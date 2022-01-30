@@ -1,0 +1,34 @@
+version: '3'
+services:
+  scheduler_server:
+    build: 
+      context: ./job_scheduler/server
+      dockerfile: Dockerfile
+    ports:
+      - '9090:9090'
+    networks:
+        - default
+    environment:
+      - REDIS_HOST=redis
+  remote_worker_eg:
+    build: 
+      context: ./job_scheduler/remote_worker
+      dockerfile: Dockerfile
+    networks:
+        - default
+    environment:
+      - SERVER_HOST=http://scheduler_server:9090
+  redis:
+    image: redis
+    hostname: redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - 'redis_data:/data'
+networks:
+  default:
+    external:
+      name: local
+
+volumes:
+  redis_data:

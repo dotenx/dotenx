@@ -4,7 +4,7 @@ const { v4: uuid } = require('uuid');
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-const serverUrl = 'http://localhost:9090'
+const serverUrl = process.env.SERVER_HOST;
 const intervalInMilli = 1000; // 1000 milliseconds
 
 
