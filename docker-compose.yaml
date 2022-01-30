@@ -8,6 +8,8 @@ services:
       - '9090:9090'
     networks:
         - default
+    volumes:
+      - ./job_scheduler/server:/usr/src/app
     environment:
       - REDIS_HOST=redis
   remote_worker_eg:
@@ -16,6 +18,8 @@ services:
       dockerfile: Dockerfile
     networks:
         - default
+    volumes:
+      - ./job_scheduler/remote_worker:/usr/src/app
     environment:
       - SERVER_HOST=http://scheduler_server:9090
   redis:
