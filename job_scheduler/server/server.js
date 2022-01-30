@@ -20,26 +20,7 @@ routineJobsQueue.on('completed', function (job, result) {
   console.log(`job ${jobData.jobId} completed with result: ${JSON.stringify(result)}`)
 })
 
-async function clearRedis(queue) {
-  await queue.empty();
-  await queue.clean(0, 'active');
-  await queue.clean(0, 'completed');
-  await queue.clean(0, 'delayed');
-  await queue.clean(0, 'failed');
-}
 
-// clearRedis().then(() => { });
-
-// Generate a routine job every second
-let count = 0;
-setInterval(async () => {
-  await routineJobsQueue.add({
-    value: Date.now(),
-    jobType: 'routine'
-  });
-  console.log(`scheduled job: ${count}`);
-  count++;
-}, intervalInMilli * 10);
 
 
 // ------------ enable bull-ui -----------
@@ -61,19 +42,15 @@ app.use(bodyParser.json());
 serverAdapter.setBasePath('/admin/queues'); // An arbitrary path to serve the dashboard
 app.use('/admin/queues', serverAdapter.getRouter());
 
-app.get('/next/:token', async (req, res) => {
-  const worker = new Queue('routine_jobs', { redis: { port: redisPort, host: redisHost } });
+app.get('/next/queue/:qname/:token', async (req, res) => {
+  const { qname } = req.params;
+  const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getNextJob(req.params.token);
   if (!job) {
     return res.sendStatus(400);
   }
   console.log(`started processing job: ${job.id}`);
-  // await job.progress(1);
   await worker.close();
-  // console.log('job completed');
-  // await delay(1000);
-  // job.
-  // job.moveToCompleted();
   res.send(JSON.stringify(job));
 });
 
@@ -91,9 +68,28 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   } else {
     await job.moveToFailed(returnValue, token);
   }
+  // Call AO-API with the results
   await worker.close();
   res.sendStatus(200);
 });
+
+app.post('/queue/:qname/job', async (req, res) => {
+  const { qname } = req.params;
+  const payload = req.body;
+  console.log(`Adding new job to queue: ${qname}`);
+  const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
+  try {
+    const job = await worker.add(payload);
+    await worker.close();
+    res.send({
+      jobId: job.id
+    });  
+  } catch (error) {
+    console.error(error.message);
+    res.sendStatus(500)
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Listening on port: ${port}`)
