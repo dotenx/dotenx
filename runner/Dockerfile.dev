@@ -1,0 +1,13 @@
+FROM golang:1.14.7 AS go-build
+
+ARG GITLAB_ACCESS_USERNAME
+ARG GITLAB_ACCESS_PASSWORD
+
+WORKDIR /go/src/gitlab.com/utopiops-water/ao-runner
+RUN echo https://${GITLAB_ACCESS_USERNAME}:${GITLAB_ACCESS_PASSWORD}@gitlab.com >> ~/.git-credentials && git config --global credential.helper 'store --file ~/.git-credentials'
+
+ENV GO111MODULE=on
+
+
+
+
