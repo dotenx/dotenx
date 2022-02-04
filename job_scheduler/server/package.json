@@ -4,7 +4,8 @@
   "description": "Bull-server example source code. Repo managed by utopiops.com.",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "dev": "./node_modules/nodemon/bin/nodemon.js server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
