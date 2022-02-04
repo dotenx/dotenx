@@ -1,4 +1,4 @@
-package services
+package jobScheduler
 
 import (
 	"github.com/utopiops/automated-ops/runner/models"
