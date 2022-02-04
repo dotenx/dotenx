@@ -19,7 +19,11 @@ func (manager *JobManager) StartReceiving(jobChan chan models.Job) {
 		}
 		var job models.Job
 		json.Unmarshal(out, &job)
-		jobChan <- job
-		time.Sleep(time.Duration(5 * time.Second))
+		if job.Id != "" {
+			fmt.Println()
+			jobChan <- job
+		} else {
+			time.Sleep(time.Duration(5 * time.Second))
+		}
 	}
 }

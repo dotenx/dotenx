@@ -5,16 +5,18 @@ type Task struct {
 }
 
 type TaskDetails struct {
-	Name           string                 `json:"name"`
-	Id             string                 `json:"id"`
-	Type           string                 `json:"type"`
-	Body           map[string]interface{} `json:"body"`
-	ServiceAccount string                 `json:"serviceAccount"`
+	Name           string   `json:"name"`
+	Id             string   `json:"id"`
+	Type           string   `json:"type"`
+	Body           TaskBody `json:"body"`
+	ServiceAccount string   `json:"serviceAccount"`
 }
+
+type TaskBody map[string]interface{}
 
 type TaskResult struct {
 	Name      string `json:"name"`
-	Id        int    `json:"id"`
+	Id        string `json:"id"`
 	Type      string `json:"type"`
 	AccountId string `json:"accountId"`
 	Log       string `json:"log"`
