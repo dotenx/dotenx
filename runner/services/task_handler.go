@@ -9,9 +9,9 @@ import (
 	"strings"
 	"sync"
 
-	"gitlab.com/utopiops-water/ao-runner/config"
-	"gitlab.com/utopiops-water/ao-runner/models"
-	"gitlab.com/utopiops-water/ao-runner/shared"
+	"github.com/utopiops/automated-ops/runner/config"
+	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/utopiops/automated-ops/runner/shared"
 )
 
 type QueueMessage struct {

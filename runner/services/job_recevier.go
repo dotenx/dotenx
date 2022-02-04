@@ -8,8 +8,8 @@ import (
 	"log"
 	"time"
 
-	"gitlab.com/utopiops-water/ao-runner/grpcClient"
-	"gitlab.com/utopiops-water/ao-runner/models"
+	"github.com/utopiops/automated-ops/runner/grpcClient"
+	"github.com/utopiops/automated-ops/runner/models"
 )
 
 func StartReceiving(c grpcClient.JobStreamServiceClient, clientId string, taskChan chan models.Task) {

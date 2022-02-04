@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"sync"
 
-	"gitlab.com/utopiops-water/ao-runner/config"
+	"github.com/utopiops/automated-ops/runner/config"
 )
 
 func NewLogHelper(authHelper AuthHelper, httpHelper HttpHelper) LogHelper {
