@@ -1,5 +1,7 @@
 FROM node:17-slim
-# FROM node:12.19.0
+
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
