@@ -4,42 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/utopiops-water/ao-runner/executors"
-	"gitlab.com/utopiops-water/ao-runner/grpcClient"
-	"gitlab.com/utopiops-water/ao-runner/models"
-	"gitlab.com/utopiops-water/ao-runner/shared"
+	"github.com/utopiops/automated-ops/runner/executors"
+	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/utopiops/automated-ops/runner/shared"
 )
 
 func HandleJob(client grpcClient.JobStreamServiceClient, task models.Task, logHelper shared.LogHelper) {
-	// get the job details
-	/*job := models.Job{
-		ExecutionId: jobDto.ExecutionId,
-		PipelineId:  jobDto.PipelineId,
-		ActionId:    -1, // Negative ActionId indicates no action is provided, in this case we also don't (need to) provide the Status
-	}
-
-	// get the job details
-	taskIds, err := jobService.GetNextJobs(&job)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	fmt.Println("taskIds", taskIds)
-	taskChannel, errors := dispatchTasks(taskIds, job.ExecutionId, jobDto.Input, jobService, httpHelper, authHelper)*/
-	//resultChannel := make(chan models.TaskResult, )
-	//go HanleErrors(jobService, job.ExecutionId, errors)
-	//fmt.Println("wait finished")
-	/*for res := range resultChannel {
-		fmt.Println(res)
-		jobService.SetStatus(res.Status, job.ExecutionId, res.Id)
-		// todo: send task result for ao api
-	}
-	if err == nil {
-		// todo: ack the message here
-		fmt.Println("didn't have error")
-	}*/
-
-	// todo: should I NACK? or just leave it and it will get back to the queue?
 	Execute(task, task.ExecutionId, client, logHelper)
 	return
 }

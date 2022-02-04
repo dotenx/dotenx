@@ -1,4 +1,4 @@
-module gitlab.com/utopiops-water/ao-runner
+module github.com/utopiops/automated-ops/runner
 
 go 1.13
 

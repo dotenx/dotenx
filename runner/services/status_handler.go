@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.com/utopiops-water/ao-runner/config"
-	"gitlab.com/utopiops-water/ao-runner/shared"
+	"github.com/utopiops/automated-ops/runner/config"
+	"github.com/utopiops/automated-ops/runner/shared"
 )
 
 func (j *jobService) SetStatus(status string, executionId int, taskId int) error {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitlab.com/utopiops-water/ao-runner/app"
+	"github.com/utopiops/automated-ops/runner/app"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/dgrijalva/jwt-go"
-	"gitlab.com/utopiops-water/ao-runner/config"
+	"github.com/utopiops/automated-ops/runner/config"
 )
 
 type AuthHelper struct {

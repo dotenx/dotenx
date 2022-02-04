@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"gitlab.com/utopiops-water/ao-runner/config"
-	"gitlab.com/utopiops-water/ao-runner/grpcClient"
-	"gitlab.com/utopiops-water/ao-runner/models"
-	"gitlab.com/utopiops-water/ao-runner/services"
-	"gitlab.com/utopiops-water/ao-runner/shared"
+	"github.com/utopiops/automated-ops/runner/config"
+	"github.com/utopiops/automated-ops/runner/grpcClient"
+	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/utopiops/automated-ops/runner/services"
+	"github.com/utopiops/automated-ops/runner/shared"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

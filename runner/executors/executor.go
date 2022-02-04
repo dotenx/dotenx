@@ -1,8 +1,8 @@
 package executors
 
 import (
-	"gitlab.com/utopiops-water/ao-runner/executors/docker"
-	"gitlab.com/utopiops-water/ao-runner/models"
+	"github.com/utopiops/automated-ops/runner/executors/docker"
+	"github.com/utopiops/automated-ops/runner/models"
 )
 
 type Executor interface {

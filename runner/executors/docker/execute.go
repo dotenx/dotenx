@@ -11,7 +11,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"gitlab.com/utopiops-water/ao-runner/models"
+	"github.com/utopiops/automated-ops/runner/models"
 )
 
 func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskResult {
