@@ -1,19 +1,11 @@
 package services
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"time"
-
-	"github.com/utopiops/automated-ops/runner/grpcClient"
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
-func StartReceiving(c grpcClient.JobStreamServiceClient, clientId string, taskChan chan models.Task) {
-	req := &grpcClient.JobStreamRequest{
+func StartReceiving(clientId string, taskChan chan models.Task) {
+	/*req := &grpcClient.JobStreamRequest{
 		ClientId: clientId,
 	}
 	stream, err := c.GetJobs(context.Background(), req)
@@ -36,5 +28,5 @@ func StartReceiving(c grpcClient.JobStreamServiceClient, clientId string, taskCh
 		json.Unmarshal([]byte(res.Payload), &task)
 		fmt.Println(task)
 		taskChan <- task
-	}
+	}*/
 }
