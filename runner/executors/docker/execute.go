@@ -99,10 +99,10 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 			status = models.StatusFailed
 			break
 		} else if statusCode == 0 { // done
-			status = models.StatusSuccess
+			status = models.StatusCompleted
 			break
 		} else if timeCounter == int(timeOut) { // timedout
-			status = models.StatusTimedout
+			status = models.StatusTimedOut
 			break
 		}
 	}
