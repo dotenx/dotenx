@@ -9,19 +9,14 @@ type (
 		Endpoints Endpoints
 	}
 	Queue struct {
-		URL             string `envconfig:"AOR_AMQP_URL"`
-		Name            string `envconfig:"AOR_QUEUE_NAME"`
-		Exchange        string `envconfig:"AOR_QUEUE_EXCHANGE"`
-		Key             string `envconfig:"AOR_QUEUE_KEY"`
-		WorkersExchange string `envconfig:"AOR_QUEUE_WORKERS_EXCHANGE"`
-		WorkersKey      string `envconfig:"AOR_QUEUE_WORKERS_KEY"`
+		Token string `envconfig:"AOR_QUEUE_TOKEN"`
+		Name  string `envconfig:"AOR_QUEUE_NAME"`
 	}
-
 	Endpoints struct {
 		Core             string `envconfig:"AOR_CORE_API_URL"`
 		AoAPI            string `envconfig:"AOR_AO_API_URL"`
 		SecretManager    string `envconfig:"AOR_AO_SM_URL"`
-		AoBridge         string `envconfig:"AOR_BRIDGE_URL"`
+		JobScheduler     string `envconfig:"AOR_JOBSCHEDULER_URL"`
 		LogstreamManager string `envconfig:"AOR_LSM_URL"`
 	}
 
