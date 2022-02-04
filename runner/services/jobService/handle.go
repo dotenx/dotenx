@@ -1,8 +1,6 @@
 package jobService
 
 import (
-	"fmt"
-
 	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/executors"
 	"github.com/utopiops/automated-ops/runner/models"
@@ -11,15 +9,21 @@ import (
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
 	executor := executors.NewExecutor()
+	var name, taskType string
+	if _, ok := job.Data["name"]; ok {
+		name = job.Data["name"].(string)
+	}
+	if _, ok := job.Data["type"]; ok {
+		taskType = job.Data["type"].(string)
+	}
 	taskDetails := models.TaskDetails{
-		Name:           "chi bezaram",
+		Name:           name,
 		Id:             job.Id,
-		Type:           "in type?",
+		Type:           taskType,
 		Body:           job.Data,
 		ServiceAccount: "service?",
 	}
 	result := executor.Execute(&taskDetails)
-	fmt.Println(result)
 	resultDto := models.TaskStatus{
 		ReturnValue: "",
 		Result:      models.Status(result.Status),

@@ -17,10 +17,9 @@ func (manager *JobManager) StartReceiving(jobChan chan models.Job) {
 		if err != nil {
 			continue
 		}
-		fmt.Println(string(out))
 		var job models.Job
 		json.Unmarshal(out, &job)
-		fmt.Println(job)
 		jobChan <- job
+		time.Sleep(time.Duration(5 * time.Second))
 	}
 }

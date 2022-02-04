@@ -15,6 +15,7 @@ import (
 )
 
 func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskResult {
+	fmt.Println(task)
 	var containerImage string
 	var timeOut float64
 	var containerScript []interface{}
