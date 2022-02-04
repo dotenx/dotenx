@@ -22,7 +22,7 @@ func StartApp() {
 	}
 	logHelper := shared.NewLogHelper(authHelper, httpHelper)
 	service := jobService.NewService(httpHelper, logHelper)
-	taskChan := make(chan models.Task, 1000)
+	taskChan := make(chan models.Job, 1000)
 	if err != nil {
 		panic(err)
 	}
