@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/services"
+	"github.com/utopiops/automated-ops/runner/services/jobService"
 	"github.com/utopiops/automated-ops/runner/shared"
 )
 
@@ -21,6 +21,7 @@ func StartApp() {
 		HttpHelper: httpHelper,
 	}
 	logHelper := shared.NewLogHelper(authHelper, httpHelper)
+	service := jobService.NewService(httpHelper, logHelper)
 	//err = register(authHelper)
 	//shared.FailOnError(err, "Failed to bootstrap")
 	//jobSvc := services.NewJobService(authHelper, httpHelper)
@@ -31,9 +32,9 @@ func StartApp() {
 	var clientId string
 	fmt.Print("ClientId: ")
 	fmt.Scan(&clientId)
-	go services.StartReceiving(clientId, taskChan)
+	go service.StartReceiving(clientId, taskChan)
 	for task := range taskChan {
-		go services.HandleJob(task, logHelper)
+		go service.HandleJob(task, logHelper)
 	}
 }
 

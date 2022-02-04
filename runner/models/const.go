@@ -1,9 +1,9 @@
 package models
 
+type Status string
+
 const (
-	StatusSuccess   = "Success"
-	StatusFailed    = "Failed"
-	StatusTimedout  = "Timedout"
-	StatusStarted   = "Started"
-	StatusCancelled = "Canselled"
+	StatusCompleted = "completed"
+	StatusFailed    = "failed"
+	StatusTimedOut  = "timedOut"
 )
