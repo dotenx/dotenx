@@ -11,8 +11,8 @@ import (
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
-func (manager *JobManager) SendResult(status models.TaskStatus) error {
-	url := config.Configs.Endpoints.AoAPI + fmt.Sprintf("/execution/id/%d/task/%d/result", "executionId", "taskId")
+func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) error {
+	url := fmt.Sprintf("%s/queue/%s/job/%s/result", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, jobId)
 	json_data, err := json.Marshal(status)
 	if err != nil {
 		return err

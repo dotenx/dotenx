@@ -22,17 +22,11 @@ func StartApp() {
 	}
 	logHelper := shared.NewLogHelper(authHelper, httpHelper)
 	service := jobService.NewService(httpHelper, logHelper)
-	//err = register(authHelper)
-	//shared.FailOnError(err, "Failed to bootstrap")
-	//jobSvc := services.NewJobService(authHelper, httpHelper)
 	taskChan := make(chan models.Task, 1000)
 	if err != nil {
 		panic(err)
 	}
-	var clientId string
-	fmt.Print("ClientId: ")
-	fmt.Scan(&clientId)
-	go service.StartReceiving(clientId, taskChan)
+	go service.StartReceiving(taskChan)
 	for task := range taskChan {
 		go service.HandleJob(task, logHelper)
 	}

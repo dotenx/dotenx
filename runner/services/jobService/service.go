@@ -6,9 +6,9 @@ import (
 )
 
 type JobService interface {
-	HandleJob(task models.Task, logHelper shared.LogHelper)
-	StartReceiving(clientId string, taskChan chan models.Task)
-	SendResult(status models.TaskStatus) error
+	HandleJob(job models.Job, logHelper shared.LogHelper)
+	StartReceiving(jobChan chan models.Job)
+	SendResult(jobId string, status models.TaskStatus) error
 }
 
 type JobManager struct {
