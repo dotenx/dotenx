@@ -12,6 +12,7 @@ services:
       - ./job_scheduler/server:/usr/src/app
     environment:
       - REDIS_HOST=redis
+    command: npm run dev
   remote_worker_eg:
     build: 
       context: ./job_scheduler/remote_worker
@@ -22,6 +23,7 @@ services:
       - ./job_scheduler/remote_worker:/usr/src/app
     environment:
       - SERVER_HOST=http://scheduler_server:9090
+    command: npm run dev
   redis:
     image: redis
     hostname: redis
