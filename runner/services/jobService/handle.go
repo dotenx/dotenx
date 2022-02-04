@@ -9,10 +9,16 @@ import (
 	"github.com/utopiops/automated-ops/runner/shared"
 )
 
-func (manager *JobManager) HandleJob(task models.Task, logHelper shared.LogHelper) {
-	//var wg sync.WaitGroup
+func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
 	executor := executors.NewExecutor()
-	result := executor.Execute(&task.Detailes)
+	taskDetails := models.TaskDetails{
+		Name:           "chi bezaram",
+		Id:             job.Id,
+		Type:           "in type?",
+		Body:           job.Data,
+		ServiceAccount: "service?",
+	}
+	result := executor.Execute(&taskDetails)
 	fmt.Println(result)
 	resultDto := models.TaskStatus{
 		ReturnValue: "",
@@ -24,7 +30,6 @@ func (manager *JobManager) HandleJob(task models.Task, logHelper shared.LogHelpe
 	} else {
 		resultDto.Result = models.StatusFailed
 	}
-	manager.LogHelper.Log(result.Log, true, result.Id, result.Id)
-	manager.SendResult(resultDto)
-	return
+	manager.LogHelper.Log(result.Log, true, result.Id)
+	manager.SendResult(job.Id, resultDto)
 }

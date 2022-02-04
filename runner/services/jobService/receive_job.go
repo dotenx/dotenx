@@ -10,17 +10,17 @@ import (
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
-func (manager *JobManager) StartReceiving(clientId string, taskChan chan models.Task) {
-	url := config.Configs.Endpoints.AoAPI + fmt.Sprintf("/execution/id/%d/task/%d/result", "executionId", "taskId")
+func (manager *JobManager) StartReceiving(jobChan chan models.Job) {
+	url := fmt.Sprintf("%s/next/queue/%s/%s", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, config.Configs.Queue.Token)
 	for {
 		out, err, _ := manager.HttpHelper.HttpRequest(http.MethodGet, url, nil, nil, time.Minute)
 		if err != nil {
 			continue
 		}
 		fmt.Println(string(out))
-		var task models.Task
-		json.Unmarshal(out, &task)
-		fmt.Println(task)
-		taskChan <- task
+		var job models.Job
+		json.Unmarshal(out, &job)
+		fmt.Println(job)
+		jobChan <- job
 	}
 }

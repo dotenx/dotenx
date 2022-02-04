@@ -1,20 +1,16 @@
 package models
 
 type Task struct {
-	Detailes    TaskDetails `json:"task"`
-	ExecutionId int         `json:"executionId"`
+	Detailes TaskDetails `json:"task"`
 }
 
 type TaskDetails struct {
-	Name           string   `json:"name"`
-	Id             int      `json:"id"`
-	Type           string   `json:"type"`
-	Body           TaskBody `json:"body"`
-	ServiceAccount string   `json:"serviceAccount"`
-	AccountId      string   `json:"accountId"`
+	Name           string                 `json:"name"`
+	Id             string                 `json:"id"`
+	Type           string                 `json:"type"`
+	Body           map[string]interface{} `json:"body"`
+	ServiceAccount string                 `json:"serviceAccount"`
 }
-
-type TaskBody map[string]interface{}
 
 type TaskResult struct {
 	Name      string `json:"name"`

@@ -22,7 +22,7 @@ func NewLogHelper(authHelper AuthHelper, httpHelper HttpHelper) LogHelper {
 }
 
 type LogHelper interface {
-	Log(line string, isLastLine bool, executionId int, taskId int) (err error)
+	Log(line string, isLastLine bool, taskId string) (err error)
 }
 
 type logHelper struct {
@@ -31,9 +31,9 @@ type logHelper struct {
 	lineCount  LineCount
 }
 
-func (l *logHelper) Log(line string, isLastLine bool, executionId int, taskId int) (err error) {
+func (l *logHelper) Log(line string, isLastLine bool, taskId string) (err error) {
 
-	jobId := fmt.Sprintf("pipeline-%d-%d", executionId, taskId)
+	jobId := fmt.Sprintf("pipeline-%s", taskId)
 	fmt.Println(jobId)
 
 	l.lineCount.Lock.Lock()
