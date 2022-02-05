@@ -3,6 +3,7 @@ package docker
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -55,9 +56,9 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 			containerScript = task.Body["script"].([]interface{})
 		}
 	case "Invalid":
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: nil, Log: "unsupported task type"}
+		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: errors.New("unsupported task type"), Log: ""}
 	default:
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: nil, Log: "unsupported task type"}
+		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: errors.New("unsupported task type"), Log: ""}
 	}
 	reader, err := executor.Client.ImagePull(context.Background(), containerImage, types.ImagePullOptions{})
 	if err != nil {

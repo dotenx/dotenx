@@ -2,7 +2,6 @@ package jobService
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/executors"
@@ -37,12 +36,19 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Result:      models.Status(result.Status),
 		Toekn:       config.Configs.Queue.Token,
 	}
+	var err error
+	var id string
 	if result.Error == nil {
 		resultDto.Result = models.StatusCompleted
+		id, err = manager.LogHelper.Log("log: "+result.Log, true, result.Id)
 	} else {
+		id, err = manager.LogHelper.Log("error: "+result.Error.Error()+", log: "+result.Log, true, result.Id)
 		resultDto.Result = models.StatusFailed
 	}
-	manager.LogHelper.Log(result.Log, true, result.Id)
-	log.Println(resultDto)
+	if err != nil {
+		fmt.Printf("error in setting job log: %s\n", err.Error())
+	} else {
+		fmt.Println("jobId: " + id)
+	}
 	manager.SendResult(job.Id, resultDto)
 }
