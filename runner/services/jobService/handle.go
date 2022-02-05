@@ -11,7 +11,7 @@ import (
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
 	executor := executors.NewExecutor()
-	var name, taskType string
+	var name, taskType, service string
 	var body map[string]interface{}
 	if _, ok := job.Data["name"]; ok {
 		name = job.Data["name"].(string)
@@ -22,17 +22,20 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if _, ok := job.Data["body"]; ok {
 		body = job.Data["body"].(map[string]interface{})
 	}
+	if _, ok := job.Data["serviceAccount"]; ok {
+		service = job.Data["serviceAccount"].(string)
+	}
 	taskDetails := models.TaskDetails{
 		Name:           name,
 		Id:             job.Id,
 		Type:           taskType,
 		Body:           body,
-		ServiceAccount: "service?",
+		ServiceAccount: service,
 	}
 	result := executor.Execute(&taskDetails)
 	fmt.Println(result)
 	resultDto := models.TaskStatus{
-		ReturnValue: "",
+		ReturnValue: result.Log,
 		Result:      models.Status(result.Status),
 		Toekn:       config.Configs.Queue.Token,
 	}
