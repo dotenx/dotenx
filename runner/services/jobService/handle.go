@@ -21,7 +21,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		taskType = job.Data["type"].(string)
 	}
 	if _, ok := job.Data["body"]; ok {
-		body = job.Data["body"].(models.TaskBody)
+		body = job.Data["body"].(map[string]interface{})
 	}
 	taskDetails := models.TaskDetails{
 		Name:           name,
