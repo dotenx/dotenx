@@ -13,6 +13,7 @@ services:
       - /usr/src/app/node_modules
     environment:
       - REDIS_HOST=redis
+      - AO_API_URL=localhost:8080
     command: npm run dev
   remote_worker_eg:
     build: 
