@@ -3,7 +3,6 @@ package shared
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -22,7 +21,7 @@ func NewLogHelper(authHelper AuthHelper, httpHelper HttpHelper) LogHelper {
 }
 
 type LogHelper interface {
-	Log(line string, isLastLine bool, taskId string) (err error)
+	Log(line string, isLastLine bool, taskId string) (jobId string, err error)
 }
 
 type logHelper struct {
@@ -31,15 +30,13 @@ type logHelper struct {
 	lineCount  LineCount
 }
 
-func (l *logHelper) Log(line string, isLastLine bool, taskId string) (err error) {
+func (l *logHelper) Log(line string, isLastLine bool, taskId string) (jobId string, err error) {
 
-	jobId := fmt.Sprintf("pipeline-%s", taskId)
-	fmt.Println(jobId)
-
+	jobId = fmt.Sprintf("pipeline-%s", taskId)
 	l.lineCount.Lock.Lock()
 	var lineNumber int16
 	var ok bool
-	if lineNumber, ok = l.lineCount.Counter[jobId]; !ok {
+	if _, ok = l.lineCount.Counter[jobId]; !ok {
 		l.lineCount.Counter[jobId] = 1
 	} else {
 		l.lineCount.Counter[jobId] += 1
@@ -48,13 +45,13 @@ func (l *logHelper) Log(line string, isLastLine bool, taskId string) (err error)
 	l.lineCount.Lock.Unlock()
 
 	method := http.MethodPost
-	url := config.Configs.Endpoints.LogstreamManager + fmt.Sprintf("/log/job")
+	url := fmt.Sprintf("%s/log/job", config.Configs.Endpoints.LogstreamManager)
 	token, err := l.authHelper.GetToken()
 	if err != nil {
 		return
 	}
 	headers := []Header{
-		Header{
+		{
 			Key:   "Authorization",
 			Value: fmt.Sprintf("Bearer %s", token),
 		},
@@ -76,7 +73,7 @@ func (l *logHelper) Log(line string, isLastLine bool, taskId string) (err error)
 		return
 	}
 	if statusCode != http.StatusOK {
-		err = errors.New(fmt.Sprintf("request failed: %d", statusCode))
+		err = fmt.Errorf("request failed: %d", statusCode)
 	}
 	return
 }

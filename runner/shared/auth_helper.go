@@ -2,7 +2,6 @@ package shared
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -20,7 +19,6 @@ type AuthHelper struct {
 func (aus *AuthHelper) Register() (err error) {
 	method := http.MethodPost
 	url := config.Configs.Endpoints.Core + "/auth/apps/register"
-	fmt.Println(url)
 	headers := []Header{
 		{
 			Key:   "appName",
@@ -38,7 +36,7 @@ func (aus *AuthHelper) Register() (err error) {
 	}
 	if statusCode != http.StatusOK {
 		fmt.Println("Status code: ", statusCode)
-		err = errors.New(fmt.Sprintf("request failed: %d", statusCode))
+		err = fmt.Errorf("request failed: %d", statusCode)
 		return
 	}
 	return
@@ -48,11 +46,11 @@ func (aus *AuthHelper) setToken() (err error) {
 	method := http.MethodPost
 	url := config.Configs.Endpoints.Core + "/auth/apps/token"
 	headers := []Header{
-		Header{
+		{
 			Key:   "appName",
 			Value: config.Configs.Secrets.AppName,
 		},
-		Header{
+		{
 			Key:   "secret",
 			Value: config.Configs.Secrets.AuthServerJwtSecret,
 		},
@@ -63,7 +61,7 @@ func (aus *AuthHelper) setToken() (err error) {
 		return
 	}
 	if statusCode != http.StatusOK {
-		err = errors.New(fmt.Sprintf("request failed: %d", statusCode))
+		err = fmt.Errorf("request failed: %d", statusCode)
 		return
 	}
 
@@ -93,7 +91,7 @@ func (aus *AuthHelper) GetToken() (token string, err error) {
 		t, err := jwt.Parse(aus.token, func(token *jwt.Token) (interface{}, error) {
 			// Validate the alg is what you expect:
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"]) // This would be a serious issue cause the auth server has changed the alg
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"]) // This would be a serious issue cause the auth server has changed the alg
 			}
 			return secret, nil
 		})

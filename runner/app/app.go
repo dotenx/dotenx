@@ -15,19 +15,17 @@ import (
 func StartApp() {
 	err := bootstrap()
 	shared.FailOnError(err, "Failed to bootstrap")
-
 	httpHelper := shared.NewHttpHelper(shared.NewHttpClient())
 	authHelper := shared.AuthHelper{
 		HttpHelper: httpHelper,
 	}
+	err = register(authHelper)
+	shared.FailOnError(err, "Failed to register")
 	logHelper := shared.NewLogHelper(authHelper, httpHelper)
 	service := jobService.NewService(httpHelper, logHelper)
-	taskChan := make(chan models.Job, 1000)
-	if err != nil {
-		panic(err)
-	}
-	go service.StartReceiving(taskChan)
-	for task := range taskChan {
+	jobChan := make(chan models.Job, 1000)
+	go service.StartReceiving(jobChan)
+	for task := range jobChan {
 		go service.HandleJob(task, logHelper)
 	}
 }
