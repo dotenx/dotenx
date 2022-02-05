@@ -1,5 +1,6 @@
 const express = require('express');
 var bodyParser = require('body-parser')
+const axios = require('axios');
 const Queue = require('bull');
 const { createBullBoard } = require('@bull-board/api');
 const { BullAdapter } = require('@bull-board/api/bullAdapter');
@@ -8,7 +9,7 @@ const { ExpressAdapter } = require('@bull-board/express');
 const port = process.env.PORT || 9090;
 const redisHost = process.env.REDIS_HOST || '127.0.0.1';
 const redisPort = process.env.REDIS_PORT || 6379;
-const intervalInMilli = 1000; // 1000 milliseconds
+const aoApiUrl = process.env.AO_API_URL;
 
 
 // A queue for the jobs scheduled based on a routine without any external requests
@@ -54,6 +55,7 @@ app.get('/next/queue/:qname/:token', async (req, res) => {
   res.send(JSON.stringify(job));
 });
 
+// Set the job result
 app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   const { qname, jobId } = req.params;
   const { returnValue, token, result } = req.body;
@@ -69,10 +71,25 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
     await job.moveToFailed(returnValue, token);
   }
   // Call AO-API with the results
-  await worker.close();
-  res.sendStatus(200);
+  const [executionId, taskId] = [job.data.executionId, job.data.taskId];
+  try {
+    await axios.post(`${aoApiUrl}/execution/id/${executionId}'task/${taskId}/result`, {
+      status: result
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    // todo: handle this properly
+    console.error(error.message);
+    res.sendStatus(500);
+  }
+  finally {
+    await worker.close();
+  }
+
 });
 
+
+// Add a new job to the queue
 app.post('/queue/:qname/job', async (req, res) => {
   const { qname } = req.params;
   const payload = req.body;
@@ -83,7 +100,7 @@ app.post('/queue/:qname/job', async (req, res) => {
     await worker.close();
     res.send({
       jobId: job.id
-    });  
+    });
   } catch (error) {
     console.error(error.message);
     res.sendStatus(500)
