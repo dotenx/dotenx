@@ -15,7 +15,7 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 	case db.Postgres:
 		conn := ps.db.Connection
 		var nullableServiceAccount sql.NullString
-		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.Body, &nullableServiceAccount, &task.AccountId)
+		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.Body, &task.Timeout, &nullableServiceAccount, &task.AccountId)
 		if nullableServiceAccount.Valid {
 			task.ServiceAccount = nullableServiceAccount.String
 		}
@@ -32,7 +32,7 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 }
 
 var getTaskByExecution = `
-select t.id, t.name, t.task_type, t.body, pv.service_account, p.account_id
+select t.id, t.name, t.task_type, t.body,t.timeout, pv.service_account, p.account_id
 from executions e
 join pipeline_versions pv on e.pipeline_version_id = pv.id
 join tasks t on t.pipeline_version_id = pv.id

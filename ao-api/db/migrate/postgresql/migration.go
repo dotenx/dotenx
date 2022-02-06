@@ -201,6 +201,7 @@ task_type									VARCHAR(64),
 description								VARCHAR(128),
 pipeline_version_id				INT NOT NULL,
 body											JSONB,
+timeout INT NOT NULL default 30,
 FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id),
 FOREIGN KEY (task_type) REFERENCES task_types(name)
 )
@@ -234,6 +235,7 @@ initial_data							JSONB,
 FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
+var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							INT NOT NULL,
