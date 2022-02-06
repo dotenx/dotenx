@@ -1,0 +1,5 @@
+.vscode
+*.out
+.env*
+release/
+vendor/
