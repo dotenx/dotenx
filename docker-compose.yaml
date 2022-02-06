@@ -13,8 +13,9 @@ services:
       - /usr/src/app/node_modules
     environment:
       - REDIS_HOST=redis
-      - AO_API_URL=localhost:8080
+      - AO_API_URL=http://ao-api:3004
     command: npm run dev
+    
   remote_worker_eg:
     build: 
       context: ./job_scheduler/remote_worker
@@ -34,6 +35,35 @@ services:
       - '6380:6379'
     volumes:
       - 'redis_data:/data'
+
+  psql:
+    image: postgres:12
+    hostname: postgres
+    env_file:
+      - postgres.env
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data/'
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
+
+  ao-api:
+    build:
+      context: .
+      args:
+          - GITLAB_ACCESS_USERNAME=$GITLAB_ACCESS_USERNAME
+          - GITLAB_ACCESS_PASSWORD=$GITLAB_ACCESS_PASSWORD
+      dockerfile: ao-api/Dockerfile
+    hostname: ao-api
+    working_dir: /root/
+    volumes:
+     - .:/go/src/github.com/utopiops/automated-ops/ao-api
+    networks:
+        - default
+    ports:
+      - '3004:3004'
+
 networks:
   default:
     external:
@@ -41,3 +71,4 @@ networks:
 
 volumes:
   redis_data:
+  postgres_data:
