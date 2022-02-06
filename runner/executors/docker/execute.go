@@ -57,10 +57,10 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	}
 	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), containerImage, types.ImagePullOptions{})
 	if err != nil {
-		//	fmt.Println(err)
+		//fmt.Println(err)
 		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: nil, Log: "error in pulling base image"}
 	}
-	//	io.Copy(os.Stdout, reader)
+	//io.Copy(os.Stdout, reader)
 	var cont container.ContainerCreateCreatedBody
 	if !isPredefined {
 		cmds := make([]string, 0)
@@ -106,9 +106,12 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 			break
 		}
 	}
-	logs, _ := executor.GetLogs(cont.ID)
+	if runErr != nil {
+		return &models.TaskResult{Id: task.Id, Status: status, Error: runErr, Log: ""}
+	}
+	logs, err := executor.GetLogs(cont.ID)
 	executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
-	return &models.TaskResult{Id: task.Id, Status: status, Error: runErr, Log: logs}
+	return &models.TaskResult{Id: task.Id, Status: status, Error: err, Log: logs}
 }
 
 func (executor *dockerExecutor) CheckStatus(containerId string) int {
