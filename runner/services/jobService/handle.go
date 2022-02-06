@@ -30,6 +30,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Type:           taskType,
 		Body:           body,
 		ServiceAccount: service,
+		Timeout:        job.Timeout,
 	}
 	result := executor.Execute(&taskDetails)
 	fmt.Println(result)
