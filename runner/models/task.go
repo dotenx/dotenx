@@ -8,6 +8,7 @@ type TaskDetails struct {
 	Name           string   `json:"name"`
 	Id             string   `json:"id"`
 	Type           string   `json:"type"`
+	Timeout        int      `json:"timeout"`
 	Body           TaskBody `json:"body"`
 	ServiceAccount string   `json:"serviceAccount"`
 }

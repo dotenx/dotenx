@@ -16,7 +16,6 @@ import (
 func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskResult {
 	log.Println(task)
 	var containerImage string
-	var timeOut float64
 	var containerScript []interface{}
 	var envVariables []string
 	isPredefined := true
@@ -24,8 +23,7 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	case "HttpCall":
 		envVariables = []string{"method=" + task.Body["method"].(string),
 			"url=" + task.Body["url"].(string),
-			"body=" + task.Body["body"].(string),
-			"timeout=" + task.Body["timeout"].(string)}
+			"body=" + task.Body["body"].(string)}
 		containerImage = "awrmin/utopiopshttpcall"
 	case "CreateAccount":
 		envVariables = []string{}
@@ -50,7 +48,6 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 		{
 			isPredefined = false
 			containerImage = task.Body["image"].(string)
-			timeOut = task.Body["timeOut"].(float64)
 			containerScript = task.Body["script"].([]interface{})
 		}
 	case "Invalid":
@@ -103,7 +100,7 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 		} else if statusCode == 0 { // done
 			status = models.StatusCompleted
 			break
-		} else if timeCounter == int(timeOut) { // timedout
+		} else if timeCounter == task.Timeout { // timedout
 			status = models.StatusFailed
 			runErr = errors.New("timed out")
 			break
