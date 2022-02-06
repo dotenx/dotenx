@@ -155,7 +155,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine /*, *execut
 
 		execution.GET("/queue", executionController.GetExecution())
 		execution.GET("/id/:id/graph", executionController.GetExecutionGraph())
-		execution.GET("/id/:id/next", executionController.GetNextTask())
+		execution.POST("/id/:id/next", executionController.GetNextTask())
 		execution.GET("/id/:id/initial_data", executionController.GetInitialData())
 		execution.GET("/id/:id/task/:taskId", executionController.GetTaskDetails())
 		execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())

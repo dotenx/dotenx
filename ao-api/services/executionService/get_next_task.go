@@ -19,11 +19,12 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		jobDTO := job{ExecutionId: executionId,
-			TaskId:  strconv.Itoa(task.Id),
-			Type:    task.Type,
-			Timeout: 10,
-			Body:    task.Body,
-			Name:    task.Name,
+			TaskId:    strconv.Itoa(task.Id),
+			Type:      task.Type,
+			Timeout:   10,
+			Body:      task.Body,
+			Name:      task.Name,
+			AccountId: accountId,
 		}
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
@@ -54,11 +55,12 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				return err
 			}
 			jobDTO := job{ExecutionId: executionId,
-				TaskId:  strconv.Itoa(task.Id),
-				Type:    task.Type,
-				Timeout: 10,
-				Body:    task.Body,
-				Name:    task.Name,
+				TaskId:    strconv.Itoa(task.Id),
+				Type:      task.Type,
+				Timeout:   10,
+				Body:      task.Body,
+				Name:      task.Name,
+				AccountId: accountId,
 			}
 			err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 			if err != nil {
@@ -79,7 +81,8 @@ type job struct {
 	TaskId      string                 `json:"taskId"`
 	Timeout     int                    `json:"timeout"`
 	Name        string                 `json:"name"`
-	Type        string                 `json:"type "`
+	Type        string                 `json:"type"`
+	AccountId   string                 `json:"account_id"`
 	Body        map[string]interface{} `json:"body"`
 	//	Task        models.TaskDetails     `json:"task"`
 }

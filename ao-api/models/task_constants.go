@@ -90,22 +90,25 @@ const (
 	Timedout
 	Started
 	Cancelled
+	Completed
 )
 
 var taskStatusToString = map[TaskStatus]string{
-	Success:   "Success",
-	Failed:    "Failed",
-	Timedout:  "Timedout",
-	Started:   "Started",
-	Cancelled: "Cancelled",
+	Success:   "success",
+	Failed:    "failed",
+	Timedout:  "timedout",
+	Started:   "started",
+	Cancelled: "cancelled",
+	Completed: "completed",
 }
 
 var taskStatusToId = map[string]TaskStatus{
-	"Success":   Success,
-	"Failed":    Failed,
-	"Timedout":  Timedout,
-	"Started":   Started,
-	"Cancelled": Cancelled,
+	"success":   Success,
+	"failed":    Failed,
+	"timedout":  Timedout,
+	"started":   Started,
+	"cancelled": Cancelled,
+	"completed": Completed,
 }
 
 func (t TaskStatus) String() string {
