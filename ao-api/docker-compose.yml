@@ -1,5 +1,16 @@
 version: '3'
 services:
+  psql:
+    image: postgres:12
+    hostname: postgres
+    env_file:
+      - postgres.env
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data/'
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
   ao-api:
     build:
       context: .
@@ -12,9 +23,12 @@ services:
     networks:
         - default
     ports:
-      - '3004:3000'
+      - '3004:3004'
+
+volumes:
+  postgres_data:
 
 networks:
   default:
     external:
-      name: dev
+      name: local

@@ -11,18 +11,14 @@ WORKDIR /go/src/github.com/utopiops/automated-ops/ao-api
 ENV GONOSUMDB=gitlab.com/utopiops-water
 ENV GOPRIVATE=gitlab.com/utopiops-water/*
 
-COPY ./ao-api/go.mod .
-COPY ./ao-api/go.sum .
+COPY go.mod .
+COPY go.sum .
 
 RUN go mod download
 
-COPY ./ao-api .
+COPY . .
 
-
-
-
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build 
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ao-api .
 
 FROM alpine:3.9.5 as dns
