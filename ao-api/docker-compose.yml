@@ -1,0 +1,20 @@
+version: '3'
+services:
+  ao-api:
+    build:
+      context: .
+      args:
+          - GITLAB_ACCESS_USERNAME=$GITLAB_ACCESS_USERNAME
+          - GITLAB_ACCESS_PASSWORD=$GITLAB_ACCESS_PASSWORD
+      dockerfile: Dockerfile
+    hostname: ao-api
+    working_dir: /root/
+    networks:
+        - default
+    ports:
+      - '3004:3000'
+
+networks:
+  default:
+    external:
+      name: dev
