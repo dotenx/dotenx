@@ -21,9 +21,15 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	isPredefined := true
 	switch task.Type {
 	case "HttpCall":
+		var body string
+		if _, ok := task.Body["body"]; ok {
+			if task.Body["body"] != nil {
+				body = task.Body["body"].(string)
+			}
+		}
 		envVariables = []string{"method=" + task.Body["method"].(string),
 			"url=" + task.Body["url"].(string),
-			"body=" + task.Body["body"].(string)}
+			"body=" + body}
 		containerImage = "awrmin/utopiopshttpcall"
 	case "CreateAccount":
 		envVariables = []string{}
