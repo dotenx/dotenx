@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -25,6 +26,7 @@ func (e *ExecutionController) GetNextTask() gin.HandlerFunc {
 		// }
 		var dto models.TaskResultDto
 		if err := c.ShouldBindJSON(&dto); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

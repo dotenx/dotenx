@@ -26,7 +26,6 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	}
 	taskDetails := models.TaskDetails{
 		Name:           name,
-		Id:             job.Id,
 		Type:           taskType,
 		Body:           body,
 		ServiceAccount: service,
