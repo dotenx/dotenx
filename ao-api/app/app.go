@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"log"
-	"net"
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/config"
@@ -17,8 +16,6 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/db"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	executionserver "github.com/utopiops/automated-ops/ao-api/proto/executionServer"
-	"github.com/utopiops/automated-ops/ao-api/proto/pb"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
 	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
@@ -28,8 +25,6 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 	runnerstore "github.com/utopiops/automated-ops/ao-api/stores/runnerStore"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 func init() {
@@ -37,8 +32,8 @@ func init() {
 }
 
 type App struct {
-	route       *gin.Engine
-	grpcService *executionserver.ExecutionServer
+	route *gin.Engine
+	//grpServer *executionserver.ExecutionServer
 }
 
 func NewApp() *App {
@@ -65,13 +60,13 @@ func NewApp() *App {
 	// 	}
 	// }()
 	// Initialize router
-	r, g := routing(db, queue)
+	r /*, g*/ := routing(db, queue)
 	if r == nil {
 		log.Fatalln("r is nil")
 	}
 	return &App{
-		route:       r,
-		grpcService: g,
+		route: r,
+		//grpServer: g,
 	}
 }
 
@@ -85,7 +80,7 @@ func (a *App) Start(restPort, grpcPort string) error {
 			return
 		}
 	}()
-	go func() {
+	/*go func() {
 		lis, err := net.Listen("tcp", grpcPort)
 		if err != nil {
 			log.Printf("failed to listen: %v", err)
@@ -93,7 +88,7 @@ func (a *App) Start(restPort, grpcPort string) error {
 			return
 		}
 		s := grpc.NewServer()
-		pb.RegisterExecutionServiceServer(s, a.grpcService)
+		//pb.RegisterExecutionServiceServer(s, a.//grpServer)
 		reflection.Register(s)
 		log.Printf("server listening at %v", lis.Addr())
 		if err := s.Serve(lis); err != nil {
@@ -102,11 +97,11 @@ func (a *App) Start(restPort, grpcPort string) error {
 			return
 		}
 	}()
-	log.Println("grpc server is running")
+	log.Println("grpc server is running")*/
 	return <-errChan
 }
 
-func routing(db *db.DB, queue queueService.QueueService) (*gin.Engine, *executionserver.ExecutionServer) {
+func routing(db *db.DB, queue queueService.QueueService) *gin.Engine /*, *executionserver.ExecutionServer*/ {
 	r := gin.Default()
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
@@ -134,7 +129,7 @@ func routing(db *db.DB, queue queueService.QueueService) (*gin.Engine, *executio
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	// Routes
 
-	g := executionserver.New(executionServices)
+	//g := executionserver.New(executionServices)
 	//pretected
 	tasks := r.Group("/task")
 	{
@@ -184,7 +179,7 @@ func routing(db *db.DB, queue queueService.QueueService) (*gin.Engine, *executio
 		runner.POST("/register/type/:type", runnerController.RegisterRunner)
 		runner.GET("/id/:id/queue", runnerController.GetQueueId)
 	}
-	return r, g
+	return r /*, g*/
 }
 
 func initializeDB() (*db.DB, error) {

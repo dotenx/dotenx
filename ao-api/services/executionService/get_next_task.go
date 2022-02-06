@@ -3,8 +3,7 @@ package executionService
 import (
 	"fmt"
 	"log"
-
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"strconv"
 )
 
 func (manager *executionManager) GetNextTask(taskId, executionId int, status, accountId string) error {
@@ -19,7 +18,13 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		if err != nil {
 			return err
 		}
-		jobDTO := job{ExecutionId: executionId, Task: task}
+		jobDTO := job{ExecutionId: executionId,
+			TaskId:  strconv.Itoa(task.Id),
+			Type:    task.Type,
+			Timeout: 10,
+			Body:    task.Body,
+			Name:    task.Name,
+		}
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
 			log.Println(err.Error())
@@ -48,7 +53,13 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			if err != nil {
 				return err
 			}
-			jobDTO := job{ExecutionId: executionId, Task: task}
+			jobDTO := job{ExecutionId: executionId,
+				TaskId:  strconv.Itoa(task.Id),
+				Type:    task.Type,
+				Timeout: 10,
+				Body:    task.Body,
+				Name:    task.Name,
+			}
 			err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 			if err != nil {
 				log.Println(err.Error())
@@ -64,6 +75,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 }
 
 type job struct {
-	ExecutionId int                `json:"executionId"`
-	Task        models.TaskDetails `json:"task"`
+	ExecutionId int                    `json:"executionId"`
+	TaskId      string                 `json:"taskId"`
+	Timeout     int                    `json:"timeout"`
+	Name        string                 `json:"name"`
+	Type        string                 `json:"type "`
+	Body        map[string]interface{} `json:"body"`
+	//	Task        models.TaskDetails     `json:"task"`
 }
