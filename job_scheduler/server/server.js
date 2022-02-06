@@ -72,6 +72,7 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   }
   // Call AO-API with the results
   const [executionId, taskId] = [job.data.executionId, job.data.taskId];
+  console.log(executionId, taskId);
   try {
     await axios.post(`${aoApiUrl}/execution/id/${executionId}'task/${taskId}/result`, {
       status: result
