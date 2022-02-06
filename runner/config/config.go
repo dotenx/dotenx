@@ -9,8 +9,7 @@ type (
 		Endpoints Endpoints
 	}
 	Queue struct {
-		Token string `envconfig:"AOR_QUEUE_TOKEN"`
-		Name  string `envconfig:"AOR_QUEUE_NAME"`
+		Name string `envconfig:"AOR_QUEUE_NAME"`
 	}
 	Endpoints struct {
 		Core             string `envconfig:"AOR_CORE_API_URL"`
