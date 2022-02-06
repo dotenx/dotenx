@@ -39,19 +39,25 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Result:      models.Status(result.Status),
 		Toekn:       job.Token,
 	}
-	var err error
-	var id string
+	//var err error
+	//var id string
+	fmt.Println("job log:")
+	fmt.Println(result.Log)
+	fmt.Println("################################")
 	if result.Error == nil {
 		resultDto.Result = models.StatusCompleted
-		id, err = manager.LogHelper.Log("log: "+result.Log, true, result.Id)
+		//id, err = manager.LogHelper.Log("log: "+result.Log, true, result.Id)
 	} else {
-		id, err = manager.LogHelper.Log("error: "+result.Error.Error()+", log: "+result.Log, true, result.Id)
+		//id, err = manager.LogHelper.Log("error: "+result.Error.Error()+", log: "+result.Log, true, result.Id)
 		resultDto.Result = models.StatusFailed
 	}
-	if err != nil {
+	/*if err != nil {
 		fmt.Printf("error in setting job log: %s\n", err.Error())
 	} else {
 		fmt.Println("jobId: " + id)
+	}*/
+	err := manager.SendResult(job.Id, resultDto)
+	if err != nil {
+		fmt.Printf("error in setting job result: %s\n", err.Error())
 	}
-	manager.SendResult(job.Id, resultDto)
 }
