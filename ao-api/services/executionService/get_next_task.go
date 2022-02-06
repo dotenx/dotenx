@@ -3,7 +3,6 @@ package executionService
 import (
 	"fmt"
 	"log"
-	"strconv"
 )
 
 func (manager *executionManager) GetNextTask(taskId, executionId int, status, accountId string) error {
@@ -19,7 +18,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		jobDTO := job{ExecutionId: executionId,
-			TaskId:    strconv.Itoa(task.Id),
+			TaskId:    task.Id,
 			Type:      task.Type,
 			Timeout:   10,
 			Body:      task.Body,
@@ -55,7 +54,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				return err
 			}
 			jobDTO := job{ExecutionId: executionId,
-				TaskId:    strconv.Itoa(task.Id),
+				TaskId:    task.Id,
 				Type:      task.Type,
 				Timeout:   10,
 				Body:      task.Body,
@@ -78,7 +77,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 
 type job struct {
 	ExecutionId int                    `json:"executionId"`
-	TaskId      string                 `json:"taskId"`
+	TaskId      int                    `json:"taskId"`
 	Timeout     int                    `json:"timeout"`
 	Name        string                 `json:"name"`
 	Type        string                 `json:"type"`

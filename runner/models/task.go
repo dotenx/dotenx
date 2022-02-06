@@ -6,7 +6,7 @@ type Task struct {
 
 type TaskDetails struct {
 	Name           string   `json:"name"`
-	Id             string   `json:"id"`
+	Id             int      `json:"id"`
 	Type           string   `json:"type"`
 	Timeout        int      `json:"timeout"`
 	Body           TaskBody `json:"body"`
@@ -17,7 +17,7 @@ type TaskBody map[string]interface{}
 
 type TaskResult struct {
 	Name      string `json:"name"`
-	Id        string `json:"id"`
+	Id        int    `json:"id"`
 	Type      string `json:"type"`
 	AccountId string `json:"accountId"`
 	Log       string `json:"log"`
