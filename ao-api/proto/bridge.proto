@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+message TaskResult {
+  int32 task_id = 1;
+  int32 execution_id = 2;
+  string status = 3;
+  string AccountId = 4;
+  string log = 5;
+  string error = 6;
+}
+
+message TaskStatus {
+  int32 task_id = 1;
+  int32 execution_id = 2;
+  string status = 3;
+}
+
+message void {}
+
+service ExecutionService {
+  rpc SubmitTaskResult(TaskResult) returns(void){};
+  rpc SetTaskStatus(TaskStatus) returns(void){};
+}
