@@ -3,7 +3,6 @@ package jobService
 import (
 	"fmt"
 
-	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/executors"
 	"github.com/utopiops/automated-ops/runner/models"
 	"github.com/utopiops/automated-ops/runner/shared"
@@ -37,7 +36,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	resultDto := models.TaskStatus{
 		ReturnValue: result.Log,
 		Result:      models.Status(result.Status),
-		Toekn:       config.Configs.Queue.Token,
+		Toekn:       job.Token,
 	}
 	var err error
 	var id string
