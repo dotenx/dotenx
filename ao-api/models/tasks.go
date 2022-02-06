@@ -33,10 +33,11 @@ func (t *TaskBodyMap) Scan(value interface{}) error {
 type TaskDetails struct {
 	Name           string
 	Id             int
+	Timeout        int         `db:"timeout" json:"timeout"`
 	Type           string      `db:"task_type"`
 	Body           TaskBodyMap `db:"body" json:"body"`
 	ServiceAccount string      `db:"service_account" json:"serviceAccount"`
-	AccountId      string      `db:"account_id" json:"accountId"`
+	AccountId      string      `db:"account_id" json:"account_id"`
 }
 
 // Task Bodies
