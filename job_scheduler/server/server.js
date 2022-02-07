@@ -109,7 +109,7 @@ app.post('/queue/:qname/job', async (req, res) => {
   const { qname } = req.params;
   const payload = req.body;
   console.log(`Adding new job to queue: ${qname}`);
-  console.log(payload);
+  //console.log(payload);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   addQueue(new BullAdapter(worker))
   try {
