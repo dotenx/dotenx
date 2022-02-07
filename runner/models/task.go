@@ -1,9 +1,5 @@
 package models
 
-type Task struct {
-	Detailes TaskDetails `json:"task"`
-}
-
 type TaskDetails struct {
 	Name           string   `json:"name"`
 	Id             int      `json:"id"`
@@ -28,4 +24,12 @@ type TaskStatus struct {
 	ReturnValue interface{} `json:"returnValue"`
 	Toekn       string      `json:"token"`
 	Result      Status      `json:"result"`
+}
+
+type Task struct {
+	Detailes             TaskDetails
+	Image                string
+	EnvironmentVariables []string
+	Script               []string
+	IsPredifined         bool
 }

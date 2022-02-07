@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -14,107 +13,61 @@ import (
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
-func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskResult {
-	log.Println(task)
-	var containerImage string
-	var containerScript string
-	var envVariables []string
-	isPredefined := true
-	switch task.Type {
-	case "HttpCall":
-		var body string
-		if b, ok := task.Body["body"]; ok {
-			body = fmt.Sprintf("%v", b)
-		}
-		envVariables = []string{"method=" + task.Body["method"].(string),
-			"url=" + task.Body["url"].(string),
-			"body=" + body}
-		containerImage = "awrmin/utopiopshttpcall"
-	case "CreateAccount":
-		envVariables = []string{}
-		containerImage = "CreateAccountImage"
-	case "GitlabAddMember":
-		envVariables = []string{"privateToken=" + task.Body["privateToken"].(string),
-			"id=" + task.Body["id"].(string),
-			"userId=" + task.Body["userId"].(string),
-			"accessLevel=" + task.Body["accessLevel"].(string),
-			"expiresAt=" + task.Body["expiresAt"].(string),
-			"type=" + "projects",
-			"action=" + "add"}
-		containerImage = "awrmin/utopiops"
-	case "GitlabRemoveMember":
-		envVariables = []string{"privateToken=" + task.Body["privateToken"].(string),
-			"id=" + task.Body["id"].(string),
-			"userId=" + task.Body["userId"].(string),
-			"type=" + "projects",
-			"action=" + "remove"}
-		containerImage = "awrmin/utopiops"
-	case "default":
-		{
-			isPredefined = false
-			containerImage = task.Body["image"].(string)
-			containerScript = task.Body["script"].(string)
-		}
-	case "Invalid":
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: errors.New("unsupported task type"), Log: ""}
-	default:
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: errors.New("unsupported task type"), Log: ""}
+func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskResult) {
+	result = &models.TaskResult{}
+	result.Id = task.Detailes.Id
+	result.Status = models.StatusFailed
+	if task.Image == "" {
+		result.Error = errors.New("task dto is invalid and cant be processed")
+		return
 	}
-	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), containerImage, types.ImagePullOptions{})
+	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Image, types.ImagePullOptions{})
 	if err != nil {
-		//fmt.Println(err)
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: nil, Log: "error in pulling base image"}
+		result.Error = errors.New("error in pulling base image")
+		return
 	}
-	//io.Copy(os.Stdout, reader)
+	//io.Copy(os.Stdout, reader) // to get pull image log
 	var cont container.ContainerCreateCreatedBody
-	if !isPredefined {
+	if !task.IsPredifined {
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: containerImage,
-				Cmd:   strings.Split(containerScript, " "),
+				Image: task.Image,
+				Cmd:   task.Script,
 			},
 			nil, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: containerImage,
-				Env:   envVariables,
+				Image: task.Image,
+				Env:   task.EnvironmentVariables,
 			},
 			nil, nil, nil, "")
 	}
 	if err != nil {
-		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: nil, Log: "error in creating container"}
+		result.Error = errors.New("error in creating container")
+		return
 	}
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	timeCounter := 0
-	var status string
-	var runErr error
 	for {
-		//fmt.Println("tssss")
-		//fmt.Println(task.Timeout)
 		time.Sleep(time.Second)
 		timeCounter++
 		statusCode := executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
-			status = models.StatusFailed
 			break
 		} else if statusCode == 0 { // done
-			status = models.StatusCompleted
+			result.Status = models.StatusCompleted
 			break
-		} else if timeCounter == task.Timeout { // timedout
-			status = models.StatusFailed
-			runErr = errors.New("timed out")
-			break
+		} else if timeCounter == task.Detailes.Timeout { // timedout
+			result.Error = errors.New("timed out")
+			return
 		}
 	}
-	if runErr != nil {
-		return &models.TaskResult{Id: task.Id, Status: status, Error: runErr, Log: ""}
-	}
-	logs, err := executor.GetLogs(cont.ID)
-	executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
-	return &models.TaskResult{Id: task.Id, Status: status, Error: err, Log: logs}
+	result.Log, result.Error = executor.GetLogs(cont.ID)
+	return
 }
 
 func (executor *dockerExecutor) CheckStatus(containerId string) int {

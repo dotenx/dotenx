@@ -6,7 +6,7 @@ import (
 )
 
 type Executor interface {
-	Execute(task *models.TaskDetails) *models.TaskResult
+	Execute(task *models.Task) *models.TaskResult
 }
 
 func NewExecutor() Executor {
