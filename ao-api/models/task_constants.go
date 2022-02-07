@@ -45,7 +45,7 @@ var TaskToFields = map[string][]TaskField{
 		},
 		TaskField{
 			Key:  "script",
-			Type: "string arr",
+			Type: "text",
 		},
 	},
 }
