@@ -19,8 +19,8 @@ func StartApp() {
 	authHelper := shared.AuthHelper{
 		HttpHelper: httpHelper,
 	}
-	err = register(authHelper)
-	shared.FailOnError(err, "Failed to register")
+	//err = register(authHelper)
+	//shared.FailOnError(err, "Failed to register")
 	logHelper := shared.NewLogHelper(authHelper, httpHelper)
 	service := jobService.NewService(httpHelper, logHelper)
 	jobChan := make(chan models.Job, 1000)
