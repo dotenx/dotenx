@@ -97,6 +97,8 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	var status string
 	var runErr error
 	for {
+		//fmt.Println("tssss")
+		//fmt.Println(task.Timeout)
 		time.Sleep(time.Second)
 		timeCounter++
 		statusCode := executor.CheckStatus(cont.ID)

@@ -12,6 +12,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	executor := executors.NewExecutor()
 	var name, taskType, service string
 	var body map[string]interface{}
+	var timeout float64
 	if _, ok := job.Data["name"]; ok {
 		name = job.Data["name"].(string)
 	}
@@ -24,12 +25,15 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if _, ok := job.Data["serviceAccount"]; ok {
 		service = job.Data["serviceAccount"].(string)
 	}
+	if _, ok := job.Data["timeout"]; ok {
+		timeout = job.Data["timeout"].(float64)
+	}
 	taskDetails := models.TaskDetails{
 		Name:           name,
 		Type:           taskType,
 		Body:           body,
 		ServiceAccount: service,
-		Timeout:        job.Timeout,
+		Timeout:        int(timeout),
 	}
 	result := executor.Execute(&taskDetails)
 	fmt.Println(result)
