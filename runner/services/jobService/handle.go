@@ -10,30 +10,25 @@ import (
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
 	executor := executors.NewExecutor()
-	var name, taskType, service string
-	var body map[string]interface{}
-	var timeout float64
-	if _, ok := job.Data["name"]; ok {
-		name = job.Data["name"].(string)
-	}
-	if _, ok := job.Data["type"]; ok {
-		taskType = job.Data["type"].(string)
-	}
-	if _, ok := job.Data["body"]; ok {
-		body = job.Data["body"].(map[string]interface{})
-	}
-	if _, ok := job.Data["serviceAccount"]; ok {
-		service = job.Data["serviceAccount"].(string)
-	}
-	if _, ok := job.Data["timeout"]; ok {
-		timeout = job.Data["timeout"].(float64)
+	if !job.Validate() {
+		fmt.Println("invalid job body")
+		resultDto := models.TaskStatus{
+			ReturnValue: "",
+			Result:      models.StatusFailed,
+			Toekn:       job.Token,
+		}
+		err := manager.SendResult(job.Id, resultDto)
+		if err != nil {
+			fmt.Printf("error in setting job result: %s\n", err.Error())
+		}
+		return
 	}
 	taskDetails := models.TaskDetails{
-		Name:           name,
-		Type:           taskType,
-		Body:           body,
-		ServiceAccount: service,
-		Timeout:        int(timeout),
+		Name:           job.Data["name"].(string),
+		Type:           job.Data["type"].(string),
+		Body:           job.Data["body"].(map[string]interface{}),
+		ServiceAccount: "serviceAccount?",
+		Timeout:        int(job.Data["timeout"].(float64)),
 	}
 	result := executor.Execute(executors.ProcessTask(&taskDetails))
 	fmt.Println(result)
