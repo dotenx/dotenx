@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -16,7 +17,7 @@ import (
 func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskResult {
 	log.Println(task)
 	var containerImage string
-	var containerScript []interface{}
+	var containerScript string
 	var envVariables []string
 	isPredefined := true
 	switch task.Type {
@@ -52,7 +53,7 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 		{
 			isPredefined = false
 			containerImage = task.Body["image"].(string)
-			containerScript = task.Body["script"].([]interface{})
+			containerScript = task.Body["script"].(string)
 		}
 	case "Invalid":
 		return &models.TaskResult{Id: task.Id, Status: models.StatusFailed, Error: errors.New("unsupported task type"), Log: ""}
@@ -67,15 +68,11 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	//io.Copy(os.Stdout, reader)
 	var cont container.ContainerCreateCreatedBody
 	if !isPredefined {
-		cmds := make([]string, 0)
-		for _, value := range containerScript {
-			cmds = append(cmds, value.(string))
-		}
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
 				Image: containerImage,
-				Cmd:   cmds,
+				Cmd:   strings.Split(containerScript, " "),
 			},
 			nil, nil, nil, "")
 	} else {
