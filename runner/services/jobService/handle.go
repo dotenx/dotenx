@@ -35,7 +35,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		ServiceAccount: service,
 		Timeout:        int(timeout),
 	}
-	result := executor.Execute(&taskDetails)
+	result := executor.Execute(executors.ProcessTask(&taskDetails))
 	fmt.Println(result)
 	resultDto := models.TaskStatus{
 		ReturnValue: result.Log,
