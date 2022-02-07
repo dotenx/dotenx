@@ -2,11 +2,13 @@ package predifinedTaskService
 
 import (
 	"errors"
+
+	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 type PredifinedTaskService interface {
 	GetTasks() ([]string, error)
-	GetTaskFields(taskName string) ([]string, error)
+	GetTaskFields(taskName string) ([]models.TaskField, error)
 }
 
 type predifinedTaskService struct {
@@ -18,19 +20,14 @@ func NewPredefinedTaskService() PredifinedTaskService {
 }
 
 func (r *predifinedTaskService) GetTasks() ([]string, error) {
-	return []string{"HttpCall", "CreateAccount", "GitlabAddGroupMember", "default"}, nil
+	return models.AvaliableTasks, nil
 }
 
-func (r *predifinedTaskService) GetTaskFields(taskName string) ([]string, error) {
-	switch taskName {
-	case "HttpCall":
-		return []string{"url"}, nil
-	case "CreateAccount":
-		return []string{"accountId", "userId"}, nil
-	case "GitlabAddGroupMember":
-		return []string{"privateToken", "id", "userId", "accessLevel", "expiresAt"}, nil
-	case "default":
-		return []string{"image", "cmd", "timeoute"}, nil
+func (r *predifinedTaskService) GetTaskFields(taskName string) ([]models.TaskField, error) {
+	for _, taskType := range models.AvaliableTasks {
+		if taskType == taskName {
+			return models.TaskToFields[taskName], nil
+		}
 	}
-	return nil, errors.New("invalid task name")
+	return nil, errors.New("invalid task type")
 }

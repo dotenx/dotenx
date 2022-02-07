@@ -22,10 +22,8 @@ func (executor *dockerExecutor) Execute(task *models.TaskDetails) *models.TaskRe
 	switch task.Type {
 	case "HttpCall":
 		var body string
-		if _, ok := task.Body["body"]; ok {
-			if task.Body["body"] != nil {
-				body = task.Body["body"].(string)
-			}
+		if b, ok := task.Body["body"]; ok {
+			body = fmt.Sprintf("%v", b)
 		}
 		envVariables = []string{"method=" + task.Body["method"].(string),
 			"url=" + task.Body["url"].(string),

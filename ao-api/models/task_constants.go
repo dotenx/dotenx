@@ -18,6 +18,43 @@ const (
 	Default
 )
 
+var AvaliableTasks = []string{
+	"HttpCall",
+	"default",
+}
+
+var TaskToFields = map[string][]TaskField{
+	"HttpCall": {
+		TaskField{
+			Key:  "url",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "method",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "body",
+			Type: "json",
+		},
+	},
+	"default": {
+		TaskField{
+			Key:  "image",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "script",
+			Type: "string arr",
+		},
+	},
+}
+
+type TaskField struct {
+	Key  string `json:"key"`
+	Type string `json:"type"`
+}
+
 var taskTypeToString = map[TaskType]string{
 	Invalid:            "Invalid",
 	HttpCall:           "HttpCall",

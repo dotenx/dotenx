@@ -42,9 +42,9 @@ type TaskDetails struct {
 
 // Task Bodies
 type HttpCallTaskBody struct {
-	Method string            `db:"method" json:"method" yaml:"method"`
-	URL    string            `db:"method" json:"url" yaml:"url"`
-	Body   map[string]string `db:"body" json:"body" yaml:"body"`
+	Method string                 `db:"method" json:"method" yaml:"method"`
+	URL    string                 `db:"method" json:"url" yaml:"url"`
+	Body   map[string]interface{} `db:"body" json:"body" yaml:"body"`
 }
 
 func (b HttpCallTaskBody) Value() (driver.Value, error) {
