@@ -28,7 +28,6 @@ func (manager *JobManager) StartReceiving(jobChan chan models.Job) {
 		json.Unmarshal(out, &job)
 		if job.Id != "" {
 			job.Token = token.String()
-			fmt.Println(job)
 			jobChan <- job
 		} else {
 			time.Sleep(time.Duration(5 * time.Second))

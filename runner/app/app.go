@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -25,6 +24,7 @@ func StartApp() {
 	service := jobService.NewService(httpHelper, logHelper)
 	jobChan := make(chan models.Job, 1000)
 	go service.StartReceiving(jobChan)
+	fmt.Println("listenning for jobs...")
 	for task := range jobChan {
 		go service.HandleJob(task, logHelper)
 	}
@@ -39,7 +39,7 @@ func bootstrap() error {
 	if err != nil {
 		return err
 	}
-	log.Println("Environment variables loaded...")
+	//log.Println("Environment variables loaded...")
 	return nil
 }
 
