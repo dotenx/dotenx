@@ -28,6 +28,7 @@ func (b *bullQueue) QueueTasks(accountId, priority string, tasks ...interface{})
 		if err != nil {
 			return err
 		}
+		log.Println("#######1111")
 		fmt.Println(string(body))
 		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
@@ -36,6 +37,7 @@ func (b *bullQueue) QueueTasks(accountId, priority string, tasks ...interface{})
 			log.Println(err)
 			return err
 		}
+		log.Println("#######2222")
 		if resp.StatusCode != 200 {
 			err = fmt.Errorf("bull server responded with status %s", resp.Status)
 			log.Println(err)

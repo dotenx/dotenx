@@ -23,6 +23,11 @@ var AvaliableTasks = []string{
 	"default",
 }
 
+var PredefiniedTaskToImage = map[string]string{
+	"HttpCall": "awrmin/utopiopshttpcall",
+	"default":  "",
+}
+
 var TaskToFields = map[string][]TaskField{
 	"HttpCall": {
 		TaskField{

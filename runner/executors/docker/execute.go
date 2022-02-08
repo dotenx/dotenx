@@ -17,11 +17,11 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	result = &models.TaskResult{}
 	result.Id = task.Detailes.Id
 	result.Status = models.StatusFailed
-	if task.Image == "" {
+	if task.Detailes.Image == "" {
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
-	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Image, types.ImagePullOptions{})
+	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
 		result.Error = errors.New("error in pulling base image")
 		return
@@ -32,7 +32,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: task.Image,
+				Image: task.Detailes.Image,
 				Cmd:   task.Script,
 			},
 			nil, nil, nil, "")
@@ -40,7 +40,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: task.Image,
+				Image: task.Detailes.Image,
 				Env:   task.EnvironmentVariables,
 			},
 			nil, nil, nil, "")

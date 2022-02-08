@@ -1,8 +1,11 @@
 package executionService
 
 import (
+	"errors"
 	"fmt"
 	"log"
+
+	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (manager *executionManager) GetNextTask(taskId, executionId int, status, accountId string) error {
@@ -17,10 +20,15 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		if err != nil {
 			return err
 		}
+		image, ok := models.PredefiniedTaskToImage[task.Type]
+		if !ok {
+			return errors.New("no image for this task")
+		}
 		jobDTO := job{ExecutionId: executionId,
 			TaskId:    task.Id,
 			Type:      task.Type,
 			Timeout:   task.Timeout,
+			Image:     image,
 			Body:      task.Body,
 			Name:      task.Name,
 			AccountId: accountId,
@@ -30,13 +38,6 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			log.Println(err.Error())
 			return err
 		}
-		// job, err := manager.QueueService.DequeueTask(accountId, "default")
-		// var newTask models.TaskDetails
-		// bytes, err := json.Marshal(job)
-		// err = json.Unmarshal(bytes, &newTask)
-		// if err != nil {
-		// 	return nil, http.StatusInternalServerError
-		// }
 		return nil
 	} else {
 		taskIds, err := manager.Store.GetNextTasks(noContext, executionId, taskId, status)
@@ -53,10 +54,15 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			if err != nil {
 				return err
 			}
+			image, ok := models.PredefiniedTaskToImage[task.Type]
+			if !ok {
+				return errors.New("no image for this task")
+			}
 			jobDTO := job{ExecutionId: executionId,
 				TaskId:    task.Id,
 				Type:      task.Type,
 				Timeout:   task.Timeout,
+				Image:     image,
 				Body:      task.Body,
 				Name:      task.Name,
 				AccountId: accountId,
@@ -67,10 +73,6 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				return err
 			}
 		}
-		// job, err := manager.QueueService.DequeueTask(accountId, "default")
-		// if err != nil {
-		// 	return nil, http.StatusInternalServerError
-		// }
 		return nil
 	}
 }
@@ -81,7 +83,7 @@ type job struct {
 	Timeout     int                    `json:"timeout"`
 	Name        string                 `json:"name"`
 	Type        string                 `json:"type"`
+	Image       string                 `json:"image"`
 	AccountId   string                 `json:"account_id"`
 	Body        map[string]interface{} `json:"body"`
-	//	Task        models.TaskDetails     `json:"task"`
 }
