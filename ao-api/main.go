@@ -20,7 +20,7 @@ func init() {
 
 func main() {
 	app := app.NewApp()
-	log.Fatalln(app.Start(":"+config.Configs.App.Port, ":"+config.Configs.App.GrpcPort))
+	log.Fatalln(app.Start(":" + config.Configs.App.Port))
 }
 
 func bootstrap() error {

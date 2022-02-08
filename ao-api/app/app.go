@@ -40,37 +40,18 @@ func NewApp() *App {
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
-	//redis, err := redis.NewRDB()
 	utils.FailOnError(err, "RDB initialization failed")
-	//queue, err := queueService.NewRmq()
 	queue := queueService.NewBullQueue()
-	//utils.FailOnError(err, "Queue service initialization failed, exiting the app with error!")
-	// Initialize and open the connection
-	// queueService := services.NewQueueService()
-	// err = queueService.Initialize()
-	// utils.FailOnError(err, "Failed to initialize Queue")
-	// queueSvc, err := prepareQueueService()
-	// utils.FailOnError(err, "Failed to prepare the QueueService")
-	// connError, err := queueSvc.Open()
-	// utils.FailOnError(err, "Failed to connect to queue")
-	// go func() {
-	// 	select {
-	// 	case <-connError:
-	// 		// TODO: do something
-	// 	}
-	// }()
-	// Initialize router
-	r /*, g*/ := routing(db, queue)
+	r := routing(db, queue)
 	if r == nil {
 		log.Fatalln("r is nil")
 	}
 	return &App{
 		route: r,
-		//grpServer: g,
 	}
 }
 
-func (a *App) Start(restPort, grpcPort string) error {
+func (a *App) Start(restPort string) error {
 	errChan := make(chan error)
 	go func() {
 		err := a.route.Run(restPort)
@@ -80,28 +61,10 @@ func (a *App) Start(restPort, grpcPort string) error {
 			return
 		}
 	}()
-	/*go func() {
-		lis, err := net.Listen("tcp", grpcPort)
-		if err != nil {
-			log.Printf("failed to listen: %v", err)
-			errChan <- err
-			return
-		}
-		s := grpc.NewServer()
-		//pb.RegisterExecutionServiceServer(s, a.//grpServer)
-		reflection.Register(s)
-		log.Printf("server listening at %v", lis.Addr())
-		if err := s.Serve(lis); err != nil {
-			log.Printf("failed to serve: %v", err)
-			errChan <- err
-			return
-		}
-	}()
-	log.Println("grpc server is running")*/
 	return <-errChan
 }
 
-func routing(db *db.DB, queue queueService.QueueService) *gin.Engine /*, *executionserver.ExecutionServer*/ {
+func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	r := gin.Default()
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
@@ -128,8 +91,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine /*, *execut
 	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	// Routes
-
-	//g := executionserver.New(executionServices)
 	//pretected
 	tasks := r.Group("/task")
 	{
