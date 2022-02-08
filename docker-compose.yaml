@@ -64,6 +64,17 @@ services:
     ports:
       - '3004:3004'
 
+  runner:
+    build:
+      context: .
+      dockerfile: runner/Dockerfile
+    hostname: runner
+    working_dir: /root/
+    volumes:
+     - .:/go/src/github.com/utopiops/automated-ops/runner
+    networks:
+        - default
+
 networks:
   default:
     external:
