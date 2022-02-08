@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,7 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 			c.Status(http.StatusBadRequest)
 			return
 		}
+		fmt.Println("##################")
 		id, err := e.Service.StartPipeline(input, accountId, endpoint)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)

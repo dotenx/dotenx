@@ -14,6 +14,9 @@ func (j Job) Validate() bool {
 	if _, ok := j.Data["type"]; !ok {
 		return false
 	}
+	if _, ok := j.Data["image"]; !ok {
+		return false
+	}
 	if _, ok := j.Data["body"]; !ok {
 		return false
 	}

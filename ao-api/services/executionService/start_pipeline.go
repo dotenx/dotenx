@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -25,6 +26,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
+	fmt.Println("tssssssss1")
 
 	execution := models.Execution{
 		PipelineVersionId: pipelineId,
@@ -37,6 +39,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		log.Println(err.Error())
 		return -1, err
 	}
+	fmt.Println("tssssssss2")
 
 	// _ = redis.Execution{
 	// 	Action:      "start_pipeline",
@@ -53,10 +56,12 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
+	fmt.Println("tssssssss3")
 	err = manager.GetNextTask(-1, executionId, "", accountId)
 	if err != nil {
 		return -1, err
 	}
+	fmt.Println("tssssssss4")
 	// ch, err := manager.QueueService.NewChannel()
 	// if err != nil {
 	// 	return -1, http.StatusInternalServerError

@@ -27,6 +27,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Name:           job.Data["name"].(string),
 		Type:           job.Data["type"].(string),
 		Body:           job.Data["body"].(map[string]interface{}),
+		Image:          job.Data["image"].(string),
 		ServiceAccount: "serviceAccount?",
 		Timeout:        int(job.Data["timeout"].(float64)),
 	}
