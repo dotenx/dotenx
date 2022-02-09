@@ -24,7 +24,7 @@ func StartApp() {
 	service := jobService.NewService(httpHelper, logHelper)
 	jobChan := make(chan models.Job, 1000)
 	go service.StartReceiving(jobChan)
-	fmt.Println("listenning for jobs...")
+	fmt.Println("listening for jobs...")
 	for task := range jobChan {
 		go service.HandleJob(task, logHelper)
 	}
