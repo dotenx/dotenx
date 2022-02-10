@@ -51,9 +51,6 @@ services:
   ao-api:
     build:
       context: .
-      args:
-          - GITLAB_ACCESS_USERNAME=$GITLAB_ACCESS_USERNAME
-          - GITLAB_ACCESS_PASSWORD=$GITLAB_ACCESS_PASSWORD
       dockerfile: ao-api/Dockerfile
     hostname: ao-api
     working_dir: /root/
