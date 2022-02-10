@@ -7,6 +7,6 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /httpcall
+RUN go build -o /changeGitlabMembers
 
-CMD [ "/httpcall" ]
+CMD [ "/changeGitlabMembers" ]
