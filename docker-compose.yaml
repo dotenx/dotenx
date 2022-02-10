@@ -55,7 +55,7 @@ services:
     hostname: ao-api
     working_dir: /root/
     volumes:
-     - .:/go/src/github.com/utopiops/automated-ops/ao-api
+     - ao_data:/go/src/github.com/utopiops/automated-ops/ao-api
     networks:
         - default
     ports:
@@ -80,3 +80,4 @@ networks:
 volumes:
   redis_data:
   postgres_data:
+  ao_data:
