@@ -18,9 +18,19 @@ const intervalInMilli = 1000; // 1000 milliseconds
 // Add jobs to queue
 setInterval(async () => {
   try {
-    const result = await axios.post(`${serverUrl}/queue/routine_jobs/job`, {
-      value: Date.now(),
-      jobType: 'cool'
+    const result = await axios.post(`${serverUrl}/queue/123456-default/job`, {
+    type: "HttpCall",
+    name: "test",
+    image: "awrmin/utopiopshttpcall",
+    executionId: "test",
+    taskId: "task",
+    timeout: 10,
+    account_id:"123456",
+    body: {
+        method: "GET",
+        url: "https://jsonplaceholder.typicode.com/todos/1",
+        body: {}
+    }
     });
     console.log(`scheduled job: ${result.data}`);
   } catch (error) {
