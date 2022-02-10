@@ -20,13 +20,16 @@ const (
 
 var AvaliableTasks = []string{
 	"HttpCall",
+	"GitlabAddMember",
+	"GitlabRemoveMember",
 	"default",
 }
 
 var PredefiniedTaskToImage = map[string]string{
-	"HttpCall": "awrmin/utopiopshttpcall",
-	"":         "awrmin/change_gitlab_members",
-	"default":  "",
+	"HttpCall":           "awrmin/utopiopshttpcall",
+	"GitlabAddMember":    "awrmin/change_gitlab_members",
+	"GitlabRemoveMember": "awrmin/change_gitlab_members",
+	"default":            "",
 }
 
 var TaskToFields = map[string][]TaskField{
@@ -42,6 +45,50 @@ var TaskToFields = map[string][]TaskField{
 		TaskField{
 			Key:  "body",
 			Type: "json",
+		},
+	},
+	"GitlabAddMember": {
+		TaskField{
+			Key:  "privateToken",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "id",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "userId",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "accessLevel",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "expiresAt",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "type",
+			Type: "text",
+		},
+	},
+	"GitlabRemoveMember": {
+		TaskField{
+			Key:  "privateToken",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "id",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "userId",
+			Type: "text",
+		},
+		TaskField{
+			Key:  "type",
+			Type: "text",
 		},
 	},
 	"default": {

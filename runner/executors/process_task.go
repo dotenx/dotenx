@@ -27,13 +27,13 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 			"userId=" + task.Body["userId"].(string),
 			"accessLevel=" + task.Body["accessLevel"].(string),
 			"expiresAt=" + task.Body["expiresAt"].(string),
-			"type=" + "projects",
+			"type=" + task.Body["type"].(string),
 			"action=" + "add"}
 	case "GitlabRemoveMember":
 		processedTask.EnvironmentVariables = []string{"privateToken=" + task.Body["privateToken"].(string),
 			"id=" + task.Body["id"].(string),
 			"userId=" + task.Body["userId"].(string),
-			"type=" + "projects",
+			"type=" + task.Body["type"].(string),
 			"action=" + "remove"}
 	case "default":
 		{
