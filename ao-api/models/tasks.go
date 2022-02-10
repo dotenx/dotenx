@@ -82,8 +82,9 @@ type GitlabAddMemberTaskBody struct {
 	PrivateToken string `yaml:"privateToken" json:"privateToken"`
 	ID           string `yaml:"id" json:"id"`
 	UserID       string `yaml:"userId" json:"userId"`
-	AccessLevel  string `yaml:"accessLevel"`
-	ExpiresAt    string `yaml:"expiresAt,omitempty"`
+	AccessLevel  string `yaml:"accessLevel" json:"accessLevel"`
+	ExpiresAt    string `yaml:"expiresAt,omitempty" json:"expiresAt"`
+	Type         string `yaml:"type" json:"type"`
 }
 
 func (b GitlabAddMemberTaskBody) Value() (driver.Value, error) {
@@ -102,6 +103,7 @@ type GitlabRemoveMemberTaskBody struct {
 	PrivateToken string `yaml:"privateToken" json:"privateToken"`
 	ID           string `yaml:"id" json:"id"`
 	UserID       string `yaml:"userId" json:"userId"`
+	Type         string `yaml:"type" json:"type"`
 }
 
 func (b GitlabRemoveMemberTaskBody) Value() (driver.Value, error) {
