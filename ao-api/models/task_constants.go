@@ -25,6 +25,7 @@ var AvaliableTasks = []string{
 
 var PredefiniedTaskToImage = map[string]string{
 	"HttpCall": "awrmin/utopiopshttpcall",
+	"":         "awrmin/change_gitlab_members",
 	"default":  "",
 }
 
