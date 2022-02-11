@@ -101,6 +101,35 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
 
 });
 
+// Set the job result
+app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
+  const { qname, jobId } = req.params;
+  const { status } = req.body;
+  console.log(`received the status for queue: ${qname}: ${jobId} status: ${status}`);
+  const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
+  const job = await worker.getJob(jobId);
+  if (!job) {
+    return res.sendStatus(400)
+  }
+  // Call AO-API with the results
+  const [executionId, taskId] = [job.data.executionId, job.data.taskId];
+  try {
+    await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
+      status: status,
+    });
+    res.sendStatus(200);
+    //res.sendStatus(200);
+  } catch (error) {
+   // console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`);
+    // todo: handle this properly
+    console.error(error.message);
+    res.sendStatus(500);
+  }
+  finally {
+    await worker.close();
+  }
+});
+
 
 // Add a new job to the queue
 app.post('/queue/:qname/job', async (req, res) => {
