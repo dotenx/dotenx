@@ -31,6 +31,10 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		ServiceAccount: "serviceAccount?",
 		Timeout:        int(job.Data["timeout"].(float64)),
 	}
+	err := manager.SetStatusStarted(job.Id, "started")
+	if err != nil {
+		fmt.Printf("error in setting job result to started: %s\n", err.Error())
+	}
 	result := executor.Execute(executors.ProcessTask(&taskDetails))
 	fmt.Println(result)
 	resultDto := models.TaskStatus{
@@ -55,7 +59,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	} else {
 		fmt.Println("jobId: " + id)
 	}*/
-	err := manager.SendResult(job.Id, resultDto)
+	err = manager.SendResult(job.Id, resultDto)
 	if err != nil {
 		fmt.Printf("error in setting job result: %s\n", err.Error())
 	}
