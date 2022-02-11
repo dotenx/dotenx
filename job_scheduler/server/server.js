@@ -73,18 +73,6 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   // Call AO-API with the results
   const [executionId, taskId, account_id] = [job.data.executionId, job.data.taskId, job.data.account_id];
   try {
-    await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
-      status: result,
-    });
-    //res.sendStatus(200);
-  } catch (error) {
-   // console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`);
-    // todo: handle this properly
-    console.error(error.message);
-    //res.sendStatus(500);
-  }
-  console.log(executionId, taskId, account_id);
-  try {
     await axios.post(`${aoApiUrl}/execution/id/${executionId}/next`, {
       status: result,
       account_id:account_id,
@@ -98,7 +86,6 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   finally {
     await worker.close();
   }
-
 });
 
 // Set the job result
