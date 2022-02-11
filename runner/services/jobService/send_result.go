@@ -32,7 +32,7 @@ func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) er
 	return nil
 }
 
-func (manager *JobManager) SetStatusStarted(jobId string, status string) error {
+func (manager *JobManager) SetStatus(jobId, status string) error {
 	url := fmt.Sprintf("%s/queue/%s/job/%s/status", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, jobId)
 	headers := []shared.Header{
 		{
