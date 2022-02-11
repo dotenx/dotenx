@@ -113,9 +113,19 @@ app.post('/queue/:qname/job', async (req, res) => {
   try {
     const job = await worker.add(payload);
     await worker.close();
-    res.send({
-      jobId: job.id
-    });
+    const [executionId, taskId] = [job.data.executionId, job.data.taskId];
+    try {
+      await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
+        status: "waiting",
+      });
+      res.send({
+        jobId: job.id
+      });
+    } catch (error) {
+      console.error(error.message);
+      res.sendStatus(500);
+    }
+
   } catch (error) {
     console.error(error.message);
     res.sendStatus(500)
