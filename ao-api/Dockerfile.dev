@@ -1,0 +1,18 @@
+FROM golang:1.13.4 AS go-build
+
+ENV GO111MODULE=on
+
+ARG GITLAB_ACCESS_USERNAME
+ARG GITLAB_ACCESS_PASSWORD
+
+WORKDIR /go/src/github.com/utopiops/automated-ops/ao-api
+ENV GONOSUMDB=gitlab.com/utopiops-water
+ENV GOPRIVATE=gitlab.com/utopiops-water/*
+RUN echo https://${GITLAB_ACCESS_USERNAME}:${GITLAB_ACCESS_PASSWORD}@gitlab.com >> ~/.git-credentials && git config --global credential.helper 'store --file ~/.git-credentials'
+
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+COPY . .

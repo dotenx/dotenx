@@ -26,7 +26,7 @@ routineJobsQueue.on('completed', function (job, result) {
 
 // ------------ enable bull-ui -----------
 const serverAdapter = new ExpressAdapter();
-createBullBoard({
+const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
   queues: [
     new BullAdapter(routineJobsQueue),
   ],
@@ -71,14 +71,27 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
     await job.moveToFailed(returnValue, token);
   }
   // Call AO-API with the results
-  const [executionId, taskId] = [job.data.executionId, job.data.taskId];
+  const [executionId, taskId, account_id] = [job.data.executionId, job.data.taskId, job.data.account_id];
   try {
-    await axios.post(`${aoApiUrl}/execution/id/${executionId}'task/${taskId}/result`, {
-      status: result
+    await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
+      status: result,
+    });
+    //res.sendStatus(200);
+  } catch (error) {
+   // console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`);
+    // todo: handle this properly
+    console.error(error.message);
+    //res.sendStatus(500);
+  }
+  console.log(executionId, taskId, account_id);
+  try {
+    await axios.post(`${aoApiUrl}/execution/id/${executionId}/next`, {
+      status: result,
+      account_id:account_id,
+      task_id:taskId
     });
     res.sendStatus(200);
   } catch (error) {
-    // todo: handle this properly
     console.error(error.message);
     res.sendStatus(500);
   }
@@ -94,7 +107,9 @@ app.post('/queue/:qname/job', async (req, res) => {
   const { qname } = req.params;
   const payload = req.body;
   console.log(`Adding new job to queue: ${qname}`);
+  //console.log(payload);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
+  addQueue(new BullAdapter(worker))
   try {
     const job = await worker.add(payload);
     await worker.close();
