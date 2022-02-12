@@ -68,7 +68,7 @@ services:
     #hostname: runner
     #working_dir: /root/
     #volumes:
-    # - .:/go/src/github.com/utopiops/automated-ops/runner
+    # - runner_data:/go/src/github.com/utopiops/automated-ops/runner
     #networks:
      #   - default
 
@@ -81,3 +81,4 @@ volumes:
   redis_data:
   postgres_data:
   ao_api_data:
+  runner_data:
