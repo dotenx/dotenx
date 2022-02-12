@@ -41,10 +41,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		return nil
 	} else {
 		taskIds, err := manager.Store.GetNextTasks(noContext, executionId, taskId, status)
-		fmt.Println("taskId", taskId)
-		fmt.Println("executionId", executionId)
-		fmt.Println("status", status)
-		fmt.Println("taskIds", taskIds)
+		//fmt.Println("taskId", taskId)
+		//fmt.Println("executionId", executionId)
+		//fmt.Println("status", status)
+		//fmt.Println("taskIds", taskIds)
 		if err != nil {
 			log.Println(err.Error())
 			return err

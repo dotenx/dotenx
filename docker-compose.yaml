@@ -16,18 +16,18 @@ services:
       - AO_API_URL=http://ao-api:3004
     command: npm run dev
     
-  remote_worker_eg:
-    build: 
-      context: ./job_scheduler/remote_worker
-      dockerfile: Dockerfile
-    networks:
-        - default
-    volumes:
-      - ./job_scheduler/remote_worker:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - SERVER_HOST=http://scheduler_server:9090
-    command: npm run dev
+  #remote_worker_eg:
+   # build: 
+    #  context: ./job_scheduler/remote_worker
+     # dockerfile: Dockerfile
+    #networks:
+     #   - default
+    #volumes:
+     # - ./job_scheduler/remote_worker:/usr/src/app
+     # - /usr/src/app/node_modules
+    #environment:
+     # - SERVER_HOST=http://scheduler_server:9090
+    #command: npm run dev
   redis:
     image: redis
     hostname: redis
@@ -55,7 +55,7 @@ services:
     hostname: ao-api
     working_dir: /root/
     volumes:
-     - ao_data:/go/src/github.com/utopiops/automated-ops/ao-api
+     - ao_api_data:/go/src/github.com/utopiops/automated-ops/ao-api
     networks:
         - default
     ports:
@@ -80,5 +80,5 @@ networks:
 volumes:
   redis_data:
   postgres_data:
-  ao_data:
+  ao_api_data:
   runner_data:

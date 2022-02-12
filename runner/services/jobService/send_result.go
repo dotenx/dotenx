@@ -31,3 +31,26 @@ func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) er
 	}
 	return nil
 }
+
+func (manager *JobManager) SetStatus(jobId, status string) error {
+	url := fmt.Sprintf("%s/queue/%s/job/%s/status", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, jobId)
+	headers := []shared.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+	}
+	data := map[string]string{
+		"status": status,
+	}
+	json_data, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	body := bytes.NewBuffer(json_data)
+	_, err, _ = manager.HttpHelper.HttpRequest(http.MethodPost, url, body, headers, time.Minute)
+	if err != nil {
+		return err
+	}
+	return nil
+}
