@@ -16,6 +16,7 @@ type ExecutionService interface {
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
 	SetTaskExecutionResult(executionId int, taskId int, taskStatus string, taskResult map[string]interface{}) error
+	SetTaskExecutionResultDetailes(executionId int, taskId int, status, returnValue, log string) error
 	SetTaskStatusToTimedout(executionId, taskId int) error
 	GetExecution(string) (interface{}, error)
 }
