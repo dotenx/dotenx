@@ -21,7 +21,7 @@ services:
       context: ./ui
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - '3010:80'
     networks:
         - default
     volumes:
@@ -29,7 +29,6 @@ services:
       - /usr/src/app/node_modules
     environment:
       - GATSBY_API_URL=http://ao-api:3004
-    command: npm run develop
     
   #remote_worker_eg:
    # build: 
