@@ -42,6 +42,7 @@ type PipelineStore interface {
 	SetTaskStatusToTimedout(context context.Context, executionId int, taskId int) (err error)
 	// Set the result of a task
 	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
+	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, log string) (err error)
 	// Retrieve a pipeline version dependency graph based on execution id
 	GetExecutionGraph(context context.Context, executionId int, accountId string) (graph models.PipelineVersion, name string, err error)
 

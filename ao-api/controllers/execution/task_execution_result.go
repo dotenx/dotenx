@@ -38,6 +38,11 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
+		err = e.Service.SetTaskExecutionResultDetailes(executionId, taskId, taskResultDto.Status.String(), taskResultDto.ReturnValue, taskResultDto.Log)
+		if err != nil && err.Error() == "Foreign key constraint violence" {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
 		c.Status(http.StatusOK)
 	}
 }
