@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,9 @@ func CORSMiddleware(allowedOrigins string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.GetHeader("origin")
 		originParts := strings.Split(origin, ".")
+		fmt.Println("################")
+		fmt.Println(originParts)
+		fmt.Println("################")
 		if len(originParts) > 2 && originParts[len(originParts)-2] == "utopiops" && originParts[len(originParts)-1] == "com" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		} else {

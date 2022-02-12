@@ -27,8 +27,6 @@ services:
     volumes:
       - ./ui:/usr/src/app
       - /usr/src/app/node_modules
-    environment:
-      - GATSBY_API_URL=http://ao-api:3004
     
   #remote_worker_eg:
    # build: 
