@@ -15,6 +15,21 @@ services:
       - REDIS_HOST=redis
       - AO_API_URL=http://ao-api:3004
     command: npm run dev
+
+  ui:
+    build: 
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    networks:
+        - default
+    volumes:
+      - ./ui:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - GATSBY_API_URL=http://ao-api:3004
+    command: npm run develop
     
   #remote_worker_eg:
    # build: 
@@ -61,16 +76,16 @@ services:
     ports:
       - '3004:3004'
 
-  runner:
-    build:
-      context: .
-      dockerfile: runner/Dockerfile
-    hostname: runner
-    working_dir: /root/
-    volumes:
-     - runner_data:/go/src/github.com/utopiops/automated-ops/runner
-    networks:
-        - default
+#  runner:
+ #   build:
+  #    context: .
+   #   dockerfile: runner/Dockerfile
+    #hostname: runner
+    #working_dir: /root/
+    #volumes:
+    # - runner_data:/go/src/github.com/utopiops/automated-ops/runner
+    #networks:
+     #   - default
 
 networks:
   default:
@@ -81,4 +96,4 @@ volumes:
   redis_data:
   postgres_data:
   ao_api_data:
-  runner_data:
+  #runner_data:
