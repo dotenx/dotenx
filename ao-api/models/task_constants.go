@@ -181,6 +181,7 @@ const (
 	Started
 	Cancelled
 	Completed
+	Wating
 )
 
 var taskStatusToString = map[TaskStatus]string{
@@ -190,6 +191,7 @@ var taskStatusToString = map[TaskStatus]string{
 	Started:   "started",
 	Cancelled: "cancelled",
 	Completed: "completed",
+	Wating:    "waiting",
 }
 
 var taskStatusToId = map[string]TaskStatus{
@@ -199,6 +201,7 @@ var taskStatusToId = map[string]TaskStatus{
 	"started":   Started,
 	"cancelled": Cancelled,
 	"completed": Completed,
+	"waiting":   Wating,
 }
 
 func (t TaskStatus) String() string {
