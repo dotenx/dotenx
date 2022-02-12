@@ -15,6 +15,18 @@ services:
       - REDIS_HOST=redis
       - AO_API_URL=http://ao-api:3004
     command: npm run dev
+
+  ui:
+    build: 
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - '3010:80'
+    networks:
+        - default
+    volumes:
+      - ./ui:/usr/src/app
+      - /usr/src/app/node_modules
     
   remote_worker_eg:
     build: 
