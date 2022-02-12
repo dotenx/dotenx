@@ -91,7 +91,7 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
 // Set the job result
 app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   const { qname, jobId } = req.params;
-  const { status } = req.body;
+  const { status, returnValue, log } = req.body;
   console.log(`received the status for queue: ${qname}: ${jobId} status: ${status}`);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getJob(jobId);
@@ -103,6 +103,8 @@ app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   try {
     await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
       status: status,
+      return_value:returnValue,
+      log:log
     });
     res.sendStatus(200);
     //res.sendStatus(200);
@@ -133,6 +135,8 @@ app.post('/queue/:qname/job', async (req, res) => {
     try {
       await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
         status: "waiting",
+        return_value:"",
+        log:""
       });
       res.send({
         jobId: job.id

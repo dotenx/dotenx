@@ -25,6 +25,7 @@ type TaskStatus struct {
 	ReturnValue interface{} `json:"returnValue"`
 	Toekn       string      `json:"token"`
 	Result      Status      `json:"result"`
+	Logs        string      `json:"logs"`
 }
 
 type Task struct {
