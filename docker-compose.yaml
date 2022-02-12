@@ -28,18 +28,18 @@ services:
       - ./ui:/usr/src/app
       - /usr/src/app/node_modules
     
-  #remote_worker_eg:
-   # build: 
-    #  context: ./job_scheduler/remote_worker
-     # dockerfile: Dockerfile
-    #networks:
-     #   - default
-    #volumes:
-     # - ./job_scheduler/remote_worker:/usr/src/app
-     # - /usr/src/app/node_modules
-    #environment:
-     # - SERVER_HOST=http://scheduler_server:9090
-    #command: npm run dev
+  remote_worker_eg:
+    build: 
+      context: ./job_scheduler/remote_worker
+      dockerfile: Dockerfile
+    networks:
+        - default
+    volumes:
+      - ./job_scheduler/remote_worker:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - SERVER_HOST=http://scheduler_server:9090
+    command: npm run dev
   redis:
     image: redis
     hostname: redis
