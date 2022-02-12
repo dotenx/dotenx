@@ -1,0 +1,5 @@
+.vscode
+*.out
+release/
+vendor/
+.idea
