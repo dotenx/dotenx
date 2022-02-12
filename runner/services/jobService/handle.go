@@ -31,7 +31,11 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		ServiceAccount: "serviceAccount?",
 		Timeout:        int(job.Data["timeout"].(float64)),
 	}
-	err := manager.SetStatus(job.Id, "started")
+	err := manager.SetStatus(job.Id, models.TaskStatus{
+		ReturnValue: "",
+		Result:      "started",
+		Logs:        "",
+	})
 	if err != nil {
 		fmt.Printf("error in setting job result to started: %s\n", err.Error())
 	}
@@ -41,6 +45,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		ReturnValue: result.Log,
 		Result:      models.Status(result.Status),
 		Toekn:       job.Token,
+		Logs:        result.Log,
 	}
 	//var err error
 	//var id string
@@ -59,7 +64,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	} else {
 		fmt.Println("jobId: " + id)
 	}*/
-	err = manager.SetStatus(job.Id, result.Status)
+	err = manager.SetStatus(job.Id, resultDto)
 	if err != nil {
 		fmt.Printf("error in setting job result: %s\n", err.Error())
 	}

@@ -43,8 +43,10 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 }
 
 type taskResultDto struct {
-	Status models.TaskStatus      `json:"status"`
-	Result map[string]interface{} //Not used currently
+	Status      models.TaskStatus      `json:"status"`
+	ReturnValue string                 `json:"return_value"`
+	Log         string                 "log"
+	Result      map[string]interface{} //Not used currently
 }
 
 func (t taskResultDto) Value() (driver.Value, error) {
