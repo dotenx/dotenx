@@ -63,6 +63,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 			break
 		} else if timeCounter == task.Detailes.Timeout { // timedout
 			result.Error = errors.New("timed out")
+			result.Log = "timed out"
 			return
 		}
 	}
