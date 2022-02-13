@@ -42,13 +42,14 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 		go func() {
 			defer close(chanStream)
 			for {
+				//fmt.Println("TTTTTTT")
 				tasks, err := e.Service.GetTasksWithStatusForExecution(id)
 				if err != nil {
 					fmt.Println(err.Error())
 					done <- true
 					break
 				}
-				if !isChanged(tasks, lastSummeries) {
+				if len(lastSummeries) > 0 && !isChanged(tasks, lastSummeries) {
 					time.Sleep(time.Second)
 					continue
 				}
@@ -64,6 +65,9 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 					c.SSEvent("end", "end")
 					return false
 				case msg := <-chanStream:
+					fmt.Println("$$$$$$$$$$$$$$$$$")
+					fmt.Println(msg)
+					fmt.Println("$$$$$$$$$$$$$$$$$")
 					c.Render(-1, sse.Event{
 						Event: "message",
 						Data:  msg,
@@ -79,6 +83,7 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 func isChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool {
 	for _, inTask := range inputSummeries {
 		for _, oldTask := range lastSummeries {
+			//fmt.Println("OOOOOOOOOOOOOOOOOOO")
 			if inTask.Name == oldTask.Name {
 				if inTask.Status != oldTask.Status {
 					return true
