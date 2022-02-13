@@ -121,6 +121,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.GET("/id/:id/task/:taskId", executionController.GetTaskDetails())
 		execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
 		execution.POST("/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
+		execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
 	}
 	workspaces := r.Group("/workspaces")
 	{

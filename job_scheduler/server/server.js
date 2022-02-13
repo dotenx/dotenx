@@ -138,6 +138,7 @@ app.post('/queue/:qname/job', async (req, res) => {
         return_value:"",
         log:""
       });
+      console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`)
       res.send({
         jobId: job.id
       });

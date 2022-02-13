@@ -45,6 +45,9 @@ func (manager *JobManager) SetStatus(jobId string, status models.TaskStatus) err
 		"returnValue": status.ReturnValue.(string),
 		"log":         status.Logs,
 	}
+	fmt.Println("$$$$$$$$$$$$$$")
+	fmt.Println(data)
+	fmt.Println("$$$$$$$$$$$$$$")
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		return err

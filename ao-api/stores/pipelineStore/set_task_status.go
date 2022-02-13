@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/lib/pq"
 	"github.com/utopiops/automated-ops/ao-api/db"
@@ -44,6 +46,29 @@ func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int,
 	}
 	return
 }
+func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		conn := ps.db.Connection
+
+		var taskRes struct {
+			Status      string `json:"status"`
+			Log         string `json:"log"`
+			ReturnValue string `json:"return_value"`
+		}
+		err = conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &taskRes.ReturnValue)
+		res = taskRes
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return
+		}
+	}
+	return
+
+}
 
 func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, logs string) (err error) {
 	switch ps.db.Driver {
@@ -64,7 +89,12 @@ func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executio
 			// result is sth other than timeout
 			query = updateTaskResultDetailes
 		}
-		_, err = tx.Exec(query, executionId, taskId, status, returnValue, logs)
+		logs = strings.ReplaceAll(logs, "\u0000", "")
+		returnValue = strings.ReplaceAll(returnValue, "\u0000", "")
+		fmt.Println("^^^^^^^^^^^^^^^^^^^^")
+		fmt.Println(query, executionId, taskId, status, returnValue, logs)
+		fmt.Println("^^^^^^^^^^^^^^^^^^^^")
+		_, err = tx.Exec(query, executionId, taskId, status, string(returnValue), string(logs))
 		if err != nil {
 			log.Println(err.Error())
 			if pgErr, isPGErr := err.(*pq.Error); isPGErr {
@@ -112,6 +142,11 @@ WHERE execution_id = $1 AND task_id = $2;
 
 var checkIfTaskResultAlreadySet = `
 SELECT count(*) FROM executions_result
+WHERE execution_id = $1 AND task_id = $2;
+`
+
+var getTaskResult = `
+SELECT status, log, return_value FROM executions_result
 WHERE execution_id = $1 AND task_id = $2;
 `
 
