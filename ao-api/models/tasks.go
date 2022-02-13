@@ -39,6 +39,10 @@ type TaskDetails struct {
 	ServiceAccount string      `db:"service_account" json:"serviceAccount"`
 	AccountId      string      `db:"account_id" json:"account_id"`
 }
+type TaskStatusSummery struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
 
 // Task Bodies
 type HttpCallTaskBody struct {
