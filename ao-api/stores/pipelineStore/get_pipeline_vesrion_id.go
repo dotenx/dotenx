@@ -23,7 +23,6 @@ func (ps *pipelineStore) GetPipelineVersionId(context context.Context, execution
 		}
 	}
 	return
-
 }
 
 var getPipelineVersionId = `

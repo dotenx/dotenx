@@ -21,8 +21,8 @@ func (e *ExecutionController) GetTaskExecutionResultByName() gin.HandlerFunc {
 			return
 		}
 
-		taskName, err := strconv.Atoi(c.Param("task_name"))
-		if err != nil {
+		taskName := c.Param("task_name")
+		if taskName == "" || executionId == 0 {
 			c.Status(http.StatusBadRequest)
 			return
 		}
