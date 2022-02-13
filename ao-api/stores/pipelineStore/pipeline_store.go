@@ -16,6 +16,8 @@ func New(db *db.DB) PipelineStore {
 type PipelineStore interface {
 	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
 	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
+	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
+	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Create pipelineStore a new pipeline if `fromVersion` equals to 0 otherwise adds a new pipeline version to an existing pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
