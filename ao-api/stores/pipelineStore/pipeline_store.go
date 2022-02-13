@@ -14,6 +14,7 @@ func New(db *db.DB) PipelineStore {
 // NOTE: Many of these endpoints don't get accountId as one of their inputs meaning they don't check if the operation is being performed on the
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
+	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
 	// Create pipelineStore a new pipeline if `fromVersion` equals to 0 otherwise adds a new pipeline version to an existing pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
