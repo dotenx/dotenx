@@ -13,7 +13,7 @@ func (manager *executionManager) GetTasksWithStatusForExecution(executionId int)
 		if err != nil {
 			return nil, err
 		}
-		task.name = name
+		task.Name = name
 		summeries = append(summeries, task)
 	}
 	return summeries, nil
