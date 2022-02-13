@@ -18,6 +18,7 @@ type ExecutionService interface {
 	SetTaskExecutionResult(executionId int, taskId int, taskStatus string, taskResult map[string]interface{}) error
 	SetTaskExecutionResultDetailes(executionId int, taskId int, status, returnValue, log string) error
 	GetTaskExecutionResult(executionId int, taskId int) (interface{}, error)
+	GetTaskId(executionId int, taskName string) (int, error)
 	SetTaskStatusToTimedout(executionId, taskId int) error
 	GetExecution(string) (interface{}, error)
 }
