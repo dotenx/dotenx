@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 
@@ -91,9 +90,6 @@ func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executio
 		}
 		logs = strings.ReplaceAll(logs, "\u0000", "")
 		returnValue = strings.ReplaceAll(returnValue, "\u0000", "")
-		fmt.Println("^^^^^^^^^^^^^^^^^^^^")
-		fmt.Println(query, executionId, taskId, status, returnValue, logs)
-		fmt.Println("^^^^^^^^^^^^^^^^^^^^")
 		_, err = tx.Exec(query, executionId, taskId, status, string(returnValue), string(logs))
 		if err != nil {
 			log.Println(err.Error())
