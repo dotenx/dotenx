@@ -72,6 +72,19 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 				}
 			}
 		})
-		c.JSON(http.StatusOK, gin.H{"id": id})
+		//c.JSON(http.StatusOK, gin.H{"id": id})
 	}
+}
+
+func isChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool {
+	for _, inTask := range inputSummeries {
+		for _, oldTask := range lastSummeries {
+			if inTask.Name == oldTask.Name {
+				if inTask.Status != oldTask.Status {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
