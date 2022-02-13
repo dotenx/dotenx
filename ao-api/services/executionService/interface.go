@@ -21,6 +21,7 @@ type ExecutionService interface {
 	GetTaskId(executionId int, taskName string) (int, error)
 	SetTaskStatusToTimedout(executionId, taskId int) error
 	GetExecution(string) (interface{}, error)
+	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
 }
 
 type executionManager struct {
