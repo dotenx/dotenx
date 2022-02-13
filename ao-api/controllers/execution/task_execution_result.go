@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+func (e *ExecutionController) GetTaskExecutionResult() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		executionId, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+
+		taskId, err := strconv.Atoi(c.Param("taskId"))
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+
+		res, err := e.Service.GetTaskExecutionResult(executionId, taskId)
+		if err != nil && err.Error() == "Foreign key constraint violence" {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, res)
+	}
+}
 
 func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -32,6 +57,9 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		fmt.Println("$$$$$$$$$$$$$$$$$")
+		fmt.Println(taskResultDto)
+		fmt.Println("$$$$$$$$$$$$$$$$$")
 
 		err = e.Service.SetTaskExecutionResult(executionId, taskId, taskResultDto.Status.String(), taskResultDto.Result)
 		if err != nil && err.Error() == "Foreign key constraint violence" {

@@ -9,7 +9,7 @@ type JobService interface {
 	HandleJob(job models.Job, logHelper shared.LogHelper)
 	StartReceiving(jobChan chan models.Job)
 	SendResult(jobId string, status models.TaskStatus) error
-	SetStatus(jobId, status string) error
+	SetStatus(jobId string, status models.TaskStatus) error
 }
 
 type JobManager struct {
