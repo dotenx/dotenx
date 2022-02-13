@@ -5,6 +5,5 @@ func (manager *executionManager) GetTaskId(executionId int, taskName string) (in
 	if err != nil {
 		return -1, err
 	}
-
-	return
+	return manager.Store.GetTaskByPipelineVersionId(taskName, pipelineVersionId)
 }
