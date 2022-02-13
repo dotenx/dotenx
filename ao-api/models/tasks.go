@@ -40,6 +40,7 @@ type TaskDetails struct {
 	AccountId      string      `db:"account_id" json:"account_id"`
 }
 type TaskStatusSummery struct {
+	Id     int
 	Name   string `json:"name"`
 	Status string `json:"status"`
 }
