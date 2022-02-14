@@ -16,14 +16,13 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 		c.Status(http.StatusOK)
 		accountId := c.MustGet("accountId").(string)
 
-		pipeLineName := c.Param("endpoint")
+		pipeLineName := c.Param("name")
 
 		executionId, err := e.Service.GetExecutionIdForPipeline(accountId, pipeLineName)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-
 		type Execution struct {
 			Id    int                        `json:"execution_id"`
 			Tasks []models.TaskStatusSummery `json:"tasks"`
@@ -57,9 +56,9 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 					c.SSEvent("end", "end")
 					return false
 				case msg := <-chanStream:
-					fmt.Println("$$$$$$$$$$$$$$$$$")
-					fmt.Println(msg)
-					fmt.Println("$$$$$$$$$$$$$$$$$")
+					//	fmt.Println("$$$$$$$$$$$$$$$$$")
+					//fmt.Println(msg)
+					//	fmt.Println("$$$$$$$$$$$$$$$$$")
 					c.Render(-1, sse.Event{
 						Event: "message",
 						Data:  msg,

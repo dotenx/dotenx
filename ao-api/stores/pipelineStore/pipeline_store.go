@@ -14,6 +14,8 @@ func New(db *db.DB) PipelineStore {
 // NOTE: Many of these endpoints don't get accountId as one of their inputs meaning they don't check if the operation is being performed on the
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
+	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
+	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
 	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
 	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
 	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
