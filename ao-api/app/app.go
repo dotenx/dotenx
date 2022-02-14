@@ -108,9 +108,9 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	}
 	execution := r.Group("/execution")
 	{
-		execution.POST("/ep/:endpoint/start", executionController.StartPipeline())
+		execution.GET("/ep/:endpoint/start", executionController.StartPipeline())
 		execution.POST("/name/:name/start", executionController.StartPipelineByName())
-		execution.GET("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
+		execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
 		execution.POST("/ep/:endpoint/stop", executionController.StopPipeline())
 		execution.POST("/ep/:endpoint/task/:name/stop", executionController.StopPipelineTask())
 
