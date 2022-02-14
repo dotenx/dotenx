@@ -14,18 +14,11 @@ import (
 func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Status(http.StatusOK)
-
-		// Get the `input data` from the request body
-
 		accountId := c.MustGet("accountId").(string)
 
-		endpoint := c.Param("endpoint")
-		var input map[string]interface{}
-		if err := c.ShouldBindJSON(&input); err != nil {
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		id, err := e.Service.StartPipeline(input, accountId, endpoint)
+		pipeLineName := c.Param("endpoint")
+
+		executionId, err := e.Service.GetExecutionIdForPipeline(accountId, pipeLineName)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -42,8 +35,7 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 		go func() {
 			defer close(chanStream)
 			for {
-				//fmt.Println("TTTTTTT")
-				tasks, err := e.Service.GetTasksWithStatusForExecution(id)
+				tasks, err := e.Service.GetTasksWithStatusForExecution(executionId)
 				if err != nil {
 					fmt.Println(err.Error())
 					done <- true
@@ -54,7 +46,7 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 					continue
 				}
 				lastSummeries = tasks
-				chanStream <- Execution{Id: id, Tasks: tasks}
+				chanStream <- Execution{Id: executionId, Tasks: tasks}
 				time.Sleep(time.Second)
 			}
 		}()
@@ -76,7 +68,6 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 				}
 			}
 		})
-		//c.JSON(http.StatusOK, gin.H{"id": id})
 	}
 }
 
