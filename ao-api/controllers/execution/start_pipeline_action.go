@@ -21,10 +21,10 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 
 		endpoint := c.Param("endpoint")
 		var input map[string]interface{}
-		if err := c.ShouldBindJSON(&input); err != nil {
+		/*if err := c.ShouldBindJSON(&input); err != nil {
 			c.Status(http.StatusBadRequest)
 			return
-		}
+		}*/
 		id, err := e.Service.StartPipeline(input, accountId, endpoint)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
