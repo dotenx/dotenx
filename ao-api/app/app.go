@@ -103,6 +103,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
 		pipline.GET("/name/:name", crudController.ListPipelineVersions())
+		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name/version/:version", crudController.GetPipeline())
 		pipline.POST("/name/:name/version/:version/activate", crudController.ActivatePipeline())
 	}
