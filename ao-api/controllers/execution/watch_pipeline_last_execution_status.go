@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-contrib/sse"
@@ -12,13 +11,16 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
-func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
+func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Status(http.StatusOK)
+		accountId := c.MustGet("accountId").(string)
 
-		executionId, err := strconv.Atoi(c.Param("id"))
+		pipeLineName := c.Param("name")
+
+		executionId, err := e.Service.GetExecutionIdForPipeline(accountId, pipeLineName)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		type Execution struct {
@@ -66,4 +68,18 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 			}
 		})
 	}
+}
+
+func isChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool {
+	for _, inTask := range inputSummeries {
+		for _, oldTask := range lastSummeries {
+			//fmt.Println("OOOOOOOOOOOOOOOOOOO")
+			if inTask.Name == oldTask.Name {
+				if inTask.Status != oldTask.Status {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
