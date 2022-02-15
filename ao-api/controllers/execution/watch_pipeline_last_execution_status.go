@@ -23,6 +23,11 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
+		totalTasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 		type Execution struct {
 			Id    int                        `json:"execution_id"`
 			Tasks []models.TaskStatusSummery `json:"tasks"`
@@ -34,6 +39,10 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 		go func() {
 			defer close(chanStream)
 			for {
+				if isExecutionDone(totalTasks, lastSummeries) {
+					done <- true
+					break
+				}
 				tasks, err := e.Service.GetTasksWithStatusForExecution(executionId)
 				if err != nil {
 					fmt.Println(err.Error())
