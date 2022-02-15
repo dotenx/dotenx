@@ -20,3 +20,11 @@ func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error)
 func (cm *crudManager) ListPipelineVersionsByName(accountId string, name string) ([]models.PipelineVersionSummary, error) {
 	return cm.Store.ListPipelineVersionsByName(noContext, accountId, name)
 }
+
+func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]interface{}, error) {
+	pipelineId, err := cm.Store.GetPipelineId(noContext, accountId, name)
+	if err != nil {
+		return nil, err
+	}
+	return cm.Store.GetAllExecutions(noContext, pipelineId)
+}
