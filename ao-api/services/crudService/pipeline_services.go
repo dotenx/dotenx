@@ -21,7 +21,7 @@ func (cm *crudManager) ListPipelineVersionsByName(accountId string, name string)
 	return cm.Store.ListPipelineVersionsByName(noContext, accountId, name)
 }
 
-func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]interface{}, error) {
+func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]models.Execution, error) {
 	pipelineId, err := cm.Store.GetPipelineId(noContext, accountId, name)
 	if err != nil {
 		return nil, err
