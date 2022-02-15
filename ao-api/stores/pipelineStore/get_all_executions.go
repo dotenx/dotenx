@@ -15,7 +15,7 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-		rows, err := conn.Queryx(getLastExecution, pipelineId)
+		rows, err := conn.Queryx(getAllExecution, pipelineId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
