@@ -9,6 +9,7 @@ import (
 )
 
 type ExecutionService interface {
+	GetNumberOfTasksByExecution(executionId int) (int, error)
 	GetExecutionGraph(executionId int, accountId string) (interface{}, int)
 	GetInitialData(executionId int, accountId string) (models.InputData, int)
 	GetNextTask(taskId, executionId int, status, accountId string) error
