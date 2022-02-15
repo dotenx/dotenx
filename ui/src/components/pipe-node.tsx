@@ -1,5 +1,7 @@
+import { Theme } from '@emotion/react'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
-import { BsGearFill } from 'react-icons/bs'
+import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
+import { Status } from '../api'
 import { useIsAcyclic } from '../hooks/use-is-acyclic'
 import { Modals, useModal } from '../hooks/use-modal'
 import { Button } from './button'
@@ -7,6 +9,8 @@ import { Button } from './button'
 export interface NodeData {
 	name: string
 	type: string
+	status?: Status
+	executionId?: string
 }
 
 export interface NodeEntity {
@@ -14,26 +18,53 @@ export interface NodeEntity {
 	data: NodeData
 }
 
-export function PipeNode({ id, data }: NodeProps) {
+export function PipeNode({ id, data }: NodeProps<NodeData>) {
 	const modal = useModal()
 	const nodeEntity: NodeEntity = { id, data }
-
 	const isAcyclic = useIsAcyclic()
 
 	return (
 		<div
-			css={{
+			css={(theme) => ({
 				display: 'flex',
 				gap: 2,
 				alignItems: 'center',
 				justifyContent: 'space-between',
-			}}
+				backgroundColor: getStatusColor(theme, data.status),
+				borderRadius: 4,
+				padding: '2px 4px',
+			})}
 		>
 			<Handle type="target" position={Position.Top} />
 
-			<p css={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-				{nodeEntity.data.name}
-			</p>
+			<div css={{ textAlign: 'start' }}>
+				<p css={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+					{nodeEntity.data.name}
+				</p>
+				{data.status && (
+					<div
+						css={{
+							display: 'flex',
+							gap: 4,
+							fontSize: 8,
+							alignItems: 'center',
+						}}
+					>
+						<p>{data.status}</p>
+						<Button
+							variant="icon"
+							onClick={() =>
+								modal.open(Modals.TaskLog, {
+									executionId: data.executionId,
+									taskName: data.name,
+								})
+							}
+						>
+							<LogIcon />
+						</Button>
+					</div>
+				)}
+			</div>
 			<Button
 				variant="icon"
 				css={{ flexShrink: 0 }}
@@ -49,4 +80,25 @@ export function PipeNode({ id, data }: NodeProps) {
 			/>
 		</div>
 	)
+}
+
+function getStatusColor(theme: Theme, status?: Status) {
+	switch (status) {
+		case Status.Cancelled:
+			return theme.color.background
+		case Status.Completed:
+			return theme.color.positive
+		case Status.Failed:
+			return theme.color.negative
+		case Status.Started:
+			return theme.color.primary
+		case Status.Success:
+			return theme.color.positive
+		case Status.Timedout:
+			return theme.color.negative
+		case Status.Waiting:
+			return theme.color.background
+		default:
+			return theme.color.background
+	}
 }
