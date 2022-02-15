@@ -28,18 +28,18 @@ services:
       - ./ui:/usr/src/app
       - /usr/src/app/node_modules
     
- # remote_worker_eg:
-  #  build: 
-   #   context: ./job_scheduler/remote_worker
-    #  dockerfile: Dockerfile
-    #networks:
-     #   - default
-    #volumes:
-     # - ./job_scheduler/remote_worker:/usr/src/app
-      #- /usr/src/app/node_modules
-    #environment:
-     # - SERVER_HOST=http://scheduler_server:9090
-    #command: npm run dev
+  remote_worker_eg:
+    build: 
+      context: ./job_scheduler/remote_worker
+      dockerfile: Dockerfile
+    networks:
+        - default
+    volumes:
+      - ./job_scheduler/remote_worker:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - SERVER_HOST=http://scheduler_server:9090
+    command: npm run dev
   redis:
     image: redis
     hostname: redis
@@ -73,16 +73,16 @@ services:
     ports:
       - '3004:3004'
 
-  #runner:
-   # build:
-    #  context: .
-     # dockerfile: runner/Dockerfile
-    #hostname: runner
-   # working_dir: /root/
-    #volumes:
-     #- runner_data:/go/src/github.com/utopiops/automated-ops/runner
-    #networks:
-     #   - default
+  runner:
+    build:
+      context: .
+      dockerfile: runner/Dockerfile
+    hostname: runner
+    working_dir: /root/
+    volumes:
+     - runner_data:/go/src/github.com/utopiops/automated-ops/runner
+    networks:
+        - default
 
 networks:
   default:
@@ -93,4 +93,4 @@ volumes:
   redis_data:
   postgres_data:
   ao_api_data:
-  #runner_data:
+  runner_data:
