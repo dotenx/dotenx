@@ -67,3 +67,13 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 		})
 	}
 }
+
+func isExecutionDone(totalTasks int, currentTasks []models.TaskStatusSummery) bool {
+	doneTasks := 0
+	for _, task := range currentTasks {
+		if task.Status == "completed" || task.Status == "failed" {
+			doneTasks++
+		}
+	}
+	return doneTasks == totalTasks
+}
