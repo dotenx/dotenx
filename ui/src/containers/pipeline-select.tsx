@@ -1,21 +1,21 @@
 import { atom, useAtom } from 'jotai'
-import { useState } from 'react'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
 import { getPipeline, getPipelines, Pipeline, PipelineVersionData, QueryKey } from '../api'
 
 export const selectedPipelineAtom = atom<PipelineVersionData | undefined>(undefined)
 
-export function PipelineSelect() {
+interface PipelineSelectProps {
+	value: Pipeline | undefined
+	onChange: (value: Pipeline) => void
+}
+
+export function PipelineSelect({ value: selected, onChange: setSelected }: PipelineSelectProps) {
 	const pipelinesQuery = useQuery(QueryKey.GetPipelines, getPipelines)
-	const [selected, setSelected] = useState<Pipeline>()
 	const setSelectedPipeline = useAtom(selectedPipelineAtom)[1]
 	const pipelines = pipelinesQuery.data?.data
-	const options =
-		pipelines?.map((pipeline) => ({
-			label: pipeline.name,
-			value: pipeline,
-		})) ?? []
+	const options = pipelines?.map((pipeline) => ({ label: pipeline.name, value: pipeline })) ?? []
+
 	useQuery(
 		[QueryKey.GetPipeline, selected],
 		() => {
@@ -32,7 +32,7 @@ export function PipelineSelect() {
 			options={options}
 			name="pipeline"
 			isLoading={pipelinesQuery.isLoading}
-			onChange={(option) => setSelected(option?.value)}
+			onChange={(option) => option && setSelected(option.value)}
 		/>
 	)
 }

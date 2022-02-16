@@ -1,5 +1,5 @@
 import axios from 'axios'
-const API_URL = process.env.GATSBY_API_URL
+export const API_URL = process.env.GATSBY_API_URL
 
 const api = axios.create({
 	baseURL: API_URL,
@@ -33,15 +33,56 @@ export function getPipeline(name: string, version: number) {
 	return api.get<PipelineVersionData>(`/pipeline/name/${name}/version/${version}`)
 }
 
+export function getResult(executionId: string, taskName: string) {
+	return api.get<TaskResult>(`/execution/id/${executionId}/task_name/${taskName}/result`)
+}
+
+export function getExecutions(pipelineName: string) {
+	return api.get<Execution[]>(`/pipeline/name/${pipelineName}/executions`)
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetPipeline = 'get-pipeline',
+	GetResult = 'get-result',
+	GetExecutions = 'get-executions',
+}
+
+export enum Status {
+	Success = 'success',
+	Failed = 'failed',
+	Timedout = 'timedout',
+	Started = 'started',
+	Cancelled = 'cancelled',
+	Completed = 'completed',
+	Waiting = 'waiting',
 }
 
 export enum TaskType {
 	Text = 'text',
+}
+
+export interface Execution {
+	Id: number
+	PipelineVersionId: number
+	StartedAt: string
+	InitialData: unknown | null
+}
+
+export interface PipelineEventMessage {
+	execution_id: string
+	tasks: {
+		name: string
+		status: Status
+	}[]
+}
+
+export interface TaskResult {
+	status: Status
+	log: string
+	return_value: string
 }
 
 export interface PipelineVersionData {
