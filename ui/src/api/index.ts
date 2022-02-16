@@ -37,12 +37,17 @@ export function getResult(executionId: string, taskName: string) {
 	return api.get<TaskResult>(`/execution/id/${executionId}/task_name/${taskName}/result`)
 }
 
+export function getExecutions(pipelineName: string) {
+	return api.get<Execution[]>(`/pipeline/name/${pipelineName}/executions`)
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetPipeline = 'get-pipeline',
 	GetResult = 'get-result',
+	GetExecutions = 'get-executions',
 }
 
 export enum Status {
@@ -57,6 +62,13 @@ export enum Status {
 
 export enum TaskType {
 	Text = 'text',
+}
+
+export interface Execution {
+	Id: number
+	PipelineVersionId: number
+	StartedAt: string
+	InitialData: unknown | null
 }
 
 export interface PipelineEventMessage {
