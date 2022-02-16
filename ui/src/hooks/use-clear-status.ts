@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai'
+import { useCallback } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
 import { NodeData } from '../components/pipe-node'
 import { flowAtom } from '../hooks/use-flow'
@@ -6,7 +7,7 @@ import { flowAtom } from '../hooks/use-flow'
 export function useClearStatus() {
 	const setElements = useAtom(flowAtom)[1]
 
-	return () => {
+	return useCallback(() => {
 		setElements((elements) =>
 			elements.map((element) => {
 				if (isNode(element)) {
@@ -17,5 +18,5 @@ export function useClearStatus() {
 				return element
 			})
 		)
-	}
+	}, [setElements])
 }
