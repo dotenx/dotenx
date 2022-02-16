@@ -54,6 +54,7 @@ function Home() {
 		if (!selected) return
 		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
 		eventSource.addEventListener('message', handleReceiveMessage)
+		eventSource.addEventListener('end', () => eventSource.close())
 		return () => {
 			eventSource.removeEventListener('message', handleReceiveMessage)
 			eventSource.close()
@@ -65,6 +66,7 @@ function Home() {
 		clearStatus()
 		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`)
 		eventSource.addEventListener('message', handleReceiveMessage)
+		eventSource.addEventListener('end', () => eventSource.close())
 		return () => {
 			eventSource.removeEventListener('message', handleReceiveMessage)
 			eventSource.close()
