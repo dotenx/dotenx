@@ -104,9 +104,16 @@ function Home() {
 						]}
 					>
 						<div css={{ display: 'flex', gap: 6 }}>
-							<PipelineSelect value={selected} onChange={setSelected} />
+							<PipelineSelect
+								value={selected}
+								onChange={(value) => {
+									setSelected(value)
+									setExecutionId(undefined)
+								}}
+							/>
 							<PipelineExecution
 								pipelineName={selected?.name}
+								value={executionId}
 								onChange={setExecutionId}
 							/>
 						</div>
