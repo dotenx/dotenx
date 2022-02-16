@@ -7,9 +7,9 @@ import '../styles/global.css'
 
 const theme: Theme = {
 	color: {
-		primary: '#1D3557',
-		positive: '#2A9D8F',
-		negative: '#E63946',
+		primary: '#8EA6BB',
+		positive: '#90be6d',
+		negative: '#FB797B',
 		text: '#222222',
 		background: '#FFFFFC',
 	},
