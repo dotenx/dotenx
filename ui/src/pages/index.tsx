@@ -46,6 +46,7 @@ function Home() {
 	)
 
 	useEffect(() => {
+		if (executionId) return
 		if (!selected) return
 		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
 		eventSource.addEventListener('message', handleReceiveMessage)
@@ -53,7 +54,7 @@ function Home() {
 			eventSource.removeEventListener('message', handleReceiveMessage)
 			eventSource.close()
 		}
-	}, [handleReceiveMessage, selected])
+	}, [executionId, handleReceiveMessage, selected])
 
 	useEffect(() => {
 		if (!executionId) return
