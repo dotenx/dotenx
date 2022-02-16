@@ -1,14 +1,13 @@
 import { css } from '@emotion/react'
 import { useAtom } from 'jotai'
-import { isNode, Node } from 'react-flow-renderer'
 import { useMutation, useQueryClient } from 'react-query'
 import { QueryKey, startPipeline } from '../api'
 import { Button } from '../components/button'
 import { Modal } from '../components/modal'
-import { NodeData } from '../components/pipe-node'
-import { flowAtom } from '../hooks/use-flow'
+import { useClearStatus } from '../hooks/use-clear-status'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
+import { selectedExecutionAtom } from '../pages'
 import { selectedPipelineAtom } from './pipeline-select'
 import { SaveForm } from './save-form'
 
@@ -18,22 +17,15 @@ export function ActionBar() {
 	const { onLayout } = useLayout()
 	const modal = useModal()
 	const [selectedPipeline] = useAtom(selectedPipelineAtom)
-	const setElements = useAtom(flowAtom)[1]
+	const clearStatus = useClearStatus()
 	const client = useQueryClient()
+	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 
 	const mutation = useMutation(startPipeline, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
-			setElements((elements) =>
-				elements.map((element) => {
-					if (isNode(element)) {
-						const node = element as Node<NodeData>
-						if (!node.data) return node
-						return { ...node, data: { ...node.data, status: undefined } }
-					}
-					return element
-				})
-			)
+			clearStatus()
+			setSelectedExec(undefined)
 		},
 	})
 

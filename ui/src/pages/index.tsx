@@ -1,5 +1,5 @@
 import { css, Theme } from '@emotion/react'
-import { useAtom } from 'jotai'
+import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
 import { Node } from 'react-flow-renderer'
 import { API_URL, Pipeline, PipelineEventMessage } from '../api'
@@ -10,15 +10,19 @@ import { Flow } from '../containers/flow'
 import { PipelineExecution } from '../containers/pipeline-execution'
 import { PipelineSelect } from '../containers/pipeline-select'
 import { Sidebar } from '../containers/sidebar'
+import { useClearStatus } from '../hooks/use-clear-status'
 import { flowAtom } from '../hooks/use-flow'
+
+export const selectedExecutionAtom = atom<number | undefined>(undefined)
 
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
 function Home() {
 	const [selected, setSelected] = useState<Pipeline>()
-	const [executionId, setExecutionId] = useState<number>()
+	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]
+	const clearStatus = useClearStatus()
 
 	const handleReceiveMessage = useCallback(
 		(event: MessageEvent<string>) => {
@@ -58,13 +62,14 @@ function Home() {
 
 	useEffect(() => {
 		if (!executionId) return
+		clearStatus()
 		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`)
 		eventSource.addEventListener('message', handleReceiveMessage)
 		return () => {
 			eventSource.removeEventListener('message', handleReceiveMessage)
 			eventSource.close()
 		}
-	}, [executionId, handleReceiveMessage])
+	}, [clearStatus, executionId, handleReceiveMessage])
 
 	return (
 		<Layout>
