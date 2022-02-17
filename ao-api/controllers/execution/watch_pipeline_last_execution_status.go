@@ -20,6 +20,10 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 
 		executionId, err := e.Service.GetExecutionIdForPipeline(accountId, pipeLineName)
 		if err != nil {
+			if err.Error() == "not found" {
+				c.JSON(http.StatusBadRequest, "there is no executon for this pipeline")
+				return
+			}
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
