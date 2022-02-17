@@ -7,6 +7,7 @@ import { getNodeColor, useFlow } from '../hooks/use-flow'
 import { Modals, useModal } from '../hooks/use-modal'
 import { EdgeSettings } from './edge-settings'
 import { NodeSettings } from './node-settings'
+import { TaskLog, TaskLogProps } from './task-log'
 
 const nodeTypes = {
 	default: PipeNode,
@@ -51,7 +52,19 @@ export function Flow() {
 
 			<NodeSettingsModal updateNode={updateElement} />
 			<EdgeSettingsModal updateEdge={updateElement} />
+			<TaskLogModal />
 		</>
+	)
+}
+
+function TaskLogModal() {
+	const modal = useModal()
+	const data = modal.data as TaskLogProps | undefined
+
+	return (
+		<Modal kind={Modals.TaskLog}>
+			<TaskLog executionId={data?.executionId} taskName={data?.taskName} />
+		</Modal>
 	)
 }
 
