@@ -46,7 +46,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		fmt.Println("request sent successfully")
+		fmt.Println("request sent successfully2")
 		return
 	} else {
 		fmt.Println("Failed to sent request")
