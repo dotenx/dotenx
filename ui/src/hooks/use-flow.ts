@@ -23,7 +23,7 @@ import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 let id = 0
 const getId = () => `node_${id++}`
 
-const initialElements: Elements<NodeData | EdgeData> = [
+export const initialElements: Elements<NodeData | EdgeData> = [
 	{
 		id: getId(),
 		type: 'default',

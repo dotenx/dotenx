@@ -5,6 +5,7 @@ import { QueryKey, startPipeline } from '../api'
 import { Button } from '../components/button'
 import { Modal } from '../components/modal'
 import { useClearStatus } from '../hooks/use-clear-status'
+import { flowAtom, initialElements } from '../hooks/use-flow'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
 import { listenAtom, selectedExecutionAtom } from '../pages'
@@ -13,14 +14,19 @@ import { SaveForm } from './save-form'
 
 const smallButton = css({ fontSize: 12, padding: '2px 0', width: 50 })
 
-export function ActionBar() {
+interface ActionBarProps {
+	deselectPipeline: () => void
+}
+
+export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	const { onLayout } = useLayout()
 	const modal = useModal()
-	const [selectedPipeline] = useAtom(selectedPipelineAtom)
+	const [selectedPipeline, setSelectedPipeline] = useAtom(selectedPipelineAtom)
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
 	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 	const setListen = useAtom(listenAtom)[1]
+	const setElements = useAtom(flowAtom)[1]
 
 	const mutation = useMutation(startPipeline, {
 		onSuccess: () => {
@@ -38,6 +44,16 @@ export function ActionBar() {
 	return (
 		<>
 			<div css={{ display: 'flex', gap: 6 }}>
+				<Button
+					css={smallButton}
+					onClick={() => {
+						setSelectedPipeline(undefined)
+						setElements(initialElements)
+						deselectPipeline()
+					}}
+				>
+					New
+				</Button>
 				<Button css={smallButton} onClick={() => onLayout('TB')}>
 					Sort
 				</Button>
