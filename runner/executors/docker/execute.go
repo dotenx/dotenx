@@ -23,7 +23,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	}
 	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
-		result.Error = errors.New("error in pulling base image")
+		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
 	}
 	//io.Copy(os.Stdout, reader) // to get pull image log
@@ -36,7 +36,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Cmd:   task.Script,
 			},
 			&container.HostConfig{
-				Binds: []string{"automated-ops_ao_api_data"},
+				Binds: []string{"/usr/local/ao_api_data:/go/src/github.com/utopiops/automated-ops/runner"},
 			}, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
