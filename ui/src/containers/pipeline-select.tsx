@@ -33,6 +33,7 @@ export function PipelineSelect({ value: selected, onChange: setSelected }: Pipel
 			name="pipeline"
 			isLoading={pipelinesQuery.isLoading}
 			onChange={(option) => option && setSelected(option.value)}
+			value={options?.find((option) => option.value.name === selected?.name) ?? null}
 		/>
 	)
 }
