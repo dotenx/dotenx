@@ -52,7 +52,6 @@ function Home() {
 	)
 
 	useEffect(() => {
-		console.log(executionId, selected)
 		if (executionId) return
 		if (!selected) return
 		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
@@ -121,7 +120,7 @@ function Home() {
 							/>
 						</div>
 
-						<ActionBar />
+						<ActionBar deselectPipeline={() => setSelected(undefined)} />
 					</div>
 					<div css={center}>
 						<Sidebar />
