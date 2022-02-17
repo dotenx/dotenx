@@ -14,6 +14,7 @@ import { useClearStatus } from '../hooks/use-clear-status'
 import { flowAtom } from '../hooks/use-flow'
 
 export const selectedExecutionAtom = atom<number | undefined>(undefined)
+export const listenAtom = atom(0)
 
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
@@ -23,6 +24,7 @@ function Home() {
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]
 	const clearStatus = useClearStatus()
+	const [listen] = useAtom(listenAtom)
 
 	const handleReceiveMessage = useCallback(
 		(event: MessageEvent<string>) => {
@@ -50,6 +52,7 @@ function Home() {
 	)
 
 	useEffect(() => {
+		console.log(executionId, selected)
 		if (executionId) return
 		if (!selected) return
 		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
@@ -59,7 +62,7 @@ function Home() {
 			eventSource.removeEventListener('message', handleReceiveMessage)
 			eventSource.close()
 		}
-	}, [executionId, handleReceiveMessage, selected])
+	}, [executionId, handleReceiveMessage, selected, listen])
 
 	useEffect(() => {
 		if (!executionId) return

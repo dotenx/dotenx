@@ -7,7 +7,7 @@ import { Modal } from '../components/modal'
 import { useClearStatus } from '../hooks/use-clear-status'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
-import { selectedExecutionAtom } from '../pages'
+import { listenAtom, selectedExecutionAtom } from '../pages'
 import { selectedPipelineAtom } from './pipeline-select'
 import { SaveForm } from './save-form'
 
@@ -20,12 +20,14 @@ export function ActionBar() {
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
 	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
+	const setListen = useAtom(listenAtom)[1]
 
 	const mutation = useMutation(startPipeline, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
 			setSelectedExec(undefined)
+			setListen((x) => x + 1)
 		},
 	})
 
