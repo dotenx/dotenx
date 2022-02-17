@@ -1,11 +1,13 @@
 import { css } from '@emotion/react'
 import { useAtom } from 'jotai'
-import { useMutation } from 'react-query'
-import { startPipeline } from '../api'
+import { useMutation, useQueryClient } from 'react-query'
+import { QueryKey, startPipeline } from '../api'
 import { Button } from '../components/button'
 import { Modal } from '../components/modal'
+import { useClearStatus } from '../hooks/use-clear-status'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
+import { selectedExecutionAtom } from '../pages'
 import { selectedPipelineAtom } from './pipeline-select'
 import { SaveForm } from './save-form'
 
@@ -15,7 +17,17 @@ export function ActionBar() {
 	const { onLayout } = useLayout()
 	const modal = useModal()
 	const [selectedPipeline] = useAtom(selectedPipelineAtom)
-	const mutation = useMutation(startPipeline)
+	const clearStatus = useClearStatus()
+	const client = useQueryClient()
+	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
+
+	const mutation = useMutation(startPipeline, {
+		onSuccess: () => {
+			client.invalidateQueries(QueryKey.GetExecutions)
+			clearStatus()
+			setSelectedExec(undefined)
+		},
+	})
 
 	const onRun = () => {
 		if (selectedPipeline) mutation.mutate({ endpoint: selectedPipeline.endpoint })
