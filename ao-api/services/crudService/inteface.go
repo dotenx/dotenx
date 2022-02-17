@@ -12,6 +12,7 @@ func NewCrudService(store pipelineStore.PipelineStore) CrudService {
 }
 
 type CrudService interface {
+	GetAllExecutions(accountId string, name string) ([]models.Execution, error)
 	ActivatePipeline(accountId string, name string, version int16) error
 	CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)

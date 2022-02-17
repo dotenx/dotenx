@@ -103,6 +103,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
 		pipline.GET("/name/:name", crudController.ListPipelineVersions())
+		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name/version/:version", crudController.GetPipeline())
 		pipline.POST("/name/:name/version/:version/activate", crudController.ActivatePipeline())
 	}
@@ -110,6 +111,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		execution.POST("/ep/:endpoint/start", executionController.StartPipeline())
 		execution.POST("/name/:name/start", executionController.StartPipelineByName())
+		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
+		execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
 		execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
 		execution.POST("/ep/:endpoint/stop", executionController.StopPipeline())
 		execution.POST("/ep/:endpoint/task/:name/stop", executionController.StopPipelineTask())
@@ -121,6 +124,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.GET("/id/:id/task/:taskId", executionController.GetTaskDetails())
 		execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
 		execution.POST("/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
+		execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
+		execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
 	}
 	workspaces := r.Group("/workspaces")
 	{

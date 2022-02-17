@@ -14,6 +14,14 @@ func New(db *db.DB) PipelineStore {
 // NOTE: Many of these endpoints don't get accountId as one of their inputs meaning they don't check if the operation is being performed on the
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
+	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
+	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
+	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
+	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
+	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
+	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
+	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
+	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Create pipelineStore a new pipeline if `fromVersion` equals to 0 otherwise adds a new pipeline version to an existing pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
@@ -38,13 +46,14 @@ type PipelineStore interface {
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
 	// Get task details based on execution id and task id
 	GetTaskByExecution(context context.Context, executionId int, taskId int) (task models.TaskDetails, err error)
+	GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error)
 	// Set the status of a task to timed out if it's status is not already set
 	SetTaskStatusToTimedout(context context.Context, executionId int, taskId int) (err error)
 	// Set the result of a task
 	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
+	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, log string) (err error)
 	// Retrieve a pipeline version dependency graph based on execution id
 	GetExecutionGraph(context context.Context, executionId int, accountId string) (graph models.PipelineVersion, name string, err error)
-
 	/// Workspaces
 	// Get all workspace onboarding pipelines
 	ListOnBoardingPipelines(context context.Context, accountId string) (pipelines []models.WorkspacePipelineSummary, err error)

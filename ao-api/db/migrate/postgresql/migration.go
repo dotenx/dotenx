@@ -57,6 +57,10 @@ var migrations = []struct {
 		stmt: createTableExecutionsStatus,
 	},
 	{
+		name: "create-table-executions-result",
+		stmt: createTableExecutionsResult,
+	},
+	{
 		name: "create-table-trigger-types",
 		stmt: createTableTriggerTypes,
 	},
@@ -246,6 +250,17 @@ FOREIGN KEY (task_id) REFERENCES tasks(id),
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
 `
+var createTableExecutionsResult = `
+CREATE TABLE IF NOT EXISTS executions_result (
+execution_id							INT NOT NULL,
+task_id										INT NOT NULL,
+status										VARCHAR(16),
+return_value                                VARCHAR(10485760),
+log                                         VARCHAR(10485760),
+FOREIGN KEY (execution_id) REFERENCES executions(id),
+FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (status) REFERENCES task_status(name)
+)`
 
 var createTableTriggerTypes = `
 CREATE TABLE IF NOT EXISTS trigger_types (
