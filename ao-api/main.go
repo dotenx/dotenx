@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -19,6 +21,16 @@ func init() {
 }
 
 func main() {
+	_, err := ioutil.ReadFile("./_data/test.json")
+	if err != nil {
+		fmt.Print(err)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Successfully Opened users.json")
+	// defer the closing of our jsonFile so that we can parse it later on
 	app := app.NewApp()
 	log.Fatalln(app.Start(":" + config.Configs.App.Port))
 }

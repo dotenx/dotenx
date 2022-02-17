@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -17,18 +16,11 @@ func main() {
 	method := os.Getenv("method")
 	url := os.Getenv("url")
 	body := os.Getenv("body")
-	timeout := os.Getenv("timeout")
-	timeoutInt, err1 := strconv.Atoi(timeout)
-	if err1 != nil {
-		fmt.Println("Failed to get timeout")
-		panic("Failed")
-		return
-	}
 	var out []byte
 	var err error
 	var statusCode int
 	if body == "" {
-		out, err, statusCode = HttpRequest(method, url, nil, nil, time.Duration(timeoutInt)*time.Second)
+		out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
 	} else {
 		json_data, err := json.Marshal(body)
 		if err != nil {
@@ -36,20 +28,24 @@ func main() {
 		}
 		payload := bytes.NewBuffer(json_data)
 
-		out, err, statusCode = HttpRequest(method, url, payload, nil, time.Duration(timeoutInt)*time.Second)
+		out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
 	}
 
 	if err != nil {
 		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
-		fmt.Printf("Error: %s\n", err.Error())
+		fmt.Printf("Error: %s", err.Error())
+		return
 	}
-
-	fmt.Printf("Response: %s\n", string(out))
 
 	var resultData map[string]interface{}
 	if statusCode == http.StatusOK {
 		json.Unmarshal(out, &resultData)
-		fmt.Println(resultData)
+		fmt.Print(resultData)
+		file, _ := json.MarshalIndent(resultData, "", " ")
+		err = ioutil.WriteFile("test.json", file, 0644)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		fmt.Println("request sent successfully")
 		return
 	} else {

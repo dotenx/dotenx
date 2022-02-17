@@ -35,7 +35,9 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Image: task.Detailes.Image,
 				Cmd:   task.Script,
 			},
-			nil, nil, nil, "")
+			&container.HostConfig{
+				Binds: []string{"automated-ops_ao_api_data"},
+			}, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
