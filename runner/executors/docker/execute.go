@@ -23,7 +23,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	}
 	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
-		result.Error = errors.New("error in pulling base image")
+		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
 	}
 	//io.Copy(os.Stdout, reader) // to get pull image log
@@ -35,7 +35,9 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Image: task.Detailes.Image,
 				Cmd:   task.Script,
 			},
-			nil, nil, nil, "")
+			&container.HostConfig{
+				Binds: []string{"/usr/local/ao_api_data:/go/src/github.com/utopiops/automated-ops/runner"},
+			}, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
@@ -63,6 +65,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 			break
 		} else if timeCounter == task.Detailes.Timeout { // timedout
 			result.Error = errors.New("timed out")
+			result.Log = "timed out"
 			return
 		}
 	}
