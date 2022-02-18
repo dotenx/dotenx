@@ -1,6 +1,6 @@
 # Multi-stage
 # 1) Node image for building frontend assets
-# 2) nginx stage to serve frontend assets
+# 2) Nginx stage to serve frontend assets
 
 # Name the node stage "builder"
 FROM node:16 AS builder
