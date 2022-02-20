@@ -5,11 +5,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
@@ -21,12 +24,12 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
-	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
+	reader, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
 		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
 	}
-	//io.Copy(os.Stdout, reader) // to get pull image log
+	io.Copy(os.Stdout, reader) // to get pull image log
 	var cont container.ContainerCreateCreatedBody
 	if !task.IsPredifined {
 		cont, err = executor.Client.ContainerCreate(
@@ -36,7 +39,13 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Cmd:   task.Script,
 			},
 			&container.HostConfig{
-				Binds: []string{"/usr/local/ao_api_data:/go/src/github.com/utopiops/automated-ops/runner"},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: "/usr/local",
+						Target: "/tmp",
+					},
+				},
 			}, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
@@ -45,7 +54,15 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Image: task.Detailes.Image,
 				Env:   task.EnvironmentVariables,
 			},
-			nil, nil, nil, "")
+			&container.HostConfig{
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: "/usr/local",
+						Target: "/tmp",
+					},
+				},
+			}, nil, nil, "")
 	}
 	if err != nil {
 		result.Error = errors.New("error in creating container")
@@ -54,6 +71,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	timeCounter := 0
+	//time.Sleep(time.Duration(time.Minute * 3))
 	for {
 		time.Sleep(time.Second)
 		timeCounter++
