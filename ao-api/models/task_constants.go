@@ -12,7 +12,6 @@ type TaskType int
 const (
 	Invalid TaskType = iota
 	HttpCall
-	CreateAccount
 	GitlabAddMember
 	GitlabRemoveMember
 	Default
@@ -111,7 +110,6 @@ type TaskField struct {
 var taskTypeToString = map[TaskType]string{
 	Invalid:            "Invalid",
 	HttpCall:           "HttpCall",
-	CreateAccount:      "CreateAccount",
 	GitlabAddMember:    "GitlabAddMember",
 	GitlabRemoveMember: "GitlabRemoveMember",
 	Default:            "default",
@@ -120,7 +118,6 @@ var taskTypeToString = map[TaskType]string{
 var taskTypeToId = map[string]TaskType{
 	"Invalid":            Invalid,
 	"HttpCall":           HttpCall,
-	"CreateAccount":      CreateAccount,
 	"GitlabAddMember":    GitlabAddMember,
 	"GitlabRemoveMember": GitlabRemoveMember,
 	"default":            Default,

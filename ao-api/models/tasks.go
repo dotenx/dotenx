@@ -64,25 +64,6 @@ func (b HttpCallTaskBody) Scan(value interface{}) error {
 	}
 }
 
-type CreateAccountTaskBody struct {
-	ServiceName string            `db:"service_name" json:"serviceName" yaml:"serviceName"`
-	Username    string            `db:"username" json:"username" yaml:"username"`
-	Password    string            `db:"password" json:"password" yaml:"password"`
-	Extras      map[string]string `db:"extras" json:"extras" yaml:"extras"`
-}
-
-func (b CreateAccountTaskBody) Value() (driver.Value, error) {
-	return json.Marshal(b)
-}
-
-func (b CreateAccountTaskBody) Scan(value interface{}) error {
-	if bytes, ok := value.([]byte); ok {
-		return json.Unmarshal(bytes, &b)
-	} else {
-		return errors.New("type assertion to []byte failed")
-	}
-}
-
 type GitlabAddMemberTaskBody struct {
 	PrivateToken string `yaml:"privateToken" json:"privateToken"`
 	ID           string `yaml:"id" json:"id"`
