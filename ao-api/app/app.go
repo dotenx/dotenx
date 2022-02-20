@@ -113,9 +113,9 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.POST("/name/:name/start", executionController.StartPipelineByName())
 		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
 		execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
-		execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
-		execution.POST("/ep/:endpoint/stop", executionController.StopPipeline())
-		execution.POST("/ep/:endpoint/task/:name/stop", executionController.StopPipelineTask())
+		//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
+		//execution.POST("/ep/:endpoint/stop", executionController.StopPipeline())
+		//execution.POST("/ep/:endpoint/task/:name/stop", executionController.StopPipelineTask())
 
 		execution.GET("/queue", executionController.GetExecution())
 		execution.GET("/id/:id/graph", executionController.GetExecutionGraph())
