@@ -69,9 +69,6 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 					c.SSEvent("end", "end")
 					return false
 				case msg := <-chanStream:
-					//	fmt.Println("$$$$$$$$$$$$$$$$$")
-					//fmt.Println(msg)
-					//	fmt.Println("$$$$$$$$$$$$$$$$$")
 					c.Render(-1, sse.Event{
 						Event: "message",
 						Data:  msg,
@@ -86,7 +83,6 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 func isChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool {
 	for _, inTask := range inputSummeries {
 		for _, oldTask := range lastSummeries {
-			//fmt.Println("OOOOOOOOOOOOOOOOOOO")
 			if inTask.Name == oldTask.Name {
 				if inTask.Status != oldTask.Status {
 					return true
