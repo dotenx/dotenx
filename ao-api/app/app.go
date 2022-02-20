@@ -9,6 +9,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
 	"github.com/utopiops/automated-ops/ao-api/controllers/health"
+	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
 	"github.com/utopiops/automated-ops/ao-api/controllers/onoffboarding"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	runnercontroller "github.com/utopiops/automated-ops/ao-api/controllers/runner"
@@ -84,12 +85,15 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
 	runnerservice := runnerservice.NewRunnerService(runnerStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
+	// integration service to be added to integration controller
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
 	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
 	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
+	IntegrationController := integrationController.IntegrationController{}
+
 	// Routes
 	//pretected
 	tasks := r.Group("/task")
@@ -144,6 +148,12 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		runner.POST("/register/type/:type", runnerController.RegisterRunner)
 		runner.GET("/id/:id/queue", runnerController.GetQueueId)
+	}
+	intgration := r.Group("/intgration")
+	{
+		intgration.POST("", IntegrationController.AddIntegration())
+		intgration.GET("", IntegrationController.GetIntegrations())
+		intgration.GET("/type/:type", IntegrationController.GetIntegrationFields())
 	}
 	return r /*, g*/
 }
