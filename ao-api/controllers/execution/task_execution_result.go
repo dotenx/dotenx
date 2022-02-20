@@ -103,7 +103,7 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 type taskResultDto struct {
 	Status      models.TaskStatus      `json:"status"`
 	ReturnValue string                 `json:"return_value"`
-	Log         string                 "log"
+	Log         string                 `json:"log"`
 	Result      map[string]interface{} //Not used currently
 }
 

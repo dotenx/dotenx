@@ -53,10 +53,6 @@ func (p *pipelineStore) GetByVersion(context context.Context, version int16, acc
 				var taskBody models.HttpCallTaskBody
 				json.Unmarshal(body.([]byte), &taskBody)
 				task.Body = taskBody
-			case models.CreateAccount:
-				var taskBody models.CreateAccountTaskBody
-				json.Unmarshal(body.([]byte), &taskBody)
-				task.Body = taskBody
 			case models.GitlabAddMember:
 				var taskBody models.GitlabAddMemberTaskBody
 				json.Unmarshal(body.([]byte), &taskBody)
