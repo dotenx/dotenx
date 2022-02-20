@@ -5,9 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -24,12 +22,12 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
-	reader, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
+	/*reader,*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
 		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
 	}
-	io.Copy(os.Stdout, reader) // to get pull image log
+	//io.Copy(os.Stdout, reader) // to get pull image log
 	var cont container.ContainerCreateCreatedBody
 	if !task.IsPredifined {
 		cont, err = executor.Client.ContainerCreate(
@@ -70,22 +68,20 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	}
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
-	timeCounter := 0
-	//time.Sleep(time.Duration(time.Minute * 3))
-	for {
-		time.Sleep(time.Second)
-		timeCounter++
-		statusCode := executor.CheckStatus(cont.ID)
+	var statusCode int
+	for start := time.Now(); time.Since(start) < time.Duration(task.Detailes.Timeout)*time.Second; {
+		statusCode = executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
 			break
 		} else if statusCode == 0 { // done
 			result.Status = models.StatusCompleted
 			break
-		} else if timeCounter == task.Detailes.Timeout { // timedout
-			result.Error = errors.New("timed out")
-			result.Log = "timed out"
-			return
 		}
+	}
+	if statusCode != -1 && statusCode != 0 { // timedout
+		result.Error = errors.New("timed out")
+		result.Log = "timed out"
+		return
 	}
 	result.Log, result.Error = executor.GetLogs(cont.ID)
 	return
