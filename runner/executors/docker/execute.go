@@ -10,6 +10,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
@@ -21,7 +22,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
-	/*reader*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
+	/*reader,*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
 	if err != nil {
 		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
@@ -36,7 +37,13 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Cmd:   task.Script,
 			},
 			&container.HostConfig{
-				Binds: []string{"/usr/local/ao_api_data:/go/src/github.com/utopiops/automated-ops/runner"},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: "/usr/local",
+						Target: "/tmp",
+					},
+				},
 			}, nil, nil, "")
 	} else {
 		cont, err = executor.Client.ContainerCreate(
@@ -45,7 +52,15 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Image: task.Detailes.Image,
 				Env:   task.EnvironmentVariables,
 			},
-			nil, nil, nil, "")
+			&container.HostConfig{
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: "/usr/local",
+						Target: "/tmp",
+					},
+				},
+			}, nil, nil, "")
 	}
 	if err != nil {
 		result.Error = errors.New("error in creating container")
@@ -53,21 +68,20 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	}
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
-	timeCounter := 0
-	for {
-		time.Sleep(time.Second)
-		timeCounter++
-		statusCode := executor.CheckStatus(cont.ID)
+	var statusCode int
+	for start := time.Now(); time.Since(start) < time.Duration(task.Detailes.Timeout)*time.Second; {
+		statusCode = executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
 			break
 		} else if statusCode == 0 { // done
 			result.Status = models.StatusCompleted
 			break
-		} else if timeCounter == task.Detailes.Timeout { // timedout
-			result.Error = errors.New("timed out")
-			result.Log = "timed out"
-			return
 		}
+	}
+	if statusCode != -1 && statusCode != 0 { // timedout
+		result.Error = errors.New("timed out")
+		result.Log = "timed out"
+		return
 	}
 	result.Log, result.Error = executor.GetLogs(cont.ID)
 	return

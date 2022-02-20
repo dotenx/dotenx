@@ -63,9 +63,6 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 					c.SSEvent("end", "end")
 					return false
 				case msg := <-chanStream:
-					//	fmt.Println("$$$$$$$$$$$$$$$$$")
-					//fmt.Println(msg)
-					//	fmt.Println("$$$$$$$$$$$$$$$$$")
 					c.Render(-1, sse.Event{
 						Event: "message",
 						Data:  msg,

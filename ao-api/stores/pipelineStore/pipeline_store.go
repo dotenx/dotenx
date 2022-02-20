@@ -14,14 +14,9 @@ func New(db *db.DB) PipelineStore {
 // NOTE: Many of these endpoints don't get accountId as one of their inputs meaning they don't check if the operation is being performed on the
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
-	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
-	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
-	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
+	// pipelines
 	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
 	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
-	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
-	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
-	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Create pipelineStore a new pipeline if `fromVersion` equals to 0 otherwise adds a new pipeline version to an existing pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
@@ -36,14 +31,12 @@ type PipelineStore interface {
 	GetActivatedPipelineVersionIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 	// Check if the name is valid and activated return the pipeline version id
 	GetActivatedPipelineVersionIdByName(context context.Context, accountId string, name string) (pipelineId int, err error)
-	// Add execution
-	CreateExecution(context context.Context, execution models.Execution) (id int, err error)
-	// Get initial job of an execution
-	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
-	// GetInitialData retrieves the initial data of an execution
-	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
-	// Get next job in an execution based on the status of a task in the execution
-	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
+
+	// tasks
+	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
+	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
+	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
+	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Get task details based on execution id and task id
 	GetTaskByExecution(context context.Context, executionId int, taskId int) (task models.TaskDetails, err error)
 	GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error)
@@ -52,8 +45,21 @@ type PipelineStore interface {
 	// Set the result of a task
 	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
 	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, log string) (err error)
+
+	// executions
+	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
+	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
+	// Add execution
+	CreateExecution(context context.Context, execution models.Execution) (id int, err error)
+	// Get initial job of an execution
+	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
+	// GetInitialData retrieves the initial data of an execution
+	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
+	// Get next job in an execution based on the status of a task in the execution
+	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
 	// Retrieve a pipeline version dependency graph based on execution id
 	GetExecutionGraph(context context.Context, executionId int, accountId string) (graph models.PipelineVersion, name string, err error)
+
 	/// Workspaces
 	// Get all workspace onboarding pipelines
 	ListOnBoardingPipelines(context context.Context, accountId string) (pipelines []models.WorkspacePipelineSummary, err error)

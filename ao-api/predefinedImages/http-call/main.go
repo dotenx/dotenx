@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -42,11 +43,15 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
 		file, _ := json.MarshalIndent(resultData, "", " ")
-		err = ioutil.WriteFile("test.json", file, 0644)
+		err = ioutil.WriteFile("/tmp/test.json", file, 0644)
 		if err != nil {
 			fmt.Println(err.Error())
+		} else {
+			fmt.Println("response saved")
+			out, _ := exec.Command("pwd").Output()
+			output := string(out[:])
+			fmt.Println(output)
 		}
-		fmt.Println("request sent successfully2")
 		return
 	} else {
 		fmt.Println("Failed to sent request")

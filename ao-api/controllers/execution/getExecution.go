@@ -12,10 +12,6 @@ func (e *ExecutionController) GetExecution() gin.HandlerFunc {
 		accountId := c.MustGet("accountId").(string)
 		execution, err := e.Service.GetExecution(accountId)
 		if err != nil {
-			// if _, ok := err.(redis.NoExecErr); ok {
-			// 	c.Status(http.StatusNoContent)
-			// 	return
-			// }
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

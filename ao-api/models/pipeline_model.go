@@ -96,10 +96,6 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 		var taskBody HttpCallTaskBody
 		json.Unmarshal(body, &taskBody)
 		t.Body = taskBody
-	case CreateAccount:
-		var taskBody CreateAccountTaskBody
-		json.Unmarshal(body, &taskBody)
-		t.Body = taskBody
 	case GitlabAddMember:
 		var taskBody GitlabAddMemberTaskBody
 		json.Unmarshal(body, &taskBody)
@@ -146,10 +142,6 @@ func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	switch t.Type {
 	case HttpCall:
 		var taskBody HttpCallTaskBody
-		yaml.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case CreateAccount:
-		var taskBody CreateAccountTaskBody
 		yaml.Unmarshal(body, &taskBody)
 		t.Body = taskBody
 	case GitlabAddMember:
