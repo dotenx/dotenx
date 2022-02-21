@@ -100,7 +100,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		tasks.GET("", predefinedController.GetTasks)
 		tasks.GET("/:task_name/fields", predefinedController.GetFields)
-		//tasks.POST("/predifined", crudController.AddPipeline()) // todo: endpoint to add predefined task
 	}
 	pipline := r.Group("/pipeline")
 	{
