@@ -50,6 +50,10 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 }
 func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		integrations := make([]string, 0)
+		for _, integ := range models.AvaliableIntegrations {
+			integrations = append(integrations, integ.Type)
+		}
+		c.JSON(http.StatusOK, integrations)
 	}
 }
