@@ -9,7 +9,7 @@ import (
 type IntegrationService interface {
 	GetIntegrationFields(name string) ([]models.IntegrationField, error)
 	GetIntegrations() ([]string, error)
-	AddIntegration() error
+	AddIntegration(accountId string, integration models.IntegrationDefinition) error
 }
 
 type IntegrationManager struct {
@@ -36,6 +36,6 @@ func (manager *IntegrationManager) GetIntegrations() ([]string, error) {
 	return integrations, nil
 }
 
-func (manager *IntegrationManager) AddIntegration() error {
+func (manager *IntegrationManager) AddIntegration(accountId string, integration models.IntegrationDefinition) error {
 	return nil
 }

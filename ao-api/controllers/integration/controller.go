@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/utopiops/automated-ops/ao-api/models"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
@@ -26,9 +27,18 @@ func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc 
 
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//accountId := c.MustGet("accountId").(string)
-		controller.Service.AddIntegration()
-		c.JSON(http.StatusNotImplemented, nil)
+		var integration models.IntegrationDefinition
+		accountId := c.MustGet("accountId").(string)
+		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		err := controller.Service.AddIntegration(accountId, integration)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, nil)
 	}
 }
 func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {

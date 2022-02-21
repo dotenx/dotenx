@@ -33,10 +33,6 @@ type IntegrationField struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
 }
-type AddIntegrationRequest struct {
-	Type   string             `yaml:"type"`
-	Fields []IntegrationField `json:"fields"`
-}
 
 func init() {
 	AvaliableIntegrations = make(map[string]IntegrationDefinition)
