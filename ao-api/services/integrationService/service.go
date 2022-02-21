@@ -21,22 +21,9 @@ func NewIntegrationService() IntegrationService {
 }
 
 func (manager *IntegrationManager) GetIntegrationFields(name string) ([]models.IntegrationField, error) {
-	fields := make([]models.IntegrationField, 0)
 	for _, integ := range models.AvaliableIntegrations {
 		if integ.Type == name {
-			if integ.NeedsAccessToken {
-				fields = append(fields, models.IntegrationField{Type: "text", Key: "access_token"})
-			}
-			if integ.NeedsKey {
-				fields = append(fields, models.IntegrationField{Type: "text", Key: "key"})
-			}
-			if integ.NeedsSecret {
-				fields = append(fields, models.IntegrationField{Type: "text", Key: "secret"})
-			}
-			if integ.NeedsUrl {
-				fields = append(fields, models.IntegrationField{Type: "text", Key: "url"})
-			}
-			return fields, nil
+			return integ.Fields, nil
 		}
 	}
 	return nil, errors.New("no integration with this name")
