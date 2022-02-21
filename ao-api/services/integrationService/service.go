@@ -37,5 +37,8 @@ func (manager *IntegrationManager) GetIntegrations() ([]string, error) {
 }
 
 func (manager *IntegrationManager) AddIntegration(accountId string, integration models.IntegrationDefinition) error {
+	if !integration.IsValid() {
+		return errors.New("field missing")
+	}
 	return nil
 }

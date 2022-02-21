@@ -28,6 +28,16 @@ type IntegrationDefinition struct {
 	Type   string             `json:"type"`
 	Fields []IntegrationField `json:"fields"`
 }
+
+func (intg IntegrationDefinition) IsValid() bool {
+	for _, field := range intg.Fields {
+		if field.Value == "" {
+			return false
+		}
+	}
+	return true
+}
+
 type IntegrationField struct {
 	Key   string `json:"key"`
 	Type  string `json:"type"`
