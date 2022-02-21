@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
+	//"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
 type IntegrationController struct {
-	Service integrationService.IntegrationService
+	//Service integrationService.IntegrationService
 }
 
 func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc {
