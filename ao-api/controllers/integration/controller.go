@@ -14,9 +14,32 @@ type IntegrationController struct {
 
 func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//integrationType := c.Param("type")
-		//accountId := c.MustGet("accountId").(string)
-		c.JSON(http.StatusOK, nil)
+		typeIntegration := c.Param("type")
+		type field struct {
+			Key  string `json:"key"`
+			Type string `json:"type"`
+		}
+		fields := make([]field, 0)
+		for _, integ := range models.AvaliableIntegrations {
+			if integ.Type == typeIntegration {
+				if integ.NeedsAccessToken {
+					fields = append(fields, field{Type: "text", Key: "access_token"})
+				}
+				if integ.NeedsKey {
+					fields = append(fields, field{Type: "text", Key: "key"})
+				}
+				if integ.NeedsSecret {
+					fields = append(fields, field{Type: "text", Key: "secret"})
+				}
+				if integ.NeedsUrl {
+					fields = append(fields, field{Type: "text", Key: "url"})
+				}
+				c.JSON(http.StatusOK, fields)
+				return
+			}
+		}
+		c.AbortWithStatus(http.StatusBadRequest)
+
 	}
 }
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
@@ -27,31 +50,6 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 }
 func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		type field struct {
-			Key  string `json:"key"`
-			Type string `json:"type"`
-		}
-		type integration struct {
-			Type   string  `json:"type"`
-			Fields []field `json:"fields"`
-		}
-		res := make([]integration, 0)
-		for typeInteg, integ := range models.AvaliableIntegrations {
-			integr := integration{Type: typeInteg, Fields: make([]field, 0)}
-			if integ.NeedsAccessToken {
-				integr.Fields = append(integr.Fields, field{Type: "text", Key: "access_token"})
-			}
-			if integ.NeedsKey {
-				integr.Fields = append(integr.Fields, field{Type: "text", Key: "key"})
-			}
-			if integ.NeedsSecret {
-				integr.Fields = append(integr.Fields, field{Type: "text", Key: "secret"})
-			}
-			if integ.NeedsUrl {
-				integr.Fields = append(integr.Fields, field{Type: "text", Key: "url"})
-			}
-			res = append(res, integr)
-		}
-		c.JSON(http.StatusOK, res)
+
 	}
 }
