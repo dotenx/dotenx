@@ -7,7 +7,7 @@ import (
 )
 
 type IntegrationService interface {
-	GetIntegrationFields(name string) ([]field, error)
+	GetIntegrationFields(name string) ([]models.IntegrationField, error)
 	GetIntegrations() ([]string, error)
 	AddIntegration() error
 }
@@ -20,26 +20,21 @@ func NewIntegrationService() IntegrationService {
 	return &IntegrationManager{}
 }
 
-type field struct {
-	Key  string `json:"key"`
-	Type string `json:"type"`
-}
-
-func (manager *IntegrationManager) GetIntegrationFields(name string) ([]field, error) {
-	fields := make([]field, 0)
+func (manager *IntegrationManager) GetIntegrationFields(name string) ([]models.IntegrationField, error) {
+	fields := make([]models.IntegrationField, 0)
 	for _, integ := range models.AvaliableIntegrations {
 		if integ.Type == name {
 			if integ.NeedsAccessToken {
-				fields = append(fields, field{Type: "text", Key: "access_token"})
+				fields = append(fields, models.IntegrationField{Type: "text", Key: "access_token"})
 			}
 			if integ.NeedsKey {
-				fields = append(fields, field{Type: "text", Key: "key"})
+				fields = append(fields, models.IntegrationField{Type: "text", Key: "key"})
 			}
 			if integ.NeedsSecret {
-				fields = append(fields, field{Type: "text", Key: "secret"})
+				fields = append(fields, models.IntegrationField{Type: "text", Key: "secret"})
 			}
 			if integ.NeedsUrl {
-				fields = append(fields, field{Type: "text", Key: "url"})
+				fields = append(fields, models.IntegrationField{Type: "text", Key: "url"})
 			}
 			return fields, nil
 		}
