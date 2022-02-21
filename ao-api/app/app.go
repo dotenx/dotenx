@@ -19,6 +19,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
+	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
@@ -85,14 +86,14 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
 	runnerservice := runnerservice.NewRunnerService(runnerStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	// integration service to be added to integration controller
+	IntegrationService := integrationService.NewIntegrationService()
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
 	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
 	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
-	IntegrationController := integrationController.IntegrationController{}
+	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 
 	// Routes
 	//pretected

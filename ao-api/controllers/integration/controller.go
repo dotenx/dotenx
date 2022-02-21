@@ -5,47 +5,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
-	//"github.com/utopiops/automated-ops/ao-api/services/integrationService"
+	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
 type IntegrationController struct {
-	//Service integrationService.IntegrationService
+	Service integrationService.IntegrationService
 }
 
 func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		typeIntegration := c.Param("type")
-		type field struct {
-			Key  string `json:"key"`
-			Type string `json:"type"`
+		fields, err := controller.Service.GetIntegrationFields(typeIntegration)
+		if err == nil {
+			c.JSON(http.StatusOK, fields)
+			return
 		}
-		fields := make([]field, 0)
-		for _, integ := range models.AvaliableIntegrations {
-			if integ.Type == typeIntegration {
-				if integ.NeedsAccessToken {
-					fields = append(fields, field{Type: "text", Key: "access_token"})
-				}
-				if integ.NeedsKey {
-					fields = append(fields, field{Type: "text", Key: "key"})
-				}
-				if integ.NeedsSecret {
-					fields = append(fields, field{Type: "text", Key: "secret"})
-				}
-				if integ.NeedsUrl {
-					fields = append(fields, field{Type: "text", Key: "url"})
-				}
-				c.JSON(http.StatusOK, fields)
-				return
-			}
-		}
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, err.Error())
 
 	}
 }
+
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//accountId := c.MustGet("accountId").(string)
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusNotImplemented, nil)
 	}
 }
 func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {
