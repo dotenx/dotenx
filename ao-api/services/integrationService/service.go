@@ -47,7 +47,11 @@ func (manager *IntegrationManager) GetIntegrationFields(name string) ([]field, e
 	return nil, errors.New("no integration with this name")
 }
 func (manager *IntegrationManager) GetIntegrations() ([]string, error) {
-	return nil, nil
+	integrations := make([]string, 0)
+	for _, integ := range models.AvaliableIntegrations {
+		integrations = append(integrations, integ.Type)
+	}
+	return integrations, nil
 }
 
 func (manager *IntegrationManager) AddIntegration() error {
