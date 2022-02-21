@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
@@ -34,10 +33,7 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 }
 func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		integrations := make([]string, 0)
-		for _, integ := range models.AvaliableIntegrations {
-			integrations = append(integrations, integ.Type)
-		}
+		integrations, _ := controller.Service.GetIntegrations()
 		c.JSON(http.StatusOK, integrations)
 	}
 }
