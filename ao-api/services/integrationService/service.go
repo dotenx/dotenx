@@ -1,9 +1,11 @@
 package integrationService
 
 import (
+	"context"
 	"errors"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 )
 
 type IntegrationService interface {
@@ -13,7 +15,7 @@ type IntegrationService interface {
 }
 
 type IntegrationManager struct {
-	//Store pipelineStore.PipelineStore
+	Store integrationStore.IntegrationStore
 }
 
 func NewIntegrationService() IntegrationService {
@@ -40,5 +42,6 @@ func (manager *IntegrationManager) AddIntegration(accountId string, integration 
 	if !integration.IsValid() {
 		return errors.New("field missing")
 	}
-	return nil
+	// todo: make ready the body to be saved in table
+	return manager.Store.AddIntegration(context.Background(), accountId, integration)
 }
