@@ -149,7 +149,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		runner.POST("/register/type/:type", runnerController.RegisterRunner)
 		runner.GET("/id/:id/queue", runnerController.GetQueueId)
 	}
-	intgration := r.Group("/intgration")
+	intgration := r.Group("/integration")
 	{
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetIntegrations())

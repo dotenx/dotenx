@@ -9,6 +9,7 @@ import (
 type IntegrationService interface {
 	GetIntegrationFields(name string) ([]field, error)
 	GetIntegrations() ([]string, error)
+	AddIntegration() error
 }
 
 type IntegrationManager struct {
@@ -45,6 +46,10 @@ func (manager *IntegrationManager) GetIntegrationFields(name string) ([]field, e
 	}
 	return nil, errors.New("no integration with this name")
 }
-func (manager *IntegrationManager) GetIntegrations() ([]string, error) {}
+func (manager *IntegrationManager) GetIntegrations() ([]string, error) {
+	return nil, nil
+}
 
-//func (manager *IntegrationManager) AddIntegration() ([]string, error)                       {}
+func (manager *IntegrationManager) AddIntegration() error {
+	return nil
+}

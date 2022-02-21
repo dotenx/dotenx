@@ -28,6 +28,7 @@ func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc 
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//accountId := c.MustGet("accountId").(string)
+		controller.Service.AddIntegration()
 		c.JSON(http.StatusNotImplemented, nil)
 	}
 }
