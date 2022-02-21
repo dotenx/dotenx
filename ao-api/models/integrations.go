@@ -16,6 +16,15 @@ type IntegrationDefinition struct {
 	NeedsSecret      bool   `yaml:"needs_secret"`
 	NeedsUrl         bool   `yaml:"needs_url"`
 }
+type IntegrationField struct {
+	Key   string `json:"key"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+type AddIntegrationRequest struct {
+	Type   string             `yaml:"type"`
+	Fields []IntegrationField `json:"fields"`
+}
 
 func init() {
 	AvaliableIntegrations = make(map[string]IntegrationDefinition)
