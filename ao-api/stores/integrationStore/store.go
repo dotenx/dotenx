@@ -38,7 +38,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, integration.AccountId, integration.Type, integration.Name,
+	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name,
 		integration.Url, integration.Key, integration.Secret, integration.AccessToken)
 	if err != nil {
 		return err

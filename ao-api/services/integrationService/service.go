@@ -20,8 +20,8 @@ type IntegrationManager struct {
 	Store integrationStore.IntegrationStore
 }
 
-func NewIntegrationService() IntegrationService {
-	return &IntegrationManager{}
+func NewIntegrationService(store integrationStore.IntegrationStore) IntegrationService {
+	return &IntegrationManager{Store: store}
 }
 
 func (manager *IntegrationManager) GetIntegrationFields(name string) ([]string, error) {
