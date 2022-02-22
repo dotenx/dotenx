@@ -152,7 +152,9 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	intgration := r.Group("/integration")
 	{
 		intgration.POST("", IntegrationController.AddIntegration())
-		intgration.GET("/type", IntegrationController.GetIntegrationTypes())
+		intgration.GET("", IntegrationController.GetAllIntegrations())
+		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
+		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 	}
 	return r /*, g*/
