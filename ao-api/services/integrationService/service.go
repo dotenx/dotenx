@@ -44,3 +44,9 @@ func (manager *IntegrationManager) AddIntegration(accountId string, integration 
 	// todo: make ready the body to be saved in table
 	return manager.Store.AddIntegration(context.Background(), accountId, integration)
 }
+func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
+	return manager.Store.GetAllintegrations(context.Background(), accountId)
+}
+func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId, integrationType string) ([]models.Integration, error) {
+	return manager.Store.GetIntegrationsByType(context.Background(), accountId, integrationType)
+}
