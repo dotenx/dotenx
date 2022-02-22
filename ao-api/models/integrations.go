@@ -25,29 +25,23 @@ type IntegrationFile struct {
 }
 
 type Integration struct {
-	Name       string                `db:"name" json:"name"`
-	AccountId  string                `db:"account_id" json:"account_id"`
-	Definition IntegrationDefinition `json:"definition"`
+	Name        string `db:"name" json:"name"`
+	AccountId   string `db:"account_id" json:"account_id"`
+	Type        string `db:"type" json:"type"`
+	Url         string `db:"url" json:"url"`
+	Key         string `db:"key" json:"key"`
+	Secret      string `db:"secret" json:"secret"`
+	AccessToken string `db:"access_token" json:"access_token"`
 }
 
 type IntegrationDefinition struct {
-	Type   string             `json:"type"`
-	Fields []IntegrationField `json:"fields"`
-}
-
-func (intg IntegrationDefinition) IsValid() bool {
-	for _, field := range intg.Fields {
-		if field.Value == "" {
-			return false
-		}
-	}
-	return true
+	Type   string   `json:"type"`
+	Fields []string `json:"fields"`
 }
 
 type IntegrationField struct {
-	Key   string `json:"key"`
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Key  string `json:"key"`
+	Type string `json:"type"`
 }
 
 func init() {
@@ -67,18 +61,18 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		integrationDefinition := IntegrationDefinition{Type: yamlFile.Type, Fields: make([]IntegrationField, 0)}
+		integrationDefinition := IntegrationDefinition{Type: yamlFile.Type, Fields: make([]string, 0)}
 		if yamlFile.NeedsAccessToken {
-			integrationDefinition.Fields = append(integrationDefinition.Fields, AvaliableIntegrationFields["access_token"])
+			integrationDefinition.Fields = append(integrationDefinition.Fields, "access_token")
 		}
 		if yamlFile.NeedsKey {
-			integrationDefinition.Fields = append(integrationDefinition.Fields, AvaliableIntegrationFields["key"])
+			integrationDefinition.Fields = append(integrationDefinition.Fields, "key")
 		}
 		if yamlFile.NeedsSecret {
-			integrationDefinition.Fields = append(integrationDefinition.Fields, AvaliableIntegrationFields["secret"])
+			integrationDefinition.Fields = append(integrationDefinition.Fields, "secret")
 		}
 		if yamlFile.NeedsUrl {
-			integrationDefinition.Fields = append(integrationDefinition.Fields, AvaliableIntegrationFields["url"])
+			integrationDefinition.Fields = append(integrationDefinition.Fields, "url")
 		}
 		AvaliableIntegrations[integrationDefinition.Type] = integrationDefinition
 	}
