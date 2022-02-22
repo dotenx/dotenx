@@ -9,6 +9,8 @@ import (
 
 type IntegrationStore interface {
 	AddIntegration(ctx context.Context, accountId string, integration models.Integration) error
+	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
+	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
 }
 
 type integrationStore struct {
@@ -21,4 +23,10 @@ func New(db *db.DB) IntegrationStore {
 
 func (store *integrationStore) AddIntegration(ctx context.Context, accountId string, integration models.Integration) error {
 	return nil
+}
+func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error) {
+	return nil, nil
+}
+func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error) {
+	return nil, nil
 }
