@@ -298,3 +298,16 @@ var createTableRunnerQueue = `CREATE TABLE IF NOT EXISTS runner_queue (
 	account_id varchar(32),
 	queue_type varchar(32)
 )`
+
+var createTableIntegrations = `
+CREATE TABLE IF NOT EXISTS integrations (
+account_id        varchar(32) NOT NULL,
+type              varchar(32) NOT NULL,
+name              varchar(32) NOT NULL,
+url               varchar(128),
+key               varchar(128),
+secret            varchar(128),
+access_token            varchar(128),
+UNIQUE (account_id, integration_name)
+)
+`

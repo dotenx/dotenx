@@ -24,6 +24,12 @@ type IntegrationFile struct {
 	NeedsUrl         bool   `yaml:"needs_url"`
 }
 
+type Integration struct {
+	Name       string                `db:"name" json:"name"`
+	AccountId  string                `db:"account_id" json:"account_id"`
+	Definition IntegrationDefinition `json:"definition"`
+}
+
 type IntegrationDefinition struct {
 	Type   string             `json:"type"`
 	Fields []IntegrationField `json:"fields"`
