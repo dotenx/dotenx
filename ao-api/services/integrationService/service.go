@@ -11,6 +11,8 @@ import (
 type IntegrationService interface {
 	GetIntegrationFields(name string) ([]string, error)
 	GetIntegrationTypes() ([]string, error)
+	GetAllIntegrations(accountId string) ([]models.Integration, error)
+	GetAllIntegrationsForAccountByType(accountId, integrationType string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
 }
 
