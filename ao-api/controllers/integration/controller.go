@@ -12,7 +12,7 @@ type IntegrationController struct {
 	Service integrationService.IntegrationService
 }
 
-func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc {
+func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		typeIntegration := c.Param("type")
 		fields, err := controller.Service.GetIntegrationFields(typeIntegration)
@@ -27,7 +27,7 @@ func (controller *IntegrationController) GetIntegrationFields() gin.HandlerFunc 
 
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var integration models.IntegrationDefinition
+		var integration models.Integration
 		accountId := c.MustGet("accountId").(string)
 		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" {
 			c.AbortWithStatus(http.StatusBadRequest)
@@ -41,9 +41,9 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 		c.JSON(http.StatusOK, nil)
 	}
 }
-func (controller *IntegrationController) GetIntegrations() gin.HandlerFunc {
+func (controller *IntegrationController) GetIntegrationTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		integrations, _ := controller.Service.GetIntegrations()
+		integrations, _ := controller.Service.GetIntegrationTypes()
 		c.JSON(http.StatusOK, integrations)
 	}
 }
