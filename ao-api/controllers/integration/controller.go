@@ -25,6 +25,31 @@ func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerF
 	}
 }
 
+func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		typeIntegration := c.Param("type")
+		integrations, err := controller.Service.GetAllIntegrationsForAccountByType(typeIntegration)
+		if err == nil {
+			c.JSON(http.StatusOK, integrations)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
+
+func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		integrations, err := controller.Service.GetAllIntegrations(typeIntegration)
+		if err == nil {
+			c.JSON(http.StatusOK, integrations)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
+
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var integration models.Integration

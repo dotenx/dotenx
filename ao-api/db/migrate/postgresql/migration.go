@@ -312,6 +312,6 @@ url               varchar(128),
 key               varchar(128),
 secret            varchar(128),
 access_token            varchar(128),
-UNIQUE (account_id, integration_name)
+UNIQUE (account_id, name)
 )
 `
