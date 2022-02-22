@@ -2,7 +2,10 @@ package integrationStore
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/utopiops/automated-ops/ao-api/db"
 	"github.com/utopiops/automated-ops/ao-api/models"
@@ -46,20 +49,62 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 	return nil
 }
 
-var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, url, key, secret, access_token)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+var getIntegrationsByType = `
+select * from integrations 
+where account_id = $1 and type = $2;
 `
 
 func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error) {
-	return nil, nil
+	res := make([]models.Integration, 0)
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getIntegrationsByType, accountId, integrationType)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return nil, err
+		}
+		for rows.Next() {
+			var cur models.Integration
+			rows.StructScan(&cur)
+			if err != nil {
+				return nil, err
+			}
+			res = append(res, cur)
+		}
+	}
+	return res, nil
 }
 
-var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, url, key, secret, access_token)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+var getIntegrations = `
+select * from integrations 
+where account_id = $1;
 `
 
 func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error) {
-	return nil, nil
+	res := make([]models.Integration, 0)
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getIntegrations, accountId)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return nil, err
+		}
+		for rows.Next() {
+			var cur models.Integration
+			rows.StructScan(&cur)
+			if err != nil {
+				return nil, err
+			}
+			res = append(res, cur)
+		}
+	}
+	return res, nil
 }
