@@ -25,6 +25,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	runnerservice "github.com/utopiops/automated-ops/ao-api/services/runnerService"
 	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
+	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 	runnerstore "github.com/utopiops/automated-ops/ao-api/stores/runnerStore"
 )
@@ -79,6 +80,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	})
 	// TODO: Providers to be called here
 	pipelineStore := pipelineStore.New(db)
+	IntegrationStore := integrationStore.New(db)
 	runnerStore := runnerstore.New(db)
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue)
@@ -86,7 +88,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
 	runnerservice := runnerservice.NewRunnerService(runnerStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	IntegrationService := integrationService.NewIntegrationService()
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
