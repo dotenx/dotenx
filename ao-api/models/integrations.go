@@ -34,6 +34,15 @@ type Integration struct {
 	AccessToken string `db:"access_token" json:"access_token"`
 }
 
+func (intg Integration) IsValid() bool {
+	for integrationType, _ := range AvaliableIntegrations {
+		if integrationType == intg.Type {
+			return true
+		}
+	}
+	return false
+}
+
 type IntegrationDefinition struct {
 	Type   string   `json:"type"`
 	Fields []string `json:"fields"`
