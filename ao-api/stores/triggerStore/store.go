@@ -3,6 +3,7 @@ package triggerStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -26,8 +27,8 @@ func New(db *db.DB) TriggerStore {
 }
 
 var storeTrigger = `
-INSERT INTO event_triggers (account_id, type, name, integration, endpoint, credentials)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO event_triggers (account_id, type, name, integration, pipeline, endpoint, credentials)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
@@ -38,8 +39,9 @@ func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, tri
 	default:
 		return fmt.Errorf("driver not supported")
 	}
+	js, _ := json.Marshal(trigger.Credentials)
 	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
-		trigger.Integration, trigger.Endpoint, trigger.Credentials)
+		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js)
 	if err != nil {
 		return err
 	}
@@ -80,7 +82,7 @@ func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, tri
 }
 
 var getTriggers = `
-select * from event_triggers 
+select  type, name, integration, pipeline, endpoint, credentials from event_triggers 
 where account_id = $1;
 `
 
@@ -99,7 +101,9 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 		}
 		for rows.Next() {
 			var cur models.EventTrigger
-			rows.StructScan(&cur)
+			var cred []byte
+			rows.Scan(&cur.Type, &cur.Name, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
+			json.Unmarshal(cred, &cur.Credentials)
 			if err != nil {
 				return nil, err
 			}

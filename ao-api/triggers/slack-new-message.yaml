@@ -2,5 +2,5 @@ type: slack-new-message
 integration: slack-bot 
 image:
 credentials:
-  - key: channel_name
+  - key: channel_id
     type: text

@@ -85,11 +85,11 @@ var migrations = []struct {
 		stmt: createTableIntegrations,
 	},
 	{
-		name: "drop-table-event_triggers",
+		name: "drop-table-event_triggers2",
 		stmt: dropTableEventTriggers,
 	},
 	{
-		name: "create-table-event_triggers2",
+		name: "create-table-event_triggers3",
 		stmt: createTableEventTriggers,
 	},
 }
@@ -331,6 +331,7 @@ type                     varchar(64) NOT NULL,
 name                     varchar(32) NOT NULL,
 integration              varchar(128) NOT NULL,
 endpoint                 varchar(128) NOT NULL,
+pipeline                 varchar(128) NOT NULL,
 credentials									JSONB,
 UNIQUE (account_id, name)
 )
