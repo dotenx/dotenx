@@ -2,6 +2,7 @@ package triggerService
 
 import (
 	"context"
+	"errors"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
@@ -11,6 +12,7 @@ type TriggerService interface {
 	GetTriggerTypes() ([]string, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
+	GetIntegrationType(accountId, triggerType string) (string, error)
 	AddTrigger(accountId string, trigger models.EventTrigger) error
 }
 
@@ -39,4 +41,12 @@ func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventT
 }
 func (manager *TriggerManager) GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error) {
 	return manager.Store.GetTriggersByType(context.Background(), accountId, triggerType)
+}
+
+func (manager *TriggerManager) GetIntegrationType(accountId, triggerType string) (string, error) {
+	intgType, ok := models.AvaliableTriggers[triggerType]
+	if ok {
+		return intgType.IntegrationType, nil
+	}
+	return "", errors.New("invalid trigger type")
 }
