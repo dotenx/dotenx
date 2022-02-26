@@ -20,6 +20,7 @@ type EventTrigger struct {
 	AccountId   string `db:"account_id" json:"account_id"`
 	Type        string `db:"type" json:"type"`
 	Endpoint    string `db:"endpoint" json:"endpoint"`
+	Pipeline    string `json:"pipeline_name"`
 	Integration string `db:"integration" json:"integration"`
 }
 
