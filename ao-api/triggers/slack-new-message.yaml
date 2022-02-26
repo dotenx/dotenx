@@ -1,0 +1,3 @@
+type: slack-new-message 
+intgration: slack-bot 
+image:
