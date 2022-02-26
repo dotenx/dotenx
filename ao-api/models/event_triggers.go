@@ -16,6 +16,11 @@ type TriggerDefinition struct {
 }
 
 type EventTrigger struct {
+	Name        string `db:"name" json:"name"`
+	AccountId   string `db:"account_id" json:"account_id"`
+	Type        string `db:"type" json:"type"`
+	Endpoint    string `db:"endpoint" json:"endpoint"`
+	Integration string `db:"integration" json:"integration"`
 }
 
 func init() {
