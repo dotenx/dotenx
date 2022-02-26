@@ -101,7 +101,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
-	TriggerController := trigger.TriggerController{Service: TriggerServic}
+	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 
 	// Routes
 	//pretected
