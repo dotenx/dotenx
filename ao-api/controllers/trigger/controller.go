@@ -1,15 +1,18 @@
 package trigger
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 )
 
 type TriggerController struct {
-	Service triggerService.TriggerService
+	Service     triggerService.TriggerService
+	CrudService crudService.CrudService
 }
 
 func (controller *TriggerController) GetAllTriggersForAccountByType() gin.HandlerFunc {
@@ -60,7 +63,14 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		err := controller.Service.AddTrigger(accountId, trigger)
+		_, endpoint, err := controller.CrudService.GetPipelineByVersion(1, accountId, trigger.Pipeline)
+		if err != nil {
+			log.Println(err.Error())
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		trigger.Endpoint = endpoint
+		err = controller.Service.AddTrigger(accountId, trigger)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
