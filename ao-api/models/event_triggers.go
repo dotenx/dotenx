@@ -10,18 +10,24 @@ import (
 var AvaliableTriggers map[string]TriggerDefinition
 
 type TriggerDefinition struct {
-	Type            string `yaml:"type"`
-	IntegrationType string `yaml:"integration"`
-	Image           string `yaml:"image"`
+	Type            string       `yaml:"type"`
+	IntegrationType string       `yaml:"integration"`
+	Image           string       `yaml:"image"`
+	Credentials     []Credential `yaml:"credentials"`
+}
+type Credential struct {
+	Key  string `yaml:"key"`
+	Type string `yaml:"type"`
 }
 
 type EventTrigger struct {
-	Name        string `db:"name" json:"name"`
-	AccountId   string `db:"account_id" json:"account_id"`
-	Type        string `db:"type" json:"type"`
-	Endpoint    string `db:"endpoint" json:"endpoint"`
-	Pipeline    string `json:"pipeline_name"`
-	Integration string `db:"integration" json:"integration"`
+	Name        string                 `db:"name" json:"name"`
+	AccountId   string                 `db:"account_id" json:"account_id"`
+	Type        string                 `db:"type" json:"type"`
+	Endpoint    string                 `db:"endpoint" json:"endpoint"`
+	Pipeline    string                 `json:"pipeline_name"`
+	Integration string                 `db:"integration" json:"integration"`
+	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 }
 
 func init() {

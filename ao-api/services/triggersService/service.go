@@ -12,7 +12,7 @@ type TriggerService interface {
 	GetTriggerTypes() ([]string, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
-	GetIntegrationType(accountId, triggerType string) (string, error)
+	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTrigger(accountId string, trigger models.EventTrigger) error
 }
 
@@ -43,10 +43,10 @@ func (manager *TriggerManager) GetAllTriggersForAccountByType(accountId, trigger
 	return manager.Store.GetTriggersByType(context.Background(), accountId, triggerType)
 }
 
-func (manager *TriggerManager) GetIntegrationType(accountId, triggerType string) (string, error) {
+func (manager *TriggerManager) GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error) {
 	intgType, ok := models.AvaliableTriggers[triggerType]
 	if ok {
-		return intgType.IntegrationType, nil
+		return intgType, nil
 	}
-	return "", errors.New("invalid trigger type")
+	return models.TriggerDefinition{}, errors.New("invalid trigger type")
 }

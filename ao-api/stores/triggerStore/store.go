@@ -26,8 +26,8 @@ func New(db *db.DB) TriggerStore {
 }
 
 var storeTrigger = `
-INSERT INTO event_triggers (account_id, type, name, integration, endpoint)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO event_triggers (account_id, type, name, integration, endpoint, credentials)
+VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
@@ -39,7 +39,7 @@ func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, tri
 		return fmt.Errorf("driver not supported")
 	}
 	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
-		trigger.Integration, trigger.Endpoint)
+		trigger.Integration, trigger.Endpoint, trigger.Credentials)
 	if err != nil {
 		return err
 	}
