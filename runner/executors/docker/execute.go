@@ -40,7 +40,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Mounts: []mount.Mount{
 					{
 						Type:   mount.TypeBind,
-						Source: "/usr/local",
+						Source: "/tmp/cache",
 						Target: "/tmp",
 					},
 				},
@@ -56,8 +56,9 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Mounts: []mount.Mount{
 					{
 						Type:   mount.TypeBind,
-						Source: "/usr/local",
+						Source: "/tmp/cache",
 						Target: "/tmp",
+						//TmpfsOptions: &mount.TmpfsOptions{Mode: fs.ModeAppend},
 					},
 				},
 			}, nil, nil, "")
@@ -69,6 +70,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	var statusCode int
+	//time.Sleep(time.Duration(time.Minute * 5))
 	for start := time.Now(); time.Since(start) < time.Duration(task.Detailes.Timeout)*time.Second; {
 		statusCode = executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
