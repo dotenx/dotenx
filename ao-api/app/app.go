@@ -171,7 +171,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("", TriggerController.GetAllTriggers())
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
-		trigger.GET("/type/:type/integration", TriggerController.GetIntegrationTypeForTrigger())
+		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
 	}
 	return r /*, g*/
 }
