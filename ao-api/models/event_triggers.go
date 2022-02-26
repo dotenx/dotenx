@@ -10,10 +10,10 @@ import (
 var AvaliableTriggers map[string]TriggerDefinition
 
 type TriggerDefinition struct {
-	Type            string       `yaml:"type"`
-	IntegrationType string       `yaml:"integration"`
-	Image           string       `yaml:"image"`
-	Credentials     []Credential `yaml:"credentials"`
+	Type            string       `json:"type" yaml:"type"`
+	IntegrationType string       `json:"integration" yaml:"integration"`
+	Image           string       `json:"image" yaml:"image"`
+	Credentials     []Credential `json:"credentials" yaml:"credentials"`
 }
 type Credential struct {
 	Key  string `yaml:"key"`
