@@ -4,10 +4,14 @@ import { getDisplayText } from '../utils'
 
 export function IntegrationList() {
 	const query = useQuery(QueryKey.GetAccountIntegrations, getAccountIntegrations)
+	const integrations = query.data?.data
 
 	return (
 		<div>
 			<h2>Integrations</h2>
+			{integrations?.length === 0 && (
+				<div css={{ marginTop: 6 }}>No integration added yet.</div>
+			)}
 			<div
 				css={{
 					padding: 8,
@@ -21,7 +25,7 @@ export function IntegrationList() {
 				<div>Name</div>
 				<div>Type</div>
 			</div>
-			{query.data?.data.map((integration) => (
+			{integrations?.map((integration) => (
 				<div
 					key={integration.name}
 					css={{
