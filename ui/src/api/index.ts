@@ -41,6 +41,22 @@ export function getExecutions(pipelineName: string) {
 	return api.get<Execution[]>(`/pipeline/name/${pipelineName}/executions`)
 }
 
+export function getIntegrationTypes() {
+	return api.get<string[]>('/integration/avaliable')
+}
+
+export function getIntegrationTypeFields(integrationType: string) {
+	return api.get<string[]>(`/integration/type/${integrationType}/fields`)
+}
+
+export function getAccountIntegrations() {
+	return api.get<IntegrationData[]>(`/integration`)
+}
+
+export function addIntegration(payload: AddIntegrationPayload) {
+	return api.post<void>('/integration', payload)
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
@@ -48,6 +64,9 @@ export enum QueryKey {
 	GetPipeline = 'get-pipeline',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
+	GetIntegrationTypes = 'get-integration-types',
+	GetIntegrationTypeFields = 'get-integration-type-fields',
+	GetAccountIntegrations = 'get-account-integrations',
 }
 
 export enum Status {
@@ -62,6 +81,21 @@ export enum Status {
 
 export enum TaskType {
 	Text = 'text',
+}
+
+export interface IntegrationData {
+	name: string
+	account_id: string
+	type: string
+	url: string
+	key: string
+	secret: string
+	access_token: string
+}
+
+export interface AddIntegrationPayload {
+	name: string
+	type: string
 }
 
 export interface Execution {
