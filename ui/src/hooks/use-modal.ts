@@ -5,6 +5,7 @@ export enum Modals {
 	EdgeSettings = 'edge-settings',
 	SavePipeline = 'save-pipeline',
 	TaskLog = 'task-log',
+	NewIntegration = 'new-integration',
 }
 
 export const modalAtom = atom<{ isOpen: boolean; kind: Modals | null; data: unknown | null }>({
