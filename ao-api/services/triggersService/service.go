@@ -18,7 +18,7 @@ type TriggerManager struct {
 	Store triggerStore.TriggerStore
 }
 
-func NewIntegrationService(store triggerStore.TriggerStore) TriggerService {
+func NewTriggerService(store triggerStore.TriggerStore) TriggerService {
 	return &TriggerManager{Store: store}
 }
 
