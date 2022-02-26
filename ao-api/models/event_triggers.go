@@ -25,7 +25,7 @@ type EventTrigger struct {
 	AccountId   string                 `db:"account_id" json:"account_id"`
 	Type        string                 `db:"type" json:"type"`
 	Endpoint    string                 `db:"endpoint" json:"endpoint"`
-	Pipeline    string                 `json:"pipeline_name"`
+	Pipeline    string                 `db:"pipeline_name" json:"pipeline_name"`
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 }
