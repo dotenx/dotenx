@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import * as z from 'zod'
 import { addIntegration, getIntegrationTypeFields, getIntegrationTypes, QueryKey } from '../api'
 import { Button } from '../components/button'
@@ -33,6 +33,7 @@ export function NewIntegration() {
 		{ enabled: !!integrationType }
 	)
 	const mutation = useMutation(addIntegration)
+	const client = useQueryClient()
 	const modal = useModal()
 
 	const availableIntegrations = integrationTypesQuery.data?.data
@@ -40,7 +41,12 @@ export function NewIntegration() {
 
 	const onSave = () => {
 		const fieldValues = getValues()
-		mutation.mutate(fieldValues, { onSuccess: modal.close })
+		mutation.mutate(fieldValues, {
+			onSuccess: () => {
+				client.invalidateQueries(QueryKey.GetAccountIntegrations)
+				modal.close()
+			},
+		})
 	}
 
 	return (
