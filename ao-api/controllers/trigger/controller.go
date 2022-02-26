@@ -25,6 +25,19 @@ func (controller *TriggerController) GetAllTriggersForAccountByType() gin.Handle
 
 	}
 }
+func (controller *TriggerController) GetIntegrationTypeForTrigger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		typetrigger := c.Param("type")
+		accountId := c.MustGet("accountId").(string)
+		intgType, err := controller.Service.GetIntegrationType(accountId, typetrigger)
+		if err == nil {
+			c.JSON(http.StatusOK, intgType)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
 
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
