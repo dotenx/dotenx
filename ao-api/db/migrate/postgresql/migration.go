@@ -315,3 +315,15 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
+
+var createTableEventTriggers = `
+CREATE TABLE IF NOT EXISTS event_triggers (
+account_id               varchar(32) NOT NULL,
+type                     varchar(64) NOT NULL,
+name                     varchar(32) NOT NULL,
+integration              varchar(128) NOT NULL,
+endpoint                 varchar(128) NOT NULL,
+FOREIGN KEY (integration) REFERENCES integrations(name),
+UNIQUE (account_id, name)
+)
+`
