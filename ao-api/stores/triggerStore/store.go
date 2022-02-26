@@ -1,4 +1,4 @@
-package integrationStore
+package triggerStore
 
 import (
 	"context"
@@ -11,26 +11,26 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
-type IntegrationStore interface {
+type TriggerStore interface {
 	AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
 	GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error)
 }
 
-type integrationStore struct {
+type triggerStore struct {
 	db *db.DB
 }
 
-func New(db *db.DB) IntegrationStore {
-	return &integrationStore{db: db}
+func New(db *db.DB) TriggerStore {
+	return &triggerStore{db: db}
 }
 
 var storeTrigger = `
-INSERT INTO integrations (account_id, type, name, url, key, secret, access_token)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO event_triggers (account_id, type, name, integration, endpoint)
+VALUES ($1, $2, $3, $4, $5)
 `
 
-func (store *integrationStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
+func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
@@ -38,28 +38,28 @@ func (store *integrationStore) AddTrigger(ctx context.Context, accountId string,
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name,
-		integration.Url, integration.Key, integration.Secret, integration.AccessToken)
+	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
+		trigger.Integration, trigger.Endpoint)
 	if err != nil {
 		return err
 	}
 	if count, _ := res.RowsAffected(); count == 0 {
-		return fmt.Errorf("can not add integration, try again")
+		return fmt.Errorf("can not add trigger, try again")
 	}
 	return nil
 }
 
 var getTriggersByType = `
-select * from integrations 
+select * from event_triggers 
 where account_id = $1 and type = $2;
 `
 
-func (store *integrationStore) GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error) {
-	res := make([]models.Integration, 0)
+func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error) {
+	res := make([]models.EventTrigger, 0)
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection
-		rows, err := conn.Queryx(getTriggersByType, accountId, integrationType)
+		rows, err := conn.Queryx(getTriggersByType, accountId, triggerType)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -68,7 +68,7 @@ func (store *integrationStore) GetTriggersByType(ctx context.Context, accountId,
 			return nil, err
 		}
 		for rows.Next() {
-			var cur models.Integration
+			var cur models.EventTrigger
 			rows.StructScan(&cur)
 			if err != nil {
 				return nil, err
@@ -80,12 +80,12 @@ func (store *integrationStore) GetTriggersByType(ctx context.Context, accountId,
 }
 
 var getTriggers = `
-select * from integrations 
+select * from event_triggers 
 where account_id = $1;
 `
 
-func (store *integrationStore) GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error) {
-	res := make([]models.Integration, 0)
+func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error) {
+	res := make([]models.EventTrigger, 0)
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection
@@ -98,7 +98,7 @@ func (store *integrationStore) GetAllTriggers(ctx context.Context, accountId str
 			return nil, err
 		}
 		for rows.Next() {
-			var cur models.Integration
+			var cur models.EventTrigger
 			rows.StructScan(&cur)
 			if err != nil {
 				return nil, err

@@ -84,6 +84,10 @@ var migrations = []struct {
 		name: "create-table-integrations",
 		stmt: createTableIntegrations,
 	},
+	{
+		name: "create-table-event_triggers",
+		stmt: createTableEventTriggers,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
