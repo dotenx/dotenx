@@ -47,19 +47,11 @@ func main() {
 			fmt.Println(err.Error())
 		} else {
 			fmt.Println("response saved")
-			/*out, _ := exec.Command("pwd").Output()
-			output := string(out[:])
-			fmt.Println(output)
-			fmt.Println("response saved")
-			out, _ = exec.Command("ls").Output()
-			output = string(out[:])
-			fmt.Println(output)*/
 		}
+		time.Sleep(time.Duration(time.Minute * 6))
 		return
 	} else {
-		fmt.Println("Failed to sent request")
 		panic("Failed")
-		return
 	}
 }
 
