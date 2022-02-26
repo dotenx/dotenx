@@ -17,6 +17,9 @@ export const fieldCss = (theme: Theme): Interpolation<Theme> => ({
 	borderRadius: 4,
 	padding: 4,
 	height: 36,
+	'::placeholder': {
+		color: '#333333',
+	},
 })
 
 const errorCss = (theme: Theme): Interpolation<Theme> => ({
