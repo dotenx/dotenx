@@ -3,9 +3,13 @@ package triggerService
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 
 	"github.com/utopiops/automated-ops/ao-api/config"
@@ -49,5 +53,35 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 }
 
 func (dc dockerCleint) checkTrigger(trigger models.EventTrigger, integration models.Integration) {
+	img := models.AvaliableTriggers[trigger.Type].Image
+	/*reader,*/
+	_, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
+	if err != nil {
+		log.Println("error in pulling base image " + err.Error())
+		return
+	}
+	//io.Copy(os.Stdout, reader) // to get pull image log
+	var cont container.ContainerCreateCreatedBody
+	cont, err = dc.cli.ContainerCreate(
+		context.Background(),
+		&container.Config{
+			Image: img,
+			Env:   envs,
+		},
+		&container.HostConfig{
+			Mounts: []mount.Mount{
+				{
+					Type:   mount.TypeBind,
+					Source: "/tmp/cache",
+					Target: "/tmp",
+					//TmpfsOptions: &mount.TmpfsOptions{Mode: fs.ModeAppend},
+				},
+			},
+		}, nil, nil, "")
 
+	if err != nil {
+		log.Println("error in creating container" + err.Error())
+		return
+	}
+	dc.cli.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 }
