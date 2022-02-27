@@ -15,6 +15,7 @@ type IntegrationStore interface {
 	AddIntegration(ctx context.Context, accountId string, integration models.Integration) error
 	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
 	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
+	GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error)
 }
 
 type integrationStore struct {
@@ -107,4 +108,35 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 		}
 	}
 	return res, nil
+}
+
+var getIntegrationsByName = `
+select * from integrations 
+where account_id = $1 and name = $2
+limit= 1;
+`
+
+func (store *integrationStore) GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error) {
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getIntegrationsByName, accountId, name)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return models.Integration{}, err
+		}
+		for rows.Next() {
+			var cur models.Integration
+			rows.StructScan(&cur)
+			if err != nil {
+				return models.Integration{}, err
+			} else {
+				return cur, nil
+			}
+		}
+	}
+	return models.Integration{}, nil
 }

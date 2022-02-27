@@ -13,11 +13,17 @@ func (manager *TriggerManager) StartChecking(accId string, store integrationStor
 	if err != nil {
 		return err
 	}
+	for _, trigger := range triggers {
+		go handleTrigger(accId, trigger, store)
+	}
 	return nil
 }
 
-func handleTrigger(trigger models.EventTrigger, store integrationStore.IntegrationStore) {
-	//integration, err := store.GetIntegrationByName()
+func handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
+	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
+	if err != nil {
+		return
+	}
 	for start := time.Now(); time.Since(start) < time.Duration()*time.Second; {
 		checkTrigger()
 	}
