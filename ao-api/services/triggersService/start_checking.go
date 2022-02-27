@@ -9,7 +9,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 
 	"github.com/utopiops/automated-ops/ao-api/config"
@@ -47,13 +46,22 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	if err != nil {
 		return
 	}
+	img := models.AvaliableTriggers[trigger.Type].Image
+	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
+	envs := []string{"CREDENTIAL_URL=" + integration.Url,
+		"CREDENTIAL_KEY=" + integration.Key,
+		"CREDENTIAL_SECRET=" + integration.Secret,
+		"CREDENTIAL_ACCESS_TOKEN=" + integration.AccessToken,
+		"PIPELINE_ENDPOINT=" + pipelineUrl}
+	for key, value := range trigger.Credentials {
+		envs = append(envs, key+"="+value.(string))
+	}
 	for start := time.Now(); time.Since(start) < time.Duration(freq)*time.Second; {
-		dc.checkTrigger(trigger, integration)
+		dc.checkTrigger(img, envs)
 	}
 }
 
-func (dc dockerCleint) checkTrigger(trigger models.EventTrigger, integration models.Integration) {
-	img := models.AvaliableTriggers[trigger.Type].Image
+func (dc dockerCleint) checkTrigger(img string, envs []string) {
 	/*reader,*/
 	_, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
 	if err != nil {
@@ -68,16 +76,7 @@ func (dc dockerCleint) checkTrigger(trigger models.EventTrigger, integration mod
 			Image: img,
 			Env:   envs,
 		},
-		&container.HostConfig{
-			Mounts: []mount.Mount{
-				{
-					Type:   mount.TypeBind,
-					Source: "/tmp/cache",
-					Target: "/tmp",
-					//TmpfsOptions: &mount.TmpfsOptions{Mode: fs.ModeAppend},
-				},
-			},
-		}, nil, nil, "")
+		nil, nil, nil, "")
 
 	if err != nil {
 		log.Println("error in creating container" + err.Error())
