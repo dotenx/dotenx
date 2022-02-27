@@ -1,6 +1,7 @@
 package triggerService
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -56,14 +57,14 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
-	for start := time.Now(); time.Since(start) < time.Duration(freq)*time.Second; {
+	for {
 		dc.checkTrigger(img, envs)
+		time.Sleep(time.Duration(freq) * time.Second)
 	}
 }
 
 func (dc dockerCleint) checkTrigger(img string, envs []string) {
-	/*reader,*/
-	_, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
+	/*reader*/ _, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
 	if err != nil {
 		log.Println("error in pulling base image " + err.Error())
 		return
@@ -83,4 +84,18 @@ func (dc dockerCleint) checkTrigger(img string, envs []string) {
 		return
 	}
 	dc.cli.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	time.Sleep(time.Duration(10) * time.Second)
+	log, _ := dc.GetLogs(cont.ID)
+	fmt.Println(log)
+}
+func (dc dockerCleint) GetLogs(containerId string) (string, error) {
+	reader, err := dc.cli.ContainerLogs(context.Background(), containerId, types.ContainerLogsOptions{ShowStdout: true})
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(reader)
+	logs := buf.String()
+	return logs, nil
 }

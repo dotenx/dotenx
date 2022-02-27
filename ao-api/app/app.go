@@ -173,6 +173,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
 	}
+	go TriggerServic.StartChecking("123456", IntegrationStore)
 	return r /*, g*/
 }
 
