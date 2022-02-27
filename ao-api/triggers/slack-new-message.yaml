@@ -1,6 +1,6 @@
 type: slack-new-message 
 integration: slack-bot 
-image:
+image: awrmin/slacknewmessage
 credentials:
   - key: channel_id
     type: text
