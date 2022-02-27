@@ -30,8 +30,11 @@ func handleTrigger(accountId string, trigger models.EventTrigger, store integrat
 	if err != nil {
 		return
 	}
-
 	for start := time.Now(); time.Since(start) < time.Duration(freq)*time.Second; {
-		checkTrigger()
+		checkTrigger(trigger, integration)
 	}
+}
+
+func checkTrigger(trigger models.EventTrigger, integration models.Integration) {
+
 }
