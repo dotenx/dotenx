@@ -112,8 +112,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 
 var getIntegrationsByName = `
 select * from integrations 
-where account_id = $1 and name = $2
-limit= 1;
+where account_id = $1 and name = $2;
 `
 
 func (store *integrationStore) GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error) {

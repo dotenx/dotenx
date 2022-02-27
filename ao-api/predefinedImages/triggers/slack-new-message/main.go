@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,8 +19,6 @@ func main() {
 	channelId := os.Getenv("channel_id")
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	api := slack.New(access_token)
-	// {"channel_id": }
-	//log.Println("slack step0 done")
 	//now := time.Now()
 	//sec := now.Unix() - 600
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId /*, Inclusive: true, Oldest: string(sec)*/})
@@ -27,7 +27,19 @@ func main() {
 		return
 	}
 	if len(res.Messages) > 0 {
-		_, _, _ = HttpRequest(http.MethodPost, pipelineEndpoint, nil, nil, 0)
+		fmt.Println("calling endpoint")
+		body := make(map[string]interface{})
+		json_data, err := json.Marshal(body)
+		if err != nil {
+			return
+		}
+		payload := bytes.NewBuffer(json_data)
+		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+		fmt.Println(string(out))
+		fmt.Println(err)
+		fmt.Println(status)
+	} else {
+		fmt.Println("no message in channel")
 	}
 }
 
