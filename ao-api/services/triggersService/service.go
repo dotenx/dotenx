@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
 
@@ -14,6 +15,7 @@ type TriggerService interface {
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTrigger(accountId string, trigger models.EventTrigger) error
+	StartChecking(accId string, store integrationStore.IntegrationStore) error
 }
 
 type TriggerManager struct {
