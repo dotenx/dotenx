@@ -18,7 +18,7 @@ export const fieldCss = (theme: Theme): Interpolation<Theme> => ({
 	padding: 4,
 	height: 36,
 	'::placeholder': {
-		color: '#333333',
+		color: '#33333399',
 	},
 })
 
