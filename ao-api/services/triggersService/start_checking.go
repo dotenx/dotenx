@@ -13,6 +13,10 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 )
 
+type dockerCleint struct {
+	cli *client.Client
+}
+
 func (manager *TriggerManager) StartChecking(accId string, store integrationStore.IntegrationStore) error {
 	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
 	if err != nil {
@@ -22,27 +26,28 @@ func (manager *TriggerManager) StartChecking(accId string, store integrationStor
 	if err != nil {
 		return err
 	}
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		fmt.Println("Unable to create docker client")
 		return err
 	}
+	dc := dockerCleint{cli: cli}
 	for _, trigger := range triggers {
-		go cli.handleTrigger(accId, trigger, store, freq)
+		go dc.handleTrigger(accId, trigger, store, freq)
 	}
 	return nil
 }
 
-func (dockerClient *client.Client) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, freq int) {
+func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, freq int) {
 	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
 	if err != nil {
 		return
 	}
 	for start := time.Now(); time.Since(start) < time.Duration(freq)*time.Second; {
-		dockerClient.checkTrigger(trigger, integration)
+		dc.checkTrigger(trigger, integration)
 	}
 }
 
-func (dockerClient *client.Client) checkTrigger(trigger models.EventTrigger, integration models.Integration) {
+func (dc dockerCleint) checkTrigger(trigger models.EventTrigger, integration models.Integration) {
 
 }
