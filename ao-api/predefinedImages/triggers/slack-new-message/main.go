@@ -2,20 +2,33 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/slack-go/slack"
 )
 
 func main() {
-	//	access_token := os.Getenv("method")
-	//api := slack.New(access_token)
+	access_token := os.Getenv("CREDENTIAL_ACCESS_TOKEN")
+	channelId := os.Getenv("channel_id")
+	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	api := slack.New(access_token)
+	// {"channel_id": }
 	//log.Println("slack step0 done")
-	slack.Conversation{}
-	//	api.WatchRead()
+	//now := time.Now()
+	//sec := now.Unix() - 600
+	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId /*, Inclusive: true, Oldest: string(sec)*/})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if len(res.Messages) > 0 {
+		_, _, _ = HttpRequest(http.MethodPost, pipelineEndpoint, nil, nil, 0)
+	}
 }
 
 type Header struct {
