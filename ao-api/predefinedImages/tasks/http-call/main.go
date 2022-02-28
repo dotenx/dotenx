@@ -43,7 +43,7 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
 		file, _ := json.MarshalIndent(resultData, "", " ")
-		fileName := fmt.Sprintf("/tmp/%s.json", taskName)
+		fileName := fmt.Sprintf("/tmp/task_%s_result.json", taskName)
 		err := os.WriteFile(fileName, file, 0644)
 		if err != nil {
 			fmt.Println(err.Error())
