@@ -16,6 +16,7 @@ func main() {
 	method := os.Getenv("method")
 	url := os.Getenv("url")
 	body := os.Getenv("body")
+	taskName := os.Getenv("TASK_NAME")
 	var out []byte
 	var err error
 	var statusCode int
@@ -42,13 +43,13 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
 		file, _ := json.MarshalIndent(resultData, "", " ")
-		err := os.WriteFile("/tmp/test.json", file, 0644)
+		fileName := fmt.Sprintf("/tmp/%s.json", taskName)
+		err := os.WriteFile(fileName, file, 0644)
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
 			fmt.Println("response saved")
 		}
-		time.Sleep(time.Duration(time.Minute * 6))
 		return
 	} else {
 		panic("Failed")
