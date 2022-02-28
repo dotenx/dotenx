@@ -11,6 +11,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
+	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
@@ -35,17 +36,9 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 			&container.Config{
 				Image: task.Detailes.Image,
 				Cmd:   task.Script,
-			},
-			&container.HostConfig{
-				Mounts: []mount.Mount{
-					{
-						Type:   mount.TypeBind,
-						Source: "/tmp/cache",
-						Target: "/tmp",
-					},
-				},
-			}, nil, nil, "")
+			}, nil, nil, nil, "")
 	} else {
+		task.EnvironmentVariables = append(task.EnvironmentVariables, "TASK_NAME="+task.Detailes.Name)
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
@@ -56,15 +49,14 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskR
 				Mounts: []mount.Mount{
 					{
 						Type:   mount.TypeBind,
-						Source: "/tmp/cache",
+						Source: config.Configs.App.FileSharing,
 						Target: "/tmp",
-						//TmpfsOptions: &mount.TmpfsOptions{Mode: fs.ModeAppend},
 					},
 				},
 			}, nil, nil, "")
 	}
 	if err != nil {
-		result.Error = errors.New("error in creating container")
+		result.Error = errors.New("error in creating container" + err.Error())
 		return
 	}
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
