@@ -100,8 +100,6 @@ func (dc dockerCleint) checkTrigger(img string, envs []string) {
 	logs, err := dc.GetLogs(cont.ID)
 	if err != nil {
 		log.Println(err.Error())
-	} else {
-		log.Println("no err")
 	}
 	fmt.Println(logs)
 }
