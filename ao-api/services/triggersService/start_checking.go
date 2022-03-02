@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
 	"github.com/utopiops/automated-ops/ao-api/config"
@@ -64,29 +67,45 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 }
 
 func (dc dockerCleint) checkTrigger(img string, envs []string) {
-	/*reader*/ _, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
+	reader, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
 	if err != nil {
 		log.Println("error in pulling base image " + err.Error())
 		return
 	}
-	//io.Copy(os.Stdout, reader) // to get pull image log
+	io.Copy(os.Stdout, reader) // to get pull image log
 	var cont container.ContainerCreateCreatedBody
+	networkConfig := &network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{},
+	}
+	gatewayConfig := &network.EndpointSettings{
+		Gateway: "local",
+	}
+	networkConfig.EndpointsConfig["local"] = gatewayConfig
 	cont, err = dc.cli.ContainerCreate(
 		context.Background(),
 		&container.Config{
 			Image: img,
 			Env:   envs,
 		},
-		nil, nil, nil, "")
+		nil, networkConfig, nil, "")
 
 	if err != nil {
 		log.Println("error in creating container" + err.Error())
 		return
 	}
-	dc.cli.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	err = dc.cli.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	if err != nil {
+		log.Println("error in starting container" + err.Error())
+		return
+	}
 	time.Sleep(time.Duration(10) * time.Second)
-	log, _ := dc.GetLogs(cont.ID)
-	fmt.Println(log)
+	logs, err := dc.GetLogs(cont.ID)
+	if err != nil {
+		log.Println(err.Error())
+	} else {
+		log.Println("no err")
+	}
+	fmt.Println(logs)
 }
 func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 	reader, err := dc.cli.ContainerLogs(context.Background(), containerId, types.ContainerLogsOptions{ShowStdout: true})
