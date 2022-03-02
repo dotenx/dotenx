@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -23,8 +24,8 @@ func main() {
 	//sec := now.Unix() - 600
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId /*, Inclusive: true, Oldest: string(sec)*/})
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err.Error())
+		panic(err)
 	}
 	if len(res.Messages) > 0 {
 		fmt.Println("calling endpoint")
