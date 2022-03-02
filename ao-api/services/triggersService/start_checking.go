@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"strconv"
 	"time"
 
@@ -67,12 +65,12 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 }
 
 func (dc dockerCleint) checkTrigger(img string, envs []string) {
-	reader, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
+	/*reader*/ _, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
 	if err != nil {
 		log.Println("error in pulling base image " + err.Error())
 		return
 	}
-	io.Copy(os.Stdout, reader) // to get pull image log
+	//io.Copy(os.Stdout, reader) // to get pull image log
 	var cont container.ContainerCreateCreatedBody
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{},
