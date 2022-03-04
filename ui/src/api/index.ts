@@ -49,12 +49,28 @@ export function getIntegrationTypeFields(integrationType: string) {
 	return api.get<string[]>(`/integration/type/${integrationType}/fields`)
 }
 
-export function getAccountIntegrations() {
+export function getIntegrations() {
 	return api.get<IntegrationData[]>(`/integration`)
 }
 
 export function addIntegration(payload: AddIntegrationPayload) {
 	return api.post<void>('/integration', payload)
+}
+
+export function getTriggers() {
+	return api.get<TriggerData[]>('/trigger')
+}
+
+export function getTriggerTypes() {
+	return api.get<string[]>('/trigger/avaliable')
+}
+
+export function getTriggerDefinition(type: string) {
+	return api.get<TriggerDefinition>(`/trigger/type/${type}/definition`)
+}
+
+export function addTrigger(payload: AddTriggerPayload) {
+	return api.post<void>('/trigger', payload)
 }
 
 export enum QueryKey {
@@ -66,7 +82,10 @@ export enum QueryKey {
 	GetExecutions = 'get-executions',
 	GetIntegrationTypes = 'get-integration-types',
 	GetIntegrationTypeFields = 'get-integration-type-fields',
-	GetAccountIntegrations = 'get-account-integrations',
+	GetIntegrations = 'get-integrations',
+	GetTriggers = 'get-triggers',
+	GetTriggerTypes = 'get-trigger-types',
+	GetTriggerDefinition = 'get-trigger-definition',
 }
 
 export enum Status {
@@ -81,6 +100,36 @@ export enum Status {
 
 export enum TaskType {
 	Text = 'text',
+}
+
+export interface TriggerData {
+	name: string
+	account_id: string
+	type: string
+	endpoint: string
+	pipeline_name: string
+	integration: string
+	credentials: Record<string, string>
+}
+
+export interface AddTriggerPayload {
+	name: string
+	type: string
+	pipeline_name: string
+	integration: string
+	credentials: Record<string, string>
+}
+
+export interface TriggerDefinition {
+	type: string
+	integration: string
+	image: string
+	credentials: FieldType[]
+}
+
+export interface FieldType {
+	Key: string
+	Type: string
 }
 
 export interface IntegrationData {
