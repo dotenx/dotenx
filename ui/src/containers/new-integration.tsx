@@ -43,7 +43,7 @@ export function NewIntegration() {
 		const fieldValues = getValues()
 		mutation.mutate(fieldValues, {
 			onSuccess: () => {
-				client.invalidateQueries(QueryKey.GetAccountIntegrations)
+				client.invalidateQueries(QueryKey.GetIntegrations)
 				modal.close()
 			},
 		})

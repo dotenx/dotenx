@@ -1,9 +1,9 @@
 import { useQuery } from 'react-query'
-import { getAccountIntegrations, QueryKey } from '../api'
+import { getIntegrations, QueryKey } from '../api'
 import { getDisplayText } from '../utils'
 
 export function IntegrationList() {
-	const query = useQuery(QueryKey.GetAccountIntegrations, getAccountIntegrations)
+	const query = useQuery(QueryKey.GetIntegrations, getIntegrations)
 	const integrations = query.data?.data
 
 	return (
