@@ -96,6 +96,7 @@ function Sidebar({ pathname }: SidebarProps) {
 	const items = [
 		{ to: '/', label: 'Pipelines' },
 		{ to: '/integrations', label: 'Integrations' },
+		{ to: '/triggers', label: 'Triggers' },
 	]
 
 	return (
