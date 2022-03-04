@@ -7,7 +7,7 @@ import { IntegrationList } from '../containers/integration-list'
 import { NewIntegration } from '../containers/new-integration'
 import { Modals, useModal } from '../hooks/use-modal'
 
-function Integrations({ location }: PageProps) {
+export default function Integrations({ location }: PageProps) {
 	return (
 		<Layout pathname={location.pathname} header={<Header />}>
 			<div css={{ padding: '48px 96px', flexGrow: 1 }}>
@@ -19,8 +19,6 @@ function Integrations({ location }: PageProps) {
 		</Layout>
 	)
 }
-
-export default Integrations
 
 function Header() {
 	const modal = useModal()

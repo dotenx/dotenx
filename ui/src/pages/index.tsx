@@ -20,7 +20,7 @@ export const listenAtom = atom(0)
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
-function Home({ location }: PageProps) {
+export default function Home({ location }: PageProps) {
 	location.pathname
 	const [selected, setSelected] = useState<Pipeline>()
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
@@ -97,8 +97,6 @@ function Home({ location }: PageProps) {
 		</Layout>
 	)
 }
-
-export default Home
 
 interface HeaderProps {
 	selected: Pipeline | undefined
