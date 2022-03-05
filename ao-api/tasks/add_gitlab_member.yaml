@@ -9,5 +9,5 @@ fields:
     type: text
   - key: expiresAt
     type: text
-  - key: type
+  - key: source
     type: text

@@ -5,7 +5,7 @@ fields:
     type: text
   - key: id
     type: text
-  - key: type
+  - key: source
     type: text
   - key: userId
     type: text
