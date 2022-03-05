@@ -8,7 +8,6 @@ import (
 )
 
 func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
-	//fmt.Println(task)
 	processedTask = &models.Task{}
 	processedTask.Detailes = *task
 	processedTask.IsPredifined = true

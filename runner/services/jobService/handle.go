@@ -24,6 +24,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		}
 		return
 	}
+	//fmt.Println(job)
 	taskDetails := models.TaskDetails{
 		Name:           job.Data["name"].(string),
 		Type:           job.Data["type"].(string),
