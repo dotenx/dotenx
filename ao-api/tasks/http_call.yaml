@@ -1,0 +1,9 @@
+type: httpCall
+image: awrmin/utopiopshttpcall
+fields:
+  - key: method
+    type: text
+  - key: url
+    type: text
+  - key: body
+    type: JSON
