@@ -10,7 +10,7 @@ import (
 
 var seeds = []string{
 	insertTaskStatusValues,
-	insertTaskTypeValues,
+	//insertTaskTypeValues,
 	insertTriggerTypeValues,
 }
 
@@ -40,11 +40,13 @@ INSERT INTO task_status (name) VALUES ` + format(models.TaskStatusValues()) + `
 ON CONFLICT (name) 
 DO NOTHING;
 `
-var insertTaskTypeValues = `
-INSERT INTO task_types (name) VALUES ` + format(models.TaskTypeValues()) + ` 
-ON CONFLICT (name) 
+
+/*var insertTaskTypeValues = `
+INSERT INTO task_types (name) VALUES ` + format(models.TaskTypeValues()) + `
+ON CONFLICT (name)
 DO NOTHING;
-`
+`*/
+
 var insertTriggerTypeValues = `
 INSERT INTO trigger_types (name) VALUES ` + format(models.TriggerTypeValues()) + ` 
 ON CONFLICT (name) 
