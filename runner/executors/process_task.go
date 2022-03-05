@@ -45,3 +45,12 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 	}
 	return
 }
+
+func IsTaskTypeValid(taskType string) bool {
+	for t := range models.AvaliableTasks {
+		if t == taskType {
+			return true
+		}
+	}
+	return false
+}
