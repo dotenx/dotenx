@@ -3,6 +3,7 @@ package pipelineStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 
@@ -15,7 +16,8 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 	case db.Postgres:
 		conn := ps.db.Connection
 		var nullableServiceAccount sql.NullString
-		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.Body, &task.Timeout, &nullableServiceAccount, &task.AccountId)
+		var body interface{}
+		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &body, &task.Timeout, &nullableServiceAccount, &task.AccountId)
 		if nullableServiceAccount.Valid {
 			task.ServiceAccount = nullableServiceAccount.String
 		}
@@ -26,6 +28,9 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 			}
 			return
 		}
+		var taskBody models.TaskBodyMap
+		json.Unmarshal(body.([]byte), &taskBody)
+		task.Body = taskBody
 	}
 	return
 
