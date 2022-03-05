@@ -4,6 +4,10 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
+
+	"gopkg.in/yaml.v2"
 )
 
 /*
@@ -125,4 +129,27 @@ type TaskResultDto struct {
 	AccountId string `json:"account_id"`
 	Log       string `json:"log"`
 	Error     string `json:"error"`
+}
+
+func init() {
+	AvaliableTasks = make(map[string]TaskDefinition)
+	address := "tasks"
+	files, err := ioutil.ReadDir(address)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		var yamlFile TaskDefinition
+		yamlData, err := ioutil.ReadFile(address + "/" + file.Name())
+		if err != nil {
+			panic(err)
+		}
+		err = yaml.Unmarshal(yamlData, &yamlFile)
+		if err != nil {
+			panic(err)
+		}
+
+		AvaliableTasks[yamlFile.Type] = yamlFile
+	}
+	fmt.Println(AvaliableTasks)
 }
