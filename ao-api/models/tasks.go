@@ -22,7 +22,7 @@ func (t TaskBodyMap) Value() (driver.Value, error) {
 	return json.Marshal(t)
 }
 
-func (t *TaskBodyMap) Scan(value interface{}) error {
+func (t TaskBodyMap) Scan(value interface{}) error {
 	if b, ok := value.([]byte); ok {
 		return json.Unmarshal(b, &t)
 	} else {
@@ -45,7 +45,7 @@ type TaskStatusSummery struct {
 	Status string `json:"status"`
 }
 
-// Task Bodies
+/*// Task Bodies
 type HttpCallTaskBody struct {
 	Method string                 `db:"method" json:"method" yaml:"method"`
 	URL    string                 `db:"method" json:"url" yaml:"url"`
@@ -116,7 +116,7 @@ func (b DefaultTaskBody) Scan(value interface{}) error {
 	} else {
 		return errors.New("type assertion to []byte failed")
 	}
-}
+}*/
 
 type TaskResultDto struct {
 	TaskId int `json:"task_id"`
