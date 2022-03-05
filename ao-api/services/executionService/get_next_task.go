@@ -1,7 +1,6 @@
 package executionService
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -20,10 +19,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		if err != nil {
 			return err
 		}
-		image, ok := models.PredefiniedTaskToImage[task.Type]
-		if !ok {
+		image := models.AvaliableTasks[task.Type].Image
+		/*if !ok {
 			return errors.New("no image for this task")
-		}
+		}*/
 		jobDTO := job{ExecutionId: executionId,
 			TaskId:    task.Id,
 			Type:      task.Type,
@@ -60,10 +59,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			if err != nil {
 				return err
 			}
-			image, ok := models.PredefiniedTaskToImage[task.Type]
-			if !ok {
+			image := models.AvaliableTasks[task.Type].Image
+			/*if image == "" {
 				return errors.New("no image for this task")
-			}
+			}*/
 			jobDTO := job{ExecutionId: executionId,
 				TaskId:    task.Id,
 				Type:      task.Type,
