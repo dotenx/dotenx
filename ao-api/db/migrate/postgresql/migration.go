@@ -33,7 +33,11 @@ var migrations = []struct {
 		stmt: createTableTaskTypes,
 	},
 	{
-		name: "create-table-tasks",
+		name: "drop-table-tasks",
+		stmt: dropTableTasks,
+	},
+	{
+		name: "create-table-tasks2",
 		stmt: createTableTasks,
 	},
 	{
@@ -318,6 +322,7 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
+var dropTableTasks = `drop table tasks`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
