@@ -96,12 +96,14 @@ func (dc dockerCleint) checkTrigger(img string, envs []string) {
 		log.Println("error in starting container" + err.Error())
 		return
 	}
-	time.Sleep(time.Duration(10) * time.Second)
+	time.Sleep(time.Duration(20) * time.Second)
 	logs, err := dc.GetLogs(cont.ID)
 	if err != nil {
 		log.Println(err.Error())
 	}
+	fmt.Println("###########   trigger log: ")
 	fmt.Println(logs)
+	fmt.Println("##########################")
 }
 func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 	reader, err := dc.cli.ContainerLogs(context.Background(), containerId, types.ContainerLogsOptions{ShowStdout: true})
