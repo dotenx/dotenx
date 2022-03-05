@@ -18,8 +18,6 @@ func main() {
 	privateToken := os.Getenv("privateToken")
 	id := os.Getenv("id")
 	userID := os.Getenv("userId")
-	accessLevel := os.Getenv("accessLevel")
-	expiresAt := os.Getenv("expiresAt")
 	memberType := os.Getenv("source")
 
 	fmt.Printf("removing user %s to %s %s\n", userID, memberType, id)
