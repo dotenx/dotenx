@@ -20,13 +20,17 @@ func NewPredefinedTaskService() PredifinedTaskService {
 }
 
 func (r *predifinedTaskService) GetTasks() ([]string, error) {
-	return models.AvaliableTasks, nil
+	types := make([]string, 0)
+	for t, _ := range models.AvaliableTasks {
+		types = append(types, t)
+	}
+	return types, nil
 }
 
-func (r *predifinedTaskService) GetTaskFields(taskName string) ([]models.TaskField, error) {
-	for _, taskType := range models.AvaliableTasks {
-		if taskType == taskName {
-			return models.TaskToFields[taskName], nil
+func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, error) {
+	for t := range models.AvaliableTasks {
+		if t == taskType {
+			return models.AvaliableTasks[t].Fields, nil
 		}
 	}
 	return nil, errors.New("invalid task type")
