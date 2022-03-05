@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
@@ -75,5 +74,4 @@ func init() {
 
 		AvaliableTasks[yamlFile.Type] = yamlFile
 	}
-	fmt.Println(AvaliableTasks)
 }
