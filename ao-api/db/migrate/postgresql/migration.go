@@ -332,4 +332,3 @@ credentials									JSONB,
 UNIQUE (account_id, name)
 )
 `
-var dropTableEventTriggers = `drop table event_triggers`
