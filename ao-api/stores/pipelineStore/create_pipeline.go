@@ -63,7 +63,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 		// Insert all the tasks first (reason: FK constraint)
 		for name, task := range pipeline.Manifest.Tasks {
 			var taskId int
-			err := tx.QueryRow(create_task, name, task.Type.String(), "description", pipelineVersionId, task.Body).Scan(&taskId)
+			err := tx.QueryRow(create_task, name, task.Type, "description", pipelineVersionId, task.Body).Scan(&taskId)
 			if err != nil {
 				return err
 			}
