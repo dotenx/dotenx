@@ -1,5 +1,5 @@
 type: addGitlabMember
-image: awrmin/change_gitlab_members
+image: awrmin/add_gitlab_members
 fields:
   - key: privateToken
     type: text
