@@ -32,10 +32,10 @@ var migrations = []struct {
 		name: "create-table-task-types",
 		stmt: createTableTaskTypes,
 	},
-	{
+	/*{
 		name: "drop-table-tasks",
 		stmt: dropTableTasks,
-	},
+	},*/
 	{
 		name: "create-table-tasks2",
 		stmt: createTableTasks,
