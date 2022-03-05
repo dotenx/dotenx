@@ -20,26 +20,16 @@ func main() {
 	userID := os.Getenv("userId")
 	accessLevel := os.Getenv("accessLevel")
 	expiresAt := os.Getenv("expiresAt")
-	memberType := os.Getenv("type")
-	action := os.Getenv("action")
+	memberType := os.Getenv("source")
 
-	fmt.Printf("%s user %s to %s %s\n", action, userID, memberType, id)
+	fmt.Printf("removing user %s to %s %s\n", userID, memberType, id)
 
 	endpoint := fmt.Sprintf("/%s/%s/members", memberType, id)
 
 	var method string
 	v := url.Values{}
-	if action == "add" {
-		method = http.MethodPost
-		v.Set("user_id", userID)
-		v.Set("access_level", accessLevel)
-		if expiresAt != "" {
-			v.Set("expires_at", expiresAt)
-		}
-	} else {
-		endpoint += "/" + userID
-		method = http.MethodDelete
-	}
+	endpoint += "/" + userID
+	method = http.MethodDelete
 	apiURL := "https://gitlab.com/api/v4" + endpoint
 	payload := strings.NewReader(v.Encode())
 
@@ -78,17 +68,6 @@ func main() {
 		panic("Failed")
 	}
 }
-
-// For more details see: https://docs.gitlab.com/ee/api/members.html#add-a-member-to-a-group-or-project
-// Attribute		Type						Required	Description
-// id						integer/string	yes				The ID or URL-encoded path of the project or group owned by the authenticated user
-// user_id			integer/string	yes				The user ID of the new member or multiple IDs separated by commas
-// access_level	integer					yes				A valid access level
-// expires_at		string					no				A date string in the format YEAR-MONTH-DAY
-
-// examples:
-// curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" --data "user_id=1&access_level=30" "https://gitlab.example.com/api/v4/groups/:id/members"
-// curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" --data "user_id=1&access_level=30" "https://gitlab.example.com/api/v4/projects/:id/members"
 
 type Header struct {
 	Key   string
