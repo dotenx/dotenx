@@ -214,8 +214,7 @@ description								VARCHAR(128),
 pipeline_version_id				INT NOT NULL,
 body											JSONB,
 timeout INT NOT NULL default 30,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id),
-FOREIGN KEY (task_type) REFERENCES task_types(name)
+FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
 
