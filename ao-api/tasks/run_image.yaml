@@ -5,3 +5,4 @@ fields:
     type: text
   - key: script
     type: text
+
