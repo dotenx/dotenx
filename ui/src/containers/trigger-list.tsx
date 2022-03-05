@@ -15,12 +15,14 @@ export function TriggerList() {
 					margin: 12,
 					marginBottom: 16,
 					display: 'grid',
-					gridTemplateColumns: 'repeat(3, 1fr)',
+					gridTemplateColumns: 'repeat(4, 1fr)',
 					borderBottom: '1px solid #999999',
 				}}
 			>
 				<div>Name</div>
 				<div>Type</div>
+				<div>Integration</div>
+				<div>Pipeline</div>
 			</div>
 			{triggers?.map((trigger) => (
 				<div
@@ -31,11 +33,13 @@ export function TriggerList() {
 						borderRadius: 4,
 						margin: 12,
 						display: 'grid',
-						gridTemplateColumns: 'repeat(3, 1fr)',
+						gridTemplateColumns: 'repeat(4, 1fr)',
 					}}
 				>
 					<div>{trigger.name}</div>
 					<div>{getDisplayText(trigger.type)}</div>
+					<div>{trigger.integration}</div>
+					<div>{trigger.pipeline_name}</div>
 				</div>
 			))}
 		</div>

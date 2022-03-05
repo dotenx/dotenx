@@ -24,6 +24,7 @@ export function IntegrationList() {
 			>
 				<div>Name</div>
 				<div>Type</div>
+				<div>Access token</div>
 			</div>
 			{integrations?.map((integration) => (
 				<div
@@ -39,6 +40,7 @@ export function IntegrationList() {
 				>
 					<div>{integration.name}</div>
 					<div>{getDisplayText(integration.type)}</div>
+					<div>{integration.access_token}</div>
 				</div>
 			))}
 		</div>
