@@ -6,32 +6,15 @@ import (
 	"encoding/json"
 )
 
-// Task Type
-type TaskType int
-
-const (
-	Invalid TaskType = iota
-	HttpCall
-	GitlabAddMember
-	GitlabRemoveMember
-	Default
-)
-
-var AvaliableTasks = []string{
-	"HttpCall",
-	"GitlabAddMember",
-	"GitlabRemoveMember",
-	"default",
+type TaskDefinition struct {
+	Type   string
+	Fields []TaskField
+	Image  string
 }
 
-var PredefiniedTaskToImage = map[string]string{
-	"HttpCall":           "awrmin/utopiopshttpcall",
-	"GitlabAddMember":    "awrmin/change_gitlab_members",
-	"GitlabRemoveMember": "awrmin/change_gitlab_members",
-	"default":            "",
-}
+var AvaliableTasks map[string]TaskDefinition
 
-var TaskToFields = map[string][]TaskField{
+/*var TaskToFields = map[string][]TaskField{
 	"HttpCall": {
 		TaskField{
 			Key:  "url",
@@ -100,72 +83,11 @@ var TaskToFields = map[string][]TaskField{
 			Type: "text",
 		},
 	},
-}
+}*/
 
 type TaskField struct {
 	Key  string `json:"key"`
 	Type string `json:"type"`
-}
-
-var taskTypeToString = map[TaskType]string{
-	Invalid:            "Invalid",
-	HttpCall:           "HttpCall",
-	GitlabAddMember:    "GitlabAddMember",
-	GitlabRemoveMember: "GitlabRemoveMember",
-	Default:            "default",
-}
-
-var taskTypeToId = map[string]TaskType{
-	"Invalid":            Invalid,
-	"HttpCall":           HttpCall,
-	"GitlabAddMember":    GitlabAddMember,
-	"GitlabRemoveMember": GitlabRemoveMember,
-	"default":            Default,
-}
-
-func (t TaskType) String() string {
-	return taskTypeToString[t]
-}
-
-func (t TaskType) Value() (driver.Value, error) {
-	return json.Marshal(t)
-}
-
-func (t *TaskType) Scan(value interface{}) error {
-	strValue := value.(string)
-	*t = taskTypeToId[strValue]
-	return nil
-}
-
-func (t TaskType) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	buffer.WriteString(t.String())
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
-}
-
-func (t *TaskType) UnmarshalJSON(b []byte) error {
-	var j string
-	if err := json.Unmarshal(b, &j); err != nil {
-		return err
-	}
-	// Note that if the string cannot be found then it will be set to the zero value, 'HttpCall' in this case.
-	*t = taskTypeToId[j]
-	return nil
-}
-
-func (t TaskType) MarshalYAML() (interface{}, error) {
-	return t.String(), nil
-}
-
-func (t *TaskType) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var j string
-	if err := unmarshal(&j); err != nil {
-		return err
-	}
-	// Note that if the string cannot be found then it will be set to the zero value, 'HttpCall' in this case.
-	*t = taskTypeToId[j]
-	return nil
 }
 
 // Task Status
@@ -213,16 +135,6 @@ func (t *TaskStatus) Scan(value interface{}) error {
 	strValue := value.(string)
 	*t = taskStatusToId[strValue]
 	return nil
-}
-
-func TaskTypeValues() []string {
-	values := make([]string, len(taskTypeToId))
-	i := 0
-	for key := range taskTypeToId {
-		values[i] = key
-		i++
-	}
-	return values
 }
 
 func TaskStatusValues() []string {
