@@ -62,6 +62,7 @@ type Task struct {
 	ExecuteAfter map[string][]string `db:"execute_after" json:"executeAfter" yaml:"executeAfter,omitempty"`
 	Type         string              `db:"task_type" json:"type" yaml:"type"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
+	FieldMap     map[string]string   `db:"field_map" json:"field_map" yaml:"field_map"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
 }
 
@@ -78,6 +79,13 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(executeAfterBytes, &executeAfter)
 	t.ExecuteAfter = executeAfter
+	var fieldMap map[string]string
+	fieldMapBytes, err := json.Marshal(raw["field_map"])
+	if err != nil {
+		return err
+	}
+	json.Unmarshal(fieldMapBytes, &fieldMap)
+	t.FieldMap = fieldMap
 	var typeUnmarshaled string
 	typeBytes, err := json.Marshal(raw["type"])
 	if err != nil {
