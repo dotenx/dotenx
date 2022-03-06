@@ -25,12 +25,11 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	}
 	//fmt.Println(job)
 	taskDetails := models.TaskDetails{
-		Name:           job.Data["name"].(string),
-		Type:           job.Data["type"].(string),
-		Body:           job.Data["body"].(map[string]interface{}),
-		Image:          job.Data["image"].(string),
-		ServiceAccount: "serviceAccount?",
-		Timeout:        int(job.Data["timeout"].(float64)),
+		Name:    job.Data["name"].(string),
+		Type:    job.Data["type"].(string),
+		Body:    job.Data["body"].(map[string]interface{}),
+		Image:   job.Data["image"].(string),
+		Timeout: int(job.Data["timeout"].(float64)),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: "",
