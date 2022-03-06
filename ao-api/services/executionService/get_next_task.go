@@ -23,14 +23,16 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		/*if !ok {
 			return errors.New("no image for this task")
 		}*/
-		jobDTO := job{ExecutionId: executionId,
-			TaskId:    task.Id,
-			Type:      task.Type,
-			Timeout:   task.Timeout,
-			Image:     image,
-			Body:      task.Body,
-			Name:      task.Name,
-			AccountId: accountId,
+		jobDTO := job{
+			ExecutionId: executionId,
+			TaskId:      task.Id,
+			Type:        task.Type,
+			Timeout:     task.Timeout,
+			Image:       image,
+			Body:        task.Body,
+			Name:        task.Name,
+			AccountId:   accountId,
+			MetaData:    models.AvaliableTasks[task.Type],
 		}
 		body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
 		if err == nil {
@@ -63,14 +65,16 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			/*if image == "" {
 				return errors.New("no image for this task")
 			}*/
-			jobDTO := job{ExecutionId: executionId,
-				TaskId:    task.Id,
-				Type:      task.Type,
-				Timeout:   task.Timeout,
-				Image:     image,
-				Body:      task.Body,
-				Name:      task.Name,
-				AccountId: accountId,
+			jobDTO := job{
+				ExecutionId: executionId,
+				TaskId:      task.Id,
+				Type:        task.Type,
+				Timeout:     task.Timeout,
+				Image:       image,
+				Body:        task.Body,
+				Name:        task.Name,
+				AccountId:   accountId,
+				MetaData:    models.AvaliableTasks[task.Type],
 			}
 			body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
 			if err == nil {
@@ -95,4 +99,5 @@ type job struct {
 	Image       string                 `json:"image"`
 	AccountId   string                 `json:"account_id"`
 	Body        map[string]interface{} `json:"body"`
+	MetaData    models.TaskDefinition  `json:"task_meta_data"`
 }
