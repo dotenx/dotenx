@@ -1,12 +1,29 @@
 package crudService
 
-import "github.com/utopiops/automated-ops/ao-api/models"
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/utopiops/automated-ops/ao-api/models"
+)
 
 func (cm *crudManager) ActivatePipeline(accountId string, name string, version int16) error {
 	return cm.Store.Activate(noContext, accountId, name, int16(version))
 }
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error {
+	for _, task := range pipeline.Manifest.Tasks {
+		var body map[string]interface{}
+		bytes, _ := json.Marshal(task.Body)
+		json.Unmarshal(bytes, &body)
+		for key, value := range body {
+			stringValue := fmt.Sprintf("%v", value)
+			if strings.Contains(stringValue, "$$$") {
+				task.FieldMap[key] = strings.ReplaceAll(stringValue, "$$$", "")
+			}
+		}
+	}
 	return cm.Store.Create(noContext, base, pipeline)
 }
 
