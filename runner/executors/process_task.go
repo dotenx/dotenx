@@ -17,7 +17,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		processedTask.Script = strings.Split(task.Body["script"].(string), " ")
 	} else {
 		envs := make([]string, 0)
-		for _, field := range models.AvaliableTasks[task.Type].Fields {
+		for _, field := range task.MetaData.Fields {
 			if value, ok := task.Body[field.Key]; ok {
 				var envVar string
 				if field.Type == "text" {

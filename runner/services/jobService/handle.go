@@ -2,7 +2,6 @@ package jobService
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/utopiops/automated-ops/runner/executors"
 	"github.com/utopiops/automated-ops/runner/models"
@@ -32,10 +31,6 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Image:          job.Data["image"].(string),
 		ServiceAccount: "serviceAccount?",
 		Timeout:        int(job.Data["timeout"].(float64)),
-	}
-	if !IsTaskTypeValid(taskDetails.Type) {
-		log.Println("invalid task type")
-		return
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: "",
@@ -78,13 +73,4 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if err != nil {
 		fmt.Printf("error in sending job result: %s\n", err.Error())
 	}
-}
-
-func IsTaskTypeValid(taskType string) bool {
-	for t := range models.AvaliableTasks {
-		if t == taskType {
-			return true
-		}
-	}
-	return false
 }
