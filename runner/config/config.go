@@ -4,9 +4,13 @@ import "github.com/kelseyhightower/envconfig"
 
 type (
 	Config struct {
+		App       App
 		Secrets   Secrets
 		Queue     Queue
 		Endpoints Endpoints
+	}
+	App struct {
+		FileSharing string `envconfig:"AOR_FILE_DIR"`
 	}
 	Queue struct {
 		Name string `envconfig:"AOR_QUEUE_NAME"`

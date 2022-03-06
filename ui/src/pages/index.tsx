@@ -1,4 +1,5 @@
 import { css, Theme } from '@emotion/react'
+import { PageProps } from 'gatsby'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
 import { Node } from 'react-flow-renderer'
@@ -19,7 +20,8 @@ export const listenAtom = atom(0)
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
-function Home() {
+export default function Home({ location }: PageProps) {
+	location.pathname
 	const [selected, setSelected] = useState<Pipeline>()
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]
@@ -76,65 +78,68 @@ function Home() {
 	}, [clearStatus, executionId, handleReceiveMessage])
 
 	return (
-		<Layout>
-			<div
-				css={(theme) => ({
-					height: '100vh',
-					display: 'flex',
-					flexDirection: 'column',
-					color: theme.color.text,
-				})}
-			>
-				<div
-					css={(theme) => ({
-						borderBottom: '1px solid',
-						borderColor: theme.color.text,
-						display: 'flex',
-					})}
-				>
-					<h1 css={[borderRight, center, { fontWeight: 100 }]}>Automated Ops</h1>
-					<div
-						css={[
-							{
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								flexGrow: 1,
-							},
-							borderRight,
-							center,
-						]}
-					>
-						<div css={{ display: 'flex', gap: 6 }}>
-							<PipelineSelect
-								value={selected}
-								onChange={(value) => {
-									setSelected(value)
-									setExecutionId(undefined)
-								}}
-							/>
-							<PipelineExecution
-								pipelineName={selected?.name}
-								value={executionId}
-								onChange={setExecutionId}
-							/>
-						</div>
-
-						<ActionBar deselectPipeline={() => setSelected(undefined)} />
-					</div>
-					<div css={center}>
-						<Sidebar />
-					</div>
-				</div>
-
-				<div css={{ display: 'flex', flexGrow: '1', gap: 6 }}>
-					<div css={{ flexGrow: '1' }}>
-						<Flow />
-					</div>
+		<Layout
+			pathname={location.pathname}
+			header={
+				<Header
+					executionId={executionId}
+					selected={selected}
+					setExecutionId={setExecutionId}
+					setSelected={setSelected}
+				/>
+			}
+		>
+			<div css={{ display: 'flex', flexGrow: '1', gap: 6 }}>
+				<div css={{ flexGrow: '1' }}>
+					<Flow />
 				</div>
 			</div>
 		</Layout>
 	)
 }
 
-export default Home
+interface HeaderProps {
+	selected: Pipeline | undefined
+	setSelected: (value: Pipeline | undefined) => void
+	executionId: number | undefined
+	setExecutionId: (value: number | undefined) => void
+}
+
+function Header({ executionId, selected, setExecutionId, setSelected }: HeaderProps) {
+	return (
+		<div css={{ display: 'flex' }}>
+			<div
+				css={[
+					{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						flexGrow: '1',
+					},
+					borderRight,
+					center,
+				]}
+			>
+				<div css={{ display: 'flex', gap: 6 }}>
+					<PipelineSelect
+						value={selected}
+						onChange={(value) => {
+							setSelected(value)
+							setExecutionId(undefined)
+						}}
+					/>
+					<PipelineExecution
+						pipelineName={selected?.name}
+						value={executionId}
+						onChange={setExecutionId}
+					/>
+				</div>
+
+				<ActionBar deselectPipeline={() => setSelected(undefined)} />
+			</div>
+			<div css={center}>
+				<Sidebar />
+			</div>
+		</div>
+	)
+}
