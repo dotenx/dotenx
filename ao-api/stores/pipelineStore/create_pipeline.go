@@ -63,7 +63,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 		// Insert all the tasks first (reason: FK constraint)
 		for name, task := range pipeline.Manifest.Tasks {
 			var taskId int
-			err := tx.QueryRow(create_task, name, task.Type, "description", pipelineVersionId, task.Body, task.FieldMap).Scan(&taskId)
+			err := tx.QueryRow(create_task, name, task.Type, "description", pipelineVersionId, task.Body).Scan(&taskId)
 			if err != nil {
 				return err
 			}
@@ -122,8 +122,8 @@ INSERT INTO pipeline_versions (pipeline_id, version, from_version, service_accou
 VALUES ($1, (SELECT COALESCE(MAX(version), 0) FROM pipeline_versions WHERE pipeline_id = $1) + 1, $2, $3) RETURNING id
 `
 const create_task = `
-INSERT INTO tasks (name, task_type, description, pipeline_version_id, body, field_map)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+INSERT INTO tasks (name, task_type, description, pipeline_version_id, body)
+VALUES ($1, $2, $3, $4, $5) RETURNING id
 `
 const create_task_precondition = `
 INSERT INTO task_preconditions (task_id, precondition_id, status)
