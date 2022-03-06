@@ -46,12 +46,22 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId := c.MustGet("accountId").(string)
 		triggers, err := controller.Service.GetAllTriggers(accountId)
-		if err == nil {
-			c.JSON(http.StatusOK, triggers)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
-		c.JSON(http.StatusBadRequest, err.Error())
-
+		pipeline, ok := c.GetQuery("pipeline")
+		if ok {
+			selected := make([]models.EventTrigger, 0)
+			for _, tr := range triggers {
+				if tr.Pipeline == pipeline {
+					selected = append(selected, tr)
+				}
+			}
+			c.JSON(http.StatusOK, selected)
+			return
+		}
+		c.JSON(http.StatusOK, triggers)
 	}
 }
 
