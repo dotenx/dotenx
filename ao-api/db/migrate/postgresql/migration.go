@@ -213,11 +213,12 @@ var createTableTasks = `
 CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
-task_type									VARCHAR(64),
-description								VARCHAR(128),
-pipeline_version_id				INT NOT NULL,
+task_type									    VARCHAR(64),
+description					        			VARCHAR(128),
+pipeline_version_id			                 	INT NOT NULL,
 body											JSONB,
-timeout INT NOT NULL default 30,
+field_map                                       JSONB,
+timeout                                         INT NOT NULL default 30,
 FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
