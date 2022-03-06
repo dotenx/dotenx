@@ -36,13 +36,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			MetaData:    models.AvaliableTasks[task.Type],
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
-		if err == nil {
+		if err != nil {
 			return err
 		}
 		jobDTO.Body = body
-		/*else {
-			fmt.Println("error in getting inital body" + err.Error())
-		}*/
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
 			log.Println(err.Error())
@@ -80,7 +77,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				MetaData:    models.AvaliableTasks[task.Type],
 			}
 			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
-			if err == nil {
+			if err != nil {
 				return err
 			}
 			jobDTO.Body = body
