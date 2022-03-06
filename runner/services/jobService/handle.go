@@ -1,6 +1,7 @@
 package jobService
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/utopiops/automated-ops/runner/executors"
@@ -24,12 +25,16 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		return
 	}
 	//fmt.Println(job)
+	var meta models.TaskMetaData
+	bytes, _ := json.Marshal(job.Data["task_meta_data"])
+	json.Unmarshal(bytes, &meta)
 	taskDetails := models.TaskDetails{
-		Name:    job.Data["name"].(string),
-		Type:    job.Data["type"].(string),
-		Body:    job.Data["body"].(map[string]interface{}),
-		Image:   job.Data["image"].(string),
-		Timeout: int(job.Data["timeout"].(float64)),
+		Name:     job.Data["name"].(string),
+		Type:     job.Data["type"].(string),
+		Body:     job.Data["body"].(map[string]interface{}),
+		Image:    job.Data["image"].(string),
+		MetaData: meta,
+		Timeout:  int(job.Data["timeout"].(float64)),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: "",
