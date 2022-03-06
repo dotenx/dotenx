@@ -15,12 +15,8 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-		var nullableServiceAccount sql.NullString
-		var body interface{}
-		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &body, &task.Timeout, &nullableServiceAccount, &task.AccountId)
-		if nullableServiceAccount.Valid {
-			task.ServiceAccount = nullableServiceAccount.String
-		}
+		var body, fieldMap interface{}
+		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &body, &fieldMap, &task.Timeout, &task.AccountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -29,15 +25,18 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 			return
 		}
 		var taskBody models.TaskBodyMap
+		var field_map map[string]string
 		json.Unmarshal(body.([]byte), &taskBody)
+		json.Unmarshal(fieldMap.([]byte), &field_map)
 		task.Body = taskBody
+		task.FieldMap = field_map
 	}
 	return
 
 }
 
 var getTaskByExecution = `
-select t.id, t.name, t.task_type, t.body,t.timeout, pv.service_account, p.account_id
+select t.id, t.name, t.task_type, t.body, t.field_map, t.timeout, p.account_id
 from executions e
 join pipeline_versions pv on e.pipeline_version_id = pv.id
 join tasks t on t.pipeline_version_id = pv.id
