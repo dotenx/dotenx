@@ -3,6 +3,7 @@ package executionService
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
@@ -34,10 +35,12 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			AccountId:   accountId,
 			MetaData:    models.AvaliableTasks[task.Type],
 		}
-		body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
+		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 		if err == nil {
-			jobDTO.Body = body
-		} /*else {
+			return err
+		}
+		jobDTO.Body = body
+		/*else {
 			fmt.Println("error in getting inital body" + err.Error())
 		}*/
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
@@ -76,10 +79,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				AccountId:   accountId,
 				MetaData:    models.AvaliableTasks[task.Type],
 			}
-			body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
+			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 			if err == nil {
-				jobDTO.Body = body
+				return err
 			}
+			jobDTO.Body = body
 			err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 			if err != nil {
 				log.Println(err.Error())
@@ -100,4 +104,19 @@ type job struct {
 	AccountId   string                 `json:"account_id"`
 	Body        map[string]interface{} `json:"body"`
 	MetaData    models.TaskDefinition  `json:"task_meta_data"`
+}
+
+func (manager *executionManager) mapFields(execId int, accountId string, taskBody map[string]interface{}) (map[string]interface{}, error) {
+	for key, value := range taskBody {
+		stringValue := fmt.Sprintf("%v", value)
+		if strings.Contains(stringValue, "$$$") {
+			source := strings.ReplaceAll(stringValue, "$$$", "")
+			body, err := manager.CheckExecutionInitialData(execId, accountId, source)
+			if err != nil {
+				return nil, err
+			}
+			taskBody[key] = body[key]
+		}
+	}
+	return taskBody, nil
 }

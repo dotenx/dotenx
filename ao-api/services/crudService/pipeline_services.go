@@ -9,17 +9,6 @@ func (cm *crudManager) ActivatePipeline(accountId string, name string, version i
 }
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	/*for _, task := range pipeline.Manifest.Tasks {
-		var body map[string]interface{}
-		bytes, _ := json.Marshal(task.Body)
-		json.Unmarshal(bytes, &body)
-		for key, value := range body {
-			stringValue := fmt.Sprintf("%v", value)
-			if strings.Contains(stringValue, "$$$") {
-				task.FieldMap[key] = strings.ReplaceAll(stringValue, "$$$", "")
-			}
-		}
-	}*/
 	return cm.Store.Create(noContext, base, pipeline)
 }
 
