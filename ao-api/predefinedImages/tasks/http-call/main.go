@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"time"
 )
 
@@ -17,6 +16,7 @@ func main() {
 	method := os.Getenv("method")
 	url := os.Getenv("url")
 	body := os.Getenv("body")
+	taskName := os.Getenv("TASK_NAME")
 	var out []byte
 	var err error
 	var statusCode int
@@ -43,20 +43,16 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
 		file, _ := json.MarshalIndent(resultData, "", " ")
-		err = ioutil.WriteFile("/tmp/test.json", file, 0644)
+		fileName := fmt.Sprintf("/tmp/task_%s_result.json", taskName)
+		err := os.WriteFile(fileName, file, 0644)
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
 			fmt.Println("response saved")
-			out, _ := exec.Command("pwd").Output()
-			output := string(out[:])
-			fmt.Println(output)
 		}
 		return
 	} else {
-		fmt.Println("Failed to sent request")
 		panic("Failed")
-		return
 	}
 }
 

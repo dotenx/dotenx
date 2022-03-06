@@ -9,22 +9,28 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
 	"github.com/utopiops/automated-ops/ao-api/controllers/health"
+	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
 	"github.com/utopiops/automated-ops/ao-api/controllers/onoffboarding"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	runnercontroller "github.com/utopiops/automated-ops/ao-api/controllers/runner"
+	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
 	"github.com/utopiops/automated-ops/ao-api/controllers/workspaces"
 	"github.com/utopiops/automated-ops/ao-api/db"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
+	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	runnerservice "github.com/utopiops/automated-ops/ao-api/services/runnerService"
+	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
+	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 	runnerstore "github.com/utopiops/automated-ops/ao-api/stores/runnerStore"
+	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
 
 func init() {
@@ -77,6 +83,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	})
 	// TODO: Providers to be called here
 	pipelineStore := pipelineStore.New(db)
+	IntegrationStore := integrationStore.New(db)
+	TriggerStore := triggerStore.New(db)
 	runnerStore := runnerstore.New(db)
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue)
@@ -84,19 +92,23 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
 	runnerservice := runnerservice.NewRunnerService(runnerStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
 	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
 	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
+	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
+	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
+
 	// Routes
 	//pretected
 	tasks := r.Group("/task")
 	{
 		tasks.GET("", predefinedController.GetTasks)
 		tasks.GET("/:task_name/fields", predefinedController.GetFields)
-		//tasks.POST("/predifined", crudController.AddPipeline()) // todo: endpoint to add predefined task
 	}
 	pipline := r.Group("/pipeline")
 	{
@@ -145,6 +157,23 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		runner.POST("/register/type/:type", runnerController.RegisterRunner)
 		runner.GET("/id/:id/queue", runnerController.GetQueueId)
 	}
+	intgration := r.Group("/integration")
+	{
+		intgration.POST("", IntegrationController.AddIntegration())
+		intgration.GET("", IntegrationController.GetAllIntegrations())
+		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
+		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
+		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
+	}
+	trigger := r.Group("/trigger")
+	{
+		trigger.POST("", TriggerController.AddTrigger())
+		trigger.GET("", TriggerController.GetAllTriggers())
+		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
+		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
+		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
+	}
+	go TriggerServic.StartChecking("123456", IntegrationStore)
 	return r /*, g*/
 }
 

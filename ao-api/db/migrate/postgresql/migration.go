@@ -80,6 +80,14 @@ var migrations = []struct {
 		name: "create-table-runner_queue",
 		stmt: createTableRunnerQueue,
 	},
+	{
+		name: "create-table-integrations",
+		stmt: createTableIntegrations,
+	},
+	{
+		name: "create-table-event_triggers3",
+		stmt: createTableEventTriggers,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -298,3 +306,29 @@ var createTableRunnerQueue = `CREATE TABLE IF NOT EXISTS runner_queue (
 	account_id varchar(32),
 	queue_type varchar(32)
 )`
+
+var createTableIntegrations = `
+CREATE TABLE IF NOT EXISTS integrations (
+account_id        varchar(32) NOT NULL,
+type              varchar(32) NOT NULL,
+name              varchar(32) NOT NULL,
+url               varchar(128),
+key               varchar(128),
+secret            varchar(128),
+access_token            varchar(128),
+UNIQUE (account_id, name)
+)
+`
+
+var createTableEventTriggers = `
+CREATE TABLE IF NOT EXISTS event_triggers (
+account_id               varchar(32) NOT NULL,
+type                     varchar(64) NOT NULL,
+name                     varchar(32) NOT NULL,
+integration              varchar(128) NOT NULL,
+endpoint                 varchar(128) NOT NULL,
+pipeline                 varchar(128) NOT NULL,
+credentials									JSONB,
+UNIQUE (account_id, name)
+)
+`

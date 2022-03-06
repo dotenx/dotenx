@@ -33,6 +33,12 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			Name:      task.Name,
 			AccountId: accountId,
 		}
+		body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
+		if err == nil {
+			jobDTO.Body = body
+		} /*else {
+			fmt.Println("error in getting inital body" + err.Error())
+		}*/
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
 			log.Println(err.Error())
@@ -66,6 +72,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				Body:      task.Body,
 				Name:      task.Name,
 				AccountId: accountId,
+			}
+			body, err := manager.CheckExecutionInitialData(executionId, accountId, jobDTO.Name)
+			if err == nil {
+				jobDTO.Body = body
 			}
 			err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 			if err != nil {

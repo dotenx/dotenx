@@ -13,6 +13,7 @@ type (
 
 	App struct {
 		Port           string `envconfig:"AOA_APP_PORT" default:"3004"`
+		CheckTrigger   string `envconfig:"AOA_CHECK_TRIGGER"`
 		Environment    string `envconfig:"AOA_APP_ENV"`
 		AllowedOrigins string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
@@ -21,7 +22,8 @@ type (
 		BULL string `envconfig:"AOA_BULL_URL"`
 	}
 	Endpoints struct {
-		Core string `envconfig:"AOA_CORE_API_URL"`
+		AoApi string `envconfig:"AOA_AO_API_URL"`
+		Core  string `envconfig:"AOA_CORE_API_URL"`
 	}
 
 	Database struct {
