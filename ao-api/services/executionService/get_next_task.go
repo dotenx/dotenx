@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -110,7 +111,13 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 			source := strings.ReplaceAll(stringValue, "$$$", "")
 			body, err := manager.CheckExecutionInitialData(execId, accountId, source)
 			if err != nil {
-				return nil, err
+				body, err = manager.CheckReturnValues(execId, accountId, source)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if _, ok := body[key]; !ok {
+				return nil, errors.New("no value for this field in initial data or return values")
 			}
 			taskBody[key] = body[key]
 		}
