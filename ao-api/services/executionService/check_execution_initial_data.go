@@ -11,7 +11,7 @@ func (manage *executionManager) CheckExecutionInitialData(executionId int, accou
 		return
 	}
 	taskData, ok := initialData[source]
-	if ok {
+	if !ok {
 		return nil, errors.New("no initial data for this task")
 	}
 	var testType map[string]interface{}
