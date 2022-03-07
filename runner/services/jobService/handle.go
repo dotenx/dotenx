@@ -47,7 +47,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	result := executor.Execute(executors.ProcessTask(&taskDetails))
 	//fmt.Println(result)
 	resultDto := models.TaskStatus{
-		ReturnValue: make(map[string]interface{}), //todo: get real returned Value
+		ReturnValue: result.ReturnValue, //todo: get real returned Value
 		Result:      models.Status(result.Status),
 		Toekn:       job.Token,
 		Logs:        result.Log,
