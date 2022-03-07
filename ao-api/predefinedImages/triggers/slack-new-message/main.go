@@ -19,6 +19,7 @@ func main() {
 	access_token := os.Getenv("CREDENTIAL_ACCESS_TOKEN")
 	channelId := os.Getenv("channel_id")
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	log.Println("tssssss")
 	api := slack.New(access_token)
 	//now := time.Now()
 	//sec := now.Unix() - 600
@@ -30,8 +31,12 @@ func main() {
 	if len(res.Messages) > 0 {
 		fmt.Println("calling endpoint")
 		body := make(map[string]interface{})
+		innerBody := make(map[string]interface{})
+		innerBody["text"] = res.Messages[0]
+		body["trigger"] = innerBody
 		json_data, err := json.Marshal(body)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 		payload := bytes.NewBuffer(json_data)
