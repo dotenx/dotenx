@@ -3,6 +3,7 @@ import { atom, useAtom } from 'jotai'
 export enum Modals {
 	NodeSettings = 'node-settings',
 	EdgeSettings = 'edge-settings',
+	TriggerSettings = 'trigger-settings',
 	SavePipeline = 'save-pipeline',
 	TaskLog = 'task-log',
 	NewIntegration = 'new-integration',

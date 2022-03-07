@@ -1,16 +1,21 @@
 import { useTheme } from '@emotion/react'
+import { useAtom } from 'jotai'
 import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
 import { Modal } from '../components/modal'
 import { EdgeData, EdgeEntity, PipeEdge } from '../components/pipe-edge'
 import { NodeData, NodeEntity, PipeNode } from '../components/pipe-node'
+import { TriggerEntity, TriggerNode } from '../components/trigger-node'
 import { getNodeColor, useFlow } from '../hooks/use-flow'
 import { Modals, useModal } from '../hooks/use-modal'
+import { selectedPipelineDataAtom } from '../pages'
 import { EdgeSettings } from './edge-settings'
 import { NodeSettings } from './node-settings'
 import { TaskLog, TaskLogProps } from './task-log'
+import { TriggerSettings } from './trigger-settings'
 
 const nodeTypes = {
 	default: PipeNode,
+	trigger: TriggerNode,
 }
 
 const edgeTypes = {
@@ -51,6 +56,7 @@ export function Flow() {
 			</div>
 
 			<NodeSettingsModal updateNode={updateElement} />
+			<TriggerSettingsModal updateNode={updateElement} />
 			<EdgeSettingsModal updateEdge={updateElement} />
 			<TaskLogModal />
 		</>
@@ -104,6 +110,25 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 					defaultValues={data}
 					onSave={(values) => {
 						updateEdge(id, values)
+						modal.close()
+					}}
+				/>
+			)}
+		</Modal>
+	)
+}
+
+function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
+	const modal = useModal()
+	const [pipeline] = useAtom(selectedPipelineDataAtom)
+
+	return (
+		<Modal kind={Modals.TriggerSettings}>
+			{({ id, data }: TriggerEntity) => (
+				<TriggerSettings
+					defaultValues={{ ...data, pipeline_name: pipeline?.name ?? 'default' }}
+					onSave={(values) => {
+						updateNode(id, values)
 						modal.close()
 					}}
 				/>

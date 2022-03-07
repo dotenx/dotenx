@@ -1,5 +1,7 @@
+import _ from 'lodash'
 import { useQuery } from 'react-query'
 import { getTriggers, QueryKey } from '../api'
+import { Detail, Item, Table } from '../components/table'
 import { getDisplayText } from '../utils'
 
 export function TriggerList() {
@@ -7,41 +9,24 @@ export function TriggerList() {
 	const triggers = query.data?.data
 
 	return (
-		<div>
-			<h2>Triggers</h2>
-			<div
-				css={{
-					padding: 8,
-					margin: 12,
-					marginBottom: 16,
-					display: 'grid',
-					gridTemplateColumns: 'repeat(4, 1fr)',
-					borderBottom: '1px solid #999999',
-				}}
-			>
-				<div>Name</div>
-				<div>Type</div>
-				<div>Integration</div>
-				<div>Pipeline</div>
-			</div>
-			{triggers?.map((trigger) => (
-				<div
+		<Table
+			title="Triggers"
+			headers={['Name', 'Type', 'Integration', 'Pipeline']}
+			items={triggers?.map((trigger) => (
+				<Item
 					key={trigger.name}
-					css={{
-						padding: 8,
-						backgroundColor: '#eeeeee44',
-						borderRadius: 4,
-						margin: 12,
-						display: 'grid',
-						gridTemplateColumns: 'repeat(4, 1fr)',
-					}}
+					values={[
+						trigger.name,
+						getDisplayText(trigger.type),
+						trigger.integration,
+						trigger.pipeline_name,
+					]}
 				>
-					<div>{trigger.name}</div>
-					<div>{getDisplayText(trigger.type)}</div>
-					<div>{trigger.integration}</div>
-					<div>{trigger.pipeline_name}</div>
-				</div>
+					{_.entries(trigger.credentials).map(([key, value]) => (
+						<Detail key={key} label={getDisplayText(key)} value={value} />
+					))}
+				</Item>
 			))}
-		</div>
+		/>
 	)
 }
