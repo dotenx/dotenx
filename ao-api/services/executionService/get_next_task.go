@@ -116,6 +116,7 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 					return nil, err
 				}
 			}
+			fmt.Println(body)
 			if _, ok := body[key]; !ok {
 				return nil, errors.New("no value for this field in initial data or return values")
 			}
