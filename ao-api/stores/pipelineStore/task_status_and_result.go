@@ -3,6 +3,7 @@ package pipelineStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 	"strings"
@@ -46,27 +47,29 @@ func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int,
 	}
 	return
 }
-func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error) {
+func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (interface{}, error) {
+	var taskRes struct {
+		Status      string                `json:"status"`
+		Log         string                `json:"log"`
+		ReturnValue models.ReturnValueMap `json:"return_value"`
+	}
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-
-		var taskRes struct {
-			Status      string                `json:"status"`
-			Log         string                `json:"log"`
-			ReturnValue models.ReturnValueMap `json:"return_value"`
-		}
-		err = conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &taskRes.ReturnValue)
-		res = taskRes
+		var body interface{}
+		var taskBody models.ReturnValueMap
+		err := conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &body)
+		json.Unmarshal(body.([]byte), &taskBody)
+		taskRes.ReturnValue = taskBody
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
 			}
-			return
+			return nil, err
 		}
 	}
-	return
+	return taskRes, nil
 
 }
 
