@@ -34,6 +34,25 @@ func (t TaskBodyMap) Scan(value interface{}) error {
 	}
 }
 
+type ReturnValue interface {
+	Value() (driver.Value, error)
+	Scan(interface{}) error
+}
+
+type ReturnValueMap map[string]interface{}
+
+func (t ReturnValueMap) Value() (driver.Value, error) {
+	return json.Marshal(t)
+}
+
+func (t ReturnValueMap) Scan(value interface{}) error {
+	if b, ok := value.([]byte); ok {
+		return json.Unmarshal(b, &t)
+	} else {
+		return errors.New("type assertion to []byte failed")
+	}
+}
+
 type TaskDetails struct {
 	Name      string
 	Id        int
