@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-func (manage *executionManager) CheckExecutionInitialData(executionId int, accountId, source string) (input map[string]interface{}, err error) {
+func (manage *executionManager) CheckReturnValues(executionId int, accountId, taskName string) (input map[string]interface{}, err error) {
 	initialData, err := manage.Store.GetInitialData(noContext, executionId, accountId)
 	if err != nil {
 		return
