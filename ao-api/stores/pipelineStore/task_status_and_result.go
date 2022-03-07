@@ -9,6 +9,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {
@@ -51,9 +52,9 @@ func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executio
 		conn := ps.db.Connection
 
 		var taskRes struct {
-			Status      string `json:"status"`
-			Log         string `json:"log"`
-			ReturnValue string `json:"return_value"`
+			Status      string                `json:"status"`
+			Log         string                `json:"log"`
+			ReturnValue models.ReturnValueMap `json:"return_value"`
 		}
 		err = conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &taskRes.ReturnValue)
 		res = taskRes
@@ -69,7 +70,7 @@ func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executio
 
 }
 
-func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, logs string) (err error) {
+func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, logs string) (err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
@@ -89,8 +90,7 @@ func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executio
 			query = updateTaskResultDetailes
 		}
 		logs = strings.ReplaceAll(logs, "\u0000", "")
-		returnValue = strings.ReplaceAll(returnValue, "\u0000", "")
-		_, err = tx.Exec(query, executionId, taskId, status, string(returnValue), string(logs))
+		_, err = tx.Exec(query, executionId, taskId, status, returnValue, string(logs))
 		if err != nil {
 			log.Println(err.Error())
 			if pgErr, isPGErr := err.(*pq.Error); isPGErr {
