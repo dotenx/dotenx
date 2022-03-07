@@ -61,7 +61,7 @@ var migrations = []struct {
 		stmt: createTableExecutionsStatus,
 	},
 	{
-		name: "create-table-executions-result",
+		name: "create-table-executions-result2",
 		stmt: createTableExecutionsResult,
 	},
 	{
