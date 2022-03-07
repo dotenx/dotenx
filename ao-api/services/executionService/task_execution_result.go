@@ -20,9 +20,6 @@ func (manager *executionManager) SetTaskExecutionResultDetailes(executionId int,
 		log.Println(err.Error())
 		return err
 	}
-	if taskStatus == models.Completed.String() {
-		//save the returned value in initial data
-	}
 	return nil
 }
 
