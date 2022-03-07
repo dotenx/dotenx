@@ -15,8 +15,8 @@ import (
 	"github.com/utopiops/automated-ops/runner/models"
 )
 
-func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskResult) {
-	result = &models.TaskResult{}
+func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {
+	result = &models.TaskExecutionResult{}
 	result.Id = task.Detailes.Id
 	result.Status = models.StatusFailed
 	if task.Detailes.Image == "" {
