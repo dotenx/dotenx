@@ -6,7 +6,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
-func (manager *executionManager) SetTaskExecutionResult(executionId int, taskId int, taskStatus string, taskResult map[string]interface{}) error {
+func (manager *executionManager) SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error {
 	err := manager.Store.SetTaskResult(noContext, executionId, taskId, taskStatus)
 	if err != nil {
 		log.Println(err.Error())
