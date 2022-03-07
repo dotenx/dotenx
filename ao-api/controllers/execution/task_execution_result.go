@@ -86,7 +86,7 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			return
 		}
 
-		err = e.Service.SetTaskExecutionResult(executionId, taskId, taskResultDto.Status.String(), taskResultDto.Result)
+		err = e.Service.SetTaskExecutionResult(executionId, taskId, taskResultDto.Status.String())
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
@@ -101,10 +101,9 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 }
 
 type taskResultDto struct {
-	Status      models.TaskStatus      `json:"status"`
-	ReturnValue string                 `json:"return_value"`
-	Log         string                 `json:"log"`
-	Result      map[string]interface{} //Not used currently
+	Status      models.TaskStatus     `json:"status"`
+	ReturnValue models.ReturnValueMap `json:"return_value"`
+	Log         string                `json:"log"`
 }
 
 func (t taskResultDto) Value() (driver.Value, error) {
