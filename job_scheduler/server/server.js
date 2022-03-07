@@ -55,7 +55,7 @@ app.get('/next/queue/:qname/:token', async (req, res) => {
   res.send(JSON.stringify(job));
 });
 
-// Set the job result
+// move job to completed and call ao-api to trigger next tasks
 app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   const { qname, jobId } = req.params;
   const { returnValue, token, result } = req.body;
@@ -88,7 +88,7 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   }
 });
 
-// Set the job result
+// Set the job returnd value and status
 app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   const { qname, jobId } = req.params;
   const { status, returnValue, log } = req.body;
@@ -98,7 +98,7 @@ app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   if (!job) {
     return res.sendStatus(400)
   }
-  // Call AO-API with the results
+  // Call AO-API to set current status and returned value
   const [executionId, taskId] = [job.data.executionId, job.data.taskId];
   try {
     await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
