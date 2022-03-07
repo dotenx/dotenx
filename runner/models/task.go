@@ -21,11 +21,12 @@ type TaskResult struct {
 	Error     error  `json:"error"`
 	Status    string `json:"status"`
 }
+
 type TaskStatus struct {
-	ReturnValue interface{} `json:"returnValue"`
-	Toekn       string      `json:"token"`
-	Result      Status      `json:"result"`
-	Logs        string      `json:"logs"`
+	ReturnValue map[string]interface{} `json:"return_value"`
+	Toekn       string                 `json:"token"`
+	Result      Status                 `json:"result"`
+	Logs        string                 `json:"logs"`
 }
 
 type Task struct {

@@ -12,6 +12,7 @@ import (
 	"github.com/utopiops/automated-ops/runner/shared"
 )
 
+// sending this request only cause to trigger ao api for next tasks
 func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) error {
 	url := fmt.Sprintf("%s/queue/%s/job/%s/result", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, jobId)
 	headers := []shared.Header{
@@ -32,6 +33,7 @@ func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) er
 	return nil
 }
 
+// this request is for setting the status, returned value and log
 func (manager *JobManager) SetStatus(jobId string, status models.TaskStatus) error {
 	url := fmt.Sprintf("%s/queue/%s/job/%s/status", config.Configs.Endpoints.JobScheduler, config.Configs.Queue.Name, jobId)
 	headers := []shared.Header{
@@ -40,10 +42,10 @@ func (manager *JobManager) SetStatus(jobId string, status models.TaskStatus) err
 			Value: "application/json",
 		},
 	}
-	data := map[string]string{
-		"status":      string(status.Result),
-		"returnValue": status.ReturnValue.(string),
-		"log":         status.Logs,
+	data := map[string]interface{}{
+		"status":       string(status.Result),
+		"return_value": status.ReturnValue,
+		"log":          status.Logs,
 	}
 	json_data, err := json.Marshal(data)
 	if err != nil {

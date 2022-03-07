@@ -14,7 +14,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if !job.Validate() {
 		fmt.Println("invalid job body")
 		resultDto := models.TaskStatus{
-			ReturnValue: "",
+			ReturnValue: make(map[string]interface{}),
 			Result:      models.StatusFailed,
 			Toekn:       job.Token,
 		}
@@ -37,7 +37,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Timeout:  int(job.Data["timeout"].(float64)),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
-		ReturnValue: "",
+		ReturnValue: make(map[string]interface{}),
 		Result:      "started",
 		Logs:        "",
 	})
@@ -47,7 +47,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	result := executor.Execute(executors.ProcessTask(&taskDetails))
 	//fmt.Println(result)
 	resultDto := models.TaskStatus{
-		ReturnValue: result.Log,
+		ReturnValue: make(map[string]interface{}), //todo: get real returned Value
 		Result:      models.Status(result.Status),
 		Toekn:       job.Token,
 		Logs:        result.Log,
