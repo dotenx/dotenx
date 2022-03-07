@@ -1,0 +1,11 @@
+type: sendEmail
+image: awrmin/sendemail
+fields:
+  - key: sender
+    type: text
+  - key: target
+    type: text
+  - key: text
+    type: text
+  - key: api_key
+    type: text
