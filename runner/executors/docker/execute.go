@@ -19,6 +19,9 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	result = &models.TaskExecutionResult{}
 	result.Id = task.Detailes.Id
 	result.Status = models.StatusFailed
+	result.ReturnValue = make(map[string]interface{})
+	// todo: remove this which is for test and add real task returned value
+	result.ReturnValue["done"] = true
 	if task.Detailes.Image == "" {
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
