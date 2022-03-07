@@ -1,22 +1,30 @@
 package executionService
 
 import (
-	"errors"
-	"reflect"
+	"encoding/json"
+
+	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (manage *executionManager) CheckReturnValues(executionId int, accountId, taskName string) (input map[string]interface{}, err error) {
-	initialData, err := manage.Store.GetInitialData(noContext, executionId, accountId)
+	taskId, err := manage.GetTaskId(executionId, taskName)
+	if err != nil {
+		return nil, err
+	}
+	res, err := manage.Store.GetTaskResultDetailes(noContext, executionId, taskId)
 	if err != nil {
 		return
 	}
-	taskData, ok := initialData[source]
-	if ok {
-		return nil, errors.New("no initial data for this task")
+	type taskRes struct {
+		Status      string                `json:"status"`
+		Log         string                `json:"log"`
+		ReturnValue models.ReturnValueMap `json:"return_value"`
 	}
-	var testType map[string]interface{}
-	if !reflect.TypeOf(taskData).ConvertibleTo(reflect.TypeOf(testType)) {
-		return nil, errors.New("unsuported initial data")
+	var result taskRes
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		return
 	}
-	return taskData.(map[string]interface{}), nil
+	json.Unmarshal(bytes, &result)
+	return result.ReturnValue, nil
 }
