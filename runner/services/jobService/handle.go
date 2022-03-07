@@ -3,7 +3,11 @@ package jobService
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 
+	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/executors"
 	"github.com/utopiops/automated-ops/runner/models"
 	"github.com/utopiops/automated-ops/runner/shared"
@@ -11,10 +15,11 @@ import (
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
 	executor := executors.NewExecutor()
+	returnValue := make(map[string]interface{})
 	if !job.Validate() {
 		fmt.Println("invalid job body")
 		resultDto := models.TaskStatus{
-			ReturnValue: make(map[string]interface{}),
+			ReturnValue: returnValue,
 			Result:      models.StatusFailed,
 			Toekn:       job.Token,
 		}
@@ -37,7 +42,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Timeout:  int(job.Data["timeout"].(float64)),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
-		ReturnValue: make(map[string]interface{}),
+		ReturnValue: returnValue,
 		Result:      "started",
 		Logs:        "",
 	})
@@ -69,6 +74,16 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	} else {
 		fmt.Println("jobId: " + id)
 	}*/
+	if resultDto.Result == models.StatusCompleted {
+		resultFile, err := os.Open(config.Configs.App.FileSharing + "/task_" + taskDetails.Name + "_result.json")
+		if err != nil {
+			log.Println(err)
+		}
+		defer resultFile.Close()
+		byteValue, _ := ioutil.ReadAll(resultFile)
+		json.Unmarshal([]byte(byteValue), &returnValue)
+		resultDto.ReturnValue = returnValue
+	}
 	err = manager.SetStatus(job.Id, resultDto)
 	if err != nil {
 		fmt.Printf("error in setting job result: %s\n", err.Error())
