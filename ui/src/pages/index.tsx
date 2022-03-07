@@ -1,28 +1,29 @@
 import { css, Theme } from '@emotion/react'
 import { PageProps } from 'gatsby'
 import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
 import { API_URL, Pipeline, PipelineEventMessage } from '../api'
 import { Layout } from '../components/layout'
 import { NodeData } from '../components/pipe-node'
 import { ActionBar } from '../containers/action-bar'
+import { DragDropNodes } from '../containers/drag-drop-nodes'
 import { Flow } from '../containers/flow'
 import { PipelineExecution } from '../containers/pipeline-execution'
 import { PipelineSelect } from '../containers/pipeline-select'
-import { Sidebar } from '../containers/sidebar'
 import { useClearStatus } from '../hooks/use-clear-status'
 import { flowAtom } from '../hooks/use-flow'
 
 export const selectedExecutionAtom = atom<number | undefined>(undefined)
 export const listenAtom = atom(0)
+export const selectedPipelineDataAtom = atom<Pipeline | undefined>(undefined)
 
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
 export default function Home({ location }: PageProps) {
 	location.pathname
-	const [selected, setSelected] = useState<Pipeline>()
+	const [selected, setSelected] = useAtom(selectedPipelineDataAtom)
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]
 	const clearStatus = useClearStatus()
@@ -138,7 +139,7 @@ function Header({ executionId, selected, setExecutionId, setSelected }: HeaderPr
 				<ActionBar deselectPipeline={() => setSelected(undefined)} />
 			</div>
 			<div css={center}>
-				<Sidebar />
+				<DragDropNodes />
 			</div>
 		</div>
 	)
