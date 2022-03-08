@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/utopiops/automated-ops/runner/config"
@@ -29,7 +28,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		}
 		return
 	}
-	//fmt.Println(job)
+	// parsing task meta data
 	var meta models.TaskMetaData
 	bytes, _ := json.Marshal(job.Data["task_meta_data"])
 	json.Unmarshal(bytes, &meta)
@@ -59,9 +58,6 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	}
 	//var err error
 	//var id string
-	fmt.Println("job result:")
-	fmt.Println(result)
-	fmt.Println("################################")
 	if result.Error == nil {
 		resultDto.Result = models.StatusCompleted
 		//id, err = manager.LogHelper.Log("log: "+result.Log, true, result.Id)
@@ -77,7 +73,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if resultDto.Result == models.StatusCompleted {
 		resultFile, err := os.Open(config.Configs.App.FileSharing + "/task_" + taskDetails.Name + "_result.json")
 		if err != nil {
-			log.Println(err)
+			fmt.Printf("error in parsing job return value: %s\n", err.Error())
 		}
 		defer resultFile.Close()
 		byteValue, _ := ioutil.ReadAll(resultFile)
@@ -92,4 +88,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if err != nil {
 		fmt.Printf("error in sending job result: %s\n", err.Error())
 	}
+	fmt.Println("job result:")
+	fmt.Println(result)
+	fmt.Println("################################")
 }
