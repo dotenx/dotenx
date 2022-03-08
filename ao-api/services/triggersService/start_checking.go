@@ -23,6 +23,14 @@ type dockerCleint struct {
 }
 
 func (manager *TriggerManager) StartChecking(accId string, store integrationStore.IntegrationStore) error {
+	for {
+		// todo: handle error
+		go manager.check(accId, store)
+		//time.Sleep(time.Duration(freq) * time.Second)
+		time.Sleep(time.Duration(5) * time.Second)
+	}
+}
+func (manager *TriggerManager) check(accId string, store integrationStore.IntegrationStore) error {
 	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
 	if err != nil {
 		return err
@@ -59,11 +67,7 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
-	for {
-		dc.checkTrigger(trigger.Name, img, envs)
-		//time.Sleep(time.Duration(freq) * time.Second)
-		time.Sleep(time.Duration(5) * time.Second)
-	}
+	dc.checkTrigger(trigger.Name, img, envs)
 }
 
 func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
