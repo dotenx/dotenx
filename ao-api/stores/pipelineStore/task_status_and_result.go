@@ -59,8 +59,10 @@ func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executio
 		var body interface{}
 		var taskBody models.ReturnValueMap
 		err := conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &body)
-		json.Unmarshal(body.([]byte), &taskBody)
-		taskRes.ReturnValue = taskBody
+		if body != nil {
+			json.Unmarshal(body.([]byte), &taskBody)
+			taskRes.ReturnValue = taskBody
+		}
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {

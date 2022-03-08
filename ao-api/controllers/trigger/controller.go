@@ -70,6 +70,7 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 		var trigger models.EventTrigger
 		accountId := c.MustGet("accountId").(string)
 		if err := c.ShouldBindJSON(&trigger); err != nil || accountId == "" {
+			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
