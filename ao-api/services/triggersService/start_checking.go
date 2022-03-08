@@ -23,19 +23,19 @@ type dockerCleint struct {
 }
 
 func (manager *TriggerManager) StartChecking(accId string, store integrationStore.IntegrationStore) error {
+	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
+	if err != nil {
+		return err
+	}
 	for {
 		// todo: handle error
 		go manager.check(accId, store)
-		//time.Sleep(time.Duration(freq) * time.Second)
-		time.Sleep(time.Duration(5) * time.Second)
+		time.Sleep(time.Duration(freq) * time.Second)
+		//time.Sleep(time.Duration(5) * time.Second)
 	}
 }
 func (manager *TriggerManager) check(accId string, store integrationStore.IntegrationStore) error {
 	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
-	if err != nil {
-		return err
-	}
-	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
 	if err != nil {
 		return err
 	}
@@ -47,12 +47,12 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	dc := dockerCleint{cli: cli}
 	fmt.Println(triggers)
 	for _, trigger := range triggers {
-		go dc.handleTrigger(accId, trigger, store, freq)
+		go dc.handleTrigger(accId, trigger, store)
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, freq int) {
+func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
 	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
 	if err != nil {
 		return
