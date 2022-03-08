@@ -57,21 +57,23 @@ services:
     working_dir: /root/
     volumes:
      - ao_api_data:/go/src/github.com/utopiops/automated-ops/ao-api
+     - /var/run/docker.sock:/var/run/docker.sock
     networks:
         - default
     ports:
       - '3004:3004'
 
-  #runner:
-    #build:
-      #context: .
-     # dockerfile: runner/Dockerfile
-    #hostname: runner
-    #working_dir: /root/
-    #volumes:
-     #- runner_data:/go/src/github.com/utopiops/automated-ops/runner
-    #networks:
-   #     - default
+  runner:
+    build:
+      context: runner
+      dockerfile: Dockerfile
+    hostname: runner
+    working_dir: /root/
+    volumes:
+     - runner_data:/go/src/github.com/utopiops/automated-ops/runner
+     - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+       - default
 
 networks:
   default:
@@ -82,4 +84,4 @@ volumes:
   redis_data:
   postgres_data:
   ao_api_data:
-  #runner_data:
+  runner_data:
