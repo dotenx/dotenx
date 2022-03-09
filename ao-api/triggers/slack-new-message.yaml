@@ -4,3 +4,5 @@ image: awrmin/slack-new-message
 credentials:
   - key: channel_id
     type: text
+  - key: passed_minutes
+    type: text
