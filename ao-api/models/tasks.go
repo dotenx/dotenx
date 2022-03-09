@@ -10,11 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-/*
-Important Note: at the moment all the fields of the task bodies should be of type `string` as they can be set to a variable. In the future add a concept of YAML schema
-and do some validation there.
-*/
-
 type TaskBody interface {
 	Value() (driver.Value, error)
 	Scan(interface{}) error
