@@ -94,7 +94,9 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-
+		if yamlFile.Fields == nil {
+			yamlFile.Fields = make([]Field, 0)
+		}
 		AvaliableTasks[yamlFile.Type] = yamlFile
 	}
 	fmt.Println(AvaliableTasks)
