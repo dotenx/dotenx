@@ -47,6 +47,9 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+		if yamlFile.Credentials == nil {
+			yamlFile.Credentials = make([]Credential, 0)
+		}
 		AvaliableTriggers[yamlFile.Type] = yamlFile
 	}
 	fmt.Println(AvaliableTriggers)
