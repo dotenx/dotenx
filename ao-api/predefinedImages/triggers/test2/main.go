@@ -18,6 +18,13 @@ func main() {
 	fmt.Println("calling endpoint")
 	body := make(map[string]interface{})
 	innerBody := make(map[string]interface{})
+	/*
+		{
+			"trigger":{
+				"text":"your text"
+			}
+		}
+	*/
 	innerBody["text"] = "message from trigger"
 	body["trigger"] = innerBody
 	json_data, err := json.Marshal(body)
