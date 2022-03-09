@@ -26,17 +26,19 @@ func main() {
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId /*, Inclusive: true, Oldest: string(sec)*/})
 	if err != nil {
 		log.Println(err.Error())
-		panic(err)
+		time.Sleep(time.Duration(5) * time.Minute)
+		return
 	}
 	if len(res.Messages) > 0 {
 		fmt.Println("calling endpoint")
 		body := make(map[string]interface{})
 		innerBody := make(map[string]interface{})
-		innerBody["text"] = res.Messages[0]
+		innerBody["text"] = res.Messages[0].Msg.Text
 		body["trigger"] = innerBody
 		json_data, err := json.Marshal(body)
 		if err != nil {
 			log.Println(err)
+			time.Sleep(time.Duration(5) * time.Minute)
 			return
 		}
 		payload := bytes.NewBuffer(json_data)
@@ -44,8 +46,10 @@ func main() {
 		fmt.Println(string(out))
 		fmt.Println(err)
 		fmt.Println(status)
+		time.Sleep(time.Duration(5) * time.Minute)
 	} else {
 		fmt.Println("no message in channel")
+		time.Sleep(time.Duration(5) * time.Minute)
 	}
 }
 
