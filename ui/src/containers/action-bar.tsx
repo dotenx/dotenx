@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
 import { QueryKey, startPipeline } from '../api'
@@ -17,6 +17,18 @@ const smallButton = css({ fontSize: 12, padding: '2px 0', width: 50 })
 interface ActionBarProps {
 	deselectPipeline: () => void
 }
+
+export const redSmallButton = [
+	smallButton,
+	(theme: Theme) => ({
+		backgroundColor: theme.color.negative,
+		borderColor: theme.color.negative,
+		borderRadius: 4,
+		':not([disabled]):hover': {
+			color: `${theme.color.negative}`,
+		},
+	}),
+]
 
 export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	const { onLayout } = useLayout()
@@ -44,6 +56,17 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	return (
 		<>
 			<div css={{ display: 'flex', gap: 6 }}>
+				<Button
+					css={redSmallButton}
+					disabled={!selectedPipeline}
+					onClick={() => {
+						setSelectedPipeline(undefined)
+						setElements(initialElements)
+						deselectPipeline()
+					}}
+				>
+					Delete
+				</Button>
 				<Button
 					css={smallButton}
 					onClick={() => {

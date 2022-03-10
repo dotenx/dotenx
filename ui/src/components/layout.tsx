@@ -11,7 +11,7 @@ const theme: Theme = {
 	color: {
 		primary: '#e85d04',
 		positive: '#90be6d',
-		negative: '#FB797B',
+		negative: '#ef233c',
 		text: '#222222',
 		background: '#FFFFFC',
 	},
