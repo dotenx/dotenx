@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/utopiops/automated-ops/runner/config"
 	"github.com/utopiops/automated-ops/runner/executors"
@@ -73,7 +74,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if resultDto.Result == models.StatusCompleted {
 		resultFile, err := os.Open(config.Configs.App.FileSharing + "/task_" + taskDetails.Name + "_result.json")
 		if err != nil {
-			fmt.Printf("error in parsing job return value: %s\n", err.Error())
+			fmt.Printf("parsing job return value failed: %s\n", err.Error())
 		}
 		defer resultFile.Close()
 		byteValue, _ := ioutil.ReadAll(resultFile)
@@ -88,7 +89,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if err != nil {
 		fmt.Printf("error in sending job result: %s\n", err.Error())
 	}
-	fmt.Println("job result:")
+	fmt.Println(time.Now().String() + ", job result:")
 	fmt.Println(result)
 	fmt.Println("################################")
 }
