@@ -5,12 +5,20 @@ import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import * as z from 'zod'
-import { activatePipeline, addPipeline, Manifest, QueryKey, Tasks } from '../api'
+import {
+	activatePipeline,
+	addPipeline,
+	addTrigger,
+	AddTriggerPayload,
+	Manifest,
+	QueryKey,
+	Tasks,
+} from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { EdgeData } from '../components/pipe-edge'
-import { NodeData } from '../components/pipe-node'
+import { NodeData, NodeType } from '../components/pipe-node'
 import { flowAtom } from '../hooks/use-flow'
 import { useModal } from '../hooks/use-modal'
 
@@ -31,6 +39,7 @@ export function SaveForm() {
 	const modal = useModal()
 	const addPipelineMutation = useMutation(addPipeline)
 	const activatePipelineMutation = useMutation(activatePipeline)
+	const addTriggerMutation = useMutation(addTrigger)
 
 	const [elements] = useAtom(flowAtom)
 
@@ -46,6 +55,15 @@ export function SaveForm() {
 					modal.close()
 					client.invalidateQueries(QueryKey.GetPipelines)
 					activatePipelineMutation.mutate({ name: values.name, version: 1 })
+
+					const triggers = mapElementsToTriggers(elements)
+					triggers.forEach((trigger) => {
+						if (trigger.data)
+							addTriggerMutation.mutate({
+								...trigger.data,
+								pipeline_name: values.name,
+							})
+					})
 				},
 			}
 		)
@@ -64,10 +82,18 @@ export function SaveForm() {
 	)
 }
 
+function mapElementsToTriggers(elements: Elements<NodeData | EdgeData>) {
+	return elements
+		.filter(isNode)
+		.filter((node) => node.type === NodeType.Trigger) as Node<AddTriggerPayload>[]
+}
+
 function mapElementsToPayload(elements: Elements<NodeData | EdgeData>): Manifest {
 	const tasks: Tasks = {}
 
-	const nodes = elements.filter(isNode) as Node<NodeData>[]
+	const nodes = elements
+		.filter(isNode)
+		.filter((node) => node.type === NodeType.Default) as Node<NodeData>[]
 	const edges = elements.filter(isEdge) as Edge<EdgeData>[]
 
 	nodes.forEach((node) => {

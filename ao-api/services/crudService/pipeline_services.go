@@ -1,6 +1,8 @@
 package crudService
 
-import "github.com/utopiops/automated-ops/ao-api/models"
+import (
+	"github.com/utopiops/automated-ops/ao-api/models"
+)
 
 func (cm *crudManager) ActivatePipeline(accountId string, name string, version int16) error {
 	return cm.Store.Activate(noContext, accountId, name, int16(version))

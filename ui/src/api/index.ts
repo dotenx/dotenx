@@ -73,6 +73,10 @@ export function addTrigger(payload: AddTriggerPayload) {
 	return api.post<void>('/trigger', payload)
 }
 
+export function getPipelineTriggers(pipelineName: string) {
+	return api.get<TriggerData[]>(`/trigger`, { params: { pipeline: pipelineName } })
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
@@ -86,6 +90,7 @@ export enum QueryKey {
 	GetTriggers = 'get-triggers',
 	GetTriggerTypes = 'get-trigger-types',
 	GetTriggerDefinition = 'get-trigger-definition',
+	GetPipelineTriggers = 'get-pipeline-triggers',
 }
 
 export enum Status {

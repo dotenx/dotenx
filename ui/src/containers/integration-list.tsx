@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query'
 import { getIntegrations, QueryKey } from '../api'
+import { Detail, Item, Table } from '../components/table'
 import { getDisplayText } from '../utils'
 
 export function IntegrationList() {
@@ -7,42 +8,20 @@ export function IntegrationList() {
 	const integrations = query.data?.data
 
 	return (
-		<div>
-			<h2>Integrations</h2>
-			{integrations?.length === 0 && (
-				<div css={{ marginTop: 6 }}>No integration added yet.</div>
-			)}
-			<div
-				css={{
-					padding: 8,
-					margin: 12,
-					marginBottom: 16,
-					display: 'grid',
-					gridTemplateColumns: 'repeat(3, 1fr)',
-					borderBottom: '1px solid #999999',
-				}}
-			>
-				<div>Name</div>
-				<div>Type</div>
-				<div>Access token</div>
-			</div>
-			{integrations?.map((integration) => (
-				<div
+		<Table
+			title="Integrations"
+			headers={['Name', 'Type']}
+			items={integrations?.map((integration) => (
+				<Item
 					key={integration.name}
-					css={{
-						padding: 8,
-						backgroundColor: '#eeeeee44',
-						borderRadius: 4,
-						margin: 12,
-						display: 'grid',
-						gridTemplateColumns: 'repeat(3, 1fr)',
-					}}
+					values={[integration.name, getDisplayText(integration.type)]}
 				>
-					<div>{integration.name}</div>
-					<div>{getDisplayText(integration.type)}</div>
-					<div>{integration.access_token}</div>
-				</div>
+					<Detail label="Access token" value={integration.access_token} />
+					<Detail label="Key" value={integration.key} />
+					<Detail label="Secret" value={integration.secret} />
+					<Detail label="URL" value={integration.url} />
+				</Item>
 			))}
-		</div>
+		/>
 	)
 }

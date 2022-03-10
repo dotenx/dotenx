@@ -10,6 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/slack-go/slack"
@@ -18,27 +20,49 @@ import (
 func main() {
 	access_token := os.Getenv("CREDENTIAL_ACCESS_TOKEN")
 	channelId := os.Getenv("channel_id")
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	api := slack.New(access_token)
-	//now := time.Now()
-	//sec := now.Unix() - 600
-	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId /*, Inclusive: true, Oldest: string(sec)*/})
+	passedMinutes := os.Getenv("passed_minutes")
+	minutes, err := strconv.Atoi(passedMinutes)
 	if err != nil {
 		log.Println(err.Error())
-		panic(err)
+		return
+	}
+	selectedUnix := time.Now().Unix() - (int64(minutes) * 60)
+	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	api := slack.New(access_token)
+	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId})
+	if err != nil {
+		log.Println(err.Error())
+		return
 	}
 	if len(res.Messages) > 0 {
-		fmt.Println("calling endpoint")
-		body := make(map[string]interface{})
-		json_data, err := json.Marshal(body)
+		unixTime := strings.Split(res.Messages[0].Timestamp, ".")
+		intUnixTime, err := strconv.Atoi(unixTime[0])
 		if err != nil {
+			log.Println(err.Error())
 			return
 		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		fmt.Println(string(out))
-		fmt.Println(err)
-		fmt.Println(status)
+		if selectedUnix < int64(intUnixTime) {
+			fmt.Println("calling endpoint")
+			body := make(map[string]interface{})
+			innerBody := make(map[string]interface{})
+			innerBody["text"] = res.Messages[0].Msg.Text
+			body["trigger"] = innerBody
+			json_data, err := json.Marshal(body)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			payload := bytes.NewBuffer(json_data)
+			out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+			if err != nil {
+				fmt.Println(err)
+				fmt.Println(status)
+				return
+			}
+			fmt.Println(string(out))
+		} else {
+			fmt.Println("no new message in channel")
+		}
 	} else {
 		fmt.Println("no message in channel")
 	}

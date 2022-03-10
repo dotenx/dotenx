@@ -18,8 +18,8 @@ type ExecutionService interface {
 	GetExecutionIdForPipeline(accountId, pipeLineName string) (int, error)
 
 	// tasks
-	SetTaskExecutionResult(executionId int, taskId int, taskStatus string, taskResult map[string]interface{}) error
-	SetTaskExecutionResultDetailes(executionId int, taskId int, status, returnValue, log string) error
+	SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error
+	SetTaskExecutionResultDetailes(executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) error
 	GetTaskExecutionResult(executionId int, taskId int) (interface{}, error)
 	GetTaskId(executionId int, taskName string) (int, error)
 	SetTaskStatusToTimedout(executionId, taskId int) error

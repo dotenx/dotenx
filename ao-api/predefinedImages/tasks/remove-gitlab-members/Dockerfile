@@ -7,6 +7,6 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /changeGitlabMembers
+RUN go build -o /removeGitlabMembers
 
-CMD [ "/changeGitlabMembers" ]
+CMD [ "/removeGitlabMembers" ]
