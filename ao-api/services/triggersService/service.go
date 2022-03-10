@@ -15,6 +15,7 @@ type TriggerService interface {
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTrigger(accountId string, trigger models.EventTrigger) error
+	DeleteTrigger(accountId string, triggerName string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
 }
 
@@ -37,6 +38,9 @@ func (manager *TriggerManager) GetTriggerTypes() ([]string, error) {
 func (manager *TriggerManager) AddTrigger(accountId string, trigger models.EventTrigger) error {
 	// todo: make ready the body to be saved in table
 	return manager.Store.AddTrigger(context.Background(), accountId, trigger)
+}
+func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName string) error {
+	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName)
 }
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggers(context.Background(), accountId)
