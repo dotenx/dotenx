@@ -161,8 +161,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetAllIntegrations())
-		// todo : implemet this
-		//intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
+		intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
 		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
 		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
