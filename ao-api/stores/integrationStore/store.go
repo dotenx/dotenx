@@ -13,6 +13,7 @@ import (
 
 type IntegrationStore interface {
 	AddIntegration(ctx context.Context, accountId string, integration models.Integration) error
+	DeleteIntegration(ctx context.Context, accountId string, integrationName string) error
 	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
 	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
 	GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error)
@@ -139,3 +140,26 @@ func (store *integrationStore) GetIntegrationsByName(ctx context.Context, accoun
 	}
 	return models.Integration{}, nil
 }
+
+func (store *integrationStore) DeleteIntegration(ctx context.Context, accountId string, integrationName string) error {
+	var stmt string
+	switch store.db.Driver {
+	case db.Postgres:
+		stmt = deleteIntegration
+	default:
+		return fmt.Errorf("driver not supported")
+	}
+	res, err := store.db.Connection.Exec(stmt, accountId, integrationName)
+	if err != nil {
+		return err
+	}
+	if count, _ := res.RowsAffected(); count == 0 {
+		return fmt.Errorf("can not delete integration")
+	}
+	return nil
+}
+
+var deleteIntegration = `
+delete from integrations 
+where account_id = $1 and name = $2;
+`
