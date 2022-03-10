@@ -39,7 +39,6 @@ func init() {
 
 type App struct {
 	route *gin.Engine
-	//grpServer *executionserver.ExecutionServer
 }
 
 func NewApp() *App {
@@ -173,11 +172,10 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
-		// todo : implemet this
-		//trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
+		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
 	go TriggerServic.StartChecking("123456", IntegrationStore)
-	return r /*, g*/
+	return r
 }
 
 func initializeDB() (*db.DB, error) {
