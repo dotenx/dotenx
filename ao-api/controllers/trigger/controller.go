@@ -41,6 +41,19 @@ func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
 
 	}
 }
+func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		trigger := c.Param("name")
+		accountId := c.MustGet("accountId").(string)
+		err := controller.Service.DeleteTrigger(accountId, trigger)
+		if err == nil {
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
 
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
