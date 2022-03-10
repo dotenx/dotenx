@@ -1,0 +1,9 @@
+type: sendSlackMessage
+image: awrmin/slack-send-message
+fields:
+  - key: target_id
+    type: text
+  - key: text
+    type: text
+  - key: access_token
+    type: text

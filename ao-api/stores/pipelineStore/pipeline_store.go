@@ -44,7 +44,7 @@ type PipelineStore interface {
 	SetTaskStatusToTimedout(context context.Context, executionId int, taskId int) (err error)
 	// Set the result of a task
 	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
-	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, log string) (err error)
+	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) (err error)
 
 	// executions
 	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)

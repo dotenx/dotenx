@@ -3,12 +3,14 @@ package pipelineStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 	"strings"
 
 	"github.com/lib/pq"
 	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {
@@ -45,31 +47,35 @@ func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int,
 	}
 	return
 }
-func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error) {
+func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (interface{}, error) {
+	var taskRes struct {
+		Status      string                `json:"status"`
+		Log         string                `json:"log"`
+		ReturnValue models.ReturnValueMap `json:"return_value"`
+	}
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-
-		var taskRes struct {
-			Status      string `json:"status"`
-			Log         string `json:"log"`
-			ReturnValue string `json:"return_value"`
+		var body interface{}
+		var taskBody models.ReturnValueMap
+		err := conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &body)
+		if body != nil {
+			json.Unmarshal(body.([]byte), &taskBody)
+			taskRes.ReturnValue = taskBody
 		}
-		err = conn.QueryRow(getTaskResult, executionId, taskId).Scan(&taskRes.Status, &taskRes.Log, &taskRes.ReturnValue)
-		res = taskRes
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
 			}
-			return
+			return nil, err
 		}
 	}
-	return
+	return taskRes, nil
 
 }
 
-func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status, returnValue, logs string) (err error) {
+func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, logs string) (err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
@@ -89,8 +95,7 @@ func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executio
 			query = updateTaskResultDetailes
 		}
 		logs = strings.ReplaceAll(logs, "\u0000", "")
-		returnValue = strings.ReplaceAll(returnValue, "\u0000", "")
-		_, err = tx.Exec(query, executionId, taskId, status, string(returnValue), string(logs))
+		_, err = tx.Exec(query, executionId, taskId, status, returnValue, string(logs))
 		if err != nil {
 			log.Println(err.Error())
 			if pgErr, isPGErr := err.(*pq.Error); isPGErr {

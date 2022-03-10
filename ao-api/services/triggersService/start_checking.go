@@ -23,11 +23,19 @@ type dockerCleint struct {
 }
 
 func (manager *TriggerManager) StartChecking(accId string, store integrationStore.IntegrationStore) error {
-	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
+	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
 	if err != nil {
 		return err
 	}
-	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
+	for {
+		// todo: handle error
+		go manager.check(accId, store)
+		time.Sleep(time.Duration(freq) * time.Second)
+		//time.Sleep(time.Duration(5) * time.Second)
+	}
+}
+func (manager *TriggerManager) check(accId string, store integrationStore.IntegrationStore) error {
+	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
 	if err != nil {
 		return err
 	}
@@ -37,13 +45,14 @@ func (manager *TriggerManager) StartChecking(accId string, store integrationStor
 		return err
 	}
 	dc := dockerCleint{cli: cli}
+	fmt.Println(triggers)
 	for _, trigger := range triggers {
-		go dc.handleTrigger(accId, trigger, store, freq)
+		go dc.handleTrigger(accId, trigger, store)
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, freq int) {
+func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
 	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
 	if err != nil {
 		return
@@ -58,13 +67,10 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
-	for {
-		dc.checkTrigger(img, envs)
-		time.Sleep(time.Duration(freq) * time.Second)
-	}
+	dc.checkTrigger(trigger.Name, img, envs)
 }
 
-func (dc dockerCleint) checkTrigger(img string, envs []string) {
+func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
 	/*reader*/ _, err := dc.cli.ImagePull(context.Background(), img, types.ImagePullOptions{})
 	if err != nil {
 		log.Println("error in pulling base image " + err.Error())
@@ -96,12 +102,12 @@ func (dc dockerCleint) checkTrigger(img string, envs []string) {
 		log.Println("error in starting container" + err.Error())
 		return
 	}
-	time.Sleep(time.Duration(20) * time.Second)
+	time.Sleep(time.Duration(10) * time.Second)
 	logs, err := dc.GetLogs(cont.ID)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	fmt.Println("###########   trigger log: ")
+	fmt.Println("###########   " + triggerName + " log: ")
 	fmt.Println(logs)
 	fmt.Println("##########################")
 }
@@ -112,7 +118,7 @@ func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 		return "", err
 	}
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
+	_, err = buf.ReadFrom(reader)
 	logs := buf.String()
-	return logs, nil
+	return logs, err
 }

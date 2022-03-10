@@ -4,8 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-
-	"gopkg.in/yaml.v2"
 )
 
 type Pipeline struct {
@@ -62,7 +60,7 @@ type Task struct {
 	Id           int                 `db:"id" json:"id" yaml:"-"`
 	Name         string              `db:"name" json:"-" yaml:"-"`
 	ExecuteAfter map[string][]string `db:"execute_after" json:"executeAfter" yaml:"executeAfter,omitempty"`
-	Type         TaskType            `db:"task_type" json:"type" yaml:"type"`
+	Type         string              `db:"task_type" json:"type" yaml:"type"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
 }
@@ -80,7 +78,7 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(executeAfterBytes, &executeAfter)
 	t.ExecuteAfter = executeAfter
-	var typeUnmarshaled TaskType
+	var typeUnmarshaled string
 	typeBytes, err := json.Marshal(raw["type"])
 	if err != nil {
 		return err
@@ -91,73 +89,13 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	switch t.Type {
-	case HttpCall:
-		var taskBody HttpCallTaskBody
-		json.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case GitlabAddMember:
-		var taskBody GitlabAddMemberTaskBody
-		json.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case GitlabRemoveMember:
-		var taskBody GitlabRemoveMemberTaskBody
-		json.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case Default:
-		var taskBody DefaultTaskBody
-		json.Unmarshal(body, &taskBody)
-		t.Body = taskBody
+	if !isTaskTypeValid(t.Type) {
+		return errors.New("invalid task type")
 	}
-	return nil
-}
-
-func (t *Task) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var raw map[string]interface{}
-	if err := unmarshal(&raw); err != nil {
-		return err
-	}
-	*t = Task{}
-	var executeAfter map[string][]string
-	executeAfterBytes, err := yaml.Marshal(raw["executeAfter"])
-	if err != nil {
-		return err
-	}
-	yaml.Unmarshal(executeAfterBytes, &executeAfter)
-	t.ExecuteAfter = executeAfter
-	var typeUnmarshaled TaskType
-	typeBytes, err := yaml.Marshal(raw["type"])
-	if err != nil {
-		return err
-	}
-	err = yaml.Unmarshal(typeBytes, &typeUnmarshaled)
-	if err != nil {
-		return err
-	}
-	t.Type = typeUnmarshaled
-	body, err := yaml.Marshal(raw["body"])
-	if err != nil {
-		return err
-	}
-	switch t.Type {
-	case HttpCall:
-		var taskBody HttpCallTaskBody
-		yaml.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case GitlabAddMember:
-		var taskBody GitlabAddMemberTaskBody
-		yaml.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case GitlabRemoveMember:
-		var taskBody GitlabRemoveMemberTaskBody
-		yaml.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	case Default:
-		var taskBody DefaultTaskBody
-		yaml.Unmarshal(body, &taskBody)
-		t.Body = taskBody
-	}
-	return nil
+	var taskBody TaskBodyMap
+	err = json.Unmarshal(body, &taskBody)
+	t.Body = taskBody
+	return err
 }
 
 func (t Task) Value() (driver.Value, error) {
@@ -170,4 +108,13 @@ func (t *Task) Scan(value interface{}) error {
 	} else {
 		return errors.New("type assertion to []byte failed")
 	}
+}
+
+func isTaskTypeValid(taskType string) bool {
+	for t, _ := range AvaliableTasks {
+		if t == taskType {
+			return true
+		}
+	}
+	return false
 }

@@ -48,24 +48,9 @@ func (p *pipelineStore) GetByVersion(context context.Context, version int16, acc
 			if err != nil {
 				return
 			}
-			switch task.Type { //TODO: This is super ugly. Fix this shit
-			case models.HttpCall:
-				var taskBody models.HttpCallTaskBody
-				json.Unmarshal(body.([]byte), &taskBody)
-				task.Body = taskBody
-			case models.GitlabAddMember:
-				var taskBody models.GitlabAddMemberTaskBody
-				json.Unmarshal(body.([]byte), &taskBody)
-				task.Body = taskBody
-			case models.GitlabRemoveMember:
-				var taskBody models.GitlabRemoveMemberTaskBody
-				json.Unmarshal(body.([]byte), &taskBody)
-				task.Body = taskBody
-			case models.Default:
-				var taskBody models.DefaultTaskBody
-				json.Unmarshal(body.([]byte), &taskBody)
-				task.Body = taskBody
-			}
+			var taskBody models.TaskBodyMap
+			json.Unmarshal(body.([]byte), &taskBody)
+			task.Body = taskBody
 			tasks = append(tasks, task)
 		}
 		taskIdToName := make(map[int]string)

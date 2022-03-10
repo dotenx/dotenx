@@ -18,6 +18,11 @@ export interface NodeEntity {
 	data: NodeData
 }
 
+export enum NodeType {
+	Default = 'default',
+	Trigger = 'trigger',
+}
+
 export function PipeNode({ id, data }: NodeProps<NodeData>) {
 	const modal = useModal()
 	const nodeEntity: NodeEntity = { id, data }

@@ -55,7 +55,7 @@ app.get('/next/queue/:qname/:token', async (req, res) => {
   res.send(JSON.stringify(job));
 });
 
-// Set the job result
+// move job to completed and call ao-api to trigger next tasks
 app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   const { qname, jobId } = req.params;
   const { returnValue, token, result } = req.body;
@@ -88,23 +88,23 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   }
 });
 
-// Set the job result
+// Set the job returnd value and status
 app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   const { qname, jobId } = req.params;
-  const { status, returnValue, log } = req.body;
+  const { status, return_value, log } = req.body;
   console.log(`received the status for queue: ${qname}: ${jobId} status: ${status}`);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getJob(jobId);
   if (!job) {
     return res.sendStatus(400)
   }
-  // Call AO-API with the results
+  // Call AO-API to set current status and returned value
   const [executionId, taskId] = [job.data.executionId, job.data.taskId];
   try {
     await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
       status: status,
-      return_value:returnValue,
-      log:log
+      return_value: return_value,
+      log: log
     });
     res.sendStatus(200);
     //res.sendStatus(200);
@@ -135,7 +135,6 @@ app.post('/queue/:qname/job', async (req, res) => {
     try {
       await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
         status: "waiting",
-        return_value:"",
         log:""
       });
       console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`)

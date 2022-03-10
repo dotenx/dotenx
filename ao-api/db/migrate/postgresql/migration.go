@@ -32,8 +32,12 @@ var migrations = []struct {
 		name: "create-table-task-types",
 		stmt: createTableTaskTypes,
 	},
+	/*{
+		name: "drop-table-tasks",
+		stmt: dropTableTasks,
+	},*/
 	{
-		name: "create-table-tasks",
+		name: "create-table-tasks2",
 		stmt: createTableTasks,
 	},
 	{
@@ -57,7 +61,7 @@ var migrations = []struct {
 		stmt: createTableExecutionsStatus,
 	},
 	{
-		name: "create-table-executions-result",
+		name: "create-table-executions-result2",
 		stmt: createTableExecutionsResult,
 	},
 	{
@@ -209,20 +213,19 @@ var createTableTasks = `
 CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
-task_type									VARCHAR(64),
-description								VARCHAR(128),
-pipeline_version_id				INT NOT NULL,
+task_type									    VARCHAR(64),
+description					        			VARCHAR(128),
+pipeline_version_id			                 	INT NOT NULL,
 body											JSONB,
-timeout INT NOT NULL default 30,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id),
-FOREIGN KEY (task_type) REFERENCES task_types(name)
+timeout                                         INT NOT NULL default 30,
+FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
 
 var createTableTaskPreconditions = `
 CREATE TABLE IF NOT EXISTS task_preconditions (
 task_id										INT NOT NULL,
-precondition_id						INT NOT NULL,
+precondition_id					         	INT NOT NULL,
 status										VARCHAR(16) NOT NULL,
 FOREIGN KEY (task_id) REFERENCES tasks(id),
 FOREIGN KEY (precondition_id) REFERENCES tasks(id),
@@ -241,16 +244,16 @@ CREATE INDEX task_preconditions_tasks ON task_preconditions (task_id)
 var createTableExecutions = `
 CREATE TABLE IF NOT EXISTS executions (
 id												SERIAL PRIMARY KEY,
-pipeline_version_id				INT NOT NULL,
-started_at								TIMESTAMP WITH TIME ZONE,
-initial_data							JSONB,
+pipeline_version_id				                INT NOT NULL,
+started_at								        TIMESTAMP WITH TIME ZONE,
+initial_data							        JSONB,
 FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
 var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
-execution_id							INT NOT NULL,
+execution_id							    INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
 FOREIGN KEY (execution_id) REFERENCES executions(id),
@@ -260,10 +263,10 @@ FOREIGN KEY (status) REFERENCES task_status(name)
 `
 var createTableExecutionsResult = `
 CREATE TABLE IF NOT EXISTS executions_result (
-execution_id							INT NOT NULL,
+execution_id							    INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
-return_value                                VARCHAR(10485760),
+return_value                                JSONB,
 log                                         VARCHAR(10485760),
 FOREIGN KEY (execution_id) REFERENCES executions(id),
 FOREIGN KEY (task_id) REFERENCES tasks(id),
@@ -319,6 +322,7 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
+var dropTableTasks = `drop table tasks`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
