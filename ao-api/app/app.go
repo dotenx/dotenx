@@ -115,6 +115,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
 		pipline.GET("/name/:name", crudController.ListPipelineVersions())
+		//todo: implement this
+		//pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name/version/:version", crudController.GetPipeline())
 		pipline.POST("/name/:name/version/:version/activate", crudController.ActivatePipeline())
@@ -161,6 +163,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetAllIntegrations())
+		// todo : implemet this
+		//intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
 		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
 		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
@@ -172,6 +176,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
+		// todo : implemet this
+		//trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
 	go TriggerServic.StartChecking("123456", IntegrationStore)
 	return r /*, g*/
