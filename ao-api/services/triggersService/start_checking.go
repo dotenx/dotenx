@@ -53,7 +53,7 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 }
 
 func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
-	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
+	integration, err := store.GetIntegrationByName(context.Background(), accountId, trigger.Integration)
 	if err != nil {
 		return
 	}

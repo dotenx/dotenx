@@ -22,9 +22,6 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		image := models.AvaliableTasks[task.Type].Image
-		/*if !ok {
-			return errors.New("no image for this task")
-		}*/
 		jobDTO := job{
 			ExecutionId: executionId,
 			TaskId:      task.Id,
@@ -35,6 +32,17 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			Name:        task.Name,
 			AccountId:   accountId,
 			MetaData:    models.AvaliableTasks[task.Type],
+		}
+		integrationName := models.AvaliableTasks[task.Type].Integration
+		if integrationName != "" {
+			integration, err := manager.IntegrationService.GetIntegrationByName(accountId, integrationName)
+			if err != nil {
+				return err
+			}
+			jobDTO.Body["CREDENTIAL_ACCESS_TOKEN"] = integration.AccessToken
+			jobDTO.Body["CREDENTIAL_URL"] = integration.Url
+			jobDTO.Body["CREDENTIAL_KEY"] = integration.Key
+			jobDTO.Body["CREDENTIAL_SECRET"] = integration.Secret
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 		if err != nil {
@@ -49,10 +57,6 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		return nil
 	} else {
 		taskIds, err := manager.Store.GetNextTasks(noContext, executionId, taskId, status)
-		//fmt.Println("taskId", taskId)
-		//fmt.Println("executionId", executionId)
-		//fmt.Println("status", status)
-		//fmt.Println("taskIds", taskIds)
 		if err != nil {
 			log.Println(err.Error())
 			return err
@@ -63,9 +67,6 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				return err
 			}
 			image := models.AvaliableTasks[task.Type].Image
-			/*if image == "" {
-				return errors.New("no image for this task")
-			}*/
 			jobDTO := job{
 				ExecutionId: executionId,
 				TaskId:      task.Id,
@@ -76,6 +77,17 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				Name:        task.Name,
 				AccountId:   accountId,
 				MetaData:    models.AvaliableTasks[task.Type],
+			}
+			integrationName := models.AvaliableTasks[task.Type].Integration
+			if integrationName != "" {
+				integration, err := manager.IntegrationService.GetIntegrationByName(accountId, integrationName)
+				if err != nil {
+					return err
+				}
+				jobDTO.Body["CREDENTIAL_ACCESS_TOKEN"] = integration.AccessToken
+				jobDTO.Body["CREDENTIAL_URL"] = integration.Url
+				jobDTO.Body["CREDENTIAL_KEY"] = integration.Key
+				jobDTO.Body["CREDENTIAL_SECRET"] = integration.Secret
 			}
 			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 			if err != nil {

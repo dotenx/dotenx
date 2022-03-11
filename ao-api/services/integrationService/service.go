@@ -10,6 +10,7 @@ import (
 
 type IntegrationService interface {
 	GetIntegrationFields(name string) ([]string, error)
+	GetIntegrationByName(accountId, name string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
 	GetIntegrationTypes() ([]string, error)
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
@@ -52,4 +53,7 @@ func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]model
 }
 func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId, integrationType string) ([]models.Integration, error) {
 	return manager.Store.GetIntegrationsByType(context.Background(), accountId, integrationType)
+}
+func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) (models.Integration, error) {
+	return manager.Store.GetIntegrationByName(context.Background(), accountId, name)
 }
