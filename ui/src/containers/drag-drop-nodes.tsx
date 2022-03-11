@@ -1,5 +1,5 @@
 import { DragEvent } from 'react'
-import { NodeType } from '../components/pipe-node'
+import { NodeType } from '../components/task-node'
 
 export function DragDropNodes() {
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {

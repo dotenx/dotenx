@@ -6,7 +6,7 @@ import { useIsAcyclic } from '../hooks/use-is-acyclic'
 import { Modals, useModal } from '../hooks/use-modal'
 import { Button } from './button'
 
-export interface NodeData {
+export interface TaskNodeData {
 	name: string
 	type: string
 	status?: Status
@@ -14,9 +14,9 @@ export interface NodeData {
 	integration?: string
 }
 
-export interface NodeEntity {
+export interface TaskEntity {
 	id: string
-	data: NodeData
+	data: TaskNodeData
 }
 
 export enum NodeType {
@@ -24,9 +24,9 @@ export enum NodeType {
 	Trigger = 'trigger',
 }
 
-export function PipeNode({ id, data }: NodeProps<NodeData>) {
+export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	const modal = useModal()
-	const nodeEntity: NodeEntity = { id, data }
+	const nodeEntity: TaskEntity = { id, data }
 	const isAcyclic = useIsAcyclic()
 
 	return (
