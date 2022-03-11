@@ -39,10 +39,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			if err != nil {
 				return err
 			}
-			jobDTO.Body["CREDENTIAL_ACCESS_TOKEN"] = integration.AccessToken
-			jobDTO.Body["CREDENTIAL_URL"] = integration.Url
-			jobDTO.Body["CREDENTIAL_KEY"] = integration.Key
-			jobDTO.Body["CREDENTIAL_SECRET"] = integration.Secret
+			jobDTO.Body["INTEGRATION_ACCESS_TOKEN"] = integration.AccessToken
+			jobDTO.Body["INTEGRATION_URL"] = integration.Url
+			jobDTO.Body["INTEGRATION_KEY"] = integration.Key
+			jobDTO.Body["INTEGRATION_SECRET"] = integration.Secret
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 		if err != nil {
@@ -84,10 +84,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				if err != nil {
 					return err
 				}
-				jobDTO.Body["CREDENTIAL_ACCESS_TOKEN"] = integration.AccessToken
-				jobDTO.Body["CREDENTIAL_URL"] = integration.Url
-				jobDTO.Body["CREDENTIAL_KEY"] = integration.Key
-				jobDTO.Body["CREDENTIAL_SECRET"] = integration.Secret
+				jobDTO.Body["INTEGRATION_ACCESS_TOKEN"] = integration.AccessToken
+				jobDTO.Body["INTEGRATION_URL"] = integration.Url
+				jobDTO.Body["INTEGRATION_KEY"] = integration.Key
+				jobDTO.Body["INTEGRATION_SECRET"] = integration.Secret
 			}
 			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 			if err != nil {

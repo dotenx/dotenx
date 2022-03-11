@@ -59,10 +59,10 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image
 	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
-	envs := []string{"CREDENTIAL_URL=" + integration.Url,
-		"CREDENTIAL_KEY=" + integration.Key,
-		"CREDENTIAL_SECRET=" + integration.Secret,
-		"CREDENTIAL_ACCESS_TOKEN=" + integration.AccessToken,
+	envs := []string{"INTEGRATION_URL=" + integration.Url,
+		"INTEGRATION_KEY=" + integration.Key,
+		"INTEGRATION_SECRET=" + integration.Secret,
+		"INTEGRATION_ACCESS_TOKEN=" + integration.AccessToken,
 		"PIPELINE_ENDPOINT=" + pipelineUrl}
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
