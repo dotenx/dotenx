@@ -42,6 +42,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			jobDTO.Body["INTEGRATION_URL"] = integration.Url
 			jobDTO.Body["INTEGRATION_KEY"] = integration.Key
 			jobDTO.Body["INTEGRATION_SECRET"] = integration.Secret
+			jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_URL", Type: "text"})
+			jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_SECRET", Type: "text"})
+			jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_KEY", Type: "text"})
+			jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 		if err != nil {
@@ -86,6 +90,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				jobDTO.Body["INTEGRATION_URL"] = integration.Url
 				jobDTO.Body["INTEGRATION_KEY"] = integration.Key
 				jobDTO.Body["INTEGRATION_SECRET"] = integration.Secret
+				jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_URL", Type: "text"})
+				jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_SECRET", Type: "text"})
+				jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_KEY", Type: "text"})
+				jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
 			}
 			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
 			if err != nil {
