@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Control, FieldErrors, useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
-import { getIntegrations, getTaskFields, getTasks, QueryKey } from '../api'
+import { getIntegrationsByType, getTaskFields, getTasks, QueryKey } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -74,7 +74,13 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						name={taskField.key}
 					/>
 				))}
-				{integrationType && <SelectIntegration control={control} errors={errors} />}
+				{integrationType && (
+					<SelectIntegration
+						control={control}
+						errors={errors}
+						integrationType={integrationType}
+					/>
+				)}
 			</div>
 			<Button type="submit">Save</Button>
 		</Form>
@@ -84,10 +90,15 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 interface SelectIntegrationProps {
 	control: Control<Schema>
 	errors: FieldErrors
+	integrationType: string
 }
 
-function SelectIntegration({ control, errors }: SelectIntegrationProps) {
-	const integrationQuery = useQuery(QueryKey.GetIntegrations, getIntegrations)
+function SelectIntegration({ control, errors, integrationType }: SelectIntegrationProps) {
+	const integrationQuery = useQuery(
+		QueryKey.GetIntegrationsByType,
+		() => getIntegrationsByType(integrationType),
+		{ enabled: !!integrationType }
+	)
 
 	return (
 		<Select
