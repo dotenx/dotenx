@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	access_token := os.Getenv("access_token")
+	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	text := os.Getenv("text")
 	target := os.Getenv("target_id")
 	err := SendSlackMessage(text, target, access_token)

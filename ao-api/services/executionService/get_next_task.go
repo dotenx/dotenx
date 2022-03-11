@@ -33,9 +33,8 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			AccountId:   accountId,
 			MetaData:    models.AvaliableTasks[task.Type],
 		}
-		integrationName := models.AvaliableTasks[task.Type].Integration
-		if integrationName != "" {
-			integration, err := manager.IntegrationService.GetIntegrationByName(accountId, integrationName)
+		if task.Integration != "" {
+			integration, err := manager.IntegrationService.GetIntegrationByName(accountId, task.Integration)
 			if err != nil {
 				return err
 			}
@@ -78,9 +77,8 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				AccountId:   accountId,
 				MetaData:    models.AvaliableTasks[task.Type],
 			}
-			integrationName := models.AvaliableTasks[task.Type].Integration
-			if integrationName != "" {
-				integration, err := manager.IntegrationService.GetIntegrationByName(accountId, integrationName)
+			if task.Integration != "" {
+				integration, err := manager.IntegrationService.GetIntegrationByName(accountId, task.Integration)
 				if err != nil {
 					return err
 				}
