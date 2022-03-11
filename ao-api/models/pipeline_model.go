@@ -79,6 +79,7 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(executeAfterBytes, &executeAfter)
 	t.ExecuteAfter = executeAfter
+
 	var typeUnmarshaled string
 	typeBytes, err := json.Marshal(raw["type"])
 	if err != nil {
@@ -86,6 +87,15 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(typeBytes, &typeUnmarshaled)
 	t.Type = typeUnmarshaled
+
+	var integrationUnmarshaled string
+	integrationBytes, err := json.Marshal(raw["integration"])
+	if err != nil {
+		return err
+	}
+	json.Unmarshal(integrationBytes, &integrationUnmarshaled)
+	t.Integration = integrationUnmarshaled
+
 	body, err := json.Marshal(raw["body"])
 	if err != nil {
 		return err
@@ -96,6 +106,7 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	var taskBody TaskBodyMap
 	err = json.Unmarshal(body, &taskBody)
 	t.Body = taskBody
+
 	return err
 }
 

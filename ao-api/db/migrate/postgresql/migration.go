@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS task_preconditions (
 task_id										INT NOT NULL,
 precondition_id					         	INT NOT NULL,
 status										VARCHAR(16) NOT NULL,
-FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE ,
 FOREIGN KEY (precondition_id) REFERENCES tasks(id) ON DELETE CASCADE ,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
@@ -204,7 +204,7 @@ id												SERIAL PRIMARY KEY,
 pipeline_id				                        INT NOT NULL,
 started_at								        TIMESTAMP WITH TIME ZONE,
 initial_data							        JSONB,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id)
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
 
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							    INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
-FOREIGN KEY (execution_id) REFERENCES executions(id),
+FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
 FOREIGN KEY (task_id) REFERENCES tasks(id),
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
@@ -226,7 +226,7 @@ task_id										INT NOT NULL,
 status										VARCHAR(16),
 return_value                                JSONB,
 log                                         VARCHAR(10485760),
-FOREIGN KEY (execution_id) REFERENCES executions(id),
+FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
 FOREIGN KEY (task_id) REFERENCES tasks(id),
 FOREIGN KEY (status) REFERENCES task_status(name)
 )`
