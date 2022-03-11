@@ -12,7 +12,6 @@ import (
 	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
 	"github.com/utopiops/automated-ops/ao-api/controllers/onoffboarding"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
-	runnercontroller "github.com/utopiops/automated-ops/ao-api/controllers/runner"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
 	"github.com/utopiops/automated-ops/ao-api/controllers/workspaces"
 	"github.com/utopiops/automated-ops/ao-api/db"
@@ -24,12 +23,10 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
-	runnerservice "github.com/utopiops/automated-ops/ao-api/services/runnerService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
-	runnerstore "github.com/utopiops/automated-ops/ao-api/stores/runnerStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
 
@@ -80,16 +77,14 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		ctx.Set("accountId", "123456")
 		ctx.Next()
 	})
-	// TODO: Providers to be called here
+	//TODO : Providers to be called here
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
-	runnerStore := runnerstore.New(db)
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue)
 	onoffboardingServices := onoffboardingService.NewOnofboardingService(pipelineStore)
 	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
-	runnerservice := runnerservice.NewRunnerService(runnerStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
 	TriggerServic := triggerService.NewTriggerService(TriggerStore)
@@ -97,7 +92,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	executionController := execution.ExecutionController{Service: executionServices}
 	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
 	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
-	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
@@ -150,11 +144,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		workspaces.POST("/offboarding/flows", onOffBoardingController.CreateOnOffBoardingFlow(onoffboarding.OffBoarding))
 		workspaces.POST("/offboarding/flows/name/:name/version/:version", onOffBoardingController.AddOnOffBoardingFlow(onoffboarding.OffBoarding))
 		workspaces.GET("/offboarding/flows", onOffBoardingController.ListOnOffBoardingFlows(onoffboarding.OffBoarding))
-	}
-	runner := r.Group("/runner")
-	{
-		runner.POST("/register/type/:type", runnerController.RegisterRunner)
-		runner.GET("/id/:id/queue", runnerController.GetQueueId)
 	}
 	intgration := r.Group("/integration")
 	{
