@@ -97,10 +97,10 @@ func init() {
 			if !ok {
 				panic("invalid integration type in task " + yamlFile.Type)
 			}
-			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_URL", Type: "text"})
-			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_SECRET", Type: "text"})
-			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_KEY", Type: "text"})
-			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_ACCESS_TOKEN", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "INTEGRATION_URL", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "INTEGRATION_SECRET", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "INTEGRATION_KEY", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
 		}
 		AvaliableTasks[yamlFile.Type] = yamlFile
 	}
