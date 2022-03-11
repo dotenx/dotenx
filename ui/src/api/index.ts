@@ -30,7 +30,7 @@ export function getTaskFields(taskName: string) {
 }
 
 export function getPipeline(name: string, version: number) {
-	return api.get<PipelineVersionData>(`/pipeline/name/${name}/version/${version}`)
+	return api.get<PipelineVersionData>(`/pipeline/name/${name}`)
 }
 
 export function getResult(executionId: string, taskName: string) {
