@@ -15,7 +15,7 @@ import (
 */
 func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error) {
 
-	pipelineId, err := manager.Store.GetActivatedPipelineVersionIdByName(noContext, accountId, name)
+	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name)
 	if err != nil {
 		log.Println(err.Error())
 		if err.Error() == "pipeline not found" {

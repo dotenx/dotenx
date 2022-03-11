@@ -15,7 +15,7 @@ import (
 */
 
 func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error) {
-	pipelineId, err := manager.Store.GetActivatedPipelineVersionIdByEndpoint(noContext, accountId, endpoint)
+	pipelineId, err := manager.Store.GetPipelineIdByEndpoint(noContext, accountId, endpoint)
 	if err != nil {
 		log.Println(err.Error())
 		if err.Error() == "pipeline not found" {
@@ -25,7 +25,6 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
-	//fmt.Println("tssssssss1")
 
 	execution := models.Execution{
 		PipelineVersionId: pipelineId,
@@ -38,16 +37,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		log.Println(err.Error())
 		return -1, err
 	}
-	//fmt.Println("tssssssss2")
 
-	// _ = redis.Execution{
-	// 	Action:      "start_pipeline",
-	// 	ExecutionId: executionId,
-	// 	PipelineId:  pipelineId,
-	// 	Input:       input,
-	// }
-
-	//err = manager.redisQueue.StoreExecution(msg, accountId)
 	if err != nil {
 		return -1, err
 	}
@@ -55,20 +45,9 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
-	//fmt.Println("tssssssss3")
 	err = manager.GetNextTask(-1, executionId, "", accountId)
 	if err != nil {
 		return -1, err
 	}
-	//fmt.Println("tssssssss4")
-	// ch, err := manager.QueueService.NewChannel()
-	// if err != nil {
-	// 	return -1, http.StatusInternalServerError
-	// }
-
-	// err = manager.QueueService.SendMessage(ch, msg, config.Configs.Queue.Exchange, config.Configs.Queue.Key)
-	// if err != nil {
-	// 	return -1, http.StatusInternalServerError
-	// }
 	return executionId, nil
 }
