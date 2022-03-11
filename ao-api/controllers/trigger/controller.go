@@ -87,7 +87,7 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, err := controller.CrudService.GetPipelineByVersion(1, accountId, trigger.Pipeline)
+		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, trigger.Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)

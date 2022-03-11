@@ -10,7 +10,6 @@ import (
 
 type ExecutionService interface {
 	// execution
-	GetExecutionGraph(executionId int, accountId string) (interface{}, int)
 	GetInitialData(executionId int, accountId string) (models.InputData, int)
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
