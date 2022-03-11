@@ -95,7 +95,7 @@ interface SelectIntegrationProps {
 
 function SelectIntegration({ control, errors, integrationType }: SelectIntegrationProps) {
 	const integrationQuery = useQuery(
-		QueryKey.GetIntegrationsByType,
+		[QueryKey.GetIntegrationsByType, integrationType],
 		() => getIntegrationsByType(integrationType),
 		{ enabled: !!integrationType }
 	)
