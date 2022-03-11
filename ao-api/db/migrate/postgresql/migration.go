@@ -203,7 +203,7 @@ id												SERIAL PRIMARY KEY,
 pipeline_id				                        INT NOT NULL,
 started_at								        TIMESTAMP WITH TIME ZONE,
 initial_data							        JSONB,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id)
 )
 `
 

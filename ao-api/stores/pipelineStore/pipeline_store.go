@@ -16,7 +16,7 @@ func New(db *db.DB) PipelineStore {
 type PipelineStore interface {
 	// pipelines
 	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
-	//GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
+	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
 	// Create pipelineStore a new pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
