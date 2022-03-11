@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
 import { Modal } from '../components/modal'
 import { EdgeData, EdgeEntity, PipeEdge } from '../components/pipe-edge'
-import { NodeData, NodeEntity, PipeNode } from '../components/pipe-node'
+import { TaskEntity, TaskNode, TaskNodeData } from '../components/task-node'
 import { TriggerEntity, TriggerNode } from '../components/trigger-node'
 import { getNodeColor, useFlow } from '../hooks/use-flow'
 import { Modals, useModal } from '../hooks/use-modal'
@@ -14,7 +14,7 @@ import { TaskSettings } from './task-settings'
 import { TriggerSettings } from './trigger-settings'
 
 const nodeTypes = {
-	default: PipeNode,
+	default: TaskNode,
 	trigger: TriggerNode,
 }
 
@@ -75,7 +75,7 @@ function TaskLogModal() {
 }
 
 interface NodeSettingsModalProps {
-	updateNode: (id: string, data: NodeData) => void
+	updateNode: (id: string, data: TaskNodeData) => void
 }
 
 function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
@@ -83,7 +83,7 @@ function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
 
 	return (
 		<Modal kind={Modals.NodeSettings}>
-			{({ id, data }: NodeEntity) => (
+			{({ id, data }: TaskEntity) => (
 				<TaskSettings
 					defaultValues={data}
 					onSave={(values) => {

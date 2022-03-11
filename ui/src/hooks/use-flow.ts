@@ -16,7 +16,7 @@ import {
 import { useQuery } from 'react-query'
 import { getPipelineTriggers, PipelineData, QueryKey, TriggerData } from '../api'
 import { EdgeData } from '../components/pipe-edge'
-import { NodeData, NodeType } from '../components/pipe-node'
+import { NodeType, TaskNodeData } from '../components/task-node'
 import { Trigger } from '../containers/edge-settings'
 import { selectedPipelineAtom } from '../containers/pipeline-select'
 import { selectedPipelineDataAtom } from '../pages'
@@ -28,7 +28,7 @@ const getId = () => `node_${id++}`
 let triggerId = 1
 const getTriggerId = () => `trigger ${triggerId++}`
 
-export const initialElements: Elements<NodeData | EdgeData> = [
+export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
 		id: getId(),
 		type: 'default',
@@ -96,7 +96,7 @@ export function useFlow() {
 			y: event.clientY - reactFlowBounds.top,
 		})
 		const id = type === NodeType.Default ? getId() : getTriggerId()
-		const newNode: FlowElement<NodeData> = {
+		const newNode: FlowElement<TaskNodeData> = {
 			id,
 			type,
 			position,
@@ -106,7 +106,7 @@ export function useFlow() {
 		setElements((es) => es.concat(newNode))
 	}
 
-	const updateElement = (id: string, data: NodeData | EdgeData) => {
+	const updateElement = (id: string, data: TaskNodeData | EdgeData) => {
 		setElements((els) => els.map((el) => (el.id === id ? { ...el, data } : el)))
 	}
 
@@ -133,7 +133,7 @@ export function getNodeColor(theme: Theme, node: Node) {
 	}
 }
 
-function mapPipelineToElements(pipeline: PipelineData): Elements<NodeData | EdgeData> {
+function mapPipelineToElements(pipeline: PipelineData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => ({
 		id: key,
 		position: { x: 0, y: 0 },
@@ -141,6 +141,7 @@ function mapPipelineToElements(pipeline: PipelineData): Elements<NodeData | Edge
 		data: {
 			name: key,
 			type: value.type,
+			integration: value.integration,
 			...value.body,
 		},
 	}))
