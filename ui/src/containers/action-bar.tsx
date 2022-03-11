@@ -1,14 +1,14 @@
 import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
-import { QueryKey, startPipeline } from '../api'
+import { deletePipeline, QueryKey, startPipeline } from '../api'
 import { Button } from '../components/button'
 import { Modal } from '../components/modal'
 import { useClearStatus } from '../hooks/use-clear-status'
 import { flowAtom, initialElements } from '../hooks/use-flow'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
-import { listenAtom, selectedExecutionAtom } from '../pages'
+import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../pages'
 import { selectedPipelineAtom } from './pipeline-select'
 import { SaveForm } from './save-form'
 
@@ -39,6 +39,8 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 	const setListen = useAtom(listenAtom)[1]
 	const setElements = useAtom(flowAtom)[1]
+	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
+	const deletePipelineMutation = useMutation(deletePipeline)
 
 	const mutation = useMutation(startPipeline, {
 		onSuccess: () => {
@@ -60,21 +62,19 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 					css={redSmallButton}
 					disabled={!selectedPipeline}
 					onClick={() => {
-						setSelectedPipeline(undefined)
-						setElements(initialElements)
-						deselectPipeline()
+						if (!selectedPipelineData) return
+						deletePipelineMutation.mutate(selectedPipelineData.name, {
+							onSuccess: () => {
+								resetPipeline()
+								client.invalidateQueries(QueryKey.GetPipelines)
+							},
+						})
 					}}
+					isLoading={deletePipelineMutation.isLoading}
 				>
 					Delete
 				</Button>
-				<Button
-					css={smallButton}
-					onClick={() => {
-						setSelectedPipeline(undefined)
-						setElements(initialElements)
-						deselectPipeline()
-					}}
-				>
+				<Button css={smallButton} onClick={resetPipeline}>
 					New
 				</Button>
 				<Button css={smallButton} onClick={() => onLayout('TB')}>
@@ -97,4 +97,10 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 			</Modal>
 		</>
 	)
+
+	function resetPipeline() {
+		setSelectedPipeline(undefined)
+		setElements(initialElements)
+		deselectPipeline()
+	}
 }
