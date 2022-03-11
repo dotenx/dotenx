@@ -27,7 +27,6 @@ func (ps *pipelineStore) GetInitialData(context context.Context, executionId int
 
 var getInitialData = `
 SELECT initial_data FROM executions e
-JOIN pipeline_versions pv ON pv.id = e.pipeline_version_id
-JOIN pipelines p ON p.id = pv.pipeline_id
-WHERE e.id = $1 AND p.account_id = $2
+JOIN pipelines pv ON pv.id = e.pipeline_id
+WHERE e.id = $1 AND pv.account_id = $2
 `

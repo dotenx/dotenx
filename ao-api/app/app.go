@@ -10,21 +10,17 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
 	"github.com/utopiops/automated-ops/ao-api/controllers/health"
 	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
-	"github.com/utopiops/automated-ops/ao-api/controllers/onoffboarding"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
-	"github.com/utopiops/automated-ops/ao-api/controllers/workspaces"
 	"github.com/utopiops/automated-ops/ao-api/db"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
-	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
-	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
@@ -83,15 +79,11 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	TriggerStore := triggerStore.New(db)
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue)
-	onoffboardingServices := onoffboardingService.NewOnofboardingService(pipelineStore)
-	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
 	TriggerServic := triggerService.NewTriggerService(TriggerStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
-	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
-	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
@@ -106,12 +98,10 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
-		pipline.GET("/name/:name", crudController.ListPipelineVersions())
 		//todo: implement this
 		//pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
-		pipline.GET("/name/:name/version/:version", crudController.GetPipeline())
-		pipline.POST("/name/:name/version/:version/activate", crudController.ActivatePipeline())
+		pipline.GET("/name/:name", crudController.GetPipeline())
 	}
 	execution := r.Group("/execution")
 	{
@@ -130,19 +120,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.POST("/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
 		execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
 		execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
-	}
-	workspaces := r.Group("/workspaces")
-	{
-		workspaces.GET("/executions", workspacesController.ListWorkspaceExecutions())
-		workspaces.GET("/flows/name/:name/version/:version", workspacesController.GetFlow())
-
-		workspaces.POST("/onboarding/flows", onOffBoardingController.CreateOnOffBoardingFlow(onoffboarding.OnBoarding))
-		workspaces.POST("/onboarding/flows/name/:name/version/:version", onOffBoardingController.AddOnOffBoardingFlow(onoffboarding.OnBoarding))
-		workspaces.GET("/onboarding/flows", onOffBoardingController.ListOnOffBoardingFlows(onoffboarding.OnBoarding))
-
-		workspaces.POST("/offboarding/flows", onOffBoardingController.CreateOnOffBoardingFlow(onoffboarding.OffBoarding))
-		workspaces.POST("/offboarding/flows/name/:name/version/:version", onOffBoardingController.AddOnOffBoardingFlow(onoffboarding.OffBoarding))
-		workspaces.GET("/offboarding/flows", onOffBoardingController.ListOnOffBoardingFlows(onoffboarding.OffBoarding))
 	}
 	intgration := r.Group("/integration")
 	{

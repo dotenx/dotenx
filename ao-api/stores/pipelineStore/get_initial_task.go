@@ -31,9 +31,8 @@ func (ps *pipelineStore) GetInitialTask(context context.Context, executionId int
 var getInitialTask = `
 select ts.id id
 from executions as e
-join pipeline_versions as pv on e.pipeline_version_id = pv.id
-join pipelines as p on pv.pipeline_id = p.id
-join tasks as ts on ts.pipeline_version_id = pv.id
+join pipelines as pv on e.pipeline_id = pv.id
+join tasks as ts on ts.pipeline_id = pv.id
 where e.id = $1
 and not exists (select * from task_preconditions as tp where tp.task_id = ts.id);
 `
