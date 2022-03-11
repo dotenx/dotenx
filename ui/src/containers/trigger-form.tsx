@@ -4,7 +4,7 @@ import { useQuery } from 'react-query'
 import * as z from 'zod'
 import {
 	AddTriggerPayload,
-	getIntegrations,
+	getIntegrationsByType,
 	getPipelines,
 	getTriggerDefinition,
 	getTriggerTypes,
@@ -49,11 +49,18 @@ export function TriggerForm({
 	const triggerType = watch('type')
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerTypes)
 	const pipelinesQuery = useQuery(QueryKey.GetPipelines, getPipelines)
-	const integrationQuery = useQuery(QueryKey.GetIntegrations, getIntegrations)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
 		() => getTriggerDefinition(triggerType),
 		{ enabled: !!triggerType }
+	)
+	const integrationType = triggerDefinitionQuery.data?.data.integration
+	const integrationQuery = useQuery(
+		[QueryKey.GetIntegrationsByType, integrationType],
+		() => {
+			if (integrationType) return getIntegrationsByType(integrationType)
+		},
+		{ enabled: !!integrationType }
 	)
 
 	return (
