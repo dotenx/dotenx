@@ -16,6 +16,7 @@ type CrudService interface {
 	CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)
 	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, error)
+	DeletePipeline(accountId, name string) (err error)
 }
 
 type crudManager struct {

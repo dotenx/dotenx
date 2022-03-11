@@ -98,8 +98,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
-		//todo: implement this
-		//pipline.DELETE("/name/:name", crudController.DeletePipeline())
+		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name", crudController.GetPipeline())
 	}
