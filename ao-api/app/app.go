@@ -73,11 +73,11 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	healthCheckController := health.HealthCheckController{}
 	// Routes
 	r.GET("/health", healthCheckController.GetStatus())
+	// setting account id for request, this account id is not importnt and only used in db tables
 	r.Use(func(ctx *gin.Context) {
-		ctx.Set("accountId", "123456")
+		ctx.Set("accountId", config.Configs.App.AccountId)
 		ctx.Next()
 	})
-	//TODO : Providers to be called here
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
@@ -97,7 +97,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 
 	// Routes
-	//pretected
 	tasks := r.Group("/task")
 	{
 		tasks.GET("", predefinedController.GetTasks)
@@ -163,7 +162,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
 		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
-	go TriggerServic.StartChecking("123456", IntegrationStore)
+	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
 	return r
 }
 
