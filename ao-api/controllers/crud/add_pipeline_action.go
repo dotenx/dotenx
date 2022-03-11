@@ -16,7 +16,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			return
 		}
 		accountId := c.MustGet("accountId").(string)
-		// TODO: Add validation and check if the from version exists!
 
 		base := models.Pipeline{
 			AccountId: accountId,

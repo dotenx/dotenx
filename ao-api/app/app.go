@@ -77,10 +77,10 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
-	crudServices := crudService.NewCrudService(pipelineStore)
-	executionServices := executionService.NewExecutionService(pipelineStore, queue)
-	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
+	crudServices := crudService.NewCrudService(pipelineStore)
+	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService)
+	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
