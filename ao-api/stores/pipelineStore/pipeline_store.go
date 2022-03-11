@@ -16,25 +16,19 @@ func New(db *db.DB) PipelineStore {
 type PipelineStore interface {
 	// pipelines
 	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
-	GetPipelineVersionId(context context.Context, executionId int) (id int, err error)
-	// Create pipelineStore a new pipeline if `fromVersion` equals to 0 otherwise adds a new pipeline version to an existing pipeline
+	//GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
+	// Create pipelineStore a new pipeline
 	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
-	// Retrieve a pipeline version based on version
-	GetByVersion(context context.Context, version int16, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error)
-	// Get the list of the versions of a pipeline by its name
-	ListPipelineVersionsByName(context context.Context, accountId string, name string) (pipelines []models.PipelineVersionSummary, err error)
-	// Activate specific version of pipeline
-	Activate(context context.Context, accountId string, name string, version int16) (err error)
-	// Check if the endpoint is valid and activated return the pipeline version id
-	GetActivatedPipelineVersionIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
-	// Check if the name is valid and activated return the pipeline version id
-	GetActivatedPipelineVersionIdByName(context context.Context, accountId string, name string) (pipelineId int, err error)
+	// Retrieve a pipeline based on name
+	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error)
+	// Check if the endpoint is valid return the pipeline id
+	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 
 	// tasks
 	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
-	GetTaskByPipelineVersionId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
+	GetTaskByPipelineId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)
 	GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error)
 	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Get task details based on execution id and task id
@@ -57,16 +51,6 @@ type PipelineStore interface {
 	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
 	// Get next job in an execution based on the status of a task in the execution
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
-	// Retrieve a pipeline version dependency graph based on execution id
-	GetExecutionGraph(context context.Context, executionId int, accountId string) (graph models.PipelineVersion, name string, err error)
-
-	/// Workspaces
-	// Get all workspace onboarding pipelines
-	ListOnBoardingPipelines(context context.Context, accountId string) (pipelines []models.WorkspacePipelineSummary, err error)
-	// Get all workspace offboarding pipelines
-	ListOffBoardingPipelines(context context.Context, accountId string) (pipelines []models.WorkspacePipelineSummary, err error)
-	// Get all the executions corresponding to workspaces (on/off-boarding) pipelines
-	ListWorkspaceExecutions(context context.Context, accountId string) (executions []models.WorkspaceExecutionSummary, err error)
 }
 
 type pipelineStore struct {

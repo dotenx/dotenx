@@ -11,20 +11,15 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
-func (p *pipelineStore) GetByVersion(context context.Context, version int16, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
-	pipeline.Version = version
 	pipeline.Manifest.Tasks = make(map[string]models.Task)
 	pipeline.Manifest.Triggers = make(map[string]models.Trigger)
 
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		var nullableServiceAccount sql.NullString
-		err = conn.QueryRow(select_pipeline_by_version, accountId, name, version).Scan(&pipeline.Id, &pipeline.FromVersion, &endpoint, &nullableServiceAccount)
-		if nullableServiceAccount.Valid {
-			pipeline.ServiceAccount = nullableServiceAccount.String
-		}
+		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -36,7 +31,7 @@ func (p *pipelineStore) GetByVersion(context context.Context, version int16, acc
 		log.Println(pipeline.Id, accountId)
 		tasks := []models.Task{}
 		var rows *sql.Rows
-		rows, err = conn.Query(select_tasks_by_pipeline_version_id, pipeline.Id)
+		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.Id)
 		if err != nil {
 			log.Println("error", err.Error())
 			return
@@ -78,36 +73,20 @@ func (p *pipelineStore) GetByVersion(context context.Context, version int16, acc
 				Description:  task.Description,
 			}
 		}
-		triggers := []struct {
-			Id   int
-			Name string
-			models.Trigger
-		}{}
-		err = conn.Select(&triggers, select_trigger_by_pipeline_version_id, pipeline.Id)
-		if err != nil {
-			return
-		}
-		for _, trigger := range triggers {
-			pipeline.Manifest.Triggers[trigger.Name] = trigger.Trigger
-		}
 	}
 	return pipeline, endpoint, nil
 }
 
-var select_pipeline_by_version = `
-SELECT pv.id as id, pv.from_version, p.endpoint, pv.service_account
-FROM pipeline_versions pv JOIN pipelines p ON pv.pipeline_id = p.id
-WHERE p.account_id = $1 AND p.name = $2 AND version = $3
+var select_pipeline = `
+SELECT id , endpoint
+FROM pipelines p
+WHERE account_id = $1 AND name = $2
 `
-var select_tasks_by_pipeline_version_id = `
+var select_tasks_by_pipeline_id = `
 SELECT id, name, task_type, description, body FROM tasks
-WHERE pipeline_version_id = $1
+WHERE pipeline_id = $1
 `
 var select_preconditions_by_task_id = `
 SELECT precondition_id, status FROM task_preconditions
 WHERE task_id = $1
-`
-var select_trigger_by_pipeline_version_id = `
-SELECT id, name, trigger_type FROM triggers
-WHERE pipeline_version_id = $1
 `
