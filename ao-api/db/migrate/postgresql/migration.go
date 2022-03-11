@@ -29,14 +29,6 @@ var migrations = []struct {
 		stmt: createTableTaskStatus,
 	},
 	{
-		name: "create-table-task-types",
-		stmt: createTableTaskTypes,
-	},
-	/*{
-		name: "drop-table-tasks",
-		stmt: dropTableTasks,
-	},*/
-	{
 		name: "create-table-tasks2",
 		stmt: createTableTasks,
 	},
@@ -79,10 +71,6 @@ var migrations = []struct {
 	{
 		name: "add_column_service_account_to_pipeline_versions",
 		stmt: addColumnServiceAccountToPipelineVersions,
-	},
-	{
-		name: "create-table-runner_queue",
-		stmt: createTableRunnerQueue,
 	},
 	{
 		name: "create-table-integrations",
@@ -203,12 +191,6 @@ name											VARCHAR(16) PRIMARY KEY
 )
 ` // Seeded
 
-var createTableTaskTypes = `
-CREATE TABLE IF NOT EXISTS task_types (
-name											VARCHAR(64) PRIMARY KEY
-)
-` // Seeded
-
 var createTableTasks = `
 CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
@@ -250,7 +232,8 @@ initial_data							        JSONB,
 FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
 )
 `
-var dropTasks = `drop table tasks`
+
+//var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							    INT NOT NULL,
@@ -304,11 +287,6 @@ var addColumnServiceAccountToPipelineVersions = `
 ALTER TABLE pipeline_versions
 ADD COLUMN service_account VARCHAR(64)
 `
-var createTableRunnerQueue = `CREATE TABLE IF NOT EXISTS runner_queue (
-	runner_id varchar(32) PRIMARY KEY,
-	account_id varchar(32),
-	queue_type varchar(32)
-)`
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
@@ -322,7 +300,6 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
-var dropTableTasks = `drop table tasks`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
