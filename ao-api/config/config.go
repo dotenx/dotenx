@@ -13,8 +13,8 @@ type (
 
 	App struct {
 		Port           string `envconfig:"AOA_APP_PORT" default:"3004"`
-		CheckTrigger   string `envconfig:"AOA_CHECK_TRIGGER"`
-		AccountId      string `envconfig:"AOA_ACCOUNT_ID"`
+		CheckTrigger   string `envconfig:"AOA_APP_CHECK_TRIGGER"`
+		AccountId      string `envconfig:"AOA_APP_ACCOUNT_ID"`
 		Environment    string `envconfig:"AOA_APP_ENV"`
 		AllowedOrigins string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
