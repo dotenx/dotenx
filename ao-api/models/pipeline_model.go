@@ -63,6 +63,7 @@ type Task struct {
 	Type         string              `db:"task_type" json:"type" yaml:"type"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
+	Integration  string              `db:"integration" json:"integration" yaml:"integration"`
 }
 
 func (t *Task) UnmarshalJSON(data []byte) error {
