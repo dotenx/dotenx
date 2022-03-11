@@ -8,5 +8,4 @@ fields:
     type: text
   - key: text
     type: text
-  - key: api_key
-    type: text
+

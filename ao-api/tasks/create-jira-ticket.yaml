@@ -12,5 +12,3 @@ fields:
     type: text
   - key: jira_url
     type: text
-  - key: access_token
-    type: text

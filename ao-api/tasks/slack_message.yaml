@@ -6,5 +6,3 @@ fields:
     type: text
   - key: text
     type: text
-  - key: access_token
-    type: text
