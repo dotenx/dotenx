@@ -5,7 +5,7 @@ import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
 import { API_URL, Pipeline, PipelineEventMessage } from '../api'
 import { Layout } from '../components/layout'
-import { NodeData } from '../components/pipe-node'
+import { TaskNodeData } from '../components/task-node'
 import { ActionBar } from '../containers/action-bar'
 import { DragDropNodes } from '../containers/drag-drop-nodes'
 import { Flow } from '../containers/flow'
@@ -37,7 +37,7 @@ export default function Home({ location }: PageProps) {
 				elements.map((element) => {
 					const updated = data.tasks.find((task) => task.name === element.id)
 					if (!updated) return element
-					const node = element as Node<NodeData>
+					const node = element as Node<TaskNodeData>
 					if (!node.data) return node
 					return {
 						...node,
