@@ -10,7 +10,6 @@ import (
 
 var seeds = []string{
 	insertTaskStatusValues,
-	insertTriggerTypeValues,
 }
 
 func Seed(db *sql.DB) error {
@@ -36,12 +35,6 @@ func format(values []string) string {
 
 var insertTaskStatusValues = `
 INSERT INTO task_status (name) VALUES ` + format(models.TaskStatusValues()) + ` 
-ON CONFLICT (name) 
-DO NOTHING;
-`
-
-var insertTriggerTypeValues = `
-INSERT INTO trigger_types (name) VALUES ` + format(models.TriggerTypeValues()) + ` 
 ON CONFLICT (name) 
 DO NOTHING;
 `
