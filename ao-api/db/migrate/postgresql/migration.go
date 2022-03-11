@@ -53,10 +53,6 @@ var migrations = []struct {
 		stmt: createTableExecutionsResult,
 	},
 	{
-		name: "create-table-trigger-types",
-		stmt: createTableTriggerTypes,
-	},
-	{
 		name: "create-table-integrations",
 		stmt: createTableIntegrations,
 	},
@@ -215,7 +211,7 @@ execution_id							    INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
 FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
-FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
 `
@@ -227,15 +223,9 @@ status										VARCHAR(16),
 return_value                                JSONB,
 log                                         VARCHAR(10485760),
 FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
-FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )`
-
-var createTableTriggerTypes = `
-CREATE TABLE IF NOT EXISTS trigger_types (
-name											VARCHAR(64) PRIMARY KEY
-)
-` // Seeded
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
