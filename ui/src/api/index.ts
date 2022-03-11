@@ -85,6 +85,10 @@ export function deleteTrigger(name: string) {
 	return api.delete<void>(`/trigger/name/${name}`)
 }
 
+export function getIntegrationsByType(type: string) {
+	return api.get<IntegrationData[]>(`/integration/type/${type}`)
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
@@ -99,6 +103,7 @@ export enum QueryKey {
 	GetTriggerTypes = 'get-trigger-types',
 	GetTriggerDefinition = 'get-trigger-definition',
 	GetPipelineTriggers = 'get-pipeline-triggers',
+	GetIntegrationsByType = 'get-integration-by-type',
 }
 
 export enum Status {
