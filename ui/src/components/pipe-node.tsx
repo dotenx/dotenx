@@ -11,6 +11,7 @@ export interface NodeData {
 	type: string
 	status?: Status
 	executionId?: string
+	integration?: string
 }
 
 export interface NodeEntity {

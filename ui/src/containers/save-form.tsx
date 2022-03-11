@@ -90,7 +90,8 @@ function mapElementsToPayload(elements: Elements<NodeData | EdgeData>): Manifest
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
 		tasks[node.data.name] = {
 			type: node.data.type,
-			body: _.omit(node.data, ['name', 'type']),
+			body: _.omit(node.data, ['name', 'type', 'integration']),
+			integration: node.data.integration ?? '',
 			executeAfter: mapEdgesToExecuteAfter(connectedEdges, elements),
 		}
 	})

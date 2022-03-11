@@ -9,8 +9,8 @@ import { getNodeColor, useFlow } from '../hooks/use-flow'
 import { Modals, useModal } from '../hooks/use-modal'
 import { selectedPipelineDataAtom } from '../pages'
 import { EdgeSettings } from './edge-settings'
-import { NodeSettings } from './node-settings'
 import { TaskLog, TaskLogProps } from './task-log'
+import { TaskSettings } from './task-settings'
 import { TriggerSettings } from './trigger-settings'
 
 const nodeTypes = {
@@ -84,7 +84,7 @@ function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	return (
 		<Modal kind={Modals.NodeSettings}>
 			{({ id, data }: NodeEntity) => (
-				<NodeSettings
+				<TaskSettings
 					defaultValues={data}
 					onSave={(values) => {
 						updateNode(id, values)

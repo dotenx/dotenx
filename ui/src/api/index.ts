@@ -191,6 +191,7 @@ export interface TaskFields {
 		key: string
 		type: string
 	}[]
+	integration_type: string
 }
 
 export interface TasksData {
@@ -226,4 +227,5 @@ export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
 	body: Record<string, string>
+	integration: string
 }
