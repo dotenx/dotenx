@@ -14,7 +14,7 @@ import {
 	removeElements,
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
-import { getPipelineTriggers, PipelineVersionData, QueryKey, TriggerData } from '../api'
+import { getPipelineTriggers, PipelineData, QueryKey, TriggerData } from '../api'
 import { EdgeData } from '../components/pipe-edge'
 import { NodeData, NodeType } from '../components/pipe-node'
 import { Trigger } from '../containers/edge-settings'
@@ -133,7 +133,7 @@ export function getNodeColor(theme: Theme, node: Node) {
 	}
 }
 
-function mapPipelineToElements(pipeline: PipelineVersionData): Elements<NodeData | EdgeData> {
+function mapPipelineToElements(pipeline: PipelineData): Elements<NodeData | EdgeData> {
 	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => ({
 		id: key,
 		position: { x: 0, y: 0 },
