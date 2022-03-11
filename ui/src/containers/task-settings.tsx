@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import _ from 'lodash'
-import { useForm } from 'react-hook-form'
+import { Control, FieldErrors, useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
-import { getTaskFields, getTasks, QueryKey } from '../api'
+import { getIntegrations, getTaskFields, getTasks, QueryKey } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -16,12 +16,14 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-interface NodeSettingsProps {
+interface TaskSettingsProps {
 	defaultValues: Schema
 	onSave: (values: Schema) => void
 }
 
-export function NodeSettings({ defaultValues, onSave }: NodeSettingsProps) {
+export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
+	console.log(defaultValues)
+
 	const {
 		control,
 		formState: { errors },
@@ -48,6 +50,7 @@ export function NodeSettings({ defaultValues, onSave }: NodeSettingsProps) {
 		}
 	)
 	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
+	const integrationType = taskFieldsQuery.data?.data.integration_type
 
 	return (
 		<Form css={{ height: '100%' }} onSubmit={handleSubmit(() => onSave(getValues()))}>
@@ -71,8 +74,33 @@ export function NodeSettings({ defaultValues, onSave }: NodeSettingsProps) {
 						name={taskField.key}
 					/>
 				))}
+				{integrationType && <SelectIntegration control={control} errors={errors} />}
 			</div>
 			<Button type="submit">Save</Button>
 		</Form>
+	)
+}
+
+interface SelectIntegrationProps {
+	control: Control<Schema>
+	errors: FieldErrors
+}
+
+function SelectIntegration({ control, errors }: SelectIntegrationProps) {
+	const integrationQuery = useQuery(QueryKey.GetIntegrations, getIntegrations)
+
+	return (
+		<Select
+			label="Integration"
+			name="integration"
+			control={control}
+			isLoading={integrationQuery.isLoading}
+			errors={errors}
+			options={integrationQuery?.data?.data.map((integration) => ({
+				label: integration.name,
+				value: integration.name,
+			}))}
+			placeholder="Integration name"
+		/>
 	)
 }
