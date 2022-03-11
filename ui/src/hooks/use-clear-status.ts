@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 import { useCallback } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
-import { NodeData } from '../components/pipe-node'
+import { TaskNodeData } from '../components/task-node'
 import { flowAtom } from '../hooks/use-flow'
 
 export function useClearStatus() {
@@ -11,7 +11,7 @@ export function useClearStatus() {
 		setElements((elements) =>
 			elements.map((element) => {
 				if (isNode(element)) {
-					const node = element as Node<NodeData>
+					const node = element as Node<TaskNodeData>
 					if (!node.data) return node
 					return { ...node, data: { ...node.data, status: undefined } }
 				}
