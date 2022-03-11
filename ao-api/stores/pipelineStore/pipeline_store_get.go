@@ -39,7 +39,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 		for rows.Next() {
 			task := models.Task{}
 			var body interface{}
-			err = rows.Scan(&task.Id, &task.Name, &task.Type, &task.Description, &body)
+			err = rows.Scan(&task.Id, &task.Name, &task.Type, &task.Integration, &task.Description, &body)
 			if err != nil {
 				return
 			}
@@ -83,7 +83,7 @@ FROM pipelines p
 WHERE account_id = $1 AND name = $2
 `
 var select_tasks_by_pipeline_id = `
-SELECT id, name, task_type, description, body FROM tasks
+SELECT id, name, task_type, integration, description, body FROM tasks
 WHERE pipeline_id = $1
 `
 var select_preconditions_by_task_id = `

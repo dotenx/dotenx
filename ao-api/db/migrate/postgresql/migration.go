@@ -170,6 +170,7 @@ CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
 task_type									    VARCHAR(64),
+integration					        			VARCHAR(128),
 description					        			VARCHAR(128),
 pipeline_id			                         	INT NOT NULL,
 body											JSONB,

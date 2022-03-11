@@ -43,7 +43,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 		// Insert all the tasks first (reason: FK constraint)
 		for name, task := range pipeline.Manifest.Tasks {
 			var taskId int
-			err := tx.QueryRow(create_task, name, task.Type, "description", pipelineId, task.Body).Scan(&taskId)
+			err := tx.QueryRow(create_task, name, task.Type, task.Integration, "description", pipelineId, task.Body).Scan(&taskId)
 			if err != nil {
 				return err
 			}
@@ -89,8 +89,8 @@ VALUES ($1, $2) RETURNING id
 `
 
 const create_task = `
-INSERT INTO tasks (name, task_type, description, pipeline_id, body)
-VALUES ($1, $2, $3, $4, $5) RETURNING id
+INSERT INTO tasks (name, task_type,integration, description, pipeline_id, body)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 `
 const create_task_precondition = `
 INSERT INTO task_preconditions (task_id, precondition_id, status)
