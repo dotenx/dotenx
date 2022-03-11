@@ -8,7 +8,7 @@ import (
 
 type PredifinedTaskService interface {
 	GetTasks() ([]string, error)
-	GetTaskFields(taskName string) ([]models.TaskField, error)
+	GetTaskFields(taskName string) ([]models.TaskField, string, error)
 }
 
 type predifinedTaskService struct {
@@ -27,11 +27,11 @@ func (r *predifinedTaskService) GetTasks() ([]string, error) {
 	return types, nil
 }
 
-func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, error) {
+func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, string, error) {
 	for t := range models.AvaliableTasks {
 		if t == taskType {
-			return models.AvaliableTasks[t].Fields, nil
+			return models.AvaliableTasks[t].Fields, models.AvaliableTasks[t].Integration, nil
 		}
 	}
-	return nil, errors.New("invalid task type")
+	return nil, "", errors.New("invalid task type")
 }
