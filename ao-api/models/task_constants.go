@@ -7,9 +7,10 @@ import (
 )
 
 type TaskDefinition struct {
-	Type   string
-	Fields []TaskField
-	Image  string
+	Type        string
+	Fields      []TaskField
+	Image       string
+	Integration string
 }
 
 var AvaliableTasks map[string]TaskDefinition

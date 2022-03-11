@@ -16,7 +16,7 @@ type IntegrationStore interface {
 	DeleteIntegration(ctx context.Context, accountId string, integrationName string) error
 	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
 	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
-	GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error)
+	GetIntegrationByName(ctx context.Context, accountId, name string) (models.Integration, error)
 }
 
 type integrationStore struct {
@@ -116,7 +116,7 @@ select * from integrations
 where account_id = $1 and name = $2;
 `
 
-func (store *integrationStore) GetIntegrationsByName(ctx context.Context, accountId, name string) (models.Integration, error) {
+func (store *integrationStore) GetIntegrationByName(ctx context.Context, accountId, name string) (models.Integration, error) {
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection

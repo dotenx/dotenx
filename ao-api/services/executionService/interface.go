@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 )
@@ -29,17 +30,16 @@ type ExecutionService interface {
 }
 
 type executionManager struct {
-	Store pipelineStore.PipelineStore
-	//QueueService messaging.QueueService
-	QueueService queueService.QueueService
-	//redisQueue   redis.RDB
+	Store              pipelineStore.PipelineStore
+	QueueService       queueService.QueueService
+	IntegrationService integrationService.IntegrationService
 }
 
-func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService) ExecutionService {
+func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService) ExecutionService {
 	return &executionManager{
-		Store:        store,
-		QueueService: queue,
-		//redisQueue:   rdb,
+		Store:              store,
+		QueueService:       queue,
+		IntegrationService: intgService,
 	}
 }
 

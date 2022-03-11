@@ -92,6 +92,16 @@ func init() {
 		if yamlFile.Fields == nil {
 			yamlFile.Fields = make([]TaskField, 0)
 		}
+		if yamlFile.Integration != "" {
+			_, ok := AvaliableIntegrations[yamlFile.Integration]
+			if !ok {
+				panic("invalid integration type in task " + yamlFile.Type)
+			}
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_URL", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_SECRET", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_KEY", Type: "text"})
+			yamlFile.Fields = append(yamlFile.Fields, TaskField{Key: "CREDENTIAL_ACCESS_TOKEN", Type: "text"})
+		}
 		AvaliableTasks[yamlFile.Type] = yamlFile
 	}
 	fmt.Println(AvaliableTasks)
