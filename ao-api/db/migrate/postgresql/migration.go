@@ -21,10 +21,6 @@ var migrations = []struct {
 		stmt: createTablePipelines,
 	},
 	{
-		name: "create-table-pipeline-versions",
-		stmt: createTablePipelineVersions,
-	},
-	{
 		name: "create-table-task-status",
 		stmt: createTableTaskStatus,
 	},
@@ -59,18 +55,6 @@ var migrations = []struct {
 	{
 		name: "create-table-trigger-types",
 		stmt: createTableTriggerTypes,
-	},
-	{
-		name: "create-table-triggers",
-		stmt: createTableTriggers,
-	},
-	{
-		name: "create-table-pipeline-activations",
-		stmt: createTablePipelineActivations,
-	},
-	{
-		name: "add_column_service_account_to_pipeline_versions",
-		stmt: addColumnServiceAccountToPipelineVersions,
 	},
 	{
 		name: "create-table-integrations",
@@ -169,19 +153,9 @@ var createTablePipelines = `
 CREATE TABLE IF NOT EXISTS pipelines (
 id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
-account_id         				VARCHAR(64),
-endpoint 									uuid DEFAULT uuid_generate_v4(),
+account_id         			                 	VARCHAR(64),
+endpoint 							     		uuid DEFAULT uuid_generate_v4(),
 UNIQUE (name, account_id)
-)
-`
-var createTablePipelineVersions = `
-CREATE TABLE IF NOT EXISTS pipeline_versions (
-id												SERIAL PRIMARY KEY,
-pipeline_id 							INT NOT NULL,
-version		        				SMALLINT NOT NULL,
-from_version       				SMALLINT DEFAULT 0 NOT NULL,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id),
-UNIQUE (pipeline_id, version)
 )
 `
 
@@ -197,10 +171,10 @@ id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
 task_type									    VARCHAR(64),
 description					        			VARCHAR(128),
-pipeline_version_id			                 	INT NOT NULL,
+pipeline_id			                         	INT NOT NULL,
 body											JSONB,
 timeout                                         INT NOT NULL default 30,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 )
 `
 
@@ -210,7 +184,7 @@ task_id										INT NOT NULL,
 precondition_id					         	INT NOT NULL,
 status										VARCHAR(16) NOT NULL,
 FOREIGN KEY (task_id) REFERENCES tasks(id),
-FOREIGN KEY (precondition_id) REFERENCES tasks(id),
+FOREIGN KEY (precondition_id) REFERENCES tasks(id) ON DELETE CASCADE ,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
 `
@@ -226,10 +200,10 @@ CREATE INDEX task_preconditions_tasks ON task_preconditions (task_id)
 var createTableExecutions = `
 CREATE TABLE IF NOT EXISTS executions (
 id												SERIAL PRIMARY KEY,
-pipeline_version_id				                INT NOT NULL,
+pipeline_id				                        INT NOT NULL,
 started_at								        TIMESTAMP WITH TIME ZONE,
 initial_data							        JSONB,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 )
 `
 
@@ -261,32 +235,6 @@ CREATE TABLE IF NOT EXISTS trigger_types (
 name											VARCHAR(64) PRIMARY KEY
 )
 ` // Seeded
-
-var createTableTriggers = `
-CREATE TABLE IF NOT EXISTS triggers (
-id												SERIAL PRIMARY KEY,
-name											VARCHAR(64),
-trigger_type							VARCHAR(64),
-pipeline_version_id				INT NOT NULL,
-data_bag									JSONB,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id),
-FOREIGN KEY (trigger_type) REFERENCES trigger_types(name)
-)
-`
-
-var createTablePipelineActivations = `
-CREATE TABLE IF NOT EXISTS pipeline_activations (
-pipeline_id								INT PRIMARY KEY,
-activated_version					INT NOT NULL,
-last_activation						TIMESTAMP NOT NULL,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id),
-FOREIGN KEY (activated_version) REFERENCES pipeline_versions(id)
-)
-`
-var addColumnServiceAccountToPipelineVersions = `
-ALTER TABLE pipeline_versions
-ADD COLUMN service_account VARCHAR(64)
-`
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
