@@ -38,9 +38,10 @@ export function Table({ title, headers, items = [] }: TableProps) {
 interface ItemProps {
 	children: ReactNode
 	values: string[]
+	onDelete: () => void
 }
 
-export function Item({ children, values }: ItemProps) {
+export function Item({ children, values, onDelete }: ItemProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
@@ -63,7 +64,9 @@ export function Item({ children, values }: ItemProps) {
 				{values.map((value, index) => (
 					<div key={index}>{value}</div>
 				))}
-				<Button css={[redSmallButton, { marginLeft: 'auto' }]}>Delete</Button>
+				<Button css={[redSmallButton, { marginLeft: 'auto' }]} onClick={onDelete}>
+					Delete
+				</Button>
 			</div>
 			{isOpen && <div css={{ padding: 4 }}>{children}</div>}
 		</div>
