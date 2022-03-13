@@ -6,6 +6,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
+	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 )
 
@@ -33,6 +34,7 @@ type executionManager struct {
 	Store              pipelineStore.PipelineStore
 	QueueService       queueService.QueueService
 	IntegrationService integrationService.IntegrationService
+	UtopiopsService    utopiopsService.UtopiopsService
 }
 
 func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService) ExecutionService {
