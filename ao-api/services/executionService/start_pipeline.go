@@ -38,9 +38,6 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return -1, err
 	}
 
-	if err != nil {
-		return -1, err
-	}
 	err = manager.QueueService.AddUser(accountId)
 	if err != nil {
 		return -1, err

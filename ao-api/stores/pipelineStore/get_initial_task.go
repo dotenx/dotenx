@@ -18,7 +18,7 @@ func (ps *pipelineStore) GetInitialTask(context context.Context, executionId int
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
-				return 0, errors.New("not found")
+				return 0, errors.New("task id not found")
 			}
 			return 0, err
 		}
