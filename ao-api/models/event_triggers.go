@@ -14,7 +14,9 @@ type TriggerDefinition struct {
 	IntegrationType string       `json:"integration" yaml:"integration"`
 	Image           string       `json:"image" yaml:"image"`
 	Credentials     []Credential `json:"credentials" yaml:"credentials"`
+	Author          string       `json:"author" yaml:"author"`
 }
+
 type Credential struct {
 	Key  string `yaml:"key"`
 	Type string `yaml:"type"`

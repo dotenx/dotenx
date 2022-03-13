@@ -1,3 +1,0 @@
-type: test
-integration: slack-bot 
-image: awrmin/triggertest

@@ -7,3 +7,4 @@ fields:
     type: text
   - key: body
     type: JSON
+author: Armingodiz

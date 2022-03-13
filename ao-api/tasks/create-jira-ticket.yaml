@@ -12,3 +12,4 @@ fields:
     type: text
   - key: jira_url
     type: text
+author: Armingodiz
