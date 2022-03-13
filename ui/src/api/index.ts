@@ -17,10 +17,6 @@ export function startPipeline(payload: StartPipelinePayload) {
 	return api.post<void>(`/execution/ep/${payload.endpoint}/start`, {})
 }
 
-export function activatePipeline(payload: ActivatePipelinePayload) {
-	return api.post<void>(`/pipeline/name/${payload.name}/version/${payload.version}/activate`)
-}
-
 export function getTasks() {
 	return api.get<TasksData>('/task')
 }
@@ -29,8 +25,8 @@ export function getTaskFields(taskName: string) {
 	return api.get<TaskFields>(`/task/${taskName}/fields`)
 }
 
-export function getPipeline(name: string, version: number) {
-	return api.get<PipelineVersionData>(`/pipeline/name/${name}/version/${version}`)
+export function getPipeline(name: string) {
+	return api.get<PipelineData>(`/pipeline/name/${name}`)
 }
 
 export function getResult(executionId: string, taskName: string) {
@@ -77,6 +73,22 @@ export function getPipelineTriggers(pipelineName: string) {
 	return api.get<TriggerData[]>(`/trigger`, { params: { pipeline: pipelineName } })
 }
 
+export function deletePipeline(name: string) {
+	return api.delete<void>(`/pipeline/name/${name}`)
+}
+
+export function deleteIntegration(name: string) {
+	return api.delete<void>(`/integration/name/${name}`)
+}
+
+export function deleteTrigger(name: string) {
+	return api.delete<void>(`/trigger/name/${name}`)
+}
+
+export function getIntegrationsByType(type: string) {
+	return api.get<IntegrationData[]>(`/integration/type/${type}`)
+}
+
 export enum QueryKey {
 	GetPipelines = 'get-pipelines',
 	GetTasks = 'get-tasks',
@@ -91,6 +103,7 @@ export enum QueryKey {
 	GetTriggerTypes = 'get-trigger-types',
 	GetTriggerDefinition = 'get-trigger-definition',
 	GetPipelineTriggers = 'get-pipeline-triggers',
+	GetIntegrationsByType = 'get-integration-by-type',
 }
 
 export enum Status {
@@ -154,7 +167,6 @@ export interface AddIntegrationPayload {
 
 export interface Execution {
 	Id: number
-	PipelineVersionId: number
 	StartedAt: string
 	InitialData: unknown | null
 }
@@ -173,9 +185,7 @@ export interface TaskResult {
 	return_value: string
 }
 
-export interface PipelineVersionData {
-	fromVersion: number
-	version: number
+export interface PipelineData {
 	serviceAccount: string
 	endpoint: string
 	manifest: Manifest
@@ -186,15 +196,11 @@ export interface TaskFields {
 		key: string
 		type: string
 	}[]
+	integration_type: string
 }
 
 export interface TasksData {
 	tasks: string[]
-}
-
-export interface ActivatePipelinePayload {
-	name: string
-	version: number
 }
 
 export interface StartPipelinePayload {
@@ -208,7 +214,6 @@ export interface Pipeline {
 
 export interface AddPipelinePayload {
 	name: string
-	fromVersion: number
 	manifest: Manifest
 }
 
@@ -227,4 +232,5 @@ export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
 	body: Record<string, string>
+	integration: string
 }
