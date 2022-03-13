@@ -9,11 +9,11 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/db"
 )
 
-func (ps *pipelineStore) GetTaskByPipelineId(context context.Context, executionId int, taskName string) (id int, err error) {
+func (ps *pipelineStore) GetTaskByPipelineId(context context.Context, pipelineId int, taskName string) (id int, err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-		err = conn.QueryRow(getTaskByPipelineId, taskName, executionId).Scan(&id)
+		err = conn.QueryRow(getTaskByPipelineId, taskName, pipelineId).Scan(&id)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
