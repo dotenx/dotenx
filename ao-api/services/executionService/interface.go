@@ -37,11 +37,12 @@ type executionManager struct {
 	UtopiopsService    utopiopsService.UtopiopsService
 }
 
-func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService) ExecutionService {
+func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService, utoService utopiopsService.UtopiopsService) ExecutionService {
 	return &executionManager{
 		Store:              store,
 		QueueService:       queue,
 		IntegrationService: intgService,
+		UtopiopsService:    utoService,
 	}
 }
 

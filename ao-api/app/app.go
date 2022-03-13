@@ -21,6 +21,8 @@ import (
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
+	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
+	"github.com/utopiops/automated-ops/ao-api/stores/authorStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
@@ -77,11 +79,13 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
+	AuthorStore := authorStore.New(db)
+	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
 	crudServices := crudService.NewCrudService(pipelineStore)
-	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService)
+	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
