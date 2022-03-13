@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { FormHTMLAttributes } from 'react'
 
 type FormProps = FormHTMLAttributes<HTMLFormElement>

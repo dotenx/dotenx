@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteTrigger, getTriggers, QueryKey } from '../api'
