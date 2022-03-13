@@ -14,6 +14,8 @@ import (
 type IntegrationStore interface {
 	AddIntegration(ctx context.Context, accountId string, integration models.Integration) error
 	DeleteIntegration(ctx context.Context, accountId string, integrationName string) error
+	CheckTasksForIntegration(ctx context.Context, accountId string, integrationName string) (bool, error)
+	CheckTriggersForIntegration(ctx context.Context, accountId string, integrationName string) (bool, error)
 	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
 	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
 	GetIntegrationByName(ctx context.Context, accountId, name string) (models.Integration, error)
@@ -162,4 +164,56 @@ func (store *integrationStore) DeleteIntegration(ctx context.Context, accountId 
 var deleteIntegration = `
 delete from integrations 
 where account_id = $1 and name = $2;
+`
+
+func (ps *integrationStore) CheckTasksForIntegration(context context.Context, accountId string, integrationName string) (bool, error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		conn := ps.db.Connection
+		var count int
+		err := conn.QueryRow(checkTasks, integrationName).Scan(&count)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return false, err
+		}
+		if count > 0 {
+			return true, nil
+		}
+		return false, nil
+	}
+	return false, errors.New("driver not supported")
+}
+
+var checkTasks = `
+SELECT count(*) FROM tasks
+WHERE integration = $1;
+`
+
+func (ps *integrationStore) CheckTriggersForIntegration(context context.Context, accountId string, integrationName string) (bool, error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		conn := ps.db.Connection
+		var count int
+		err := conn.QueryRow(checkTriggers, integrationName).Scan(&count)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return false, err
+		}
+		if count > 0 {
+			return true, nil
+		}
+		return false, nil
+	}
+	return false, errors.New("driver not supported")
+}
+
+var checkTriggers = `
+SELECT count(*) FROM event_triggers
+WHERE integration = $1;
 `
