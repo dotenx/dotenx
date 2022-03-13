@@ -1,5 +1,6 @@
-import { PageProps } from 'gatsby'
+/** @jsxImportSource @emotion/react */
 import { BsPlusSquare } from 'react-icons/bs'
+import { useLocation } from 'react-router-dom'
 import { Button } from '../components/button'
 import { Layout } from '../components/layout'
 import { Modal } from '../components/modal'
@@ -7,7 +8,9 @@ import { NewTrigger } from '../containers/new-trigger'
 import { TriggerList } from '../containers/trigger-list'
 import { Modals, useModal } from '../hooks/use-modal'
 
-export default function Triggers({ location }: PageProps) {
+export default function Triggers() {
+	const location = useLocation()
+
 	return (
 		<Layout pathname={location.pathname} header={<Header />}>
 			<div css={{ padding: '48px 96px', flexGrow: 1 }}>

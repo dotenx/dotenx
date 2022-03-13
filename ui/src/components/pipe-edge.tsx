@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { MouseEvent } from 'react'
 import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'

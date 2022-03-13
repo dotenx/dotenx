@@ -19,7 +19,7 @@ import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
 import { Trigger } from '../containers/edge-settings'
 import { selectedPipelineAtom } from '../containers/pipeline-select'
-import { selectedPipelineDataAtom } from '../pages'
+import { selectedPipelineDataAtom } from '../pages/home'
 import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 let id = 0

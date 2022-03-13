@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { atom, useAtom } from 'jotai'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
