@@ -1,11 +1,11 @@
+/** @jsxImportSource @emotion/react */
 import { Theme, ThemeProvider } from '@emotion/react'
-import { Link } from 'gatsby'
 import { ReactNode, useEffect } from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
 import { BsArrowRightShort } from 'react-icons/bs'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import '../styles/global.css'
+import { Link } from 'react-router-dom'
 
 const theme: Theme = {
 	color: {

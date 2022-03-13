@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useQuery } from 'react-query'
 import { getResult, QueryKey } from '../api'
 

@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteIntegration, getIntegrations, QueryKey } from '../api'
 import { Detail, Item, Table } from '../components/table'

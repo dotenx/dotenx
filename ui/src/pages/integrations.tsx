@@ -1,5 +1,6 @@
-import { PageProps } from 'gatsby'
+/** @jsxImportSource @emotion/react */
 import { BsPlusSquare } from 'react-icons/bs'
+import { useLocation } from 'react-router-dom'
 import { Button } from '../components/button'
 import { Layout } from '../components/layout'
 import { Modal } from '../components/modal'
@@ -7,7 +8,9 @@ import { IntegrationList } from '../containers/integration-list'
 import { NewIntegration } from '../containers/new-integration'
 import { Modals, useModal } from '../hooks/use-modal'
 
-export default function Integrations({ location }: PageProps) {
+export default function Integrations() {
+	const location = useLocation()
+
 	return (
 		<Layout pathname={location.pathname} header={<Header />}>
 			<div css={{ padding: '48px 96px', flexGrow: 1 }}>

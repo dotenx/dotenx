@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { AddTriggerPayload } from '../api'
 import { TriggerForm } from './trigger-form'
 
