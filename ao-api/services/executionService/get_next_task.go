@@ -57,6 +57,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			log.Println(err.Error())
 			return err
 		}
+		manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTasks[task.Type].Author, "task", task.Type)
 		return nil
 	} else {
 		taskIds, err := manager.Store.GetNextTasks(noContext, executionId, taskId, status)
@@ -105,6 +106,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				log.Println(err.Error())
 				return err
 			}
+			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTasks[task.Type].Author, "task", task.Type)
 		}
 		return nil
 	}
