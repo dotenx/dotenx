@@ -34,8 +34,7 @@ type PipelineDto struct {
 }
 
 type Manifest struct {
-	Triggers map[string]Trigger `db:"triggers" json:"triggers" yaml:"triggers,omitempty"`
-	Tasks    map[string]Task    `db:"tasks" json:"tasks" yaml:"tasks"`
+	Tasks map[string]Task `db:"tasks" json:"tasks" yaml:"tasks"`
 }
 
 func (m Manifest) Value() (driver.Value, error) {
@@ -49,11 +48,6 @@ func (m *Manifest) Scan(value interface{}) error {
 		return errors.New("type assertion to []byte failed")
 	}
 
-}
-
-type Trigger struct {
-	Type TriggerType `db:"trigger_type" json:"type" yaml:"type"`
-	Body TriggerBody `db:"body" json:"body" yaml:"body,omitempty"`
 }
 
 type Task struct {

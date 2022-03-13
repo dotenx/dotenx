@@ -14,7 +14,6 @@ import (
 func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	pipeline.Manifest.Tasks = make(map[string]models.Task)
-	pipeline.Manifest.Triggers = make(map[string]models.Trigger)
 
 	switch p.db.Driver {
 	case db.Postgres:
