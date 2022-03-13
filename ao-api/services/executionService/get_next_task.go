@@ -48,10 +48,9 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
-		if err != nil {
-			return err
+		if err == nil {
+			jobDTO.Body = body
 		}
-		jobDTO.Body = body
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
 			log.Println(err.Error())
@@ -97,10 +96,9 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				jobDTO.MetaData.Fields = append(jobDTO.MetaData.Fields, models.TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
 			}
 			body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
-			if err != nil {
-				return err
+			if err == nil {
+				jobDTO.Body = body
 			}
-			jobDTO.Body = body
 			err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 			if err != nil {
 				log.Println(err.Error())
