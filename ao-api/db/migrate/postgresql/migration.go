@@ -262,7 +262,8 @@ CREATE TABLE IF NOT EXISTS author_state (
 author                   varchar(64) NOT NULL,
 type                     varchar(64) NOT NULL,
 name                     varchar(64) NOT NULL,
-used_times               INT NOT NULL,,
+used_times               INT NOT NULL,
+service                  varchar(128),
 UNIQUE (author, type, name)
 )
 `
