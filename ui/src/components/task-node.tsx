@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { Theme } from '@emotion/react'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'

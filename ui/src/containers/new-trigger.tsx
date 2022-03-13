@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useMutation, useQueryClient } from 'react-query'
 import { addTrigger, AddTriggerPayload, QueryKey } from '../api'
 import { useModal } from '../hooks/use-modal'

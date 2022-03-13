@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
@@ -8,7 +9,7 @@ import { useClearStatus } from '../hooks/use-clear-status'
 import { flowAtom, initialElements } from '../hooks/use-flow'
 import { useLayout } from '../hooks/use-layout'
 import { Modals, useModal } from '../hooks/use-modal'
-import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../pages'
+import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../pages/home'
 import { selectedPipelineAtom } from './pipeline-select'
 import { SaveForm } from './save-form'
 

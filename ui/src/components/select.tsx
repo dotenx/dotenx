@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
 import ReactSelect, { MultiValue } from 'react-select'

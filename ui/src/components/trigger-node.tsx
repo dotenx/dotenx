@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { NodeProps } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
 import { AddTriggerPayload } from '../api'
