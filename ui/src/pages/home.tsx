@@ -1,8 +1,9 @@
+/** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
-import { PageProps } from 'gatsby'
 import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
+import { useLocation } from 'react-router-dom'
 import { API_URL, Pipeline, PipelineEventMessage } from '../api'
 import { Layout } from '../components/layout'
 import { TaskNodeData } from '../components/task-node'
@@ -21,8 +22,8 @@ export const selectedPipelineDataAtom = atom<Pipeline | undefined>(undefined)
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
-export default function Home({ location }: PageProps) {
-	location.pathname
+export default function Home() {
+	const location = useLocation()
 	const [selected, setSelected] = useAtom(selectedPipelineDataAtom)
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]

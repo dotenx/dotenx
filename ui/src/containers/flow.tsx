@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
@@ -7,7 +8,7 @@ import { TaskEntity, TaskNode, TaskNodeData } from '../components/task-node'
 import { TriggerEntity, TriggerNode } from '../components/trigger-node'
 import { getNodeColor, useFlow } from '../hooks/use-flow'
 import { Modals, useModal } from '../hooks/use-modal'
-import { selectedPipelineDataAtom } from '../pages'
+import { selectedPipelineDataAtom } from '../pages/home'
 import { EdgeSettings } from './edge-settings'
 import { TaskLog, TaskLogProps } from './task-log'
 import { TaskSettings } from './task-settings'
