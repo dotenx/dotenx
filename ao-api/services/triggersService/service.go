@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
@@ -20,11 +21,12 @@ type TriggerService interface {
 }
 
 type TriggerManager struct {
-	Store triggerStore.TriggerStore
+	Store           triggerStore.TriggerStore
+	UtopiopsService utopiopsService.UtopiopsService
 }
 
-func NewTriggerService(store triggerStore.TriggerStore) TriggerService {
-	return &TriggerManager{Store: store}
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService) TriggerService {
+	return &TriggerManager{Store: store, UtopiopsService: service}
 }
 
 func (manager *TriggerManager) GetTriggerTypes() ([]string, error) {

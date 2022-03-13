@@ -48,6 +48,7 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	fmt.Println(triggers)
 	for _, trigger := range triggers {
 		go dc.handleTrigger(accId, trigger, store)
+		manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 	}
 	return nil
 }
