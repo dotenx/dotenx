@@ -38,6 +38,7 @@ fields:
     type: type of your variable(currently text and JSON are supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your task
+author: your github username 
 ```
 
 # Add new trigger type
@@ -53,4 +54,5 @@ credentials:
     type: type of your variable(currently text is supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your trigger
+author: your github username 
 ```
