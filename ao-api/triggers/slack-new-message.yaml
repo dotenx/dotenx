@@ -6,3 +6,4 @@ credentials:
     type: text
   - key: passed_minutes
     type: text
+author: Armingodiz
