@@ -12,7 +12,19 @@ docker network create -d bridge local --attachable
 docker compose up
 ```
 
-# Adding new task
+# Add new integration
+
+If you want to use a new integration type you only need to add a yaml file 
+to integrations directory in this format.
+``` yaml
+type: type of your integration
+needs_access_token: set true if your integration needs an access token
+needs_key: set true if your integration needs a key
+needs_secret: set true if your integration needs a secret key
+needs_url: set true if your integration needs an url
+```
+
+# Add new task
 
 If you want to use a new task you only need to add a yaml file 
 to tasks directory in this format.
