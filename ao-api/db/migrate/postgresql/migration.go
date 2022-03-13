@@ -60,6 +60,10 @@ var migrations = []struct {
 		name: "create-table-event_triggers3",
 		stmt: createTableEventTriggers,
 	},
+	{
+		name: "create-table-author_state",
+		stmt: createAuthorState,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -250,5 +254,15 @@ endpoint                 varchar(128) NOT NULL,
 pipeline                 varchar(128) NOT NULL,
 credentials									JSONB,
 UNIQUE (account_id, name)
+)
+`
+
+var createAuthorState = `
+CREATE TABLE IF NOT EXISTS author_state (
+author                   varchar(64) NOT NULL,
+type                     varchar(64) NOT NULL,
+name                     varchar(64) NOT NULL,
+used_times               INT NOT NULL,,
+UNIQUE (author, type, name)
 )
 `
