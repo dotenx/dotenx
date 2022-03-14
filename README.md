@@ -1,7 +1,7 @@
-# automated-ops
-AutomatedOps, extremely simple and flexible way to run any workflow.
+# Do Ten X
+DoTenX, extremely simple and flexible way to run any workflow.
 
-Automated ops is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
+DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
 The exact details that must be followed are provided in the License of this repository.
 
 
