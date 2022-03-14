@@ -7,9 +7,11 @@ import (
 )
 
 type TaskDefinition struct {
-	Type   string
-	Fields []TaskField
-	Image  string
+	Type        string
+	Fields      []TaskField
+	Image       string
+	Integration string
+	Author      string `json:"author" yaml:"author"`
 }
 
 var AvaliableTasks map[string]TaskDefinition

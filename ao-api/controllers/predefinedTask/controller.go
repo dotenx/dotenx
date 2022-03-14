@@ -31,13 +31,14 @@ func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
 
 func (r *PredefinedTaskController) GetFields(ctx *gin.Context) {
 	taskName := ctx.Param("task_name")
-	fields, err := r.service.GetTaskFields(taskName)
+	fields, integrationType, err := r.service.GetTaskFields(taskName)
 	if err != nil {
 		log.Println(err)
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"fields": fields,
+		"fields":           fields,
+		"integration_type": integrationType,
 	})
 }

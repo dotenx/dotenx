@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
+	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
 )
 
 type ExecutionService interface {
 	// execution
-	GetExecutionGraph(executionId int, accountId string) (interface{}, int)
 	GetInitialData(executionId int, accountId string) (models.InputData, int)
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
@@ -30,17 +31,18 @@ type ExecutionService interface {
 }
 
 type executionManager struct {
-	Store pipelineStore.PipelineStore
-	//QueueService messaging.QueueService
-	QueueService queueService.QueueService
-	//redisQueue   redis.RDB
+	Store              pipelineStore.PipelineStore
+	QueueService       queueService.QueueService
+	IntegrationService integrationService.IntegrationService
+	UtopiopsService    utopiopsService.UtopiopsService
 }
 
-func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService) ExecutionService {
+func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService, utoService utopiopsService.UtopiopsService) ExecutionService {
 	return &executionManager{
-		Store:        store,
-		QueueService: queue,
-		//redisQueue:   rdb,
+		Store:              store,
+		QueueService:       queue,
+		IntegrationService: intgService,
+		UtopiopsService:    utoService,
 	}
 }
 

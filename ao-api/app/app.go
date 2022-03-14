@@ -10,26 +10,21 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
 	"github.com/utopiops/automated-ops/ao-api/controllers/health"
 	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
-	"github.com/utopiops/automated-ops/ao-api/controllers/onoffboarding"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
-	runnercontroller "github.com/utopiops/automated-ops/ao-api/controllers/runner"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
-	"github.com/utopiops/automated-ops/ao-api/controllers/workspaces"
 	"github.com/utopiops/automated-ops/ao-api/db"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
-	"github.com/utopiops/automated-ops/ao-api/services/onoffboardingService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
-	runnerservice "github.com/utopiops/automated-ops/ao-api/services/runnerService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
-	"github.com/utopiops/automated-ops/ao-api/services/workspacesService"
+	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
+	"github.com/utopiops/automated-ops/ao-api/stores/authorStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
-	runnerstore "github.com/utopiops/automated-ops/ao-api/stores/runnerStore"
 	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
 
@@ -39,7 +34,6 @@ func init() {
 
 type App struct {
 	route *gin.Engine
-	//grpServer *executionserver.ExecutionServer
 }
 
 func NewApp() *App {
@@ -77,34 +71,28 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	healthCheckController := health.HealthCheckController{}
 	// Routes
 	r.GET("/health", healthCheckController.GetStatus())
+	// setting account id for request, this account id is not importnt and only used in db tables
 	r.Use(func(ctx *gin.Context) {
-		ctx.Set("accountId", "123456")
+		ctx.Set("accountId", config.Configs.App.AccountId)
 		ctx.Next()
 	})
-	// TODO: Providers to be called here
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
-	runnerStore := runnerstore.New(db)
-	crudServices := crudService.NewCrudService(pipelineStore)
-	executionServices := executionService.NewExecutionService(pipelineStore, queue)
-	onoffboardingServices := onoffboardingService.NewOnofboardingService(pipelineStore)
-	workspacesServices := workspacesService.NewWorkspaceService(pipelineStore)
-	runnerservice := runnerservice.NewRunnerService(runnerStore)
-	predefinedService := predifinedTaskService.NewPredefinedTaskService()
+	AuthorStore := authorStore.New(db)
+	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
-	TriggerServic := triggerService.NewTriggerService(TriggerStore)
+	crudServices := crudService.NewCrudService(pipelineStore)
+	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
+	predefinedService := predifinedTaskService.NewPredefinedTaskService()
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
-	onOffBoardingController := onoffboarding.Controller{Service: onoffboardingServices}
-	workspacesController := workspaces.WorkspacesController{Servicee: workspacesServices}
-	runnerController := runnercontroller.New(runnerservice)
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 
 	// Routes
-	//pretected
 	tasks := r.Group("/task")
 	{
 		tasks.GET("", predefinedController.GetTasks)
@@ -114,10 +102,9 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		pipline.POST("", crudController.AddPipeline())
 		pipline.GET("", crudController.GetPipelines())
-		pipline.GET("/name/:name", crudController.ListPipelineVersions())
+		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
-		pipline.GET("/name/:name/version/:version", crudController.GetPipeline())
-		pipline.POST("/name/:name/version/:version/activate", crudController.ActivatePipeline())
+		pipline.GET("/name/:name", crudController.GetPipeline())
 	}
 	execution := r.Group("/execution")
 	{
@@ -126,11 +113,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
 		execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
 		//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
-		//execution.POST("/ep/:endpoint/stop", executionController.StopPipeline())
-		//execution.POST("/ep/:endpoint/task/:name/stop", executionController.StopPipelineTask())
 
 		execution.GET("/queue", executionController.GetExecution())
-		execution.GET("/id/:id/graph", executionController.GetExecutionGraph())
 		execution.POST("/id/:id/next", executionController.GetNextTask())
 		execution.GET("/id/:id/initial_data", executionController.GetInitialData())
 		execution.GET("/id/:id/task/:taskId", executionController.GetTaskDetails())
@@ -139,28 +123,11 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
 		execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
 	}
-	workspaces := r.Group("/workspaces")
-	{
-		workspaces.GET("/executions", workspacesController.ListWorkspaceExecutions())
-		workspaces.GET("/flows/name/:name/version/:version", workspacesController.GetFlow())
-
-		workspaces.POST("/onboarding/flows", onOffBoardingController.CreateOnOffBoardingFlow(onoffboarding.OnBoarding))
-		workspaces.POST("/onboarding/flows/name/:name/version/:version", onOffBoardingController.AddOnOffBoardingFlow(onoffboarding.OnBoarding))
-		workspaces.GET("/onboarding/flows", onOffBoardingController.ListOnOffBoardingFlows(onoffboarding.OnBoarding))
-
-		workspaces.POST("/offboarding/flows", onOffBoardingController.CreateOnOffBoardingFlow(onoffboarding.OffBoarding))
-		workspaces.POST("/offboarding/flows/name/:name/version/:version", onOffBoardingController.AddOnOffBoardingFlow(onoffboarding.OffBoarding))
-		workspaces.GET("/offboarding/flows", onOffBoardingController.ListOnOffBoardingFlows(onoffboarding.OffBoarding))
-	}
-	runner := r.Group("/runner")
-	{
-		runner.POST("/register/type/:type", runnerController.RegisterRunner)
-		runner.GET("/id/:id/queue", runnerController.GetQueueId)
-	}
 	intgration := r.Group("/integration")
 	{
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetAllIntegrations())
+		intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
 		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
 		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
@@ -172,9 +139,10 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
+		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
-	go TriggerServic.StartChecking("123456", IntegrationStore)
-	return r /*, g*/
+	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	return r
 }
 
 func initializeDB() (*db.DB, error) {

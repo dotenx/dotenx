@@ -48,21 +48,22 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	fmt.Println(triggers)
 	for _, trigger := range triggers {
 		go dc.handleTrigger(accId, trigger, store)
+		manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 	}
 	return nil
 }
 
 func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
-	integration, err := store.GetIntegrationsByName(context.Background(), accountId, trigger.Integration)
+	integration, err := store.GetIntegrationByName(context.Background(), accountId, trigger.Integration)
 	if err != nil {
 		return
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image
 	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
-	envs := []string{"CREDENTIAL_URL=" + integration.Url,
-		"CREDENTIAL_KEY=" + integration.Key,
-		"CREDENTIAL_SECRET=" + integration.Secret,
-		"CREDENTIAL_ACCESS_TOKEN=" + integration.AccessToken,
+	envs := []string{"INTEGRATION_URL=" + integration.Url,
+		"INTEGRATION_KEY=" + integration.Key,
+		"INTEGRATION_SECRET=" + integration.Secret,
+		"INTEGRATION_ACCESS_TOKEN=" + integration.AccessToken,
 		"PIPELINE_ENDPOINT=" + pipelineUrl}
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))

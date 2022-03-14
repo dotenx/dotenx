@@ -1,8 +1,7 @@
-
 type: runImage
 fields:
   - key: image
     type: text
   - key: script
     type: text
-
+author: Armingodiz

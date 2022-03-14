@@ -21,21 +21,9 @@ var migrations = []struct {
 		stmt: createTablePipelines,
 	},
 	{
-		name: "create-table-pipeline-versions",
-		stmt: createTablePipelineVersions,
-	},
-	{
 		name: "create-table-task-status",
 		stmt: createTableTaskStatus,
 	},
-	{
-		name: "create-table-task-types",
-		stmt: createTableTaskTypes,
-	},
-	/*{
-		name: "drop-table-tasks",
-		stmt: dropTableTasks,
-	},*/
 	{
 		name: "create-table-tasks2",
 		stmt: createTableTasks,
@@ -65,32 +53,16 @@ var migrations = []struct {
 		stmt: createTableExecutionsResult,
 	},
 	{
-		name: "create-table-trigger-types",
-		stmt: createTableTriggerTypes,
-	},
-	{
-		name: "create-table-triggers",
-		stmt: createTableTriggers,
-	},
-	{
-		name: "create-table-pipeline-activations",
-		stmt: createTablePipelineActivations,
-	},
-	{
-		name: "add_column_service_account_to_pipeline_versions",
-		stmt: addColumnServiceAccountToPipelineVersions,
-	},
-	{
-		name: "create-table-runner_queue",
-		stmt: createTableRunnerQueue,
-	},
-	{
 		name: "create-table-integrations",
 		stmt: createTableIntegrations,
 	},
 	{
 		name: "create-table-event_triggers3",
 		stmt: createTableEventTriggers,
+	},
+	{
+		name: "create-table-author_state",
+		stmt: createAuthorState,
 	},
 }
 
@@ -181,19 +153,9 @@ var createTablePipelines = `
 CREATE TABLE IF NOT EXISTS pipelines (
 id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
-account_id         				VARCHAR(64),
-endpoint 									uuid DEFAULT uuid_generate_v4(),
+account_id         			                 	VARCHAR(64),
+endpoint 							     		uuid DEFAULT uuid_generate_v4(),
 UNIQUE (name, account_id)
-)
-`
-var createTablePipelineVersions = `
-CREATE TABLE IF NOT EXISTS pipeline_versions (
-id												SERIAL PRIMARY KEY,
-pipeline_id 							INT NOT NULL,
-version		        				SMALLINT NOT NULL,
-from_version       				SMALLINT DEFAULT 0 NOT NULL,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id),
-UNIQUE (pipeline_id, version)
 )
 `
 
@@ -203,22 +165,17 @@ name											VARCHAR(16) PRIMARY KEY
 )
 ` // Seeded
 
-var createTableTaskTypes = `
-CREATE TABLE IF NOT EXISTS task_types (
-name											VARCHAR(64) PRIMARY KEY
-)
-` // Seeded
-
 var createTableTasks = `
 CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
 task_type									    VARCHAR(64),
+integration					        			VARCHAR(128),
 description					        			VARCHAR(128),
-pipeline_version_id			                 	INT NOT NULL,
+pipeline_id			                         	INT NOT NULL,
 body											JSONB,
 timeout                                         INT NOT NULL default 30,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 )
 `
 
@@ -227,8 +184,8 @@ CREATE TABLE IF NOT EXISTS task_preconditions (
 task_id										INT NOT NULL,
 precondition_id					         	INT NOT NULL,
 status										VARCHAR(16) NOT NULL,
-FOREIGN KEY (task_id) REFERENCES tasks(id),
-FOREIGN KEY (precondition_id) REFERENCES tasks(id),
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE ,
+FOREIGN KEY (precondition_id) REFERENCES tasks(id) ON DELETE CASCADE ,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
 `
@@ -244,20 +201,21 @@ CREATE INDEX task_preconditions_tasks ON task_preconditions (task_id)
 var createTableExecutions = `
 CREATE TABLE IF NOT EXISTS executions (
 id												SERIAL PRIMARY KEY,
-pipeline_version_id				                INT NOT NULL,
+pipeline_id				                        INT NOT NULL,
 started_at								        TIMESTAMP WITH TIME ZONE,
 initial_data							        JSONB,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id)
+FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
-var dropTasks = `drop table tasks`
+
+//var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							    INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
-FOREIGN KEY (execution_id) REFERENCES executions(id),
-FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )
 `
@@ -268,46 +226,9 @@ task_id										INT NOT NULL,
 status										VARCHAR(16),
 return_value                                JSONB,
 log                                         VARCHAR(10485760),
-FOREIGN KEY (execution_id) REFERENCES executions(id),
-FOREIGN KEY (task_id) REFERENCES tasks(id),
+FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
-)`
-
-var createTableTriggerTypes = `
-CREATE TABLE IF NOT EXISTS trigger_types (
-name											VARCHAR(64) PRIMARY KEY
-)
-` // Seeded
-
-var createTableTriggers = `
-CREATE TABLE IF NOT EXISTS triggers (
-id												SERIAL PRIMARY KEY,
-name											VARCHAR(64),
-trigger_type							VARCHAR(64),
-pipeline_version_id				INT NOT NULL,
-data_bag									JSONB,
-FOREIGN KEY (pipeline_version_id) REFERENCES pipeline_versions(id),
-FOREIGN KEY (trigger_type) REFERENCES trigger_types(name)
-)
-`
-
-var createTablePipelineActivations = `
-CREATE TABLE IF NOT EXISTS pipeline_activations (
-pipeline_id								INT PRIMARY KEY,
-activated_version					INT NOT NULL,
-last_activation						TIMESTAMP NOT NULL,
-FOREIGN KEY (pipeline_id) REFERENCES pipelines(id),
-FOREIGN KEY (activated_version) REFERENCES pipeline_versions(id)
-)
-`
-var addColumnServiceAccountToPipelineVersions = `
-ALTER TABLE pipeline_versions
-ADD COLUMN service_account VARCHAR(64)
-`
-var createTableRunnerQueue = `CREATE TABLE IF NOT EXISTS runner_queue (
-	runner_id varchar(32) PRIMARY KEY,
-	account_id varchar(32),
-	queue_type varchar(32)
 )`
 
 var createTableIntegrations = `
@@ -322,7 +243,6 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
-var dropTableTasks = `drop table tasks`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
@@ -334,5 +254,16 @@ endpoint                 varchar(128) NOT NULL,
 pipeline                 varchar(128) NOT NULL,
 credentials									JSONB,
 UNIQUE (account_id, name)
+)
+`
+
+var createAuthorState = `
+CREATE TABLE IF NOT EXISTS author_state (
+author                   varchar(64) NOT NULL,
+type                     varchar(64) NOT NULL,
+name                     varchar(64) NOT NULL,
+used_times               INT NOT NULL,
+service                  varchar(128),
+UNIQUE (author, type, name)
 )
 `

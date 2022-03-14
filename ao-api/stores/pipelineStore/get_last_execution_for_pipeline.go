@@ -28,7 +28,7 @@ func (ps *pipelineStore) GetLastExecution(context context.Context, pipelineId in
 var getLastExecution = `
 select id
 from executions
-where pipeline_version_id = $1
+where pipeline_id = $1
 ORDER BY started_at DESC
 LIMIT 1;
 `

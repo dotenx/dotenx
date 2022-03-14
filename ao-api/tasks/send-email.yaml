@@ -1,5 +1,6 @@
 type: sendEmail
 image: awrmin/sendemail
+integration: sendGrid
 fields:
   - key: sender
     type: text
@@ -7,5 +8,4 @@ fields:
     type: text
   - key: text
     type: text
-  - key: api_key
-    type: text
+author: Armingodiz

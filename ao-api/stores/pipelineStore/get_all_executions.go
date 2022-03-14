@@ -38,5 +38,5 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 var getAllExecution = `
 select *
 from executions
-where pipeline_version_id = $1;
+where pipeline_id = $1;
 `

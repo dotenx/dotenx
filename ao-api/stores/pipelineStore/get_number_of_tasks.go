@@ -27,5 +27,5 @@ func (ps *pipelineStore) GetNumberOfTasksForPipeline(context context.Context, pi
 
 var getNumberOfTasks = `
 SELECT count(*) FROM tasks
-WHERE pipeline_version_id = $1;
+WHERE pipeline_id = $1;
 `

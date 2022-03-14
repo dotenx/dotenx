@@ -16,11 +16,11 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 	case db.Postgres:
 		conn := ps.db.Connection
 		var body interface{}
-		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &body, &task.Timeout, &task.AccountId)
+		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.Integration, &body, &task.Timeout, &task.AccountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
-				err = errors.New("not found")
+				err = errors.New("task detailes not found")
 			}
 			return
 		}
@@ -33,11 +33,10 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 }
 
 var getTaskByExecution = `
-select t.id, t.name, t.task_type, t.body, t.timeout, p.account_id
+select t.id, t.name, t.task_type, t.integration, t.body, t.timeout, pv.account_id
 from executions e
-join pipeline_versions pv on e.pipeline_version_id = pv.id
-join tasks t on t.pipeline_version_id = pv.id
-join pipelines p on pv.pipeline_id = p.id
+join pipelines pv on e.pipeline_id = pv.id
+join tasks t on t.pipeline_id = pv.id
 where e.id = $1 and t.id = $2
 LIMIT 1;
 `
