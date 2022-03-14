@@ -98,7 +98,7 @@ function getStatusColor(theme: Theme, status?: Status) {
 		case Status.Failed:
 			return theme.color.negative
 		case Status.Started:
-			return theme.color.primary
+			return '#8EA6BB'
 		case Status.Success:
 			return theme.color.positive
 		case Status.Timedout:
