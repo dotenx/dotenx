@@ -89,7 +89,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	if err != nil {
 		fmt.Printf("error in sending job result: %s\n", err.Error())
 	}
-	fmt.Println(time.Now().String() + ", job result:")
+	fmt.Println("####### (" + time.Now().Local().Format(time.Stamp) + "), job result:")
 	fmt.Println(result)
 	fmt.Println("################################")
 }

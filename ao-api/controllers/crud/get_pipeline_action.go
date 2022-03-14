@@ -3,7 +3,6 @@ package crud
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
 	"gopkg.in/yaml.v2"
@@ -14,17 +13,10 @@ import (
 func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
-		versionString := c.Param("version")
-		i64, err := strconv.ParseInt(versionString, 10, 16)
-		if err != nil {
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		version := int16(i64)
 		accept := c.GetHeader("accept")
 		accountId := c.MustGet("accountId").(string)
 
-		pipeline, endpoint, err := mc.Service.GetPipelineByVersion(version, accountId, name)
+		pipeline, endpoint, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)

@@ -41,6 +41,19 @@ func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
 
 	}
 }
+func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		trigger := c.Param("name")
+		accountId := c.MustGet("accountId").(string)
+		err := controller.Service.DeleteTrigger(accountId, trigger)
+		if err == nil {
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
 
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -74,7 +87,7 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, err := controller.CrudService.GetPipelineByVersion(1, accountId, trigger.Pipeline)
+		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, trigger.Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)

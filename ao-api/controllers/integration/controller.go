@@ -39,6 +39,20 @@ func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gi
 	}
 }
 
+func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		integrationName := c.Param("name")
+		accountId := c.MustGet("accountId").(string)
+		err := controller.Service.DeleteIntegration(accountId, integrationName)
+		if err == nil {
+			c.JSON(http.StatusOK, nil)
+			return
+		}
+		c.JSON(http.StatusBadRequest, err.Error())
+
+	}
+}
+
 func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId := c.MustGet("accountId").(string)

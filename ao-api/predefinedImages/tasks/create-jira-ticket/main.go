@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	access_token := os.Getenv("access_token")
+	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	project_key := os.Getenv("project_key")
 	issueType := os.Getenv("issue_type")
 	description := os.Getenv("description")

@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	access_token := os.Getenv("CREDENTIAL_ACCESS_TOKEN")
+	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	channelId := os.Getenv("channel_id")
 	passedMinutes := os.Getenv("passed_minutes")
 	minutes, err := strconv.Atoi(passedMinutes)

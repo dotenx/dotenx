@@ -34,8 +34,7 @@ type PipelineDto struct {
 }
 
 type Manifest struct {
-	Triggers map[string]Trigger `db:"triggers" json:"triggers" yaml:"triggers,omitempty"`
-	Tasks    map[string]Task    `db:"tasks" json:"tasks" yaml:"tasks"`
+	Tasks map[string]Task `db:"tasks" json:"tasks" yaml:"tasks"`
 }
 
 func (m Manifest) Value() (driver.Value, error) {
@@ -51,11 +50,6 @@ func (m *Manifest) Scan(value interface{}) error {
 
 }
 
-type Trigger struct {
-	Type TriggerType `db:"trigger_type" json:"type" yaml:"type"`
-	Body TriggerBody `db:"body" json:"body" yaml:"body,omitempty"`
-}
-
 type Task struct {
 	Id           int                 `db:"id" json:"id" yaml:"-"`
 	Name         string              `db:"name" json:"-" yaml:"-"`
@@ -63,6 +57,7 @@ type Task struct {
 	Type         string              `db:"task_type" json:"type" yaml:"type"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
+	Integration  string              `db:"integration" json:"integration" yaml:"integration"`
 }
 
 func (t *Task) UnmarshalJSON(data []byte) error {
@@ -78,6 +73,7 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(executeAfterBytes, &executeAfter)
 	t.ExecuteAfter = executeAfter
+
 	var typeUnmarshaled string
 	typeBytes, err := json.Marshal(raw["type"])
 	if err != nil {
@@ -85,6 +81,15 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	json.Unmarshal(typeBytes, &typeUnmarshaled)
 	t.Type = typeUnmarshaled
+
+	var integrationUnmarshaled string
+	integrationBytes, err := json.Marshal(raw["integration"])
+	if err != nil {
+		return err
+	}
+	json.Unmarshal(integrationBytes, &integrationUnmarshaled)
+	t.Integration = integrationUnmarshaled
+
 	body, err := json.Marshal(raw["body"])
 	if err != nil {
 		return err
@@ -95,6 +100,7 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	var taskBody TaskBodyMap
 	err = json.Unmarshal(body, &taskBody)
 	t.Body = taskBody
+
 	return err
 }
 

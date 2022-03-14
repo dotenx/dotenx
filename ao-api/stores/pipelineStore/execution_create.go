@@ -30,6 +30,6 @@ func (ps *pipelineStore) CreateExecution(context context.Context, execution mode
 }
 
 var createExecution = `
-INSERT INTO executions (pipeline_version_id, started_at, initial_data)
+INSERT INTO executions (pipeline_id, started_at, initial_data)
 VALUES ($1, $2, $3) RETURNING id
 `

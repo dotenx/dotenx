@@ -1,5 +1,6 @@
 type: createJiraTicket
 image: awrmin/create-jira-ticket
+integration: jira
 fields:
   - key: project_key
     type: text
@@ -11,5 +12,4 @@ fields:
     type: text
   - key: jira_url
     type: text
-  - key: access_token
-    type: text
+author: Armingodiz

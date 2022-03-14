@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,8 +16,10 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		fmt.Println("################")
+		fmt.Println(pipelineDto)
+		fmt.Println("##################")
 		accountId := c.MustGet("accountId").(string)
-		// TODO: Add validation and check if the from version exists!
 
 		base := models.Pipeline{
 			AccountId: accountId,
