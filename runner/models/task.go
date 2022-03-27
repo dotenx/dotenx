@@ -31,7 +31,7 @@ type TaskStatus struct {
 }
 
 type Task struct {
-	Detailes             TaskDetails
+	Details              TaskDetails
 	EnvironmentVariables []string
 	Script               []string
 	IsPredifined         bool

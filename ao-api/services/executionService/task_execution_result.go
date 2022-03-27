@@ -14,8 +14,8 @@ func (manager *executionManager) SetTaskExecutionResult(executionId int, taskId 
 	}
 	return nil
 }
-func (manager *executionManager) SetTaskExecutionResultDetailes(executionId int, taskId int, taskStatus string, returnValue models.ReturnValueMap, logs string) error {
-	err := manager.Store.SetTaskResultDetailes(noContext, executionId, taskId, taskStatus, returnValue, logs)
+func (manager *executionManager) SetTaskExecutionResultDetails(executionId int, taskId int, taskStatus string, returnValue models.ReturnValueMap, logs string) error {
+	err := manager.Store.SetTaskResultDetails(noContext, executionId, taskId, taskStatus, returnValue, logs)
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -24,7 +24,7 @@ func (manager *executionManager) SetTaskExecutionResultDetailes(executionId int,
 }
 
 func (manager *executionManager) GetTaskExecutionResult(executionId int, taskId int) (interface{}, error) {
-	res, err := manager.Store.GetTaskResultDetailes(noContext, executionId, taskId)
+	res, err := manager.Store.GetTaskResultDetails(noContext, executionId, taskId)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
