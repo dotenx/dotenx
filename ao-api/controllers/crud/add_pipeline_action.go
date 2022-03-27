@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
@@ -19,7 +20,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		fmt.Println("################")
 		fmt.Println(pipelineDto)
 		fmt.Println("##################")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
 			AccountId: accountId,

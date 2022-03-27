@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 )
@@ -18,7 +19,7 @@ type TriggerController struct {
 func (controller *TriggerController) GetAllTriggersForAccountByType() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		typetrigger := c.Param("type")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		triggers, err := controller.Service.GetAllTriggersForAccountByType(accountId, typetrigger)
 		if err == nil {
 			c.JSON(http.StatusOK, triggers)
@@ -31,7 +32,7 @@ func (controller *TriggerController) GetAllTriggersForAccountByType() gin.Handle
 func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		typetrigger := c.Param("type")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		intgType, err := controller.Service.GetDefinitionForTrigger(accountId, typetrigger)
 		if err == nil {
 			c.JSON(http.StatusOK, intgType)
@@ -44,7 +45,7 @@ func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
 func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		trigger := c.Param("name")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		err := controller.Service.DeleteTrigger(accountId, trigger)
 		if err == nil {
 			c.JSON(http.StatusOK, nil)
@@ -57,7 +58,7 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		triggers, err := controller.Service.GetAllTriggers(accountId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err.Error())
@@ -81,7 +82,7 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var trigger models.EventTrigger
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&trigger); err != nil || accountId == "" {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
