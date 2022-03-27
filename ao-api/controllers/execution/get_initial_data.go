@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (mc *ExecutionController) GetInitialData() gin.HandlerFunc {
@@ -16,7 +17,7 @@ func (mc *ExecutionController) GetInitialData() gin.HandlerFunc {
 			return
 		}
 
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		initialData, statusCode := mc.Service.GetInitialData(executionId, accountId)
 		if statusCode != http.StatusOK {

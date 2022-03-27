@@ -71,11 +71,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	healthCheckController := health.HealthCheckController{}
 	// Routes
 	r.GET("/health", healthCheckController.GetStatus())
-	// setting account id for request, this account id is not importnt and only used in db tables
-	r.Use(func(ctx *gin.Context) {
-		ctx.Set("accountId", config.Configs.App.AccountId)
-		ctx.Next()
-	})
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)

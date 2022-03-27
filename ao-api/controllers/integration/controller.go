@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
@@ -28,7 +29,7 @@ func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerF
 func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		typeIntegration := c.Param("type")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, typeIntegration)
 		if err == nil {
 			c.JSON(http.StatusOK, integrations)
@@ -42,7 +43,7 @@ func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gi
 func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		integrationName := c.Param("name")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		err := controller.Service.DeleteIntegration(accountId, integrationName)
 		if err == nil {
 			c.JSON(http.StatusOK, nil)
@@ -55,7 +56,7 @@ func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 
 func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		integrations, err := controller.Service.GetAllIntegrations(accountId)
 		if err == nil {
 			c.JSON(http.StatusOK, integrations)
@@ -69,7 +70,7 @@ func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var integration models.Integration
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" || !integration.IsValid() {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
