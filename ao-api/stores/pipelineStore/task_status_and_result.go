@@ -47,7 +47,7 @@ func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int,
 	}
 	return
 }
-func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executionId int, taskId int) (interface{}, error) {
+func (ps *pipelineStore) GetTaskResultDetails(context context.Context, executionId int, taskId int) (interface{}, error) {
 	var taskRes struct {
 		Status      string                `json:"status"`
 		Log         string                `json:"log"`
@@ -75,7 +75,7 @@ func (ps *pipelineStore) GetTaskResultDetailes(context context.Context, executio
 
 }
 
-func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, logs string) (err error) {
+func (ps *pipelineStore) SetTaskResultDetails(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, logs string) (err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
@@ -87,12 +87,12 @@ func (ps *pipelineStore) SetTaskResultDetailes(context context.Context, executio
 		}
 		var query string
 		if count == 0 {
-			query = addTaskResultDetailes
+			query = addTaskResultDetails
 		} else {
 			// NOTE: Currently we allow the result to be overwritten which should be only in case we have
 			// for some reason received timeout before the result, but it doesn't care even if the current
 			// result is sth other than timeout
-			query = updateTaskResultDetailes
+			query = updateTaskResultDetails
 		}
 		logs = strings.ReplaceAll(logs, "\u0000", "")
 		_, err = tx.Exec(query, executionId, taskId, status, returnValue, string(logs))
@@ -162,7 +162,7 @@ INSERT INTO executions_status(
 execution_id, task_id, status)
 VALUES ($1, $2, $3);
 `
-var addTaskResultDetailes = `
+var addTaskResultDetails = `
 INSERT INTO executions_result(
 execution_id, task_id, status, return_value, log)
 VALUES ($1, $2, $3, $4, $5);
@@ -173,7 +173,7 @@ UPDATE executions_status
 SET execution_id=$1, task_id=$2, status=$3
 WHERE execution_id = $1 AND task_id = $2;
 `
-var updateTaskResultDetailes = `
+var updateTaskResultDetails = `
 UPDATE executions_result
 SET execution_id=$1, task_id=$2, status=$3, return_value=$4, log=$5
 WHERE execution_id = $1 AND task_id = $2;

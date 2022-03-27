@@ -3,15 +3,15 @@ FROM golang:1.14.7 AS go-build
 ENV GO111MODULE=on
 WORKDIR /go/src/github.com/utopiops/automated-ops/runner
 
-COPY ./runner/go.mod .
-COPY ./runner/go.sum .
+COPY go.mod .
+COPY go.sum .
 
 
 ENV GOPRIVATE=gitlab.com/utopiops-water/*
 
 RUN go mod download
 
-COPY ./runner .
+COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o runner .

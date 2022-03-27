@@ -11,7 +11,7 @@ func (manage *executionManager) CheckReturnValues(executionId int, accountId, ta
 	if err != nil {
 		return nil, err
 	}
-	res, err := manage.Store.GetTaskResultDetailes(noContext, executionId, taskId)
+	res, err := manage.Store.GetTaskResultDetails(noContext, executionId, taskId)
 	if err != nil {
 		return
 	}
