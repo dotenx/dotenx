@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		name := c.Param("name")
 		// Get the `input data` from the request body

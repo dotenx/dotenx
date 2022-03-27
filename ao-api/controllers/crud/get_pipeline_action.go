@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"gopkg.in/yaml.v2"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
 		accept := c.GetHeader("accept")
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		pipeline, endpoint, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {

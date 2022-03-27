@@ -171,7 +171,7 @@ func (ps *integrationStore) CheckTasksForIntegration(context context.Context, ac
 	case db.Postgres:
 		conn := ps.db.Connection
 		var count int
-		err := conn.QueryRow(checkTasks, integrationName).Scan(&count)
+		err := conn.QueryRow(checkTasks, integrationName, accountId).Scan(&count)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -189,7 +189,7 @@ func (ps *integrationStore) CheckTasksForIntegration(context context.Context, ac
 
 var checkTasks = `
 SELECT count(*) FROM tasks
-WHERE integration = $1;
+WHERE integration = $1 and account_id = $2;
 `
 
 func (ps *integrationStore) CheckTriggersForIntegration(context context.Context, accountId string, integrationName string) (bool, error) {
@@ -197,7 +197,7 @@ func (ps *integrationStore) CheckTriggersForIntegration(context context.Context,
 	case db.Postgres:
 		conn := ps.db.Connection
 		var count int
-		err := conn.QueryRow(checkTriggers, integrationName).Scan(&count)
+		err := conn.QueryRow(checkTriggers, integrationName, accountId).Scan(&count)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -215,5 +215,5 @@ func (ps *integrationStore) CheckTriggersForIntegration(context context.Context,
 
 var checkTriggers = `
 SELECT count(*) FROM event_triggers
-WHERE integration = $1;
+WHERE integration = $1 and account_id = $2;
 `

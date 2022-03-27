@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Status(http.StatusOK)
 
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		endpoint := c.Param("endpoint")
 		var input map[string]interface{}

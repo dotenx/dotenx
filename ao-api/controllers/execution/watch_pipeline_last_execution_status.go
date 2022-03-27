@@ -9,12 +9,13 @@ import (
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
 	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Status(http.StatusOK)
-		accountId := c.MustGet("accountId").(string)
+		accountId, _ := utils.GetAccountId(c)
 
 		pipeLineName := c.Param("name")
 
