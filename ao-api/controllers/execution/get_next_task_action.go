@@ -11,7 +11,7 @@ import (
 
 func (e *ExecutionController) GetNextTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// accountId := c.MustGet("accountId").(string)
+		// accountId, _ := utils.GetAccountId(c)
 		// queryString := c.Request.URL.Query()
 		executionId, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
