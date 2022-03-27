@@ -17,13 +17,13 @@ import (
 
 func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {
 	result = &models.TaskExecutionResult{}
-	result.Id = task.Detailes.Id
+	result.Id = task.Details.Id
 	result.Status = models.StatusFailed
-	if task.Detailes.Image == "" {
+	if task.Details.Image == "" {
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
-	/*reader,*/ _, err := executor.Client.ImagePull(context.Background(), task.Detailes.Image, types.ImagePullOptions{})
+	/*reader,*/ _, err := executor.Client.ImagePull(context.Background(), task.Details.Image, types.ImagePullOptions{})
 	if err != nil {
 		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
@@ -34,15 +34,15 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: task.Detailes.Image,
+				Image: task.Details.Image,
 				Cmd:   task.Script,
 			}, nil, nil, nil, "")
 	} else {
-		task.EnvironmentVariables = append(task.EnvironmentVariables, "TASK_NAME="+task.Detailes.Name)
+		task.EnvironmentVariables = append(task.EnvironmentVariables, "TASK_NAME="+task.Details.Name)
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
-				Image: task.Detailes.Image,
+				Image: task.Details.Image,
 				Env:   task.EnvironmentVariables,
 			},
 			&container.HostConfig{
@@ -63,7 +63,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	var statusCode int
 	//time.Sleep(time.Duration(time.Minute * 5))
-	for start := time.Now(); time.Since(start) < time.Duration(task.Detailes.Timeout)*time.Second; {
+	for start := time.Now(); time.Since(start) < time.Duration(task.Details.Timeout)*time.Second; {
 		statusCode = executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
 			break

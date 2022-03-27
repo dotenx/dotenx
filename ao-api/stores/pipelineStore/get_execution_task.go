@@ -20,7 +20,7 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
-				err = errors.New("task detailes not found")
+				err = errors.New("task Details not found")
 			}
 			return
 		}

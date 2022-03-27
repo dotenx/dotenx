@@ -9,11 +9,11 @@ import (
 
 func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 	processedTask = &models.Task{}
-	processedTask.Detailes = *task
+	processedTask.Details = *task
 	processedTask.IsPredifined = true
 	if task.Type == "runImage" {
 		processedTask.IsPredifined = false
-		processedTask.Detailes.Image = task.Body["image"].(string)
+		processedTask.Details.Image = task.Body["image"].(string)
 		processedTask.Script = strings.Split(task.Body["script"].(string), " ")
 	} else {
 		envs := make([]string, 0)

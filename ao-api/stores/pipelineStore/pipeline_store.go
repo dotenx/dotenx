@@ -34,12 +34,12 @@ type PipelineStore interface {
 	GetTaskNameById(noContext context.Context, taskId int) (string, error)
 	// Get task details based on execution id and task id
 	GetTaskByExecution(context context.Context, executionId int, taskId int) (task models.TaskDetails, err error)
-	GetTaskResultDetailes(context context.Context, executionId int, taskId int) (res interface{}, err error)
+	GetTaskResultDetails(context context.Context, executionId int, taskId int) (res interface{}, err error)
 	// Set the status of a task to timed out if it's status is not already set
 	SetTaskStatusToTimedout(context context.Context, executionId int, taskId int) (err error)
 	// Set the result of a task
 	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
-	SetTaskResultDetailes(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) (err error)
+	SetTaskResultDetails(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) (err error)
 
 	// executions
 	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
