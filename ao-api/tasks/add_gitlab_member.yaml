@@ -1,0 +1,14 @@
+type: addGitlabMember
+image: awrmin/add_gitlab_members
+fields:
+  - key: privateToken
+    type: text
+  - key: id
+    type: text
+  - key: accessLevel
+    type: text
+  - key: expiresAt
+    type: text
+  - key: source
+    type: text
+author: Armingodiz

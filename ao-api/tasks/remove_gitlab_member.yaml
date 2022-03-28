@@ -1,0 +1,12 @@
+type: removeGitlabMember
+image: awrmin/remove_gitlab_members
+fields:
+  - key: privateToken
+    type: text
+  - key: id
+    type: text
+  - key: source
+    type: text
+  - key: userId
+    type: text
+author: Armingodiz

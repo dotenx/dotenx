@@ -1,0 +1,5 @@
+type: aws
+needs_access_token: false
+needs_key: true 
+needs_secret: true
+needs_url: false

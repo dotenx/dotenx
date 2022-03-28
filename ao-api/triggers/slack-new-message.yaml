@@ -1,0 +1,9 @@
+type: slack-new-message 
+integration: slack-bot 
+image: awrmin/slack-new-message
+credentials:
+  - key: channel_id
+    type: text
+  - key: passed_minutes
+    type: text
+author: Armingodiz
