@@ -1,4 +1,4 @@
-# Do Ten X
+# Do Ten X for new
 DoTenX, extremely simple and flexible way to run any workflow.
 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
