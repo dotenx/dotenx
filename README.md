@@ -56,4 +56,3 @@ credentials:
 integration: integration type wich is needed to run your trigger
 author: your github username 
 ```
-new feature
