@@ -17,6 +17,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 		if err != nil {
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Pipeline
 			rows.StructScan(&cur)
