@@ -205,17 +205,8 @@ func init() {
 	}
 }
 
-// Provider represents an OAUTH provider for mouthful
-type Provider struct {
-	Name           string
-	secret         string
-	key            string
-	AdminUserIds   []string
-	Implementation *goth.Provider
-}
-
 // New returns a new provider with the given parameters. It checks if the provider is supported or not and if all the requierements are met.
-func New(name string, secret, key *string, adminUserIds []string, uri string) (*Provider, error) {
+func New(name string, secret, key *string, uri string) (*goth.Provider, error) {
 	var initfunction func(key, secret, cbUrl string, scopes ...string) goth.Provider
 	if val, ok := ProviderNameInitializationMap[name]; !ok {
 		return nil, fmt.Errorf("No such OAUTH provider %v", name)
@@ -225,10 +216,6 @@ func New(name string, secret, key *string, adminUserIds []string, uri string) (*
 
 	if uri == "" {
 		return nil, fmt.Errorf("Invalid callback uri provided for OAUTH provider %v", name)
-	}
-
-	if len(adminUserIds) == 0 {
-		return nil, fmt.Errorf("No admin accounts provided for OAUTH provider %v", name)
 	}
 
 	capped := strings.ToUpper(name)
@@ -254,11 +241,5 @@ func New(name string, secret, key *string, adminUserIds []string, uri string) (*
 
 	gothProvider := initfunction(*key, *secret, uri)
 
-	return &Provider{
-		Implementation: &gothProvider,
-		Name:           name,
-		AdminUserIds:   adminUserIds,
-		secret:         *secret,
-		key:            *key,
-	}, nil
+	return &gothProvider, nil
 }
