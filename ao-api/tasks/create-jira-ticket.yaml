@@ -1,0 +1,15 @@
+type: createJiraTicket
+image: awrmin/create-jira-ticket
+integration: jira
+fields:
+  - key: project_key
+    type: text
+  - key: issue_type
+    type: text
+  - key: description
+    type: text
+  - key: summery
+    type: text
+  - key: jira_url
+    type: text
+author: Armingodiz

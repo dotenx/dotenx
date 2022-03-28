@@ -1,0 +1,103 @@
+{
+	"name": "ao-ui",
+	"version": "0.1.0",
+	"dependencies": {
+		"@emotion/react": "^11.8.2",
+		"@emotion/styled": "^11.8.1",
+		"@hookform/error-message": "^2.0.0",
+		"@hookform/resolvers": "^2.8.8",
+		"@testing-library/jest-dom": "^5.16.2",
+		"@testing-library/react": "^12.1.4",
+		"@testing-library/user-event": "^13.5.0",
+		"axios": "^0.26.1",
+		"dagre": "^0.8.5",
+		"date-fns": "^2.28.0",
+		"jotai": "^1.6.1",
+		"lodash": "^4.17.21",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-flow-renderer": "^9.7.4",
+		"react-hook-form": "^7.28.0",
+		"react-icons": "^4.3.1",
+		"react-modal": "^3.14.4",
+		"react-query": "^3.34.16",
+		"react-router-dom": "^6.2.2",
+		"react-scripts": "5.0.0",
+		"react-select": "^5.2.2",
+		"web-vitals": "^2.1.4",
+		"zod": "^3.13.4"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
+		"lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore '**/*.{ts,tsx}' && tsc --noEmit"
+	},
+	"eslintConfig": {
+		"env": {
+			"browser": true,
+			"es2021": true
+		},
+		"extends": [
+			"eslint:recommended",
+			"plugin:@typescript-eslint/recommended",
+			"plugin:@typescript-eslint/eslint-recommended",
+			"plugin:react/recommended",
+			"plugin:react/jsx-runtime"
+		],
+		"parser": "@typescript-eslint/parser",
+		"parserOptions": {
+			"ecmaFeatures": {
+				"jsx": true
+			},
+			"ecmaVersion": "latest",
+			"sourceType": "module"
+		},
+		"plugins": [
+			"react",
+			"@typescript-eslint",
+			"@emotion",
+			"react-hooks"
+		],
+		"settings": {
+			"react": {
+				"version": "detect"
+			}
+		},
+		"rules": {
+			"react-hooks/rules-of-hooks": "error",
+			"react-hooks/exhaustive-deps": "warn"
+		}
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"@emotion/babel-plugin": "^11.7.2",
+		"@emotion/eslint-plugin": "^11.7.0",
+		"@types/dagre": "^0.7.47",
+		"@types/lodash": "^4.14.179",
+		"@types/react": "^17.0.40",
+		"@types/react-dom": "^17.0.13",
+		"@types/react-modal": "^3.13.1",
+		"@typescript-eslint/eslint-plugin": "^5.14.0",
+		"@typescript-eslint/parser": "^5.14.0",
+		"eslint": "^8.11.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-react": "^7.29.3",
+		"eslint-plugin-react-hooks": "^4.3.0",
+		"prettier": "^2.5.1",
+		"typescript": "^4.6.2"
+	}
+}

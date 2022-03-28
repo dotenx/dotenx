@@ -1,0 +1,11 @@
+type: sendEmail
+image: awrmin/sendemail
+integration: sendGrid
+fields:
+  - key: sender
+    type: text
+  - key: target
+    type: text
+  - key: text
+    type: text
+author: Armingodiz

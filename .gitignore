@@ -1,0 +1,6 @@
+.vscode
+*.out
+release/
+vendor/
+.idea
+.DS_Store
