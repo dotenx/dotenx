@@ -20,13 +20,13 @@ import (
 func main() {
 	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	channelId := os.Getenv("channel_id")
-	passedMinutes := os.Getenv("passed_minutes")
-	minutes, err := strconv.Atoi(passedMinutes)
+	passedSeconds := os.Getenv("passed_seconds")
+	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	selectedUnix := time.Now().Unix() - (int64(minutes) * 60)
+	selectedUnix := time.Now().Unix() - (int64(seconds))
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	api := slack.New(access_token)
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId})

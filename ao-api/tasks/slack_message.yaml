@@ -1,4 +1,4 @@
-type: sendSlackMessage
+type: Send slack message
 image: awrmin/slack-send-message
 integration: slack-bot 
 fields:
