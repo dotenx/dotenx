@@ -11,7 +11,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 	processedTask = &models.Task{}
 	processedTask.Details = *task
 	processedTask.IsPredifined = true
-	if task.Type == "runImage" {
+	if task.Type == "Run image" {
 		processedTask.IsPredifined = false
 		processedTask.Details.Image = task.Body["image"].(string)
 		processedTask.Script = strings.Split(task.Body["script"].(string), " ")
