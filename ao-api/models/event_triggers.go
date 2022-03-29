@@ -1,8 +1,12 @@
 package models
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os/exec"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -34,6 +38,20 @@ type EventTrigger struct {
 
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
+	cmd := exec.Command("ls")
+
+	cmd.Stdin = strings.NewReader("and old falcon")
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("translated phrase: %q\n", out.String())
 	address := "triggers"
 	files, err := ioutil.ReadDir(address)
 	if err != nil {
