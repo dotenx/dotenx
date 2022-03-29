@@ -34,7 +34,7 @@ If you want to use a new task you only need to add a yaml file
 to tasks directory in this format.
 ``` yaml
 type: type of your task
-image: Docker image wich that the task
+image: Docker image that implements the task
 # every field you define here will be available as an environment variable in container with the same key
 fields:
   - key: key of your variable
