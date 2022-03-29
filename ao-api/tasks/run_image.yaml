@@ -1,4 +1,4 @@
-type: runImage
+type: Run image
 fields:
   - key: image
     type: text

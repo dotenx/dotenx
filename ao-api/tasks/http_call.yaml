@@ -1,4 +1,4 @@
-type: httpCall
+type: Http request
 image: awrmin/utopiopshttpcall
 fields:
   - key: method
