@@ -15,8 +15,10 @@ COPY ./ao-api/go.mod .
 COPY ./ao-api/go.sum .
 
 RUN go mod download
-
+COPY ./triggers ./triggers
+COPY ./tasks ./tasks
 COPY ./ao-api .
+
 
 
 
