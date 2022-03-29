@@ -15,7 +15,7 @@ func FailOnError(err error, msg string) {
 
 func GetAccountId(c *gin.Context) (string, error) {
 	/*session := sessions.Default(c)
-	accountId, ok := session.Get("accountId").(bool)
+	accountId, ok := session.Get("accountId").(string)
 	if !ok {
 		return "", errors.New("you need to login first")
 	}
