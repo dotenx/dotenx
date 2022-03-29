@@ -34,7 +34,7 @@ If you want to use a new task you only need to add a yaml file
 to tasks directory in this format.
 ``` yaml
 type: type of your task
-image: image wich will be runned if you start your task
+image: Docker image wich that the task
 # every field you define here will be available as an environment variable in container with the same key
 fields:
   - key: key of your variable
@@ -50,7 +50,7 @@ If you want to use a new trigger you only need to add a yaml file
 to triggers directory in this format.
 ``` yaml
 type: type of your trigger
-image: image wich will be runned if you want to check your trigger
+image: Docker image that implements the trigger
 # every field you define here will be available as an environment variable in container with the same key
 credentials:
   - key: key of your variable
