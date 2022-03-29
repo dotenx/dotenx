@@ -10,3 +10,5 @@ fields:
   - key: userId
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fabout.gitlab.com%2Fpress%2Fpress-kit%2F&psig=AOvVaw1tuI3_Z33Hnpjvw4uAw59H&ust=1648656580322000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJiUi8Ha6_YCFQAAAAAdAAAAABAD
+description: Removes a member with given userId from gitlab project or group(source must be "project" or "group")

@@ -12,6 +12,8 @@ type TaskDefinition struct {
 	Image       string
 	Integration string
 	Author      string `json:"author" yaml:"author"`
+	Icon        string `json:"icon" yaml:"icon"`
+	Description string `json:"description" yaml:"description"`
 }
 
 var AvaliableTasks map[string]TaskDefinition

@@ -7,3 +7,5 @@ credentials:
   - key: passed_seconds
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fdribbble.com%2Ftags%2Fslack&psig=AOvVaw230wH_lTE6i6qIDfw19d--&ust=1648657118060000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCKD4tcLc6_YCFQAAAAAdAAAAABAS
+description: Checks if there is a new message(sent before given number of secnds), tiggers a specefic pipeline

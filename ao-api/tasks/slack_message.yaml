@@ -7,3 +7,5 @@ fields:
   - key: text
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fdribbble.com%2Ftags%2Fslack&psig=AOvVaw230wH_lTE6i6qIDfw19d--&ust=1648657118060000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCKD4tcLc6_YCFQAAAAAdAAAAABAS
+description: Sends slack message using slack bot
