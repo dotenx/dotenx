@@ -3,8 +3,12 @@ package app
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/utopiops/automated-ops/ao-api/config"
 	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
@@ -66,6 +70,15 @@ func (a *App) Start(restPort string) error {
 
 func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	r := gin.Default()
+	store := cookie.NewStore([]byte(config.Configs.Secrets.CookieSecret))
+	duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
+	if err != nil {
+		panic(err.Error())
+	}
+	store.Options(sessions.Options{
+		MaxAge: int(time.Second * time.Duration(duration)), //30min
+		Path:   "/",
+	})
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
 	healthCheckController := health.HealthCheckController{}

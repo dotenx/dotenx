@@ -12,11 +12,12 @@ type (
 	}
 
 	App struct {
-		Port           string `envconfig:"AOA_APP_PORT" default:"3004"`
-		CheckTrigger   string `envconfig:"AOA_APP_CHECK_TRIGGER"`
-		AccountId      string `envconfig:"AOA_APP_ACCOUNT_ID"`
-		Environment    string `envconfig:"AOA_APP_ENV"`
-		AllowedOrigins string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		Port            string `envconfig:"AOA_APP_PORT" default:"3004"`
+		CheckTrigger    string `envconfig:"AOA_APP_CHECK_TRIGGER"`
+		AccountId       string `envconfig:"AOA_APP_ACCOUNT_ID"`
+		Environment     string `envconfig:"AOA_APP_ENV"`
+		SessionDuration string `envconfig:"AOA_SESSION_DURATION"`
+		AllowedOrigins  string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
 
 	Queue struct {
@@ -40,6 +41,7 @@ type (
 		AuthServerJwtSecret string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
 		AppName             string `envconfig:"AOA_APP_NAME"`
 		AppSecret           string `envconfig:"AOA_APP_SECRET"`
+		CookieSecret        string `envconfig:"AOA_Cookie_SECRET"`
 	}
 )
 

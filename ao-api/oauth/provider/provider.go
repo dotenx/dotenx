@@ -20,7 +20,7 @@ import (
 	"github.com/markbates/goth/providers/fitbit"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
-	"github.com/markbates/goth/providers/gplus"
+	"github.com/markbates/goth/providers/google"
 	"github.com/markbates/goth/providers/heroku"
 	"github.com/markbates/goth/providers/influxcloud"
 	"github.com/markbates/goth/providers/instagram"
@@ -107,8 +107,8 @@ func init() {
 		provider := gitlab.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
-	ProviderNameInitializationMap["googleplus"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
-		provider := gplus.New(key, secret, cbUrl, scopes...)
+	ProviderNameInitializationMap["google"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
+		provider := google.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
 	ProviderNameInitializationMap["heroku"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
