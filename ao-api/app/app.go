@@ -6,9 +6,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 	"github.com/utopiops/automated-ops/ao-api/config"
 	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
@@ -17,6 +19,8 @@ import (
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
 	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/utopiops/automated-ops/ao-api/oauth"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
@@ -69,16 +73,17 @@ func (a *App) Start(restPort string) error {
 }
 
 func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
-	r := gin.Default()
-	store := cookie.NewStore([]byte(config.Configs.Secrets.CookieSecret))
 	duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
 	if err != nil {
 		panic(err.Error())
 	}
+	r := gin.Default()
+	store := cookie.NewStore([]byte(config.Configs.Secrets.CookieSecret))
 	store.Options(sessions.Options{
 		MaxAge: int(time.Second * time.Duration(duration)), //30min
 		Path:   "/",
 	})
+	r.Use(sessions.Sessions("dotenx", store))
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
 	healthCheckController := health.HealthCheckController{}
@@ -101,6 +106,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 
 	// Routes
+	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	{
 		tasks.GET("", predefinedController.GetTasks)
@@ -149,6 +155,23 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
 		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
+	// authentication settings
+	gothic.Store = store
+	callbackUrl := config.Configs.Endpoints.AoApi + "/oauth/callbacks/"
+	provs := make([]models.OauthProvider, 0)
+	providers, err := oauth.GetProviders(&provs, callbackUrl)
+	if err != nil {
+		panic(err.Error())
+	}
+	for i := range providers {
+		goth.UseProviders(*providers[i])
+	}
+	/*oauth := r.Group("/oauth")
+	{
+		oauth.GET("/callbacks/:provider", sessions.Sessions(global.DefaultSessionName, store), router.OAuthCallback)
+		oauth.GET("/auth/:provider", sessions.Sessions(global.DefaultSessionName, store), router.OAuth)
+	}*/
+
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
 	return r
 }
