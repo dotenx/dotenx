@@ -1,4 +1,4 @@
-# Do Ten X
+# Do10X
 DoTenX, extremely simple and most flexible way to run any workflow.
 
 
