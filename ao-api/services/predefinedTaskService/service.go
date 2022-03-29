@@ -6,8 +6,14 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
+type taskDetail struct {
+	Type        string `json:"type"`
+	IconUrl     string `json:"icon_url"`
+	Description string `json:"description"`
+}
+
 type PredifinedTaskService interface {
-	GetTasks() ([]string, error)
+	GetTasks() ([]taskDetail, error)
 	GetTaskFields(taskName string) ([]models.TaskField, string, error)
 }
 
@@ -19,10 +25,10 @@ func NewPredefinedTaskService() PredifinedTaskService {
 	return &predifinedTaskService{}
 }
 
-func (r *predifinedTaskService) GetTasks() ([]string, error) {
-	types := make([]string, 0)
-	for t, _ := range models.AvaliableTasks {
-		types = append(types, t)
+func (r *predifinedTaskService) GetTasks() ([]taskDetail, error) {
+	types := make([]taskDetail, 0)
+	for _, t := range models.AvaliableTasks {
+		types = append(types, taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
 	}
 	return types, nil
 }
