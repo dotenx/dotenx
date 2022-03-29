@@ -1,4 +1,4 @@
-type: addGitlabMember
+type: Add gitlab member
 image: awrmin/add_gitlab_members
 fields:
   - key: privateToken

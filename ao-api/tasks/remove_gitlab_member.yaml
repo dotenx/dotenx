@@ -1,4 +1,4 @@
-type: removeGitlabMember
+type: Remove gitlab member
 image: awrmin/remove_gitlab_members
 fields:
   - key: privateToken

@@ -1,4 +1,4 @@
-type: sendEmail
+type: Send email
 image: awrmin/sendemail
 integration: sendGrid
 fields:
