@@ -5,3 +5,5 @@ fields:
   - key: script
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vectorstock.com%2Froyalty-free-vector%2Fastana-kazakhstan-20-july-2020-docker-icon-vector-34243992&psig=AOvVaw0Oec3xLtJ4iuUB-lu-mdXZ&ust=1648656988345000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJjts4jc6_YCFQAAAAAdAAAAABAO
+description: Runs given script in mentioned image

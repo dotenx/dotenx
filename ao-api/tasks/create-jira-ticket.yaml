@@ -13,3 +13,5 @@ fields:
   - key: jira_url
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fstormboard.com%2Fintegrations%2Fjira&psig=AOvVaw0nZw5ylS1SGqImSxfVTHb0&ust=1648656764226000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDhg5jb6_YCFQAAAAAdAAAAABAK
+description: Creates a jira issue with given detailes

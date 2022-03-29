@@ -9,3 +9,5 @@ fields:
   - key: text
     type: text
 author: Armingodiz
+icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fsendgrid.com%2Fresource%2Fbrand%2F&psig=AOvVaw32mv_2F3mqpRI3XcWE4105&ust=1648657061561000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDO_abc6_YCFQAAAAAdAAAAABAD
+description: Sends email using send grid
