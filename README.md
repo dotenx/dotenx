@@ -1,8 +1,11 @@
-# Do Ten X
-DoTenX, extremely simple and flexible way to run any workflow.
+# Do10X
+DoTenX, extremely simple and most flexible way to run any workflow.
 
-DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
-The exact details that must be followed are provided in the License of this repository.
+
+Discord:
+
+https://discord.gg/kpCmHtKYHd
+
 
 
 # Running
@@ -56,3 +59,7 @@ credentials:
 integration: integration type wich is needed to run your trigger
 author: your github username 
 ```
+
+# License 
+DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
+The exact details that must be followed are provided in the License of this repository.
