@@ -1,4 +1,4 @@
-type: createJiraTicket
+type: Create jira ticket
 image: awrmin/create-jira-ticket
 integration: jira
 fields:

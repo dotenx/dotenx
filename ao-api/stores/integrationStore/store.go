@@ -71,6 +71,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
 			rows.StructScan(&cur)
@@ -101,6 +102,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
 			rows.StructScan(&cur)
@@ -130,6 +132,7 @@ func (store *integrationStore) GetIntegrationByName(ctx context.Context, account
 			}
 			return models.Integration{}, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
 			rows.StructScan(&cur)

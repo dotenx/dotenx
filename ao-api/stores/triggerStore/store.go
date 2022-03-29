@@ -70,6 +70,7 @@ func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, tri
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.EventTrigger
 			rows.StructScan(&cur)
@@ -100,6 +101,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.EventTrigger
 			var cred []byte

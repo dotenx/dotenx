@@ -35,6 +35,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
+		defer rows.Close()
 		for rows.Next() {
 			task := models.Task{}
 			var body interface{}

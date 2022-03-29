@@ -23,9 +23,10 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Execution
-			rows.StructScan(&cur)
+			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData)
 			if err != nil {
 				return nil, err
 			}
