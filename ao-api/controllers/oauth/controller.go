@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
 	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
+	"github.com/utopiops/automated-ops/ao-api/services/oauthService"
 )
 
 type OauthController struct {
-	Service integrationService.IntegrationService
+	Service oauthService.OauthService
 }
 
 // OAuth initializes the OAuth flow by redirecting the user to the providers login page

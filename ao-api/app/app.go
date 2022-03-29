@@ -16,6 +16,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
 	"github.com/utopiops/automated-ops/ao-api/controllers/health"
 	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
+	oauthController "github.com/utopiops/automated-ops/ao-api/controllers/oauth"
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
 	"github.com/utopiops/automated-ops/ao-api/db"
@@ -26,6 +27,7 @@ import (
 	"github.com/utopiops/automated-ops/ao-api/services/crudService"
 	"github.com/utopiops/automated-ops/ao-api/services/executionService"
 	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
+	"github.com/utopiops/automated-ops/ao-api/services/oauthService"
 	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 	"github.com/utopiops/automated-ops/ao-api/services/queueService"
 	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
@@ -99,11 +101,13 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
+	OauthService := oauthService.NewutopiopsService(AuthorStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
+	OauthController := oauthController.OauthController{Service: OauthService}
 
 	// Routes
 	// TODO : add sessions middleware to needed endpoints
@@ -158,6 +162,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	// authentication settings
 	gothic.Store = store
 	callbackUrl := config.Configs.Endpoints.AoApi + "/oauth/callbacks/"
+	// TODO get providers from config file
 	provs := make([]models.OauthProvider, 0)
 	providers, err := oauth.GetProviders(&provs, callbackUrl)
 	if err != nil {
@@ -166,12 +171,11 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	for i := range providers {
 		goth.UseProviders(*providers[i])
 	}
-	/*oauth := r.Group("/oauth")
+	oauth := r.Group("/oauth")
 	{
-		oauth.GET("/callbacks/:provider", sessions.Sessions(global.DefaultSessionName, store), router.OAuthCallback)
-		oauth.GET("/auth/:provider", sessions.Sessions(global.DefaultSessionName, store), router.OAuth)
-	}*/
-
+		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
+		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
+	}
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
 	return r
 }
