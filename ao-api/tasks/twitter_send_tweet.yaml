@@ -1,0 +1,7 @@
+type: Send Tweets
+image: dotenx/tasks:twitter-send-tweet-0.0.1
+integration: twitter_oauth1
+fields:
+  - key: text
+    type: text
+author: Mohsen

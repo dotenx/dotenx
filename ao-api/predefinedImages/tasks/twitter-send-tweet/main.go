@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -32,15 +33,17 @@ func (s AuthType) String() string {
 
 func main() {
 
-	// Send a Tweet
-	client := getClient(OAuth1)
-	// tweets, _, _ := client.Timelines.HomeTimeline(&twitter.HomeTimelineParams{})
-	// fmt.Println(tweets)
-	tweet, resp, err := client.Statuses.Update("Open source is the best way to give back to the community as a developer.", nil)
-	if err != nil {
-		fmt.Println(err.Error())
+	var client *twitter.Client
+
+	if os.Getenv("integration_type") == "twitter_oauth2" {
+		client = getClient(OAuth2)
+	} else {
+		client = getClient(OAuth1)
 	}
-	fmt.Println(resp.StatusCode, tweet.Text)
+	_, _, err := client.Statuses.Update(os.Getenv("text"), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getClient(authType AuthType) *twitter.Client {
@@ -51,8 +54,8 @@ func getClient(authType AuthType) *twitter.Client {
 	case OAuth2:
 		// oauth2 configures a client that uses app credentials to keep a fresh token
 		config := &clientcredentials.Config{
-			ClientID:     "consumerKey",
-			ClientSecret: "consumerSecret",
+			ClientID:     os.Getenv("consumerKey"),
+			ClientSecret: os.Getenv("consumerSecret"),
 			TokenURL:     "https://api.twitter.com/oauth2/token",
 		}
 		// http.Client will automatically authorize Requests
@@ -62,7 +65,10 @@ func getClient(authType AuthType) *twitter.Client {
 		client = twitter.NewClient(httpClient)
 		break
 	case OAuth1:
-
+		consumerKey := os.Getenv("consumerKey")
+		consumerSecret := os.Getenv("consumerSecret")
+		accessToken := os.Getenv("accessToken")
+		accessSecret := os.Getenv("accessSecret")
 		config := oauth1.NewConfig(consumerKey, consumerSecret)
 		token := oauth1.NewToken(accessToken, accessSecret)
 		httpClient := config.Client(oauth1.NoContext, token)
