@@ -69,7 +69,7 @@ const Label = styled.span<{ error?: FieldErrors }>({ fontSize: 14 }, (props) => 
 export interface TaskSelectOption {
 	value: string
 	label: string
-	iconUrl: string
+	iconUrl?: string
 }
 
 interface TaskSelectProps {
@@ -160,7 +160,7 @@ function TaskSelectInner({ value, onChange, options, invalid }: TaskSelectInnerP
 										setIsOpen(false)
 									}}
 								>
-									<img src={option.iconUrl} alt="" />
+									{option.iconUrl && <img src={option.iconUrl} alt="" />}
 									{option.label}
 								</OptionBox>
 							))}
