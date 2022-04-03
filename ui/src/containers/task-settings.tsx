@@ -9,6 +9,7 @@ import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { Select } from '../components/select'
+import { TaskSelect } from './task-select'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -23,8 +24,6 @@ interface TaskSettingsProps {
 }
 
 export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
-	console.log(defaultValues)
-
 	const {
 		control,
 		formState: { errors },
@@ -36,10 +35,16 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 		defaultValues: _.cloneDeep(defaultValues),
 	})
 	const taskType = watch('type')
-
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTasks)
 	const tasks = tasksQuery.data?.data?.tasks
-	const tasksOptions = tasks?.map((task) => ({ label: task, value: task }))
+	const tasksOptions = _.entries(tasks).map(([group, tasks]) => ({
+		group,
+		options: tasks.map((task) => ({
+			label: task.type,
+			value: task.type,
+			iconUrl: task.icon_url,
+		})),
+	}))
 	const taskFieldsQuery = useQuery(
 		[QueryKey.GetTaskFields, taskType],
 		() => {
@@ -52,20 +57,24 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 	)
 	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
 	const integrationType = taskFieldsQuery.data?.data.integration_type
+	const selectedTaskTypeDescription = _.values(tasks)
+		.flat()
+		.find((task) => task.type === taskType)?.description
 
 	return (
 		<Form css={{ height: '100%' }} onSubmit={handleSubmit(() => onSave(getValues()))}>
 			<h2>Node Settings</h2>
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
-				<Select
-					label="Type"
-					name="type"
-					control={control}
-					options={tasksOptions}
-					errors={errors}
-					isLoading={tasksQuery.isLoading}
-				/>
+				<div>
+					<TaskSelect
+						options={tasksOptions}
+						control={control}
+						name="type"
+						errors={errors}
+					/>
+					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskTypeDescription}</div>
+				</div>
 				{taskFields.map((taskField) => (
 					<Field
 						key={taskField.key}
@@ -83,6 +92,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 					/>
 				)}
 			</div>
+
 			<Button type="submit">Save</Button>
 		</Form>
 	)
