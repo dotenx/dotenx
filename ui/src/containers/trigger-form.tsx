@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
+import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
@@ -16,6 +17,7 @@ import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { Select } from '../components/select'
 import { getDisplayText } from '../utils'
+import { GroupSelect } from './group-select'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -63,6 +65,15 @@ export function TriggerForm({
 		},
 		{ enabled: !!integrationType }
 	)
+	const triggers = triggerTypesQuery?.data?.data
+	// const triggerOptions = triggers?.map((triggerType) => ({
+	// 	label: getDisplayText(triggerType),
+	// 	value: triggerType,
+	// }))
+	const triggerOptions = _.entries(triggers).map(([group, triggers]) => ({
+		group,
+		options: triggers.map((trigger) => ({ label: trigger, value: trigger })),
+	}))
 
 	return (
 		<Form
@@ -78,16 +89,20 @@ export function TriggerForm({
 					control={control}
 					errors={errors}
 				/>
-				<Select
+				{/* <Select
 					label="Type"
 					name="type"
 					control={control}
 					isLoading={triggerTypesQuery.isLoading}
 					errors={errors}
-					options={triggerTypesQuery?.data?.data.map((triggerType) => ({
-						label: getDisplayText(triggerType),
-						value: triggerType,
-					}))}
+					options={triggerOptions}
+					placeholder="Trigger type"
+				/> */}
+				<GroupSelect
+					name="type"
+					control={control}
+					errors={errors}
+					options={triggerOptions}
 					placeholder="Trigger type"
 				/>
 				{mode === 'new' && (
