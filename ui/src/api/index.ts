@@ -200,7 +200,13 @@ export interface TaskFields {
 }
 
 export interface TasksData {
-	tasks: string[]
+	tasks: Record<string, TaskTypeData[]>
+}
+
+export interface TaskTypeData {
+	type: string
+	description: string
+	icon_url: string
 }
 
 export interface StartPipelinePayload {
