@@ -14,7 +14,7 @@ type taskDetail struct {
 
 type PredifinedTaskService interface {
 	GetTasks() (map[string][]taskDetail, error)
-	GetTaskFields(taskName string) ([]models.TaskField, string, error)
+	GetTaskFields(taskName string) ([]models.TaskField, []string, []models.TaskField, error)
 }
 
 type predifinedTaskService struct {
@@ -39,11 +39,11 @@ func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
 	return types, nil
 }
 
-func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, string, error) {
+func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, []string, []models.TaskField, error) {
 	for t := range models.AvaliableTasks {
 		if t == taskType {
-			return models.AvaliableTasks[t].Fields, models.AvaliableTasks[t].Integration, nil
+			return models.AvaliableTasks[t].Fields, models.AvaliableTasks[t].Integrations, models.AvaliableTasks[t].Outputs, nil
 		}
 	}
-	return nil, "", errors.New("invalid task type")
+	return nil, nil, nil, errors.New("invalid task type")
 }

@@ -58,6 +58,9 @@ func readTriggerFile(address string) {
 	if yamlFile.Outputs == nil {
 		yamlFile.Outputs = make([]Credential, 0)
 	}
+	if yamlFile.IntegrationTypes == nil {
+		yamlFile.IntegrationTypes = make([]string, 0)
+	}
 	AvaliableTriggers[yamlFile.Type] = yamlFile
 }
 

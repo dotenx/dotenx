@@ -92,6 +92,12 @@ func readTaskFile(addr string) {
 	if yamlFile.Fields == nil {
 		yamlFile.Fields = make([]TaskField, 0)
 	}
+	if yamlFile.Outputs == nil {
+		yamlFile.Outputs = make([]TaskField, 0)
+	}
+	if yamlFile.Integrations == nil {
+		yamlFile.Integrations = make([]string, 0)
+	}
 	AvaliableTasks[yamlFile.Type] = yamlFile
 }
 
