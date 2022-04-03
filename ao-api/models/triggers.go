@@ -14,6 +14,7 @@ import (
 var AvaliableTriggers map[string]TriggerDefinition
 
 type TriggerDefinition struct {
+	Service         string       `json:"service" yaml:"service"`
 	Type            string       `json:"type" yaml:"type"`
 	IntegrationType string       `json:"integration" yaml:"integration"`
 	Image           string       `json:"image" yaml:"image"`

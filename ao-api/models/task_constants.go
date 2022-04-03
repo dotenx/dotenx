@@ -7,6 +7,7 @@ import (
 )
 
 type TaskDefinition struct {
+	Service     string `json:"service" yaml:"service"`
 	Type        string
 	Fields      []TaskField
 	Image       string
