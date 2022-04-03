@@ -60,48 +60,54 @@ const OptionBox = styled.button(({ theme }) => ({
 	},
 }))
 
-const TaskSelectWrapper = styled.div({ display: 'flex', flexDirection: 'column', gap: 2 })
+const GroupSelectWrapper = styled.div({ display: 'flex', flexDirection: 'column', gap: 2 })
 
 const Label = styled.span<{ error?: FieldErrors }>({ fontSize: 14 }, (props) => ({
 	color: props.error ? props.theme.color.negative : props.theme.color.text,
 }))
 
-export interface TaskSelectOption {
+export interface GroupSelectOption {
 	value: string
 	label: string
 	iconUrl?: string
 }
 
-interface TaskSelectProps {
+interface GroupSelectProps {
 	name: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>
 	options: GroupOption[]
 	errors?: FieldErrors
+	placeholder: string
 }
 
-export function TaskSelect({ control, name, options, errors }: TaskSelectProps) {
+export function GroupSelect({ control, name, options, errors, placeholder }: GroupSelectProps) {
 	const {
 		fieldState: { error },
 	} = useController({ name: name, control })
 
 	return (
-		<TaskSelectWrapper>
+		<GroupSelectWrapper>
 			<Label error={error}>Type</Label>
-			<ControlledTaskSelect name={name} control={control} options={options} />
+			<ControlledGroupSelect
+				name={name}
+				control={control}
+				options={options}
+				placeholder={placeholder}
+			/>
 			{name && errors && <FieldError errors={errors} name={name} />}
-		</TaskSelectWrapper>
+		</GroupSelectWrapper>
 	)
 }
 
-export function ControlledTaskSelect({ control, name, options }: TaskSelectProps) {
+export function ControlledGroupSelect({ control, name, options, placeholder }: GroupSelectProps) {
 	return (
 		<Controller
 			control={control}
 			name={name}
 			render={({ field: { onChange, value }, fieldState: { invalid } }) => {
 				return (
-					<TaskSelectInner
+					<GroupSelectInner
 						onChange={(newValue) => onChange(newValue.value)}
 						value={options
 							.map((group) => group.options)
@@ -109,6 +115,7 @@ export function ControlledTaskSelect({ control, name, options }: TaskSelectProps
 							.find((option) => option.value === value)}
 						options={options}
 						invalid={invalid}
+						placeholder={placeholder}
 					/>
 				)
 			}}
@@ -118,17 +125,24 @@ export function ControlledTaskSelect({ control, name, options }: TaskSelectProps
 
 interface GroupOption {
 	group: string
-	options: TaskSelectOption[]
+	options: GroupSelectOption[]
 }
 
-interface TaskSelectInnerProps {
-	value?: TaskSelectOption
-	onChange: (value: TaskSelectOption) => void
+interface GroupSelectInnerProps {
+	value?: GroupSelectOption
+	onChange: (value: GroupSelectOption) => void
 	options: GroupOption[]
 	invalid: boolean
+	placeholder: string
 }
 
-function TaskSelectInner({ value, onChange, options, invalid }: TaskSelectInnerProps) {
+function GroupSelectInner({
+	value,
+	onChange,
+	options,
+	invalid,
+	placeholder,
+}: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
@@ -141,7 +155,7 @@ function TaskSelectInner({ value, onChange, options, invalid }: TaskSelectInnerP
 				{value ? (
 					<span>{value.label}</span>
 				) : (
-					<Placeholder invalid={invalid}>Task type</Placeholder>
+					<Placeholder invalid={invalid}>{placeholder}</Placeholder>
 				)}
 				<BsChevronDown />
 			</SelectBox>

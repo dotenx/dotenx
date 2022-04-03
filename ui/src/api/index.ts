@@ -58,7 +58,7 @@ export function getTriggers() {
 }
 
 export function getTriggerTypes() {
-	return api.get<string[]>('/trigger/avaliable')
+	return api.get<Record<string, string[]>>('/trigger/avaliable')
 }
 
 export function getTriggerDefinition(type: string) {

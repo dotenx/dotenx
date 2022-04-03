@@ -9,7 +9,7 @@ import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { Select } from '../components/select'
-import { TaskSelect } from './task-select'
+import { GroupSelect } from './group-select'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -67,11 +67,12 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
 				<div>
-					<TaskSelect
+					<GroupSelect
 						options={tasksOptions}
 						control={control}
 						name="type"
 						errors={errors}
+						placeholder="Task type"
 					/>
 					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskTypeDescription}</div>
 				</div>
