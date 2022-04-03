@@ -18,6 +18,8 @@ type TriggerDefinition struct {
 	Credentials      []Credential `json:"credentials" yaml:"credentials"`
 	Outputs          []Credential `json:"outputs" yaml:"outputs"`
 	Author           string       `json:"author" yaml:"author"`
+	Icon             string       `json:"icon" yaml:"icon"`
+	Description      string       `json:"description" yaml:"description"`
 }
 
 type Credential struct {
@@ -38,7 +40,6 @@ type EventTrigger struct {
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
 	filepath.WalkDir("triggers", walkTriggers)
-
 }
 
 func readTriggerFile(address string) {
