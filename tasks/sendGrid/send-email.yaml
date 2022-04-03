@@ -1,3 +1,4 @@
+service: sendGrid
 type: Send email
 image: awrmin/sendemail
 integration: sendGrid

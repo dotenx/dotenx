@@ -1,3 +1,4 @@
+service: etc
 type: Http request
 image: awrmin/utopiopshttpcall
 fields:

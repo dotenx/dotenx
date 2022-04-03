@@ -1,3 +1,4 @@
+service: etc
 type: Run image
 fields:
   - key: image
