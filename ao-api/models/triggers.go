@@ -1,12 +1,9 @@
 package models
 
 import (
-	"bytes"
-	"fmt"
+	"io/fs"
 	"io/ioutil"
-	"log"
-	"os/exec"
-	"strings"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -39,39 +36,32 @@ type EventTrigger struct {
 
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
-	cmd := exec.Command("ls")
+	filepath.WalkDir("triggers", walkTriggers)
 
-	cmd.Stdin = strings.NewReader("and old falcon")
+}
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
-
-	err := cmd.Run()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("translated phrase: %q\n", out.String())
-	address := "triggers"
-	files, err := ioutil.ReadDir(address)
+func readTriggerFile(address string) {
+	var yamlFile TriggerDefinition
+	yamlData, err := ioutil.ReadFile(address)
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range files {
-		var yamlFile TriggerDefinition
-		yamlData, err := ioutil.ReadFile(address + "/" + file.Name())
-		if err != nil {
-			panic(err)
-		}
-		err = yaml.Unmarshal(yamlData, &yamlFile)
-		if err != nil {
-			panic(err)
-		}
-		if yamlFile.Credentials == nil {
-			yamlFile.Credentials = make([]Credential, 0)
-		}
-		AvaliableTriggers[yamlFile.Type] = yamlFile
+	err = yaml.Unmarshal(yamlData, &yamlFile)
+	if err != nil {
+		panic(err)
 	}
-	fmt.Println(AvaliableTriggers)
+	if yamlFile.Credentials == nil {
+		yamlFile.Credentials = make([]Credential, 0)
+	}
+	AvaliableTriggers[yamlFile.Type] = yamlFile
+}
+
+func walkTriggers(s string, d fs.DirEntry, err error) error {
+	if err != nil {
+		return err
+	}
+	if !d.IsDir() {
+		readTriggerFile(s)
+	}
+	return nil
 }
