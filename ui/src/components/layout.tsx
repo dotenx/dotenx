@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom'
 
 import Logo from '../assets/images/logo.png'
 
-
 const theme: Theme = {
 	color: {
 		primary: '#e85d04',
@@ -60,10 +59,14 @@ export function Layout({ children, pathname, header = null }: LayoutProps) {
 							fontWeight: 100,
 						}}
 					>
-						<img src={Logo} alt="logo" css={{
-							height: '5vh',
-							width: 'auto',
-						}} ></img>
+						<img
+							src={Logo}
+							alt="logo"
+							css={{
+								height: '5vh',
+								width: 'auto',
+							}}
+						></img>
 					</div>
 					<div css={{ flexGrow: '1' }}>{header}</div>
 				</div>
