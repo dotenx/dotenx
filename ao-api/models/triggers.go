@@ -11,12 +11,13 @@ import (
 var AvaliableTriggers map[string]TriggerDefinition
 
 type TriggerDefinition struct {
-	Service         string       `json:"service" yaml:"service"`
-	Type            string       `json:"type" yaml:"type"`
-	IntegrationType string       `json:"integration" yaml:"integration"`
-	Image           string       `json:"image" yaml:"image"`
-	Credentials     []Credential `json:"credentials" yaml:"credentials"`
-	Author          string       `json:"author" yaml:"author"`
+	Service          string       `json:"service" yaml:"service"`
+	Type             string       `json:"type" yaml:"type"`
+	IntegrationTypes []string     `json:"integrations" yaml:"integrations"`
+	Image            string       `json:"image" yaml:"image"`
+	Credentials      []Credential `json:"credentials" yaml:"credentials"`
+	Outputs          []Credential `json:"outputs" yaml:"outputs"`
+	Author           string       `json:"author" yaml:"author"`
 }
 
 type Credential struct {
@@ -52,6 +53,9 @@ func readTriggerFile(address string) {
 	}
 	if yamlFile.Credentials == nil {
 		yamlFile.Credentials = make([]Credential, 0)
+	}
+	if yamlFile.Outputs == nil {
+		yamlFile.Outputs = make([]Credential, 0)
 	}
 	AvaliableTriggers[yamlFile.Type] = yamlFile
 }
