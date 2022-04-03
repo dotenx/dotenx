@@ -11,7 +11,7 @@ import (
 )
 
 type TriggerService interface {
-	GetTriggerTypes() ([]string, error)
+	GetTriggerTypes() (map[string][]string, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
@@ -29,10 +29,17 @@ func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.
 	return &TriggerManager{Store: store, UtopiopsService: service}
 }
 
-func (manager *TriggerManager) GetTriggerTypes() ([]string, error) {
-	triggers := make([]string, 0)
+func (manager *TriggerManager) GetTriggerTypes() (map[string][]string, error) {
+	triggers := make(map[string][]string)
 	for _, integ := range models.AvaliableTriggers {
-		triggers = append(triggers, integ.Type)
+		if _, ok := triggers[integ.Service]; ok {
+			triggers[integ.Service] = append(triggers[integ.Service], integ.Type)
+		} else {
+			types := make([]string, 0)
+			types = append(types, integ.Type)
+			triggers[integ.Service] = types
+		}
+
 	}
 	return triggers, nil
 }

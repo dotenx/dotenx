@@ -76,7 +76,7 @@ type TaskResultDto struct {
 
 func init() {
 	AvaliableTasks = make(map[string]TaskDefinition)
-	filepath.WalkDir("tasks", walk)
+	filepath.WalkDir("tasks", walkTasks)
 }
 
 func readTaskFile(addr string) {
@@ -95,7 +95,7 @@ func readTaskFile(addr string) {
 	AvaliableTasks[yamlFile.Type] = yamlFile
 }
 
-func walk(s string, d fs.DirEntry, err error) error {
+func walkTasks(s string, d fs.DirEntry, err error) error {
 	if err != nil {
 		return err
 	}
