@@ -1,7 +1,7 @@
 service: sendGrid
 type: Send email
 image: awrmin/sendemail
-integration: sendGrid
+integrations: [sendGrid]
 fields:
   - key: sender
     type: text
