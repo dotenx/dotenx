@@ -13,7 +13,7 @@ type taskDetail struct {
 }
 
 type PredifinedTaskService interface {
-	GetTasks() ([]taskDetail, error)
+	GetTasks() (map[string][]taskDetail, error)
 	GetTaskFields(taskName string) ([]models.TaskField, string, error)
 }
 
@@ -25,10 +25,16 @@ func NewPredefinedTaskService() PredifinedTaskService {
 	return &predifinedTaskService{}
 }
 
-func (r *predifinedTaskService) GetTasks() ([]taskDetail, error) {
-	types := make([]taskDetail, 0)
+func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
+	types := make(map[string][]taskDetail, 0)
 	for _, t := range models.AvaliableTasks {
-		types = append(types, taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
+		if _, ok := types[t.Service]; ok {
+			types[t.Service] = append(types[t.Service], taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
+		} else {
+			detailes := make([]taskDetail, 0)
+			detailes = append(detailes, taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
+			types[t.Service] = detailes
+		}
 	}
 	return types, nil
 }
