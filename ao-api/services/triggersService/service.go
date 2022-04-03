@@ -11,7 +11,7 @@ import (
 )
 
 type TriggerService interface {
-	GetTriggerTypes() (map[string][]string, error)
+	GetTriggerTypes() (map[string][]triggerSummery, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
@@ -25,18 +25,24 @@ type TriggerManager struct {
 	UtopiopsService utopiopsService.UtopiopsService
 }
 
+type triggerSummery struct {
+	Type        string `json:"type"`
+	IconUrl     string `json:"icon_url"`
+	Description string `json:"description"`
+}
+
 func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService) TriggerService {
 	return &TriggerManager{Store: store, UtopiopsService: service}
 }
 
-func (manager *TriggerManager) GetTriggerTypes() (map[string][]string, error) {
-	triggers := make(map[string][]string)
+func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
+	triggers := make(map[string][]triggerSummery)
 	for _, integ := range models.AvaliableTriggers {
 		if _, ok := triggers[integ.Service]; ok {
-			triggers[integ.Service] = append(triggers[integ.Service], integ.Type)
+			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 		} else {
-			types := make([]string, 0)
-			types = append(types, integ.Type)
+			types := make([]triggerSummery, 0)
+			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 			triggers[integ.Service] = types
 		}
 
