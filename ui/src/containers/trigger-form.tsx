@@ -6,7 +6,6 @@ import { useQuery } from 'react-query'
 import * as z from 'zod'
 import {
 	AddTriggerPayload,
-	getIntegrationsByType,
 	getPipelines,
 	getTriggerDefinition,
 	getTriggerTypes,
@@ -18,6 +17,7 @@ import { Form } from '../components/form'
 import { Select } from '../components/select'
 import { getDisplayText } from '../utils'
 import { GroupSelect } from './group-select'
+import { SelectIntegration } from './select-integration'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -58,13 +58,6 @@ export function TriggerForm({
 		{ enabled: !!triggerType }
 	)
 	const integrationTypes = triggerDefinitionQuery.data?.data.integrations
-	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationTypes],
-		() => {
-			if (integrationTypes) return getIntegrationsByType(integrationTypes)
-		},
-		{ enabled: !!integrationTypes }
-	)
 	const triggers = triggerTypesQuery?.data?.data.triggers
 	const triggerOptions = _.entries(triggers).map(([group, triggers]) => ({
 		group,
@@ -74,14 +67,19 @@ export function TriggerForm({
 			iconUrl: trigger.icon_url,
 		})),
 	}))
-	const selectedTriggerTypeDescription = _.values(triggers)
+	const selectedTriggerType = _.values(triggers)
 		.flat()
-		.find((trigger) => trigger.type === triggerType)?.description
+		.find((trigger) => trigger.type === triggerType)
 
 	return (
 		<Form
 			css={{ height: '100%' }}
-			onSubmit={handleSubmit(() => onSave(getValues() as AddTriggerPayload))}
+			onSubmit={handleSubmit(() =>
+				onSave({
+					...(getValues() as AddTriggerPayload),
+					iconUrl: selectedTriggerType?.icon_url,
+				})
+			)}
 		>
 			<h2>{mode === 'new' ? 'Add trigger' : 'Trigger settings'}</h2>
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
@@ -100,7 +98,9 @@ export function TriggerForm({
 						options={triggerOptions}
 						placeholder="Trigger type"
 					/>
-					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTriggerTypeDescription}</div>
+					<div css={{ fontSize: 12, marginTop: 6 }}>
+						{selectedTriggerType?.description}
+					</div>
 				</div>
 				{mode === 'new' && (
 					<Select
@@ -116,18 +116,13 @@ export function TriggerForm({
 						placeholder="Pipeline name"
 					/>
 				)}
-				<Select
-					label="Integration"
-					name="integration"
-					control={control}
-					isLoading={integrationQuery.isLoading}
-					errors={errors}
-					options={integrationQuery?.data?.data.map((integration) => ({
-						label: integration.name,
-						value: integration.name,
-					}))}
-					placeholder="Integration name"
-				/>
+				{integrationTypes && integrationTypes.length !== 0 && (
+					<SelectIntegration
+						control={control}
+						errors={errors}
+						integrationTypes={integrationTypes}
+					/>
+				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
 					<Field
 						key={triggerDefinition.Key}
