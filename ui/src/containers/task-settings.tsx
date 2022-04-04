@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
 import _ from 'lodash'
-import { Control, FieldErrors, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
-import { getIntegrationsByType, getTaskFields, getTasks, QueryKey } from '../api'
+import { getTaskFields, getTasks, QueryKey } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
-import { Select } from '../components/select'
 import { GroupSelect } from './group-select'
+import { SelectIntegration } from './select-integration'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -85,7 +85,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						name={taskField.key}
 					/>
 				))}
-				{integrationTypes && (
+				{integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
 						control={control}
 						errors={errors}
@@ -96,34 +96,5 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 
 			<Button type="submit">Save</Button>
 		</Form>
-	)
-}
-
-interface SelectIntegrationProps {
-	control: Control<Schema>
-	errors: FieldErrors
-	integrationTypes: string[]
-}
-
-function SelectIntegration({ control, errors, integrationTypes }: SelectIntegrationProps) {
-	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationTypes],
-		() => getIntegrationsByType(integrationTypes),
-		{ enabled: !!integrationTypes }
-	)
-
-	return (
-		<Select
-			label="Integration"
-			name="integration"
-			control={control}
-			isLoading={integrationQuery.isLoading}
-			errors={errors}
-			options={integrationQuery?.data?.data.map((integration) => ({
-				label: integration.name,
-				value: integration.name,
-			}))}
-			placeholder="Integration name"
-		/>
 	)
 }
