@@ -66,6 +66,17 @@ const Label = styled.span<{ error?: FieldErrors }>({ fontSize: 14 }, (props) => 
 	color: props.error ? props.theme.color.negative : props.theme.color.text,
 }))
 
+const Icon = styled.img({
+	width: 20,
+	height: 20,
+})
+
+const SelectContent = styled.div({
+	display: 'flex',
+	alignItems: 'center',
+	gap: 10,
+})
+
 export interface GroupSelectOption {
 	value: string
 	label: string
@@ -153,7 +164,10 @@ function GroupSelectInner({
 				invalid={invalid}
 			>
 				{value ? (
-					<span>{value.label}</span>
+					<SelectContent>
+						{value.iconUrl && <Icon src={value.iconUrl} alt="" />}
+						{value.label}
+					</SelectContent>
 				) : (
 					<Placeholder invalid={invalid}>{placeholder}</Placeholder>
 				)}
@@ -174,7 +188,7 @@ function GroupSelectInner({
 										setIsOpen(false)
 									}}
 								>
-									{option.iconUrl && <img src={option.iconUrl} alt="" />}
+									{option.iconUrl && <Icon src={option.iconUrl} alt="" />}
 									{option.label}
 								</OptionBox>
 							))}

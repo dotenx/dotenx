@@ -56,7 +56,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 		}
 	)
 	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
-	const integrationType = taskFieldsQuery.data?.data.integration_type
+	const integrationTypes = taskFieldsQuery.data?.data.integration_types
 	const selectedTaskTypeDescription = _.values(tasks)
 		.flat()
 		.find((task) => task.type === taskType)?.description
@@ -85,11 +85,11 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						name={taskField.key}
 					/>
 				))}
-				{integrationType && (
+				{integrationTypes && (
 					<SelectIntegration
 						control={control}
 						errors={errors}
-						integrationType={integrationType}
+						integrationTypes={integrationTypes}
 					/>
 				)}
 			</div>
@@ -102,14 +102,14 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 interface SelectIntegrationProps {
 	control: Control<Schema>
 	errors: FieldErrors
-	integrationType: string
+	integrationTypes: string[]
 }
 
-function SelectIntegration({ control, errors, integrationType }: SelectIntegrationProps) {
+function SelectIntegration({ control, errors, integrationTypes }: SelectIntegrationProps) {
 	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationType],
-		() => getIntegrationsByType(integrationType),
-		{ enabled: !!integrationType }
+		[QueryKey.GetIntegrationsByType, integrationTypes],
+		() => getIntegrationsByType(integrationTypes),
+		{ enabled: !!integrationTypes }
 	)
 
 	return (
