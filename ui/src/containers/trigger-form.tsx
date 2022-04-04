@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
+import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
@@ -16,6 +17,7 @@ import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { Select } from '../components/select'
 import { getDisplayText } from '../utils'
+import { GroupSelect } from './group-select'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -55,14 +57,26 @@ export function TriggerForm({
 		() => getTriggerDefinition(triggerType),
 		{ enabled: !!triggerType }
 	)
-	const integrationType = triggerDefinitionQuery.data?.data.integration
+	const integrationTypes = triggerDefinitionQuery.data?.data.integrations
 	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationType],
+		[QueryKey.GetIntegrationsByType, integrationTypes],
 		() => {
-			if (integrationType) return getIntegrationsByType(integrationType)
+			if (integrationTypes) return getIntegrationsByType(integrationTypes)
 		},
-		{ enabled: !!integrationType }
+		{ enabled: !!integrationTypes }
 	)
+	const triggers = triggerTypesQuery?.data?.data.triggers
+	const triggerOptions = _.entries(triggers).map(([group, triggers]) => ({
+		group,
+		options: triggers.map((trigger) => ({
+			label: trigger.type,
+			value: trigger.type,
+			iconUrl: trigger.icon_url,
+		})),
+	}))
+	const selectedTriggerTypeDescription = _.values(triggers)
+		.flat()
+		.find((trigger) => trigger.type === triggerType)?.description
 
 	return (
 		<Form
@@ -78,18 +92,16 @@ export function TriggerForm({
 					control={control}
 					errors={errors}
 				/>
-				<Select
-					label="Type"
-					name="type"
-					control={control}
-					isLoading={triggerTypesQuery.isLoading}
-					errors={errors}
-					options={triggerTypesQuery?.data?.data.map((triggerType) => ({
-						label: getDisplayText(triggerType),
-						value: triggerType,
-					}))}
-					placeholder="Trigger type"
-				/>
+				<div>
+					<GroupSelect
+						name="type"
+						control={control}
+						errors={errors}
+						options={triggerOptions}
+						placeholder="Trigger type"
+					/>
+					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTriggerTypeDescription}</div>
+				</div>
 				{mode === 'new' && (
 					<Select
 						label="Pipeline"
