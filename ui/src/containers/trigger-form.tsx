@@ -18,6 +18,7 @@ import { Form } from '../components/form'
 import { Select } from '../components/select'
 import { getDisplayText } from '../utils'
 import { GroupSelect } from './group-select'
+import { SelectIntegration } from './select-integration'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -116,18 +117,13 @@ export function TriggerForm({
 						placeholder="Pipeline name"
 					/>
 				)}
-				<Select
-					label="Integration"
-					name="integration"
-					control={control}
-					isLoading={integrationQuery.isLoading}
-					errors={errors}
-					options={integrationQuery?.data?.data.map((integration) => ({
-						label: integration.name,
-						value: integration.name,
-					}))}
-					placeholder="Integration name"
-				/>
+				{integrationTypes && integrationTypes.length !== 0 && (
+					<SelectIntegration
+						control={control}
+						errors={errors}
+						integrationTypes={integrationTypes}
+					/>
+				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
 					<Field
 						key={triggerDefinition.Key}
