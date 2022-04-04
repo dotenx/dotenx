@@ -1,17 +1,17 @@
 service: slack
-type: Slack new message 
-integrations: [slack-bot] 
+type: Slack new message
+integrations: [slack-bot]
 image: awrmin/slack-new-message
 credentials:
-  - key: channel_id
-    type: text
-  - key: passed_seconds
-    type: text
+    - key: channel_id
+      type: text
+    - key: passed_seconds
+      type: text
 outputs:
-  - key: text
-    type: text
-  - key: timestamp
-    type: text
+    - key: text
+      type: text
+    - key: timestamp
+      type: text
 author: Armingodiz
-icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fdribbble.com%2Ftags%2Fslack&psig=AOvVaw230wH_lTE6i6qIDfw19d--&ust=1648657118060000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCKD4tcLc6_YCFQAAAAAdAAAAABAS
+icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
 description: Checks if there is a new message(sent before given number of secnds), tiggers a specefic pipeline

@@ -3,12 +3,12 @@ type: Send email
 image: awrmin/sendemail
 integrations: [sendGrid]
 fields:
-  - key: sender
-    type: text
-  - key: target
-    type: text
-  - key: text
-    type: text
+    - key: sender
+      type: text
+    - key: target
+      type: text
+    - key: text
+      type: text
 author: Armingodiz
-icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fsendgrid.com%2Fresource%2Fbrand%2F&psig=AOvVaw32mv_2F3mqpRI3XcWE4105&ust=1648657061561000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDO_abc6_YCFQAAAAAdAAAAABAD
+icon: https://sendgrid.com/wp-content/themes/sgdotcom/pages/resource/brand/2016/SendGrid-Logomark.png
 description: Sends email using send grid

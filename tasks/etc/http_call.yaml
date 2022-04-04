@@ -2,12 +2,12 @@ service: etc
 type: Http request
 image: awrmin/utopiopshttpcall
 fields:
-  - key: method
-    type: text
-  - key: url
-    type: text
-  - key: body
-    type: JSON
+    - key: method
+      type: text
+    - key: url
+      type: text
+    - key: body
+      type: JSON
 author: Armingodiz
-icon: https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Fhttp_1674969&psig=AOvVaw15liqgtQYsFQ-DFDVdZM3x&ust=1648656843393000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCLD-4r7b6_YCFQAAAAAdAAAAABAN
+icon: https://cdn-icons-png.flaticon.com/512/1674/1674969.png
 description: Sends a http request to given url with given body
