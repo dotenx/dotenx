@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
 import _ from 'lodash'
-import { Control, FieldErrors, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
-import { getIntegrationsByType, getTaskFields, getTasks, QueryKey } from '../api'
+import { getTaskFields, getTasks, QueryKey } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
-import { Select } from '../components/select'
 import { GroupSelect } from './group-select'
+import { SelectIntegration } from './select-integration'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -20,7 +20,7 @@ type Schema = z.infer<typeof schema>
 
 interface TaskSettingsProps {
 	defaultValues: Schema
-	onSave: (values: Schema) => void
+	onSave: (values: Schema & { iconUrl?: string }) => void
 }
 
 export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
@@ -57,12 +57,17 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 	)
 	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
 	const integrationTypes = taskFieldsQuery.data?.data.integration_types
-	const selectedTaskTypeDescription = _.values(tasks)
+	const selectedTaskType = _.values(tasks)
 		.flat()
-		.find((task) => task.type === taskType)?.description
+		.find((task) => task.type === taskType)
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={handleSubmit(() => onSave(getValues()))}>
+		<Form
+			css={{ height: '100%' }}
+			onSubmit={handleSubmit(() =>
+				onSave({ ...getValues(), iconUrl: selectedTaskType?.icon_url })
+			)}
+		>
 			<h2>Node Settings</h2>
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
@@ -74,7 +79,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						errors={errors}
 						placeholder="Task type"
 					/>
-					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskTypeDescription}</div>
+					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskType?.description}</div>
 				</div>
 				{taskFields.map((taskField) => (
 					<Field
@@ -85,7 +90,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						name={taskField.key}
 					/>
 				))}
-				{integrationTypes && (
+				{integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
 						control={control}
 						errors={errors}
@@ -96,34 +101,5 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 
 			<Button type="submit">Save</Button>
 		</Form>
-	)
-}
-
-interface SelectIntegrationProps {
-	control: Control<Schema>
-	errors: FieldErrors
-	integrationTypes: string[]
-}
-
-function SelectIntegration({ control, errors, integrationTypes }: SelectIntegrationProps) {
-	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationTypes],
-		() => getIntegrationsByType(integrationTypes),
-		{ enabled: !!integrationTypes }
-	)
-
-	return (
-		<Select
-			label="Integration"
-			name="integration"
-			control={control}
-			isLoading={integrationQuery.isLoading}
-			errors={errors}
-			options={integrationQuery?.data?.data.map((integration) => ({
-				label: integration.name,
-				value: integration.name,
-			}))}
-			placeholder="Integration name"
-		/>
 	)
 }
