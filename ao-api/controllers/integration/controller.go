@@ -28,9 +28,9 @@ func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerF
 
 func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		typeIntegration := c.Param("type")
+		types := c.QueryArray("type")
 		accountId, _ := utils.GetAccountId(c)
-		integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, typeIntegration)
+		integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
 		if err == nil {
 			c.JSON(http.StatusOK, integrations)
 			return
