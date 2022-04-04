@@ -48,7 +48,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 			<div css={{ textAlign: 'start' }}>
 				<div css={{ display: 'flex', gap: 6, alignItems: 'center' }}>
 					{data.iconUrl && (
-						<img src={data.iconUrl} alt="" css={{ width: 12, height: 12 }} />
+						<img src={data.iconUrl} alt="" css={{ width: 16, height: 16 }} />
 					)}
 					<span>{data.name}</span>
 				</div>
