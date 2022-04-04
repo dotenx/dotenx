@@ -13,6 +13,7 @@ export interface TaskNodeData {
 	status?: Status
 	executionId?: string
 	integration?: string
+	iconUrl?: string
 }
 
 export interface TaskEntity {
@@ -45,9 +46,12 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 			<Handle type="target" position={Position.Top} />
 
 			<div css={{ textAlign: 'start' }}>
-				<p css={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-					{nodeEntity.data.name}
-				</p>
+				<div css={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+					{data.iconUrl && (
+						<img src={data.iconUrl} alt="" css={{ width: 12, height: 12 }} />
+					)}
+					<span>{data.name}</span>
+				</div>
 				{data.status && (
 					<div
 						css={{

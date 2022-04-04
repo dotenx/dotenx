@@ -4,8 +4,9 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io/fs"
 	"io/ioutil"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -75,25 +76,37 @@ type TaskResultDto struct {
 
 func init() {
 	AvaliableTasks = make(map[string]TaskDefinition)
-	address := "tasks"
-	files, err := ioutil.ReadDir(address)
+	filepath.WalkDir("tasks", walkTasks)
+}
+
+func readTaskFile(addr string) {
+	var yamlFile TaskDefinition
+	yamlData, err := ioutil.ReadFile(addr)
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range files {
-		var yamlFile TaskDefinition
-		yamlData, err := ioutil.ReadFile(address + "/" + file.Name())
-		if err != nil {
-			panic(err)
-		}
-		err = yaml.Unmarshal(yamlData, &yamlFile)
-		if err != nil {
-			panic(err)
-		}
-		if yamlFile.Fields == nil {
-			yamlFile.Fields = make([]TaskField, 0)
-		}
-		AvaliableTasks[yamlFile.Type] = yamlFile
+	err = yaml.Unmarshal(yamlData, &yamlFile)
+	if err != nil {
+		panic(err)
 	}
-	fmt.Println(AvaliableTasks)
+	if yamlFile.Fields == nil {
+		yamlFile.Fields = make([]TaskField, 0)
+	}
+	if yamlFile.Outputs == nil {
+		yamlFile.Outputs = make([]TaskField, 0)
+	}
+	if yamlFile.Integrations == nil {
+		yamlFile.Integrations = make([]string, 0)
+	}
+	AvaliableTasks[yamlFile.Type] = yamlFile
+}
+
+func walkTasks(s string, d fs.DirEntry, err error) error {
+	if err != nil {
+		return err
+	}
+	if !d.IsDir() {
+		readTaskFile(s)
+	}
+	return nil
 }

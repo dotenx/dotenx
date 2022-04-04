@@ -1,0 +1,14 @@
+service: sendGrid
+type: Send email
+image: awrmin/sendemail
+integrations: [sendGrid]
+fields:
+    - key: sender
+      type: text
+    - key: target
+      type: text
+    - key: text
+      type: text
+author: Armingodiz
+icon: https://sendgrid.com/wp-content/themes/sgdotcom/pages/resource/brand/2016/SendGrid-Logomark.png
+description: Sends email using send grid

@@ -1,9 +1,0 @@
-type: Send slack message
-image: awrmin/slack-send-message
-integration: slack-bot 
-fields:
-  - key: target_id
-    type: text
-  - key: text
-    type: text
-author: Armingodiz
