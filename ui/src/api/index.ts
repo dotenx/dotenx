@@ -147,6 +147,7 @@ export interface AddTriggerPayload {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	iconUrl?: string
 }
 
 export interface TriggerDefinition {

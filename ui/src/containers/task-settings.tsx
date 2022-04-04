@@ -20,7 +20,7 @@ type Schema = z.infer<typeof schema>
 
 interface TaskSettingsProps {
 	defaultValues: Schema
-	onSave: (values: Schema) => void
+	onSave: (values: Schema & { iconUrl?: string }) => void
 }
 
 export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
@@ -57,12 +57,17 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 	)
 	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
 	const integrationTypes = taskFieldsQuery.data?.data.integration_types
-	const selectedTaskTypeDescription = _.values(tasks)
+	const selectedTaskType = _.values(tasks)
 		.flat()
-		.find((task) => task.type === taskType)?.description
+		.find((task) => task.type === taskType)
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={handleSubmit(() => onSave(getValues()))}>
+		<Form
+			css={{ height: '100%' }}
+			onSubmit={handleSubmit(() =>
+				onSave({ ...getValues(), iconUrl: selectedTaskType?.icon_url })
+			)}
+		>
 			<h2>Node Settings</h2>
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
@@ -74,7 +79,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						errors={errors}
 						placeholder="Task type"
 					/>
-					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskTypeDescription}</div>
+					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskType?.description}</div>
 				</div>
 				{taskFields.map((taskField) => (
 					<Field
