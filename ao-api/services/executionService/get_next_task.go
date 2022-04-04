@@ -1,10 +1,10 @@
 package executionService
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
@@ -54,23 +54,29 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 	return nil
 }
 
+type insertDto struct {
+	Source string `json:"source"`
+	Key    string `json:"key"`
+}
+
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
 func (manager *executionManager) mapFields(execId int, accountId string, taskBody map[string]interface{}) (map[string]interface{}, error) {
 	for key, value := range taskBody {
+		var insertDt insertDto
 		stringValue := fmt.Sprintf("%v", value)
-		if strings.Contains(stringValue, "$$$") {
-			source := strings.ReplaceAll(stringValue, "$$$", "")
-			body, err := manager.CheckExecutionInitialData(execId, accountId, source)
+		err := json.Unmarshal([]byte(stringValue), insertDt)
+		if err == nil && insertDt.Key != "" && insertDt.Source != "" {
+			body, err := manager.CheckExecutionInitialData(execId, accountId, insertDt.Source)
 			if err != nil {
-				body, err = manager.CheckReturnValues(execId, accountId, source)
+				body, err = manager.CheckReturnValues(execId, accountId, insertDt.Source)
 				if err != nil {
 					return nil, err
 				}
 			}
-			if _, ok := body[key]; !ok {
+			if _, ok := body[insertDt.Key]; !ok {
 				return nil, errors.New("no value for this field in initial data or return values")
 			}
-			taskBody[key] = body[key]
+			taskBody[key] = body[insertDt.Key]
 		}
 	}
 	return taskBody, nil

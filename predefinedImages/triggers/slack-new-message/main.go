@@ -46,6 +46,7 @@ func main() {
 			body := make(map[string]interface{})
 			innerBody := make(map[string]interface{})
 			innerBody["text"] = res.Messages[0].Msg.Text
+			innerBody["timestamp"] = res.Messages[0].Timestamp
 			body["trigger"] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {

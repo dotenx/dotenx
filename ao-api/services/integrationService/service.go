@@ -14,7 +14,7 @@ type IntegrationService interface {
 	DeleteIntegration(accountId string, integrationName string) error
 	GetIntegrationTypes() ([]string, error)
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
-	GetAllIntegrationsForAccountByType(accountId, integrationType string) ([]models.Integration, error)
+	GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
 }
 
@@ -60,9 +60,18 @@ func (manager *IntegrationManager) DeleteIntegration(accountId string, integrati
 func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
 	return manager.Store.GetAllintegrations(context.Background(), accountId)
 }
-func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId, integrationType string) ([]models.Integration, error) {
-	return manager.Store.GetIntegrationsByType(context.Background(), accountId, integrationType)
+func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error) {
+	integrations := make([]models.Integration, 0)
+	var err error
+	for _, intgType := range integrationTypes {
+		intgs, err := manager.Store.GetIntegrationsByType(context.Background(), accountId, intgType)
+		if err == nil {
+			integrations = append(integrations, intgs...)
+		}
+	}
+	return integrations, err
 }
+
 func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) (models.Integration, error) {
 	return manager.Store.GetIntegrationByName(context.Background(), accountId, name)
 }
