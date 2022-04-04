@@ -57,23 +57,26 @@ export function TriggerForm({
 		() => getTriggerDefinition(triggerType),
 		{ enabled: !!triggerType }
 	)
-	const integrationType = triggerDefinitionQuery.data?.data.integration
+	const integrationTypes = triggerDefinitionQuery.data?.data.integrations
 	const integrationQuery = useQuery(
-		[QueryKey.GetIntegrationsByType, integrationType],
+		[QueryKey.GetIntegrationsByType, integrationTypes],
 		() => {
-			if (integrationType) return getIntegrationsByType(integrationType)
+			if (integrationTypes) return getIntegrationsByType(integrationTypes)
 		},
-		{ enabled: !!integrationType }
+		{ enabled: !!integrationTypes }
 	)
-	const triggers = triggerTypesQuery?.data?.data
-	// const triggerOptions = triggers?.map((triggerType) => ({
-	// 	label: getDisplayText(triggerType),
-	// 	value: triggerType,
-	// }))
+	const triggers = triggerTypesQuery?.data?.data.triggers
 	const triggerOptions = _.entries(triggers).map(([group, triggers]) => ({
 		group,
-		options: triggers.map((trigger) => ({ label: trigger, value: trigger })),
+		options: triggers.map((trigger) => ({
+			label: trigger.type,
+			value: trigger.type,
+			iconUrl: trigger.icon_url,
+		})),
 	}))
+	const selectedTriggerTypeDescription = _.values(triggers)
+		.flat()
+		.find((trigger) => trigger.type === triggerType)?.description
 
 	return (
 		<Form
@@ -89,22 +92,16 @@ export function TriggerForm({
 					control={control}
 					errors={errors}
 				/>
-				{/* <Select
-					label="Type"
-					name="type"
-					control={control}
-					isLoading={triggerTypesQuery.isLoading}
-					errors={errors}
-					options={triggerOptions}
-					placeholder="Trigger type"
-				/> */}
-				<GroupSelect
-					name="type"
-					control={control}
-					errors={errors}
-					options={triggerOptions}
-					placeholder="Trigger type"
-				/>
+				<div>
+					<GroupSelect
+						name="type"
+						control={control}
+						errors={errors}
+						options={triggerOptions}
+						placeholder="Trigger type"
+					/>
+					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTriggerTypeDescription}</div>
+				</div>
 				{mode === 'new' && (
 					<Select
 						label="Pipeline"
