@@ -20,7 +20,6 @@ import (
 	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
 	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
 	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
 	"github.com/utopiops/automated-ops/ao-api/oauth"
 	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
 	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
@@ -162,9 +161,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	// authentication settings
 	gothic.Store = store
 	callbackUrl := config.Configs.Endpoints.AoApi + "/oauth/callbacks/"
-	// TODO get providers from config file
-	provs := make([]models.OauthProvider, 0)
-	providers, err := oauth.GetProviders(&provs, callbackUrl)
+	providers, err := oauth.GetProviders(callbackUrl)
 	if err != nil {
 		panic(err.Error())
 	}
