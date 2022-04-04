@@ -10,9 +10,6 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-// Implement a function that sends a tweet
-
-// Define an enum with values Oauth2 and Oauth1
 type AuthType int
 
 const (
@@ -52,16 +49,13 @@ func getClient(authType AuthType) *twitter.Client {
 
 	switch authType {
 	case OAuth2:
-		// oauth2 configures a client that uses app credentials to keep a fresh token
 		config := &clientcredentials.Config{
 			ClientID:     os.Getenv("consumerKey"),
 			ClientSecret: os.Getenv("consumerSecret"),
 			TokenURL:     "https://api.twitter.com/oauth2/token",
 		}
-		// http.Client will automatically authorize Requests
 		httpClient := config.Client(oauth2.NoContext)
 
-		// Twitter client
 		client = twitter.NewClient(httpClient)
 		break
 	case OAuth1:
@@ -72,8 +66,6 @@ func getClient(authType AuthType) *twitter.Client {
 		config := oauth1.NewConfig(consumerKey, consumerSecret)
 		token := oauth1.NewToken(accessToken, accessSecret)
 		httpClient := config.Client(oauth1.NoContext, token)
-
-		// Twitter client
 		client = twitter.NewClient(httpClient)
 	}
 	return client
