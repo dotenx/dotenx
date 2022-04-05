@@ -58,7 +58,7 @@ export function getTriggers() {
 }
 
 export function getTriggerTypes() {
-	return api.get<string[]>('/trigger/avaliable')
+	return api.get<AvailableTriggers>('/trigger/avaliable')
 }
 
 export function getTriggerDefinition(type: string) {
@@ -85,8 +85,9 @@ export function deleteTrigger(name: string) {
 	return api.delete<void>(`/trigger/name/${name}`)
 }
 
-export function getIntegrationsByType(type: string) {
-	return api.get<IntegrationData[]>(`/integration/type/${type}`)
+export function getIntegrationsByType(types: string[]) {
+	const typesQuery = types.map((type) => `type=${type}&`)
+	return api.get<IntegrationData[]>(`/integration?${typesQuery}`)
 }
 
 export enum QueryKey {
@@ -120,6 +121,16 @@ export enum TaskType {
 	Text = 'text',
 }
 
+export interface AvailableTriggers {
+	triggers: Record<string, TriggerTypeData[]>
+}
+
+export interface TriggerTypeData {
+	type: string
+	icon_url: string
+	description: string
+}
+
 export interface TriggerData {
 	name: string
 	account_id: string
@@ -136,11 +147,12 @@ export interface AddTriggerPayload {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	iconUrl?: string
 }
 
 export interface TriggerDefinition {
 	type: string
-	integration: string
+	integrations: string[]
 	image: string
 	credentials: FieldType[]
 }
@@ -196,11 +208,18 @@ export interface TaskFields {
 		key: string
 		type: string
 	}[]
-	integration_type: string
+	integration_types: string[]
+	outputs: unknown[]
 }
 
 export interface TasksData {
-	tasks: string[]
+	tasks: Record<string, TaskTypeData[]>
+}
+
+export interface TaskTypeData {
+	type: string
+	description: string
+	icon_url: string
 }
 
 export interface StartPipelinePayload {

@@ -22,8 +22,8 @@ import { selectedPipelineAtom } from '../containers/pipeline-select'
 import { selectedPipelineDataAtom } from '../pages/home'
 import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
-let id = 0
-const getId = () => `node_${id++}`
+let id = 1
+const getId = () => `task ${id++}`
 
 let triggerId = 1
 const getTriggerId = () => `trigger ${triggerId++}`
@@ -32,7 +32,7 @@ export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
 		id: getId(),
 		type: 'default',
-		data: { name: 'node_0', type: '' },
+		data: { name: 'task 1', type: '' },
 		position: { x: 0, y: 0 },
 	},
 ]

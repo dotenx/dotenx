@@ -1,22 +1,21 @@
-FROM golang:1.13.4 AS go-build
+FROM golang:1.16-alpine AS go-build
 
 ENV GO111MODULE=on
-
-ARG GITLAB_ACCESS_USERNAME
-ARG GITLAB_ACCESS_PASSWORD
-RUN echo https://${GITLAB_ACCESS_USERNAME}:${GITLAB_ACCESS_PASSWORD}@gitlab.com >> ~/.git-credentials && git config --global credential.helper 'store --file ~/.git-credentials'
 
 WORKDIR /go/src/github.com/utopiops/automated-ops/ao-api
 
 ENV GONOSUMDB=gitlab.com/utopiops-water
-ENV GOPRIVATE=gitlab.com/utopiops-water/*
 
 COPY ./ao-api/go.mod .
 COPY ./ao-api/go.sum .
 
 RUN go mod download
+COPY ./triggers ./triggers
+COPY ./tasks ./tasks
+COPY ./integrations ./integrations
 
 COPY ./ao-api .
+
 
 
 

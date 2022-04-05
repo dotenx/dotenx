@@ -106,7 +106,8 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 func (controller *TriggerController) GetTriggersTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		triggers, _ := controller.Service.GetTriggerTypes()
-		//fmt.Println(triggers)
-		c.JSON(http.StatusOK, triggers)
+		c.JSON(http.StatusOK, gin.H{
+			"triggers": triggers,
+		})
 	}
 }

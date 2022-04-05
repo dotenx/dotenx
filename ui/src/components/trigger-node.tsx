@@ -29,7 +29,10 @@ export function TriggerNode({ id, data }: NodeProps<AddTriggerPayload>) {
 				alignItems: 'center',
 			})}
 		>
-			<div>{data.name}</div>
+			<div css={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+				{data.iconUrl && <img src={data.iconUrl} alt="" css={{ width: 14, height: 14 }} />}
+				<span>{data.name}</span>
+			</div>
 			<Button
 				variant="icon"
 				css={(theme) => ({

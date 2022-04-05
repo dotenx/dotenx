@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,20 +27,6 @@ func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerF
 	}
 }
 
-func (controller *IntegrationController) GetAllIntegrationsForAccountByType() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		typeIntegration := c.Param("type")
-		accountId, _ := utils.GetAccountId(c)
-		integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, typeIntegration)
-		if err == nil {
-			c.JSON(http.StatusOK, integrations)
-			return
-		}
-		c.JSON(http.StatusBadRequest, err.Error())
-
-	}
-}
-
 func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		integrationName := c.Param("name")
@@ -56,14 +43,24 @@ func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 
 func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		types := c.QueryArray("type")
+		fmt.Println(types)
 		accountId, _ := utils.GetAccountId(c)
-		integrations, err := controller.Service.GetAllIntegrations(accountId)
-		if err == nil {
-			c.JSON(http.StatusOK, integrations)
-			return
+		if len(types) == 0 {
+			integrations, err := controller.Service.GetAllIntegrations(accountId)
+			if err == nil {
+				c.JSON(http.StatusOK, integrations)
+				return
+			}
+			c.JSON(http.StatusBadRequest, err.Error())
+		} else {
+			integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
+			if err == nil {
+				c.JSON(http.StatusOK, integrations)
+				return
+			}
+			c.JSON(http.StatusBadRequest, err.Error())
 		}
-		c.JSON(http.StatusBadRequest, err.Error())
-
 	}
 }
 
