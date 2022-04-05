@@ -1,5 +1,5 @@
 # Do10X
-DoTenX, extremely simple and most flexible way to run any workflow.
+DoTenX, extremely simple and most flexible way to build any automation with no-code.
 
 
 Discord:
