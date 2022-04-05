@@ -1,7 +1,9 @@
 type: Send Tweets
 image: dotenx/tasks:twitter-send-tweet-0.0.1
-integration: twitter_oauth1
+integrations: 
+  - twitter_oauth1
 fields:
   - key: text
     type: text
+icon: https://cdn-icons-png.flaticon.com/512/3128/3128310.png
 author: Mohsen
