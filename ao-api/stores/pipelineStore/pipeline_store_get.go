@@ -46,6 +46,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			var taskBody models.TaskBodyMap
 			json.Unmarshal(body.([]byte), &taskBody)
 			task.Body = taskBody
+			task.MetaData = models.AvaliableTasks[task.Type]
 			tasks = append(tasks, task)
 		}
 		taskIdToName := make(map[int]string)

@@ -52,11 +52,12 @@ func (t ReturnValueMap) Scan(value interface{}) error {
 type TaskDetails struct {
 	Name        string
 	Id          int
-	Timeout     int         `db:"timeout" json:"timeout"`
-	Type        string      `db:"task_type"`
-	Body        TaskBodyMap `db:"body" json:"body"`
-	AccountId   string      `db:"account_id" json:"account_id"`
-	Integration string      `db:"integration" json:"integration"`
+	Timeout     int            `db:"timeout" json:"timeout"`
+	Type        string         `db:"task_type"`
+	Body        TaskBodyMap    `db:"body" json:"body"`
+	AccountId   string         `db:"account_id" json:"account_id"`
+	Integration string         `db:"integration" json:"integration"`
+	MetaData    TaskDefinition `json:"meta_data"`
 }
 
 type TaskStatusSummery struct {
