@@ -15,6 +15,10 @@ docker network create -d bridge local --attachable
 docker compose up
 ```
 
+# ⭐️ `Star us`
+
+If you want to support our work - please star this project, every star makes us very happy!
+
 # Add new integration type
 
 If you want to use a new integration type you only need to add a yaml file 
