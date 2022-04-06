@@ -12,6 +12,9 @@ func main() {
 	target := os.Getenv("target")
 	text := os.Getenv("text")
 	apiKey := os.Getenv("INTEGRATION_ACCESS_TOKEN")
+	if apiKey == "" {
+		panic("no api key")
+	}
 	err := SendGridEmail(apiKey, sender, target, text)
 	if err != nil {
 		panic(err)
