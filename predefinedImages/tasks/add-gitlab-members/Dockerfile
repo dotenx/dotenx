@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine
+FROM golang:1.16-alpine as build
  
 WORKDIR /app
 
@@ -7,6 +7,10 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /addGitlabMembers
+RUN go build -o ./addGitlabMembers
+
+FROM alpine 
+
+COPY --from=build /app/addGitlabMembers ./
 
 CMD [ "/addGitlabMembers" ]
