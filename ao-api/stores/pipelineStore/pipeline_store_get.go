@@ -73,6 +73,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 				Body:         task.Body,
 				Description:  task.Description,
 				Integration:  task.Integration,
+				MetaData:     task.MetaData,
 			}
 		}
 	}

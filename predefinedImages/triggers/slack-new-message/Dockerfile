@@ -1,13 +1,17 @@
-FROM golang:1.16-alpine
+FROM golang:1.16-alpine as build
  
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
+COPY go.mod go.sum ./
+
 RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /slack-new-message
+RUN go build -o ./slack-new-message
 
-CMD [ "/slack-new-message" ]
+FROM alpine 
+
+COPY --from=build /app/slack-new-message ./
+
+CMD [ "./slack-new-message" ]
