@@ -160,8 +160,9 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	}
 	// authentication settings
 	gothic.Store = store
-	callbackUrl := config.Configs.Endpoints.AoApi + "/oauth/callbacks/"
-	providers, err := oauth.GetProviders(callbackUrl)
+	// integrationCallbackUrl := config.Configs.Endpoints.AoApi + "/oauth/integration/callbacks/"
+	integrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/oauth/integration/callbacks/"
+	providers, err := oauth.GetProviders(integrationCallbackUrl)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -172,6 +173,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	{
 		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
+		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
 	}
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
 	return r

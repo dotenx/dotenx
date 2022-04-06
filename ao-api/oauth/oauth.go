@@ -37,7 +37,7 @@ func GetProviders(cbURIBase string) ([]*goth.Provider, error) {
 	}
 	for _, v := range providers {
 		uri := cbURIBase + v.Name
-		p, err := provider.New(v.Name, &v.Secret, &v.Key, uri)
+		p, err := provider.New(v.Name, &v.Secret, &v.Key, uri, v.Scopes...)
 		if err != nil {
 			return result, err
 		}
