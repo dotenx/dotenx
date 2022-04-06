@@ -35,6 +35,7 @@ type EventTrigger struct {
 	Pipeline    string                 `db:"pipeline_name" json:"pipeline_name"`
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
+	MetaData    TriggerDefinition      `json:"meta_data"`
 }
 
 func init() {
