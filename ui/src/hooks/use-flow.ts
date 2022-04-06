@@ -152,7 +152,6 @@ function mapPipelineToElements(pipeline: PipelineData): Elements<TaskNodeData | 
 			return [fieldName, inputOrSelectValue]
 		})
 		const body = _.fromPairs(bodyEntries)
-		console.log(body)
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -161,6 +160,7 @@ function mapPipelineToElements(pipeline: PipelineData): Elements<TaskNodeData | 
 				name: key,
 				type: value.type,
 				integration: value.integration,
+				iconUrl: value.meta_data?.icon,
 				...body,
 			},
 		}
@@ -187,7 +187,7 @@ function mapTriggersToElements(triggers: TriggerData[] | undefined) {
 		id: trigger.name,
 		position: { x: 0, y: 0 },
 		type: NodeType.Trigger,
-		data: trigger,
+		data: { ...trigger, iconUrl: trigger.meta_data.icon },
 	}))
 
 	return triggerNodes
