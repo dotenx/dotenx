@@ -1,5 +1,5 @@
 FROM golang:1.16-alpine
- 
+
 WORKDIR /app
 
 COPY go.mod ./
@@ -7,6 +7,10 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /removeGitlabMembers
+RUN go build -o ./removeGitlabMembers
 
-CMD [ "/removeGitlabMembers" ]
+FROM alpine
+
+COPY --from=0 /app/removeGitlabMembers ./
+
+CMD [ "./removeGitlabMembers" ]
