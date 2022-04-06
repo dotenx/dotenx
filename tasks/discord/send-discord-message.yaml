@@ -1,0 +1,10 @@
+service: discord
+type: Send discord message
+image: hawwwdi/send-discord-message
+integrations: [discord-channel]
+fields:
+    - key: TEXT
+      type: text
+author: hawwwdi
+icon: https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png
+description: Sends discord message using discord channel webhook
