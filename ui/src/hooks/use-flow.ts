@@ -1,5 +1,6 @@
 import { Theme } from '@emotion/react'
 import { atom, useAtom } from 'jotai'
+import _ from 'lodash'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
 import {
 	addEdge,
@@ -15,6 +16,7 @@ import {
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
 import { getPipelineTriggers, PipelineData, QueryKey, TriggerData } from '../api'
+import { InputOrSelectValue } from '../components/input-or-select'
 import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
 import { Trigger } from '../containers/edge-settings'
@@ -134,17 +136,35 @@ export function getNodeColor(theme: Theme, node: Node) {
 }
 
 function mapPipelineToElements(pipeline: PipelineData): Elements<TaskNodeData | EdgeData> {
-	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => ({
-		id: key,
-		position: { x: 0, y: 0 },
-		type: NodeType.Default,
-		data: {
-			name: key,
-			type: value.type,
-			integration: value.integration,
-			...value.body,
-		},
-	}))
+	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => {
+		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
+			let inputOrSelectValue = { type: 'text', data: '' } as InputOrSelectValue
+			if (typeof fieldValue === 'string') {
+				inputOrSelectValue = { type: 'text', data: fieldValue }
+			} else {
+				inputOrSelectValue = {
+					type: 'option',
+					data: fieldValue.key,
+					groupName: fieldValue.source,
+					iconUrl: '',
+				}
+			}
+			return [fieldName, inputOrSelectValue]
+		})
+		const body = _.fromPairs(bodyEntries)
+		return {
+			id: key,
+			position: { x: 0, y: 0 },
+			type: NodeType.Default,
+			data: {
+				name: key,
+				type: value.type,
+				integration: value.integration,
+				iconUrl: value.meta_data?.icon,
+				...body,
+			},
+		}
+	})
 	const edges = Object.entries(pipeline.manifest.tasks).flatMap(([target, task]) =>
 		Object.entries(task.executeAfter).map(([source, triggers]) => ({
 			id: `${source}to${target}`,
@@ -167,7 +187,7 @@ function mapTriggersToElements(triggers: TriggerData[] | undefined) {
 		id: trigger.name,
 		position: { x: 0, y: 0 },
 		type: NodeType.Trigger,
-		data: trigger,
+		data: { ...trigger, iconUrl: trigger.meta_data.icon },
 	}))
 
 	return triggerNodes

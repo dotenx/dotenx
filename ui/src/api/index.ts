@@ -21,8 +21,8 @@ export function getTasks() {
 	return api.get<TasksData>('/task')
 }
 
-export function getTaskFields(taskName: string) {
-	return api.get<TaskFields>(`/task/${taskName}/fields`)
+export function getTaskFields(taskType: string) {
+	return api.get<TaskFields>(`/task/${taskType}/fields`)
 }
 
 export function getPipeline(name: string) {
@@ -125,6 +125,11 @@ export interface AvailableTriggers {
 	triggers: Record<string, TriggerTypeData[]>
 }
 
+export interface Output {
+	Key: string
+	Type: string
+}
+
 export interface TriggerTypeData {
 	type: string
 	icon_url: string
@@ -139,6 +144,7 @@ export interface TriggerData {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	meta_data: Metadata
 }
 
 export interface AddTriggerPayload {
@@ -155,6 +161,7 @@ export interface TriggerDefinition {
 	integrations: string[]
 	image: string
 	credentials: FieldType[]
+	outputs: Output[]
 }
 
 export interface FieldType {
@@ -209,7 +216,7 @@ export interface TaskFields {
 		type: string
 	}[]
 	integration_types: string[]
-	outputs: unknown[]
+	outputs: Output[]
 }
 
 export interface TasksData {
@@ -250,6 +257,11 @@ export interface Trigger {
 export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
-	body: Record<string, string>
+	body: Record<string, string | { source: string; key: string }>
 	integration: string
+	meta_data?: Metadata
+}
+
+export interface Metadata {
+	icon: string
 }

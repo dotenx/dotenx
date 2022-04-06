@@ -46,7 +46,12 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		trigger := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
-		err := controller.Service.DeleteTrigger(accountId, trigger)
+		pipeline := c.Query("pipeline")
+		if pipeline == "" || trigger == "" {
+			c.JSON(http.StatusBadRequest, nil)
+			return
+		}
+		err := controller.Service.DeleteTrigger(accountId, trigger, pipeline)
 		if err == nil {
 			c.JSON(http.StatusOK, nil)
 			return

@@ -57,7 +57,11 @@ var migrations = []struct {
 		stmt: createTableIntegrations,
 	},
 	{
-		name: "create-table-event_triggers3",
+		name: "drop-table-event_triggers4",
+		stmt: dropTriggers,
+	},
+	{
+		name: "create-table-event_triggers4",
 		stmt: createTableEventTriggers,
 	},
 	{
@@ -244,6 +248,7 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
+var dropTriggers = `DROP TABLE IF EXISTS event_triggers`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
@@ -254,7 +259,7 @@ integration              varchar(128) NOT NULL,
 endpoint                 varchar(128) NOT NULL,
 pipeline                 varchar(128) NOT NULL,
 credentials									JSONB,
-UNIQUE (account_id, name)
+UNIQUE (account_id, name, pipeline)
 )
 `
 

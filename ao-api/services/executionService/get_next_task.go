@@ -3,7 +3,6 @@ package executionService
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/utopiops/automated-ops/ao-api/models"
@@ -63,8 +62,8 @@ type insertDto struct {
 func (manager *executionManager) mapFields(execId int, accountId string, taskBody map[string]interface{}) (map[string]interface{}, error) {
 	for key, value := range taskBody {
 		var insertDt insertDto
-		stringValue := fmt.Sprintf("%v", value)
-		err := json.Unmarshal([]byte(stringValue), insertDt)
+		b, _ := json.Marshal(value)
+		err := json.Unmarshal(b, &insertDt)
 		if err == nil && insertDt.Key != "" && insertDt.Source != "" {
 			body, err := manager.CheckExecutionInitialData(execId, accountId, insertDt.Source)
 			if err != nil {
