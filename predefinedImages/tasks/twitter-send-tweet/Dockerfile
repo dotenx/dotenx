@@ -9,7 +9,7 @@ COPY *.go ./
 
 RUN go build -o ./sendTweet
 
-FROM scratch
+FROM alpine
 
 COPY --from=0 /app/sendTweet ./
 
