@@ -100,6 +100,9 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	var taskBody TaskBodyMap
 	err = json.Unmarshal(body, &taskBody)
+	if err != nil {
+		return err
+	}
 	t.Body = taskBody
 
 	return err

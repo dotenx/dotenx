@@ -18,6 +18,11 @@ import (
 )
 
 func main() {
+	triggerName := os.Getenv("TRIGGER_NAME")
+	if triggerName == "" {
+		log.Println("your trigger name is not set")
+		return
+	}
 	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	channelId := os.Getenv("channel_id")
 	passedSeconds := os.Getenv("passed_seconds")
@@ -47,7 +52,7 @@ func main() {
 			innerBody := make(map[string]interface{})
 			innerBody["text"] = res.Messages[0].Msg.Text
 			innerBody["timestamp"] = res.Messages[0].Timestamp
-			body["trigger"] = innerBody
+			body[triggerName] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {
 				log.Println(err)

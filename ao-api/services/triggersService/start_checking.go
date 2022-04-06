@@ -64,7 +64,8 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 		"INTEGRATION_KEY=" + integration.Key,
 		"INTEGRATION_SECRET=" + integration.Secret,
 		"INTEGRATION_ACCESS_TOKEN=" + integration.AccessToken,
-		"PIPELINE_ENDPOINT=" + pipelineUrl}
+		"PIPELINE_ENDPOINT=" + pipelineUrl,
+		"TRIGGER_NAME=" + trigger.Name}
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
