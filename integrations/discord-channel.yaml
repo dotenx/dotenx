@@ -1,0 +1,5 @@
+type: discord-channel
+needs_access_token: false
+needs_key: false 
+needs_secret: false
+needs_url: true
