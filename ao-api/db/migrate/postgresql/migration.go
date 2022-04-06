@@ -248,7 +248,8 @@ access_token            varchar(128),
 UNIQUE (account_id, name)
 )
 `
-var dropTriggers = `drop table event_triggers`
+var dropTriggers = `DROP TABLE IF EXISTS event_triggers`
+
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
 account_id               varchar(32) NOT NULL,
