@@ -14,7 +14,7 @@ import (
 
 type TriggerStore interface {
 	AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error
-	DeleteTrigger(ctx context.Context, accountId string, triggerName string) error
+	DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
 	GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error)
 }
@@ -110,6 +110,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 			if err != nil {
 				return nil, err
 			}
+			cur.MetaData = models.AvaliableTriggers[cur.Type]
 			res = append(res, cur)
 		}
 	}
@@ -118,10 +119,10 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 
 var deleteTrigger = `
 delete from event_triggers
-where account_id = $1 and name = $2;
+where account_id = $1 and name = $2 and pipeline = $3;
 `
 
-func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, triggerName string) error {
+func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
@@ -129,7 +130,7 @@ func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, 
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, triggerName)
+	res, err := store.db.Connection.Exec(stmt, accountId, triggerName, pipeline)
 	if err != nil {
 		return err
 	}

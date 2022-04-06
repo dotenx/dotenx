@@ -6,9 +6,7 @@ import { BsArrowRightShort } from 'react-icons/bs'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Link } from 'react-router-dom'
-
 // import logo '../assets/logo.jpg'
-
 import Logo from '../assets/images/logo.png'
 
 const theme: Theme = {
@@ -105,7 +103,7 @@ interface SidebarProps {
 
 function Sidebar({ pathname }: SidebarProps) {
 	const items = [
-		{ to: '/', label: 'Pipelines' },
+		{ to: '/', label: 'Automations' },
 		{ to: '/integrations', label: 'Integrations' },
 		{ to: '/triggers', label: 'Triggers' },
 	]

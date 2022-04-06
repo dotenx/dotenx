@@ -10,6 +10,7 @@ import { addPipeline, addTrigger, AddTriggerPayload, Manifest, QueryKey, Tasks }
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
+import { InputOrSelectValue } from '../components/input-or-select'
 import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
 import { flowAtom } from '../hooks/use-flow'
@@ -89,9 +90,20 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 	nodes.forEach((node) => {
 		if (!node.data?.name) return console.error('Node data does not exists')
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
+		const body = _.omit(node.data, ['name', 'type', 'integration', 'iconUrl'])
+		for (const key in body) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const taskBody = body as any
+			const taskFieldValue = taskBody[key] as InputOrSelectValue
+			if (taskFieldValue.type === 'option') {
+				taskBody[key] = { source: taskFieldValue.groupName, key: taskFieldValue.data }
+			} else {
+				taskBody[key] = taskFieldValue.data
+			}
+		}
 		tasks[node.data.name] = {
 			type: node.data.type,
-			body: _.omit(node.data, ['name', 'type', 'integration']),
+			body,
 			integration: node.data.integration ?? '',
 			executeAfter: mapEdgesToExecuteAfter(connectedEdges, elements),
 		}
