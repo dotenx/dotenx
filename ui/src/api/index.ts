@@ -144,6 +144,7 @@ export interface TriggerData {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	meta_data: Metadata
 }
 
 export interface AddTriggerPayload {
@@ -258,4 +259,9 @@ export interface Task {
 	executeAfter: Record<string, string[]>
 	body: Record<string, string | { source: string; key: string }>
 	integration: string
+	meta_data?: Metadata
+}
+
+export interface Metadata {
+	icon: string
 }
