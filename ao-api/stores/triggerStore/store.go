@@ -110,6 +110,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 			if err != nil {
 				return nil, err
 			}
+			cur.MetaData = models.AvaliableTriggers[cur.Type]
 			res = append(res, cur)
 		}
 	}
