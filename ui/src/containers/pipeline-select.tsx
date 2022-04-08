@@ -29,7 +29,7 @@ export function PipelineSelect({ value: selected, onChange: setSelected }: Pipel
 	return (
 		<Select
 			css={{ width: 256, zIndex: 10 }}
-			placeholder="Pipeline"
+			placeholder="Automation"
 			options={options}
 			name="pipeline"
 			isLoading={pipelinesQuery.isLoading}
