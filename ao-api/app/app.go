@@ -136,6 +136,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
 	return r
 }
 

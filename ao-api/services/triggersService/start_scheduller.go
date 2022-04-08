@@ -21,5 +21,5 @@ func (manager *TriggerManager) StartScheduller(accId string) error {
 }
 
 func (manager *TriggerManager) StartSchedulling(trigger models.EventTrigger) error {
-
+	return nil
 }
