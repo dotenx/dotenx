@@ -81,8 +81,8 @@ export function deleteIntegration(name: string) {
 	return api.delete<void>(`/integration/name/${name}`)
 }
 
-export function deleteTrigger(name: string) {
-	return api.delete<void>(`/trigger/name/${name}`)
+export function deleteTrigger(name: string, pipelineName: string) {
+	return api.delete<void>(`/trigger/name/${name}?pipeline=${pipelineName}`)
 }
 
 export function getIntegrationsByType(types: string[]) {
@@ -182,6 +182,7 @@ export interface IntegrationData {
 export interface AddIntegrationPayload {
 	name: string
 	type: string
+	secrets: Record<string, string>
 }
 
 export interface Execution {

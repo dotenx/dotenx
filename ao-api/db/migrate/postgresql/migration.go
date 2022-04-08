@@ -241,10 +241,7 @@ CREATE TABLE IF NOT EXISTS integrations (
 account_id        varchar(32) NOT NULL,
 type              varchar(32) NOT NULL,
 name              varchar(32) NOT NULL,
-url               varchar(128),
-key               varchar(128),
-secret            varchar(128),
-access_token            varchar(128),
+secrets                          JSONB,
 UNIQUE (account_id, name)
 )
 `

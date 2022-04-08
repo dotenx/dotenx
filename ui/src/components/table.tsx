@@ -37,7 +37,7 @@ export function Table({ title, headers, items = [] }: TableProps) {
 }
 
 interface ItemProps {
-	children: ReactNode
+	children?: ReactNode
 	values: string[]
 	onDelete: () => void
 }
@@ -55,7 +55,7 @@ export function Item({ children, values, onDelete }: ItemProps) {
 					padding: 8,
 					display: 'grid',
 					gridTemplateColumns: `repeat(${values.length + 1}, 1fr)`,
-					cursor: 'pointer',
+					cursor: children ? 'pointer' : 'default',
 					':hover': {
 						backgroundColor: '#eeeeee99',
 					},
@@ -69,7 +69,7 @@ export function Item({ children, values, onDelete }: ItemProps) {
 					Delete
 				</Button>
 			</div>
-			{isOpen && <div css={{ padding: 4 }}>{children}</div>}
+			{isOpen && children && <div css={{ padding: 4 }}>{children}</div>}
 		</div>
 	)
 }

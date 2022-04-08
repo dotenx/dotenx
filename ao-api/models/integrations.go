@@ -1,21 +1,15 @@
 package models
 
-type IntegrationFile struct {
-	Type             string `yaml:"type"`
-	NeedsAccessToken bool   `yaml:"needs_access_token"`
-	NeedsKey         bool   `yaml:"needs_key"`
-	NeedsSecret      bool   `yaml:"needs_secret"`
-	NeedsUrl         bool   `yaml:"needs_url"`
+type IntegrationDefinition struct {
+	Type    string   `yaml:"type"`
+	Secrets []string `yaml:"secrets"`
 }
 
 type Integration struct {
-	Name        string `db:"name" json:"name"`
-	AccountId   string `db:"account_id" json:"account_id"`
-	Type        string `db:"type" json:"type"`
-	Url         string `db:"url" json:"url"`
-	Key         string `db:"key" json:"key"`
-	Secret      string `db:"secret" json:"secret"`
-	AccessToken string `db:"access_token" json:"access_token"`
+	Name      string            `db:"name" json:"name"`
+	AccountId string            `db:"account_id" json:"account_id"`
+	Type      string            `db:"type" json:"type"`
+	Secrets   map[string]string `db:"secrets" json:"secrets"`
 }
 
 func (intg Integration) IsValid() bool {
@@ -25,14 +19,4 @@ func (intg Integration) IsValid() bool {
 		}
 	}
 	return false
-}
-
-type IntegrationDefinition struct {
-	Type   string   `json:"type"`
-	Fields []string `json:"fields"`
-}
-
-type IntegrationField struct {
-	Key  string `json:"key"`
-	Type string `json:"type"`
 }
