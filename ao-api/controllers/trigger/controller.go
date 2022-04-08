@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/crudService"
-	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 )
 
 type TriggerController struct {

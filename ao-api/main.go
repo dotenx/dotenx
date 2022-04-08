@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/dotenx/dotenx/ao-api/app"
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/joho/godotenv"
-	"github.com/utopiops/automated-ops/ao-api/app"
-	"github.com/utopiops/automated-ops/ao-api/config"
 )
 
 func init() {

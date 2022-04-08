@@ -3,8 +3,8 @@ package crudService
 import (
 	"context"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 )
 
 func NewCrudService(store pipelineStore.PipelineStore) CrudService {

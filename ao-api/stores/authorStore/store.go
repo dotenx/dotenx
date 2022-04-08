@@ -3,7 +3,7 @@ package authorStore
 import (
 	"fmt"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db"
 )
 
 type AuthorStore interface {

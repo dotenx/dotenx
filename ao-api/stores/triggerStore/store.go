@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 type TriggerStore interface {
