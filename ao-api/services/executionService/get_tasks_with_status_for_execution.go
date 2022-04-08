@@ -1,6 +1,6 @@
 package executionService
 
-import "github.com/utopiops/automated-ops/ao-api/models"
+import "github.com/dotenx/dotenx/ao-api/models"
 
 func (manager *executionManager) GetTasksWithStatusForExecution(executionId int) ([]models.TaskStatusSummery, error) {
 	tasks, err := manager.Store.GetTasksWithStatusForExecution(noContext, executionId)

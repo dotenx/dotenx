@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
 
 type IntegrationService interface {

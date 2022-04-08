@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"gopkg.in/yaml.v2"
 
 	"github.com/gin-gonic/gin"

@@ -7,8 +7,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {

@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 var seeds = []string{

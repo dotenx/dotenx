@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/utopiops/automated-ops/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/config"
 )
 
 type bullQueue struct {
