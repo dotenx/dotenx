@@ -182,6 +182,7 @@ export interface IntegrationData {
 export interface AddIntegrationPayload {
 	name: string
 	type: string
+	secrets: Record<string, string>
 }
 
 export interface Execution {
