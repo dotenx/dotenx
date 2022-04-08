@@ -82,7 +82,7 @@ export function deleteIntegration(name: string) {
 }
 
 export function deleteTrigger(name: string, pipelineName: string) {
-	return api.delete<void>(`/trigger/name/${name}/?pipeline=${pipelineName}`)
+	return api.delete<void>(`/trigger/name/${name}?pipeline=${pipelineName}`)
 }
 
 export function getIntegrationsByType(types: string[]) {
