@@ -25,12 +25,9 @@ If you want to use a new integration type you only need to add a yaml file
 to integrations directory in this format.
 ``` yaml
 type: type of your integration
-needs_access_token: set true if your integration needs an access token
-needs_key: set true if your integration needs a key
-needs_secret: set true if your integration needs a secret key
-needs_url: set true if your integration needs an url
+secrets: [ACCESS_TOKEN]
 ```
-* If you set an integration type for your task or trigger you have access to integration fields in your container, forexample if your integration has access token you have an environment variable named INTEGRATION_ACCESS_TOKEN in your container
+* If you set an integration type for your task or trigger you have access to integration fields in your container, forexample if your integration has ACCESS_TOKEN you have an environment variable named INTEGRATION_ACCESS_TOKEN in your container
 
 # Add new task type
 
