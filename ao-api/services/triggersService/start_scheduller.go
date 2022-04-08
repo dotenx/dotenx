@@ -2,7 +2,11 @@ package triggerService
 
 import (
 	"context"
+	"errors"
+	"strconv"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
@@ -21,5 +25,19 @@ func (manager *TriggerManager) StartScheduller(accId string) error {
 }
 
 func (manager *TriggerManager) StartSchedulling(trigger models.EventTrigger) error {
+	s := gocron.NewScheduler(time.UTC)
+	if freq, ok := trigger.Credentials["frequency"]; !ok || freq == "" {
+		return errors.New("invalid frequency")
+	}
+	if t, ok := trigger.Credentials["time"]; !ok || t == "" {
+		return errors.New("invalid time")
+	}
+	freq, err := strconv.Atoi(trigger.Credentials["frequency"].(string))
+	if err != nil {
+		return err
+	}
+	s.Every(freq).Second().Do(manager.ExecutionService.StartPipeline(nil, trigger.AccountId, trigger.Endpoint))
+	//s.Every(freq).Day().At(trigger.Credentials["time"].(string)).Do(manager.ExecutionService.StartPipeline(nil, trigger.AccountId, trigger.Endpoint))
+	s.StartAsync()
 	return nil
 }
