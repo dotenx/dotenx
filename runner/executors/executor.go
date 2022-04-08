@@ -1,8 +1,8 @@
 package executors
 
 import (
-	"github.com/utopiops/automated-ops/runner/executors/docker"
-	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/dotenx/dotenx/runner/executors/docker"
+	"github.com/dotenx/dotenx/runner/models"
 )
 
 type Executor interface {
