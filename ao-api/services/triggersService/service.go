@@ -18,6 +18,7 @@ type TriggerService interface {
 	AddTrigger(accountId string, trigger models.EventTrigger) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
+	StartScheduller(accId string) error
 }
 
 type TriggerManager struct {
