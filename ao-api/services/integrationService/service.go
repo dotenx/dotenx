@@ -29,7 +29,7 @@ func NewIntegrationService(store integrationStore.IntegrationStore) IntegrationS
 func (manager *IntegrationManager) GetIntegrationFields(name string) ([]string, error) {
 	for _, integ := range models.AvaliableIntegrations {
 		if integ.Type == name {
-			return integ.Fields, nil
+			return integ.Secrets, nil
 		}
 	}
 	return nil, errors.New("no integration with this name")

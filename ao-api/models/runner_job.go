@@ -30,12 +30,9 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 
 // add integration fields to job body and task meta data fields
 func (job *Job) SetIntegration(integration Integration) {
-	job.Body["INTEGRATION_ACCESS_TOKEN"] = integration.AccessToken
-	job.Body["INTEGRATION_URL"] = integration.Url
-	job.Body["INTEGRATION_KEY"] = integration.Key
-	job.Body["INTEGRATION_SECRET"] = integration.Secret
-	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "INTEGRATION_URL", Type: "text"})
-	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "INTEGRATION_SECRET", Type: "text"})
-	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "INTEGRATION_KEY", Type: "text"})
-	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "INTEGRATION_ACCESS_TOKEN", Type: "text"})
+	for key, value := range integration.Secrets {
+		k := "INTEGRATION_" + key
+		job.Body[k] = value
+		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: k, Type: "text"})
+	}
 }
