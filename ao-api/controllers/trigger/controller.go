@@ -105,10 +105,12 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		err = controller.Service.StartSchedulling(trigger)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
+		if trigger.Type == "Schedule" {
+			err = controller.Service.StartSchedulling(trigger)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 		c.JSON(http.StatusOK, nil)
 	}
