@@ -8,9 +8,13 @@ import { getDisplayText } from '../utils'
 export function TriggerList() {
 	const client = useQueryClient()
 	const query = useQuery(QueryKey.GetTriggers, getTriggers)
-	const deleteMutation = useMutation(deleteTrigger, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers),
-	})
+	const deleteMutation = useMutation(
+		(payload: { triggerName: string; pipelineName: string }) =>
+			deleteTrigger(payload.triggerName, payload.pipelineName),
+		{
+			onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers),
+		}
+	)
 	const triggers = query.data?.data
 
 	return (
@@ -26,7 +30,12 @@ export function TriggerList() {
 						trigger.integration,
 						trigger.pipeline_name,
 					]}
-					onDelete={() => deleteMutation.mutate(trigger.name)}
+					onDelete={() =>
+						deleteMutation.mutate({
+							triggerName: trigger.name,
+							pipelineName: trigger.pipeline_name,
+						})
+					}
 				>
 					{_.entries(trigger.credentials).map(([key, value]) => (
 						<Detail key={key} label={getDisplayText(key)} value={value} />
