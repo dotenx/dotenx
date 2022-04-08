@@ -1,8 +1,8 @@
 package jobService
 
 import (
-	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/shared"
+	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/shared"
 )
 
 type JobService interface {

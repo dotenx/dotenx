@@ -3,7 +3,7 @@ package executionService
 import (
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (manager *executionManager) SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error {

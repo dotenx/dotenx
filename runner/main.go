@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/utopiops/automated-ops/runner/app"
+	"github.com/dotenx/dotenx/runner/app"
 )
 
 func main() {

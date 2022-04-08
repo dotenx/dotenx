@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc {
