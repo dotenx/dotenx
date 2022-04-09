@@ -9,6 +9,7 @@ import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { Select } from '../components/select'
 import { useModal } from '../hooks/use-modal'
+import { useOauth } from '../hooks/use-oauth'
 import { getDisplayText } from '../utils'
 
 const schema = z.object({
@@ -16,7 +17,7 @@ const schema = z.object({
 	type: z.string().min(1),
 })
 
-type Schema = z.infer<typeof schema>
+type Schema = z.infer<typeof schema> & { access_token: string }
 
 export function NewIntegration() {
 	const {
@@ -25,6 +26,7 @@ export function NewIntegration() {
 		formState: { errors },
 		watch,
 		getValues,
+		setValue,
 	} = useForm<Schema>({ defaultValues: { type: '', name: '' }, resolver: zodResolver(schema) })
 	const integrationType = watch('type')
 	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationTypes)
@@ -39,6 +41,9 @@ export function NewIntegration() {
 
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
+	const oauth = useOauth({
+		onSuccess: (accessToken) => setValue('access_token', accessToken),
+	})
 
 	const onSave = () => {
 		const fieldValues = getValues()
@@ -73,6 +78,13 @@ export function NewIntegration() {
 					}))}
 					placeholder="Integration type"
 				/>
+				<Button
+					type="button"
+					css={{ height: 30, fontSize: 14 }}
+					onClick={() => oauth.connect('dropbox')}
+				>
+					Connect
+				</Button>
 				{integrationTypeFields?.map((field) => (
 					<Field
 						key={field}
