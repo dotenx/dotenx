@@ -6,35 +6,35 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/controllers/crud"
+	"github.com/dotenx/dotenx/ao-api/controllers/execution"
+	"github.com/dotenx/dotenx/ao-api/controllers/health"
+	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
+	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
+	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
+	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/oauth"
+	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/oauthService"
+	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
+	"github.com/dotenx/dotenx/ao-api/services/queueService"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
+	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
+	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
-	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
-	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
-	"github.com/utopiops/automated-ops/ao-api/controllers/health"
-	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
-	oauthController "github.com/utopiops/automated-ops/ao-api/controllers/oauth"
-	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
-	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/oauth"
-	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/crudService"
-	"github.com/utopiops/automated-ops/ao-api/services/executionService"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
-	"github.com/utopiops/automated-ops/ao-api/services/oauthService"
-	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
-	"github.com/utopiops/automated-ops/ao-api/services/queueService"
-	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
-	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
-	"github.com/utopiops/automated-ops/ao-api/stores/authorStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
 )
 
 func init() {
@@ -145,7 +145,6 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetAllIntegrations())
 		intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
-		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
 		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 	}

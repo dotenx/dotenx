@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/executors"
-	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/shared"
+	"github.com/dotenx/dotenx/runner/config"
+	"github.com/dotenx/dotenx/runner/executors"
+	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/shared"
 )
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {

@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/db/migrate/postgresql"
 	"github.com/jmoiron/sqlx"
-	"github.com/utopiops/automated-ops/ao-api/db/migrate/postgresql"
 )
 
 // Driver defines the database driver.

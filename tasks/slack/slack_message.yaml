@@ -1,0 +1,12 @@
+service: slack
+type: Send slack message
+image: awrmin/slack-send-message
+integrations: [slack-bot]
+fields:
+    - key: target_id
+      type: text
+    - key: text
+      type: text
+author: Armingodiz
+icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
+description: Sends slack message using slack bot

@@ -1,7 +1,7 @@
 package oauthService
 
 import (
-	"github.com/utopiops/automated-ops/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
 )
 
 type OauthService interface {

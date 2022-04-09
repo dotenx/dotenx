@@ -1,5 +1,0 @@
-type: slack-bot
-needs_access_token: true
-needs_key: false 
-needs_secret: false
-needs_url: false

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
-	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/services/oauthService"
 )
 
 type OauthController struct {

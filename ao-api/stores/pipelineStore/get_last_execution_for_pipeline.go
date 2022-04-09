@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db"
 )
 
 func (ps *pipelineStore) GetLastExecution(context context.Context, pipelineId int) (id int, err error) {

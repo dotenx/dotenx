@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db"
 )
 
 func (ps *pipelineStore) GetTaskNameById(noContext context.Context, taskId int) (name string, err error) {

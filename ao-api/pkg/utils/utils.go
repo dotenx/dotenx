@@ -3,8 +3,8 @@ package utils
 import (
 	"log"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/config"
 )
 
 func FailOnError(err error, msg string) {

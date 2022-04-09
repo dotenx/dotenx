@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db"
 )
 
 func (ps *pipelineStore) DeletePipeline(context context.Context, accountId, name string) (err error) {

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/utopiops/automated-ops/runner/config"
+	"github.com/dotenx/dotenx/runner/config"
 )
 
 func NewLogHelper(authHelper AuthHelper, httpHelper HttpHelper) LogHelper {

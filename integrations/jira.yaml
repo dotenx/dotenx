@@ -1,0 +1,2 @@
+type: jira
+secrets: [ACCESS_TOKEN]

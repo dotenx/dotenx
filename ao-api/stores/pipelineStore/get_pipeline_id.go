@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db"
 )
 
 func (ps *pipelineStore) GetPipelineId(context context.Context, accountId, name string) (id int, err error) {

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/dotenx/dotenx/runner/config"
+	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/services/jobService"
+	"github.com/dotenx/dotenx/runner/shared"
 	"github.com/joho/godotenv"
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/services/jobService"
-	"github.com/utopiops/automated-ops/runner/shared"
 )
 
 func StartApp() {

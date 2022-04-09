@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (e *ExecutionController) GetNextTask() gin.HandlerFunc {

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error) {
@@ -23,9 +23,10 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Execution
-			rows.StructScan(&cur)
+			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData)
 			if err != nil {
 				return nil, err
 			}

@@ -13,9 +13,9 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
-	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
 
 type dockerCleint struct {
@@ -60,11 +60,12 @@ func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigg
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image
 	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
-	envs := []string{"INTEGRATION_URL=" + integration.Url,
-		"INTEGRATION_KEY=" + integration.Key,
-		"INTEGRATION_SECRET=" + integration.Secret,
-		"INTEGRATION_ACCESS_TOKEN=" + integration.AccessToken,
-		"PIPELINE_ENDPOINT=" + pipelineUrl}
+	envs := []string{
+		"PIPELINE_ENDPOINT=" + pipelineUrl,
+		"TRIGGER_NAME=" + trigger.Name}
+	for key, value := range integration.Secrets {
+		envs = append(envs, "INTEGRATION_"+key+"="+value)
+	}
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}

@@ -1,60 +1,63 @@
-module github.com/utopiops/automated-ops/ao-api
+module github.com/dotenx/dotenx/ao-api
 
 go 1.17
 
 require (
-	github.com/docker/docker v20.10.12+incompatible
+	github.com/docker/docker v20.10.14+incompatible
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-contrib/sse v0.1.0
 	github.com/gin-gonic/gin v1.7.7
-	github.com/gorilla/sessions v1.2.0
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/lib/pq v1.10.4
+	github.com/lib/pq v1.10.5
 	github.com/markbates/goth v1.69.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
+	cloud.google.com/go v0.81.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
-	github.com/containerd/containerd v1.6.0 // indirect
-	github.com/docker/distribution v2.8.0+incompatible // indirect
+	github.com/containerd/containerd v1.6.2 // indirect
+	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/sessions v1.2.0 // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/kr/text v0.2.0 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/markbates/going v1.0.0 // indirect
+	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c // indirect
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.19.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
-	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
-	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
-	google.golang.org/grpc v1.44.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
-	gotest.tools/v3 v3.1.0 // indirect
-)
-
-require (
-	cloud.google.com/go v0.81.0 // indirect
-	github.com/go-playground/locales v0.13.0 // indirect
-	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/markbates/going v1.0.0 // indirect
-	github.com/mattn/go-isatty v0.0.12 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
+	google.golang.org/grpc v1.45.0 // indirect
+	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gotest.tools/v3 v3.1.0 // indirect
 )

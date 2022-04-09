@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/oauth/provider"
 	"github.com/markbates/goth"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/oauth/provider"
 )
 
 var providers []models.OauthProvider
