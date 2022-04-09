@@ -19,7 +19,7 @@ const schema = z.object({
 	secrets: z.record(z.string()),
 })
 
-type Schema = z.infer<typeof schema> & { access_token: string }
+type Schema = z.infer<typeof schema>
 
 export function NewIntegration() {
 	const {
@@ -49,13 +49,10 @@ export function NewIntegration() {
 		resetField('secrets')
 	}, [integrationType, resetField])
 
-	console.log(errors)
-	console.log(watch())
-
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
 	const oauth = useOauth({
-		onSuccess: (accessToken) => setValue('access_token', accessToken),
+		onSuccess: (accessToken) => setValue('secrets.ACCESS_TOKEN', accessToken),
 	})
 
 	const onSave = () => {
@@ -94,7 +91,7 @@ export function NewIntegration() {
 				<Button
 					type="button"
 					css={{ height: 30, fontSize: 14 }}
-					onClick={() => oauth.connect('dropbox')}
+					onClick={() => oauth.connect('discord')}
 				>
 					Connect
 				</Button>
