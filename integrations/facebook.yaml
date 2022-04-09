@@ -1,0 +1,3 @@
+type: facebook
+secrets: [ACCESS_TOKEN]
+oauth_provider: facebook
