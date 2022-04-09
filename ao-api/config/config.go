@@ -37,6 +37,7 @@ type (
 		Driver   string `envconfig:"AOA_DATABASE_DRIVER" default:"postgres"`
 	}
 	Secrets struct {
+		Encryption          string `envconfig:"AOA_ENCRYPTION_SECRET"`
 		AuthServerJwtSecret string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
 		AppName             string `envconfig:"AOA_APP_NAME"`
 		AppSecret           string `envconfig:"AOA_APP_SECRET"`

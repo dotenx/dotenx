@@ -53,7 +53,12 @@ var migrations = []struct {
 		stmt: createTableExecutionsResult,
 	},
 	{
-		name: "create-table-integrations",
+		name: "drop-table-integrations2",
+		stmt: dropIntegrations,
+	},
+
+	{
+		name: "create-table-integrations3",
 		stmt: createTableIntegrations,
 	},
 	{
@@ -235,6 +240,9 @@ FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
 FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )`
+
+var dropIntegrations = ` DROP TABLE IF EXISTS integrations
+`
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (

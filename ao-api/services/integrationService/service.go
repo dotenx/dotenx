@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
 
@@ -43,6 +45,13 @@ func (manager *IntegrationManager) GetIntegrationTypes() ([]string, error) {
 }
 
 func (manager *IntegrationManager) AddIntegration(accountId string, integration models.Integration) error {
+	for key, value := range integration.Secrets {
+		encryptedValue, err := utils.Encrypt(value, config.Configs.Secrets.Encryption)
+		if err != nil {
+			return err
+		}
+		integration.Secrets[key] = encryptedValue
+	}
 	return manager.Store.AddIntegration(context.Background(), accountId, integration)
 }
 func (manager *IntegrationManager) DeleteIntegration(accountId string, integrationName string) (err error) {
@@ -58,14 +67,37 @@ func (manager *IntegrationManager) DeleteIntegration(accountId string, integrati
 }
 
 func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
-	return manager.Store.GetAllintegrations(context.Background(), accountId)
+	integrations, err := manager.Store.GetAllintegrations(context.Background(), accountId)
+	if err != nil {
+		return nil, err
+	}
+	for _, integ := range integrations {
+		for key, value := range integ.Secrets {
+			decrypted, err := utils.Decrypt(value, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return nil, err
+			}
+			integ.Secrets[key] = decrypted
+		}
+	}
+	return integrations, nil
 }
+
 func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error) {
 	integrations := make([]models.Integration, 0)
 	var err error
 	for _, intgType := range integrationTypes {
 		intgs, err := manager.Store.GetIntegrationsByType(context.Background(), accountId, intgType)
 		if err == nil {
+			for _, integ := range intgs {
+				for key, value := range integ.Secrets {
+					decrypted, err := utils.Decrypt(value, config.Configs.Secrets.Encryption)
+					if err != nil {
+						return nil, err
+					}
+					integ.Secrets[key] = decrypted
+				}
+			}
 			integrations = append(integrations, intgs...)
 		}
 	}
@@ -73,5 +105,17 @@ func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId 
 }
 
 func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) (models.Integration, error) {
-	return manager.Store.GetIntegrationByName(context.Background(), accountId, name)
+
+	integration, err := manager.Store.GetIntegrationByName(context.Background(), accountId, name)
+	if err != nil {
+		return models.Integration{}, err
+	}
+	for key, value := range integration.Secrets {
+		decrypted, err := utils.Decrypt(value, config.Configs.Secrets.Encryption)
+		if err != nil {
+			return models.Integration{}, err
+		}
+		integration.Secrets[key] = decrypted
+	}
+	return integration, err
 }
