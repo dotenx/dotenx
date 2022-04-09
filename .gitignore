@@ -4,3 +4,4 @@ release/
 vendor/
 .idea
 .DS_Store
+ao-api/providers.json
