@@ -1,0 +1,3 @@
+type: google
+secrets: [ACCESS_TOKEN]
+oauth_provider: google
