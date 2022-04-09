@@ -16,7 +16,6 @@ type (
 		CheckTrigger   string `envconfig:"AOA_APP_CHECK_TRIGGER"`
 		AccountId      string `envconfig:"AOA_APP_ACCOUNT_ID"`
 		Environment    string `envconfig:"AOA_APP_ENV"`
-		Encryption     string `envconfig:"AOA_ENCRYPTION_SECRET"`
 		AllowedOrigins string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
 
@@ -38,6 +37,7 @@ type (
 		Driver   string `envconfig:"AOA_DATABASE_DRIVER" default:"postgres"`
 	}
 	Secrets struct {
+		Encryption          string `envconfig:"AOA_ENCRYPTION_SECRET"`
 		AuthServerJwtSecret string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
 		AppName             string `envconfig:"AOA_APP_NAME"`
 		AppSecret           string `envconfig:"AOA_APP_SECRET"`
