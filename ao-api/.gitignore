@@ -2,3 +2,4 @@
 *.out
 release/
 vendor/
+providers.json
