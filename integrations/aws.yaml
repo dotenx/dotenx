@@ -1,0 +1,2 @@
+type: aws
+secrets: [KEY, SECRET]

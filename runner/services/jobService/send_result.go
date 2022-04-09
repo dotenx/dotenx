@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/shared"
+	"github.com/dotenx/dotenx/runner/config"
+	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/shared"
 )
 
 // sending this request only cause to trigger ao api for next tasks

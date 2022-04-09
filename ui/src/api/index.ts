@@ -21,8 +21,8 @@ export function getTasks() {
 	return api.get<TasksData>('/task')
 }
 
-export function getTaskFields(taskName: string) {
-	return api.get<TaskFields>(`/task/${taskName}/fields`)
+export function getTaskFields(taskType: string) {
+	return api.get<TaskFields>(`/task/${taskType}/fields`)
 }
 
 export function getPipeline(name: string) {
@@ -58,7 +58,7 @@ export function getTriggers() {
 }
 
 export function getTriggerTypes() {
-	return api.get<string[]>('/trigger/avaliable')
+	return api.get<AvailableTriggers>('/trigger/avaliable')
 }
 
 export function getTriggerDefinition(type: string) {
@@ -81,12 +81,13 @@ export function deleteIntegration(name: string) {
 	return api.delete<void>(`/integration/name/${name}`)
 }
 
-export function deleteTrigger(name: string) {
-	return api.delete<void>(`/trigger/name/${name}`)
+export function deleteTrigger(name: string, pipelineName: string) {
+	return api.delete<void>(`/trigger/name/${name}?pipeline=${pipelineName}`)
 }
 
-export function getIntegrationsByType(type: string) {
-	return api.get<IntegrationData[]>(`/integration/type/${type}`)
+export function getIntegrationsByType(types: string[]) {
+	const typesQuery = types.map((type) => `type=${type}&`)
+	return api.get<IntegrationData[]>(`/integration?${typesQuery}`)
 }
 
 export enum QueryKey {
@@ -120,6 +121,21 @@ export enum TaskType {
 	Text = 'text',
 }
 
+export interface AvailableTriggers {
+	triggers: Record<string, TriggerTypeData[]>
+}
+
+export interface Output {
+	Key: string
+	Type: string
+}
+
+export interface TriggerTypeData {
+	type: string
+	icon_url: string
+	description: string
+}
+
 export interface TriggerData {
 	name: string
 	account_id: string
@@ -128,6 +144,7 @@ export interface TriggerData {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	meta_data: Metadata
 }
 
 export interface AddTriggerPayload {
@@ -136,13 +153,15 @@ export interface AddTriggerPayload {
 	pipeline_name: string
 	integration: string
 	credentials: Record<string, string>
+	iconUrl?: string
 }
 
 export interface TriggerDefinition {
 	type: string
-	integration: string
+	integrations: string[]
 	image: string
 	credentials: FieldType[]
+	outputs: Output[]
 }
 
 export interface FieldType {
@@ -163,6 +182,7 @@ export interface IntegrationData {
 export interface AddIntegrationPayload {
 	name: string
 	type: string
+	secrets: Record<string, string>
 }
 
 export interface Execution {
@@ -196,11 +216,18 @@ export interface TaskFields {
 		key: string
 		type: string
 	}[]
-	integration_type: string
+	integration_types: string[]
+	outputs: Output[]
 }
 
 export interface TasksData {
-	tasks: string[]
+	tasks: Record<string, TaskTypeData[]>
+}
+
+export interface TaskTypeData {
+	type: string
+	description: string
+	icon_url: string
 }
 
 export interface StartPipelinePayload {
@@ -231,6 +258,11 @@ export interface Trigger {
 export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
-	body: Record<string, string>
+	body: Record<string, string | { source: string; key: string }>
 	integration: string
+	meta_data?: Metadata
+}
+
+export interface Metadata {
+	icon: string
 }

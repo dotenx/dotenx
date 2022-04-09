@@ -1,0 +1,2 @@
+type: sendGrid
+secrets: [ACCESS_TOKEN]

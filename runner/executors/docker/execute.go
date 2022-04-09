@@ -11,8 +11,8 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/dotenx/dotenx/runner/config"
+	"github.com/dotenx/dotenx/runner/models"
 )
 
 func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {

@@ -3,12 +3,13 @@ package integrationStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 type IntegrationStore interface {
@@ -30,8 +31,8 @@ func New(db *db.DB) IntegrationStore {
 }
 
 var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, url, key, secret, access_token)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO integrations (account_id, type, name, secrets)
+VALUES ($1, $2, $3, $4)
 `
 
 func (store *integrationStore) AddIntegration(ctx context.Context, accountId string, integration models.Integration) error {
@@ -42,8 +43,8 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name,
-		integration.Url, integration.Key, integration.Secret, integration.AccessToken)
+	marshalled, _ := json.Marshal(integration.Secrets)
+	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled)
 	if err != nil {
 		return err
 	}
@@ -54,7 +55,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 }
 
 var getIntegrationsByType = `
-select * from integrations 
+select account_id, type, name, secrets from integrations 
 where account_id = $1 and type = $2;
 `
 
@@ -71,11 +72,17 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
-			rows.StructScan(&cur)
+			var secrets []byte
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets)
 			if err != nil {
-				return nil, err
+				return res, err
+			}
+			err = json.Unmarshal(secrets, &cur.Secrets)
+			if err != nil {
+				return res, err
 			}
 			res = append(res, cur)
 		}
@@ -84,7 +91,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 }
 
 var getIntegrations = `
-select * from integrations 
+select account_id, type, name, secrets from integrations 
 where account_id = $1;
 `
 
@@ -101,11 +108,17 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
-			rows.StructScan(&cur)
+			var secrets []byte
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets)
 			if err != nil {
-				return nil, err
+				return res, err
+			}
+			err = json.Unmarshal(secrets, &cur.Secrets)
+			if err != nil {
+				return res, err
 			}
 			res = append(res, cur)
 		}
@@ -114,7 +127,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 }
 
 var getIntegrationsByName = `
-select * from integrations 
+select account_id, type, name, secrets from integrations 
 where account_id = $1 and name = $2;
 `
 
@@ -130,9 +143,18 @@ func (store *integrationStore) GetIntegrationByName(ctx context.Context, account
 			}
 			return models.Integration{}, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Integration
-			rows.StructScan(&cur)
+			var secrets []byte
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			err = json.Unmarshal(secrets, &cur.Secrets)
+			if err != nil {
+				return models.Integration{}, err
+			}
 			if err != nil {
 				return models.Integration{}, err
 			} else {

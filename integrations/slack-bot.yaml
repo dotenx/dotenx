@@ -1,0 +1,2 @@
+type: slack-bot
+secrets: [ACCESS_TOKEN]

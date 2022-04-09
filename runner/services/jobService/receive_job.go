@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dotenx/dotenx/runner/config"
+	"github.com/dotenx/dotenx/runner/models"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/models"
 )
 
 func (manager *JobManager) StartReceiving(jobChan chan models.Job) {

@@ -4,19 +4,19 @@ import (
 	"context"
 	"errors"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 )
 
 type TriggerService interface {
-	GetTriggerTypes() ([]string, error)
+	GetTriggerTypes() (map[string][]triggerSummery, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTrigger(accountId string, trigger models.EventTrigger) error
-	DeleteTrigger(accountId string, triggerName string) error
+	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
 }
 
@@ -25,14 +25,27 @@ type TriggerManager struct {
 	UtopiopsService utopiopsService.UtopiopsService
 }
 
+type triggerSummery struct {
+	Type        string `json:"type"`
+	IconUrl     string `json:"icon_url"`
+	Description string `json:"description"`
+}
+
 func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService) TriggerService {
 	return &TriggerManager{Store: store, UtopiopsService: service}
 }
 
-func (manager *TriggerManager) GetTriggerTypes() ([]string, error) {
-	triggers := make([]string, 0)
+func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
+	triggers := make(map[string][]triggerSummery)
 	for _, integ := range models.AvaliableTriggers {
-		triggers = append(triggers, integ.Type)
+		if _, ok := triggers[integ.Service]; ok {
+			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
+		} else {
+			types := make([]triggerSummery, 0)
+			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
+			triggers[integ.Service] = types
+		}
+
 	}
 	return triggers, nil
 }
@@ -41,8 +54,8 @@ func (manager *TriggerManager) AddTrigger(accountId string, trigger models.Event
 	// todo: make ready the body to be saved in table
 	return manager.Store.AddTrigger(context.Background(), accountId, trigger)
 }
-func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName string) error {
-	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName)
+func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipeline string) error {
+	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName, pipeline)
 }
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggers(context.Background(), accountId)

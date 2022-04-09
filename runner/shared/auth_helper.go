@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/utopiops/automated-ops/runner/config"
+	"github.com/dotenx/dotenx/runner/config"
 )
 
 type AuthHelper struct {

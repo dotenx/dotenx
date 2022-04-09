@@ -6,6 +6,8 @@ import { BsArrowRightShort } from 'react-icons/bs'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Link } from 'react-router-dom'
+// import logo '../assets/logo.jpg'
+import Logo from '../assets/images/logo.png'
 
 const theme: Theme = {
 	color: {
@@ -45,7 +47,7 @@ export function Layout({ children, pathname, header = null }: LayoutProps) {
 						display: 'flex',
 					})}
 				>
-					<h1
+					<div
 						css={{
 							borderRight: '1px solid',
 							borderColor: theme.color.text,
@@ -55,8 +57,15 @@ export function Layout({ children, pathname, header = null }: LayoutProps) {
 							fontWeight: 100,
 						}}
 					>
-						Automated Ops
-					</h1>
+						<img
+							src={Logo}
+							alt="logo"
+							css={{
+								height: '5vh',
+								width: 'auto',
+							}}
+						></img>
+					</div>
 					<div css={{ flexGrow: '1' }}>{header}</div>
 				</div>
 				<div css={{ flexGrow: '1', display: 'flex' }}>
@@ -94,7 +103,7 @@ interface SidebarProps {
 
 function Sidebar({ pathname }: SidebarProps) {
 	const items = [
-		{ to: '/', label: 'Pipelines' },
+		{ to: '/', label: 'Automations' },
 		{ to: '/integrations', label: 'Integrations' },
 		{ to: '/triggers', label: 'Triggers' },
 	]

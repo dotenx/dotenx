@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/crudService"
-	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 )
 
 type TriggerController struct {
@@ -46,7 +46,12 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		trigger := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
-		err := controller.Service.DeleteTrigger(accountId, trigger)
+		pipeline := c.Query("pipeline")
+		if pipeline == "" || trigger == "" {
+			c.JSON(http.StatusBadRequest, nil)
+			return
+		}
+		err := controller.Service.DeleteTrigger(accountId, trigger, pipeline)
 		if err == nil {
 			c.JSON(http.StatusOK, nil)
 			return
@@ -106,7 +111,8 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 func (controller *TriggerController) GetTriggersTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		triggers, _ := controller.Service.GetTriggerTypes()
-		//fmt.Println(triggers)
-		c.JSON(http.StatusOK, triggers)
+		c.JSON(http.StatusOK, gin.H{
+			"triggers": triggers,
+		})
 	}
 }

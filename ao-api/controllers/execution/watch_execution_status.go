@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {

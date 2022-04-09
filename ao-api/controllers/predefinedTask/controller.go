@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	predifinedService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/gin-gonic/gin"
-	predifinedService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
 )
 
 type PredefinedTaskController struct {
@@ -31,14 +31,15 @@ func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
 
 func (r *PredefinedTaskController) GetFields(ctx *gin.Context) {
 	taskName := ctx.Param("task_name")
-	fields, integrationType, err := r.service.GetTaskFields(taskName)
+	fields, integrationTypes, outputs, err := r.service.GetTaskFields(taskName)
 	if err != nil {
 		log.Println(err)
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"fields":           fields,
-		"integration_type": integrationType,
+		"fields":            fields,
+		"integration_types": integrationTypes,
+		"outputs":           outputs,
 	})
 }

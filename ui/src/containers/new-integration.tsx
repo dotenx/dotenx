@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import * as z from 'zod'
@@ -14,6 +15,7 @@ import { getDisplayText } from '../utils'
 const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
+	secrets: z.record(z.string()),
 })
 
 type Schema = z.infer<typeof schema>
@@ -25,7 +27,11 @@ export function NewIntegration() {
 		formState: { errors },
 		watch,
 		getValues,
-	} = useForm<Schema>({ defaultValues: { type: '', name: '' }, resolver: zodResolver(schema) })
+		resetField,
+	} = useForm<Schema>({
+		defaultValues: { type: '', name: '', secrets: undefined },
+		resolver: zodResolver(schema),
+	})
 	const integrationType = watch('type')
 	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationTypes)
 	const integrationTypeFieldsQuery = useQuery(
@@ -36,6 +42,13 @@ export function NewIntegration() {
 	const mutation = useMutation(addIntegration)
 	const client = useQueryClient()
 	const modal = useModal()
+
+	useEffect(() => {
+		resetField('secrets')
+	}, [integrationType, resetField])
+
+	console.log(errors)
+	console.log(watch())
 
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
@@ -76,8 +89,8 @@ export function NewIntegration() {
 				{integrationTypeFields?.map((field) => (
 					<Field
 						key={field}
-						label={getDisplayText(field)}
-						name={field}
+						label={field}
+						name={`secrets.${field}`}
 						control={control}
 						required
 						errors={errors}

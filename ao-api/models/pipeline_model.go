@@ -58,6 +58,7 @@ type Task struct {
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
 	Integration  string              `db:"integration" json:"integration" yaml:"integration"`
+	MetaData     TaskDefinition      `json:"meta_data"`
 }
 
 func (t *Task) UnmarshalJSON(data []byte) error {
@@ -99,6 +100,9 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 	}
 	var taskBody TaskBodyMap
 	err = json.Unmarshal(body, &taskBody)
+	if err != nil {
+		return err
+	}
 	t.Body = taskBody
 
 	return err

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (ps *pipelineStore) GetTasksWithStatusForExecution(noContext context.Context, executionId int) ([]models.TaskStatusSummery, error) {
@@ -16,7 +16,6 @@ func (ps *pipelineStore) GetTasksWithStatusForExecution(noContext context.Contex
 	case db.Postgres:
 		conn := ps.db.Connection
 		rows, err := conn.Queryx(getTasksWithStatusForExecution, executionId)
-		defer rows.Close()
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -24,6 +23,7 @@ func (ps *pipelineStore) GetTasksWithStatusForExecution(noContext context.Contex
 			}
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var taskId int
 			var taskStatus string
