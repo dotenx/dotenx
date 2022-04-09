@@ -88,14 +88,16 @@ export function NewIntegration() {
 					}))}
 					placeholder="Integration type"
 				/>
-				<Button
-					type="button"
-					css={{ height: 30, fontSize: 14 }}
-					onClick={() => oauth.connect('discord')}
-				>
-					Connect
-				</Button>
-				{integrationTypeFields?.map((field) => (
+				{integrationTypeFields?.oauth_provider && (
+					<Button
+						type="button"
+						css={{ height: 30, fontSize: 14 }}
+						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
+					>
+						Connect
+					</Button>
+				)}
+				{integrationTypeFields?.secrets.map((field) => (
 					<Field
 						key={field}
 						label={field}

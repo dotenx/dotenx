@@ -42,7 +42,7 @@ export function getIntegrationTypes() {
 }
 
 export function getIntegrationTypeFields(integrationType: string) {
-	return api.get<string[]>(`/integration/type/${integrationType}/fields`)
+	return api.get<IntegrationTypeFields>(`/integration/type/${integrationType}/fields`)
 }
 
 export function getIntegrations() {
@@ -119,6 +119,11 @@ export enum Status {
 
 export enum TaskType {
 	Text = 'text',
+}
+
+export interface IntegrationTypeFields {
+	secrets: string[]
+	oauth_provider: string
 }
 
 export interface AvailableTriggers {
