@@ -16,6 +16,7 @@ type (
 		CheckTrigger   string `envconfig:"AOA_APP_CHECK_TRIGGER"`
 		AccountId      string `envconfig:"AOA_APP_ACCOUNT_ID"`
 		Environment    string `envconfig:"AOA_APP_ENV"`
+		Encryption     string `envconfig:"AOA_ENCRYPTION_SECRET"`
 		AllowedOrigins string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
 
