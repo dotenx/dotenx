@@ -1,6 +1,6 @@
 package execution
 
-import "github.com/utopiops/automated-ops/ao-api/services/executionService"
+import "github.com/dotenx/dotenx/ao-api/services/executionService"
 
 type ExecutionController struct {
 	Service executionService.ExecutionService

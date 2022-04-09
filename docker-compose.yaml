@@ -56,7 +56,7 @@ services:
     hostname: ao-api
     working_dir: /root/
     volumes:
-     - ao_api_data:/go/src/github.com/utopiops/automated-ops/ao-api
+     - ao_api_data:/go/src/github.com/dotenx/dotenx/ao-api
      - /var/run/docker.sock:/var/run/docker.sock
     networks:
         - default

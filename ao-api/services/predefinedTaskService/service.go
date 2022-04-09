@@ -3,7 +3,7 @@ package predifinedTaskService
 import (
 	"errors"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 type taskDetail struct {

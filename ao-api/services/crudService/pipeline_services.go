@@ -1,7 +1,7 @@
 package crudService
 
 import (
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error {

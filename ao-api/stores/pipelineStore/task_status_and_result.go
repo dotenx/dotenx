@@ -8,9 +8,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/lib/pq"
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {

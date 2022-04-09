@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/utopiops/automated-ops/runner/models"
+	"github.com/dotenx/dotenx/runner/models"
 )
 
 func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {

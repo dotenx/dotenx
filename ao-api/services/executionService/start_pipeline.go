@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 /*	Note: based on this implementation always the latest activated version will be executed. If you want to

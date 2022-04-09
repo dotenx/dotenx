@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
 )
 
 type IntegrationController struct {

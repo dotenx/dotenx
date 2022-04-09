@@ -13,9 +13,9 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
-	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
 
 type dockerCleint struct {
