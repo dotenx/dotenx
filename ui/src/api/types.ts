@@ -163,8 +163,7 @@ export type GetAutomationExecutionsResponse = {
 	Id: number
 	StartedAt: string
 	InitialData: unknown | null
-}
-;[]
+}[]
 
 export type CreateTriggerRequest = {
 	name: string

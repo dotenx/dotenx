@@ -2,9 +2,9 @@
 import { BsPlusSquare } from 'react-icons/bs'
 import { useLocation } from 'react-router-dom'
 import { Button } from '../components/button'
-import { Layout } from '../components/layout'
 import { Modal } from '../components/modal'
 import { IntegrationList } from '../containers/integration-list'
+import { Layout } from '../containers/layout'
 import { NewIntegration } from '../containers/new-integration'
 import { Modals, useModal } from '../hooks/use-modal'
 

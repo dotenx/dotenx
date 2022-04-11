@@ -1,27 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { Theme, ThemeProvider } from '@emotion/react'
-import { ReactNode, useEffect } from 'react'
-import { ReactFlowProvider } from 'react-flow-renderer'
+import { ReactNode } from 'react'
 import { BsArrowRightShort } from 'react-icons/bs'
-import ReactModal from 'react-modal'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { Link } from 'react-router-dom'
-// import logo '../assets/logo.jpg'
 import Logo from '../assets/images/logo.png'
-
-const theme: Theme = {
-	color: {
-		primary: '#e85d04',
-		positive: '#90be6d',
-		negative: '#ef233c',
-		text: '#222222',
-		background: '#FFFFFC',
-	},
-}
-
-const queryClient = new QueryClient({
-	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
-})
 
 interface LayoutProps {
 	children: ReactNode
@@ -31,68 +12,46 @@ interface LayoutProps {
 
 export function Layout({ children, pathname, header = null }: LayoutProps) {
 	return (
-		<Providers>
+		<div
+			css={(theme) => ({
+				height: '100vh',
+				display: 'flex',
+				flexDirection: 'column',
+				color: theme.color.text,
+			})}
+		>
 			<div
 				css={(theme) => ({
-					height: '100vh',
+					borderBottom: '1px solid',
+					borderColor: theme.color.text,
 					display: 'flex',
-					flexDirection: 'column',
-					color: theme.color.text,
 				})}
 			>
 				<div
 					css={(theme) => ({
-						borderBottom: '1px solid',
+						borderRight: '1px solid',
 						borderColor: theme.color.text,
 						display: 'flex',
+						alignItems: 'center',
+						padding: '16px 20px',
+						fontWeight: 100,
 					})}
 				>
-					<div
+					<img
+						src={Logo}
+						alt="logo"
 						css={{
-							borderRight: '1px solid',
-							borderColor: theme.color.text,
-							display: 'flex',
-							alignItems: 'center',
-							padding: '16px 20px',
-							fontWeight: 100,
+							height: '5vh',
+							width: 'auto',
 						}}
-					>
-						<img
-							src={Logo}
-							alt="logo"
-							css={{
-								height: '5vh',
-								width: 'auto',
-							}}
-						></img>
-					</div>
-					<div css={{ flexGrow: '1' }}>{header}</div>
+					/>
 				</div>
-				<div css={{ flexGrow: '1', display: 'flex' }}>
-					<Sidebar pathname={pathname} />
-					<div css={{ flexGrow: '1', display: 'flex' }}>{children}</div>
-				</div>
+				<div css={{ flexGrow: '1' }}>{header}</div>
 			</div>
-		</Providers>
-	)
-}
-
-interface ProvidersProps {
-	children: ReactNode
-}
-
-function Providers({ children }: ProvidersProps) {
-	useEffect(() => {
-		ReactModal.setAppElement('#root')
-	}, [])
-
-	return (
-		<div id="root">
-			<ThemeProvider theme={theme}>
-				<QueryClientProvider client={queryClient}>
-					<ReactFlowProvider>{children}</ReactFlowProvider>
-				</QueryClientProvider>
-			</ThemeProvider>
+			<div css={{ flexGrow: '1', display: 'flex' }}>
+				<Sidebar pathname={pathname} />
+				<div css={{ flexGrow: '1', display: 'flex' }}>{children}</div>
+			</div>
 		</div>
 	)
 }
@@ -110,14 +69,14 @@ function Sidebar({ pathname }: SidebarProps) {
 
 	return (
 		<div
-			css={{
+			css={(theme) => ({
 				borderRight: '1px solid',
 				borderColor: theme.color.text,
 				padding: '28px 20px',
 				display: 'flex',
 				flexDirection: 'column',
 				gap: 16,
-			}}
+			})}
 		>
 			{items.map((item) => (
 				<NavItem key={item.label} to={item.to} selected={pathname === item.to}>
