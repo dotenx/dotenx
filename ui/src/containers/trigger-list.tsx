@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteTrigger, getTriggers, QueryKey } from '../api'
-import { Detail, Item, Table } from '../components/table'
+import { Detail, Item, Table } from '../features/ui'
 import { getDisplayText } from '../utils'
 
 export function TriggerList() {

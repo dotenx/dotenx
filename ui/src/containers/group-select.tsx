@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { Fragment, useState } from 'react'
 import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
 import { BsChevronDown } from 'react-icons/bs'
-import { FieldError } from '../components/field'
+import { FieldError } from '../features/ui'
 
 const Wrapper = styled.div({ position: 'relative' })
 

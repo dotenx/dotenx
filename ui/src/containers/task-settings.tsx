@@ -14,12 +14,9 @@ import {
 	getTriggerDefinition,
 	QueryKey,
 } from '../api'
-import { Button } from '../components/button'
-import { Field } from '../components/field'
-import { Form } from '../components/form'
-import { GroupData, InputOrSelect, InputOrSelectValue } from '../components/input-or-select'
-import { NodeType, TaskNodeData } from '../components/task-node'
-import { flowAtom } from '../hooks/use-flow'
+import { NodeType, TaskNodeData } from '../features/flow'
+import { flowAtom } from '../features/hooks/use-flow'
+import { Button, Field, Form, GroupData, InputOrSelect, InputOrSelectValue } from '../features/ui'
 import { GroupSelect } from './group-select'
 import { SelectIntegration } from './select-integration'
 

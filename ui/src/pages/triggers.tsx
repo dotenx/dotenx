@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { BsPlusSquare } from 'react-icons/bs'
 import { useLocation } from 'react-router-dom'
-import { Button } from '../components/button'
-import { Modal } from '../components/modal'
 import { Layout } from '../containers/layout'
 import { NewTrigger } from '../containers/new-trigger'
 import { TriggerList } from '../containers/trigger-list'
-import { Modals, useModal } from '../hooks/use-modal'
+import { Modals, useModal } from '../features/hooks/use-modal'
+import { Button, Modal } from '../features/ui'
 
 export default function Triggers() {
 	const location = useLocation()

@@ -14,14 +14,10 @@ import {
 	QueryKey,
 	Tasks,
 } from '../api'
-import { Button } from '../components/button'
-import { EdgeData } from '../components/edge'
-import { Field } from '../components/field'
-import { Form } from '../components/form'
-import { InputOrSelectValue } from '../components/input-or-select'
-import { NodeType, TaskNodeData } from '../components/task-node'
-import { flowAtom } from '../hooks/use-flow'
-import { useModal } from '../hooks/use-modal'
+import { NodeType, TaskNodeData } from '../features/flow'
+import { flowAtom } from '../features/hooks/use-flow'
+import { useModal } from '../features/hooks/use-modal'
+import { Button, EdgeData, Field, Form, InputOrSelectValue } from '../features/ui'
 
 const schema = z.object({
 	name: z.string().min(1),

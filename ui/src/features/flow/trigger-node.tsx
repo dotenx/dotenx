@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { NodeProps } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
-import { CreateTriggerRequest } from '../api'
+import { CreateTriggerRequest } from '../../api'
 import { Modals, useModal } from '../hooks/use-modal'
-import { Button } from './button'
+import { Button } from '../ui'
 
 export interface TriggerEntity {
 	id: string

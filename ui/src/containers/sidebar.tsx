@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { NavItem } from '../components/nav-item'
+import { NavItem } from '../features/ui'
 
 const Wrapper = styled.div(({ theme }) => ({
 	borderRight: '1px solid',

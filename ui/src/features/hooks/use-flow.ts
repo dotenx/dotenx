@@ -15,13 +15,12 @@ import {
 	removeElements,
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
-import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../api'
-import { EdgeData } from '../components/edge'
-import { InputOrSelectValue } from '../components/input-or-select'
-import { NodeType, TaskNodeData } from '../components/task-node'
-import { EdgeCondition } from '../containers/edge-settings'
-import { selectedPipelineAtom } from '../containers/pipeline-select'
-import { selectedPipelineDataAtom } from '../pages/home'
+import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
+import { EdgeCondition } from '../../containers/edge-settings'
+import { selectedPipelineAtom } from '../../containers/pipeline-select'
+import { selectedPipelineDataAtom } from '../../pages/home'
+import { NodeType, TaskNodeData } from '../flow'
+import { EdgeData, InputOrSelectValue } from '../ui'
 import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 let id = 1

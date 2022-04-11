@@ -1,7 +1,7 @@
 import { Control, FieldErrors } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { getIntegrationsByKinds, QueryKey } from '../api'
-import { Select } from '../components/select'
+import { Select } from '../features/ui'
 
 interface SelectIntegrationProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

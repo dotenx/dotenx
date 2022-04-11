@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { API_URL } from '../api'
-import { OAuthMessage } from '../pages/oauth'
+import { API_URL } from '../../api'
+import { OAuthMessage } from '../../pages/oauth'
 
 interface Options {
 	onSuccess: (accessToken: string) => void

@@ -2,10 +2,10 @@
 import { Theme } from '@emotion/react'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
-import { TaskExecutionStatus } from '../api'
+import { TaskExecutionStatus } from '../../api'
 import { useIsAcyclic } from '../hooks/use-is-acyclic'
 import { Modals, useModal } from '../hooks/use-modal'
-import { Button } from './button'
+import { Button } from '../ui'
 
 export interface TaskNodeData {
 	name: string

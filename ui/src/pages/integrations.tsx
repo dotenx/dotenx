@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { BsPlusSquare } from 'react-icons/bs'
 import { useLocation } from 'react-router-dom'
-import { Button } from '../components/button'
-import { Modal } from '../components/modal'
 import { IntegrationList } from '../containers/integration-list'
 import { Layout } from '../containers/layout'
 import { NewIntegration } from '../containers/new-integration'
-import { Modals, useModal } from '../hooks/use-modal'
+import { Modals, useModal } from '../features/hooks/use-modal'
+import { Button, Modal } from '../features/ui'
 
 export default function Integrations() {
 	const location = useLocation()

@@ -5,15 +5,15 @@ import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
 import { useLocation } from 'react-router-dom'
 import { API_URL, Automation, AutomationEventMessage } from '../api'
-import { TaskNodeData } from '../components/task-node'
 import { ActionBar } from '../containers/action-bar'
 import { DragDropNodes } from '../containers/drag-drop-nodes'
 import { Flow } from '../containers/flow'
 import { Layout } from '../containers/layout'
 import { PipelineExecution } from '../containers/pipeline-execution'
 import { PipelineSelect } from '../containers/pipeline-select'
-import { useClearStatus } from '../hooks/use-clear-status'
-import { flowAtom } from '../hooks/use-flow'
+import { TaskNodeData } from '../features/flow'
+import { useClearStatus } from '../features/hooks/use-clear-status'
+import { flowAtom } from '../features/hooks/use-flow'
 
 export const selectedExecutionAtom = atom<number | undefined>(undefined)
 export const listenAtom = atom(0)

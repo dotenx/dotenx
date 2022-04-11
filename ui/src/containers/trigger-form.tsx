@@ -11,10 +11,7 @@ import {
 	getTriggerKinds,
 	QueryKey,
 } from '../api'
-import { Button } from '../components/button'
-import { Field } from '../components/field'
-import { Form } from '../components/form'
-import { Select } from '../components/select'
+import { Button, Field, Form, Select } from '../features/ui'
 import { getDisplayText } from '../utils'
 import { GroupSelect } from './group-select'
 import { SelectIntegration } from './select-integration'
