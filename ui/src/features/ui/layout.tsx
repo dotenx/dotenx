@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import styled from '@emotion/styled'
 import { ReactNode } from 'react'
-import logo from '../assets/images/logo.png'
+import logo from '../../assets/images/logo.png'
 import { Sidebar } from './sidebar'
 
 const Wrapper = styled.div(({ theme }) => ({
