@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { useMutation, useQueryClient } from 'react-query'
-import { addTrigger, AddTriggerPayload, QueryKey } from '../api'
+import { createTrigger, CreateTriggerRequest, QueryKey } from '../api'
 import { useModal } from '../hooks/use-modal'
 import { TriggerForm } from './trigger-form'
 
 export function NewTrigger() {
-	const mutation = useMutation(addTrigger)
+	const mutation = useMutation(createTrigger)
 	const client = useQueryClient()
 	const modal = useModal()
 
-	const onSave = (values: AddTriggerPayload) => {
+	const onSave = (values: CreateTriggerRequest) => {
 		mutation.mutate(values, {
 			onSuccess: () => {
 				client.invalidateQueries(QueryKey.GetTriggers)

@@ -1,6 +1,6 @@
 import { Control, FieldErrors } from 'react-hook-form'
 import { useQuery } from 'react-query'
-import { getIntegrationsByType, QueryKey } from '../api'
+import { getIntegrationsByKinds, QueryKey } from '../api'
 import { Select } from '../components/select'
 
 interface SelectIntegrationProps {
@@ -13,7 +13,7 @@ interface SelectIntegrationProps {
 export function SelectIntegration({ control, errors, integrationTypes }: SelectIntegrationProps) {
 	const integrationQuery = useQuery(
 		[QueryKey.GetIntegrationsByType, integrationTypes],
-		() => getIntegrationsByType(integrationTypes),
+		() => getIntegrationsByKinds(integrationTypes),
 		{ enabled: !!integrationTypes }
 	)
 

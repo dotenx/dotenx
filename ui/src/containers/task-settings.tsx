@@ -7,7 +7,13 @@ import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
 import * as z from 'zod'
-import { AddTriggerPayload, getTaskFields, getTasks, getTriggerDefinition, QueryKey } from '../api'
+import {
+	CreateTriggerRequest,
+	getTaskFields,
+	getTaskKinds,
+	getTriggerDefinition,
+	QueryKey,
+} from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -47,7 +53,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 	})
 	const taskType = watch('type')
 	const taskName = watch('name')
-	const tasksQuery = useQuery(QueryKey.GetTasks, getTasks)
+	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
 	const tasks = tasksQuery.data?.data?.tasks
 	const tasksOptions = _.entries(tasks).map(([group, tasks]) => ({
 		group,
@@ -73,7 +79,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 		.flat()
 		.find((task) => task.type === taskType)
 	const [flowElements] = useAtom(flowAtom)
-	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | AddTriggerPayload>[])
+	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | CreateTriggerRequest>[])
 		.filter((node) => node.data?.name !== taskName)
 		.map((node) => ({
 			name: node.data?.name ?? '',

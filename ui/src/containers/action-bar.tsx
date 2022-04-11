@@ -43,7 +43,7 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
 	const deletePipelineMutation = useMutation(deleteAutomation)
 
-	const mutation = useMutation(startAutomation, {
+	const mutation = useMutation((endpoint: string) => startAutomation(endpoint), {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
@@ -53,7 +53,7 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	})
 
 	const onRun = () => {
-		if (selectedPipeline) mutation.mutate({ endpoint: selectedPipeline.endpoint })
+		if (selectedPipeline) mutation.mutate(selectedPipeline.endpoint)
 	}
 
 	return (

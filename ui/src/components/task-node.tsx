@@ -2,7 +2,7 @@
 import { Theme } from '@emotion/react'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
-import { Status } from '../api'
+import { TaskExecutionStatus } from '../api'
 import { useIsAcyclic } from '../hooks/use-is-acyclic'
 import { Modals, useModal } from '../hooks/use-modal'
 import { Button } from './button'
@@ -10,7 +10,7 @@ import { Button } from './button'
 export interface TaskNodeData {
 	name: string
 	type: string
-	status?: Status
+	status?: TaskExecutionStatus
 	executionId?: string
 	integration?: string
 	iconUrl?: string
@@ -93,21 +93,21 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	)
 }
 
-function getStatusColor(theme: Theme, status?: Status) {
+function getStatusColor(theme: Theme, status?: TaskExecutionStatus) {
 	switch (status) {
-		case Status.Cancelled:
+		case TaskExecutionStatus.Cancelled:
 			return theme.color.background
-		case Status.Completed:
+		case TaskExecutionStatus.Completed:
 			return theme.color.positive
-		case Status.Failed:
+		case TaskExecutionStatus.Failed:
 			return theme.color.negative
-		case Status.Started:
+		case TaskExecutionStatus.Started:
 			return '#8EA6BB'
-		case Status.Success:
+		case TaskExecutionStatus.Success:
 			return theme.color.positive
-		case Status.Timedout:
+		case TaskExecutionStatus.Timedout:
 			return theme.color.negative
-		case Status.Waiting:
+		case TaskExecutionStatus.Waiting:
 			return theme.color.background
 		default:
 			return theme.color.background

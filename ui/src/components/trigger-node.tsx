@@ -1,16 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { NodeProps } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
-import { AddTriggerPayload } from '../api'
+import { CreateTriggerRequest } from '../api'
 import { Modals, useModal } from '../hooks/use-modal'
 import { Button } from './button'
 
 export interface TriggerEntity {
 	id: string
-	data: AddTriggerPayload
+	data: CreateTriggerRequest
 }
 
-export function TriggerNode({ id, data }: NodeProps<AddTriggerPayload>) {
+export function TriggerNode({ id, data }: NodeProps<CreateTriggerRequest>) {
 	const modal = useModal()
 	const triggerEntity: TriggerEntity = { id, data }
 

@@ -6,7 +6,14 @@ import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import * as z from 'zod'
-import { addAutomation, addTrigger, AddTriggerPayload, Manifest, QueryKey, Tasks } from '../api'
+import {
+	createAutomation,
+	createTrigger,
+	CreateTriggerRequest,
+	Manifest,
+	QueryKey,
+	Tasks,
+} from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -31,8 +38,8 @@ export function SaveForm() {
 
 	const client = useQueryClient()
 	const modal = useModal()
-	const addPipelineMutation = useMutation(addAutomation)
-	const addTriggerMutation = useMutation(addTrigger)
+	const addPipelineMutation = useMutation(createAutomation)
+	const addTriggerMutation = useMutation(createTrigger)
 
 	const [elements] = useAtom(flowAtom)
 
@@ -76,7 +83,7 @@ export function SaveForm() {
 function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {
 	return elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Trigger) as Node<AddTriggerPayload>[]
+		.filter((node) => node.type === NodeType.Trigger) as Node<CreateTriggerRequest>[]
 }
 
 function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Manifest {

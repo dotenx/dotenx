@@ -15,11 +15,11 @@ import {
 	removeElements,
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
-import { AutomationData, getAutomationTriggers, QueryKey, TriggerData } from '../api'
+import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../api'
 import { InputOrSelectValue } from '../components/input-or-select'
 import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
-import { Trigger } from '../containers/edge-settings'
+import { EdgeCondition } from '../containers/edge-settings'
 import { selectedPipelineAtom } from '../containers/pipeline-select'
 import { selectedPipelineDataAtom } from '../pages/home'
 import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
@@ -172,7 +172,7 @@ function mapPipelineToElements(pipeline: AutomationData): Elements<TaskNodeData 
 			target,
 			arrowHeadType: ArrowHeadType.Arrow,
 			data: {
-				triggers: triggers as Trigger[],
+				triggers: triggers as EdgeCondition[],
 			},
 		}))
 	)
@@ -180,7 +180,7 @@ function mapPipelineToElements(pipeline: AutomationData): Elements<TaskNodeData 
 	return [...nodes, ...edges]
 }
 
-function mapTriggersToElements(triggers: TriggerData[] | undefined) {
+function mapTriggersToElements(triggers: Trigger[] | undefined) {
 	if (!triggers) return []
 
 	const triggerNodes = triggers.map((trigger) => ({

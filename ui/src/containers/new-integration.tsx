@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import * as z from 'zod'
-import { addIntegration, getIntegrationTypeFields, getIntegrationTypes, QueryKey } from '../api'
+import { createIntegration, getIntegrationKindFields, getIntegrationKinds, QueryKey } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -35,13 +35,13 @@ export function NewIntegration() {
 		resolver: zodResolver(schema),
 	})
 	const integrationType = watch('type')
-	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationTypes)
+	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const integrationTypeFieldsQuery = useQuery(
 		[QueryKey.GetIntegrationTypeFields, integrationType],
-		() => getIntegrationTypeFields(integrationType),
+		() => getIntegrationKindFields(integrationType),
 		{ enabled: !!integrationType }
 	)
-	const mutation = useMutation(addIntegration)
+	const mutation = useMutation(createIntegration)
 	const client = useQueryClient()
 	const modal = useModal()
 

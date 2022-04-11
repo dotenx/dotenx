@@ -7,7 +7,7 @@ import { Form } from '../components/form'
 import { Select } from '../components/select'
 
 const triggers = ['failed', 'completed'] as const
-export type Trigger = typeof triggers[number]
+export type EdgeCondition = typeof triggers[number]
 const options = triggers.map((option) => ({ label: option, value: option }))
 
 const schema = z.object({
@@ -15,7 +15,7 @@ const schema = z.object({
 })
 
 interface Schema {
-	triggers: Trigger[]
+	triggers: EdgeCondition[]
 }
 
 interface EdgeSettingsProps {

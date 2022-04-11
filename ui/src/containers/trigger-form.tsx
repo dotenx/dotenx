@@ -5,10 +5,10 @@ import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import * as z from 'zod'
 import {
-	AddTriggerPayload,
+	CreateTriggerRequest,
 	getAutomations,
 	getTriggerDefinition,
-	getTriggerTypes,
+	getTriggerKinds,
 	QueryKey,
 } from '../api'
 import { Button } from '../components/button'
@@ -29,8 +29,8 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 interface TriggerFormProps {
-	onSave: (values: AddTriggerPayload) => void
-	defaultValues?: AddTriggerPayload
+	onSave: (values: CreateTriggerRequest) => void
+	defaultValues?: CreateTriggerRequest
 	mode: 'new' | 'settings'
 }
 
@@ -50,7 +50,7 @@ export function TriggerForm({
 		resolver: zodResolver(schema),
 	})
 	const triggerType = watch('type')
-	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerTypes)
+	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerKinds)
 	const pipelinesQuery = useQuery(QueryKey.GetAutomations, getAutomations)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
@@ -76,7 +76,7 @@ export function TriggerForm({
 			css={{ height: '100%' }}
 			onSubmit={handleSubmit(() =>
 				onSave({
-					...(getValues() as AddTriggerPayload),
+					...(getValues() as CreateTriggerRequest),
 					iconUrl: selectedTriggerType?.icon_url,
 				})
 			)}

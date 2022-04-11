@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useQuery } from 'react-query'
-import { getResult, QueryKey } from '../api'
+import { getExecutionResult, QueryKey } from '../api'
 
 export interface TaskLogProps {
 	executionId?: string
@@ -11,7 +11,7 @@ export function TaskLog({ executionId, taskName }: TaskLogProps) {
 	const query = useQuery(
 		QueryKey.GetResult,
 		() => {
-			if (executionId && taskName) return getResult(executionId, taskName)
+			if (executionId && taskName) return getExecutionResult(executionId, taskName)
 		},
 		{ enabled: !!(executionId && taskName) }
 	)

@@ -2,7 +2,7 @@
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
-import { getExecutions, QueryKey } from '../api'
+import { getAutomationExecutions, QueryKey } from '../api'
 
 interface PipelineExecutionProps {
 	pipelineName: string | undefined
@@ -14,7 +14,7 @@ export function PipelineExecution({ pipelineName, value, onChange }: PipelineExe
 	const query = useQuery(
 		[QueryKey.GetExecutions, pipelineName],
 		() => {
-			if (pipelineName) return getExecutions(pipelineName)
+			if (pipelineName) return getAutomationExecutions(pipelineName)
 		},
 		{ enabled: !!pipelineName }
 	)
