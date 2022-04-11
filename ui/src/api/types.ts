@@ -25,15 +25,6 @@ export enum TaskExecutionStatus {
 	Waiting = 'waiting',
 }
 
-export enum TaskKind {
-	Text = 'text',
-}
-
-export interface IntegrationFields {
-	secrets: string[]
-	oauth_provider: string
-}
-
 export interface TaskTriggerOutput {
 	Key: string
 	Type: string
@@ -56,11 +47,6 @@ export interface Trigger {
 	meta_data: Metadata
 }
 
-export interface TriggerFieldType {
-	Key: string
-	Type: string
-}
-
 export interface Integration {
 	name: string
 	account_id: string
@@ -69,12 +55,6 @@ export interface Integration {
 	key: string
 	secret: string
 	access_token: string
-}
-
-export interface Execution {
-	Id: number
-	StartedAt: string
-	InitialData: unknown | null
 }
 
 export interface AutomationEventMessage {
@@ -142,7 +122,10 @@ export type GetIntegrationsByKindsResponse = Integration[]
 
 export type GetIntegrationKindsResponse = string[]
 
-export type GetIntegrationKindFieldsResponse = IntegrationFields
+export type GetIntegrationKindFieldsResponse = {
+	secrets: string[]
+	oauth_provider: string
+}
 
 export type GetTriggersResponse = Trigger[]
 
@@ -154,7 +137,10 @@ export type GetTriggerDefinitionResponse = {
 	type: string
 	integrations: string[]
 	image: string
-	credentials: TriggerFieldType[]
+	credentials: {
+		Key: string
+		Type: string
+	}[]
 	outputs: TaskTriggerOutput[]
 }
 
@@ -173,7 +159,12 @@ export interface GetExecutionResultResponse {
 	return_value: string
 }
 
-export type GetAutomationExecutionsResponse = Execution[]
+export type GetAutomationExecutionsResponse = {
+	Id: number
+	StartedAt: string
+	InitialData: unknown | null
+}
+;[]
 
 export type CreateTriggerRequest = {
 	name: string
