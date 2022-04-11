@@ -15,10 +15,10 @@ import {
 	Tasks,
 } from '../api'
 import { Button } from '../components/button'
+import { EdgeData } from '../components/edge'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
 import { InputOrSelectValue } from '../components/input-or-select'
-import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
 import { flowAtom } from '../hooks/use-flow'
 import { useModal } from '../hooks/use-modal'
