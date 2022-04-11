@@ -2,7 +2,7 @@
 import { NodeProps } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
 import { CreateTriggerRequest } from '../../api'
-import { Modals, useModal } from '../hooks/use-modal'
+import { Modals, useModal } from '../hooks'
 import { Button } from '../ui'
 
 export interface TriggerEntity {

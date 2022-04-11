@@ -13,11 +13,10 @@ import {
 	Manifest,
 	QueryKey,
 	Tasks,
-} from '../api'
-import { NodeType, TaskNodeData } from '../features/flow'
-import { flowAtom } from '../features/hooks/use-flow'
-import { useModal } from '../features/hooks/use-modal'
-import { Button, EdgeData, Field, Form, InputOrSelectValue } from '../features/ui'
+} from '../../api'
+import { EdgeData, flowAtom, NodeType, TaskNodeData } from '../flow'
+import { useModal } from '../hooks'
+import { Button, Field, Form, InputOrSelectValue } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),

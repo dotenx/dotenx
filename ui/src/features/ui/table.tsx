@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { ReactNode, useState } from 'react'
-import { redSmallButton } from '../../containers/action-bar'
+import { redSmallButton } from '../automation'
 import { Button } from './button'
 
 interface TableProps {

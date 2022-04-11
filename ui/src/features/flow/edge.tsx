@@ -2,9 +2,9 @@
 import { MouseEvent } from 'react'
 import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
-import { EdgeCondition } from '../../containers/edge-settings'
+import { EdgeCondition } from '../automation'
 import { Modals, useModal } from '../hooks'
-import { Button } from '../ui/button'
+import { Button } from '../ui'
 
 export interface EdgeData {
 	triggers: EdgeCondition[]

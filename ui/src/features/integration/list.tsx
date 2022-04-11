@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteIntegration, getIntegrations, QueryKey } from '../api'
-import { Item, Table } from '../features/ui'
-import { getDisplayText } from '../utils'
+import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
+import { getDisplayText } from '../../utils'
+import { Item, Table } from '../ui'
 
 export function IntegrationList() {
 	const client = useQueryClient()

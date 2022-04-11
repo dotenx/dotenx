@@ -2,15 +2,15 @@
 import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
-import { deleteAutomation, QueryKey, startAutomation } from '../api'
-import { useClearStatus } from '../features/hooks/use-clear-status'
-import { flowAtom, initialElements } from '../features/hooks/use-flow'
-import { useLayout } from '../features/hooks/use-layout'
-import { Modals, useModal } from '../features/hooks/use-modal'
-import { Button, Modal } from '../features/ui'
-import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../pages/home'
-import { selectedPipelineAtom } from './pipeline-select'
+import { deleteAutomation, QueryKey, startAutomation } from '../../api'
+import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../../pages/home'
+import { flowAtom, initialElements } from '../flow'
+import { useClearStatus } from '../flow/use-clear-status'
+import { useLayout } from '../flow/use-layout'
+import { Modals, useModal } from '../hooks/use-modal'
+import { Button, Modal } from '../ui'
 import { SaveForm } from './save-form'
+import { selectedPipelineAtom } from './selection'
 
 const smallButton = css({ fontSize: 12, padding: '2px 0', width: 50 })
 

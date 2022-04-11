@@ -10,11 +10,10 @@ import {
 	getTriggerDefinition,
 	getTriggerKinds,
 	QueryKey,
-} from '../api'
-import { Button, Field, Form, Select } from '../features/ui'
-import { getDisplayText } from '../utils'
-import { GroupSelect } from './group-select'
-import { SelectIntegration } from './select-integration'
+} from '../../api'
+import { getDisplayText } from '../../utils'
+import { SelectIntegration } from '../integration'
+import { Button, Field, Form, GroupSelect, Select } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),

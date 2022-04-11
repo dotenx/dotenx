@@ -1,8 +1,7 @@
 import { useAtom } from 'jotai'
 import { useCallback } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
-import { TaskNodeData } from '../flow'
-import { flowAtom } from './use-flow'
+import { flowAtom, TaskNodeData } from '.'
 
 export function useClearStatus() {
 	const setElements = useAtom(flowAtom)[1]

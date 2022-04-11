@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { CreateTriggerRequest } from '../api'
+import { CreateTriggerRequest } from '../../api'
 import { TriggerForm } from './trigger-form'
 
 interface TriggerSettingsProps {

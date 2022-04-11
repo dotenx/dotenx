@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useMutation, useQueryClient } from 'react-query'
-import { createTrigger, CreateTriggerRequest, QueryKey } from '../api'
-import { useModal } from '../features/hooks/use-modal'
+import { createTrigger, CreateTriggerRequest, QueryKey } from '../../api'
+import { useModal } from '../hooks'
 import { TriggerForm } from './trigger-form'
 
 export function NewTrigger() {

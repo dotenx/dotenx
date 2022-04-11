@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useQuery } from 'react-query'
-import { getExecutionResult, QueryKey } from '../api'
+import { getExecutionResult, QueryKey } from '../../api'
 
 export interface TaskLogProps {
 	executionId?: string

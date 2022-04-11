@@ -2,15 +2,24 @@
 import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
-import { TaskEntity, TaskNode, TaskNodeData, TriggerEntity, TriggerNode } from '../features/flow'
-import { getNodeColor, useFlow } from '../features/hooks/use-flow'
-import { Modals, useModal } from '../features/hooks/use-modal'
-import { EdgeData, EdgeEntity, Modal, PipeEdge } from '../features/ui'
-import { selectedPipelineDataAtom } from '../pages/home'
-import { EdgeSettings } from './edge-settings'
-import { TaskLog, TaskLogProps } from './task-log'
-import { TaskSettings } from './task-settings'
-import { TriggerSettings } from './trigger-settings'
+import {
+	EdgeData,
+	EdgeEntity,
+	getNodeColor,
+	PipeEdge,
+	TaskEntity,
+	TaskNode,
+	TaskNodeData,
+	TriggerEntity,
+	TriggerNode,
+	useFlow,
+} from '.'
+import { selectedPipelineDataAtom } from '../../pages/home'
+import { EdgeSettings } from '../automation'
+import { Modals, useModal } from '../hooks'
+import { TaskLog, TaskLogProps, TaskSettings } from '../task'
+import { TriggerSettings } from '../trigger'
+import { Modal } from '../ui'
 
 const nodeTypes = {
 	default: TaskNode,

@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteTrigger, getTriggers, QueryKey } from '../api'
-import { Detail, Item, Table } from '../features/ui'
-import { getDisplayText } from '../utils'
+import { deleteTrigger, getTriggers, QueryKey } from '../../api'
+import { getDisplayText } from '../../utils'
+import { Detail, Item, Table } from '../ui'
 
 export function TriggerList() {
 	const client = useQueryClient()

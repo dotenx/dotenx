@@ -4,11 +4,16 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import * as z from 'zod'
-import { createIntegration, getIntegrationKindFields, getIntegrationKinds, QueryKey } from '../api'
-import { useModal } from '../features/hooks/use-modal'
-import { useOauth } from '../features/hooks/use-oauth'
-import { Button, Field, Form, Select } from '../features/ui'
-import { getDisplayText } from '../utils'
+import {
+	createIntegration,
+	getIntegrationKindFields,
+	getIntegrationKinds,
+	QueryKey,
+} from '../../api'
+import { getDisplayText } from '../../utils'
+import { useModal } from '../hooks/use-modal'
+import { useOauth } from '../hooks/use-oauth'
+import { Button, Field, Form, Select } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),

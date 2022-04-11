@@ -2,7 +2,7 @@
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
-import { getAutomationExecutions, QueryKey } from '../api'
+import { getAutomationExecutions, QueryKey } from '../../api'
 
 interface PipelineExecutionProps {
 	pipelineName: string | undefined

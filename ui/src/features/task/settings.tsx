@@ -13,12 +13,18 @@ import {
 	getTaskKinds,
 	getTriggerDefinition,
 	QueryKey,
-} from '../api'
-import { NodeType, TaskNodeData } from '../features/flow'
-import { flowAtom } from '../features/hooks/use-flow'
-import { Button, Field, Form, GroupData, InputOrSelect, InputOrSelectValue } from '../features/ui'
-import { GroupSelect } from './group-select'
-import { SelectIntegration } from './select-integration'
+} from '../../api'
+import { flowAtom, NodeType, TaskNodeData } from '../flow'
+import { SelectIntegration } from '../integration'
+import {
+	Button,
+	Field,
+	Form,
+	GroupData,
+	GroupSelect,
+	InputOrSelect,
+	InputOrSelectValue,
+} from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),

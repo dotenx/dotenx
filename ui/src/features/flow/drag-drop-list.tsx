@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { DragEvent } from 'react'
-import { NodeType } from '../features/flow'
+import { NodeType } from './task-node'
 
 export function DragDropNodes() {
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
