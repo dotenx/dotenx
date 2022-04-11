@@ -62,9 +62,9 @@ export function SaveForm() {
 
 	return (
 		<Form css={{ height: '100%' }} onSubmit={handleSubmit(onSubmit)}>
-			<h2>Save pipeline</h2>
+			<h2>Save automation</h2>
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
-				<Field name="name" label="Pipeline name" control={control} errors={errors} />
+				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
 			<Button type="submit" isLoading={addPipelineMutation.isLoading}>
 				Save
