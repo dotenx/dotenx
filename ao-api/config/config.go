@@ -9,6 +9,7 @@ type (
 		Secrets   Secrets
 		Endpoints Endpoints
 		Queue     Queue
+		Redis     Redis
 	}
 
 	App struct {
@@ -40,6 +41,11 @@ type (
 		DbName   string `envconfig:"AOA_DATABASE_DBNAME"`
 		Extras   string `envconfig:"AOA_DATABASE_EXTRAS"`
 		Driver   string `envconfig:"AOA_DATABASE_DRIVER" default:"postgres"`
+	}
+
+	Redis struct {
+		Host string `envconfig:"AOA_REDIS_HOST"`
+		Port int    `envconfig:"AOA_REDIS_PORT"`
 	}
 
 	Secrets struct {

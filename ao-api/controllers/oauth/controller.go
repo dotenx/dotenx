@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/oauth/dotenx_goth/gothic"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/goth/gothic"
 )
 
 type OauthController struct {
@@ -53,13 +53,19 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	// UI := config.Configs.Endpoints.UI + "/integrations/add"
 	UI := config.Configs.Endpoints.UILocal + "/integrations/add"
 	q := c.Request.URL.Query()
-	provider := c.Param("provider")
-	q.Add("provider", provider)
+	providerStr := c.Param("provider")
+	q.Add("provider", providerStr)
 	c.Request.URL.RawQuery = q.Encode()
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
 		c.Redirect(307, UI+"?error="+err.Error())
 		return
 	}
-	c.Redirect(307, UI+"?access_token="+user.AccessToken)
+	fmt.Printf("user: %#v\n", user)
+	fmt.Printf("RefreshToken: %#v\n", user.RefreshToken)
+	if user.RefreshToken != "" {
+		c.Redirect(307, UI+"?access_token="+user.AccessToken+"&refresh_token="+user.RefreshToken)
+	} else {
+		c.Redirect(307, UI+"?access_token="+user.AccessToken)
+	}
 }

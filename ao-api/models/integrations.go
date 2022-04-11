@@ -7,10 +7,11 @@ type IntegrationDefinition struct {
 }
 
 type Integration struct {
-	Name      string            `db:"name" json:"name"`
-	AccountId string            `db:"account_id" json:"account_id"`
-	Type      string            `db:"type" json:"type"`
-	Secrets   map[string]string `db:"secrets" json:"secrets"`
+	Name            string            `db:"name" json:"name"`
+	AccountId       string            `db:"account_id" json:"account_id"`
+	Type            string            `db:"type" json:"type"`
+	Secrets         map[string]string `db:"secrets" json:"secrets"`
+	HasRefreshToken bool              `db:"hasRefreshToken" json:"hasRefreshToken"`
 }
 
 func (intg Integration) IsValid() bool {

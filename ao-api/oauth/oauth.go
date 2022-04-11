@@ -2,16 +2,18 @@ package oauth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	goth "github.com/dotenx/dotenx/ao-api/oauth/dotenx_goth"
 	"github.com/dotenx/dotenx/ao-api/oauth/provider"
-	"github.com/markbates/goth"
 )
 
 var providers []models.OauthProvider
+var gothProviders map[string]*goth.Provider
 
 func init() {
 	jsonFile, err := os.Open("providers.json")
@@ -30,18 +32,26 @@ func init() {
 }
 
 // GetProviders returns a slice of providers formed from the corresponding config section
-func GetProviders(cbURIBase string) ([]*goth.Provider, error) {
-	result := make([]*goth.Provider, 0)
+func GetProviders(cbURIBase string) (map[string]*goth.Provider, error) {
+	gothProviders = make(map[string]*goth.Provider)
 	if providers == nil {
-		return result, nil
+		return gothProviders, nil
 	}
 	for _, v := range providers {
 		uri := cbURIBase + v.Name
 		p, err := provider.New(v.Name, &v.Secret, &v.Key, uri, v.Scopes...)
 		if err != nil {
-			return result, err
+			return gothProviders, err
 		}
-		result = append(result, p)
+		gothProviders[v.Name] = p
 	}
-	return result, nil
+	return gothProviders, nil
+}
+
+func GetProviderByName(name string) (*goth.Provider, error) {
+	p, ok := gothProviders[name]
+	if !ok {
+		return nil, errors.New("Provider not found")
+	}
+	return p, nil
 }

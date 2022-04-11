@@ -68,6 +68,10 @@ var migrations = []struct {
 		name: "create-table-author_state",
 		stmt: createAuthorState,
 	},
+	{
+		name: "add-has-refresh-token-field",
+		stmt: addHasRefreshTokenField,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -269,4 +273,9 @@ used_times               INT NOT NULL,
 service                  varchar(128),
 UNIQUE (author, type, name)
 )
+`
+
+var addHasRefreshTokenField = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `

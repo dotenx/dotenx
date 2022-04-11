@@ -3,9 +3,12 @@ package integrationService
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 )
 
 type IntegrationService interface {
@@ -16,14 +19,19 @@ type IntegrationService interface {
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
 	GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
+	SetRedisPair(key, value string, ttl time.Duration) (err error)
 }
 
 type IntegrationManager struct {
-	Store integrationStore.IntegrationStore
+	Store      integrationStore.IntegrationStore
+	RedisStore redisStore.RedisStore
 }
 
-func NewIntegrationService(store integrationStore.IntegrationStore) IntegrationService {
-	return &IntegrationManager{Store: store}
+func NewIntegrationService(store integrationStore.IntegrationStore, redisStore redisStore.RedisStore) IntegrationService {
+	return &IntegrationManager{
+		Store:      store,
+		RedisStore: redisStore,
+	}
 }
 
 func (manager *IntegrationManager) GetIntegrationFields(name string) (models.IntegrationDefinition, error) {
@@ -73,5 +81,35 @@ func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId 
 }
 
 func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) (models.Integration, error) {
-	return manager.Store.GetIntegrationByName(context.Background(), accountId, name)
+
+	integration, err := manager.Store.GetIntegrationByName(context.Background(), accountId, name)
+	if err != nil {
+		return models.Integration{}, err
+	}
+	if !integration.HasRefreshToken {
+		return integration, nil
+	} else {
+		providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+		provider, err := oauth.GetProviderByName(providerName)
+		if err != nil {
+			return models.Integration{}, err
+		}
+		accessToken, err := oauth.ExchangeRefreshToken(*provider, integration.Name, accountId, manager.RedisStore)
+		if err != nil {
+			return models.Integration{}, err
+		}
+		return models.Integration{
+			Name:      integration.Name,
+			AccountId: accountId,
+			Type:      integration.Type,
+			Secrets: map[string]string{
+				"ACCESS_TOKEN": accessToken,
+			},
+			HasRefreshToken: integration.HasRefreshToken,
+		}, nil
+	}
+}
+
+func (manager *IntegrationManager) SetRedisPair(key, value string, ttl time.Duration) (err error) {
+	return manager.RedisStore.SetRedisPair(key, value, ttl)
 }
