@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/oauth/dotenx_goth/gothic"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
+	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

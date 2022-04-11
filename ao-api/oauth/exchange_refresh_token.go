@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	goth "github.com/dotenx/dotenx/ao-api/oauth/dotenx_goth"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
+	"github.com/dotenx/goth"
 )
 
 func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID string, redisStore redisStore.RedisStore) (accessToekn string, err error) {

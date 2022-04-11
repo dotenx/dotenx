@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/dotenx/dotenx/ao-api/models"
-	goth "github.com/dotenx/dotenx/ao-api/oauth/dotenx_goth"
 	"github.com/dotenx/dotenx/ao-api/oauth/provider"
+	"github.com/dotenx/goth"
 )
 
 var providers []models.OauthProvider
