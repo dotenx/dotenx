@@ -2,26 +2,26 @@
 import { atom, useAtom } from 'jotai'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
-import { getPipeline, getPipelines, Pipeline, PipelineData, QueryKey } from '../api'
+import { Automation, AutomationData, getAutomation, getAutomations, QueryKey } from '../api'
 
-export const selectedPipelineAtom = atom<PipelineData | undefined>(undefined)
+export const selectedPipelineAtom = atom<AutomationData | undefined>(undefined)
 
 interface PipelineSelectProps {
-	value: Pipeline | undefined
-	onChange: (value: Pipeline) => void
+	value: Automation | undefined
+	onChange: (value: Automation) => void
 }
 
 export function PipelineSelect({ value: selected, onChange: setSelected }: PipelineSelectProps) {
-	const pipelinesQuery = useQuery(QueryKey.GetPipelines, getPipelines)
+	const pipelinesQuery = useQuery(QueryKey.GetAutomations, getAutomations)
 	const setSelectedPipeline = useAtom(selectedPipelineAtom)[1]
 	const pipelines = pipelinesQuery.data?.data
 	const options = pipelines?.map((pipeline) => ({ label: pipeline.name, value: pipeline })) ?? []
 
 	useQuery(
-		[QueryKey.GetPipeline, selected],
+		[QueryKey.GetAutomation, selected],
 		() => {
 			if (!selected) return
-			return getPipeline(selected.name)
+			return getAutomation(selected.name)
 		},
 		{ enabled: !!selected, onSuccess: (data) => setSelectedPipeline(data?.data) }
 	)

@@ -6,7 +6,7 @@ import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import * as z from 'zod'
-import { addPipeline, addTrigger, AddTriggerPayload, Manifest, QueryKey, Tasks } from '../api'
+import { addAutomation, addTrigger, AddTriggerPayload, Manifest, QueryKey, Tasks } from '../api'
 import { Button } from '../components/button'
 import { Field } from '../components/field'
 import { Form } from '../components/form'
@@ -31,7 +31,7 @@ export function SaveForm() {
 
 	const client = useQueryClient()
 	const modal = useModal()
-	const addPipelineMutation = useMutation(addPipeline)
+	const addPipelineMutation = useMutation(addAutomation)
 	const addTriggerMutation = useMutation(addTrigger)
 
 	const [elements] = useAtom(flowAtom)
@@ -45,7 +45,7 @@ export function SaveForm() {
 			{
 				onSuccess: () => {
 					modal.close()
-					client.invalidateQueries(QueryKey.GetPipelines)
+					client.invalidateQueries(QueryKey.GetAutomations)
 
 					const triggers = mapElementsToTriggers(elements)
 					triggers.forEach((trigger) => {

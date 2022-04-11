@@ -5,15 +5,15 @@ const api = axios.create({
 	baseURL: API_URL,
 })
 
-export function getPipelines() {
-	return api.get<Pipeline[]>('/pipeline')
+export function getAutomations() {
+	return api.get<Automation[]>('/pipeline')
 }
 
-export function addPipeline(payload: AddPipelinePayload) {
+export function addAutomation(payload: AddAutomationPayload) {
 	return api.post<void>('/pipeline', payload)
 }
 
-export function startPipeline(payload: StartPipelinePayload) {
+export function startAutomation(payload: StartAutomationPayload) {
 	return api.post<void>(`/execution/ep/${payload.endpoint}/start`, {})
 }
 
@@ -25,16 +25,16 @@ export function getTaskFields(taskType: string) {
 	return api.get<TaskFields>(`/task/${taskType}/fields`)
 }
 
-export function getPipeline(name: string) {
-	return api.get<PipelineData>(`/pipeline/name/${name}`)
+export function getAutomation(name: string) {
+	return api.get<AutomationData>(`/pipeline/name/${name}`)
 }
 
 export function getResult(executionId: string, taskName: string) {
 	return api.get<TaskResult>(`/execution/id/${executionId}/task_name/${taskName}/result`)
 }
 
-export function getExecutions(pipelineName: string) {
-	return api.get<Execution[]>(`/pipeline/name/${pipelineName}/executions`)
+export function getExecutions(automationName: string) {
+	return api.get<Execution[]>(`/pipeline/name/${automationName}/executions`)
 }
 
 export function getIntegrationTypes() {
@@ -69,11 +69,11 @@ export function addTrigger(payload: AddTriggerPayload) {
 	return api.post<void>('/trigger', payload)
 }
 
-export function getPipelineTriggers(pipelineName: string) {
-	return api.get<TriggerData[]>(`/trigger`, { params: { pipeline: pipelineName } })
+export function getAutomationTriggers(automationName: string) {
+	return api.get<TriggerData[]>(`/trigger`, { params: { pipeline: automationName } })
 }
 
-export function deletePipeline(name: string) {
+export function deleteAutomation(name: string) {
 	return api.delete<void>(`/pipeline/name/${name}`)
 }
 
@@ -81,8 +81,8 @@ export function deleteIntegration(name: string) {
 	return api.delete<void>(`/integration/name/${name}`)
 }
 
-export function deleteTrigger(name: string, pipelineName: string) {
-	return api.delete<void>(`/trigger/name/${name}?pipeline=${pipelineName}`)
+export function deleteTrigger(name: string, automationName: string) {
+	return api.delete<void>(`/trigger/name/${name}?pipeline=${automationName}`)
 }
 
 export function getIntegrationsByType(types: string[]) {
@@ -91,10 +91,10 @@ export function getIntegrationsByType(types: string[]) {
 }
 
 export enum QueryKey {
-	GetPipelines = 'get-pipelines',
+	GetAutomations = 'get-automation',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
-	GetPipeline = 'get-pipeline',
+	GetAutomation = 'get-automation',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
 	GetIntegrationTypes = 'get-integration-types',
@@ -103,7 +103,7 @@ export enum QueryKey {
 	GetTriggers = 'get-triggers',
 	GetTriggerTypes = 'get-trigger-types',
 	GetTriggerDefinition = 'get-trigger-definition',
-	GetPipelineTriggers = 'get-pipeline-triggers',
+	GetAutomationTrigger = 'get-automation-triggers',
 	GetIntegrationsByType = 'get-integration-by-type',
 }
 
@@ -196,7 +196,7 @@ export interface Execution {
 	InitialData: unknown | null
 }
 
-export interface PipelineEventMessage {
+export interface AutomationEventMessage {
 	execution_id: string
 	tasks: {
 		name: string
@@ -210,7 +210,7 @@ export interface TaskResult {
 	return_value: string
 }
 
-export interface PipelineData {
+export interface AutomationData {
 	serviceAccount: string
 	endpoint: string
 	manifest: Manifest
@@ -235,16 +235,16 @@ export interface TaskTypeData {
 	icon_url: string
 }
 
-export interface StartPipelinePayload {
+export interface StartAutomationPayload {
 	endpoint: string
 }
 
-export interface Pipeline {
+export interface Automation {
 	name: string
 	endpoint: string
 }
 
-export interface AddPipelinePayload {
+export interface AddAutomationPayload {
 	name: string
 	manifest: Manifest
 }

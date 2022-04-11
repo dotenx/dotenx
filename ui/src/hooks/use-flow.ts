@@ -15,7 +15,7 @@ import {
 	removeElements,
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
-import { getPipelineTriggers, PipelineData, QueryKey, TriggerData } from '../api'
+import { AutomationData, getAutomationTriggers, QueryKey, TriggerData } from '../api'
 import { InputOrSelectValue } from '../components/input-or-select'
 import { EdgeData } from '../components/pipe-edge'
 import { NodeType, TaskNodeData } from '../components/task-node'
@@ -49,9 +49,9 @@ export function useFlow() {
 	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
 
 	const triggersQuery = useQuery(
-		[QueryKey.GetPipelineTriggers, selectedPipelineData?.name],
+		[QueryKey.GetAutomationTrigger, selectedPipelineData?.name],
 		() => {
-			if (selectedPipelineData) return getPipelineTriggers(selectedPipelineData.name)
+			if (selectedPipelineData) return getAutomationTriggers(selectedPipelineData.name)
 		},
 		{ enabled: !!selectedPipelineData }
 	)
@@ -135,7 +135,7 @@ export function getNodeColor(theme: Theme, node: Node) {
 	}
 }
 
-function mapPipelineToElements(pipeline: PipelineData): Elements<TaskNodeData | EdgeData> {
+function mapPipelineToElements(pipeline: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => {
 		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
 			let inputOrSelectValue = { type: 'text', data: '' } as InputOrSelectValue

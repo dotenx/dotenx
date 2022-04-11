@@ -4,7 +4,7 @@ import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
 import { useLocation } from 'react-router-dom'
-import { API_URL, Pipeline, PipelineEventMessage } from '../api'
+import { API_URL, Automation, AutomationEventMessage } from '../api'
 import { Layout } from '../components/layout'
 import { TaskNodeData } from '../components/task-node'
 import { ActionBar } from '../containers/action-bar'
@@ -17,7 +17,7 @@ import { flowAtom } from '../hooks/use-flow'
 
 export const selectedExecutionAtom = atom<number | undefined>(undefined)
 export const listenAtom = atom(0)
-export const selectedPipelineDataAtom = atom<Pipeline | undefined>(undefined)
+export const selectedPipelineDataAtom = atom<Automation | undefined>(undefined)
 
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
@@ -32,7 +32,7 @@ export default function Home() {
 
 	const handleReceiveMessage = useCallback(
 		(event: MessageEvent<string>) => {
-			const data: PipelineEventMessage = JSON.parse(event.data)
+			const data: AutomationEventMessage = JSON.parse(event.data)
 
 			setElements((elements) =>
 				elements.map((element) => {
@@ -101,8 +101,8 @@ export default function Home() {
 }
 
 interface HeaderProps {
-	selected: Pipeline | undefined
-	setSelected: (value: Pipeline | undefined) => void
+	selected: Automation | undefined
+	setSelected: (value: Automation | undefined) => void
 	executionId: number | undefined
 	setExecutionId: (value: number | undefined) => void
 }

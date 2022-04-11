@@ -2,7 +2,7 @@
 import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
-import { deletePipeline, QueryKey, startPipeline } from '../api'
+import { deleteAutomation, QueryKey, startAutomation } from '../api'
 import { Button } from '../components/button'
 import { Modal } from '../components/modal'
 import { useClearStatus } from '../hooks/use-clear-status'
@@ -41,9 +41,9 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 	const setListen = useAtom(listenAtom)[1]
 	const setElements = useAtom(flowAtom)[1]
 	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
-	const deletePipelineMutation = useMutation(deletePipeline)
+	const deletePipelineMutation = useMutation(deleteAutomation)
 
-	const mutation = useMutation(startPipeline, {
+	const mutation = useMutation(startAutomation, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
@@ -67,7 +67,7 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 						deletePipelineMutation.mutate(selectedPipelineData.name, {
 							onSuccess: () => {
 								resetPipeline()
-								client.invalidateQueries(QueryKey.GetPipelines)
+								client.invalidateQueries(QueryKey.GetAutomations)
 							},
 						})
 					}}

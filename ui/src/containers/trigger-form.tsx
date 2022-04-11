@@ -6,7 +6,7 @@ import { useQuery } from 'react-query'
 import * as z from 'zod'
 import {
 	AddTriggerPayload,
-	getPipelines,
+	getAutomations,
 	getTriggerDefinition,
 	getTriggerTypes,
 	QueryKey,
@@ -51,7 +51,7 @@ export function TriggerForm({
 	})
 	const triggerType = watch('type')
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerTypes)
-	const pipelinesQuery = useQuery(QueryKey.GetPipelines, getPipelines)
+	const pipelinesQuery = useQuery(QueryKey.GetAutomations, getAutomations)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
 		() => getTriggerDefinition(triggerType),
