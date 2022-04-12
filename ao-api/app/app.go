@@ -103,7 +103,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices)
 	OauthService := oauthService.NewOauthService(RedisStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
@@ -191,6 +191,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// fmt.Println("****************************************")
 
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
 	return r
 }
 

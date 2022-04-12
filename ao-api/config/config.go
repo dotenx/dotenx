@@ -53,6 +53,7 @@ type (
 		AppName             string `envconfig:"AOA_APP_NAME"`
 		AppSecret           string `envconfig:"AOA_APP_SECRET"`
 		CookieSecret        string `envconfig:"AOA_Cookie_SECRET"`
+		Encryption          string `envconfig:"AOA_ENCRYPTION_SECRET"`
 	}
 )
 

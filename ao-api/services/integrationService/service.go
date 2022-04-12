@@ -51,6 +51,13 @@ func (manager *IntegrationManager) GetIntegrationTypes() ([]string, error) {
 }
 
 func (manager *IntegrationManager) AddIntegration(accountId string, integration models.Integration) error {
+	for key, value := range integration.Secrets {
+		encryptedValue, err := utils.Encrypt(value, config.Configs.Secrets.Encryption)
+		if err != nil {
+			return err
+		}
+		integration.Secrets[key] = encryptedValue
+	}
 	return manager.Store.AddIntegration(context.Background(), accountId, integration)
 }
 func (manager *IntegrationManager) DeleteIntegration(accountId string, integrationName string) (err error) {
@@ -87,7 +94,14 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 		return models.Integration{}, err
 	}
 	if !integration.HasRefreshToken {
-		return integration, nil
+		for key, value := range integration.Secrets {
+			decrypted, err := utils.Decrypt(value, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			integration.Secrets[key] = decrypted
+		}
+		return integration, err
 	} else {
 		providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
 		provider, err := oauth.GetProviderByName(providerName)

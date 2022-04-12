@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
@@ -18,11 +19,14 @@ type TriggerService interface {
 	AddTrigger(accountId string, trigger models.EventTrigger) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
+	StartScheduller(accId string) error
+	StartSchedulling(trigger models.EventTrigger) error
 }
 
 type TriggerManager struct {
-	Store           triggerStore.TriggerStore
-	UtopiopsService utopiopsService.UtopiopsService
+	Store            triggerStore.TriggerStore
+	UtopiopsService  utopiopsService.UtopiopsService
+	ExecutionService executionService.ExecutionService
 }
 
 type triggerSummery struct {
@@ -31,8 +35,8 @@ type triggerSummery struct {
 	Description string `json:"description"`
 }
 
-func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService) TriggerService {
-	return &TriggerManager{Store: store, UtopiopsService: service}
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService) TriggerService {
+	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService}
 }
 
 func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
@@ -50,9 +54,15 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 	return triggers, nil
 }
 
-func (manager *TriggerManager) AddTrigger(accountId string, trigger models.EventTrigger) error {
+func (manager *TriggerManager) AddTrigger(accountId string, trigger models.EventTrigger) (err error) {
 	// todo: make ready the body to be saved in table
-	return manager.Store.AddTrigger(context.Background(), accountId, trigger)
+	err = manager.Store.AddTrigger(context.Background(), accountId, trigger)
+	if err == nil {
+		if trigger.Type == "Schedule" {
+			err = manager.StartSchedulling(trigger)
+		}
+	}
+	return
 }
 func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipeline string) error {
 	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName, pipeline)
