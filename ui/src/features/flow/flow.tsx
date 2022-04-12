@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
-import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
+import ReactFlow, { Controls, MiniMap } from 'react-flow-renderer'
 import { CreateTriggerRequest } from '../../api'
 import { selectedPipelineDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
@@ -48,9 +48,7 @@ export function Flow() {
 					onLoad={onLoad}
 					onDragOver={onDragOver}
 					onDrop={onDrop}
-					snapToGrid
 				>
-					<Background />
 					<MiniMap nodeColor={(node) => getNodeColor(theme, node)} />
 					<Controls />
 				</ReactFlow>
