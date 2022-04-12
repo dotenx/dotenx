@@ -51,7 +51,10 @@ export function useNewIntegration() {
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
 	const oauth = useOauth({
-		onSuccess: (accessToken) => setValue('secrets.ACCESS_TOKEN', accessToken),
+		onSuccess: (accessToken, refreshToken) => {
+			setValue('secrets.ACCESS_TOKEN', accessToken)
+			setValue('secrets.REFRESH_TOKEN', refreshToken)
+		},
 	})
 
 	const onSave = () => {

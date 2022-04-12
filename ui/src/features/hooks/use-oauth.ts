@@ -3,12 +3,13 @@ import { API_URL } from '../../api'
 import { OAuthMessage } from '../../pages/oauth'
 
 interface Options {
-	onSuccess: (accessToken: string) => void
+	onSuccess: (accessToken: string, refreshToken: string) => void
 }
 
 export function useOauth({ onSuccess }: Options) {
 	const [error, setError] = useState('')
 	const [accessToken, setAccessToken] = useState('')
+	const [refreshToken, setRefreshToken] = useState('')
 
 	function connect(providerName: string) {
 		const popupWindow = window.open(
@@ -22,11 +23,12 @@ export function useOauth({ onSuccess }: Options) {
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent<OAuthMessage>) => {
 			if (event.origin !== process.env.REACT_APP_URL) return
-			const { error, accessToken } = event.data
+			const { error, accessToken, refreshToken } = event.data
 			if (error) setError(error)
 			if (accessToken) {
 				setAccessToken(accessToken)
-				onSuccess(accessToken)
+				setRefreshToken(refreshToken ?? '')
+				onSuccess(accessToken, refreshToken ?? '')
 			}
 		}
 		window.addEventListener('message', handleMessage)
@@ -37,5 +39,6 @@ export function useOauth({ onSuccess }: Options) {
 		connect,
 		error,
 		accessToken,
+		refreshToken,
 	}
 }
