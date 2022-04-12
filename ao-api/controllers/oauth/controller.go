@@ -63,8 +63,11 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	}
 	fmt.Printf("user: %#v\n", user)
 	fmt.Printf("RefreshToken: %#v\n", user.RefreshToken)
+	fmt.Println("user.AccessTokenSecret:", user.AccessTokenSecret)
 	if user.RefreshToken != "" {
 		c.Redirect(307, UI+"?access_token="+user.AccessToken+"&refresh_token="+user.RefreshToken)
+	} else if user.AccessTokenSecret != "" {
+		c.Redirect(307, UI+"?access_token="+user.AccessToken+"&access_token_secret="+user.AccessTokenSecret)
 	} else {
 		c.Redirect(307, UI+"?access_token="+user.AccessToken)
 	}

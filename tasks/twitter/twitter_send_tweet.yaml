@@ -1,0 +1,10 @@
+service: twitter
+type: Send tweet
+image: 
+integrations: [twitter]
+fields:
+    - key: text
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/3128/3128310.png
+description: Sends a tweet with user's access token
