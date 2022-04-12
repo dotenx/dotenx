@@ -40,7 +40,7 @@ interface LayoutProps {
 
 export function Layout({ children, pathname, header = null }: LayoutProps) {
 	return (
-		<Wrapper>
+		<Wrapper className="font-body">
 			<HeaderWrapper>
 				<LogoWrapper>
 					<Logo src={logo} alt="logo" />
