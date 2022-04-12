@@ -11,7 +11,7 @@ import (
 )
 
 type IntegrationService interface {
-	GetIntegrationFields(name string) ([]string, error)
+	GetIntegrationFields(name string) (models.IntegrationDefinition, error)
 	GetIntegrationByName(accountId, name string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
 	GetIntegrationTypes() ([]string, error)
@@ -28,13 +28,13 @@ func NewIntegrationService(store integrationStore.IntegrationStore) IntegrationS
 	return &IntegrationManager{Store: store}
 }
 
-func (manager *IntegrationManager) GetIntegrationFields(name string) ([]string, error) {
+func (manager *IntegrationManager) GetIntegrationFields(name string) (models.IntegrationDefinition, error) {
 	for _, integ := range models.AvaliableIntegrations {
 		if integ.Type == name {
-			return integ.Secrets, nil
+			return integ, nil
 		}
 	}
-	return nil, errors.New("no integration with this name")
+	return models.IntegrationDefinition{}, errors.New("no integration with this name")
 }
 func (manager *IntegrationManager) GetIntegrationTypes() ([]string, error) {
 	integrations := make([]string, 0)
