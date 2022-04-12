@@ -19,7 +19,12 @@ docker compose up
 
 If you want to support our work - please star this project, every star makes us very happy!
 
-# Add new integration type
+![Screen Shot 2022-04-12 at 11 24 52 am](https://user-images.githubusercontent.com/15846333/162859972-3277c086-4d3d-40bc-aec3-2e0d6ba5b834.png)
+
+
+# Contributing
+
+## Adding new integration type
 
 If you want to use a new integration type you only need to add a yaml file 
 to integrations directory in this format.
@@ -29,7 +34,7 @@ secrets: [ACCESS_TOKEN]
 ```
 * If you set an integration type for your task or trigger you have access to integration fields in your container, forexample if your integration has ACCESS_TOKEN you have an environment variable named INTEGRATION_ACCESS_TOKEN in your container
 
-# Add new task type
+## Adding new task type
 
 If you want to use a new task you only need to add a yaml file 
 to tasks directory in this format.
@@ -45,7 +50,7 @@ integration: integration type wich is needed to run your task
 author: your github username 
 ```
 
-# Add new trigger type
+## Adding new trigger type
 
 If you want to use a new trigger you only need to add a yaml file 
 to triggers directory in this format.
