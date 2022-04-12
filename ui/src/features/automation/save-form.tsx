@@ -14,7 +14,8 @@ import {
 	QueryKey,
 	Tasks,
 } from '../../api'
-import { EdgeData, flowAtom, NodeType, TaskNodeData } from '../flow'
+import { flowAtom } from '../atoms'
+import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { useModal } from '../hooks'
 import { Button, Field, Form, InputOrSelectValue } from '../ui'
 
@@ -25,6 +26,22 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 export function SaveForm() {
+	const { addPipelineMutation, control, errors, onSubmit } = useSaveForm()
+
+	return (
+		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
+			<h2>Save automation</h2>
+			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+				<Field name="name" label="Automation name" control={control} errors={errors} />
+			</div>
+			<Button type="submit" isLoading={addPipelineMutation.isLoading}>
+				Save
+			</Button>
+		</Form>
+	)
+}
+
+function useSaveForm() {
 	const {
 		control,
 		formState: { errors },
@@ -38,7 +55,7 @@ export function SaveForm() {
 
 	const [elements] = useAtom(flowAtom)
 
-	const onSubmit = (values: Schema) => {
+	const onSave = (values: Schema) => {
 		addPipelineMutation.mutate(
 			{
 				name: values.name,
@@ -62,17 +79,14 @@ export function SaveForm() {
 		)
 	}
 
-	return (
-		<Form css={{ height: '100%' }} onSubmit={handleSubmit(onSubmit)}>
-			<h2>Save automation</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
-				<Field name="name" label="Automation name" control={control} errors={errors} />
-			</div>
-			<Button type="submit" isLoading={addPipelineMutation.isLoading}>
-				Save
-			</Button>
-		</Form>
-	)
+	const onSubmit = handleSubmit(onSave)
+
+	return {
+		onSubmit,
+		control,
+		errors,
+		addPipelineMutation,
+	}
 }
 
 function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {

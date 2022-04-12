@@ -1,16 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
-import { useAtom } from 'jotai'
-import { useMutation, useQueryClient } from 'react-query'
-import { deleteAutomation, QueryKey, startAutomation } from '../../api'
-import { listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../../pages/home'
-import { flowAtom, initialElements } from '../flow'
-import { useClearStatus } from '../flow/use-clear-status'
-import { useLayout } from '../flow/use-layout'
-import { Modals, useModal } from '../hooks/use-modal'
+import { Modals } from '../hooks'
 import { Button, Modal } from '../ui'
 import { SaveForm } from './save-form'
-import { selectedPipelineAtom } from './selection'
+import { useActionBar } from './use-action-bar'
 
 const smallButton = css({ fontSize: 12, padding: '2px 0', width: 50 })
 
@@ -31,29 +24,16 @@ export const redSmallButton = [
 ]
 
 export function ActionBar({ deselectPipeline }: ActionBarProps) {
-	const { onLayout } = useLayout()
-	const modal = useModal()
-	const [selectedPipeline, setSelectedPipeline] = useAtom(selectedPipelineAtom)
-	const clearStatus = useClearStatus()
-	const client = useQueryClient()
-	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
-	const setListen = useAtom(listenAtom)[1]
-	const setElements = useAtom(flowAtom)[1]
-	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
-	const deletePipelineMutation = useMutation(deleteAutomation)
-
-	const mutation = useMutation((endpoint: string) => startAutomation(endpoint), {
-		onSuccess: () => {
-			client.invalidateQueries(QueryKey.GetExecutions)
-			clearStatus()
-			setSelectedExec(undefined)
-			setListen((x) => x + 1)
-		},
-	})
-
-	const onRun = () => {
-		if (selectedPipeline) mutation.mutate(selectedPipeline.endpoint)
-	}
+	const {
+		deletePipelineMutation,
+		mutation,
+		onDelete,
+		onRun,
+		selectedPipeline,
+		modal,
+		onLayout,
+		resetPipeline,
+	} = useActionBar(deselectPipeline)
 
 	return (
 		<>
@@ -61,15 +41,7 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 				<Button
 					css={redSmallButton}
 					disabled={!selectedPipeline}
-					onClick={() => {
-						if (!selectedPipelineData) return
-						deletePipelineMutation.mutate(selectedPipelineData.name, {
-							onSuccess: () => {
-								resetPipeline()
-								client.invalidateQueries(QueryKey.GetAutomations)
-							},
-						})
-					}}
+					onClick={onDelete}
 					isLoading={deletePipelineMutation.isLoading}
 				>
 					Delete
@@ -97,10 +69,4 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 			</Modal>
 		</>
 	)
-
-	function resetPipeline() {
-		setSelectedPipeline(undefined)
-		setElements(initialElements)
-		deselectPipeline()
-	}
 }

@@ -1,4 +1,5 @@
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
+import { modalAtom } from '../atoms'
 
 export enum Modals {
 	NodeSettings = 'node-settings',
@@ -9,12 +10,6 @@ export enum Modals {
 	NewIntegration = 'new-integration',
 	NewTrigger = 'new-trigger',
 }
-
-export const modalAtom = atom<{ isOpen: boolean; kind: Modals | null; data: unknown | null }>({
-	isOpen: false,
-	kind: null,
-	data: null,
-})
 
 export function useModal() {
 	const [modal, setModal] = useAtom(modalAtom)

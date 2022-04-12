@@ -1,7 +1,7 @@
 import dagre from 'dagre'
 import { useAtom } from 'jotai'
 import { Elements, isNode, useStoreState } from 'react-flow-renderer'
-import { flowAtom } from './use-flow'
+import { flowAtom } from '../atoms'
 import { NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 export function useIsAcyclic() {

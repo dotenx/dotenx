@@ -1,7 +1,7 @@
 import dagre from 'dagre'
 import { useAtom } from 'jotai'
 import { Elements, isNode, Position, useStoreState } from 'react-flow-renderer'
-import { flowAtom } from './use-flow'
+import { flowAtom } from '../atoms'
 
 export const NODE_WIDTH = 172
 export const NODE_HEIGHT = 36

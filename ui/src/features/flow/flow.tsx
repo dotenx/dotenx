@@ -2,11 +2,12 @@
 import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import ReactFlow, { Background, Controls, MiniMap } from 'react-flow-renderer'
-import { selectedPipelineDataAtom } from '../../pages/home'
+import { CreateTriggerRequest } from '../../api'
+import { selectedPipelineDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettings } from '../task'
-import { TriggerSettings } from '../trigger'
+import { TriggerForm } from '../trigger'
 import { Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
 import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
@@ -134,5 +135,18 @@ function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 				/>
 			)}
 		</Modal>
+	)
+}
+
+interface TriggerSettingsProps {
+	defaultValues: CreateTriggerRequest
+	onSave: (values: CreateTriggerRequest) => void
+}
+
+export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {
+	return (
+		<div css={{ height: '100%' }}>
+			<TriggerForm defaultValues={defaultValues} onSave={onSave} mode="settings" />
+		</div>
 	)
 }

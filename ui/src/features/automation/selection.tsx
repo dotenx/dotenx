@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
-import { Automation, AutomationData, getAutomation, getAutomations, QueryKey } from '../../api'
-
-export const selectedPipelineAtom = atom<AutomationData | undefined>(undefined)
+import { Automation, getAutomation, getAutomations, QueryKey } from '../../api'
+import { selectedPipelineAtom } from '../atoms'
 
 interface PipelineSelectProps {
 	value: Automation | undefined

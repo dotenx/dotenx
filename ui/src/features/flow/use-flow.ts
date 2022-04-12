@@ -1,5 +1,5 @@
 import { Theme } from '@emotion/react'
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
 import {
@@ -16,8 +16,7 @@ import {
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
 import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
-import { selectedPipelineDataAtom } from '../../pages/home'
-import { selectedPipelineAtom } from '../automation'
+import { flowAtom, selectedPipelineAtom, selectedPipelineDataAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { InputOrSelectValue } from '../ui'
@@ -37,8 +36,6 @@ export const initialElements: Elements<TaskNodeData | EdgeData> = [
 		position: { x: 0, y: 0 },
 	},
 ]
-
-export const flowAtom = atom(initialElements)
 
 export function useFlow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null)

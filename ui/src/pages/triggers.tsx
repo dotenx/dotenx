@@ -2,11 +2,14 @@
 import { BsPlusSquare } from 'react-icons/bs'
 import { useLocation } from 'react-router-dom'
 import { Modals, useModal } from '../features/hooks'
-import { NewTrigger, TriggerList } from '../features/trigger'
+import { TriggerList } from '../features/trigger'
+import { TriggerForm } from '../features/trigger/create-form'
+import { useCreateTrigger } from '../features/trigger/use-create'
 import { Button, Layout, Modal } from '../features/ui'
 
 export default function Triggers() {
 	const location = useLocation()
+	const { onSave } = useCreateTrigger()
 
 	return (
 		<Layout pathname={location.pathname} header={<Header />}>
@@ -14,7 +17,7 @@ export default function Triggers() {
 				<TriggerList />
 			</div>
 			<Modal kind={Modals.NewTrigger}>
-				<NewTrigger />
+				<TriggerForm onSave={onSave} mode="new" />
 			</Modal>
 		</Layout>
 	)

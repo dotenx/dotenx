@@ -5,7 +5,7 @@ import { deleteTrigger, getTriggers, QueryKey } from '../../api'
 import { getDisplayText } from '../../utils'
 import { Detail, Item, Table } from '../ui'
 
-export function TriggerList() {
+function useTriggerList() {
 	const client = useQueryClient()
 	const query = useQuery(QueryKey.GetTriggers, getTriggers)
 	const deleteMutation = useMutation(
@@ -17,13 +17,22 @@ export function TriggerList() {
 	)
 	const triggers = query.data?.data
 
+	return {
+		triggers,
+		deleteMutation,
+	}
+}
+
+export function TriggerList() {
+	const { deleteMutation, triggers } = useTriggerList()
+
 	return (
 		<Table
 			title="Triggers"
 			headers={['Name', 'Type', 'Integration', 'Pipeline']}
-			items={triggers?.map((trigger) => (
+			items={triggers?.map((trigger, index) => (
 				<Item
-					key={trigger.name}
+					key={index}
 					values={[
 						trigger.name,
 						getDisplayText(trigger.type),
