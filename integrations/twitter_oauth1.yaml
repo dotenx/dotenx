@@ -1,0 +1,5 @@
+type: twitter_oauth1
+needs_access_token: true
+needs_key: true 
+needs_secret: true
+needs_url: true
