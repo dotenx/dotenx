@@ -84,7 +84,7 @@ func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, tri
 }
 
 var getTriggers = `
-select  type, name, integration, pipeline, endpoint, credentials from event_triggers 
+select  type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers 
 where account_id = $1;
 `
 
@@ -105,7 +105,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string)
 		for rows.Next() {
 			var cur models.EventTrigger
 			var cred []byte
-			rows.Scan(&cur.Type, &cur.Name, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
+			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
 			json.Unmarshal(cred, &cur.Credentials)
 			if err != nil {
 				return nil, err

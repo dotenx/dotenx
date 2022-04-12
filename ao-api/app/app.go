@@ -80,7 +80,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
@@ -136,6 +136,7 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
 	return r
 }
 

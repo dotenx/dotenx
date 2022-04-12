@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -15,8 +16,10 @@ import (
 */
 
 func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error) {
+	fmt.Println("starinting #####################################")
 	pipelineId, err := manager.Store.GetPipelineIdByEndpoint(noContext, accountId, endpoint)
 	if err != nil {
+		log.Println(accountId)
 		log.Println(err.Error())
 		if err.Error() == "pipeline not found" {
 			//return -1, http.StatusBadRequest
