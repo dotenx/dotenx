@@ -40,9 +40,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			jobDTO.SetIntegration(integration)
 		}
 		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
-		if err == nil {
-			jobDTO.Body = body
+		if err != nil {
+			return err
 		}
+		jobDTO.Body = body
 		err = manager.QueueService.QueueTasks(accountId, "default", jobDTO)
 		if err != nil {
 			log.Println(err.Error())
@@ -69,7 +70,7 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 			if err != nil {
 				body, err = manager.CheckReturnValues(execId, accountId, insertDt.Source)
 				if err != nil {
-					return nil, err
+					return nil, errors.New("no value for this field in initial data or return values")
 				}
 			}
 			if _, ok := body[insertDt.Key]; !ok {

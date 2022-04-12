@@ -4,18 +4,11 @@ import (
 	"context"
 	"errors"
 
-<<<<<<< HEAD
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/services/executionService"
-	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
-=======
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
->>>>>>> main
 )
 
 type TriggerService interface {

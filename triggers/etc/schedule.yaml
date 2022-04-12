@@ -5,6 +5,7 @@ credentials:
       type: text
     - key: frequency
       type: text
+integrations: [slack-bot]
 author: Armingodiz
 icon: https://iconape.com/wp-content/files/mw/372166/png/372166.png
 description: Starts Automations in schedulled time

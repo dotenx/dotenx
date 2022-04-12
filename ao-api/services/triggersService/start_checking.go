@@ -45,7 +45,7 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 		return err
 	}
 	dc := dockerCleint{cli: cli}
-	fmt.Println(triggers)
+	//fmt.Println(triggers)
 	for _, trigger := range triggers {
 		if trigger.Type != "Schedule" {
 			go dc.handleTrigger(accId, trigger, store)

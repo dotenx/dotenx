@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/go-co-op/gocron"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (manager *TriggerManager) StartScheduller(accId string) error {
@@ -17,7 +17,7 @@ func (manager *TriggerManager) StartScheduller(accId string) error {
 	}
 	for _, trigger := range triggers {
 		if trigger.Type == "Schedule" {
-			manager.StartSchedulling(trigger)
+			go manager.StartSchedulling(trigger)
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
@@ -36,8 +36,11 @@ func (manager *TriggerManager) StartSchedulling(trigger models.EventTrigger) err
 	if err != nil {
 		return err
 	}
-	s.Every(freq).Second().Do(manager.ExecutionService.StartPipeline(nil, trigger.AccountId, trigger.Endpoint))
-	//s.Every(freq).Day().At(trigger.Credentials["time"].(string)).Do(manager.ExecutionService.StartPipeline(nil, trigger.AccountId, trigger.Endpoint))
-	s.StartAsync()
+	inp := make(map[string]interface{})
+	s.Every(freq).Second().Do(func() {
+		manager.ExecutionService.StartPipeline(inp, trigger.AccountId, trigger.Endpoint)
+	})
+	s.StartBlocking()
+
 	return nil
 }
