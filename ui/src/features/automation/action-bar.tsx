@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
-import { ButtonHTMLAttributes } from 'react'
 import { BsPlay, BsPlus, BsSave2, BsSortDownAlt, BsTrash2 } from 'react-icons/bs'
 import { Modals } from '../hooks'
 import { Modal } from '../ui'
+import { IconButton } from '../ui/icon-button'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 
@@ -52,27 +52,5 @@ export function ActionBar({ deselectPipeline }: ActionBarProps) {
 				<SaveForm />
 			</Modal>
 		</>
-	)
-}
-
-interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-	tooltip: string
-}
-
-function IconButton(props: IconButtonProps) {
-	return (
-		<div className="relative group">
-			<button
-				className="flex items-center justify-center p-1 text-xl transition-all rounded hover:bg-gray-50 disabled:hover:bg-white disabled:text-gray-400 disabled:cursor-not-allowed"
-				{...props}
-			>
-				{props.children}
-			</button>
-			{!props.disabled && (
-				<div className="absolute hidden px-2 py-1 mt-2 text-xs text-white bg-gray-900 rounded group-hover:block left-[50%] -translate-x-[50%]">
-					{props.tooltip}
-				</div>
-			)}
-		</div>
 	)
 }
