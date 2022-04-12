@@ -19,7 +19,7 @@ const items = [
 	{ to: '/triggers', label: 'Triggers', icon: <BsPipFill /> },
 ]
 
-const isOpenAtom = atom(false)
+const isOpenAtom = atom(true)
 
 export function Sidebar({ pathname }: SidebarProps) {
 	const [isOpen, setIsOpen] = useAtom(isOpenAtom)
