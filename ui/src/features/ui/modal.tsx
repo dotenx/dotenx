@@ -22,6 +22,9 @@ export function Modal({ children, kind }: ModalProps) {
 					maxWidth: '500px',
 					margin: 'auto',
 				},
+				overlay: {
+					zIndex: 10,
+				},
 			}}
 		>
 			{typeof children === 'function' ? children(modal.data ?? {}) : children}
