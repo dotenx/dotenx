@@ -123,7 +123,7 @@ export type GetIntegrationsByKindsResponse = Integration[]
 export type GetIntegrationKindsResponse = string[]
 
 export type GetIntegrationKindFieldsResponse = {
-	secrets: string[]
+	secrets: { key: string; name: string }[]
 	oauth_provider: string
 }
 
