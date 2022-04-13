@@ -1,3 +1,5 @@
 type: slack-bot
-secrets: [ACCESS_TOKEN]
+secrets:
+  - name: SlACK BOT ACCESS TOKEN
+    key: ACCESS_TOKEN
 oauth_provider: slack

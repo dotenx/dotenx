@@ -1,2 +1,4 @@
 type: sendGrid
-secrets: [ACCESS_TOKEN]
+secrets: 
+  - name: SENDGRID ACCESS TOKEN
+    key: ACCESS_TOKEN
