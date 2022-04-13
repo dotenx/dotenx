@@ -57,7 +57,6 @@ export function useActionBar(deselectPipeline: () => void) {
 		onDelete,
 		deletePipelineMutation,
 		onRun,
-		mutation,
 		resetPipeline,
 		onLayout,
 		modal,

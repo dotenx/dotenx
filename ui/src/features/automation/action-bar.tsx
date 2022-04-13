@@ -26,7 +26,7 @@ export const redSmallButton = [
 ]
 
 export function ActionBar({ deselectPipeline }: ActionBarProps) {
-	const { mutation, onDelete, onRun, selectedPipeline, modal, onLayout, resetPipeline } =
+	const { onDelete, onRun, selectedPipeline, modal, onLayout, resetPipeline } =
 		useActionBar(deselectPipeline)
 
 	return (
