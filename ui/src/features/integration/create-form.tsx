@@ -44,9 +44,9 @@ export function NewIntegration() {
 				)}
 				{integrationTypeFields?.secrets.map((field) => (
 					<Field
-						key={field}
-						label={field}
-						name={`secrets.${field}`}
+						key={field.key}
+						label={field.name}
+						name={`secrets.${field.key}`}
 						control={control}
 						required
 						errors={errors}
