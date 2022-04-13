@@ -1,9 +1,14 @@
 package models
 
 type IntegrationDefinition struct {
-	Type          string   `json:"type" yaml:"type"`
-	Secrets       []string `json:"secrets" yaml:"secrets"`
-	OauthProvider string   `json:"oauth_provider" yaml:"oauth_provider"`
+	Type          string              `json:"type" yaml:"type"`
+	Secrets       []IntegrationSecret `json:"secrets" yaml:"secrets"`
+	OauthProvider string              `json:"oauth_provider" yaml:"oauth_provider"`
+}
+
+type IntegrationSecret struct {
+	Name string `json:"name" yaml:"name"`
+	Key  string `json:"key" yaml:"key"`
 }
 
 type Integration struct {
