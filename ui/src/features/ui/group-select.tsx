@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import { Fragment, useState } from 'react'
+import Fuse from 'fuse.js'
+import { Fragment, useMemo, useState } from 'react'
 import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
 import { BsChevronDown } from 'react-icons/bs'
 import { FieldError } from './field'
@@ -28,7 +29,7 @@ const OptionsWrapper = styled.div({
 	position: 'absolute',
 	border: '1px solid black',
 	borderRadius: 4,
-	padding: '4px 0',
+	padding: 0,
 	marginTop: 6,
 	backgroundColor: 'white',
 	zIndex: 10,
@@ -155,6 +156,13 @@ function GroupSelectInner({
 	placeholder,
 }: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
+	const [searchText, setSearchText] = useState('')
+	const fuse = useMemo(() => new Fuse(options, { keys: ['group', 'options.label'] }), [options])
+	const searchedOptions = useMemo(() => {
+		const result = fuse.search(searchText)
+		if (result.length > 0) return result
+		return options.map((option, index) => ({ item: option, refIndex: index }))
+	}, [fuse, options, searchText])
 
 	return (
 		<Wrapper>
@@ -175,11 +183,20 @@ function GroupSelectInner({
 			</SelectBox>
 
 			{isOpen && (
-				<OptionsWrapper>
-					{options.map((group, index) => (
-						<Fragment key={index}>
-							<GroupName>{group.group}</GroupName>
-							{group.options.map((option, index) => (
+				<OptionsWrapper className="flex flex-col overflow-y-auto max-h-96 scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-100 scrollbar-thin">
+					<input
+						type="text"
+						className="px-2 py-1 m-0 mt-1 text-sm border-none rounded focus:ring-0 "
+						placeholder="Search a task"
+						onChange={(e) => setSearchText(e.target.value)}
+						value={searchText}
+						autoFocus
+					/>
+					<hr className="m-1" />
+					{searchedOptions.map(({ item, refIndex }) => (
+						<Fragment key={refIndex}>
+							<GroupName>{item.group}</GroupName>
+							{item.options.map((option, index) => (
 								<OptionBox
 									key={index}
 									type="button"
