@@ -9,6 +9,7 @@ type TaskDetails struct {
 	Body           TaskBody     `json:"body"`
 	MetaData       TaskMetaData `json:"task_meta_data"`
 	ResultEndpoint string
+	Workspace      string
 }
 
 type TaskBody map[string]interface{}

@@ -41,6 +41,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		MetaData:       meta,
 		Timeout:        int(job.Data["timeout"].(float64)),
 		ResultEndpoint: job.Data["result_endpoint"].(string),
+		Workspace:      job.Data["workspace"].(string),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: returnValue,

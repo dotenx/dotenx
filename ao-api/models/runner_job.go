@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 )
@@ -17,6 +18,7 @@ type Job struct {
 	Body           map[string]interface{} `json:"body"`
 	MetaData       TaskDefinition         `json:"task_meta_data"`
 	ResultEndpoint string                 `json:"result_endpoint"`
+	WorkSpace      string                 `json:"workspace"`
 }
 
 // creates a new job dto for runner based on given task for certain execution
@@ -33,6 +35,7 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 		AccountId:      accountId,
 		MetaData:       AvaliableTasks[task.Type],
 		ResultEndpoint: fmt.Sprintf("%s/execution/id/%d/task/%d/result", config.Configs.Endpoints.AoApi, executionId, task.Id),
+		WorkSpace:      accountId + "_" + strconv.Itoa(executionId),
 	}
 }
 
