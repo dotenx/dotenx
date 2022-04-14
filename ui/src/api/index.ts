@@ -39,7 +39,7 @@ export function getAutomation(name: string) {
 }
 
 export function startAutomation(endpoint: string) {
-	return api.post<void>(`/execution/ep/${endpoint}/start`)
+	return api.post<void>(`/execution/ep/${endpoint}/start`, {})
 }
 
 export function deleteAutomation(name: string) {
