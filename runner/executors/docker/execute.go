@@ -11,6 +11,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/docker/api/types/network"
 	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/models"
 )
@@ -39,6 +40,13 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 			}, nil, nil, nil, "")
 	} else {
 		task.EnvironmentVariables = append(task.EnvironmentVariables, "TASK_NAME="+task.Details.Name)
+		networkConfig := &network.NetworkingConfig{
+			EndpointsConfig: map[string]*network.EndpointSettings{},
+		}
+		gatewayConfig := &network.EndpointSettings{
+			Gateway: "local",
+		}
+		networkConfig.EndpointsConfig["local"] = gatewayConfig
 		cont, err = executor.Client.ContainerCreate(
 			context.Background(),
 			&container.Config{
@@ -53,7 +61,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 						Target: "/tmp",
 					},
 				},
-			}, nil, nil, "")
+			}, networkConfig, nil, "")
 	}
 	if err != nil {
 		result.Error = errors.New("error in creating container" + err.Error())
