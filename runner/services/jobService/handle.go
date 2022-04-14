@@ -3,11 +3,8 @@ package jobService
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"time"
 
-	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/executors"
 	"github.com/dotenx/dotenx/runner/models"
 	"github.com/dotenx/dotenx/runner/shared"
@@ -72,7 +69,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		fmt.Printf("error in setting job log: %s\n", err.Error())
 	} else {
 		fmt.Println("jobId: " + id)
-	}*/
+	}
 	if resultDto.Result == models.StatusCompleted {
 		resultFile, err := os.Open(config.Configs.App.FileSharing + "/task_" + taskDetails.Name + "_result.json")
 		if err != nil {
@@ -82,7 +79,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		byteValue, _ := ioutil.ReadAll(resultFile)
 		json.Unmarshal([]byte(byteValue), &returnValue)
 		resultDto.ReturnValue = returnValue
-	}
+	}*/
 	err = manager.SetStatus(job.Id, resultDto)
 	if err != nil {
 		fmt.Printf("error in setting job result: %s\n", err.Error())
