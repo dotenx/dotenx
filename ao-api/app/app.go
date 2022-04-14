@@ -29,12 +29,14 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/dotenx/goth"
+	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
+	"github.com/go-redis/redis"
 )
 
 func init() {
@@ -49,9 +51,10 @@ func NewApp() *App {
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
+	redisClient, err := initializeRedis()
 	utils.FailOnError(err, "RDB initialization failed")
 	queue := queueService.NewBullQueue()
-	r := routing(db, queue)
+	r := routing(db, queue, redisClient)
 	if r == nil {
 		log.Fatalln("r is nil")
 	}
@@ -73,7 +76,7 @@ func (a *App) Start(restPort string) error {
 	return <-errChan
 }
 
-func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
+func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Client) *gin.Engine {
 	duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
 	if err != nil {
 		panic(err.Error())
@@ -94,13 +97,14 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
 	AuthorStore := authorStore.New(db)
+	RedisStore := redisStore.New(redisClient)
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
-	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
-	OauthService := oauthService.NewutopiopsService(AuthorStore)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices)
+	OauthService := oauthService.NewOauthService(RedisStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
@@ -165,8 +169,8 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	if err != nil {
 		panic(err.Error())
 	}
-	for i := range providers {
-		goth.UseProviders(*providers[i])
+	for _, provider := range providers {
+		goth.UseProviders(*provider)
 	}
 	oauth := r.Group("/oauth")
 	{
@@ -174,7 +178,20 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
 		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
 	}
+
+	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")
+	// fmt.Println("****************************************")
+	// fmt.Printf("discord integration: %#v\n", discord)
+	// fmt.Printf("intgErr: %#v\n", intgErr)
+	// fmt.Println("****************************************")
+	// dropbox, intgErr := IntegrationService.GetIntegrationByName("123456", "test-dropbox01")
+	// fmt.Println("****************************************")
+	// fmt.Printf("dropbox integration: %#v\n", dropbox)
+	// fmt.Printf("intgErr: %#v\n", intgErr)
+	// fmt.Println("****************************************")
+
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
 	return r
 }
 
@@ -193,4 +210,13 @@ func initializeDB() (*db.DB, error) {
 	log.Println(connStr)
 	db, err := db.Connect(driver, connStr)
 	return db, err
+}
+
+func initializeRedis() (redisClient *redis.Client, err error) {
+	opt := &redis.Options{
+		Addr: fmt.Sprintf("%s:%d", config.Configs.Redis.Host, config.Configs.Redis.Port),
+		// Password: config.Configs.Redis.Password,
+	}
+	redisClient, err = db.RedisConnect(opt)
+	return
 }

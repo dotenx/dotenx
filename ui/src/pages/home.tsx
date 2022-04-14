@@ -1,83 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
-import { atom, useAtom } from 'jotai'
-import { useCallback, useEffect } from 'react'
-import { Node } from 'react-flow-renderer'
 import { useLocation } from 'react-router-dom'
-import { API_URL, Pipeline, PipelineEventMessage } from '../api'
-import { Layout } from '../components/layout'
-import { TaskNodeData } from '../components/task-node'
-import { ActionBar } from '../containers/action-bar'
-import { DragDropNodes } from '../containers/drag-drop-nodes'
-import { Flow } from '../containers/flow'
-import { PipelineExecution } from '../containers/pipeline-execution'
-import { PipelineSelect } from '../containers/pipeline-select'
-import { useClearStatus } from '../hooks/use-clear-status'
-import { flowAtom } from '../hooks/use-flow'
-
-export const selectedExecutionAtom = atom<number | undefined>(undefined)
-export const listenAtom = atom(0)
-export const selectedPipelineDataAtom = atom<Pipeline | undefined>(undefined)
+import { Automation } from '../api'
+import { ActionBar, PipelineExecution, PipelineSelect } from '../features/automation'
+import { DragDropNodes, Flow } from '../features/flow'
+import { useTaskStatus } from '../features/task'
+import { Layout } from '../features/ui'
 
 const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
 export default function Home() {
 	const location = useLocation()
-	const [selected, setSelected] = useAtom(selectedPipelineDataAtom)
-	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
-	const setElements = useAtom(flowAtom)[1]
-	const clearStatus = useClearStatus()
-	const [listen] = useAtom(listenAtom)
-
-	const handleReceiveMessage = useCallback(
-		(event: MessageEvent<string>) => {
-			const data: PipelineEventMessage = JSON.parse(event.data)
-
-			setElements((elements) =>
-				elements.map((element) => {
-					const updated = data.tasks.find((task) => task.name === element.id)
-					if (!updated) return element
-					const node = element as Node<TaskNodeData>
-					if (!node.data) return node
-					return {
-						...node,
-						data: {
-							...node.data,
-							status: updated.status,
-							name: updated.name,
-							executionId: data.execution_id,
-						},
-					}
-				})
-			)
-		},
-		[setElements]
-	)
-
-	useEffect(() => {
-		if (executionId) return
-		if (!selected) return
-		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
-		eventSource.addEventListener('message', handleReceiveMessage)
-		eventSource.addEventListener('end', () => eventSource.close())
-		return () => {
-			eventSource.removeEventListener('message', handleReceiveMessage)
-			eventSource.close()
-		}
-	}, [executionId, handleReceiveMessage, selected, listen])
-
-	useEffect(() => {
-		if (!executionId) return
-		clearStatus()
-		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`)
-		eventSource.addEventListener('message', handleReceiveMessage)
-		eventSource.addEventListener('end', () => eventSource.close())
-		return () => {
-			eventSource.removeEventListener('message', handleReceiveMessage)
-			eventSource.close()
-		}
-	}, [clearStatus, executionId, handleReceiveMessage])
+	const { executionId, selected, setExecutionId, setSelected } = useTaskStatus()
 
 	return (
 		<Layout
@@ -101,8 +36,8 @@ export default function Home() {
 }
 
 interface HeaderProps {
-	selected: Pipeline | undefined
-	setSelected: (value: Pipeline | undefined) => void
+	selected: Automation | undefined
+	setSelected: (value: Automation | undefined) => void
 	executionId: number | undefined
 	setExecutionId: (value: number | undefined) => void
 }

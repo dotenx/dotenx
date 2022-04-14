@@ -1,0 +1,12 @@
+service: facebook
+type: Publish post
+image: 
+integrations: [facebook]
+fields:
+    - key: page_id
+      type: text
+    - key: text
+      type: text
+author: Hojjat-1
+icon: 
+description: Publish a post on specific page

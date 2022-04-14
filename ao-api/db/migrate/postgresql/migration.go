@@ -53,7 +53,11 @@ var migrations = []struct {
 		stmt: createTableExecutionsResult,
 	},
 	{
-		name: "create-table-integrations",
+		name: "drop-table-integrations2",
+		stmt: dropIntegrations,
+	},
+	{
+		name: "create-table-integrations5",
 		stmt: createTableIntegrations,
 	},
 	{
@@ -67,6 +71,10 @@ var migrations = []struct {
 	{
 		name: "create-table-author_state",
 		stmt: createAuthorState,
+	},
+	{
+		name: "add-has-refresh-token-field",
+		stmt: addHasRefreshTokenField,
 	},
 }
 
@@ -236,6 +244,9 @@ FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )`
 
+var dropIntegrations = ` DROP TABLE IF EXISTS integrations
+`
+
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
 account_id        varchar(32) NOT NULL,
@@ -269,4 +280,9 @@ used_times               INT NOT NULL,
 service                  varchar(128),
 UNIQUE (author, type, name)
 )
+`
+
+var addHasRefreshTokenField = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `

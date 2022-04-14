@@ -1,3 +1,7 @@
 type: dropbox
-secrets: [ACCESS_TOKEN]
+secrets:
+  - name: DROPBOX ACCESS TOKEN
+    key: ACCESS_TOKEN
+  - name: DROPBOX REFRESH TOKEN
+    key: REFRESH_TOKEN
 oauth_provider: dropbox

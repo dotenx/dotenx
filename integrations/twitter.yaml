@@ -1,3 +1,5 @@
 type: twitter
-secrets: [ACCESS_TOKEN]
+secrets:
+  - name: TWITTER ACCESS TOKEN
+    key: ACCESS_TOKEN
 oauth_provider: twitter

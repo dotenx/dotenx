@@ -9,6 +9,7 @@ type (
 		Secrets   Secrets
 		Endpoints Endpoints
 		Queue     Queue
+		Redis     Redis
 	}
 
 	App struct {
@@ -42,11 +43,17 @@ type (
 		Driver   string `envconfig:"AOA_DATABASE_DRIVER" default:"postgres"`
 	}
 
+	Redis struct {
+		Host string `envconfig:"AOA_REDIS_HOST"`
+		Port int    `envconfig:"AOA_REDIS_PORT"`
+	}
+
 	Secrets struct {
 		AuthServerJwtSecret string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
 		AppName             string `envconfig:"AOA_APP_NAME"`
 		AppSecret           string `envconfig:"AOA_APP_SECRET"`
 		CookieSecret        string `envconfig:"AOA_Cookie_SECRET"`
+		Encryption          string `envconfig:"AOA_ENCRYPTION_SECRET"`
 	}
 )
 
