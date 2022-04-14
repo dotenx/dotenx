@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -16,7 +17,8 @@ func main() {
 	method := os.Getenv("method")
 	url := os.Getenv("url")
 	body := os.Getenv("body")
-	taskName := os.Getenv("TASK_NAME")
+	//taskName := os.Getenv("TASK_NAME")
+	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
 	var out []byte
 	var err error
 	var statusCode int
@@ -42,15 +44,26 @@ func main() {
 	if statusCode == http.StatusOK {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
-		file, _ := json.MarshalIndent(resultData, "", " ")
-		fileName := fmt.Sprintf("/tmp/task_%s_result.json", taskName)
-		err := os.WriteFile(fileName, file, 0644)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			fmt.Println("response saved")
+		fmt.Println("calling endpoint")
+		//resultData["fileName"] = "name of your created file as output"
+		data := map[string]interface{}{
+			"status":       "started",
+			"return_value": resultData,
+			"log":          "",
 		}
-		return
+		json_data, err := json.Marshal(data)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		payload := bytes.NewBuffer(json_data)
+		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, nil, 0)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println(status)
+			return
+		}
+		fmt.Println(string(out))
 	} else {
 		panic("Failed")
 	}

@@ -1,30 +1,41 @@
 package models
 
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/dotenx/dotenx/ao-api/config"
+)
+
 type Job struct {
-	ExecutionId int                    `json:"executionId"`
-	TaskId      int                    `json:"taskId"`
-	Timeout     int                    `json:"timeout"`
-	Name        string                 `json:"name"`
-	Type        string                 `json:"type"`
-	Image       string                 `json:"image"`
-	AccountId   string                 `json:"account_id"`
-	Body        map[string]interface{} `json:"body"`
-	MetaData    TaskDefinition         `json:"task_meta_data"`
+	ExecutionId    int                    `json:"executionId"`
+	TaskId         int                    `json:"taskId"`
+	Timeout        int                    `json:"timeout"`
+	Name           string                 `json:"name"`
+	Type           string                 `json:"type"`
+	Image          string                 `json:"image"`
+	AccountId      string                 `json:"account_id"`
+	Body           map[string]interface{} `json:"body"`
+	MetaData       TaskDefinition         `json:"task_meta_data"`
+	ResultEndpoint string                 `json:"result_endpoint"`
+	WorkSpace      string                 `json:"workspace"`
 }
 
 // creates a new job dto for runner based on given task for certain execution
 func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 	image := AvaliableTasks[task.Type].Image
 	return &Job{
-		ExecutionId: executionId,
-		TaskId:      task.Id,
-		Type:        task.Type,
-		Timeout:     task.Timeout,
-		Image:       image,
-		Body:        task.Body,
-		Name:        task.Name,
-		AccountId:   accountId,
-		MetaData:    AvaliableTasks[task.Type],
+		ExecutionId:    executionId,
+		TaskId:         task.Id,
+		Type:           task.Type,
+		Timeout:        task.Timeout,
+		Image:          image,
+		Body:           task.Body,
+		Name:           task.Name,
+		AccountId:      accountId,
+		MetaData:       AvaliableTasks[task.Type],
+		ResultEndpoint: fmt.Sprintf("%s/execution/id/%d/task/%d/result", config.Configs.Endpoints.AoApi, executionId, task.Id),
+		WorkSpace:      accountId + "_" + strconv.Itoa(executionId),
 	}
 }
 
