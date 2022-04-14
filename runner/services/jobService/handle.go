@@ -34,12 +34,13 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	bytes, _ := json.Marshal(job.Data["task_meta_data"])
 	json.Unmarshal(bytes, &meta)
 	taskDetails := models.TaskDetails{
-		Name:     job.Data["name"].(string),
-		Type:     job.Data["type"].(string),
-		Body:     job.Data["body"].(map[string]interface{}),
-		Image:    job.Data["image"].(string),
-		MetaData: meta,
-		Timeout:  int(job.Data["timeout"].(float64)),
+		Name:           job.Data["name"].(string),
+		Type:           job.Data["type"].(string),
+		Body:           job.Data["body"].(map[string]interface{}),
+		Image:          job.Data["image"].(string),
+		MetaData:       meta,
+		Timeout:        int(job.Data["timeout"].(float64)),
+		ResultEndpoint: job.Data["result_endpoint"].(string),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: returnValue,

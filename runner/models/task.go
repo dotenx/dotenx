@@ -1,13 +1,14 @@
 package models
 
 type TaskDetails struct {
-	Name     string       `json:"name"`
-	Id       int          `json:"id"`
-	Type     string       `json:"type"`
-	Image    string       `json:"image"`
-	Timeout  int          `json:"timeout"`
-	Body     TaskBody     `json:"body"`
-	MetaData TaskMetaData `json:"task_meta_data"`
+	Name           string       `json:"name"`
+	Id             int          `json:"id"`
+	Type           string       `json:"type"`
+	Image          string       `json:"image"`
+	Timeout        int          `json:"timeout"`
+	Body           TaskBody     `json:"body"`
+	MetaData       TaskMetaData `json:"task_meta_data"`
+	ResultEndpoint string
 }
 
 type TaskBody map[string]interface{}
