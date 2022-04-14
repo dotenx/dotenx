@@ -54,6 +54,10 @@ services:
     build:
       context: .
       dockerfile: ao-api/Dockerfile
+    depends_on:
+      - psql
+      - scheduler_server
+      - redis
     hostname: ao-api
     working_dir: /root/
     volumes:
