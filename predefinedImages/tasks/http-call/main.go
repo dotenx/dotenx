@@ -45,6 +45,7 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Print(resultData)
 		fmt.Println("calling endpoint")
+		//resultData["fileName"] = "name of your created file as output"
 		data := map[string]interface{}{
 			"status":       "started",
 			"return_value": resultData,
