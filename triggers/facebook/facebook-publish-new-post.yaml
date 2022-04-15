@@ -1,0 +1,15 @@
+service: facebook
+type: Facebook new post
+integrations: [facebooK]
+image: hojjat12/facebook-publish-new-post
+credentials:
+    - key: page_id
+      type: text
+    - key: passed_seconds
+      type: text
+outputs:
+    - key: created_time
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/124/124010.png
+description: Checks if there is a new post(sent before given number of seconds), tiggers a specefic pipeline

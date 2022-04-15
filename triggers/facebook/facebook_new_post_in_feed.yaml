@@ -1,0 +1,13 @@
+service: facebook
+type: Facebook new post in feed
+integrations: [facebooK]
+image: hojjat12/facebook-new-post-in-feed
+credentials:
+    - key: passed_seconds
+      type: text
+outputs:
+    - key: created_time
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/124/124010.png
+description: Checks if there is a new post in user's feed(sent before given number of seconds), tiggers a specefic pipeline
