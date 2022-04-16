@@ -60,12 +60,12 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 					</div>
 				)}
 			</div>
-			<Button
-				className="shrink-0"
+			<button
+				className="p-1 rounded-full shrink-0 hover:bg-black hover:text-white"
 				onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
 			>
 				<BsGearFill />
-			</Button>
+			</button>
 
 			<Handle
 				type="source"
