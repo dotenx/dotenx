@@ -4,6 +4,7 @@
 	"dependencies": {
 		"@hookform/error-message": "^2.0.0",
 		"@hookform/resolvers": "^2.8.8",
+		"@types/use-persisted-state": "^0.3.1",
 		"axios": "^0.26.1",
 		"clsx": "^1.1.1",
 		"dagre": "^0.8.5",
@@ -21,11 +22,12 @@
 		"react-router-dom": "^6.2.2",
 		"react-scripts": "5.0.0",
 		"react-select": "^5.2.2",
+		"use-persisted-state": "^0.3.3",
 		"web-vitals": "^2.1.4",
 		"zod": "^3.13.4"
 	},
 	"scripts": {
-		"dev": "react-scripts start",
+		"dev": "BROWSER=none react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",

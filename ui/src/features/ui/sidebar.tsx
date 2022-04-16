@@ -1,4 +1,3 @@
-import { atom, useAtom } from 'jotai'
 import {
 	BsArrowLeft,
 	BsArrowRight,
@@ -7,8 +6,11 @@ import {
 	BsPipFill,
 } from 'react-icons/bs'
 import { useLocation } from 'react-router-dom'
+import createPersistedState from 'use-persisted-state'
 import { IconButton } from './icon-button'
 import { NavItem } from './nav-item'
+
+const useSidebarState = createPersistedState<boolean>('sidebar_state')
 
 const items = [
 	{ to: '/automations', label: 'Automations', icon: <BsFolderFill /> },
@@ -16,11 +18,9 @@ const items = [
 	{ to: '/triggers', label: 'Triggers', icon: <BsPipFill /> },
 ]
 
-const isOpenAtom = atom(true)
-
 export function Sidebar() {
 	const { pathname } = useLocation()
-	const [isOpen, setIsOpen] = useAtom(isOpenAtom)
+	const [isOpen, setIsOpen] = useSidebarState(true)
 
 	return (
 		<div className="flex flex-col justify-between px-5 border-r border-gray-900 py-7">
