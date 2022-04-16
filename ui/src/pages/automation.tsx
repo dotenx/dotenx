@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import { css, Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import { useQuery } from 'react-query'
@@ -10,9 +8,6 @@ import { ActionBar, AutomationExecution } from '../features/automation'
 import { DragDropNodes, Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 import { Layout } from '../features/ui'
-
-const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: theme.color.text })
-const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
 export default function AutomationPage() {
 	const { name } = useParams()
@@ -39,12 +34,11 @@ export default function AutomationPage() {
 					executionId={executionId}
 					selected={selected}
 					setExecutionId={setExecutionId}
-					setSelected={setSelected}
 				/>
 			}
 		>
-			<div css={{ display: 'flex', flexGrow: '1', gap: 6 }}>
-				<div css={{ flexGrow: '1' }}>
+			<div className="flex gap-2 grow">
+				<div className="grow">
 					<Flow />
 				</div>
 			</div>
@@ -54,27 +48,15 @@ export default function AutomationPage() {
 
 interface HeaderProps {
 	selected: Automation | undefined
-	setSelected: (value: Automation | undefined) => void
 	executionId: number | undefined
 	setExecutionId: (value: number | undefined) => void
 }
 
-function Header({ executionId, selected, setExecutionId, setSelected }: HeaderProps) {
+function Header({ executionId, selected, setExecutionId }: HeaderProps) {
 	return (
-		<div css={{ display: 'flex' }}>
-			<div
-				css={[
-					{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-						flexGrow: '1',
-					},
-					borderRight,
-					center,
-				]}
-			>
-				<div css={{ display: 'flex', gap: 6 }}>
+		<div className="flex h-full">
+			<div className="flex items-center justify-between px-6 border-r border-black grow">
+				<div className="flex gap-2">
 					{selected && (
 						<AutomationExecution
 							automationName={selected?.name}
@@ -84,9 +66,9 @@ function Header({ executionId, selected, setExecutionId, setSelected }: HeaderPr
 					)}
 				</div>
 
-				<ActionBar deselectAutomation={() => setSelected(undefined)} />
+				<ActionBar />
 			</div>
-			<div css={center}>
+			<div>
 				<DragDropNodes />
 			</div>
 		</div>

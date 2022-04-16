@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
@@ -27,17 +26,15 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 export function SaveForm() {
-	const { addAutomationMutation, control, errors, onSubmit } = useSaveForm()
+	const { control, errors, onSubmit } = useSaveForm()
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
-			<h2>Save automation</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={onSubmit}>
+			<h2 className="text-2xl">Save automation</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
-			<Button type="submit" isLoading={addAutomationMutation.isLoading}>
-				Save
-			</Button>
+			<Button type="submit">Save</Button>
 		</Form>
 	)
 }

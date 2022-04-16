@@ -1,13 +1,12 @@
-/** @jsxImportSource @emotion/react */
 import { BsPlusSquare } from 'react-icons/bs'
 import { Modals, useModal } from '../features/hooks'
 import { IntegrationList, NewIntegration } from '../features/integration'
-import { Button, Layout, Modal } from '../features/ui'
+import { Layout, Modal } from '../features/ui'
 
 export default function IntegrationsPage() {
 	return (
 		<Layout header={<Header />}>
-			<div css={{ padding: '48px 96px', flexGrow: 1 }}>
+			<div className="px-24 py-12 grow">
 				<IntegrationList />
 			</div>
 			<Modal kind={Modals.NewIntegration}>
@@ -21,25 +20,14 @@ function Header() {
 	const modal = useModal()
 
 	return (
-		<div
-			css={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'end',
-				height: '100%',
-				padding: '10px 20px',
-			}}
-		>
-			<Button
-				css={{
-					padding: '4px 10px',
-					fontSize: '16px',
-				}}
+		<div className="flex items-center justify-end h-full px-4 py-2">
+			<button
+				className="flex items-center px-2 py-1 mx-1 text-white bg-black border border-black rounded hover:bg-white hover:text-black"
 				onClick={() => modal.open(Modals.NewIntegration)}
 			>
 				New integration
-				<BsPlusSquare css={{ marginLeft: 10 }} />
-			</Button>
+				<BsPlusSquare className="ml-2" />
+			</button>
 		</div>
 	)
 }

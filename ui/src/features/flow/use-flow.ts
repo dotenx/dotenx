@@ -1,4 +1,3 @@
-import { Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
@@ -9,7 +8,6 @@ import {
 	Edge,
 	Elements,
 	FlowElement,
-	Node,
 	OnLoadFunc,
 	OnLoadParams,
 	removeElements,
@@ -112,17 +110,6 @@ export function useFlow() {
 		onDragOver,
 		onDrop,
 		updateElement,
-	}
-}
-
-export function getNodeColor(theme: Theme, node: Node) {
-	switch (node.type) {
-		case NodeType.Default:
-			return theme.color.text
-		case NodeType.Trigger:
-			return theme.color.primary
-		default:
-			return theme.color.text
 	}
 }
 

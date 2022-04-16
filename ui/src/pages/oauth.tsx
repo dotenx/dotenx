@@ -21,5 +21,5 @@ export default function OauthPage() {
 		window.close()
 	}, [searchParams])
 
-	return <div>Please wait...</div>
+	return <div className="mt-10 text-xl text-center">Please wait...</div>
 }

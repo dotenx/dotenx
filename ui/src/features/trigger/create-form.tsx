@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { CreateTriggerRequest } from '../../api'
 import { getDisplayText } from '../../utils'
 import { SelectIntegration } from '../integration'
@@ -29,9 +28,9 @@ export function TriggerForm({
 	} = useTriggerForm({ onSave, defaultValues })
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
-			<h2>{mode === 'new' ? 'Add trigger' : 'Trigger settings'}</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={onSubmit}>
+			<h2 className="text-2xl">{mode === 'new' ? 'Add trigger' : 'Trigger settings'}</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Field
 					label="Name"
 					name="name"
@@ -47,9 +46,7 @@ export function TriggerForm({
 						options={triggerOptions}
 						placeholder="Trigger type"
 					/>
-					<div css={{ fontSize: 12, marginTop: 6 }}>
-						{selectedTriggerType?.description}
-					</div>
+					<div className="text-xs mt-1.5">{selectedTriggerType?.description}</div>
 				</div>
 				{mode === 'new' && (
 					<Select

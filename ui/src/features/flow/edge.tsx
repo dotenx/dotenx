@@ -1,10 +1,8 @@
-/** @jsxImportSource @emotion/react */
 import { MouseEvent } from 'react'
 import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
 import { EdgeCondition } from '../automation'
 import { Modals, useModal } from '../hooks'
-import { Button } from '../ui'
 
 export interface EdgeData {
 	triggers: EdgeCondition[]
@@ -69,22 +67,13 @@ export function PipeEdge({
 				y={edgeCenterY - foreignObjectSize / 2}
 				requiredExtensions="http://www.w3.org/1999/xhtml"
 			>
-				<div
-					css={{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						width: '100%',
-						height: '100%',
-					}}
-				>
-					<Button
-						variant="icon"
-						css={{ padding: 4, backgroundColor: 'white', fontSize: 8 }}
+				<div className="flex items-center justify-center w-full h-full">
+					<button
+						className="p-1 bg-white text-[8px] hover:bg-black hover:text-white rounded-full"
 						onClick={(event) => onEdgeClick(event)}
 					>
 						<BsGearFill />
-					</Button>
+					</button>
 				</div>
 			</foreignObject>
 		</>

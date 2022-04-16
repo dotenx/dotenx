@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Button, Field, Form, Select } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
@@ -14,9 +13,9 @@ export function NewIntegration() {
 	} = useNewIntegration()
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
-			<h2>New integration</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={onSubmit}>
+			<h2 className="text-2xl">New integration</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Field
 					label="Name"
 					name="name"
@@ -36,7 +35,7 @@ export function NewIntegration() {
 				{integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"
-						css={{ height: 30, fontSize: 14 }}
+						className="text-sm h8"
 						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
 					>
 						Connect

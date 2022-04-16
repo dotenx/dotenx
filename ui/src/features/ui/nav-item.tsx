@@ -1,4 +1,4 @@
-/** @jsxImportSource @emotion/react */
+import clsx from 'clsx'
 import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -12,20 +12,10 @@ export function NavItem({ to, children, selected }: NavItemProps) {
 	return (
 		<Link
 			to={to}
-			css={(theme) => ({
-				color: selected ? theme.color.background : theme.color.text,
-				backgroundColor: selected ? theme.color.text : theme.color.background,
-				borderRadius: 4,
-				textDecoration: 'none',
-				display: 'flex',
-				alignItems: 'center',
-				gap: 16,
-				':hover': {
-					backgroundColor: theme.color.text,
-					color: theme.color.background,
-				},
-			})}
-			className="h-8 px-4"
+			className={clsx(
+				'flex items-center h-8 gap-4 px-4 rounded',
+				selected ? 'bg-black text-white' : 'hover:bg-gray-50'
+			)}
 		>
 			{children}
 		</Link>

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
@@ -26,7 +25,7 @@ export function AutomationExecution({ automationName, value, onChange }: Automat
 
 	return (
 		<Select
-			css={{ width: 256, zIndex: 10 }}
+			className="z-10 w-64"
 			placeholder="Execution"
 			name="execution"
 			isLoading={query.isLoading}

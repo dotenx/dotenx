@@ -1,9 +1,7 @@
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import {
-	flowAtom,
 	listenAtom,
 	selectedAutomationAtom,
 	selectedAutomationDataAtom,
@@ -13,16 +11,14 @@ import { useClearStatus, useLayout } from '../flow'
 import { useModal } from '../hooks'
 import { useNewAutomation } from './use-new'
 
-export function useActionBar(deselectAutomation: () => void) {
-	const navigate = useNavigate()
+export function useActionBar() {
 	const { onLayout } = useLayout()
 	const modal = useModal()
-	const [selectedAutomation, setSelectedAutomation] = useAtom(selectedAutomationAtom)
+	const [selectedAutomation] = useAtom(selectedAutomationAtom)
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
 	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 	const setListen = useAtom(listenAtom)[1]
-	const setElements = useAtom(flowAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
 	const newAutomation = useNewAutomation()

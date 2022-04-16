@@ -2,13 +2,8 @@
 	"name": "ao-ui",
 	"version": "0.1.0",
 	"dependencies": {
-		"@emotion/react": "^11.8.2",
-		"@emotion/styled": "^11.8.1",
 		"@hookform/error-message": "^2.0.0",
 		"@hookform/resolvers": "^2.8.8",
-		"@testing-library/jest-dom": "^5.16.2",
-		"@testing-library/react": "^12.1.4",
-		"@testing-library/user-event": "^13.5.0",
 		"axios": "^0.26.1",
 		"clsx": "^1.1.1",
 		"dagre": "^0.8.5",
@@ -60,7 +55,6 @@
 		"plugins": [
 			"react",
 			"@typescript-eslint",
-			"@emotion",
 			"react-hooks"
 		],
 		"settings": {
@@ -86,8 +80,6 @@
 		]
 	},
 	"devDependencies": {
-		"@emotion/babel-plugin": "^11.7.2",
-		"@emotion/eslint-plugin": "^11.7.0",
 		"@tailwindcss/forms": "^0.5.0",
 		"@types/dagre": "^0.7.47",
 		"@types/lodash": "^4.14.179",

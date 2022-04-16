@@ -1,5 +1,4 @@
-/** @jsxImportSource @emotion/react */
-import { Theme } from '@emotion/react'
+import clsx from 'clsx'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
@@ -33,37 +32,22 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 
 	return (
 		<div
-			css={(theme) => ({
-				display: 'flex',
-				gap: 2,
-				alignItems: 'center',
-				justifyContent: 'space-between',
-				backgroundColor: getStatusColor(theme, data.status),
-				borderRadius: 4,
-				padding: '2px 4px',
-			})}
+			className={clsx(
+				'flex gap-0.5 items-center justify-between rounded py-0.5 px-1',
+				getStatusColor(data.status)
+			)}
 		>
 			<Handle type="target" position={Position.Top} />
 
-			<div css={{ textAlign: 'start' }}>
-				<div css={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-					{data.iconUrl && (
-						<img src={data.iconUrl} alt="" css={{ width: 16, height: 16 }} />
-					)}
+			<div className="text-left">
+				<div className="flex gap-1.5 items-center">
+					{data.iconUrl && <img className="w-4 h-4" src={data.iconUrl} alt="" />}
 					<span>{data.name}</span>
 				</div>
 				{data.status && (
-					<div
-						css={{
-							display: 'flex',
-							gap: 4,
-							fontSize: 8,
-							alignItems: 'center',
-						}}
-					>
+					<div className="flex gap-1 text-[8px] items-center">
 						<p>{data.status}</p>
 						<Button
-							variant="icon"
 							onClick={() =>
 								modal.open(Modals.TaskLog, {
 									executionId: data.executionId,
@@ -77,8 +61,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 				)}
 			</div>
 			<Button
-				variant="icon"
-				css={{ flexShrink: 0 }}
+				className="shrink-0"
 				onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
 			>
 				<BsGearFill />
@@ -93,23 +76,23 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	)
 }
 
-function getStatusColor(theme: Theme, status?: TaskExecutionStatus) {
+function getStatusColor(status?: TaskExecutionStatus) {
 	switch (status) {
 		case TaskExecutionStatus.Cancelled:
-			return theme.color.background
+			return 'bg-white'
 		case TaskExecutionStatus.Completed:
-			return theme.color.positive
+			return 'bg-green-400'
 		case TaskExecutionStatus.Failed:
-			return theme.color.negative
+			return 'bg-red-400'
 		case TaskExecutionStatus.Started:
-			return '#8EA6BB'
+			return 'bg-blue-400'
 		case TaskExecutionStatus.Success:
-			return theme.color.positive
+			return 'bg-green-400'
 		case TaskExecutionStatus.Timedout:
-			return theme.color.negative
+			return 'bg-red-400'
 		case TaskExecutionStatus.Waiting:
-			return theme.color.background
+			return 'bg-white'
 		default:
-			return theme.color.background
+			return 'bg-white'
 	}
 }

@@ -1,8 +1,6 @@
-/** @jsxImportSource @emotion/react */
-import { Interpolation, Theme } from '@emotion/react'
 import { ErrorMessage } from '@hookform/error-message'
 import { InputHTMLAttributes } from 'react'
-import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 	label: string
@@ -12,37 +10,10 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 	control: Control<any>
 }
 
-export const fieldCss = (theme: Theme): Interpolation<Theme> => ({
-	border: '1px solid',
-	borderColor: theme.color.text,
-	borderRadius: 4,
-	padding: 4,
-	height: 36,
-	'::placeholder': {
-		color: '#33333399',
-	},
-})
-
-const errorCss = (theme: Theme): Interpolation<Theme> => ({
-	borderColor: theme.color.negative,
-	':focus': {
-		outlineStyle: 'solid',
-		outlineWidth: '0.5px',
-		outlineColor: theme.color.negative,
-	},
-})
-
 export function Field({ label, errors, control, ...rest }: FieldProps) {
-	const {
-		fieldState: { error },
-	} = useController({ name: rest.name, control })
-
 	return (
-		<div css={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-			<label
-				htmlFor={rest.name}
-				css={[{ fontSize: 14 }, (theme) => error && { color: theme.color.negative }]}
-			>
+		<div className="flex flex-col gap-0.5">
+			<label htmlFor={rest.name} className="text-sm">
 				{label}
 			</label>
 			<Controller
@@ -51,7 +22,7 @@ export function Field({ label, errors, control, ...rest }: FieldProps) {
 				defaultValue="" // This is a bit tricky, maybe needs to change for different value types in future
 				render={({ field: { onChange, value, name, ref } }) => (
 					<input
-						css={[fieldCss, error && errorCss]}
+						className="px-2 py-1 border border-black rounded"
 						id={rest.name}
 						onChange={onChange}
 						value={value}
@@ -79,9 +50,7 @@ export function FieldError({ name, errors }: FieldErrorProps) {
 		<ErrorMessage
 			name={name}
 			errors={errors}
-			render={({ message }) => (
-				<p css={(theme) => ({ fontSize: 12, color: theme.color.negative })}>{message}</p>
-			)}
+			render={({ message }) => <p className="text-xs text-red-600">{message}</p>}
 		/>
 	)
 }
