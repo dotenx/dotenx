@@ -7,8 +7,8 @@ import { useNewAutomation } from '../features/automation/use-new'
 import { Layout, Table } from '../features/ui'
 
 export default function AutomationsPage() {
-	const query = useQuery(QueryKey.GetAutomations, getAutomations)
-	const automations = query.data?.data
+	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const automations = automationsQuery.data?.data
 	const deleteMutation = useDeleteAutomation()
 
 	return (
@@ -38,7 +38,7 @@ interface ItemProps {
 function Item({ name, onDelete }: ItemProps) {
 	return (
 		<div className="flex justify-between p-2 m-4 bg-gray-100 rounded">
-			<Link className="px-2 hover:underline underline-offset-2" to={`/automations/${name}`}>
+			<Link className="hover:underline underline-offset-2" to={`/automations/${name}`}>
 				{name}
 			</Link>
 			<button

@@ -1,4 +1,4 @@
-import { Route, Routes as ReactRoutes } from 'react-router-dom'
+import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom'
 import AutomationPage from '../../pages/automation'
 import AutomationsPage from '../../pages/automations'
 import IntegrationsPage from '../../pages/integrations'
@@ -13,7 +13,8 @@ export function Routes() {
 			<Route path="/triggers" element={<TriggersPage />} />
 			<Route path="/automations/:name" element={<AutomationPage />} />
 			<Route path="/automations-new" element={<AutomationPage />} />
-			<Route path="/" element={<AutomationsPage />} />
+			<Route path="/automations" element={<AutomationsPage />} />
+			<Route path="/" element={<Navigate replace to="/automations" />} />
 		</ReactRoutes>
 	)
 }
