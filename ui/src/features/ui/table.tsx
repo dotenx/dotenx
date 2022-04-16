@@ -12,7 +12,7 @@ interface TableProps {
 export function Table({ title, headers, items = [] }: TableProps) {
 	return (
 		<div>
-			<h2>{title}</h2>
+			<h2 className="text-2xl leading-loose">{title}</h2>
 			{items?.length === 0 ? (
 				<div css={{ marginTop: 6 }}>No items</div>
 			) : (
@@ -47,7 +47,7 @@ export function Item({ children, values, onDelete }: ItemProps) {
 
 	return (
 		<div
-			css={{ backgroundColor: '#eeeeee33', borderRadius: 4, margin: 14, overflow: 'hidden' }}
+			css={{ backgroundColor: '#eeeeee33', borderRadius: 4, margin: 16, overflow: 'hidden' }}
 		>
 			<div
 				css={{

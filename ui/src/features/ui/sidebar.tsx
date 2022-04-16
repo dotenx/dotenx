@@ -6,22 +6,21 @@ import {
 	BsHddNetworkFill,
 	BsPipFill,
 } from 'react-icons/bs'
+import { useLocation } from 'react-router-dom'
 import { IconButton } from './icon-button'
 import { NavItem } from './nav-item'
 
-interface SidebarProps {
-	pathname: string
-}
-
 const items = [
 	{ to: '/', label: 'Automations', icon: <BsFolderFill /> },
+	{ to: '/automations', label: 'Automations', icon: <BsFolderFill /> },
 	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
 	{ to: '/triggers', label: 'Triggers', icon: <BsPipFill /> },
 ]
 
 const isOpenAtom = atom(true)
 
-export function Sidebar({ pathname }: SidebarProps) {
+export function Sidebar() {
+	const { pathname } = useLocation()
 	const [isOpen, setIsOpen] = useAtom(isOpenAtom)
 
 	return (

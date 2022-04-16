@@ -35,10 +35,9 @@ const FlexAndGrow = styled.div({ display: 'flex', flexGrow: '1' })
 interface LayoutProps {
 	children: ReactNode
 	header?: ReactNode
-	pathname: string
 }
 
-export function Layout({ children, pathname, header = null }: LayoutProps) {
+export function Layout({ children, header = null }: LayoutProps) {
 	return (
 		<Wrapper className="font-body">
 			<HeaderWrapper>
@@ -48,7 +47,7 @@ export function Layout({ children, pathname, header = null }: LayoutProps) {
 				<Grow>{header}</Grow>
 			</HeaderWrapper>
 			<FlexAndGrow>
-				<Sidebar pathname={pathname} />
+				<Sidebar />
 				<FlexAndGrow>{children}</FlexAndGrow>
 			</FlexAndGrow>
 		</Wrapper>

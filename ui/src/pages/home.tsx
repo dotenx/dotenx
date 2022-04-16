@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
-import { useLocation } from 'react-router-dom'
 import { Automation } from '../api'
 import { ActionBar, PipelineExecution, PipelineSelect } from '../features/automation'
 import { DragDropNodes, Flow } from '../features/flow'
@@ -11,12 +10,10 @@ const borderRight = (theme: Theme) => ({ borderRight: '1px solid', borderColor: 
 const center = css({ display: 'flex', alignItems: 'center', padding: '10px 20px' })
 
 export default function Home() {
-	const location = useLocation()
 	const { executionId, selected, setExecutionId, setSelected } = useTaskStatus()
 
 	return (
 		<Layout
-			pathname={location.pathname}
 			header={
 				<Header
 					executionId={executionId}
