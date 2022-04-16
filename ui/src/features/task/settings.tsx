@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { SelectIntegration } from '../integration'
 import { Button, Field, Form, GroupSelect, InputOrSelect, InputOrSelectValue } from '../ui'
 import { TaskSettingsSchema, useTaskSettings } from './use-settings'
@@ -26,9 +25,9 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 	} = useTaskSettings({ defaultValues, onSave })
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
-			<h2>Task Settings</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={onSubmit}>
+			<h2 className="text-2xl">Task Settings</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
 				<div>
 					<GroupSelect
@@ -38,7 +37,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						errors={errors}
 						placeholder="Task type"
 					/>
-					<div css={{ fontSize: 12, marginTop: 6 }}>{selectedTaskType?.description}</div>
+					<div className="text-xs mt-1.5">{selectedTaskType?.description}</div>
 				</div>
 				{taskFields.map((taskField) => (
 					<InputOrSelect

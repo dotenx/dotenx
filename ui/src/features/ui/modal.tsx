@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import { Modals, useModal } from '../hooks'

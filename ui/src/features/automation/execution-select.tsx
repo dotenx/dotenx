@@ -1,22 +1,21 @@
-/** @jsxImportSource @emotion/react */
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
 import { getAutomationExecutions, QueryKey } from '../../api'
 
-interface PipelineExecutionProps {
-	pipelineName: string | undefined
+interface AutomationExecutionProps {
+	automationName: string | undefined
 	value: number | undefined
 	onChange: (executionId: number) => void
 }
 
-export function PipelineExecution({ pipelineName, value, onChange }: PipelineExecutionProps) {
+export function AutomationExecution({ automationName, value, onChange }: AutomationExecutionProps) {
 	const query = useQuery(
-		[QueryKey.GetExecutions, pipelineName],
+		[QueryKey.GetExecutions, automationName],
 		() => {
-			if (pipelineName) return getAutomationExecutions(pipelineName)
+			if (automationName) return getAutomationExecutions(automationName)
 		},
-		{ enabled: !!pipelineName }
+		{ enabled: !!automationName }
 	)
 
 	const options = query.data?.data.map((execution) => ({
@@ -26,7 +25,7 @@ export function PipelineExecution({ pipelineName, value, onChange }: PipelineExe
 
 	return (
 		<Select
-			css={{ width: 256, zIndex: 10 }}
+			className="z-10 w-64"
 			placeholder="Execution"
 			name="execution"
 			isLoading={query.isLoading}

@@ -5,7 +5,7 @@ export enum Modals {
 	NodeSettings = 'node-settings',
 	EdgeSettings = 'edge-settings',
 	TriggerSettings = 'trigger-settings',
-	SavePipeline = 'save-pipeline',
+	SaveAutomation = 'save-automation',
 	TaskLog = 'task-log',
 	NewIntegration = 'new-integration',
 	NewTrigger = 'new-trigger',

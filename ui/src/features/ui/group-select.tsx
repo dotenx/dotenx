@@ -1,82 +1,8 @@
-import styled from '@emotion/styled'
 import Fuse from 'fuse.js'
 import { Fragment, useMemo, useState } from 'react'
-import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { BsChevronDown } from 'react-icons/bs'
 import { FieldError } from './field'
-
-const Wrapper = styled.div({ position: 'relative' })
-
-const SelectBox = styled.button<{ invalid: boolean }>(({ theme, invalid }) => ({
-	border: '1px solid',
-	borderColor: invalid ? theme.color.negative : theme.color.text,
-	borderRadius: 4,
-	padding: '5px 4px',
-	width: '100%',
-	cursor: 'pointer',
-	textAlign: 'start',
-	backgroundColor: 'white',
-	display: 'flex',
-	justifyContent: 'space-between',
-	alignItems: 'center',
-}))
-
-const Placeholder = styled.span<{ invalid: boolean }>(({ theme, invalid }) => ({
-	color: (invalid ? theme.color.negative : theme.color.text) + 'aa',
-}))
-
-const OptionsWrapper = styled.div({
-	position: 'absolute',
-	border: '1px solid black',
-	borderRadius: 4,
-	padding: 0,
-	marginTop: 6,
-	backgroundColor: 'white',
-	zIndex: 10,
-	left: 0,
-	right: 0,
-})
-
-const GroupName = styled.div({
-	fontSize: 14,
-	color: 'gray',
-	paddingLeft: 4,
-	':not(:first-of-type)': {
-		paddingTop: 10,
-	},
-})
-
-const OptionBox = styled.button(({ theme }) => ({
-	padding: 6,
-	display: 'flex',
-	border: 'none',
-	backgroundColor: theme.color.background,
-	width: '100%',
-	cursor: 'pointer',
-	alignItems: 'center',
-	gap: 10,
-	':hover': {
-		backgroundColor: theme.color.text,
-		color: theme.color.background,
-	},
-}))
-
-const GroupSelectWrapper = styled.div({ display: 'flex', flexDirection: 'column', gap: 2 })
-
-const Label = styled.span<{ error?: FieldErrors }>({ fontSize: 14 }, (props) => ({
-	color: props.error ? props.theme.color.negative : props.theme.color.text,
-}))
-
-const Icon = styled.img({
-	width: 20,
-	height: 20,
-})
-
-const SelectContent = styled.div({
-	display: 'flex',
-	alignItems: 'center',
-	gap: 10,
-})
 
 export interface GroupSelectOption {
 	value: string
@@ -94,13 +20,9 @@ interface GroupSelectProps {
 }
 
 export function GroupSelect({ control, name, options, errors, placeholder }: GroupSelectProps) {
-	const {
-		fieldState: { error },
-	} = useController({ name: name, control })
-
 	return (
-		<GroupSelectWrapper>
-			<Label error={error}>Type</Label>
+		<div className="flex flex-col gap-0.5">
+			<span>Type</span>
 			<ControlledGroupSelect
 				name={name}
 				control={control}
@@ -108,7 +30,7 @@ export function GroupSelect({ control, name, options, errors, placeholder }: Gro
 				placeholder={placeholder}
 			/>
 			{name && errors && <FieldError errors={errors} name={name} />}
-		</GroupSelectWrapper>
+		</div>
 	)
 }
 
@@ -148,13 +70,7 @@ interface GroupSelectInnerProps {
 	placeholder: string
 }
 
-function GroupSelectInner({
-	value,
-	onChange,
-	options,
-	invalid,
-	placeholder,
-}: GroupSelectInnerProps) {
+function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [searchText, setSearchText] = useState('')
 	const fuse = useMemo(() => new Fuse(options, { keys: ['group', 'options.label'] }), [options])
@@ -165,25 +81,25 @@ function GroupSelectInner({
 	}, [fuse, options, searchText])
 
 	return (
-		<Wrapper>
-			<SelectBox
+		<div className="relative">
+			<button
+				className="flex items-center justify-between w-full p-1 text-left bg-white border border-black rounded cursor-pointer"
 				type="button"
 				onClick={() => setIsOpen((isOpen) => !isOpen)}
-				invalid={invalid}
 			>
 				{value ? (
-					<SelectContent>
-						{value.iconUrl && <Icon src={value.iconUrl} alt="" />}
+					<div className="flex items-center gap-2">
+						{value.iconUrl && <img className="w-5 h-5" src={value.iconUrl} alt="" />}
 						{value.label}
-					</SelectContent>
+					</div>
 				) : (
-					<Placeholder invalid={invalid}>{placeholder}</Placeholder>
+					<span>{placeholder}</span>
 				)}
 				<BsChevronDown />
-			</SelectBox>
+			</button>
 
 			{isOpen && (
-				<OptionsWrapper className="flex flex-col overflow-y-auto max-h-96 scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-100 scrollbar-thin">
+				<div className="absolute left-0 right-0 z-10 flex flex-col mt-6 overflow-y-auto bg-white border border-black rounded max-h-96 scrollbar-thumb-gray-900 scrollbar-track-gray-100 scrollbar-thin">
 					<input
 						type="text"
 						className="px-2 py-1 m-0 mt-1 text-sm border-none rounded focus:ring-0 "
@@ -195,24 +111,27 @@ function GroupSelectInner({
 					<hr className="m-1" />
 					{searchedOptions.map(({ item, refIndex }) => (
 						<Fragment key={refIndex}>
-							<GroupName>{item.group}</GroupName>
+							<div className="pt-3 pl-1 text-sm text-gray-500">{item.group}</div>
 							{item.options.map((option, index) => (
-								<OptionBox
+								<button
 									key={index}
+									className="p-1.5 flex bg-white w-full cursor-pointer items-center gap-2 hover:bg-black hover:text-white"
 									type="button"
 									onClick={() => {
 										onChange(option)
 										setIsOpen(false)
 									}}
 								>
-									{option.iconUrl && <Icon src={option.iconUrl} alt="" />}
+									{option.iconUrl && (
+										<img className="w-5 h-5" src={option.iconUrl} alt="" />
+									)}
 									{option.label}
-								</OptionBox>
+								</button>
 							))}
 						</Fragment>
 					))}
-				</OptionsWrapper>
+				</div>
 			)}
-		</Wrapper>
+		</div>
 	)
 }

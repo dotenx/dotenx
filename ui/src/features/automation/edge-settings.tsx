@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -29,9 +28,9 @@ export function EdgeSettings({ defaultValues, onSave }: EdgeSettingsProps) {
 	} = useForm<Schema>({ resolver: zodResolver(schema), defaultValues })
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={handleSubmit(onSave)}>
-			<h2>Edge Settings</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={handleSubmit(onSave)}>
+			<h2 className="text-2xl">Edge Settings</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Select
 					label="Triggers"
 					name="triggers"

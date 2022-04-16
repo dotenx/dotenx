@@ -1,8 +1,7 @@
-/** @jsxImportSource @emotion/react */
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { BsChevronDown, BsChevronUp, BsXLg } from 'react-icons/bs'
-import { fieldCss, FieldError } from './field'
+import { FieldError } from './field'
 
 interface InputOrSelectProps {
 	name: string
@@ -63,9 +62,9 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
-		<div css={{ position: 'relative' }} ref={wrapperRef}>
-			<div css={{ display: 'flex', flexDirection: 'column' }}>
-				<label htmlFor={name} css={{ fontSize: 14 }}>
+		<div className="relative" ref={wrapperRef}>
+			<div className="flex flex-col">
+				<label className="text-sm" htmlFor={name}>
 					{label}
 				</label>
 				{value.type === 'option' && (
@@ -81,35 +80,18 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 				)}
 				{value.type === 'text' && (
 					<input
+						className="px-2 py-1 border border-black rounded"
 						onFocus={() => setIsOpen(true)}
 						id={name}
 						autoComplete="off"
 						name="name"
-						css={fieldCss}
 						value={value.data}
 						onChange={(e) => onChange({ type: 'text', data: e.target.value })}
 					/>
 				)}
 			</div>
 			{isOpen && groups.length !== 0 && (
-				<div
-					css={(theme) => ({
-						position: 'absolute',
-						border: '1px solid',
-						borderColor: theme.color.text,
-						borderRadius: 4,
-						marginTop: 4,
-						left: 0,
-						right: 0,
-						padding: 10,
-						display: 'flex',
-						flexDirection: 'column',
-						gap: 6,
-						backgroundColor: theme.color.background,
-						zIndex: 10,
-						boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-					})}
-				>
+				<div className="absolute border border-black rounded mt-1 left-0 right-0 p-2 flex flex-col gap-1.5 bg-white z-10 shadow">
 					{groups.map((group, index) => (
 						<Group
 							key={index}
@@ -146,41 +128,23 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 	if (options.length === 0) return null
 
 	return (
-		<div css={{ padding: 4 }} tabIndex={0}>
+		<div className="p-1" tabIndex={0}>
 			<div
-				css={{
-					fontWeight: '500',
-					cursor: 'pointer',
-					borderRadius: 4,
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					border: 'none',
-					backgroundColor: 'white',
-				}}
+				className="flex items-center justify-between font-medium bg-white border-none rounded cursor-pointer"
 				onClick={() => setIsOpen(!isOpen)}
 			>
-				<div css={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-					{iconUrl && <img src={iconUrl} alt="" css={{ width: 16, height: 16 }} />}
+				<div className="flex items-center gap-1.5">
+					{iconUrl && <img className="w-4 h-4" src={iconUrl} alt="" />}
 					<span>{name}</span>
 				</div>
 				{isOpen ? <BsChevronUp /> : <BsChevronDown />}
 			</div>
 			{isOpen && (
-				<div css={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+				<div className="flex flex-col gap-1 mt-1">
 					{options.map((option, index) => (
 						<div
 							key={index}
-							css={(theme) => ({
-								fontSize: 14,
-								borderRadius: 4,
-								padding: '2px 6px',
-								cursor: 'pointer',
-								':hover': {
-									backgroundColor: theme.color.text,
-									color: theme.color.background,
-								},
-							})}
+							className="text-sm rounded py-0.5 px-1.5 cursor-pointer hover:bg-black hover:text-white"
 							onClick={() => onSelect(option)}
 						>
 							{option}
@@ -199,47 +163,14 @@ interface SelectedDataProps {
 
 function SelectedData({ value, onClose }: SelectedDataProps) {
 	return (
-		<div
-			css={[
-				fieldCss,
-				{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-				},
-			]}
-		>
-			<div
-				css={(theme) => ({
-					backgroundColor: theme.color.text + '11',
-					borderRadius: 4,
-					padding: '0 6px',
-					display: 'flex',
-					alignItems: 'center',
-					gap: 6,
-				})}
-			>
-				{value.iconUrl && (
-					<img src={value.iconUrl} alt="" css={{ width: 14, height: 14 }} />
-				)}
-				<span css={{ fontWeight: 500 }}>{value.groupName}</span>
+		<div className="flex items-center justify-between">
+			<div className="bg-black/5 px-1.5 flex items-center gap-1.5 rounded">
+				{value.iconUrl && <img className="w-4 h-4" src={value.iconUrl} alt="" />}
+				<span className="font-medium">{value.groupName}</span>
 				<span> - {value.data}</span>
 			</div>
 			<button
-				css={(theme) => ({
-					border: '1px solid',
-					borderColor: theme.color.negative,
-					color: theme.color.negative,
-					borderRadius: 4,
-					width: 24,
-					height: 24,
-					backgroundColor: theme.color.background,
-					cursor: 'pointer',
-					':hover': {
-						color: theme.color.background,
-						backgroundColor: theme.color.negative,
-					},
-				})}
+				className="w-6 h-6 text-red-600 bg-white border border-red-600 rounded cursor-pointer hover:bg-red-600 hover:text-white"
 				onClick={onClose}
 			>
 				<BsXLg />

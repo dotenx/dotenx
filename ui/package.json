@@ -2,14 +2,11 @@
 	"name": "ao-ui",
 	"version": "0.1.0",
 	"dependencies": {
-		"@emotion/react": "^11.8.2",
-		"@emotion/styled": "^11.8.1",
 		"@hookform/error-message": "^2.0.0",
 		"@hookform/resolvers": "^2.8.8",
-		"@testing-library/jest-dom": "^5.16.2",
-		"@testing-library/react": "^12.1.4",
-		"@testing-library/user-event": "^13.5.0",
+		"@types/use-persisted-state": "^0.3.1",
 		"axios": "^0.26.1",
+		"clsx": "^1.1.1",
 		"dagre": "^0.8.5",
 		"date-fns": "^2.28.0",
 		"fuse.js": "^6.5.3",
@@ -25,11 +22,12 @@
 		"react-router-dom": "^6.2.2",
 		"react-scripts": "5.0.0",
 		"react-select": "^5.2.2",
+		"use-persisted-state": "^0.3.3",
 		"web-vitals": "^2.1.4",
 		"zod": "^3.13.4"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"dev": "BROWSER=none react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
@@ -59,7 +57,6 @@
 		"plugins": [
 			"react",
 			"@typescript-eslint",
-			"@emotion",
 			"react-hooks"
 		],
 		"settings": {
@@ -85,8 +82,6 @@
 		]
 	},
 	"devDependencies": {
-		"@emotion/babel-plugin": "^11.7.2",
-		"@emotion/eslint-plugin": "^11.7.0",
 		"@tailwindcss/forms": "^0.5.0",
 		"@types/dagre": "^0.7.47",
 		"@types/lodash": "^4.14.179",

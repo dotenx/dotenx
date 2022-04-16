@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { useQuery } from 'react-query'
 import { getExecutionResult, QueryKey } from '../../api'
 
@@ -18,9 +17,9 @@ export function TaskLog({ executionId, taskName }: TaskLogProps) {
 	const log = query.data?.data?.log
 
 	return (
-		<div css={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+		<div className="flex flex-col gap-10">
 			<h2>Logs</h2>
-			<p css={{ fontFamily: 'monospace' }}>{log ? log : 'No log is available'}</p>
+			<p className="font-mono">{log ? log : 'No log is available'}</p>
 		</div>
 	)
 }

@@ -1,9 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import ReactFlow, { Controls, MiniMap } from 'react-flow-renderer'
 import { CreateTriggerRequest } from '../../api'
-import { selectedPipelineDataAtom } from '../atoms'
+import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettings } from '../task'
@@ -12,7 +10,7 @@ import { Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
 import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
 import { TriggerEntity, TriggerNode } from './trigger-node'
-import { getNodeColor, useFlow } from './use-flow'
+import { useFlow } from './use-flow'
 
 const nodeTypes = {
 	default: TaskNode,
@@ -34,11 +32,10 @@ export function Flow() {
 		onLoad,
 		updateElement,
 	} = useFlow()
-	const theme = useTheme()
 
 	return (
 		<>
-			<div ref={reactFlowWrapper} css={{ width: '100%', height: '100%' }}>
+			<div ref={reactFlowWrapper} className="w-full h-full">
 				<ReactFlow
 					nodeTypes={nodeTypes}
 					edgeTypes={edgeTypes}
@@ -49,7 +46,7 @@ export function Flow() {
 					onDragOver={onDragOver}
 					onDrop={onDrop}
 				>
-					<MiniMap nodeColor={(node) => getNodeColor(theme, node)} />
+					<MiniMap />
 					<Controls />
 				</ReactFlow>
 			</div>
@@ -119,13 +116,13 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 
 function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const modal = useModal()
-	const [pipeline] = useAtom(selectedPipelineDataAtom)
+	const [automation] = useAtom(selectedAutomationDataAtom)
 
 	return (
 		<Modal kind={Modals.TriggerSettings}>
 			{({ id, data }: TriggerEntity) => (
 				<TriggerSettings
-					defaultValues={{ ...data, pipeline_name: pipeline?.name ?? 'default' }}
+					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
 					onSave={(values) => {
 						updateNode(id, values)
 						modal.close()
@@ -143,7 +140,7 @@ interface TriggerSettingsProps {
 
 export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {
 	return (
-		<div css={{ height: '100%' }}>
+		<div className="h-full">
 			<TriggerForm defaultValues={defaultValues} onSave={onSave} mode="settings" />
 		</div>
 	)

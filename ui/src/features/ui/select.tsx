@@ -1,6 +1,4 @@
-/** @jsxImportSource @emotion/react */
-import { Interpolation, Theme } from '@emotion/react'
-import { Control, Controller, FieldErrors, useController } from 'react-hook-form'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
 import ReactSelect, { MultiValue } from 'react-select'
 import { FieldError } from './field'
 
@@ -17,7 +15,6 @@ interface SelectProps {
 	control: Control<any>
 	options?: Option[]
 	isMulti?: boolean
-	css?: Interpolation<Theme>
 	placeholder?: string
 	isLoading?: boolean
 }
@@ -33,16 +30,9 @@ export function Select({
 	isLoading,
 	...rest
 }: SelectProps) {
-	const {
-		fieldState: { error },
-	} = useController({ name: name, control })
-
 	return (
-		<div css={{ display: 'flex', flexDirection: 'column', gap: 2 }} {...rest}>
-			<label
-				htmlFor={name}
-				css={[{ fontSize: 14 }, (theme) => error && { color: theme.color.negative }]}
-			>
+		<div className="flex flex-col gap-0.5" {...rest}>
+			<label htmlFor={name} className="text-sm">
 				{label}
 			</label>
 			<SelectController
