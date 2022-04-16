@@ -12,7 +12,6 @@ import { NavItem } from './nav-item'
 
 const items = [
 	{ to: '/', label: 'Automations', icon: <BsFolderFill /> },
-	{ to: '/automations', label: 'Automations', icon: <BsFolderFill /> },
 	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
 	{ to: '/triggers', label: 'Triggers', icon: <BsPipFill /> },
 ]

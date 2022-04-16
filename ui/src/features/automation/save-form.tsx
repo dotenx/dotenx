@@ -5,6 +5,7 @@ import _ from 'lodash'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 import {
 	createAutomation,
@@ -52,6 +53,7 @@ function useSaveForm() {
 	const modal = useModal()
 	const addAutomationMutation = useMutation(createAutomation)
 	const addTriggerMutation = useMutation(createTrigger)
+	const navigate = useNavigate()
 
 	const [elements] = useAtom(flowAtom)
 
@@ -79,7 +81,10 @@ function useSaveForm() {
 		)
 	}
 
-	const onSubmit = handleSubmit(onSave)
+	const onSubmit = handleSubmit((values) => {
+		onSave(values)
+		navigate(`/automations/${values.name}`)
+	})
 
 	return {
 		onSubmit,

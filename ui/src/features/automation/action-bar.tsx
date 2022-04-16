@@ -26,7 +26,7 @@ export const redSmallButton = [
 ]
 
 export function ActionBar({ deselectAutomation }: ActionBarProps) {
-	const { onDelete, onRun, selectedAutomation, modal, onLayout, resetAutomation } =
+	const { onDelete, onRun, selectedAutomation, modal, onLayout, newAutomation } =
 		useActionBar(deselectAutomation)
 
 	return (
@@ -35,7 +35,7 @@ export function ActionBar({ deselectAutomation }: ActionBarProps) {
 				<IconButton tooltip="Delete" disabled={!selectedAutomation} onClick={onDelete}>
 					<BsTrash2 />
 				</IconButton>
-				<IconButton tooltip="New" onClick={resetAutomation}>
+				<IconButton tooltip="New" onClick={newAutomation}>
 					<BsPlus />
 				</IconButton>
 				<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>

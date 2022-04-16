@@ -6,7 +6,7 @@ import { TriggerForm } from '../features/trigger/create-form'
 import { useCreateTrigger } from '../features/trigger/use-create'
 import { Button, Layout, Modal } from '../features/ui'
 
-export default function Triggers() {
+export default function TriggersPage() {
 	const { onSave } = useCreateTrigger()
 
 	return (

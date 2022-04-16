@@ -1,18 +1,19 @@
 import { Route, Routes as ReactRoutes } from 'react-router-dom'
-import Automations from '../../pages/automations'
-import Home from '../../pages/home'
-import Integrations from '../../pages/integrations'
-import Oauth from '../../pages/oauth'
-import Triggers from '../../pages/triggers'
+import AutomationPage from '../../pages/automation'
+import AutomationsPage from '../../pages/automations'
+import IntegrationsPage from '../../pages/integrations'
+import OauthPage from '../../pages/oauth'
+import TriggersPage from '../../pages/triggers'
 
 export function Routes() {
 	return (
 		<ReactRoutes>
-			<Route path="/integrations/add" element={<Oauth />} />
-			<Route path="/integrations" element={<Integrations />} />
-			<Route path="/triggers" element={<Triggers />} />
-			<Route path="/automations" element={<Automations />} />
-			<Route path="/" element={<Home />} />
+			<Route path="/integrations/add" element={<OauthPage />} />
+			<Route path="/integrations" element={<IntegrationsPage />} />
+			<Route path="/triggers" element={<TriggersPage />} />
+			<Route path="/automations/:name" element={<AutomationPage />} />
+			<Route path="/automations-new" element={<AutomationPage />} />
+			<Route path="/" element={<AutomationsPage />} />
 		</ReactRoutes>
 	)
 }

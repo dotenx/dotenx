@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import {
 	flowAtom,
@@ -8,10 +9,12 @@ import {
 	selectedAutomationDataAtom,
 	selectedExecutionAtom,
 } from '../atoms'
-import { initialElements, useClearStatus, useLayout } from '../flow'
+import { useClearStatus, useLayout } from '../flow'
 import { useModal } from '../hooks'
+import { useNewAutomation } from './use-new'
 
 export function useActionBar(deselectAutomation: () => void) {
+	const navigate = useNavigate()
 	const { onLayout } = useLayout()
 	const modal = useModal()
 	const [selectedAutomation, setSelectedAutomation] = useAtom(selectedAutomationAtom)
@@ -22,6 +25,7 @@ export function useActionBar(deselectAutomation: () => void) {
 	const setElements = useAtom(flowAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
+	const newAutomation = useNewAutomation()
 
 	const mutation = useMutation((endpoint: string) => startAutomation(endpoint), {
 		onSuccess: () => {
@@ -36,17 +40,11 @@ export function useActionBar(deselectAutomation: () => void) {
 		if (selectedAutomation) mutation.mutate(selectedAutomation.endpoint)
 	}
 
-	function resetAutomation() {
-		setSelectedAutomation(undefined)
-		setElements(initialElements)
-		deselectAutomation()
-	}
-
 	const onDelete = () => {
 		if (!selectedAutomationData) return
 		deleteAutomationMutation.mutate(selectedAutomationData.name, {
 			onSuccess: () => {
-				resetAutomation()
+				newAutomation()
 				client.invalidateQueries(QueryKey.GetAutomations)
 			},
 		})
@@ -57,7 +55,7 @@ export function useActionBar(deselectAutomation: () => void) {
 		onDelete,
 		deleteAutomationMutation,
 		onRun,
-		resetAutomation,
+		newAutomation,
 		onLayout,
 		modal,
 	}

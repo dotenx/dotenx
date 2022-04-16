@@ -4,7 +4,7 @@ import { Modals, useModal } from '../features/hooks'
 import { IntegrationList, NewIntegration } from '../features/integration'
 import { Button, Layout, Modal } from '../features/ui'
 
-export default function Integrations() {
+export default function IntegrationsPage() {
 	return (
 		<Layout header={<Header />}>
 			<div css={{ padding: '48px 96px', flexGrow: 1 }}>

@@ -7,7 +7,7 @@ export interface OAuthMessage {
 	refreshToken: string | null
 }
 
-export default function Oauth() {
+export default function OauthPage() {
 	const [searchParams] = useSearchParams({ access_token: '', error: '' })
 
 	useEffect(() => {
