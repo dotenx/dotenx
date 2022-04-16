@@ -8,7 +8,11 @@ https://discord.gg/kpCmHtKYHd
 
 
 
-# Running
+# Installation
+
+You can run DoTenX easily on your machine and the only requirement is to have Docker engine installed on the machine.
+
+The following commands run all the components of DoTenX on your machine:
 
 ``` bash
 docker network create -d bridge local --attachable
@@ -23,6 +27,14 @@ If you want to support our work - please star this project, every star makes us 
 
 
 # Contributing
+The most common scenario for contributing to DoTenX is adding new `Tasks`, `Triggers` or `Integrations` which are the main components of `Automations`.
+
+**Automation**: An `Automation` is a combination of one or more `Tasks` that together automate a scenario/workflow. For example, you can create an automation that sends your emails from certain contacts to your Slack channel or an automation that sends a Tweet from a list that you have stored on Dropbox and updates the list.
+
+**Trigger**: DoTenX supports `Scheduled Triggers` and `Regular Triggers`. A scheduled trigger, as implied by the name, starts the execution of an automation based on a pattern, however, a regular trigger checks a certain condition, every x seconds, and should the condition be true it starts the execution and can pass certain values to the tasks in the automation.
+
+**Task**: Tasks are the actual building blocks of an automation. Each task can execute a certain job. You can choose one of the existing task types, e.g. `Send Tweet`, `Send Slack Message`, etc, or use a user defined task. The user defined tasks can virtually be anything you can think of. All you need to do is to dockerize the code you want to run (that automates a job), add a generic taks to your automation and configure the task with your image name.
+
 
 ## Adding new integration type
 
