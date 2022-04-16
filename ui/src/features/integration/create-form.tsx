@@ -55,8 +55,8 @@ export function NewIntegration() {
 					</Button>
 				)}
 				{integrationTypeFields?.secrets
-					.filter(({ name }) =>
-						isAdvanced ? true : name !== 'ACCESS_TOKEN' && name !== 'REFRESH_TOKEN'
+					.filter(({ key }) =>
+						isAdvanced ? true : key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN'
 					)
 					.map((field) => (
 						<Field
