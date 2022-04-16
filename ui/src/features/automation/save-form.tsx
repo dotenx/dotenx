@@ -26,7 +26,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 export function SaveForm() {
-	const { addPipelineMutation, control, errors, onSubmit } = useSaveForm()
+	const { addAutomationMutation, control, errors, onSubmit } = useSaveForm()
 
 	return (
 		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
@@ -34,7 +34,7 @@ export function SaveForm() {
 			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
 				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
-			<Button type="submit" isLoading={addPipelineMutation.isLoading}>
+			<Button type="submit" isLoading={addAutomationMutation.isLoading}>
 				Save
 			</Button>
 		</Form>
@@ -50,13 +50,13 @@ function useSaveForm() {
 
 	const client = useQueryClient()
 	const modal = useModal()
-	const addPipelineMutation = useMutation(createAutomation)
+	const addAutomationMutation = useMutation(createAutomation)
 	const addTriggerMutation = useMutation(createTrigger)
 
 	const [elements] = useAtom(flowAtom)
 
 	const onSave = (values: Schema) => {
-		addPipelineMutation.mutate(
+		addAutomationMutation.mutate(
 			{
 				name: values.name,
 				manifest: mapElementsToPayload(elements),
@@ -85,7 +85,7 @@ function useSaveForm() {
 		onSubmit,
 		control,
 		errors,
-		addPipelineMutation,
+		addAutomationMutation: addAutomationMutation,
 	}
 }
 

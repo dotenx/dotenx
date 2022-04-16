@@ -9,8 +9,8 @@ function useTriggerList() {
 	const client = useQueryClient()
 	const query = useQuery(QueryKey.GetTriggers, getTriggers)
 	const deleteMutation = useMutation(
-		(payload: { triggerName: string; pipelineName: string }) =>
-			deleteTrigger(payload.triggerName, payload.pipelineName),
+		(payload: { triggerName: string; automationName: string }) =>
+			deleteTrigger(payload.triggerName, payload.automationName),
 		{
 			onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers),
 		}
@@ -29,7 +29,7 @@ export function TriggerList() {
 	return (
 		<Table
 			title="Triggers"
-			headers={['Name', 'Type', 'Integration', 'Pipeline']}
+			headers={['Name', 'Type', 'Integration', 'Automation']}
 			items={triggers?.map((trigger, index) => (
 				<Item
 					key={index}
@@ -42,7 +42,7 @@ export function TriggerList() {
 					onDelete={() =>
 						deleteMutation.mutate({
 							triggerName: trigger.name,
-							pipelineName: trigger.pipeline_name,
+							automationName: trigger.pipeline_name,
 						})
 					}
 				>

@@ -3,18 +3,22 @@ import { useAtom } from 'jotai'
 import { useQuery } from 'react-query'
 import Select from 'react-select'
 import { Automation, getAutomation, getAutomations, QueryKey } from '../../api'
-import { selectedPipelineAtom } from '../atoms'
+import { selectedAutomationAtom } from '../atoms'
 
-interface PipelineSelectProps {
+interface AutomationSelectProps {
 	value: Automation | undefined
 	onChange: (value: Automation) => void
 }
 
-export function PipelineSelect({ value: selected, onChange: setSelected }: PipelineSelectProps) {
-	const pipelinesQuery = useQuery(QueryKey.GetAutomations, getAutomations)
-	const setSelectedPipeline = useAtom(selectedPipelineAtom)[1]
-	const pipelines = pipelinesQuery.data?.data
-	const options = pipelines?.map((pipeline) => ({ label: pipeline.name, value: pipeline })) ?? []
+export function AutomationSelect({
+	value: selected,
+	onChange: setSelected,
+}: AutomationSelectProps) {
+	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const setSelectedAutomation = useAtom(selectedAutomationAtom)[1]
+	const automations = automationsQuery.data?.data
+	const options =
+		automations?.map((automation) => ({ label: automation.name, value: automation })) ?? []
 
 	useQuery(
 		[QueryKey.GetAutomation, selected],
@@ -22,7 +26,7 @@ export function PipelineSelect({ value: selected, onChange: setSelected }: Pipel
 			if (!selected) return
 			return getAutomation(selected.name)
 		},
-		{ enabled: !!selected, onSuccess: (data) => setSelectedPipeline(data?.data) }
+		{ enabled: !!selected, onSuccess: (data) => setSelectedAutomation(data?.data) }
 	)
 
 	return (
@@ -30,8 +34,8 @@ export function PipelineSelect({ value: selected, onChange: setSelected }: Pipel
 			css={{ width: 256, zIndex: 10 }}
 			placeholder="Automation"
 			options={options}
-			name="pipeline"
-			isLoading={pipelinesQuery.isLoading}
+			name="automation"
+			isLoading={automationsQuery.isLoading}
 			onChange={(option) => option && setSelected(option.value)}
 			value={options?.find((option) => option.value.name === selected?.name) ?? null}
 		/>

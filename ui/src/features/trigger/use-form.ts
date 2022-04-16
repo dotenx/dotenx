@@ -39,7 +39,7 @@ export function useTriggerForm({
 	})
 	const triggerType = watch('type')
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerKinds)
-	const pipelinesQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
 		() => getTriggerDefinition(triggerType),
@@ -64,9 +64,9 @@ export function useTriggerForm({
 			iconUrl: selectedTriggerType?.icon_url,
 		})
 	)
-	const pipelineOptions = pipelinesQuery?.data?.data.map((pipeline) => ({
-		label: pipeline.name,
-		value: pipeline.name,
+	const automationOptions = automationsQuery?.data?.data.map((automation) => ({
+		label: automation.name,
+		value: automation.name,
 	}))
 
 	return {
@@ -75,8 +75,8 @@ export function useTriggerForm({
 		errors,
 		triggerOptions,
 		selectedTriggerType,
-		pipelinesQuery,
-		pipelineOptions,
+		automationsQuery,
+		automationOptions,
 		integrationTypes,
 		triggerDefinitionQuery,
 	}

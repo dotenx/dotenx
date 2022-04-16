@@ -3,7 +3,7 @@ import { useTheme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import ReactFlow, { Controls, MiniMap } from 'react-flow-renderer'
 import { CreateTriggerRequest } from '../../api'
-import { selectedPipelineDataAtom } from '../atoms'
+import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettings } from '../task'
@@ -119,13 +119,13 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 
 function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const modal = useModal()
-	const [pipeline] = useAtom(selectedPipelineDataAtom)
+	const [automation] = useAtom(selectedAutomationDataAtom)
 
 	return (
 		<Modal kind={Modals.TriggerSettings}>
 			{({ id, data }: TriggerEntity) => (
 				<TriggerSettings
-					defaultValues={{ ...data, pipeline_name: pipeline?.name ?? 'default' }}
+					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
 					onSave={(values) => {
 						updateNode(id, values)
 						modal.close()

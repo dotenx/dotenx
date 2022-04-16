@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
 import { Automation } from '../api'
-import { ActionBar, PipelineExecution, PipelineSelect } from '../features/automation'
+import { ActionBar, AutomationExecution, AutomationSelect } from '../features/automation'
 import { DragDropNodes, Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 import { Layout } from '../features/ui'
@@ -55,21 +55,21 @@ function Header({ executionId, selected, setExecutionId, setSelected }: HeaderPr
 				]}
 			>
 				<div css={{ display: 'flex', gap: 6 }}>
-					<PipelineSelect
+					<AutomationSelect
 						value={selected}
 						onChange={(value) => {
 							setSelected(value)
 							setExecutionId(undefined)
 						}}
 					/>
-					<PipelineExecution
-						pipelineName={selected?.name}
+					<AutomationExecution
+						automationName={selected?.name}
 						value={executionId}
 						onChange={setExecutionId}
 					/>
 				</div>
 
-				<ActionBar deselectPipeline={() => setSelected(undefined)} />
+				<ActionBar deselectAutomation={() => setSelected(undefined)} />
 			</div>
 			<div css={center}>
 				<DragDropNodes />

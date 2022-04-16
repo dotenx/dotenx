@@ -2,11 +2,11 @@ import { useAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
 import { Node } from 'react-flow-renderer'
 import { API_URL, AutomationEventMessage } from '../../api'
-import { flowAtom, listenAtom, selectedExecutionAtom, selectedPipelineDataAtom } from '../atoms'
+import { flowAtom, listenAtom, selectedAutomationDataAtom, selectedExecutionAtom } from '../atoms'
 import { TaskNodeData, useClearStatus } from '../flow'
 
 export function useTaskStatus() {
-	const [selected, setSelected] = useAtom(selectedPipelineDataAtom)
+	const [selected, setSelected] = useAtom(selectedAutomationDataAtom)
 	const [executionId, setExecutionId] = useAtom(selectedExecutionAtom)
 	const setElements = useAtom(flowAtom)[1]
 	const clearStatus = useClearStatus()

@@ -10,7 +10,7 @@ import { useActionBar } from './use-action-bar'
 const smallButton = css({ fontSize: 12, padding: '2px 0', width: 50 })
 
 interface ActionBarProps {
-	deselectPipeline: () => void
+	deselectAutomation: () => void
 }
 
 export const redSmallButton = [
@@ -25,30 +25,30 @@ export const redSmallButton = [
 	}),
 ]
 
-export function ActionBar({ deselectPipeline }: ActionBarProps) {
-	const { onDelete, onRun, selectedPipeline, modal, onLayout, resetPipeline } =
-		useActionBar(deselectPipeline)
+export function ActionBar({ deselectAutomation }: ActionBarProps) {
+	const { onDelete, onRun, selectedAutomation, modal, onLayout, resetAutomation } =
+		useActionBar(deselectAutomation)
 
 	return (
 		<>
 			<div css={{ display: 'flex', gap: 6 }}>
-				<IconButton tooltip="Delete" disabled={!selectedPipeline} onClick={onDelete}>
+				<IconButton tooltip="Delete" disabled={!selectedAutomation} onClick={onDelete}>
 					<BsTrash2 />
 				</IconButton>
-				<IconButton tooltip="New" onClick={resetPipeline}>
+				<IconButton tooltip="New" onClick={resetAutomation}>
 					<BsPlus />
 				</IconButton>
 				<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>
 					<BsSortDownAlt />
 				</IconButton>
-				<IconButton tooltip="Save" onClick={() => modal.open(Modals.SavePipeline)}>
+				<IconButton tooltip="Save" onClick={() => modal.open(Modals.SaveAutomation)}>
 					<BsSave2 />
 				</IconButton>
-				<IconButton tooltip="Run" onClick={onRun} disabled={!selectedPipeline}>
+				<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
 					<BsPlay />
 				</IconButton>
 			</div>
-			<Modal kind={Modals.SavePipeline}>
+			<Modal kind={Modals.SaveAutomation}>
 				<SaveForm />
 			</Modal>
 		</>

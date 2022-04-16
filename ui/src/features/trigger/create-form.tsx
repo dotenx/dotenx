@@ -21,8 +21,8 @@ export function TriggerForm({
 		errors,
 		integrationTypes,
 		onSubmit,
-		pipelineOptions,
-		pipelinesQuery,
+		automationOptions,
+		automationsQuery,
 		selectedTriggerType,
 		triggerDefinitionQuery,
 		triggerOptions,
@@ -53,13 +53,13 @@ export function TriggerForm({
 				</div>
 				{mode === 'new' && (
 					<Select
-						label="Pipeline"
+						label="Automation"
 						name="pipeline_name"
 						control={control}
-						isLoading={pipelinesQuery.isLoading}
+						isLoading={automationsQuery.isLoading}
 						errors={errors}
-						options={pipelineOptions}
-						placeholder="Pipeline name"
+						options={automationOptions}
+						placeholder="Automation name"
 					/>
 				)}
 				{integrationTypes && integrationTypes.length !== 0 && (
