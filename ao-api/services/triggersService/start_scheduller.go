@@ -29,9 +29,6 @@ func (manager *TriggerManager) StartSchedulling(trigger models.EventTrigger) err
 	if freq, ok := trigger.Credentials["frequency"]; !ok || freq == "" {
 		return errors.New("invalid frequency")
 	}
-	if t, ok := trigger.Credentials["time"]; !ok || t == "" {
-		return errors.New("invalid time")
-	}
 	freq, err := strconv.Atoi(trigger.Credentials["frequency"].(string))
 	if err != nil {
 		return err
