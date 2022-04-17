@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Field, Form, Select } from '../ui'
+import { Button, Field, Form, Select, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
 export function NewIntegration() {
@@ -18,15 +18,11 @@ export function NewIntegration() {
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex items-center justify-between">
 				<h2 className="text-2xl">New integration</h2>
-				<label className="flex items-center gap-3 text-xs">
-					Advanced
-					<input
-						checked={isAdvanced}
-						onChange={() => setIsAdvanced((isAdvanced) => !isAdvanced)}
-						className="bg-gray-100 rounded checked:bg-gray-900 checked:focus:bg-gray-700 checked:hover:bg-gray-700"
-						type="checkbox"
-					/>
-				</label>
+				<Toggle
+					checked={isAdvanced}
+					onClick={() => setIsAdvanced((isAdvanced) => !isAdvanced)}
+					label="Advanced"
+				/>
 			</div>
 			<div className="flex flex-col gap-5 grow">
 				<Field
