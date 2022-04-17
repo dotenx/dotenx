@@ -12,18 +12,21 @@ export default function AutomationsPage() {
 	const deleteMutation = useDeleteAutomation()
 
 	return (
-		<div className="px-24 py-12 grow">
-			<Table
-				title="Automations"
-				headers={['Name']}
-				items={automations?.map((automation) => (
-					<Item
-						key={automation.name}
-						name={automation.name}
-						onDelete={() => deleteMutation.mutate(automation.name)}
-					/>
-				))}
-			/>
+		<div className="grow">
+			<Header />
+			<div className="px-24 py-6 grow">
+				<Table
+					title="Automations"
+					headers={['Name']}
+					items={automations?.map((automation) => (
+						<Item
+							key={automation.name}
+							name={automation.name}
+							onDelete={() => deleteMutation.mutate(automation.name)}
+						/>
+					))}
+				/>
+			</div>
 		</div>
 	)
 }
@@ -54,7 +57,7 @@ function Header() {
 	const newAutomation = useNewAutomation()
 
 	return (
-		<div className="flex items-center justify-end h-full px-4 py-2">
+		<div className="flex items-center justify-end p-10">
 			<button
 				className="flex items-center px-2 py-1 mx-1 text-white bg-black border border-black rounded hover:bg-white hover:text-black"
 				onClick={newAutomation}

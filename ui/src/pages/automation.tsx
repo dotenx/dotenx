@@ -27,11 +27,14 @@ export default function AutomationPage() {
 	}, [automation, name, setSelected])
 
 	return (
-		<div className="flex gap-2 grow">
-			<div className="grow">
-				<Flow />
+		<>
+			<ActionBar />
+			<div className="flex gap-2 grow">
+				<div className="grow">
+					<Flow />
+				</div>
 			</div>
-		</div>
+		</>
 	)
 }
 
