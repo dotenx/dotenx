@@ -78,7 +78,7 @@ services:
       - runner_data:/go/src/github.com/dotenx/dotenx/runner
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-        - default
+      - default
 
 networks:
   default:

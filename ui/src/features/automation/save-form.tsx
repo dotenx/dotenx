@@ -1,10 +1,10 @@
-/** @jsxImportSource @emotion/react */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 import {
 	createAutomation,
@@ -26,17 +26,15 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 export function SaveForm() {
-	const { addPipelineMutation, control, errors, onSubmit } = useSaveForm()
+	const { control, errors, onSubmit } = useSaveForm()
 
 	return (
-		<Form css={{ height: '100%' }} onSubmit={onSubmit}>
-			<h2>Save automation</h2>
-			<div css={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 20 }}>
+		<Form className="h-full" onSubmit={onSubmit}>
+			<h2 className="text-2xl">Save automation</h2>
+			<div className="flex flex-col gap-5 grow">
 				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
-			<Button type="submit" isLoading={addPipelineMutation.isLoading}>
-				Save
-			</Button>
+			<Button type="submit">Save</Button>
 		</Form>
 	)
 }
@@ -50,13 +48,14 @@ function useSaveForm() {
 
 	const client = useQueryClient()
 	const modal = useModal()
-	const addPipelineMutation = useMutation(createAutomation)
+	const addAutomationMutation = useMutation(createAutomation)
 	const addTriggerMutation = useMutation(createTrigger)
+	const navigate = useNavigate()
 
 	const [elements] = useAtom(flowAtom)
 
 	const onSave = (values: Schema) => {
-		addPipelineMutation.mutate(
+		addAutomationMutation.mutate(
 			{
 				name: values.name,
 				manifest: mapElementsToPayload(elements),
@@ -79,13 +78,16 @@ function useSaveForm() {
 		)
 	}
 
-	const onSubmit = handleSubmit(onSave)
+	const onSubmit = handleSubmit((values) => {
+		onSave(values)
+		navigate(`/automations/${values.name}`)
+	})
 
 	return {
 		onSubmit,
 		control,
 		errors,
-		addPipelineMutation,
+		addAutomationMutation: addAutomationMutation,
 	}
 }
 

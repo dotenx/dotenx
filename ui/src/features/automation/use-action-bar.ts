@@ -2,26 +2,26 @@ import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import {
-	flowAtom,
 	listenAtom,
+	selectedAutomationAtom,
+	selectedAutomationDataAtom,
 	selectedExecutionAtom,
-	selectedPipelineAtom,
-	selectedPipelineDataAtom,
 } from '../atoms'
-import { initialElements, useClearStatus, useLayout } from '../flow'
+import { useClearStatus, useLayout } from '../flow'
 import { useModal } from '../hooks'
+import { useNewAutomation } from './use-new'
 
-export function useActionBar(deselectPipeline: () => void) {
+export function useActionBar() {
 	const { onLayout } = useLayout()
 	const modal = useModal()
-	const [selectedPipeline, setSelectedPipeline] = useAtom(selectedPipelineAtom)
+	const [selectedAutomation] = useAtom(selectedAutomationAtom)
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
 	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 	const setListen = useAtom(listenAtom)[1]
-	const setElements = useAtom(flowAtom)[1]
-	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
-	const deletePipelineMutation = useMutation(deleteAutomation)
+	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
+	const deleteAutomationMutation = useMutation(deleteAutomation)
+	const newAutomation = useNewAutomation()
 
 	const mutation = useMutation((endpoint: string) => startAutomation(endpoint), {
 		onSuccess: () => {
@@ -33,31 +33,25 @@ export function useActionBar(deselectPipeline: () => void) {
 	})
 
 	const onRun = () => {
-		if (selectedPipeline) mutation.mutate(selectedPipeline.endpoint)
-	}
-
-	function resetPipeline() {
-		setSelectedPipeline(undefined)
-		setElements(initialElements)
-		deselectPipeline()
+		if (selectedAutomation) mutation.mutate(selectedAutomation.endpoint)
 	}
 
 	const onDelete = () => {
-		if (!selectedPipelineData) return
-		deletePipelineMutation.mutate(selectedPipelineData.name, {
+		if (!selectedAutomationData) return
+		deleteAutomationMutation.mutate(selectedAutomationData.name, {
 			onSuccess: () => {
-				resetPipeline()
+				newAutomation()
 				client.invalidateQueries(QueryKey.GetAutomations)
 			},
 		})
 	}
 
 	return {
-		selectedPipeline,
+		selectedAutomation,
 		onDelete,
-		deletePipelineMutation,
+		deleteAutomationMutation,
 		onRun,
-		resetPipeline,
+		newAutomation,
 		onLayout,
 		modal,
 	}

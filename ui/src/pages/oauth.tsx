@@ -7,7 +7,7 @@ export interface OAuthMessage {
 	refreshToken: string | null
 }
 
-export default function Oauth() {
+export default function OauthPage() {
 	const [searchParams] = useSearchParams({ access_token: '', error: '' })
 
 	useEffect(() => {
@@ -21,5 +21,5 @@ export default function Oauth() {
 		window.close()
 	}, [searchParams])
 
-	return <div>Please wait...</div>
+	return <div className="mt-10 text-xl text-center">Please wait...</div>
 }

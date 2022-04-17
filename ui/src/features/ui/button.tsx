@@ -1,81 +1,16 @@
-/** @jsxImportSource @emotion/react */
-import { css, Interpolation, keyframes, Theme } from '@emotion/react'
-import React from 'react'
+import clsx from 'clsx'
+import { ButtonHTMLAttributes } from 'react'
 
-const pulse = keyframes`
- 	0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: .5;
-  }
-`
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>
 
-const base = css({
-	border: 'none',
-	backgroundColor: 'unset',
-	cursor: 'pointer',
-	padding: 4,
-	margin: 0,
-	display: 'flex',
-	justifyContent: 'center',
-	alignItems: 'center',
-	':disabled': {
-		cursor: 'not-allowed',
-	},
-})
-
-type ButtonVariant = 'icon' | 'primary'
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?: ButtonVariant
-	isLoading?: boolean
-}
-
-export function Button({ variant = 'primary', isLoading, ...rest }: ButtonProps) {
+export function Button({ className, ...rest }: ButtonProps) {
 	return (
 		<button
-			css={[
-				base,
-				(theme) => getVariantCss(theme, variant),
-				isLoading && {
-					animation: `${pulse} 2s cubic-bezier(0.4, 0, 0.6, 1) infinite`,
-					':disabled': {
-						cursor: 'wait',
-					},
-				},
-			]}
-			disabled={isLoading || rest.disabled}
+			className={clsx(
+				'flex items-center justify-center w-full p-1 font-medium text-white bg-black border border-black rounded cursor-pointer disabled:cursor-not-allowed hover:bg-white hover:text-black',
+				className
+			)}
 			{...rest}
 		/>
 	)
-}
-
-function getVariantCss(theme: Theme, variant: ButtonVariant): Interpolation<Theme> {
-	switch (variant) {
-		case 'icon':
-			return {
-				borderRadius: 999,
-				':hover': {
-					backgroundColor: theme.color.text,
-					color: theme.color.background,
-				},
-			}
-		case 'primary':
-			return {
-				backgroundColor: theme.color.text,
-				color: theme.color.background,
-				borderRadius: 4,
-				border: '1px solid',
-				borderColor: theme.color.text,
-				padding: '10px 40px',
-				':not([disabled]):hover': {
-					background: theme.color.background,
-					color: theme.color.text,
-				},
-				':disabled': {
-					opacity: 0.5,
-				},
-			}
-	}
 }

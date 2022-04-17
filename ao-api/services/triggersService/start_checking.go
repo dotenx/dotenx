@@ -15,6 +15,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
 
@@ -48,15 +49,15 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	//fmt.Println(triggers)
 	for _, trigger := range triggers {
 		if trigger.Type != "Schedule" {
-			go dc.handleTrigger(accId, trigger, store)
+			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store)
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
-	integration, err := store.GetIntegrationByName(context.Background(), accountId, trigger.Integration)
+func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
+	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
 		return
 	}
@@ -106,12 +107,21 @@ func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
 		log.Println("error in starting container" + err.Error())
 		return
 	}
-	time.Sleep(time.Duration(10) * time.Second)
+	for {
+		st, err := dc.cli.ContainerInspect(context.Background(), cont.ID)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+		if !st.State.Running {
+			break
+		}
+	}
 	logs, err := dc.GetLogs(cont.ID)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	fmt.Println("###########   " + triggerName + " log: ")
+	fmt.Println("container: " + cont.ID + "###########   " + triggerName + " log: ")
 	fmt.Println(logs)
 	fmt.Println("##########################")
 }

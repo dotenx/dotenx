@@ -1,4 +1,3 @@
-import { Theme } from '@emotion/react'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
@@ -9,18 +8,17 @@ import {
 	Edge,
 	Elements,
 	FlowElement,
-	Node,
 	OnLoadFunc,
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
 import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
-import { flowAtom, selectedPipelineAtom, selectedPipelineDataAtom } from '../atoms'
+import { flowAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { InputOrSelectValue } from '../ui'
-import { getLayoutedElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
+import { getLayoutedElements as getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 let id = 1
 const getId = () => `task ${id++}`
@@ -41,29 +39,24 @@ export function useFlow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null)
 	const [reactFlowInstance, setReactFlowInstance] = useState<OnLoadParams | null>(null)
 	const [elements, setElements] = useAtom(flowAtom)
-	const [pipeline] = useAtom(selectedPipelineAtom)
-	const [selectedPipelineData] = useAtom(selectedPipelineDataAtom)
+	const [automation] = useAtom(selectedAutomationAtom)
+	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 
 	const triggersQuery = useQuery(
-		[QueryKey.GetAutomationTrigger, selectedPipelineData?.name],
+		[QueryKey.GetAutomationTrigger, selectedAutomationData?.name],
 		() => {
-			if (selectedPipelineData) return getAutomationTriggers(selectedPipelineData.name)
+			if (selectedAutomationData) return getAutomationTriggers(selectedAutomationData.name)
 		},
-		{ enabled: !!selectedPipelineData }
+		{ enabled: !!selectedAutomationData }
 	)
 
 	useEffect(() => {
-		if (!pipeline) return
-		const elements = mapPipelineToElements(pipeline)
+		if (!automation) return
+		const elements = mapAutomationToElements(automation)
 		const triggers = mapTriggersToElements(triggersQuery.data?.data)
-		const layout = getLayoutedElements(
-			[...elements, ...triggers],
-			'TB',
-			NODE_WIDTH,
-			NODE_HEIGHT
-		)
+		const layout = getLaidOutElements([...elements, ...triggers], 'TB', NODE_WIDTH, NODE_HEIGHT)
 		setElements(layout)
-	}, [pipeline, setElements, triggersQuery.data])
+	}, [automation, setElements, triggersQuery.data])
 
 	const onConnect = (params: Edge | Connection) => {
 		setElements((els) => addEdge({ ...params, arrowHeadType: ArrowHeadType.Arrow }, els))
@@ -120,19 +113,8 @@ export function useFlow() {
 	}
 }
 
-export function getNodeColor(theme: Theme, node: Node) {
-	switch (node.type) {
-		case NodeType.Default:
-			return theme.color.text
-		case NodeType.Trigger:
-			return theme.color.primary
-		default:
-			return theme.color.text
-	}
-}
-
-function mapPipelineToElements(pipeline: AutomationData): Elements<TaskNodeData | EdgeData> {
-	const nodes = Object.entries(pipeline.manifest.tasks).map(([key, value]) => {
+function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
+	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
 		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
 			let inputOrSelectValue = { type: 'text', data: '' } as InputOrSelectValue
 			if (typeof fieldValue === 'string') {
@@ -161,7 +143,7 @@ function mapPipelineToElements(pipeline: AutomationData): Elements<TaskNodeData 
 			},
 		}
 	})
-	const edges = Object.entries(pipeline.manifest.tasks).flatMap(([target, task]) =>
+	const edges = Object.entries(automation.manifest.tasks).flatMap(([target, task]) =>
 		Object.entries(task.executeAfter).map(([source, triggers]) => ({
 			id: `${source}to${target}`,
 			source,
