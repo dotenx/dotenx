@@ -1,0 +1,15 @@
+service: etc
+type: Write file
+image: awrmin/write-file
+fields:
+    - key: name
+      type: text
+    - key: age
+      type: text
+outputs:
+    - key: file
+      type: text
+author: Armingodiz
+icon: https://cdn4.vectorstock.com/i/1000x1000/81/83/document-file-logo-vector-25068183.jpg
+description: write file with given inputs
+
