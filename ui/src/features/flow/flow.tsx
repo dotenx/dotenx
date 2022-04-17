@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import ReactFlow, { Controls, MiniMap } from 'react-flow-renderer'
+import ReactFlow from 'react-flow-renderer'
 import { CreateTriggerRequest } from '../../api'
 import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
@@ -45,10 +45,7 @@ export function Flow() {
 					onLoad={onLoad}
 					onDragOver={onDragOver}
 					onDrop={onDrop}
-				>
-					<MiniMap />
-					<Controls />
-				</ReactFlow>
+				/>
 			</div>
 
 			<NodeSettingsModal updateNode={updateElement} />

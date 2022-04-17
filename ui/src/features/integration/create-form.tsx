@@ -1,4 +1,5 @@
-import { Button, Field, Form, Select } from '../ui'
+import { useState } from 'react'
+import { Button, Field, Form, Select, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
 export function NewIntegration() {
@@ -11,10 +12,18 @@ export function NewIntegration() {
 		oauth,
 		onSubmit,
 	} = useNewIntegration()
+	const [isAdvanced, setIsAdvanced] = useState(false)
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
-			<h2 className="text-2xl">New integration</h2>
+			<div className="flex items-center justify-between">
+				<h2 className="text-2xl">New integration</h2>
+				<Toggle
+					checked={isAdvanced}
+					onClick={() => setIsAdvanced((isAdvanced) => !isAdvanced)}
+					label="Advanced"
+				/>
+			</div>
 			<div className="flex flex-col gap-5 grow">
 				<Field
 					label="Name"
@@ -32,7 +41,7 @@ export function NewIntegration() {
 					options={integrationKindOptions}
 					placeholder="Integration type"
 				/>
-				{integrationTypeFields?.oauth_provider && (
+				{!isAdvanced && integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"
 						className="text-sm h8"
@@ -41,16 +50,20 @@ export function NewIntegration() {
 						Connect
 					</Button>
 				)}
-				{integrationTypeFields?.secrets.map((field) => (
-					<Field
-						key={field.key}
-						label={field.name}
-						name={`secrets.${field.key}`}
-						control={control}
-						required
-						errors={errors}
-					/>
-				))}
+				{integrationTypeFields?.secrets
+					.filter(({ key }) =>
+						isAdvanced ? true : key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN'
+					)
+					.map((field) => (
+						<Field
+							key={field.key}
+							label={field.name}
+							name={`secrets.${field.key}`}
+							control={control}
+							required
+							errors={errors}
+						/>
+					))}
 			</div>
 			<Button type="submit">Add</Button>
 		</Form>
