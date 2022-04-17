@@ -14,6 +14,12 @@ import (
 	"time"
 )
 
+type Post struct {
+	CreatedTime string `json:"created_time"`
+	Message     string `json:"message"`
+	Id          string `json:"id"`
+}
+
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	triggerName := os.Getenv("TRIGGER_NAME")
@@ -30,13 +36,13 @@ func main() {
 		return
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
-	postsCreatedTime, err := getPostsList(pageId, accessToken)
+	posts, err := getPostsList(pageId, accessToken)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	if len(postsCreatedTime) > 0 {
-		lastPostUnix, err := time.Parse("2006-01-02T15:04:05-0700", postsCreatedTime[0])
+	if len(posts) > 0 {
+		lastPostUnix, err := time.Parse("2006-01-02T15:04:05-0700", posts[0].CreatedTime)
 		if err != nil {
 			log.Println(err)
 			return
@@ -45,6 +51,8 @@ func main() {
 			body := make(map[string]interface{})
 			innerBody := make(map[string]interface{})
 			innerBody["created_time"] = lastPostUnix.String()
+			innerBody["message"] = posts[0].Message
+			innerBody["id"] = posts[0].Id
 			body[triggerName] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {
@@ -72,7 +80,7 @@ func main() {
 
 }
 
-func getPostsList(pageId, accessToken string) (postsCreatedTime []string, err error) {
+func getPostsList(pageId, accessToken string) (posts []Post, err error) {
 	url := "https://graph.facebook.com/" + pageId + "/feed?access_token=" + accessToken
 	out, err, statusCode, _ := httpRequest(http.MethodGet, url, nil, nil, 0)
 	if err != nil || statusCode != http.StatusOK {
@@ -82,23 +90,15 @@ func getPostsList(pageId, accessToken string) (postsCreatedTime []string, err er
 		}
 		return
 	}
-	type post struct {
-		CreatedTime string `json:"created_time"`
-		Message     string `json:"message"`
-		Id          string `json:"id"`
-	}
 	var resp struct {
-		Data []post `json:"data"`
+		Data []Post `json:"data"`
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	postsCreatedTime = make([]string, 0)
-	for _, p := range resp.Data {
-		postsCreatedTime = append(postsCreatedTime, p.CreatedTime)
-	}
+	posts = resp.Data
 	return
 }
 
