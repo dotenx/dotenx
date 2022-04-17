@@ -110,7 +110,7 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 		if err != nil {
 			return models.Integration{}, err
 		}
-		accessToken, err := oauth.ExchangeRefreshToken(*provider, integration.Name, accountId, manager.RedisStore)
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*provider, integration.Name, accountId, manager.RedisStore)
 		if err != nil {
 			return models.Integration{}, err
 		}
@@ -119,7 +119,8 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 			AccountId: accountId,
 			Type:      integration.Type,
 			Secrets: map[string]string{
-				"ACCESS_TOKEN": accessToken,
+				"ACCESS_TOKEN":  accessToken,
+				"REFRESH_TOKEN": refreshToken,
 			},
 			HasRefreshToken: integration.HasRefreshToken,
 		}, nil
