@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
 import { useDeleteAutomation } from '../features/automation/use-delete'
 import { useNewAutomation } from '../features/automation/use-new'
-import { Layout, Table } from '../features/ui'
+import { Table } from '../features/ui'
 
 export default function AutomationsPage() {
 	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
@@ -12,21 +12,19 @@ export default function AutomationsPage() {
 	const deleteMutation = useDeleteAutomation()
 
 	return (
-		<Layout header={<Header />}>
-			<div className="px-24 py-12 grow">
-				<Table
-					title="Automations"
-					headers={['Name']}
-					items={automations?.map((automation) => (
-						<Item
-							key={automation.name}
-							name={automation.name}
-							onDelete={() => deleteMutation.mutate(automation.name)}
-						/>
-					))}
-				/>
-			</div>
-		</Layout>
+		<div className="px-24 py-12 grow">
+			<Table
+				title="Automations"
+				headers={['Name']}
+				items={automations?.map((automation) => (
+					<Item
+						key={automation.name}
+						name={automation.name}
+						onDelete={() => deleteMutation.mutate(automation.name)}
+					/>
+				))}
+			/>
+		</div>
 	)
 }
 

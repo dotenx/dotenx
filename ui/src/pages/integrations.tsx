@@ -1,18 +1,18 @@
 import { BsPlusSquare } from 'react-icons/bs'
 import { Modals, useModal } from '../features/hooks'
 import { IntegrationList, NewIntegration } from '../features/integration'
-import { Layout, Modal } from '../features/ui'
+import { Modal } from '../features/ui'
 
 export default function IntegrationsPage() {
 	return (
-		<Layout header={<Header />}>
+		<div>
 			<div className="px-24 py-12 grow">
 				<IntegrationList />
 			</div>
 			<Modal kind={Modals.NewIntegration}>
 				<NewIntegration />
 			</Modal>
-		</Layout>
+		</div>
 	)
 }
 

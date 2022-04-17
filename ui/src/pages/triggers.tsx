@@ -3,20 +3,20 @@ import { Modals, useModal } from '../features/hooks'
 import { TriggerList } from '../features/trigger'
 import { TriggerForm } from '../features/trigger/create-form'
 import { useCreateTrigger } from '../features/trigger/use-create'
-import { Layout, Modal } from '../features/ui'
+import { Modal } from '../features/ui'
 
 export default function TriggersPage() {
 	const { onSave } = useCreateTrigger()
 
 	return (
-		<Layout header={<Header />}>
+		<div>
 			<div className="px-24 py-12 grow">
 				<TriggerList />
 			</div>
 			<Modal kind={Modals.NewTrigger}>
 				<TriggerForm onSave={onSave} mode="new" />
 			</Modal>
-		</Layout>
+		</div>
 	)
 }
 

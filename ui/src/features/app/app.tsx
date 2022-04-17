@@ -4,6 +4,7 @@ import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter } from 'react-router-dom'
 import '../../styles/global.css'
+import { Layout } from '../ui'
 import { Routes } from './routes'
 
 const queryClient = new QueryClient({
@@ -19,7 +20,9 @@ export function App() {
 		<BrowserRouter>
 			<QueryClientProvider client={queryClient}>
 				<ReactFlowProvider>
-					<Routes />
+					<Layout>
+						<Routes />
+					</Layout>
 				</ReactFlowProvider>
 			</QueryClientProvider>
 		</BrowserRouter>
