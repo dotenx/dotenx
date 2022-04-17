@@ -103,7 +103,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	crudServices := crudService.NewCrudService(pipelineStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices)
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService)
 	OauthService := oauthService.NewOauthService(RedisStore)
 	crudController := crud.CRUDController{Service: crudServices}
 	executionController := execution.ExecutionController{Service: executionServices}
