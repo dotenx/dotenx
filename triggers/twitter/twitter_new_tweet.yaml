@@ -1,0 +1,17 @@
+service: twitter
+type: Twitter new tweet
+integrations: [twitter]
+image: hojjat12/twitter-new-tweet
+credentials:
+    - key: username
+      type: text
+    - key: passed_seconds
+      type: text
+outputs:
+    - key: created_at
+      type: text
+    - key: text
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/3128/3128310.png
+description: Checks if there is a new tweet or reply(sent before given number of seconds), tiggers a specefic pipeline
