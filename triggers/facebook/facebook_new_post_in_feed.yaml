@@ -1,6 +1,6 @@
 service: facebook
-type: Facebook new post in feed
-integrations: [facebooK]
+type: Facebook new post in feed (preview)
+integrations: [facebook]
 image: hojjat12/facebook-new-post-in-feed
 credentials:
     - key: passed_seconds

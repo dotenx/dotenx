@@ -1,6 +1,6 @@
 service: facebook
 type: Facebook new post
-integrations: [facebooK]
+integrations: [facebook]
 image: hojjat12/facebook-publish-new-post
 credentials:
     - key: page_id
