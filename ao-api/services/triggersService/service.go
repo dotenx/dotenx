@@ -6,6 +6,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
@@ -24,9 +25,10 @@ type TriggerService interface {
 }
 
 type TriggerManager struct {
-	Store            triggerStore.TriggerStore
-	UtopiopsService  utopiopsService.UtopiopsService
-	ExecutionService executionService.ExecutionService
+	Store              triggerStore.TriggerStore
+	UtopiopsService    utopiopsService.UtopiopsService
+	ExecutionService   executionService.ExecutionService
+	IntegrationService integrationService.IntegrationService
 }
 
 type triggerSummery struct {
@@ -35,8 +37,8 @@ type triggerSummery struct {
 	Description string `json:"description"`
 }
 
-func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService) TriggerService {
-	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService}
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService) TriggerService {
+	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService, IntegrationService: intService}
 }
 
 func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
