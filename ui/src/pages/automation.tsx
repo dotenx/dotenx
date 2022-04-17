@@ -7,7 +7,6 @@ import { selectedAutomationAtom } from '../features/atoms'
 import { ActionBar, AutomationExecution } from '../features/automation'
 import { DragDropNodes, Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
-import { Layout } from '../features/ui'
 
 export default function AutomationPage() {
 	const { name } = useParams()
@@ -28,21 +27,14 @@ export default function AutomationPage() {
 	}, [automation, name, setSelected])
 
 	return (
-		<Layout
-			header={
-				<Header
-					executionId={executionId}
-					selected={selected}
-					setExecutionId={setExecutionId}
-				/>
-			}
-		>
+		<>
+			<ActionBar />
 			<div className="flex gap-2 grow">
 				<div className="grow">
 					<Flow />
 				</div>
 			</div>
-		</Layout>
+		</>
 	)
 }
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
 import { useDeleteAutomation } from '../features/automation/use-delete'
 import { useNewAutomation } from '../features/automation/use-new'
-import { Layout, Table } from '../features/ui'
+import { Table } from '../features/ui'
 
 export default function AutomationsPage() {
 	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
@@ -12,8 +12,9 @@ export default function AutomationsPage() {
 	const deleteMutation = useDeleteAutomation()
 
 	return (
-		<Layout header={<Header />}>
-			<div className="px-24 py-12 grow">
+		<div className="grow">
+			<Header />
+			<div className="px-24 py-6 grow">
 				<Table
 					title="Automations"
 					headers={['Name']}
@@ -26,7 +27,7 @@ export default function AutomationsPage() {
 					))}
 				/>
 			</div>
-		</Layout>
+		</div>
 	)
 }
 
@@ -56,7 +57,7 @@ function Header() {
 	const newAutomation = useNewAutomation()
 
 	return (
-		<div className="flex items-center justify-end h-full px-4 py-2">
+		<div className="flex items-center justify-end p-10">
 			<button
 				className="flex items-center px-2 py-1 mx-1 text-white bg-black border border-black rounded hover:bg-white hover:text-black"
 				onClick={newAutomation}
