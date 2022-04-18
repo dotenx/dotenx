@@ -17,7 +17,7 @@ type TriggerService interface {
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
-	AddTrigger(accountId string, trigger models.EventTrigger) error
+	AddTriggers(accountId string, triggers []models.EventTrigger) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
 	StartScheduller(accId string) error
@@ -56,12 +56,19 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 	return triggers, nil
 }
 
-func (manager *TriggerManager) AddTrigger(accountId string, trigger models.EventTrigger) (err error) {
+func (manager *TriggerManager) AddTriggers(accountId string, triggers []models.EventTrigger) (err error) {
 	// todo: make ready the body to be saved in table
-	err = manager.Store.AddTrigger(context.Background(), accountId, trigger)
-	if err == nil {
-		if trigger.Type == "Schedule" {
-			err = manager.StartSchedulling(trigger)
+	for _, tr := range triggers {
+		err = manager.Store.AddTrigger(context.Background(), accountId, tr)
+		if err == nil {
+			if tr.Type == "Schedule" {
+				err = manager.StartSchedulling(tr)
+				if err != nil {
+					return
+				}
+			}
+		} else {
+			return
 		}
 	}
 	return

@@ -86,21 +86,23 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 
 func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var trigger models.EventTrigger
+		var triggers []models.EventTrigger
 		accountId, _ := utils.GetAccountId(c)
-		if err := c.ShouldBindJSON(&trigger); err != nil || accountId == "" {
+		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, trigger.Pipeline)
+		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		trigger.Endpoint = endpoint
-		err = controller.Service.AddTrigger(accountId, trigger)
+		for _, tr := range triggers {
+			tr.Endpoint = endpoint
+		}
+		err = controller.Service.AddTriggers(accountId, triggers)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
