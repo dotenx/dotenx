@@ -56,7 +56,7 @@ export function ActionBar() {
 					</IconButton>
 				</div>
 			</div>
-			<Modal kind={Modals.SaveAutomation}>
+			<Modal title="New Automation" kind={Modals.SaveAutomation}>
 				<SaveForm />
 			</Modal>
 		</>

@@ -75,7 +75,7 @@ function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const modal = useModal()
 
 	return (
-		<Modal kind={Modals.NodeSettings}>
+		<Modal title="Task Settings" kind={Modals.NodeSettings}>
 			{({ id, data }: TaskEntity) => (
 				<TaskSettings
 					defaultValues={data}
@@ -97,7 +97,7 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 	const modal = useModal()
 
 	return (
-		<Modal kind={Modals.EdgeSettings}>
+		<Modal title="Edge Settings" kind={Modals.EdgeSettings}>
 			{({ id, data }: EdgeEntity) => (
 				<EdgeSettings
 					defaultValues={data}
@@ -116,7 +116,7 @@ function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const [automation] = useAtom(selectedAutomationDataAtom)
 
 	return (
-		<Modal kind={Modals.TriggerSettings}>
+		<Modal title="Trigger Settings" kind={Modals.TriggerSettings}>
 			{({ id, data }: TriggerEntity) => (
 				<TriggerSettings
 					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
