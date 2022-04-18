@@ -155,7 +155,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	}
 	trigger := r.Group("/trigger")
 	{
-		trigger.POST("", TriggerController.AddTrigger())
+		trigger.POST("", TriggerController.AddTriggers())
+		trigger.PUT("", TriggerController.UpdateTriggers())
 		trigger.GET("", TriggerController.GetAllTriggers())
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
