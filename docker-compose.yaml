@@ -68,17 +68,17 @@ services:
     ports:
       - '3004:3004'
 
-#  runner:
-#    build:
-#      context: runner
-#      dockerfile: Dockerfile
-#    working_dir: /root/
-#    volumes:
-#      - /tmp/cache:/tmp/cache
-#      - runner_data:/go/src/github.com/dotenx/dotenx/runner
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    networks:
-#      - default
+  runner:
+    build:
+      context: runner
+      dockerfile: Dockerfile
+    working_dir: /root/
+    volumes:
+      - /tmp/cache:/tmp/cache
+      - runner_data:/go/src/github.com/dotenx/dotenx/runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
 
 networks:
   default:
@@ -89,4 +89,4 @@ volumes:
   redis_data:
   postgres_data:
   ao_api_data:
- # runner_data:
+  runner_data:
