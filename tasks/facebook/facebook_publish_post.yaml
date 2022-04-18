@@ -1,6 +1,6 @@
 service: facebook
 type: Publish post
-image: 
+image: hojjat12/facebook-publish-post
 integrations: [facebook]
 fields:
     - key: page_id
@@ -8,5 +8,5 @@ fields:
     - key: text
       type: text
 author: Hojjat-1
-icon: 
+icon: https://cdn-icons-png.flaticon.com/512/124/124010.png
 description: Publish a post on specific page

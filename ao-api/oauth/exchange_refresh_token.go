@@ -9,27 +9,29 @@ import (
 	"github.com/dotenx/goth"
 )
 
-func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID string, redisStore redisStore.RedisStore) (accessToekn string, err error) {
+// ExchangeRefreshToken tries to get access and refresh tokens from redis (this method needs refresh token when access token expired)
+func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID string, redisStore redisStore.RedisStore) (accessToekn, refreshToken string, err error) {
 	if !provider.RefreshTokenAvailable() {
-		return "", errors.New("this provider doesn't support refresh token")
+		return "", "", errors.New("this provider doesn't support refresh token")
 	}
 	redisAccessTokenKey := "ao-api|" + accountID + "|" + integrationName + "|access_token"
 	redisRefreshTokenKey := "ao-api|" + accountID + "|" + integrationName + "|refresh_token"
 	exist, oldRefreshToken, redisErr := redisStore.GetRedisPairValue(redisRefreshTokenKey)
 	if !exist || oldRefreshToken == "" || redisErr != nil {
-		return "", errors.New("Failed to get refresh token from redis")
+		return "", "", errors.New("Failed to get refresh token from redis")
 	}
 
 	success := false
 	for i := 0; i < 20; i++ {
 		exist, oldAccessToken, redisErr := redisStore.GetRedisPairValue(redisAccessTokenKey)
 		if redisErr != nil {
-			return "", redisErr
+			return "", "", redisErr
 		}
 		if exist && oldAccessToken != "" && oldAccessToken != "pending" {
 			log.Println("access token already exist")
 			log.Println("oldAccessToken:", oldAccessToken)
 			accessToekn = oldAccessToken
+			refreshToken = oldRefreshToken
 			success = true
 			break
 		}
@@ -42,15 +44,15 @@ func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID str
 			redisErr := redisStore.SetRedisPair(redisAccessTokenKey, "pending", 30*time.Second)
 			log.Println("trying to update refresh token")
 			if redisErr != nil {
-				return "", redisErr
+				return "", "", redisErr
 			}
 			exist, oldRefreshToken, redisErr := redisStore.GetRedisPairValue(redisRefreshTokenKey)
 			if !exist || oldRefreshToken == "" || redisErr != nil {
-				return "", errors.New("Failed to get refresh token from redis")
+				return "", "", errors.New("Failed to get refresh token from redis")
 			}
 			newToken, err := provider.RefreshToken(oldRefreshToken)
 			if err != nil {
-				return "", err
+				return "", "", err
 			}
 
 			expIn := newToken.Expiry.Sub(time.Now()).Seconds()
@@ -58,13 +60,16 @@ func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID str
 			newRefreshToken := newToken.RefreshToken
 			redisErr = redisStore.SetRedisPair(redisAccessTokenKey, newAccessToken, time.Duration(expIn*float64(time.Second)))
 			if redisErr != nil {
-				return "", redisErr
+				return "", "", redisErr
 			}
 			if newRefreshToken != "" {
 				redisErr = redisStore.SetRedisPair(redisRefreshTokenKey, newRefreshToken, 0)
 				if redisErr != nil {
-					return "", redisErr
+					return "", "", redisErr
 				}
+				refreshToken = newRefreshToken
+			} else {
+				refreshToken = oldRefreshToken
 			}
 			accessToekn = newAccessToken
 			success = true
@@ -73,7 +78,7 @@ func ExchangeRefreshToken(provider goth.Provider, integrationName, accountID str
 
 	}
 	if !success {
-		return "", errors.New("failed in process of get/update oauth tokens")
+		return "", "", errors.New("failed in process of get/update oauth tokens")
 	}
 	return
 }
