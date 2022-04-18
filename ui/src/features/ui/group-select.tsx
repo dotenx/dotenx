@@ -1,7 +1,8 @@
+import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { Fragment, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
-import { BsChevronDown } from 'react-icons/bs'
+import { IoChevronDown, IoSearch } from 'react-icons/io5'
 import { FieldError } from './field'
 
 export interface GroupSelectOption {
@@ -21,8 +22,8 @@ interface GroupSelectProps {
 
 export function GroupSelect({ control, name, options, errors, placeholder }: GroupSelectProps) {
 	return (
-		<div className="flex flex-col gap-0.5">
-			<span>Type</span>
+		<div className="flex flex-col gap-1">
+			<span className="text-sm font-bold cursor-default">Type</span>
 			<ControlledGroupSelect
 				name={name}
 				control={control}
@@ -83,7 +84,10 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 	return (
 		<div className="relative">
 			<button
-				className="flex items-center justify-between w-full p-1 text-left bg-white border border-black rounded cursor-pointer"
+				className={clsx(
+					'flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded-lg cursor-pointer outline-rose-500 border-slate-400',
+					isOpen && 'outline outline-offset-[-1px] outline-2'
+				)}
 				type="button"
 				onClick={() => setIsOpen((isOpen) => !isOpen)}
 			>
@@ -93,29 +97,31 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 						{value.label}
 					</div>
 				) : (
-					<span>{placeholder}</span>
+					<span className="text-slate-500">{placeholder}</span>
 				)}
-				<BsChevronDown />
+				<IoChevronDown className="text-slate-400" />
 			</button>
 
 			{isOpen && (
-				<div className="absolute left-0 right-0 z-10 flex flex-col mt-6 overflow-y-auto bg-white border border-black rounded max-h-96 scrollbar-thumb-gray-900 scrollbar-track-gray-100 scrollbar-thin">
-					<input
-						type="text"
-						className="px-2 py-1 m-0 mt-1 text-sm border-none rounded focus:ring-0 "
-						placeholder="Search a task"
-						onChange={(e) => setSearchText(e.target.value)}
-						value={searchText}
-						autoFocus
-					/>
-					<hr className="m-1" />
+				<div className="absolute left-0 right-0 z-10 flex flex-col pr-1 mt-1 overflow-y-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thin">
+					<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded-md">
+						<IoSearch className="text-slate-500" />
+						<input
+							type="text"
+							className="p-0 m-0 text-sm border-none rounded focus:ring-0 focus:outline-none placeholder:text-slate-500"
+							placeholder="Search a task"
+							onChange={(e) => setSearchText(e.target.value)}
+							value={searchText}
+							autoFocus
+						/>
+					</div>
 					{searchedOptions.map(({ item, refIndex }) => (
-						<Fragment key={refIndex}>
-							<div className="pt-3 pl-1 text-sm text-gray-500">{item.group}</div>
+						<div className="p-1" key={refIndex}>
+							<div className="pl-1 text-sm text-gray-500">{item.group}</div>
 							{item.options.map((option, index) => (
 								<button
 									key={index}
-									className="p-1.5 flex bg-white w-full cursor-pointer items-center gap-2 hover:bg-black hover:text-white"
+									className="flex items-center w-full gap-2 p-1 transition bg-white rounded-md cursor-pointer hover:bg-rose-50"
 									type="button"
 									onClick={() => {
 										onChange(option)
@@ -128,7 +134,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 									{option.label}
 								</button>
 							))}
-						</Fragment>
+						</div>
 					))}
 				</div>
 			)}
