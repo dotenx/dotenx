@@ -1,7 +1,9 @@
 import _ from 'lodash'
+import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteTrigger, getTriggers, QueryKey } from '../../api'
 import { getDisplayText } from '../../utils'
+import { Modals, useModal } from '../hooks'
 import { Detail, Item, Table } from '../ui'
 
 function useTriggerList() {
@@ -28,7 +30,8 @@ export function TriggerList() {
 	return (
 		<Table
 			title="Triggers"
-			headers={['Name', 'Type', 'Integration', 'Automation']}
+			actionBar={<NewTrigger />}
+			headers={['Name', 'Type', 'Integration', 'Automation', 'Action']}
 			items={triggers?.map((trigger, index) => (
 				<Item
 					key={index}
@@ -51,5 +54,19 @@ export function TriggerList() {
 				</Item>
 			))}
 		/>
+	)
+}
+
+function NewTrigger() {
+	const modal = useModal()
+
+	return (
+		<button
+			className="flex items-center gap-2 px-3 py-2 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
+			onClick={() => modal.open(Modals.NewTrigger)}
+		>
+			<IoAdd className="text-2xl" />
+			New trigger
+		</button>
 	)
 }
