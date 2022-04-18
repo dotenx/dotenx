@@ -86,7 +86,7 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 
 func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var triggers []models.EventTrigger
+		var triggers []*models.EventTrigger
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
 			log.Println(err)
@@ -99,11 +99,12 @@ func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		for _, tr := range triggers {
-			tr.Endpoint = endpoint
-		}
-		err = controller.Service.AddTriggers(accountId, triggers)
+		err = controller.Service.AddTriggers(accountId, triggers, endpoint)
 		if err != nil {
+			if err.Error() == "invalid trigger dto" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
