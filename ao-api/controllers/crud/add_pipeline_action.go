@@ -74,7 +74,7 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 			FromVersion: pipelineDto.FromVersion,
 		}
 
-		err := mc.Service.CreatePipeLine(&base, &pipeline)
+		err := mc.Service.UpdatePipeline(&base, &pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
