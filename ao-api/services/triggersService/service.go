@@ -18,6 +18,7 @@ type TriggerService interface {
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
+	UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
 	StartScheduller(accId string) error
@@ -57,7 +58,6 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 }
 
 func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
-	// todo: make ready the body to be saved in table
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
 		tr.AccountId = accountId
@@ -78,6 +78,33 @@ func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.
 	}
 	return
 }
+
+func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+	err = manager.Store.DeleteTriggersForPipeline(context.Background(), accountId, triggers[0].Pipeline)
+	if err != nil {
+		return errors.New("error in deleting old triggers: " + err.Error())
+	}
+	for _, tr := range triggers {
+		tr.Endpoint = endpoint
+		tr.AccountId = accountId
+		if !tr.IsValid() {
+			return errors.New("invalid trigger dto")
+		}
+		err = manager.Store.AddTrigger(context.Background(), accountId, *tr)
+		if err == nil {
+			if tr.Type == "Schedule" {
+				err = manager.StartSchedulling(*tr)
+				if err != nil {
+					return
+				}
+			}
+		} else {
+			return
+		}
+	}
+	return
+}
+
 func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipeline string) error {
 	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName, pipeline)
 }
