@@ -8,7 +8,7 @@ export default function IntegrationsPage() {
 			<div className="px-32 py-16 grow">
 				<IntegrationList />
 			</div>
-			<Modal kind={Modals.NewIntegration}>
+			<Modal kind={Modals.NewIntegration} title="New Integration">
 				<NewIntegration />
 			</Modal>
 		</div>

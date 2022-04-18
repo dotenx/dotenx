@@ -12,7 +12,7 @@ export default function TriggersPage() {
 			<div className="px-32 py-16 grow">
 				<TriggerList />
 			</div>
-			<Modal kind={Modals.NewTrigger}>
+			<Modal title="New Trigger" kind={Modals.NewTrigger}>
 				<TriggerForm onSave={onSave} mode="new" />
 			</Modal>
 		</div>

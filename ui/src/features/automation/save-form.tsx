@@ -30,7 +30,6 @@ export function SaveForm() {
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
-			<h2 className="text-2xl">Save automation</h2>
 			<div className="flex flex-col gap-5 grow">
 				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
