@@ -50,7 +50,7 @@ export function Item({ children, values, onDelete }: ItemProps) {
 		<div className="p-5 overflow-hidden text-slate-500 even:bg-gray-50">
 			<div
 				className={clsx(
-					'grid items-center p-1',
+					'grid items-center p-1 transition',
 					children && 'hover:bg-gray-100 rounded cursor-pointer'
 				)}
 				style={{ gridTemplateColumns: `repeat(${values.length + 1}, 1fr)` }}
