@@ -1,4 +1,4 @@
-import { BsPlusSquare } from 'react-icons/bs'
+import { IoAdd, IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
@@ -13,11 +13,11 @@ export default function AutomationsPage() {
 
 	return (
 		<div className="grow">
-			<Header />
-			<div className="px-24 py-6 grow">
+			<div className="px-32 py-16 grow">
 				<Table
 					title="Automations"
-					headers={['Name']}
+					actionBar={<NewAutomation />}
+					headers={['Name', 'Action']}
 					items={automations?.map((automation) => (
 						<Item
 							key={automation.name}
@@ -38,33 +38,31 @@ interface ItemProps {
 
 function Item({ name, onDelete }: ItemProps) {
 	return (
-		<div className="flex justify-between p-2 m-4 bg-gray-100 rounded">
+		<div className="flex items-center justify-between p-6 even:bg-gray-50 text-slate-500">
 			<Link className="hover:underline underline-offset-2" to={`/automations/${name}`}>
 				{name}
 			</Link>
 			<button
-				className="px-2 text-xs text-white bg-red-600 border border-red-600 rounded hover:bg-white hover:text-red-600"
+				className="p-1 text-2xl transition rounded hover:text-rose-600 hover:bg-rose-50"
 				type="button"
 				onClick={onDelete}
 			>
-				Delete
+				<IoTrash />
 			</button>
 		</div>
 	)
 }
 
-function Header() {
+function NewAutomation() {
 	const newAutomation = useNewAutomation()
 
 	return (
-		<div className="flex items-center justify-end p-10">
-			<button
-				className="flex items-center px-2 py-1 mx-1 text-white bg-black border border-black rounded hover:bg-white hover:text-black"
-				onClick={newAutomation}
-			>
-				New Automation
-				<BsPlusSquare className="ml-2" />
-			</button>
-		</div>
+		<button
+			className="flex items-center gap-2 py-2 px-3 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
+			onClick={newAutomation}
+		>
+			<IoAdd className="text-2xl" />
+			New Automation
+		</button>
 	)
 }
