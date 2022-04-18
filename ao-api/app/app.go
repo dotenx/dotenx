@@ -122,6 +122,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipline := r.Group("/pipeline")
 	{
 		pipline.POST("", crudController.AddPipeline())
+		pipline.PUT("", crudController.UpdatePipeline())
 		pipline.GET("", crudController.GetPipelines())
 		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
