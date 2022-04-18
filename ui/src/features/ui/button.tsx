@@ -7,7 +7,7 @@ export function Button({ className, ...rest }: ButtonProps) {
 	return (
 		<button
 			className={clsx(
-				'flex items-center justify-center w-full p-1 font-medium text-white bg-black border border-black rounded cursor-pointer disabled:cursor-not-allowed hover:bg-white hover:text-black',
+				'flex items-center justify-center w-full py-2 font-medium text-white bg-rose-600 transition  rounded-lg cursor-pointer disabled:cursor-not-allowed hover:bg-rose-700',
 				className
 			)}
 			{...rest}

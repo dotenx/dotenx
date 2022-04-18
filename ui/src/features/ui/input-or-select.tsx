@@ -63,8 +63,8 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 
 	return (
 		<div className="relative" ref={wrapperRef}>
-			<div className="flex flex-col">
-				<label className="text-sm" htmlFor={name}>
+			<div className="flex flex-col gap-1">
+				<label className="text-sm font-bold" htmlFor={name}>
 					{label}
 				</label>
 				{value.type === 'option' && (
@@ -80,7 +80,7 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 				)}
 				{value.type === 'text' && (
 					<input
-						className="px-2 py-1 border border-black rounded"
+						className="px-2 py-1 border rounded-lg border-slate-400"
 						onFocus={() => setIsOpen(true)}
 						id={name}
 						autoComplete="off"
