@@ -1,5 +1,5 @@
 import { DragEvent } from 'react'
-import { NodeType } from './task-node'
+import { NodeType } from './use-flow'
 
 export function DragDropNodes() {
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
@@ -13,7 +13,7 @@ export function DragDropNodes() {
 			<div className="flex gap-2">
 				<div
 					className="flex flex-col items-center justify-center p-1 font-bold text-center border-2 border-black rounded cursor-grab grow"
-					onDragStart={(event) => onDragStart(event, NodeType.Default)}
+					onDragStart={(event) => onDragStart(event, NodeType.Task)}
 					draggable
 				>
 					Task

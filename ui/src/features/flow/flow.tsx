@@ -13,7 +13,7 @@ import { TriggerEntity, TriggerNode } from './trigger-node'
 import { useFlow } from './use-flow'
 
 const nodeTypes = {
-	default: TaskNode,
+	task: TaskNode,
 	trigger: TriggerNode,
 }
 

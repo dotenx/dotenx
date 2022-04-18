@@ -14,14 +14,14 @@ export function useLayout() {
 	const nodeHeight: number = node ? node.__rf.height : NODE_HEIGHT
 
 	const onLayout = (direction: string) => {
-		const layoutedElements = getLayoutedElements(elements, direction, nodeWidth, nodeHeight)
+		const layoutedElements = getLaidOutElements(elements, direction, nodeWidth, nodeHeight)
 		setElements(layoutedElements)
 	}
 
 	return { onLayout }
 }
 
-export function getLayoutedElements(
+export function getLaidOutElements(
 	elements: Elements,
 	direction = 'TB',
 	nodeWidth: number,

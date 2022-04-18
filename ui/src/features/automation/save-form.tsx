@@ -101,7 +101,7 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 
 	const nodes = elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Default) as Node<TaskNodeData>[]
+		.filter((node) => node.type === NodeType.Task) as Node<TaskNodeData>[]
 	const edges = elements.filter(isEdge) as Edge<EdgeData>[]
 
 	nodes.forEach((node) => {
