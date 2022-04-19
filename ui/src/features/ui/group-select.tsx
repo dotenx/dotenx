@@ -74,12 +74,22 @@ interface GroupSelectInnerProps {
 function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [searchText, setSearchText] = useState('')
-	const fuse = useMemo(() => new Fuse(options, { keys: ['group', 'options.label'] }), [options])
-	const searchedOptions = useMemo(() => {
-		const result = fuse.search(searchText)
-		if (result.length > 0) return result
+	const [selectedGroup, setSelectedGroup] = useState<GroupOption>()
+	const groupsSearch = useMemo(() => new Fuse(options, { keys: ['group'] }), [options])
+	const itemOptions = useMemo(() => selectedGroup?.options ?? [], [selectedGroup?.options])
+	const itemsSearch = useMemo(() => new Fuse(itemOptions, { keys: ['value'] }), [itemOptions])
+
+	const searchedGroups = useMemo(() => {
+		const result = groupsSearch.search(searchText)
+		if (searchText) return result
 		return options.map((option, index) => ({ item: option, refIndex: index }))
-	}, [fuse, options, searchText])
+	}, [groupsSearch, options, searchText])
+
+	const searchedItems = useMemo(() => {
+		const result = itemsSearch.search(searchText)
+		if (searchText) return result
+		return itemOptions.map((option, index) => ({ item: option, refIndex: index }))
+	}, [itemsSearch, itemOptions, searchText])
 
 	return (
 		<div className="relative">
@@ -115,29 +125,60 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 							autoFocus
 						/>
 					</div>
-					{searchedOptions.map(({ item, refIndex }) => (
-						<div className="p-1" key={refIndex}>
-							<div className="pl-1 text-sm text-gray-500">{item.group}</div>
-							{item.options.map((option, index) => (
-								<button
-									key={index}
-									className="flex items-center w-full gap-2 p-1 transition bg-white rounded-md cursor-pointer hover:bg-rose-50"
-									type="button"
-									onClick={() => {
-										onChange(option)
-										setIsOpen(false)
-									}}
-								>
-									{option.iconUrl && (
-										<img className="w-5 h-5" src={option.iconUrl} alt="" />
-									)}
-									{option.label}
-								</button>
+					<div className="pb-1">
+						{!selectedGroup && searchedGroups.length === 0 && (
+							<div className="p-2 text-xs font-thin text-center ">No group found</div>
+						)}
+						{!selectedGroup &&
+							searchedGroups.map(({ item, refIndex }) => (
+								<div className="px-2 py-0.5" key={refIndex}>
+									<DropdownItem
+										key={refIndex}
+										label={item.group}
+										iconUrl={item.options[0].iconUrl}
+										onSelect={() => {
+											setSelectedGroup(item)
+											setSearchText('')
+										}}
+									/>
+								</div>
 							))}
-						</div>
-					))}
+						{selectedGroup &&
+							searchedItems.map(({ item, refIndex }) => (
+								<div className="px-2 py-0.5" key={refIndex}>
+									<DropdownItem
+										label={item.label}
+										iconUrl={item.iconUrl}
+										onSelect={() => {
+											onChange(item)
+											setSelectedGroup(undefined)
+											setIsOpen(false)
+										}}
+									/>
+								</div>
+							))}
+					</div>
 				</div>
 			)}
 		</div>
+	)
+}
+
+interface DropdownItemProps {
+	onSelect: () => void
+	iconUrl?: string
+	label: string
+}
+
+function DropdownItem({ onSelect, iconUrl, label }: DropdownItemProps) {
+	return (
+		<button
+			className="flex items-center w-full gap-2 p-2 text-sm transition bg-white rounded-md cursor-pointer hover:bg-rose-50"
+			type="button"
+			onClick={onSelect}
+		>
+			{iconUrl && <img className="w-5 h-5" src={iconUrl} alt="" />}
+			{label}
+		</button>
 	)
 }
