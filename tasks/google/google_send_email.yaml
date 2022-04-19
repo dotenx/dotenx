@@ -13,4 +13,5 @@ fields:
       type: text
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/281/281764.png
+node_color: FBFB11
 description: Send an email message with gmail service

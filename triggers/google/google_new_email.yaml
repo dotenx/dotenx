@@ -18,4 +18,5 @@ outputs:
       type: text
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/281/281764.png
+node_color: FBFB11
 description: Checks if there is a new email in inbox (sent before given number of seconds), tiggers a specefic pipeline
