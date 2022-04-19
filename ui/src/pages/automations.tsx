@@ -16,6 +16,7 @@ export default function AutomationsPage() {
 			<div className="px-32 py-16 grow">
 				<Table
 					title="Automations"
+					emptyText="You have no automation yet, try adding one."
 					actionBar={<NewAutomation />}
 					headers={['Name', 'Action']}
 					items={automations?.map((automation) => (
@@ -58,7 +59,7 @@ function NewAutomation() {
 
 	return (
 		<button
-			className="flex items-center gap-2 py-2 px-3 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
+			className="flex items-center gap-2 px-3 py-2 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
 			onClick={newAutomation}
 		>
 			<IoAdd className="text-2xl" />

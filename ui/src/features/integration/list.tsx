@@ -16,6 +16,7 @@ export function IntegrationList() {
 	return (
 		<Table
 			title="Integrations"
+			emptyText="You have no integration yet, try adding one."
 			actionBar={<ActionBar />}
 			headers={['Name', 'Type', 'Action']}
 			items={integrations?.map((integration) => (

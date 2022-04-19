@@ -30,6 +30,7 @@ export function TriggerList() {
 	return (
 		<Table
 			title="Triggers"
+			emptyText="You have no trigger yet, try adding one."
 			actionBar={<NewTrigger />}
 			headers={['Name', 'Type', 'Integration', 'Automation', 'Action']}
 			items={triggers?.map((trigger, index) => (
