@@ -106,7 +106,7 @@ function RawSelect({
 					{options.map((option) => (
 						<button
 							type="button"
-							className="w-full p-1 text-left transition rounded-md hover:bg-rose-50"
+							className="w-full px-2 py-1 text-left transition rounded-md hover:bg-rose-50"
 							key={option.label}
 							onClick={() => {
 								onChange(option)
