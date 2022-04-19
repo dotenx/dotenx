@@ -27,8 +27,12 @@ export function Modal({ children, kind, title }: ModalProps) {
 		>
 			<div className="flex items-center justify-between px-4 py-2 text-white bg-rose-600">
 				<h3>{title}</h3>
-				<button type="button" onClick={modal.close}>
-					<IoClose className="text-2xl transition rounded hover:bg-rose-500" />
+				<button
+					className="text-2xl transition rounded outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+					type="button"
+					onClick={modal.close}
+				>
+					<IoClose />
 				</button>
 			</div>
 			<div className="p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 h-[75vh] scrollbar-thumb-slate-300">
