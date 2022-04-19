@@ -11,13 +11,16 @@ interface TableProps {
 
 export function Table({ title, headers, items = [], actionBar }: TableProps) {
 	return (
-		<div className="space-y-9">
+		<div className="flex flex-col gap-8">
 			<div className="flex items-center justify-between">
 				<h2 className="text-2xl font-bold leading-loose">{title}</h2>
-				{actionBar}
+				{items?.length !== 0 && actionBar}
 			</div>
 			{items?.length === 0 ? (
-				<div className="mt-1.5">No items</div>
+				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
+					<span className="text-lg">You have no automation yet, try adding one.</span>
+					{actionBar}
+				</div>
 			) : (
 				<div className="border rounded">
 					<div
