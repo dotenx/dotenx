@@ -19,6 +19,7 @@ type TriggerDefinition struct {
 	Outputs          []Credential `json:"outputs" yaml:"outputs"`
 	Author           string       `json:"author" yaml:"author"`
 	Icon             string       `json:"icon" yaml:"icon"`
+	NodeColor        string       `json:"node_color" yaml:"node_color"`
 	Description      string       `json:"description" yaml:"description"`
 }
 
@@ -62,6 +63,7 @@ func readTriggerFile(address string) {
 	if yamlFile.IntegrationTypes == nil {
 		yamlFile.IntegrationTypes = make([]string, 0)
 	}
+	yamlFile.NodeColor = "#" + yamlFile.NodeColor
 	AvaliableTriggers[yamlFile.Type] = yamlFile
 }
 

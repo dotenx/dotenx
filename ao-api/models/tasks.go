@@ -99,6 +99,7 @@ func readTaskFile(addr string) {
 	if yamlFile.Integrations == nil {
 		yamlFile.Integrations = make([]string, 0)
 	}
+	yamlFile.NodeColor = "#" + yamlFile.NodeColor
 	AvaliableTasks[yamlFile.Type] = yamlFile
 }
 
