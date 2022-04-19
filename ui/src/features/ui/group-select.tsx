@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { IoChevronDown, IoSearch } from 'react-icons/io5'
+import { useOutsideClick } from '../hooks'
 import { FieldError } from './field'
 
 export interface GroupSelectOption {
@@ -78,6 +79,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 	const groupsSearch = useMemo(() => new Fuse(options, { keys: ['group'] }), [options])
 	const itemOptions = useMemo(() => selectedGroup?.options ?? [], [selectedGroup?.options])
 	const itemsSearch = useMemo(() => new Fuse(itemOptions, { keys: ['value'] }), [itemOptions])
+	const searchRef = useRef<HTMLInputElement>(null)
 
 	const searchedGroups = useMemo(() => {
 		const result = groupsSearch.search(searchText)
@@ -91,8 +93,17 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 		return itemOptions.map((option, index) => ({ item: option, refIndex: index }))
 	}, [itemsSearch, itemOptions, searchText])
 
+	const close = () => {
+		setIsOpen(false)
+		setSearchText('')
+		setSelectedGroup(undefined)
+	}
+
+	const wrapperRef = useRef<HTMLDivElement>(null)
+	useOutsideClick(wrapperRef, close)
+
 	return (
-		<div className="relative">
+		<div className="relative" ref={wrapperRef}>
 			<button
 				className={clsx(
 					'flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded-lg cursor-pointer outline-rose-500 border-slate-400',
@@ -117,8 +128,9 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 					<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded-md">
 						<IoSearch className="text-slate-500" />
 						<input
-							type="text"
 							className="p-0 m-0 text-sm border-none rounded focus:ring-0 focus:outline-none placeholder:text-slate-500"
+							ref={searchRef}
+							type="text"
 							placeholder="Search a task"
 							onChange={(e) => setSearchText(e.target.value)}
 							value={searchText}
@@ -127,7 +139,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 					</div>
 					<div className="pb-1">
 						{!selectedGroup && searchedGroups.length === 0 && (
-							<div className="p-2 text-xs font-thin text-center ">No group found</div>
+							<div className="p-2 text-xs font-thin text-center">No group found</div>
 						)}
 						{!selectedGroup &&
 							searchedGroups.map(({ item, refIndex }) => (
@@ -139,6 +151,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 										onSelect={() => {
 											setSelectedGroup(item)
 											setSearchText('')
+											searchRef.current?.focus()
 										}}
 									/>
 								</div>
@@ -151,8 +164,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 										iconUrl={item.iconUrl}
 										onSelect={() => {
 											onChange(item)
-											setSelectedGroup(undefined)
-											setIsOpen(false)
+											close()
 										}}
 									/>
 								</div>
