@@ -1,5 +1,4 @@
-import clsx from 'clsx'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
 import { EdgeCondition } from '../automation'
@@ -52,8 +51,6 @@ export function PipeEdge({
 		modal.open(Modals.EdgeSettings, edgeEntity)
 	}
 
-	const [isSettingsShown, setIsSettingsShown] = useState(false)
-
 	return (
 		<>
 			<path
@@ -62,8 +59,6 @@ export function PipeEdge({
 				className="react-flow__edge-path"
 				d={edgePath}
 				markerEnd={markerEnd}
-				onMouseEnter={() => setIsSettingsShown(true)}
-				onMouseLeave={() => setIsSettingsShown(false)}
 			/>
 			<foreignObject
 				width={foreignObjectSize}
@@ -75,10 +70,7 @@ export function PipeEdge({
 			>
 				<div className="flex items-center justify-center w-full h-full">
 					<button
-						className={clsx(
-							'p-1 bg-white text-[8px] transition group-hover:opacity-100 rounded-full hover:text-slate-900',
-							isSettingsShown ? 'opacity-100' : 'opacity-0'
-						)}
+						className="p-1 bg-white text-[8px] transition rounded-full group-hover:scale-100 scale-50"
 						onClick={(event) => onEdgeClick(event)}
 					>
 						<BsGearFill />
