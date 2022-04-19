@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -22,13 +23,32 @@ func main() {
 		return
 	}
 	_, err = publishPost(text, pageId, pageAccessToken)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	log.Println("post successfully published")
 }
 
 func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
-	url := "https://graph.facebook.com/" + pageId + "/feed?message=" + text + "&access_token=" + pageAccessToken
-	out, err, statusCode, _ := httpRequest(http.MethodPost, url, nil, nil, 0)
+	url := "https://graph.facebook.com/" + pageId + "/feed?access_token=" + pageAccessToken
+	body := make(map[string]interface{})
+	body["message"] = text
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	payload := bytes.NewBuffer(jsonData)
+	headers := []Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+	}
+	out, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
 	if err != nil || statusCode != http.StatusOK {
+		log.Println("facebook response (publish post request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from facebook")
 		}
@@ -39,6 +59,7 @@ func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	id = resp.Id
@@ -49,6 +70,7 @@ func getPageAccessToken(accessToken, pageId string) (pageAccessToken string, err
 	url := "https://graph.facebook.com/" + pageId + "?fields=access_token&access_token=" + accessToken
 	out, err, statusCode, _ := httpRequest(http.MethodGet, url, nil, nil, 0)
 	if err != nil || statusCode != http.StatusOK {
+		log.Println("facebook response (get page access token request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from facebook")
 		}
@@ -60,6 +82,7 @@ func getPageAccessToken(accessToken, pageId string) (pageAccessToken string, err
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	pageAccessToken = resp.PageAccessToken
