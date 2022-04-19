@@ -104,7 +104,7 @@ function RawSelect({
 			{isOpen && (
 				<div className="absolute inset-x-0 z-10 p-1 bg-white border rounded-lg shadow-md border-slate-300">
 					{options.length === 0 && (
-						<div className="p-1 text-xs font-thin">No options</div>
+						<div className="p-1.5 text-xs font-thin text-center">No options</div>
 					)}
 					{options.map((option) => (
 						<button
