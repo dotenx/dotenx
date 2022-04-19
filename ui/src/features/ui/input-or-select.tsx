@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { IoChevronDown, IoClose } from 'react-icons/io5'
+import { useOutsideClick } from '../hooks'
 import { FieldError } from './field'
 
 interface InputOrSelectProps {
@@ -183,19 +184,4 @@ function SelectedData({ value, onClose }: SelectedDataProps) {
 			</button>
 		</div>
 	)
-}
-
-function useOutsideClick(ref: RefObject<HTMLDivElement>, callback: () => void) {
-	useEffect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		function handleClickOutside(event: any) {
-			if (ref.current && !ref.current.contains(event.target)) {
-				callback()
-			}
-		}
-		document.addEventListener('mousedown', handleClickOutside)
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
-		}
-	}, [callback, ref])
 }
