@@ -25,7 +25,7 @@ export function Table({ title, headers, items = [], actionBar, emptyText }: Tabl
 					<EmptySvg className="fixed -right-20 -bottom-80" />
 				</div>
 			) : (
-				<div className="border rounded">
+				<div className="overflow-hidden border rounded-md">
 					<div
 						className="grid px-6 py-2 font-semibold bg-gray-200"
 						style={{ gridTemplateColumns: `repeat(${headers.length}, 1fr)` }}

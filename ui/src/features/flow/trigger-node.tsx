@@ -14,7 +14,7 @@ export function TriggerNode({ id, data }: NodeProps<CreateTriggerRequest>) {
 
 	return (
 		<div
-			className="flex gap-0.5 group items-center relative justify-between bg-orange-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-orange-100 focus:ring-4"
+			className="flex gap-0.5 group items-center relative justify-between bg-orange-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-orange-100 focus:ring-4 outline-none"
 			tabIndex={0}
 		>
 			<div className="flex gap-1.5 items-center">
@@ -22,7 +22,7 @@ export function TriggerNode({ id, data }: NodeProps<CreateTriggerRequest>) {
 				<span>{data.name}</span>
 			</div>
 			<button
-				className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-orange-600 bg-orange-100"
+				className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-orange-600 bg-orange-100 focus:opacity-100 outline-orange-500"
 				onClick={() => modal.open(Modals.TriggerSettings, triggerEntity)}
 			>
 				<BsGearFill />

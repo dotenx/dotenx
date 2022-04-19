@@ -8,7 +8,7 @@ export function IconButton(props: IconButtonProps) {
 	return (
 		<div className="relative group">
 			<button
-				className="flex items-center justify-center p-1 text-2xl transition rounded hover:bg-gray-100 disabled:hover:bg-transparent disabled:text-gray-400 disabled:cursor-not-allowed"
+				className="flex items-center justify-center p-1 text-2xl transition rounded focus:bg-gray-100 outline-rose-500 hover:bg-gray-100 disabled:hover:bg-transparent disabled:text-gray-400 disabled:cursor-not-allowed"
 				{...props}
 			>
 				{props.children}

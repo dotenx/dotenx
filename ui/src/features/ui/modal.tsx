@@ -18,7 +18,7 @@ export function Modal({ children, kind, title }: ModalProps) {
 		<ReactModal
 			isOpen={modal.isOpen && kind === modal.kind}
 			onRequestClose={modal.close}
-			className="max-w-md mx-auto overflow-hidden bg-white rounded-lg shadow-lg mt-[10vh] text-slate-700"
+			className="max-w-md mx-auto overflow-hidden bg-white rounded-lg shadow-lg mt-[10vh] text-slate-700 outline-none"
 			style={{
 				overlay: {
 					zIndex: 10,
