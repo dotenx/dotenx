@@ -15,4 +15,5 @@ fields:
       type: text
 author: Armingodiz
 icon: https://symbols.getvecta.com/stencil_85/33_jira-icon.70390a6f88.svg
+node_color: 5364AD
 description: Creates a jira issue with given detailes

@@ -14,4 +14,5 @@ outputs:
       type: text
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/3128/3128310.png
+node_color: 00acee
 description: Checks if there is a new tweet or reply(sent before given number of seconds), tiggers a specefic pipeline

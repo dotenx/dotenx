@@ -14,6 +14,7 @@ type TaskDefinition struct {
 	Integrations []string
 	Author       string      `json:"author" yaml:"author"`
 	Icon         string      `json:"icon" yaml:"icon"`
+	NodeColor    string      `json:"node_color" yaml:"node_color"`
 	Description  string      `json:"description" yaml:"description"`
 	Outputs      []TaskField `json:"outputs" yaml:"outputs"`
 }

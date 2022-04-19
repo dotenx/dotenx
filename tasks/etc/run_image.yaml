@@ -7,4 +7,5 @@ fields:
       type: text
 author: Armingodiz
 icon: https://cdn-icons-png.flaticon.com/512/5969/5969059.png
+node_color: 0DB7ED
 description: Runs given script in mentioned image

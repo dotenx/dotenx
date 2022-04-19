@@ -10,4 +10,5 @@ fields:
       type: JSON
 author: Armingodiz
 icon: https://cdn-icons-png.flaticon.com/512/1674/1674969.png
+node_color: 2ECC71
 description: Sends a http request to given url with given body
