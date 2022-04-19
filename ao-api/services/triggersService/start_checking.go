@@ -10,6 +10,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
@@ -96,7 +97,15 @@ func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
 			Image: img,
 			Env:   envs,
 		},
-		nil, networkConfig, nil, "")
+		&container.HostConfig{
+			Mounts: []mount.Mount{
+				{
+					Type:   mount.TypeBind,
+					Source: config.Configs.App.FileSharing,
+					Target: "/tmp",
+				},
+			},
+		}, networkConfig, nil, "")
 
 	if err != nil {
 		log.Println("error in creating container" + err.Error())
