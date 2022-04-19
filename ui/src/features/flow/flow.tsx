@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai'
-import ReactFlow from 'react-flow-renderer'
+import { useEffect } from 'react'
+import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
 import { CreateTriggerRequest } from '../../api'
 import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
@@ -13,7 +14,7 @@ import { TriggerEntity, TriggerNode } from './trigger-node'
 import { useFlow } from './use-flow'
 
 const nodeTypes = {
-	default: TaskNode,
+	task: TaskNode,
 	trigger: TriggerNode,
 }
 
@@ -32,6 +33,12 @@ export function Flow() {
 		onLoad,
 		updateElement,
 	} = useFlow()
+
+	const { fitView } = useZoomPanHelper()
+
+	useEffect(() => {
+		fitView()
+	}, [fitView])
 
 	return (
 		<>

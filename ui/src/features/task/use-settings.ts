@@ -89,7 +89,7 @@ export function useTaskSettings({
 			queryKey: [QueryKey.GetTaskFields, node.name, node.type],
 			queryFn: async () => {
 				const response =
-					node.nodeType === NodeType.Default
+					node.nodeType === NodeType.Task
 						? getTaskFields(node.type!)
 						: getTriggerDefinition(node.type!)
 				const outputs = (await response).data.outputs

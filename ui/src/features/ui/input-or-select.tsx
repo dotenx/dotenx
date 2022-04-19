@@ -1,6 +1,7 @@
+import clsx from 'clsx'
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
-import { BsChevronDown, BsChevronUp, BsXLg } from 'react-icons/bs'
+import { IoChevronDown, IoClose } from 'react-icons/io5'
 import { FieldError } from './field'
 
 interface InputOrSelectProps {
@@ -80,7 +81,10 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 				)}
 				{value.type === 'text' && (
 					<input
-						className="px-2 py-1 border rounded-lg border-slate-400"
+						className={clsx(
+							'px-2 py-1 border rounded-lg border-slate-400 outline-rose-500',
+							isOpen && 'outline-2 outline-offset-[-0.5px]'
+						)}
 						onFocus={() => setIsOpen(true)}
 						id={name}
 						autoComplete="off"
@@ -91,7 +95,7 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 				)}
 			</div>
 			{isOpen && groups.length !== 0 && (
-				<div className="absolute border border-black rounded mt-1 left-0 right-0 p-2 flex flex-col gap-1.5 bg-white z-10 shadow">
+				<div className="absolute border border-slate-300 rounded-lg mt-1 left-0 right-0 p-2 flex flex-col gap-1.5 bg-white z-10 shadow-md select-none">
 					{groups.map((group, index) => (
 						<Group
 							key={index}
@@ -137,14 +141,16 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 					{iconUrl && <img className="w-4 h-4" src={iconUrl} alt="" />}
 					<span>{name}</span>
 				</div>
-				{isOpen ? <BsChevronUp /> : <BsChevronDown />}
+				<IoChevronDown
+					className={clsx('text-slate-400 transition', isOpen && '-scale-y-100')}
+				/>
 			</div>
 			{isOpen && (
 				<div className="flex flex-col gap-1 mt-1">
 					{options.map((option, index) => (
 						<div
 							key={index}
-							className="text-sm rounded py-0.5 px-1.5 cursor-pointer hover:bg-black hover:text-white"
+							className="text-sm rounded-md py-0.5 px-1.5 cursor-pointer transition hover:bg-rose-50"
 							onClick={() => onSelect(option)}
 						>
 							{option}
@@ -163,17 +169,17 @@ interface SelectedDataProps {
 
 function SelectedData({ value, onClose }: SelectedDataProps) {
 	return (
-		<div className="flex items-center justify-between">
-			<div className="bg-black/5 px-1.5 flex items-center gap-1.5 rounded">
+		<div className="flex items-center justify-between p-1 border rounded-lg border-slate-400">
+			<div className="bg-gray-50 px-1.5 flex items-center gap-2 rounded">
 				{value.iconUrl && <img className="w-4 h-4" src={value.iconUrl} alt="" />}
 				<span className="font-medium">{value.groupName}</span>
-				<span> - {value.data}</span>
+				<span>{value.data}</span>
 			</div>
 			<button
-				className="w-6 h-6 text-red-600 bg-white border border-red-600 rounded cursor-pointer hover:bg-red-600 hover:text-white"
+				className="p-0.5 text-lg transition rounded-md text-rose-500 hover:bg-rose-50"
 				onClick={onClose}
 			>
-				<BsXLg />
+				<IoClose />
 			</button>
 		</div>
 	)

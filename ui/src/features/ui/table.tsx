@@ -1,23 +1,29 @@
 import clsx from 'clsx'
 import { ReactNode, useState } from 'react'
 import { IoTrash } from 'react-icons/io5'
+import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
 
 interface TableProps {
 	title: string
 	headers: string[]
 	items: ReactNode[] | undefined
 	actionBar?: ReactNode
+	emptyText: string
 }
 
-export function Table({ title, headers, items = [], actionBar }: TableProps) {
+export function Table({ title, headers, items = [], actionBar, emptyText }: TableProps) {
 	return (
-		<div className="space-y-9">
+		<div className="flex flex-col gap-8">
 			<div className="flex items-center justify-between">
 				<h2 className="text-2xl font-bold leading-loose">{title}</h2>
-				{actionBar}
+				{items?.length !== 0 && actionBar}
 			</div>
 			{items?.length === 0 ? (
-				<div className="mt-1.5">No items</div>
+				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
+					<span className="text-lg">{emptyText}</span>
+					{actionBar}
+					<EmptySvg className="fixed -right-20 -bottom-80" />
+				</div>
 			) : (
 				<div className="border rounded">
 					<div

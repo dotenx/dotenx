@@ -66,10 +66,11 @@ export function PipeEdge({
 				x={edgeCenterX - foreignObjectSize / 2}
 				y={edgeCenterY - foreignObjectSize / 2}
 				requiredExtensions="http://www.w3.org/1999/xhtml"
+				className="group"
 			>
 				<div className="flex items-center justify-center w-full h-full">
 					<button
-						className="p-1 bg-white text-[8px] hover:bg-black hover:text-white rounded-full"
+						className="p-1 bg-white text-[8px] transition rounded-full group-hover:scale-100 scale-50"
 						onClick={(event) => onEdgeClick(event)}
 					>
 						<BsGearFill />

@@ -25,14 +25,14 @@ export function ActionBar() {
 		<>
 			<div className="fixed right-10 top-[35%] -translate-y-[35%] z-10 flex flex-col gap-4 items-center">
 				<div
-					className="p-2 text-2xl text-white bg-purple-600 rounded shadow-sm cursor-grab"
-					onDragStart={(event) => onDragStart(event, NodeType.Default)}
+					className="p-2 text-2xl text-white rounded shadow-sm bg-emerald-600 cursor-grab"
+					onDragStart={(event) => onDragStart(event, NodeType.Task)}
 					draggable
 				>
 					<BsUiChecksGrid />
 				</div>
 				<div
-					className="p-2 text-2xl text-white rounded shadow-sm bg-fuchsia-600 cursor-grab"
+					className="p-2 text-2xl text-white bg-orange-600 rounded shadow-sm cursor-grab"
 					onDragStart={(event) => onDragStart(event, NodeType.Trigger)}
 					draggable
 				>
