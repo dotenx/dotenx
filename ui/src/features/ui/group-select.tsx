@@ -139,7 +139,9 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 					</div>
 					<div className="pb-1">
 						{!selectedGroup && searchedGroups.length === 0 && (
-							<div className="p-2 text-xs font-thin text-center">No group found</div>
+							<div className="pb-2 pt-1.5 text-xs font-thin text-center">
+								No group found
+							</div>
 						)}
 						{!selectedGroup &&
 							searchedGroups.map(({ item, refIndex }) => (
@@ -156,6 +158,11 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 									/>
 								</div>
 							))}
+						{selectedGroup && searchedItems.length === 0 && (
+							<div className="pb-2 pt-1.5 text-xs font-thin text-center">
+								No item found
+							</div>
+						)}
 						{selectedGroup &&
 							searchedItems.map(({ item, refIndex }) => (
 								<div className="px-2 py-0.5" key={refIndex}>
