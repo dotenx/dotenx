@@ -34,6 +34,7 @@ type TriggerManager struct {
 type triggerSummery struct {
 	Type        string `json:"type"`
 	IconUrl     string `json:"icon_url"`
+	NodeColor   string `json:"node_color"`
 	Description string `json:"description"`
 }
 
@@ -48,7 +49,7 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 		} else {
 			types := make([]triggerSummery, 0)
-			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
+			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description, NodeColor: integ.NodeColor})
 			triggers[integ.Service] = types
 		}
 
