@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 )
@@ -35,7 +34,6 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 		AccountId:      accountId,
 		MetaData:       AvaliableTasks[task.Type],
 		ResultEndpoint: fmt.Sprintf("%s/execution/id/%d/task/%d/result", config.Configs.Endpoints.AoApi, executionId, task.Id),
-		WorkSpace:      accountId + "_" + strconv.Itoa(executionId),
 	}
 }
 
