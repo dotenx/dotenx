@@ -13,9 +13,17 @@ import (
 func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var pipelineDto PipelineDto
-		if err := c.ShouldBindJSON(&pipelineDto); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		accept := c.GetHeader("accept")
+		if accept == "application/x-yaml" {
+			if err := c.ShouldBindYAML(&pipelineDto); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+		} else {
+			if err := c.ShouldBindJSON(&pipelineDto); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
 		}
 		fmt.Println("################")
 		fmt.Println(pipelineDto)
