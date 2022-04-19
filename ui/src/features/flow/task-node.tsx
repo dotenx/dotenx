@@ -29,7 +29,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 		<div className="group">
 			<div
 				className={clsx(
-					'flex gap-0.5 group items-center relative justify-between bg-emerald-600 text-[10px] text-white rounded px-3 py-1 transition-all hover:ring-4 ring-emerald-100 focus:ring-4',
+					'flex gap-0.5 group items-center relative justify-between bg-emerald-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-emerald-100 focus:ring-4',
 					getStatusColor(data.status)
 				)}
 				tabIndex={0}

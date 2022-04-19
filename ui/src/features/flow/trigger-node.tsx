@@ -14,7 +14,7 @@ export function TriggerNode({ id, data }: NodeProps<CreateTriggerRequest>) {
 
 	return (
 		<div
-			className="flex gap-0.5 group items-center relative justify-between bg-orange-600 text-[10px] text-white rounded px-3 py-1 transition-all hover:ring-4 ring-orange-100 focus:ring-4"
+			className="flex gap-0.5 group items-center relative justify-between bg-orange-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-orange-100 focus:ring-4"
 			tabIndex={0}
 		>
 			<div className="flex gap-1.5 items-center">
