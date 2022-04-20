@@ -1,14 +1,14 @@
 import { NodeProps } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
-import { CreateTriggerRequest } from '../../api'
+import { TriggerData } from '../../api'
 import { Modals, useModal } from '../hooks'
 
 export interface TriggerEntity {
 	id: string
-	data: CreateTriggerRequest
+	data: TriggerData
 }
 
-export function TriggerNode({ id, data }: NodeProps<CreateTriggerRequest>) {
+export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 	const modal = useModal()
 	const triggerEntity: TriggerEntity = { id, data }
 

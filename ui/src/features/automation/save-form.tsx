@@ -7,12 +7,11 @@ import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 import {
 	createAutomation,
-	createTrigger,
-	CreateTriggerRequest,
-	Manifest,
+	createTrigger, Manifest,
 	QueryKey,
 	TaskBody,
 	Tasks,
+	TriggerData
 } from '../../api'
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
@@ -63,15 +62,10 @@ function useSaveForm() {
 				onSuccess: () => {
 					modal.close()
 					client.invalidateQueries(QueryKey.GetAutomations)
-
 					const triggers = mapElementsToTriggers(elements)
-					triggers.forEach((trigger) => {
-						if (trigger.data)
-							addTriggerMutation.mutate({
-								...trigger.data,
-								pipeline_name: values.name,
-							})
-					})
+						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
+						.filter((trigger): trigger is TriggerData => !!trigger)
+					addTriggerMutation.mutate(triggers)
 				},
 			}
 		)
@@ -93,7 +87,7 @@ function useSaveForm() {
 function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {
 	return elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Trigger) as Node<CreateTriggerRequest>[]
+		.filter((node) => node.type === NodeType.Trigger) as Node<TriggerData>[]
 }
 
 function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Manifest {

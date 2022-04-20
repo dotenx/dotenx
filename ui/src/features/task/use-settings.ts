@@ -6,13 +6,7 @@ import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
 import { z } from 'zod'
-import {
-	CreateTriggerRequest,
-	getTaskFields,
-	getTaskKinds,
-	getTriggerDefinition,
-	QueryKey,
-} from '../../api'
+import { getTaskFields, getTaskKinds, getTriggerDefinition, QueryKey, TriggerData } from '../../api'
 import { flowAtom } from '../atoms'
 import { NodeType, TaskNodeData } from '../flow'
 import { GroupData } from '../ui'
@@ -54,7 +48,6 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
-	console.log(watch())
 	const taskType = watch('type')
 	const taskName = watch('name')
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
@@ -83,7 +76,7 @@ export function useTaskSettings({
 		.flat()
 		.find((task) => task.type === taskType)
 	const [flowElements] = useAtom(flowAtom)
-	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | CreateTriggerRequest>[])
+	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | TriggerData>[])
 		.filter((node) => node.data?.name !== taskName)
 		.map((node) => ({
 			name: node.data?.name ?? '',

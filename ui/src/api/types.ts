@@ -167,14 +167,16 @@ export type GetAutomationExecutionsResponse = {
 	InitialData: unknown | null
 }[]
 
-export type CreateTriggerRequest = {
+export interface TriggerData {
 	name: string
 	type: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	iconUrl?: string
 }
+
+export type CreateTriggerRequest = TriggerData[]
 
 export type CreateIntegrationRequest = {
 	name: string
