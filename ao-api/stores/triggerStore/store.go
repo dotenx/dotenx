@@ -131,9 +131,12 @@ func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, 
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	_, err := store.db.Connection.Exec(stmt, accountId, triggerName, pipeline)
+	res, err := store.db.Connection.Exec(stmt, accountId, triggerName, pipeline)
 	if err != nil {
 		return err
+	}
+	if count, _ := res.RowsAffected(); count == 0 {
+		return fmt.Errorf("can not delete triggers, try again")
 	}
 	return nil
 }
@@ -151,12 +154,9 @@ func (store *triggerStore) DeleteTriggersForPipeline(ctx context.Context, accoun
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, pipeline)
+	_, err := store.db.Connection.Exec(stmt, accountId, pipeline)
 	if err != nil {
 		return err
-	}
-	if count, _ := res.RowsAffected(); count == 0 {
-		return fmt.Errorf("can not delete triggers, try again")
 	}
 	return nil
 }
