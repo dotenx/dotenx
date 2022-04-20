@@ -1,9 +1,11 @@
 package crud
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -15,9 +17,30 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		var pipelineDto PipelineDto
 		accept := c.GetHeader("accept")
 		if accept == "application/x-yaml" {
-			if err := c.ShouldBindYAML(&pipelineDto); err != nil {
+			var result map[string]interface{}
+			if err := c.ShouldBindYAML(&result); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
+			}
+			for key, val := range result {
+				if key == "manifest" {
+					var mani map[string]models.Task
+					var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
+					bytes, err1 := json2.Marshal(&val)
+					err2 := json.Unmarshal(bytes, &mani)
+					if err1 != nil || err2 != nil {
+						return
+					}
+					manifast := models.Manifest{}
+					manifast.Tasks = make(map[string]models.Task)
+					for name, task := range mani {
+						manifast.Tasks[name] = task
+					}
+					pipelineDto.Manifest = manifast
+				}
+				if key == "name" {
+					pipelineDto.Name = val.(string)
+				}
 			}
 		} else {
 			if err := c.ShouldBindJSON(&pipelineDto); err != nil {
@@ -25,9 +48,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 				return
 			}
 		}
-		fmt.Println("################")
-		fmt.Println(pipelineDto)
-		fmt.Println("##################")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{

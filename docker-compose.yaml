@@ -16,18 +16,18 @@ services:
       - AO_API_URL=http://ao-api:3004
     command: npm run dev
 
- # ui:
- #   build: 
- #     context: ./ui
- #     dockerfile: Dockerfile
- #   ports:
- #     - '3010:80'
- #   networks:
- #       - default
- #   volumes:
- #    - ./ui:/usr/src/app
- #    - ./ui/nginx.conf:/etc/nginx/nginx.conf
- #    - /usr/src/app/node_modules
+  ui:
+    build: 
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - '3010:80'
+    networks:
+        - default
+    volumes:
+     - ./ui:/usr/src/app
+     - ./ui/nginx.conf:/etc/nginx/nginx.conf
+     - /usr/src/app/node_modules
     
   
   redis:
