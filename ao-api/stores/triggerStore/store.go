@@ -131,12 +131,9 @@ func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, 
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, triggerName, pipeline)
+	_, err := store.db.Connection.Exec(stmt, accountId, triggerName, pipeline)
 	if err != nil {
 		return err
-	}
-	if count, _ := res.RowsAffected(); count == 0 {
-		return fmt.Errorf("can not delete trigger, try again")
 	}
 	return nil
 }
