@@ -19,11 +19,7 @@ export function Modal({ children, kind, title }: ModalProps) {
 			isOpen={modal.isOpen && kind === modal.kind}
 			onRequestClose={modal.close}
 			className="max-w-md mx-auto overflow-hidden bg-white rounded-lg shadow-lg mt-[10vh] text-slate-700 outline-none"
-			style={{
-				overlay: {
-					zIndex: 10,
-				},
-			}}
+			overlayClassName="z-10 fixed inset-0 bg-slate-50/75"
 		>
 			<div className="flex items-center justify-between px-4 py-2 text-white bg-rose-600">
 				<h3>{title}</h3>
