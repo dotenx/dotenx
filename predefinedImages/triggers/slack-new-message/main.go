@@ -51,7 +51,7 @@ func main() {
 			fmt.Println("calling endpoint")
 			body := make(map[string]interface{})
 			innerBody := make(map[string]interface{})
-			innerBody["workspace"] = workspace
+			body["workspace"] = workspace
 			innerBody["text"] = res.Messages[0].Msg.Text
 			innerBody["timestamp"] = res.Messages[0].Timestamp
 			body[triggerName] = innerBody
