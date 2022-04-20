@@ -3,6 +3,7 @@ package triggerService
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -10,11 +11,13 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
@@ -49,14 +52,26 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	//fmt.Println(triggers)
 	for _, trigger := range triggers {
 		if trigger.Type != "Schedule" {
-			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store)
+			workSpace, err := getWorkSpace(accId, trigger.Pipeline, manager.ExecutionService)
+			if err != nil {
+				return err
+			}
+			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store, workSpace)
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore) {
+func getWorkSpace(accountId, pipelineName string, executionService executionService.ExecutionService) (string, error) {
+	execId, err := executionService.GetNumberOfExecutions(accountId, pipelineName)
+	if err == nil {
+		return accountId + "_" + pipelineName + "_" + strconv.Itoa(execId+1), nil
+	}
+	return "", errors.New("error creating workspace")
+}
+
+func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
 	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
 		return
@@ -65,7 +80,8 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
 	envs := []string{
 		"PIPELINE_ENDPOINT=" + pipelineUrl,
-		"TRIGGER_NAME=" + trigger.Name}
+		"TRIGGER_NAME=" + trigger.Name,
+		"WORKSPACE=" + workspace}
 	for key, value := range integration.Secrets {
 		envs = append(envs, "INTEGRATION_"+key+"="+value)
 	}
@@ -96,7 +112,15 @@ func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
 			Image: img,
 			Env:   envs,
 		},
-		nil, networkConfig, nil, "")
+		&container.HostConfig{
+			Mounts: []mount.Mount{
+				{
+					Type:   mount.TypeBind,
+					Source: config.Configs.App.FileSharing,
+					Target: "/tmp",
+				},
+			},
+		}, networkConfig, nil, "")
 
 	if err != nil {
 		log.Println("error in creating container" + err.Error())

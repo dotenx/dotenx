@@ -1,9 +1,11 @@
 package executionService
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log"
+	"strconv"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 )
@@ -32,6 +34,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		jobDTO := models.NewJob(task, executionId, accountId)
+		workSpace, err := manager.getWorkSpace(accountId, executionId)
+		if err != nil {
+			return err
+		}
+		jobDTO.WorkSpace = workSpace
 		if task.Integration != "" {
 			integration, err := manager.IntegrationService.GetIntegrationByName(accountId, task.Integration)
 			if err != nil {
@@ -80,4 +87,30 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 		}
 	}
 	return taskBody, nil
+}
+
+func (manager *executionManager) getWorkSpace(accountId string, executionId int) (workspace string, err error) {
+	pipeId, err := manager.Store.GetPipelineIdByExecution(context.Background(), executionId)
+	if err != nil {
+		return
+	}
+	pipeline, err := manager.Store.GetPipelineNameById(context.Background(), accountId, pipeId)
+	if err != nil {
+		return
+	}
+	numberOfExecutions, err := manager.GetNumberOfExecutions(accountId, pipeline)
+	if err == nil {
+		workspace = accountId + "_" + pipeline + "_" + strconv.Itoa(numberOfExecutions)
+		return
+	}
+	return "", errors.New("error creating workspace")
+}
+
+func (manager *executionManager) GetNumberOfExecutions(accountId, pipelineName string) (int, error) {
+	pipelineId, err := manager.Store.GetPipelineId(context.Background(), accountId, pipelineName)
+	if err != nil {
+		return 0, err
+	}
+	return manager.Store.GetNumberOfExecutions(context.Background(), pipelineId)
+	return 0, errors.New("error creating workspace")
 }
