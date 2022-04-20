@@ -19,6 +19,7 @@ import (
 
 func main() {
 	triggerName := os.Getenv("TRIGGER_NAME")
+	workspace := os.Getenv("WORKSPACE")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
 		return
@@ -50,6 +51,7 @@ func main() {
 			fmt.Println("calling endpoint")
 			body := make(map[string]interface{})
 			innerBody := make(map[string]interface{})
+			innerBody["workspace"] = workspace
 			innerBody["text"] = res.Messages[0].Msg.Text
 			innerBody["timestamp"] = res.Messages[0].Timestamp
 			body[triggerName] = innerBody
