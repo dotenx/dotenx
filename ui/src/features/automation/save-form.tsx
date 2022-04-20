@@ -7,11 +7,14 @@ import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 import {
 	createAutomation,
-	createTrigger, Manifest,
+	createTrigger,
+	Manifest,
 	QueryKey,
 	TaskBody,
 	Tasks,
-	TriggerData
+	TriggerData,
+	updateAutomation,
+	updateTrigger,
 } from '../../api'
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
@@ -81,6 +84,39 @@ function useSaveForm() {
 		control,
 		errors,
 		addAutomationMutation: addAutomationMutation,
+	}
+}
+
+export function useUpdateAutomation() {
+	const client = useQueryClient()
+	const updateAutomationMutation = useMutation(updateAutomation)
+	const updateTriggerMutation = useMutation(updateTrigger)
+	const [elements] = useAtom(flowAtom)
+
+	const onUpdate = (values: Schema) => {
+		updateAutomationMutation.mutate(
+			{
+				name: values.name,
+				manifest: mapElementsToPayload(elements),
+			},
+			{
+				onSuccess: () => {
+					client.invalidateQueries(QueryKey.GetAutomation)
+					const triggers = mapElementsToTriggers(elements)
+						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
+						.filter((trigger): trigger is TriggerData => !!trigger)
+					updateTriggerMutation.mutate(triggers, {
+						onSuccess: () => {
+							client.invalidateQueries(QueryKey.GetAutomationTrigger)
+						},
+					})
+				},
+			}
+		)
+	}
+
+	return {
+		onUpdate,
 	}
 }
 

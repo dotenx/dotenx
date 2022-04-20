@@ -13,7 +13,7 @@ import { NodeType } from '../flow'
 import { Modals } from '../hooks'
 import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
-import { SaveForm } from './save-form'
+import { SaveForm, useUpdateAutomation } from './save-form'
 import { useActionBar } from './use-action-bar'
 
 interface ActionBarProps {
@@ -26,6 +26,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 		event.dataTransfer.setData('application/reactflow', nodeType)
 		event.dataTransfer.effectAllowed = 'move'
 	}
+	const { onUpdate } = useUpdateAutomation()
 
 	return (
 		<>
@@ -48,7 +49,13 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
 						<IoPlayOutline />
 					</IconButton>
-					<IconButton tooltip="Save" onClick={() => modal.open(Modals.SaveAutomation)}>
+					<IconButton
+						tooltip="Save"
+						onClick={() => {
+							if (!automationName) modal.open(Modals.SaveAutomation)
+							else onUpdate({ name: automationName })
+						}}
+					>
 						<IoSaveOutline />
 					</IconButton>
 					<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>
