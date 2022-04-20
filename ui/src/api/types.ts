@@ -92,10 +92,12 @@ export type Tasks = Record<string, Task>
 export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
-	body: Record<string, string | { source: string; key: string }>
+	body: TaskBody
 	integration: string
 	meta_data?: Metadata
 }
+
+export type TaskBody = Record<string, string | { source: string; key: string }>
 
 export interface Metadata {
 	icon: string
