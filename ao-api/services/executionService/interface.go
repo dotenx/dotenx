@@ -28,7 +28,6 @@ type ExecutionService interface {
 	GetNextTask(taskId, executionId int, status, accountId string) error
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
-	GetNumberOfExecutions(accountId, pipelineName string) (int, error)
 }
 
 type executionManager struct {

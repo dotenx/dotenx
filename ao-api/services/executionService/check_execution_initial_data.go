@@ -20,3 +20,15 @@ func (manage *executionManager) CheckExecutionInitialData(executionId int, accou
 	}
 	return taskData.(map[string]interface{}), nil
 }
+
+func (manage *executionManager) CheckExecutionInitialDataForWorkSpace(executionId int, accountId string) (workspace string, err error) {
+	initialData, err := manage.Store.GetInitialData(noContext, executionId, accountId)
+	if err != nil {
+		return
+	}
+	workSpace, ok := initialData["workspace"]
+	if !ok {
+		return "", errors.New("no workspace for this task")
+	}
+	return workSpace.(string), nil
+}
