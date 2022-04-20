@@ -3,6 +3,7 @@ import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
 	IoCalendarOutline,
+	IoCopyOutline,
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
@@ -63,6 +64,13 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					</IconButton>
 					<IconButton tooltip="New" onClick={newAutomation}>
 						<IoAdd />
+					</IconButton>
+					<IconButton
+						tooltip="Clone"
+						onClick={() => modal.open(Modals.SaveAutomation)}
+						disabled={!automationName}
+					>
+						<IoCopyOutline />
 					</IconButton>
 					<IconButton tooltip="History" disabled={!automationName}>
 						{automationName && (
