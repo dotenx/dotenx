@@ -3,7 +3,6 @@ package triggerService
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -17,7 +16,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
-	"github.com/dotenx/dotenx/ao-api/services/executionService"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
@@ -52,23 +51,11 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	//fmt.Println(triggers)
 	for _, trigger := range triggers {
 		if trigger.Type != "Schedule" {
-			workSpace, err := getWorkSpace(accId, trigger.Pipeline, manager.ExecutionService)
-			if err != nil {
-				return err
-			}
-			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store, workSpace)
+			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
 	return nil
-}
-
-func getWorkSpace(accountId, pipelineName string, executionService executionService.ExecutionService) (string, error) {
-	execId, err := executionService.GetNumberOfExecutions(accountId, pipelineName)
-	if err == nil {
-		return accountId + "_" + pipelineName + "_" + strconv.Itoa(execId+1), nil
-	}
-	return "", errors.New("error creating workspace")
 }
 
 func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
