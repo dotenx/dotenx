@@ -17,7 +17,7 @@ import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../
 import { flowAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
-import { InputOrSelectValue } from '../ui'
+import { InputOrSelectKind, InputOrSelectValue } from '../ui'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 export enum NodeType {
@@ -121,12 +121,15 @@ export function useFlow() {
 function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
 		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
-			let inputOrSelectValue = { type: 'text', data: '' } as InputOrSelectValue
+			let inputOrSelectValue = {
+				type: InputOrSelectKind.Text,
+				data: '',
+			} as InputOrSelectValue
 			if (typeof fieldValue === 'string') {
-				inputOrSelectValue = { type: 'text', data: fieldValue }
+				inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
 			} else {
 				inputOrSelectValue = {
-					type: 'option',
+					type: InputOrSelectKind.Option,
 					data: fieldValue.key,
 					groupName: fieldValue.source,
 					iconUrl: '',
@@ -144,7 +147,7 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				type: value.type,
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
-				...body,
+				others: body,
 			},
 		}
 	})

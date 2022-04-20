@@ -36,18 +36,30 @@ export function InputOrSelect({ control, label, name, groups, errors }: InputOrS
 	)
 }
 
+export enum InputOrSelectKind {
+	Text = 'text',
+	Option = 'option',
+}
+
 export interface GroupData {
 	name: string
 	options: string[]
 	iconUrl?: string
 }
 
-export interface InputOrSelectValue {
-	type: 'text' | 'option'
+interface InputValue {
+	type: InputOrSelectKind.Text
 	data: string
-	groupName?: string
+}
+
+interface SelectValue {
+	type: InputOrSelectKind.Option
+	data: string
+	groupName: string
 	iconUrl?: string
 }
+
+export type InputOrSelectValue = InputValue | SelectValue
 
 interface InputOrSelectRawProps {
 	name: string
@@ -74,13 +86,13 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 						value={value}
 						onClose={() =>
 							onChange({
-								type: 'text',
+								type: InputOrSelectKind.Text,
 								data: '',
 							})
 						}
 					/>
 				)}
-				{value.type === 'text' && (
+				{value.type === InputOrSelectKind.Text && (
 					<input
 						className={clsx(
 							'px-2 py-1 border rounded-lg border-slate-400 outline-rose-500',
@@ -91,7 +103,9 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 						autoComplete="off"
 						name="name"
 						value={value.data}
-						onChange={(e) => onChange({ type: 'text', data: e.target.value })}
+						onChange={(e) =>
+							onChange({ type: InputOrSelectKind.Text, data: e.target.value })
+						}
 					/>
 				)}
 			</div>
@@ -105,7 +119,7 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 							iconUrl={group.iconUrl}
 							onSelect={(value) => {
 								onChange({
-									type: 'option',
+									type: InputOrSelectKind.Option,
 									data: value,
 									groupName: group.name,
 									iconUrl: group.iconUrl,
@@ -164,7 +178,7 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 }
 
 interface SelectedDataProps {
-	value: InputOrSelectValue
+	value: SelectValue
 	onClose: () => void
 }
 

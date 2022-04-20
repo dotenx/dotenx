@@ -3,16 +3,17 @@ import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button } from '../ui'
+import { Button, InputOrSelectValue } from '../ui'
 import { useIsAcyclic } from './use-is-acyclic'
 
 export interface TaskNodeData {
 	name: string
 	type: string
+	integration?: string
 	status?: TaskExecutionStatus
 	executionId?: string
-	integration?: string
 	iconUrl?: string
+	others?: Record<string, InputOrSelectValue>
 }
 
 export interface TaskEntity {

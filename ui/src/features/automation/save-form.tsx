@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
-import _ from 'lodash'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
@@ -12,12 +11,13 @@ import {
 	CreateTriggerRequest,
 	Manifest,
 	QueryKey,
+	TaskBody,
 	Tasks,
 } from '../../api'
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { useModal } from '../hooks'
-import { Button, Field, Form, InputOrSelectValue } from '../ui'
+import { Button, Field, Form } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -107,15 +107,14 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 	nodes.forEach((node) => {
 		if (!node.data?.name) return console.error('Node data does not exists')
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
-		const body = _.omit(node.data, ['name', 'type', 'integration', 'iconUrl'])
-		for (const key in body) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const taskBody = body as any
-			const taskFieldValue = taskBody[key] as InputOrSelectValue
-			if (taskFieldValue.type === 'option') {
-				taskBody[key] = { source: taskFieldValue.groupName, key: taskFieldValue.data }
+		const others = node.data.others
+		const body: TaskBody = {}
+		for (const key in others) {
+			const taskOtherValue = others[key]
+			if (taskOtherValue.type === 'option') {
+				body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
 			} else {
-				taskBody[key] = taskFieldValue.data
+				body[key] = taskOtherValue.data
 			}
 		}
 		tasks[node.data.name] = {
