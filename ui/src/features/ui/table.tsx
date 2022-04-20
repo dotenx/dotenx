@@ -8,12 +8,12 @@ interface TableProps {
 	headers: string[]
 	items: ReactNode[] | undefined
 	actionBar?: ReactNode
-	emptyText: string
+	emptyText?: string
 }
 
 export function Table({ title, headers, items = [], actionBar, emptyText }: TableProps) {
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-10">
 			<div className="flex items-center justify-between">
 				<h2 className="text-2xl font-bold leading-loose">{title}</h2>
 				{items?.length !== 0 && actionBar}

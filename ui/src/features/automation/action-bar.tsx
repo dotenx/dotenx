@@ -2,11 +2,13 @@ import { DragEvent } from 'react'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
+	IoCalendarOutline,
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
 	IoTrashOutline,
 } from 'react-icons/io5'
+import { Link } from 'react-router-dom'
 import { NodeType } from '../flow'
 import { Modals } from '../hooks'
 import { Modal } from '../ui'
@@ -14,7 +16,11 @@ import { IconButton } from '../ui/icon-button'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 
-export function ActionBar() {
+interface ActionBarProps {
+	automationName?: string
+}
+
+export function ActionBar({ automationName }: ActionBarProps) {
 	const { onDelete, onRun, selectedAutomation, modal, onLayout, newAutomation } = useActionBar()
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)
@@ -50,6 +56,14 @@ export function ActionBar() {
 					</IconButton>
 					<IconButton tooltip="New" onClick={newAutomation}>
 						<IoAdd />
+					</IconButton>
+					<IconButton tooltip="History" disabled={!automationName}>
+						{automationName && (
+							<Link to={`/automations/${automationName}/executions`}>
+								<IoCalendarOutline />
+							</Link>
+						)}
+						{!automationName && <IoCalendarOutline />}
 					</IconButton>
 					<IconButton tooltip="Delete" disabled={!selectedAutomation} onClick={onDelete}>
 						<IoTrashOutline />
