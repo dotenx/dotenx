@@ -42,7 +42,9 @@ export function NewIntegration() {
 				)}
 				{integrationTypeFields?.secrets
 					.filter(({ key }) =>
-						isAdvanced ? true : key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN'
+						isAdvanced || !integrationTypeFields.oauth_provider
+							? true
+							: key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN'
 					)
 					.map((field) => (
 						<Field

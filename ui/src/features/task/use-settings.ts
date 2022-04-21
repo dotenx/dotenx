@@ -6,20 +6,27 @@ import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
 import { z } from 'zod'
-import {
-	CreateTriggerRequest,
-	getTaskFields,
-	getTaskKinds,
-	getTriggerDefinition,
-	QueryKey,
-} from '../../api'
+import { getTaskFields, getTaskKinds, getTriggerDefinition, QueryKey, TriggerData } from '../../api'
 import { flowAtom } from '../atoms'
 import { NodeType, TaskNodeData } from '../flow'
-import { GroupData, InputOrSelectValue } from '../ui'
+import { GroupData } from '../ui'
+import { InputOrSelectKind } from '../ui/input-or-select'
 
 const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
+	integration: z.string().optional(),
+	others: z
+		.record(
+			z.object({ type: z.literal(InputOrSelectKind.Text), data: z.string() }).or(
+				z.object({
+					type: z.literal(InputOrSelectKind.Option),
+					data: z.string(),
+					groupName: z.string(),
+				})
+			)
+		)
+		.optional(),
 })
 
 export type TaskSettingsSchema = z.infer<typeof schema>
@@ -29,12 +36,7 @@ export function useTaskSettings({
 	onSave,
 }: {
 	defaultValues: TaskSettingsSchema
-	onSave: (
-		values: TaskSettingsSchema & { iconUrl?: string } & Record<
-				string,
-				string | InputOrSelectValue | undefined
-			>
-	) => void
+	onSave: (values: TaskSettingsSchema & { iconUrl?: string }) => void
 }) {
 	const {
 		control,
@@ -74,7 +76,7 @@ export function useTaskSettings({
 		.flat()
 		.find((task) => task.type === taskType)
 	const [flowElements] = useAtom(flowAtom)
-	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | CreateTriggerRequest>[])
+	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | TriggerData>[])
 		.filter((node) => node.data?.name !== taskName)
 		.map((node) => ({
 			name: node.data?.name ?? '',

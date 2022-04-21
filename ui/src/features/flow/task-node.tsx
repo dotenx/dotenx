@@ -3,16 +3,17 @@ import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button } from '../ui'
+import { Button, InputOrSelectValue } from '../ui'
 import { useIsAcyclic } from './use-is-acyclic'
 
 export interface TaskNodeData {
 	name: string
 	type: string
+	integration?: string
 	status?: TaskExecutionStatus
 	executionId?: string
-	integration?: string
 	iconUrl?: string
+	others?: Record<string, InputOrSelectValue>
 }
 
 export interface TaskEntity {
@@ -29,7 +30,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 		<div className="group">
 			<div
 				className={clsx(
-					'flex gap-0.5 group items-center relative justify-between !bg-emerald-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-emerald-100 focus:ring-4',
+					'flex gap-0.5 group items-center relative justify-between !bg-emerald-600 text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4 ring-emerald-100 focus:ring-4 outline-none',
 					getStatusColor(data.status)
 				)}
 				tabIndex={0}
@@ -56,7 +57,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 					)}
 				</div>
 				<button
-					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-emerald-600 bg-emerald-100"
+					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-emerald-600 bg-emerald-100 focus:opacity-100 outline-emerald-500"
 					onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
 				>
 					<BsGearFill />

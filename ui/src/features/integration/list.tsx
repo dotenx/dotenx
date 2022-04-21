@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
 import { getDisplayText } from '../../utils'
 import { Modals, useModal } from '../hooks'
-import { Item, Table } from '../ui'
+import { Button, Item, Table } from '../ui'
 
 export function IntegrationList() {
 	const client = useQueryClient()
@@ -34,12 +34,9 @@ function ActionBar() {
 	const modal = useModal()
 
 	return (
-		<button
-			className="flex items-center gap-2 px-3 py-2 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
-			onClick={() => modal.open(Modals.NewIntegration)}
-		>
+		<Button className="max-w-min" onClick={() => modal.open(Modals.NewIntegration)}>
 			<IoAdd className="text-2xl" />
 			New integration
-		</button>
+		</Button>
 	)
 }

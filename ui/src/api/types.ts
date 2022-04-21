@@ -92,10 +92,12 @@ export type Tasks = Record<string, Task>
 export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
-	body: Record<string, string | { source: string; key: string }>
+	body: TaskBody
 	integration: string
 	meta_data?: Metadata
 }
+
+export type TaskBody = Record<string, string | { source: string; key: string }>
 
 export interface Metadata {
 	icon: string
@@ -165,14 +167,16 @@ export type GetAutomationExecutionsResponse = {
 	InitialData: unknown | null
 }[]
 
-export type CreateTriggerRequest = {
+export interface TriggerData {
 	name: string
 	type: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	iconUrl?: string
 }
+
+export type CreateTriggerRequest = TriggerData[]
 
 export type CreateIntegrationRequest = {
 	name: string

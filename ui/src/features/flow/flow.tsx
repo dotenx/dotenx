@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
-import { CreateTriggerRequest } from '../../api'
+import { TriggerData } from '../../api'
 import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
@@ -138,8 +138,8 @@ function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 }
 
 interface TriggerSettingsProps {
-	defaultValues: CreateTriggerRequest
-	onSave: (values: CreateTriggerRequest) => void
+	defaultValues: TriggerData
+	onSave: (values: TriggerData) => void
 }
 
 export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {

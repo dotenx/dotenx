@@ -70,7 +70,7 @@ export function PipeEdge({
 			>
 				<div className="flex items-center justify-center w-full h-full">
 					<button
-						className="p-1 bg-white text-[8px] transition rounded-full group-hover:scale-100 scale-50"
+						className="p-1 bg-white text-[8px] transition rounded-full group-hover:scale-100 scale-50 outline-slate-500 focus:scale-100"
 						onClick={(event) => onEdgeClick(event)}
 					>
 						<BsGearFill />

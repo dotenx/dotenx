@@ -3,7 +3,6 @@ import { Automation, AutomationData } from '../../api'
 import { initialElements } from '../flow'
 import { Modals } from '../hooks'
 
-export const selectedExecutionAtom = atom<number | undefined>(undefined)
 export const listenAtom = atom(0)
 export const selectedAutomationDataAtom = atom<Automation | undefined>(undefined)
 export const selectedAutomationAtom = atom<AutomationData | undefined>(undefined)

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteTrigger, getTriggers, QueryKey } from '../../api'
 import { getDisplayText } from '../../utils'
 import { Modals, useModal } from '../hooks'
-import { Detail, Item, Table } from '../ui'
+import { Button, Detail, Item, Table } from '../ui'
 
 function useTriggerList() {
 	const client = useQueryClient()
@@ -62,12 +62,9 @@ function NewTrigger() {
 	const modal = useModal()
 
 	return (
-		<button
-			className="flex items-center gap-2 px-3 py-2 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
-			onClick={() => modal.open(Modals.NewTrigger)}
-		>
+		<Button className="max-w-min" onClick={() => modal.open(Modals.NewTrigger)}>
 			<IoAdd className="text-2xl" />
 			New trigger
-		</button>
+		</Button>
 	)
 }
