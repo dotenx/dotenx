@@ -15,6 +15,7 @@ import (
 type TriggerStore interface {
 	AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error
 	DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error
+	DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
 	GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error)
 }
@@ -135,7 +136,27 @@ func (store *triggerStore) DeleteTrigger(ctx context.Context, accountId string, 
 		return err
 	}
 	if count, _ := res.RowsAffected(); count == 0 {
-		return fmt.Errorf("can not delete trigger, try again")
+		return fmt.Errorf("can not delete triggers, try again")
+	}
+	return nil
+}
+
+var deleteTriggers = `
+delete from event_triggers
+where account_id = $1 and pipeline = $2;
+`
+
+func (store *triggerStore) DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error {
+	var stmt string
+	switch store.db.Driver {
+	case db.Postgres:
+		stmt = deleteTriggers
+	default:
+		return fmt.Errorf("driver not supported")
+	}
+	_, err := store.db.Connection.Exec(stmt, accountId, pipeline)
+	if err != nil {
+		return err
 	}
 	return nil
 }

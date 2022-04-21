@@ -39,6 +39,16 @@ type EventTrigger struct {
 	MetaData    TriggerDefinition      `json:"meta_data"`
 }
 
+func (tr EventTrigger) IsValid() bool {
+	if tr.Endpoint == "" {
+		return false
+	}
+	if tr.Pipeline == "" {
+		return false
+	}
+	return true
+}
+
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
 	filepath.WalkDir("triggers", walkTriggers)
