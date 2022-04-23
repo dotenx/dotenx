@@ -30,6 +30,10 @@ export function createAutomation(payload: CreateAutomationRequest) {
 	return api.post<void>('/pipeline', payload)
 }
 
+export function updateAutomation(payload: CreateAutomationRequest) {
+	return api.put<void>('/pipeline', payload)
+}
+
 export function getAutomations() {
 	return api.get<GetAutomationsResponse>('/pipeline')
 }
@@ -73,6 +77,10 @@ export function deleteIntegration(name: string) {
 
 export function createTrigger(payload: CreateTriggerRequest) {
 	return api.post<void>('/trigger', payload)
+}
+
+export function updateTrigger(payload: CreateTriggerRequest) {
+	return api.put<void>('/trigger', payload)
 }
 
 export function getTriggers() {

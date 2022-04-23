@@ -11,7 +11,7 @@ const items = [
 
 export const Sidebar = memo(() => {
 	return (
-		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-56">
+		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-56 overflow-hidden">
 			<div className="flex items-center gap-4 px-5 text-xl font-medium">
 				<img className="w-10 rounded" src={logo} alt="logo" />
 				<span className="transition opacity-0 group-hover:opacity-100">DoTenX</span>

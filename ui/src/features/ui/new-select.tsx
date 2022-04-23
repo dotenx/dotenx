@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { IoChevronDown } from 'react-icons/io5'
+import { useOutsideClick } from '../hooks'
 import { FieldError } from './field'
 
 interface Option {
@@ -83,9 +84,11 @@ function RawSelect({
 	placeholder?: string
 }) {
 	const [isOpen, setIsOpen] = useState(false)
+	const wrapperRef = useRef<HTMLDivElement>(null)
+	useOutsideClick(wrapperRef, () => setIsOpen(false))
 
 	return (
-		<div className="relative space-y-1">
+		<div className="relative space-y-1" ref={wrapperRef}>
 			<button
 				type="button"
 				className={clsx(
@@ -101,12 +104,12 @@ function RawSelect({
 			{isOpen && (
 				<div className="absolute inset-x-0 z-10 p-1 bg-white border rounded-lg shadow-md border-slate-300">
 					{options.length === 0 && (
-						<div className="p-1 text-xs font-thin">No options</div>
+						<div className="p-1.5 text-xs font-thin text-center">No options</div>
 					)}
 					{options.map((option) => (
 						<button
 							type="button"
-							className="w-full p-1 text-left transition rounded-md hover:bg-rose-50"
+							className="w-full px-2 py-1 text-left transition rounded-md hover:bg-rose-50 focus:bg-rose-50 outline-rose-500"
 							key={option.label}
 							onClick={() => {
 								onChange(option)

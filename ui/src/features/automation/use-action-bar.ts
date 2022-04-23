@@ -1,12 +1,7 @@
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
-import {
-	listenAtom,
-	selectedAutomationAtom,
-	selectedAutomationDataAtom,
-	selectedExecutionAtom,
-} from '../atoms'
+import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
 import { useModal } from '../hooks'
 import { useNewAutomation } from './use-new'
@@ -17,7 +12,6 @@ export function useActionBar() {
 	const [selectedAutomation] = useAtom(selectedAutomationAtom)
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
-	const setSelectedExec = useAtom(selectedExecutionAtom)[1]
 	const setListen = useAtom(listenAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
@@ -27,7 +21,6 @@ export function useActionBar() {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
-			setSelectedExec(undefined)
 			setListen((x) => x + 1)
 		},
 	})

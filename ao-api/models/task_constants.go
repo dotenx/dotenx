@@ -14,6 +14,7 @@ type TaskDefinition struct {
 	Integrations []string
 	Author       string      `json:"author" yaml:"author"`
 	Icon         string      `json:"icon" yaml:"icon"`
+	NodeColor    string      `json:"node_color" yaml:"node_color"`
 	Description  string      `json:"description" yaml:"description"`
 	Outputs      []TaskField `json:"outputs" yaml:"outputs"`
 }
@@ -21,8 +22,8 @@ type TaskDefinition struct {
 var AvaliableTasks map[string]TaskDefinition
 
 type TaskField struct {
-	Key  string `json:"key"`
-	Type string `json:"type"`
+	Key  string `json:"key" yaml:"key"`
+	Type string `json:"type" yaml:"type"`
 }
 
 // Task Status

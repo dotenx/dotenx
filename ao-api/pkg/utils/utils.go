@@ -9,6 +9,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func FailOnError(err error, msg string) {
@@ -59,4 +60,9 @@ func Decrypt(text, MySecret string) (string, error) {
 	plainText := make([]byte, len(cipherText))
 	cfb.XORKeyStream(plainText, cipherText)
 	return string(plainText), nil
+}
+
+func GetNewUuid() string {
+	id := uuid.New()
+	return id.String()
 }

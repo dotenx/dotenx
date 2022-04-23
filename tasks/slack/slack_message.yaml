@@ -9,4 +9,5 @@ fields:
       type: text
 author: Armingodiz
 icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
+node_color: E01E5A
 description: Sends slack message using slack bot

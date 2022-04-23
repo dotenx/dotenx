@@ -23,7 +23,8 @@ docker compose up
 
 If you want to support our work - please star this project, every star makes us very happy!
 
-![Screen Shot 2022-04-12 at 11 24 52 am](https://user-images.githubusercontent.com/15846333/162859972-3277c086-4d3d-40bc-aec3-2e0d6ba5b834.png)
+![Screen Shot 2022-04-19 at 8 06 49 pm](https://user-images.githubusercontent.com/15846333/163980940-dd63f362-dfdc-45e5-9d4c-68a144434905.png)
+
 
 
 # Introduction
