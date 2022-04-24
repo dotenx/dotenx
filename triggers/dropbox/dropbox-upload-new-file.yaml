@@ -1,0 +1,24 @@
+service: dropbox
+type: Dropbox upload new file
+integrations: [dropbox]
+image: hojjat12/dropbox-upload-new-file
+credentials:
+    - key: path
+      type: text
+    - key: passed_seconds
+      type: text
+outputs:
+    - key: name
+      type: text
+    - key: path
+      type: text
+    - key: id
+      type: text
+    - key: modified_time
+      type: text
+    - key: file
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/185/185969.png
+node_color: 4caaff
+description: Checks that a user upload new file(sent before given number of seconds on specefic path), then tiggers a specefic pipeline
