@@ -142,8 +142,8 @@ export type GetTriggerDefinitionResponse = {
 	integrations: string[]
 	image: string
 	credentials: {
-		Key: string
-		Type: string
+		key: string
+		type: string
 	}[]
 	outputs: TaskTriggerOutput[]
 }

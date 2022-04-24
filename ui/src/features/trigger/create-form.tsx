@@ -65,9 +65,9 @@ export function TriggerForm({
 				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
 					<Field
-						key={triggerDefinition.Key}
-						label={getDisplayText(triggerDefinition.Key)}
-						name={`credentials.${triggerDefinition.Key}`}
+						key={triggerDefinition.key}
+						label={getDisplayText(triggerDefinition.key)}
+						name={`credentials.${triggerDefinition.key}`}
 						control={control}
 						required
 						errors={errors}
