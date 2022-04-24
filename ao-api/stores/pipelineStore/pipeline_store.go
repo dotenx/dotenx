@@ -54,6 +54,9 @@ type PipelineStore interface {
 	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
 	// Get next job in an execution based on the status of a task in the execution
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
+
+	ActivatePipeline(context context.Context, accountId, pipelineId string) error
+	DeActivatePipeline(context context.Context, accountId, pipelineId string) error
 }
 
 type pipelineStore struct {
