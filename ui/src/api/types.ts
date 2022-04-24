@@ -103,6 +103,7 @@ export type TaskBody = Record<string, string | { source: string; key: string }>
 
 export interface Metadata {
 	icon: string
+	node_color: string
 }
 
 export type GetAutomationsResponse = Automation[]
