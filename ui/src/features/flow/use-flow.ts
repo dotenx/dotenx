@@ -16,9 +16,14 @@ import { useQuery } from 'react-query'
 import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
 import { flowAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
-import { EdgeData, NodeType, TaskNodeData } from '../flow'
-import { InputOrSelectValue } from '../ui'
-import { getLayoutedElements as getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
+import { EdgeData, TaskNodeData } from '../flow'
+import { InputOrSelectKind, InputOrSelectValue } from '../ui'
+import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
+
+export enum NodeType {
+	Task = 'task',
+	Trigger = 'trigger',
+}
 
 let id = 1
 const getId = () => `task ${id++}`
@@ -29,7 +34,7 @@ const getTriggerId = () => `trigger ${triggerId++}`
 export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
 		id: getId(),
-		type: 'default',
+		type: NodeType.Task,
 		data: { name: 'task 1', type: '' },
 		position: { x: 0, y: 0 },
 	},
@@ -86,7 +91,7 @@ export function useFlow() {
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		})
-		const id = type === NodeType.Default ? getId() : getTriggerId()
+		const id = type === NodeType.Task ? getId() : getTriggerId()
 		const newNode: FlowElement<TaskNodeData> = {
 			id,
 			type,
@@ -116,12 +121,15 @@ export function useFlow() {
 function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
 		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
-			let inputOrSelectValue = { type: 'text', data: '' } as InputOrSelectValue
+			let inputOrSelectValue = {
+				type: InputOrSelectKind.Text,
+				data: '',
+			} as InputOrSelectValue
 			if (typeof fieldValue === 'string') {
-				inputOrSelectValue = { type: 'text', data: fieldValue }
+				inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
 			} else {
 				inputOrSelectValue = {
-					type: 'option',
+					type: InputOrSelectKind.Option,
 					data: fieldValue.key,
 					groupName: fieldValue.source,
 					iconUrl: '',
@@ -133,13 +141,14 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
-			type: NodeType.Default,
+			type: NodeType.Task,
 			data: {
 				name: key,
 				type: value.type,
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
-				...body,
+				color: value.meta_data?.node_color,
+				others: body,
 			},
 		}
 	})

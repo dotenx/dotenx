@@ -11,5 +11,6 @@ outputs:
       type: text
 author: Armingodiz
 icon: https://cdn4.vectorstock.com/i/1000x1000/81/83/document-file-logo-vector-25068183.jpg
+node_color: A04000
 description: write file with given inputs
 

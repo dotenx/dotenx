@@ -19,12 +19,13 @@ type TriggerDefinition struct {
 	Outputs          []Credential `json:"outputs" yaml:"outputs"`
 	Author           string       `json:"author" yaml:"author"`
 	Icon             string       `json:"icon" yaml:"icon"`
+	NodeColor        string       `json:"node_color" yaml:"node_color"`
 	Description      string       `json:"description" yaml:"description"`
 }
 
 type Credential struct {
-	Key  string `yaml:"key"`
-	Type string `yaml:"type"`
+	Key  string `json:"key" yaml:"key"`
+	Type string `json:"type" yaml:"type"`
 }
 
 type EventTrigger struct {
@@ -36,6 +37,16 @@ type EventTrigger struct {
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 	MetaData    TriggerDefinition      `json:"meta_data"`
+}
+
+func (tr EventTrigger) IsValid() bool {
+	if tr.Endpoint == "" {
+		return false
+	}
+	if tr.Pipeline == "" {
+		return false
+	}
+	return true
 }
 
 func init() {
@@ -62,6 +73,7 @@ func readTriggerFile(address string) {
 	if yamlFile.IntegrationTypes == nil {
 		yamlFile.IntegrationTypes = make([]string, 0)
 	}
+	yamlFile.NodeColor = "#" + yamlFile.NodeColor
 	AvaliableTriggers[yamlFile.Type] = yamlFile
 }
 

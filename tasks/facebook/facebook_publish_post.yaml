@@ -9,4 +9,5 @@ fields:
       type: text
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/124/124010.png
+node_color: 3b5998
 description: Publish a post on specific page

@@ -2,14 +2,14 @@ import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
-import { Automation, getAutomation, QueryKey } from '../api'
+import { getAutomation, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
-import { ActionBar, AutomationExecution } from '../features/automation'
-import { DragDropNodes, Flow } from '../features/flow'
+import { ActionBar } from '../features/automation'
+import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 
 export default function AutomationPage() {
-	const { name } = useParams()
+	const { name, id: executionId } = useParams()
 	const setSelectedAutomation = useAtom(selectedAutomationAtom)[1]
 	const automationQuery = useQuery(
 		[QueryKey.GetAutomation, name],
@@ -19,7 +19,7 @@ export default function AutomationPage() {
 		},
 		{ enabled: !!name, onSuccess: (data) => setSelectedAutomation(data?.data) }
 	)
-	const { executionId, selected, setExecutionId, setSelected } = useTaskStatus()
+	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
 
 	useEffect(() => {
@@ -28,41 +28,12 @@ export default function AutomationPage() {
 
 	return (
 		<>
-			<ActionBar />
+			<ActionBar automationName={name} />
 			<div className="flex gap-2 grow">
 				<div className="grow">
 					<Flow />
 				</div>
 			</div>
 		</>
-	)
-}
-
-interface HeaderProps {
-	selected: Automation | undefined
-	executionId: number | undefined
-	setExecutionId: (value: number | undefined) => void
-}
-
-function Header({ executionId, selected, setExecutionId }: HeaderProps) {
-	return (
-		<div className="flex h-full">
-			<div className="flex items-center justify-between px-6 border-r border-black grow">
-				<div className="flex gap-2">
-					{selected && (
-						<AutomationExecution
-							automationName={selected?.name}
-							value={executionId}
-							onChange={setExecutionId}
-						/>
-					)}
-				</div>
-
-				<ActionBar />
-			</div>
-			<div>
-				<DragDropNodes />
-			</div>
-		</div>
 	)
 }

@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
-import _ from 'lodash'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
@@ -9,15 +8,18 @@ import * as z from 'zod'
 import {
 	createAutomation,
 	createTrigger,
-	CreateTriggerRequest,
 	Manifest,
 	QueryKey,
+	TaskBody,
 	Tasks,
+	TriggerData,
+	updateAutomation,
+	updateTrigger,
 } from '../../api'
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { useModal } from '../hooks'
-import { Button, Field, Form, InputOrSelectValue } from '../ui'
+import { Button, Field, Form } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -63,15 +65,10 @@ function useSaveForm() {
 				onSuccess: () => {
 					modal.close()
 					client.invalidateQueries(QueryKey.GetAutomations)
-
 					const triggers = mapElementsToTriggers(elements)
-					triggers.forEach((trigger) => {
-						if (trigger.data)
-							addTriggerMutation.mutate({
-								...trigger.data,
-								pipeline_name: values.name,
-							})
-					})
+						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
+						.filter((trigger): trigger is TriggerData => !!trigger)
+					addTriggerMutation.mutate(triggers)
 				},
 			}
 		)
@@ -90,10 +87,43 @@ function useSaveForm() {
 	}
 }
 
+export function useUpdateAutomation() {
+	const client = useQueryClient()
+	const updateAutomationMutation = useMutation(updateAutomation)
+	const updateTriggerMutation = useMutation(updateTrigger)
+	const [elements] = useAtom(flowAtom)
+
+	const onUpdate = (values: Schema) => {
+		updateAutomationMutation.mutate(
+			{
+				name: values.name,
+				manifest: mapElementsToPayload(elements),
+			},
+			{
+				onSuccess: () => {
+					client.invalidateQueries(QueryKey.GetAutomation)
+					const triggers = mapElementsToTriggers(elements)
+						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
+						.filter((trigger): trigger is TriggerData => !!trigger)
+					updateTriggerMutation.mutate(triggers, {
+						onSuccess: () => {
+							client.invalidateQueries(QueryKey.GetAutomationTrigger)
+						},
+					})
+				},
+			}
+		)
+	}
+
+	return {
+		onUpdate,
+	}
+}
+
 function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {
 	return elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Trigger) as Node<CreateTriggerRequest>[]
+		.filter((node) => node.type === NodeType.Trigger) as Node<TriggerData>[]
 }
 
 function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Manifest {
@@ -101,21 +131,20 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 
 	const nodes = elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Default) as Node<TaskNodeData>[]
+		.filter((node) => node.type === NodeType.Task) as Node<TaskNodeData>[]
 	const edges = elements.filter(isEdge) as Edge<EdgeData>[]
 
 	nodes.forEach((node) => {
 		if (!node.data?.name) return console.error('Node data does not exists')
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
-		const body = _.omit(node.data, ['name', 'type', 'integration', 'iconUrl'])
-		for (const key in body) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const taskBody = body as any
-			const taskFieldValue = taskBody[key] as InputOrSelectValue
-			if (taskFieldValue.type === 'option') {
-				taskBody[key] = { source: taskFieldValue.groupName, key: taskFieldValue.data }
+		const others = node.data.others
+		const body: TaskBody = {}
+		for (const key in others) {
+			const taskOtherValue = others[key]
+			if (taskOtherValue.type === 'option') {
+				body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
 			} else {
-				taskBody[key] = taskFieldValue.data
+				body[key] = taskOtherValue.data
 			}
 		}
 		tasks[node.data.name] = {

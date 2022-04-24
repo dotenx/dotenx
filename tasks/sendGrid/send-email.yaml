@@ -11,4 +11,5 @@ fields:
       type: text
 author: Armingodiz
 icon: https://sendgrid.com/wp-content/themes/sgdotcom/pages/resource/brand/2016/SendGrid-Logomark.png
+node_color: 1A82e2
 description: Sends email using send grid

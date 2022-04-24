@@ -1,11 +1,30 @@
 package crudService
 
 import (
+	"errors"
+
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error {
 	return cm.Store.Create(noContext, base, pipeline)
+}
+
+func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
+	p, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	if err == nil && p.Id != "" {
+		err := cm.DeletePipeline(base.AccountId, base.Name)
+		if err != nil {
+			return errors.New("error in deleting old version: " + err.Error())
+		}
+		err = cm.Store.Create(noContext, base, pipeline)
+		if err != nil {
+			return errors.New("error in creating new version: " + err.Error())
+		}
+		return nil
+	} else {
+		return errors.New("your Automation has not been saved yet")
+	}
 }
 
 func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, error) {

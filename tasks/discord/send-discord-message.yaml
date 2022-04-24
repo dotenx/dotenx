@@ -7,4 +7,5 @@ fields:
       type: text
 author: hawwwdi
 icon: https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png
+node_color: 5865F2
 description: Sends discord message using discord channel webhook

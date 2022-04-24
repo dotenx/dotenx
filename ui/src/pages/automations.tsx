@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
 import { useDeleteAutomation } from '../features/automation/use-delete'
 import { useNewAutomation } from '../features/automation/use-new'
-import { Table } from '../features/ui'
+import { Button, Table } from '../features/ui'
 
 export default function AutomationsPage() {
 	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
@@ -16,6 +16,7 @@ export default function AutomationsPage() {
 			<div className="px-32 py-16 grow">
 				<Table
 					title="Automations"
+					emptyText="You have no automation yet, try adding one."
 					actionBar={<NewAutomation />}
 					headers={['Name', 'Action']}
 					items={automations?.map((automation) => (
@@ -57,12 +58,9 @@ function NewAutomation() {
 	const newAutomation = useNewAutomation()
 
 	return (
-		<button
-			className="flex items-center gap-2 py-2 px-3 text-white transition rounded-lg bg-rose-600 hover:bg-rose-700"
-			onClick={newAutomation}
-		>
+		<Button className="max-w-min" onClick={newAutomation}>
 			<IoAdd className="text-2xl" />
 			New Automation
-		</button>
+		</Button>
 	)
 }

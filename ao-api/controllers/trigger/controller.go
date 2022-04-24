@@ -84,30 +84,62 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	}
 }
 
-func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
+func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var trigger models.EventTrigger
+		var triggers []*models.EventTrigger
 		accountId, _ := utils.GetAccountId(c)
-		if err := c.ShouldBindJSON(&trigger); err != nil || accountId == "" {
+		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, trigger.Pipeline)
+		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		trigger.Endpoint = endpoint
-		err = controller.Service.AddTrigger(accountId, trigger)
+		err = controller.Service.AddTriggers(accountId, triggers, endpoint)
 		if err != nil {
+			if err.Error() == "invalid trigger dto" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		c.JSON(http.StatusOK, nil)
 	}
 }
+
+func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var triggers []*models.EventTrigger
+		accountId, _ := utils.GetAccountId(c)
+		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		if err != nil {
+			log.Println(err.Error())
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		err = controller.Service.UpdateTriggers(accountId, triggers, endpoint)
+		if err != nil {
+			if err.Error() == "invalid trigger dto" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, nil)
+	}
+}
+
 func (controller *TriggerController) GetTriggersTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		triggers, _ := controller.Service.GetTriggerTypes()

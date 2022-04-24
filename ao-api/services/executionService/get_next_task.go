@@ -32,6 +32,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		jobDTO := models.NewJob(task, executionId, accountId)
+		workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId, accountId)
+		if err != nil {
+			return err
+		}
+		jobDTO.WorkSpace = workSpace
 		if task.Integration != "" {
 			integration, err := manager.IntegrationService.GetIntegrationByName(accountId, task.Integration)
 			if err != nil {
