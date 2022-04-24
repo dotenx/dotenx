@@ -34,6 +34,7 @@ export interface TriggerKindData {
 	type: string
 	icon_url: string
 	description: string
+	node_color: string
 }
 
 export interface Trigger {
@@ -75,6 +76,7 @@ export interface TaskKindData {
 	type: string
 	description: string
 	icon_url: string
+	node_color: string
 }
 
 export interface Automation {
