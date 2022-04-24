@@ -3,6 +3,9 @@ package executionService
 import (
 	"errors"
 	"reflect"
+
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 func (manage *executionManager) CheckExecutionInitialData(executionId int, accountId, source string) (input map[string]interface{}, err error) {
@@ -28,7 +31,11 @@ func (manage *executionManager) CheckExecutionInitialDataForWorkSpace(executionI
 	}
 	workSpace, ok := initialData["workspace"]
 	if !ok {
-		return "", errors.New("no workspace for this task")
+		workSpace := utils.GetNewUuid()
+		data := models.InputData{}
+		data["workspace"] = workSpace
+		manage.Store.UpdateInitialData(noContext, executionId, data)
+		return workSpace, nil
 	}
 	return workSpace.(string), nil
 }
