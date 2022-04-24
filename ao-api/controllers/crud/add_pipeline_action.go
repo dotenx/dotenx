@@ -104,8 +104,7 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest:    pipelineDto.Manifest,
-			FromVersion: pipelineDto.FromVersion,
+			Manifest: pipelineDto.Manifest,
 		}
 
 		err := mc.Service.UpdatePipeline(&base, &pipeline)
