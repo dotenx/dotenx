@@ -8,8 +8,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 )
 
-func NewCrudService(store pipelineStore.PipelineStore) CrudService {
-	return &crudManager{Store: store}
+func NewCrudService(store pipelineStore.PipelineStore, trService triggerService.TriggerService) CrudService {
+	return &crudManager{Store: store, TriggerService: trService}
 }
 
 type CrudService interface {

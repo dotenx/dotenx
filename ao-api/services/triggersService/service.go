@@ -3,6 +3,7 @@ package triggerService
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
@@ -60,6 +61,7 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 }
 
 func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+	log.Println(triggers)
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
 		tr.AccountId = accountId
