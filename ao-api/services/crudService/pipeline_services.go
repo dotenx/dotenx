@@ -78,3 +78,11 @@ func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]models
 	}
 	return cm.Store.GetAllExecutions(noContext, pipelineId)
 }
+
+func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error) {
+	return cm.Store.ActivatePipeline(noContext, accountId, pipelineId)
+}
+
+func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string) (err error) {
+	return cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
+}
