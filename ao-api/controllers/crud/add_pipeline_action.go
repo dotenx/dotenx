@@ -2,6 +2,7 @@ package crud
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -22,18 +23,28 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
+			log.Println(result)
+			fmt.Println("#####################################")
 			for key, val := range result {
 				if key == "manifest" {
-					var mani map[string]models.Task
+					log.Println(val)
+					fmt.Println("#####################################")
+					var mani models.Manifest
 					var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
 					bytes, err1 := json2.Marshal(&val)
 					err2 := json.Unmarshal(bytes, &mani)
-					if err1 != nil || err2 != nil {
+					log.Println(mani)
+					fmt.Println("#####################################")
+					if err1 != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err1.Error()})
+						return
+					} else if err2 != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err2.Error()})
 						return
 					}
 					manifast := models.Manifest{}
 					manifast.Tasks = make(map[string]models.Task)
-					for name, task := range mani {
+					for name, task := range mani.Tasks {
 						manifast.Tasks[name] = task
 					}
 					pipelineDto.Manifest = manifast
@@ -58,6 +69,8 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		pipeline := models.PipelineVersion{
 			Manifest: pipelineDto.Manifest,
 		}
+
+		fmt.Println("################")
 
 		err := mc.Service.CreatePipeLine(&base, &pipeline)
 		if err != nil {
