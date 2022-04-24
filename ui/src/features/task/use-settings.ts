@@ -36,7 +36,7 @@ export function useTaskSettings({
 	onSave,
 }: {
 	defaultValues: TaskSettingsSchema
-	onSave: (values: TaskSettingsSchema & { iconUrl?: string }) => void
+	onSave: (values: TaskSettingsSchema & { iconUrl?: string; color?: string }) => void
 }) {
 	const {
 		control,
@@ -95,7 +95,7 @@ export function useTaskSettings({
 						? getTaskFields(node.type!)
 						: getTriggerDefinition(node.type!)
 				const outputs = (await response).data.outputs
-				return { ...node, options: outputs.map((output) => output.Key) }
+				return { ...node, options: outputs.map((output) => output.key) }
 			},
 			enabled: !!node.type,
 		}))
@@ -104,7 +104,11 @@ export function useTaskSettings({
 	const outputGroups = results.map((result) => result.data).filter((r) => !!r) as GroupData[]
 
 	const onSubmit = handleSubmit(() => {
-		onSave({ ...getValues(), iconUrl: selectedTaskType?.icon_url })
+		onSave({
+			...getValues(),
+			iconUrl: selectedTaskType?.icon_url,
+			color: selectedTaskType?.node_color,
+		})
 	})
 
 	return {

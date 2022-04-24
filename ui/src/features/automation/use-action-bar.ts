@@ -3,12 +3,10 @@ import { useMutation, useQueryClient } from 'react-query'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
-import { useModal } from '../hooks'
 import { useNewAutomation } from './use-new'
 
 export function useActionBar() {
 	const { onLayout } = useLayout()
-	const modal = useModal()
 	const [selectedAutomation] = useAtom(selectedAutomationAtom)
 	const clearStatus = useClearStatus()
 	const client = useQueryClient()
@@ -46,6 +44,5 @@ export function useActionBar() {
 		onRun,
 		newAutomation,
 		onLayout,
-		modal,
 	}
 }

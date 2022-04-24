@@ -4,7 +4,7 @@ import { TaskSettingsSchema, useTaskSettings } from './use-settings'
 
 interface TaskSettingsProps {
 	defaultValues: TaskSettingsSchema
-	onSave: (values: TaskSettingsSchema & { iconUrl?: string }) => void
+	onSave: (values: TaskSettingsSchema & { iconUrl?: string; color?: string }) => void
 }
 
 export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {

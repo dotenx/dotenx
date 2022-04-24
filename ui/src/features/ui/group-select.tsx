@@ -110,7 +110,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 					isOpen && 'outline outline-offset-[-1px] outline-2'
 				)}
 				type="button"
-				onClick={() => setIsOpen((isOpen) => !isOpen)}
+				onClick={() => (!isOpen ? setIsOpen(true) : close())}
 			>
 				{value ? (
 					<div className="flex items-center gap-2">
