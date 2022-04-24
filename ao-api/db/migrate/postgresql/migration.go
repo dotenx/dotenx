@@ -84,6 +84,10 @@ var migrations = []struct {
 		name: "update-is-active-field",
 		stmt: updateIsActive,
 	},
+	{
+		name: "update-nill-is-active-field",
+		stmt: updateNillIsActive,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -302,3 +306,7 @@ var updateIsActive = `
 ALTER TABLE pipelines
 ALTER COLUMN is_active
 SET DEFAULT FALSE;`
+
+var updateNillIsActive = `
+UPDATE pipelines
+SET is_active=FALSE;`

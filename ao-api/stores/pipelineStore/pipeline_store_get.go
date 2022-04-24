@@ -27,7 +27,6 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
-		log.Println(pipeline.Id, accountId)
 		tasks := []models.Task{}
 		var rows *sql.Rows
 		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.Id)
@@ -51,7 +50,6 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 		}
 		taskIdToName := make(map[int]string)
 		for _, task := range tasks {
-			log.Println(task.Name)
 			taskIdToName[task.Id] = task.Name
 		}
 		for _, task := range tasks {
