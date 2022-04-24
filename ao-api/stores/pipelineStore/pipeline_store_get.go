@@ -11,14 +11,14 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	pipeline.Manifest.Tasks = make(map[string]models.Task)
 
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint)
+		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint, &isActive)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -77,11 +77,11 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			}
 		}
 	}
-	return pipeline, endpoint, nil
+	return pipeline, endpoint, isActive, nil
 }
 
 var select_pipeline = `
-SELECT id , endpoint
+SELECT id , endpoint, is_active
 FROM pipelines p
 WHERE account_id = $1 AND name = $2
 `

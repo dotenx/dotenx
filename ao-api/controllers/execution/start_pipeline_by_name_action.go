@@ -20,6 +20,10 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		}
 		id, err := e.Service.StartPipelineByName(input, accountId, name)
 		if err != nil {
+			if err.Error() == "automation is not active" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
