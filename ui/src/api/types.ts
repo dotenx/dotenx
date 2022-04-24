@@ -26,8 +26,8 @@ export enum TaskExecutionStatus {
 }
 
 export interface TaskTriggerOutput {
-	Key: string
-	Type: string
+	key: string
+	type: string
 }
 
 export interface TriggerKindData {

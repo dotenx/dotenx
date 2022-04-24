@@ -95,7 +95,7 @@ export function useTaskSettings({
 						? getTaskFields(node.type!)
 						: getTriggerDefinition(node.type!)
 				const outputs = (await response).data.outputs
-				return { ...node, options: outputs.map((output) => output.Key) }
+				return { ...node, options: outputs.map((output) => output.key) }
 			},
 			enabled: !!node.type,
 		}))
