@@ -25,8 +25,8 @@ type PipelineDto struct {
 }
 
 type Manifest struct {
-	Tasks    map[string]Task `db:"tasks" json:"tasks" yaml:"tasks"`
-	Triggers []EventTrigger  `db:"triggers" json:"triggers" yaml:"triggers"`
+	Tasks    map[string]Task         `db:"tasks" json:"tasks" yaml:"tasks"`
+	Triggers map[string]EventTrigger `db:"triggers" json:"triggers" yaml:"triggers"`
 }
 
 func (m Manifest) Value() (driver.Value, error) {
