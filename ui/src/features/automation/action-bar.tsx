@@ -1,4 +1,5 @@
 import { DragEvent } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
@@ -29,6 +30,15 @@ export function ActionBar({ automationName }: ActionBarProps) {
 	}
 	const { onUpdate } = useUpdateAutomation()
 
+	const handleSave = () => {
+		if (!automationName) modal.open(Modals.SaveAutomation)
+		else onUpdate({ name: automationName })
+	}
+	useHotkeys('ctrl+s', (e) => {
+		e.preventDefault()
+		handleSave()
+	})
+
 	return (
 		<>
 			<div className="fixed right-10 top-[35%] -translate-y-[35%] z-10 flex flex-col gap-4 items-center">
@@ -50,13 +60,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
 						<IoPlayOutline />
 					</IconButton>
-					<IconButton
-						tooltip="Save"
-						onClick={() => {
-							if (!automationName) modal.open(Modals.SaveAutomation)
-							else onUpdate({ name: automationName })
-						}}
-					>
+					<IconButton tooltip="Save" onClick={handleSave}>
 						<IoSaveOutline />
 					</IconButton>
 					<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>
