@@ -42,12 +42,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 						c.JSON(http.StatusBadRequest, gin.H{"error": err2.Error()})
 						return
 					}
-					manifast := models.Manifest{}
-					manifast.Tasks = make(map[string]models.Task)
-					for name, task := range mani.Tasks {
-						manifast.Tasks[name] = task
-					}
-					pipelineDto.Manifest = manifast
+					pipelineDto.Manifest = mani
 				}
 				if key == "name" {
 					pipelineDto.Name = val.(string)
