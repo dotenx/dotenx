@@ -22,6 +22,13 @@ func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
+		triggers, err := mc.TriggerServic.GetAllTriggersForPipeline(accountId, name)
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, "error in getting pipeline triggers: "+err.Error())
+			return
+		}
+		pipeline.Manifest.Triggers = triggers
 		output := struct {
 			Name            string `json:"name" yaml:"name"`
 			models.Manifest `json:"manifest" yaml:"manifest"`
