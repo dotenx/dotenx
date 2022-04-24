@@ -56,8 +56,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest:    pipelineDto.Manifest,
-			FromVersion: pipelineDto.FromVersion,
+			Manifest: pipelineDto.Manifest,
 		}
 
 		err := mc.Service.CreatePipeLine(&base, &pipeline)
@@ -75,7 +74,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 }
 
 type PipelineDto struct {
-	Name        string
-	Manifest    models.Manifest
-	FromVersion int16 `json:"fromVersion"`
+	Name     string
+	Manifest models.Manifest
 }
