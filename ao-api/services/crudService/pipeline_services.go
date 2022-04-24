@@ -32,7 +32,14 @@ func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.
 	if err != nil {
 		return models.PipelineVersion{}, "", err
 	}
-	triggers, err := 
+	triggers, err := cm.TriggerService.GetAllTriggersForPipeline(accountId, name)
+	if err != nil {
+		return models.PipelineVersion{}, "", err
+	}
+	pipe.Manifest.Triggers = make(map[string]models.EventTrigger)
+	for _, tr := range triggers {
+		pipe.Manifest.Triggers[tr.Name] = tr
+	}
 	return pipe, endpoint, nil
 }
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
