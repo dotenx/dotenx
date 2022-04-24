@@ -6,8 +6,20 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	return cm.Store.Create(noContext, base, pipeline)
+func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) (err error) {
+	err = cm.Store.Create(noContext, base, pipeline)
+	if err != nil {
+		return
+	}
+	_, e, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	if err != nil {
+		return
+	}
+	triggers := make([]*models.EventTrigger, 0)
+	for _, tr := range pipeline.Manifest.Triggers {
+		triggers = append(triggers, &tr)
+	}
+	return cm.TriggerService.AddTriggers(base.AccountId, triggers, e)
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
