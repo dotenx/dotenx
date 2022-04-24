@@ -15,7 +15,7 @@ import (
 type TriggerService interface {
 	GetTriggerTypes() (map[string][]triggerSummery, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
-	GetAllTriggersForPipeline(accountId, pipelineName string) (map[string]models.EventTrigger, error)
+	GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
@@ -114,15 +114,15 @@ func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipe
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggers(context.Background(), accountId)
 }
-func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) (map[string]models.EventTrigger, error) {
+func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error) {
 	triggers, err := manager.Store.GetAllTriggers(context.Background(), accountId)
 	if err != nil {
 		return nil, err
 	}
-	selected := make(map[string]models.EventTrigger)
+	selected := make([]models.EventTrigger, 0)
 	for _, tr := range triggers {
 		if tr.Pipeline == pipelineName {
-			selected[tr.Name] = tr
+			selected = append(selected, tr)
 		}
 	}
 	return selected, nil

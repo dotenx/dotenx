@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 )
 
@@ -21,7 +22,8 @@ type CrudService interface {
 }
 
 type crudManager struct {
-	Store pipelineStore.PipelineStore
+	Store          pipelineStore.PipelineStore
+	TriggerService triggerService.TriggerService
 }
 
 var noContext = context.Background()

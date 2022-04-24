@@ -28,7 +28,12 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, error) {
-	return cm.Store.GetByName(noContext, accountId, name)
+	pipe, endpoint, err := cm.Store.GetByName(noContext, accountId, name)
+	if err != nil {
+		return models.PipelineVersion{}, "", err
+	}
+	triggers, err := 
+	return pipe, endpoint, nil
 }
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
 	return cm.Store.GetPipelines(noContext, accountId)
