@@ -23,18 +23,12 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			log.Println(result)
-			fmt.Println("#####################################")
 			for key, val := range result {
 				if key == "manifest" {
-					log.Println(val)
-					fmt.Println("#####################################")
 					var mani models.Manifest
 					var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
 					bytes, err1 := json2.Marshal(&val)
 					err2 := json.Unmarshal(bytes, &mani)
-					log.Println(mani)
-					fmt.Println("#####################################")
 					if err1 != nil {
 						c.JSON(http.StatusBadRequest, gin.H{"error": err1.Error()})
 						return
@@ -64,8 +58,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		pipeline := models.PipelineVersion{
 			Manifest: pipelineDto.Manifest,
 		}
-
-		fmt.Println("################")
 
 		err := mc.Service.CreatePipeLine(&base, &pipeline)
 		if err != nil {

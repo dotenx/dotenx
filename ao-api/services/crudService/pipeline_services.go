@@ -2,7 +2,6 @@ package crudService
 
 import (
 	"errors"
-	"log"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 )
@@ -18,7 +17,6 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	}
 	triggers := make([]*models.EventTrigger, 0)
 	for _, tr := range pipeline.Manifest.Triggers {
-		log.Println(&tr)
 		tr.Endpoint = e
 		tr.Pipeline = base.Name
 		triggers = append(triggers, &models.EventTrigger{
