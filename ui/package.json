@@ -24,6 +24,7 @@
 		"react-router-dom": "^6.2.2",
 		"react-scripts": "5.0.0",
 		"react-select": "^5.2.2",
+		"react-toastify": "^8.2.0",
 		"use-persisted-state": "^0.3.3",
 		"web-vitals": "^2.1.4",
 		"zod": "^3.13.4"

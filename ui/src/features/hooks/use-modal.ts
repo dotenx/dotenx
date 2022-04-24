@@ -9,6 +9,7 @@ export enum Modals {
 	TaskLog = 'task-log',
 	NewIntegration = 'new-integration',
 	NewTrigger = 'new-trigger',
+	HotKeys = 'hot-keys',
 }
 
 export function useModal() {
