@@ -24,8 +24,8 @@ type TriggerDefinition struct {
 }
 
 type Credential struct {
-	Key  string `yaml:"key"`
-	Type string `yaml:"type"`
+	Key  string `json:"key" yaml:"key"`
+	Type string `json:"type" yaml:"type"`
 }
 
 type EventTrigger struct {
@@ -37,6 +37,16 @@ type EventTrigger struct {
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 	MetaData    TriggerDefinition      `json:"meta_data"`
+}
+
+func (tr EventTrigger) IsValid() bool {
+	if tr.Endpoint == "" {
+		return false
+	}
+	if tr.Pipeline == "" {
+		return false
+	}
+	return true
 }
 
 func init() {

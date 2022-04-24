@@ -26,6 +26,7 @@ type PipelineStore interface {
 	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error)
 	// Check if the endpoint is valid return the pipeline id
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
+	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)
 
 	// tasks
 	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
@@ -42,6 +43,7 @@ type PipelineStore interface {
 	SetTaskResultDetails(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) (err error)
 
 	// executions
+	GetNumberOfExecutions(context context.Context, pipelineId int) (id int, err error)
 	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
 	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
 	// Add execution

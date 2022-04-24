@@ -17,6 +17,7 @@ type (
 		CheckTrigger    string `envconfig:"AOA_APP_CHECK_TRIGGER"`
 		AccountId       string `envconfig:"AOA_APP_ACCOUNT_ID"`
 		Environment     string `envconfig:"AOA_APP_ENV"`
+		FileSharing     string `envconfig:"AOA_FILE_DIR"`
 		SessionDuration string `envconfig:"AOA_SESSION_DURATION"`
 		AllowedOrigins  string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
 	}
