@@ -26,14 +26,15 @@ export enum TaskExecutionStatus {
 }
 
 export interface TaskTriggerOutput {
-	Key: string
-	Type: string
+	key: string
+	type: string
 }
 
 export interface TriggerKindData {
 	type: string
 	icon_url: string
 	description: string
+	node_color: string
 }
 
 export interface Trigger {
@@ -75,6 +76,7 @@ export interface TaskKindData {
 	type: string
 	description: string
 	icon_url: string
+	node_color: string
 }
 
 export interface Automation {
@@ -101,6 +103,7 @@ export type TaskBody = Record<string, string | { source: string; key: string }>
 
 export interface Metadata {
 	icon: string
+	node_color: string
 }
 
 export type GetAutomationsResponse = Automation[]
@@ -140,8 +143,8 @@ export type GetTriggerDefinitionResponse = {
 	integrations: string[]
 	image: string
 	credentials: {
-		Key: string
-		Type: string
+		key: string
+		type: string
 	}[]
 	outputs: TaskTriggerOutput[]
 }

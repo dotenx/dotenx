@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import Color from 'color'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
@@ -13,6 +14,7 @@ export interface TaskNodeData {
 	status?: TaskExecutionStatus
 	executionId?: string
 	iconUrl?: string
+	color?: string
 	others?: Record<string, InputOrSelectValue>
 }
 
@@ -25,14 +27,28 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	const modal = useModal()
 	const nodeEntity: TaskEntity = { id, data }
 	const isAcyclic = useIsAcyclic()
+	const color = nodeEntity.data.color || '#059669'
+	const lightColor = Color(color).lightness(90).string()
+
+	const wrapperStyle = {
+		backgroundColor: color,
+		'--tw-ring-color': lightColor,
+	}
+
+	const settingsButtonStyle = {
+		color: color,
+		backgroundColor: lightColor,
+		outlineColor: Color(color).lighten(0.1).string(),
+	}
 
 	return (
 		<div className="group">
 			<div
 				className={clsx(
-					'flex gap-0.5 group items-center relative justify-between !bg-emerald-600 text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4 ring-emerald-100 focus:ring-4 outline-none',
+					'flex gap-0.5 group items-center relative justify-between text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4  focus:ring-4 outline-none',
 					getStatusColor(data.status)
 				)}
+				style={wrapperStyle}
 				tabIndex={0}
 			>
 				<div className="text-left">
@@ -57,7 +73,8 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 					)}
 				</div>
 				<button
-					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-emerald-600 bg-emerald-100 focus:opacity-100 outline-emerald-500"
+					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 focus:opacity-100"
+					style={settingsButtonStyle}
 					onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
 				>
 					<BsGearFill />

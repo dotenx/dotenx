@@ -147,6 +147,7 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				type: value.type,
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
+				color: value.meta_data?.node_color,
 				others: body,
 			},
 		}
