@@ -167,6 +167,7 @@ id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
 account_id         			                 	VARCHAR(64),
 endpoint 							     		uuid DEFAULT uuid_generate_v4(),
+is_active                                       BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
