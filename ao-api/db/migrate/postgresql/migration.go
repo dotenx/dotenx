@@ -76,6 +76,14 @@ var migrations = []struct {
 		name: "add-has-refresh-token-field",
 		stmt: addHasRefreshTokenField,
 	},
+	{
+		name: "add-is-active-field",
+		stmt: addIsActive,
+	},
+	{
+		name: "update-is-active-field",
+		stmt: updateIsActive,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -287,3 +295,10 @@ var addHasRefreshTokenField = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `
+var addIsActive = `ALTER TABLE pipelines
+ADD COLUMN is_active BOOLEAN;`
+
+var updateIsActive = `
+ALTER TABLE pipelines
+ALTER COLUMN is_active
+SET DEFAULT FALSE;`
