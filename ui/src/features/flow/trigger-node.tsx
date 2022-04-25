@@ -18,7 +18,7 @@ export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 			tabIndex={0}
 		>
 			<div className="flex gap-1.5 items-center">
-				{data.iconUrl && <img className="w-4 h-4" src={data.iconUrl} alt="" />}
+				{data.iconUrl && <img className="w-4 h-4 select-none" src={data.iconUrl} alt="" />}
 				<span>{data.name}</span>
 			</div>
 			<button

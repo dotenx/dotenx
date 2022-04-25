@@ -76,6 +76,7 @@ export function useFlow() {
 
 		const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect()
 		const type = event.dataTransfer.getData('application/reactflow')
+		if (!type) return
 		if (!reactFlowInstance || !reactFlowBounds) return
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
