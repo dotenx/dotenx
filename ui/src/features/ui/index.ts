@@ -1,3 +1,4 @@
+export * from './animation/fade'
 export * from './button'
 export * from './delete-button'
 export * from './field'

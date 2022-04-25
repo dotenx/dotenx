@@ -10,6 +10,7 @@
 		"color": "^4.2.3",
 		"dagre": "^0.8.5",
 		"date-fns": "^2.28.0",
+		"framer-motion": "^6.3.1",
 		"fuse.js": "^6.5.3",
 		"jotai": "^1.6.1",
 		"lodash": "^4.17.21",

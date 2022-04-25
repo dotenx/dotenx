@@ -43,9 +43,11 @@ export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 			>
 				<BsGearFill />
 			</button>
-			{menuIsOpen && (
-				<ContextMenu onClose={() => setMenuIsOpen(false)} onDelete={() => deleteNode(id)} />
-			)}
+			<ContextMenu
+				onClose={() => setMenuIsOpen(false)}
+				onDelete={() => deleteNode(id)}
+				isOpen={menuIsOpen}
+			/>
 		</div>
 	)
 }

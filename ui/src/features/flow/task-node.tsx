@@ -109,9 +109,11 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 				position={Position.Bottom}
 				isValidConnection={({ source, target }) => isAcyclic.check(source, target)}
 			/>
-			{menuIsOpen && (
-				<ContextMenu onClose={() => setMenuIsOpen(false)} onDelete={() => deleteNode(id)} />
-			)}
+			<ContextMenu
+				onClose={() => setMenuIsOpen(false)}
+				onDelete={() => deleteNode(id)}
+				isOpen={menuIsOpen}
+			/>
 		</div>
 	)
 }

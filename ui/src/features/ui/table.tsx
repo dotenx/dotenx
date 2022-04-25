@@ -50,7 +50,7 @@ export function Table<D extends object = Record<string, string>>({
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
 					<span className="text-lg">{emptyText}</span>
 					{actionBar}
-					<EmptySvg className="fixed -right-20 -bottom-80" />
+					<EmptySvg className="fixed -right-20 -bottom-80 -z-10" />
 				</div>
 			)}
 			{data.length !== 0 && (
@@ -58,7 +58,7 @@ export function Table<D extends object = Record<string, string>>({
 					<div className="border max-w-xl rounded-md px-4 py-2 flex items-center gap-6 focus-within:outline outline-2 outline-offset-[-1px] outline-rose-500">
 						<IoSearch className="text-xl" />
 						<input
-							className="outline-none"
+							className="w-full h-full outline-none"
 							type="text"
 							placeholder="Search..."
 							value={search}
