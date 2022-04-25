@@ -1,5 +1,8 @@
 /* eslint-disable react/jsx-key */
-import { ReactNode } from 'react'
+import Fuse from 'fuse.js'
+import _ from 'lodash'
+import { ReactNode, useMemo, useState } from 'react'
+import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
 import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
 
@@ -18,9 +21,23 @@ export function Table<D extends object = Record<string, string>>({
 	columns,
 	data = [],
 }: TableProps<D>) {
+	const [search, setSearch] = useState('')
+	const fuzzySearch = useMemo(
+		() =>
+			new Fuse(data, {
+				keys: _.uniq(
+					columns.filter((col) => col.accessor).map((col) => col.accessor as string)
+				),
+			}),
+		[columns, data]
+	)
+	const searched = useMemo(() => {
+		if (search) return fuzzySearch.search(search).map((item) => item.item)
+		return data
+	}, [data, fuzzySearch, search])
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
 		columns,
-		data,
+		data: searched,
 	})
 
 	return (
@@ -37,42 +54,59 @@ export function Table<D extends object = Record<string, string>>({
 				</div>
 			)}
 			{data.length !== 0 && (
-				<div className="overflow-hidden border rounded-md">
-					<table className="w-full" {...getTableProps()}>
-						<thead className="bg-gray-300">
-							{headerGroups.map((headerGroup) => (
-								<tr className="" {...headerGroup.getHeaderGroupProps()}>
-									{headerGroup.headers.map((column) => (
-										<th
-											className="px-6 py-2 text-left last:text-right"
-											{...column.getHeaderProps()}
-										>
-											{column.render('Header')}
-										</th>
-									))}
-								</tr>
-							))}
-						</thead>
-						<tbody {...getTableBodyProps()}>
-							{rows.map((row) => {
-								prepareRow(row)
-								return (
-									<tr className="even:bg-gray-50" {...row.getRowProps()}>
-										{row.cells.map((cell) => {
-											return (
-												<td
-													className="px-6 py-6 text-slate-500 last:text-right"
-													{...cell.getCellProps()}
-												>
-													{cell.render('Cell')}
-												</td>
-											)
-										})}
+				<div className="flex flex-col gap-6">
+					<div className="border max-w-xl rounded-md px-4 py-2 flex items-center gap-6 focus-within:outline outline-2 outline-offset-[-1px] outline-rose-500">
+						<IoSearch className="text-xl" />
+						<input
+							className="outline-none"
+							type="text"
+							placeholder="Search..."
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+						/>
+					</div>
+					<div className="overflow-hidden border rounded-md">
+						<table className="w-full" {...getTableProps()}>
+							<thead className="bg-gray-300">
+								{headerGroups.map((headerGroup) => (
+									<tr className="" {...headerGroup.getHeaderGroupProps()}>
+										{headerGroup.headers.map((column) => (
+											<th
+												className="px-6 py-2 text-left last:text-right"
+												{...column.getHeaderProps()}
+											>
+												{column.render('Header')}
+											</th>
+										))}
 									</tr>
-								)
-							})}
-						</tbody>
-					</table>
+								))}
+							</thead>
+							<tbody {...getTableBodyProps()}>
+								{rows.map((row) => {
+									prepareRow(row)
+									return (
+										<tr className="even:bg-gray-50" {...row.getRowProps()}>
+											{row.cells.map((cell) => {
+												return (
+													<td
+														className="px-6 py-6 text-slate-500 last:text-right"
+														{...cell.getCellProps()}
+													>
+														{cell.render('Cell')}
+													</td>
+												)
+											})}
+										</tr>
+									)
+								})}
+							</tbody>
+						</table>
+						{searched.length === 0 && (
+							<div className="p-10 text-xs font-black text-center text-slate-600">
+								No items found
+							</div>
+						)}
+					</div>
 				</div>
 			)}
 		</div>
