@@ -12,9 +12,8 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { useQuery } from 'react-query'
-import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
-import { flowAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
+import { AutomationData, Trigger } from '../../api'
+import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
@@ -45,23 +44,14 @@ export function useFlow() {
 	const [reactFlowInstance, setReactFlowInstance] = useState<OnLoadParams | null>(null)
 	const [elements, setElements] = useAtom(flowAtom)
 	const [automation] = useAtom(selectedAutomationAtom)
-	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
-
-	const triggersQuery = useQuery(
-		[QueryKey.GetAutomationTrigger, selectedAutomationData?.name],
-		() => {
-			if (selectedAutomationData) return getAutomationTriggers(selectedAutomationData.name)
-		},
-		{ enabled: !!selectedAutomationData }
-	)
 
 	useEffect(() => {
 		if (!automation) return
 		const elements = mapAutomationToElements(automation)
-		const triggers = mapTriggersToElements(triggersQuery.data?.data)
+		const triggers = mapTriggersToElements(automation.manifest.triggers)
 		const layout = getLaidOutElements([...elements, ...triggers], 'TB', NODE_WIDTH, NODE_HEIGHT)
 		setElements(layout)
-	}, [automation, setElements, triggersQuery.data])
+	}, [automation, setElements])
 
 	const onConnect = (params: Edge | Connection) => {
 		setElements((els) => addEdge({ ...params, arrowHeadType: ArrowHeadType.Arrow }, els))
@@ -167,14 +157,14 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function mapTriggersToElements(triggers: Trigger[] | undefined) {
+function mapTriggersToElements(triggers: Record<string, Trigger> | undefined) {
 	if (!triggers) return []
 
-	const triggerNodes = triggers.map((trigger) => ({
-		id: trigger.name,
+	const triggerNodes = _.entries(triggers).map(([name, triggerData]) => ({
+		id: name,
 		position: { x: 0, y: 0 },
 		type: NodeType.Trigger,
-		data: { ...trigger, iconUrl: trigger.meta_data.icon },
+		data: { ...triggerData, iconUrl: triggerData.meta_data.icon },
 	}))
 
 	return triggerNodes
