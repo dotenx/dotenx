@@ -85,7 +85,7 @@ export interface Automation {
 }
 
 export interface Manifest {
-	triggers: Record<string, { type: string }>
+	triggers: Record<string, Trigger>
 	tasks: Tasks
 }
 
