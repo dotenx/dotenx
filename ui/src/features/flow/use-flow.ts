@@ -12,7 +12,7 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { AutomationData, Trigger } from '../../api'
+import { AutomationData, Triggers } from '../../api'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
@@ -157,7 +157,7 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function mapTriggersToElements(triggers: Record<string, Trigger> | undefined) {
+function mapTriggersToElements(triggers: Triggers | undefined) {
 	if (!triggers) return []
 
 	const triggerNodes = _.entries(triggers).map(([name, triggerData]) => ({

@@ -39,11 +39,11 @@ export interface TriggerKindData {
 
 export interface Trigger {
 	name: string
-	account_id: string
+	account_id?: string
 	type: string
-	endpoint: string
+	endpoint?: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	meta_data: Metadata
 }
@@ -84,8 +84,10 @@ export interface Automation {
 	endpoint: string
 }
 
+export type Triggers = Record<string, Trigger>
+
 export interface Manifest {
-	triggers: Record<string, Trigger>
+	triggers: Triggers
 	tasks: Tasks
 }
 
