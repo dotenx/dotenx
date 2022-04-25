@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai'
 import _ from 'lodash'
+import { nanoid } from 'nanoid'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
 import {
 	addEdge,
@@ -24,17 +25,11 @@ export enum NodeType {
 	Trigger = 'trigger',
 }
 
-let id = 1
-const getId = () => `task ${id++}`
-
-let triggerId = 1
-const getTriggerId = () => `trigger ${triggerId++}`
-
 export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
-		id: getId(),
+		id: nanoid(),
 		type: NodeType.Task,
-		data: { name: 'task 1', type: '' },
+		data: { name: 'task', type: '' },
 		position: { x: 0, y: 0 },
 	},
 ]
@@ -82,12 +77,12 @@ export function useFlow() {
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		})
-		const id = type === NodeType.Task ? getId() : getTriggerId()
+		const id = nanoid()
 		const newNode: FlowElement<TaskNodeData> = {
 			id,
 			type,
 			position,
-			data: { name: id, type: '' },
+			data: { name: type === NodeType.Task ? 'task' : 'trigger', type: '' },
 		}
 
 		setElements((es) => es.concat(newNode))
