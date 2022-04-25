@@ -155,7 +155,7 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 		}
 	})
 
-	return { tasks, triggers: { defaultTrigger: { type: 'Manual' } } }
+	return { tasks, triggers: {} }
 }
 
 function mapEdgesToExecuteAfter(
