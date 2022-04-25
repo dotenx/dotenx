@@ -1,4 +1,4 @@
-import { DragEvent } from 'react'
+import { DragEvent, ReactNode } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
@@ -143,8 +143,15 @@ export function ActionBar({ automationName }: ActionBarProps) {
 			<Modal title="New Automation" kind={Modals.SaveAutomation}>
 				<SaveForm />
 			</Modal>
-			<Modal title="Keyboard shortcuts" kind={Modals.HotKeys}>
+			<Modal title="Help" kind={Modals.HotKeys}>
 				<div className="space-y-1 text-sm">
+					<div className="pb-2">
+						To delete a node <Key>Left Click</Key> on it and press <Key>Backspace</Key>
+					</div>
+					<div className="pb-4">
+						To open node menu <Key>Right Click</Key> on it
+					</div>
+
 					<HelpItem label="Save Automation" hotkey="Alt + S" />
 					<HelpItem label="Run Automation" hotkey="Alt + R" />
 					<HelpItem label="New Automation" hotkey="Alt + N" />
@@ -160,9 +167,15 @@ function HelpItem({ label, hotkey }: { label: string; hotkey: string }) {
 	return (
 		<div className="flex items-center justify-between px-2 py-1 rounded even:bg-slate-100">
 			<span>{label}</span>
-			<span className="px-2 font-mono border-b rounded border-slate-400 bg-slate-50">
-				{hotkey}
-			</span>
+			<Key>{hotkey}</Key>
 		</div>
+	)
+}
+
+function Key({ children }: { children: ReactNode }) {
+	return (
+		<span className="px-2 font-mono border-b rounded border-slate-400 bg-slate-50">
+			{children}
+		</span>
 	)
 }
