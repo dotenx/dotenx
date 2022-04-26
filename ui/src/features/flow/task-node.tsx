@@ -66,7 +66,7 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 					<div className="flex items-center gap-2">
 						{data.iconUrl && (
 							<img
-								className="w-4 h-4 bg-white rounded-sm"
+								className="w-4 h-4 p-px bg-white rounded-sm"
 								src={data.iconUrl}
 								alt=""
 								draggable={false}

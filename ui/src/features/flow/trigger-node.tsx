@@ -29,7 +29,7 @@ export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 			<div className="flex gap-1.5 items-center">
 				{data.iconUrl && (
 					<img
-						className="w-4 h-4 bg-white rounded-sm"
+						className="w-4 h-4 p-px bg-white rounded-sm"
 						src={data.iconUrl}
 						alt=""
 						draggable={false}
