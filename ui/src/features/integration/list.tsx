@@ -1,9 +1,8 @@
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
-import { getDisplayText } from '../../utils'
 import { Modals, useModal } from '../hooks'
-import { Button, Item, Table } from '../ui'
+import { Button, DeleteButton, Table } from '../ui'
 
 export function IntegrationList() {
 	const client = useQueryClient()
@@ -18,14 +17,19 @@ export function IntegrationList() {
 			title="Integrations"
 			emptyText="You have no integration yet, try adding one."
 			actionBar={<ActionBar />}
-			headers={['Name', 'Type', 'Action']}
-			items={integrations?.map((integration) => (
-				<Item
-					key={integration.name}
-					values={[integration.name, getDisplayText(integration.type)]}
-					onDelete={() => deleteMutation.mutate(integration.name)}
-				/>
-			))}
+			columns={[
+				{ Header: 'Name', accessor: 'name' },
+				{ Header: 'Type', accessor: 'type' },
+				{
+					Header: 'Action',
+					id: 'action',
+					accessor: 'name',
+					Cell: ({ value }: { value: string }) => (
+						<DeleteButton onClick={() => deleteMutation.mutate(value)} />
+					),
+				},
+			]}
+			data={integrations}
 		/>
 	)
 }

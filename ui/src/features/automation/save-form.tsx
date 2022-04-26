@@ -7,14 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 import {
 	createAutomation,
-	createTrigger,
 	Manifest,
 	QueryKey,
 	TaskBody,
 	Tasks,
-	TriggerData,
+	Trigger,
+	Triggers,
 	updateAutomation,
-	updateTrigger,
 } from '../../api'
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
@@ -47,12 +46,10 @@ function useSaveForm() {
 		handleSubmit,
 	} = useForm<Schema>({ resolver: zodResolver(schema) })
 
-	const client = useQueryClient()
 	const modal = useModal()
 	const addAutomationMutation = useMutation(createAutomation)
-	const addTriggerMutation = useMutation(createTrigger)
 	const navigate = useNavigate()
-
+	const client = useQueryClient()
 	const [elements] = useAtom(flowAtom)
 
 	const onSave = (values: Schema) => {
@@ -63,12 +60,8 @@ function useSaveForm() {
 			},
 			{
 				onSuccess: () => {
+					client.invalidateQueries(QueryKey.GetAutomation)
 					modal.close()
-					client.invalidateQueries(QueryKey.GetAutomations)
-					const triggers = mapElementsToTriggers(elements)
-						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
-						.filter((trigger): trigger is TriggerData => !!trigger)
-					addTriggerMutation.mutate(triggers)
 				},
 			}
 		)
@@ -90,28 +83,13 @@ function useSaveForm() {
 export function useUpdateAutomation() {
 	const client = useQueryClient()
 	const updateAutomationMutation = useMutation(updateAutomation)
-	const updateTriggerMutation = useMutation(updateTrigger)
 	const [elements] = useAtom(flowAtom)
 
 	const onUpdate = (values: Schema) => {
+		const manifest = mapElementsToPayload(elements)
 		updateAutomationMutation.mutate(
-			{
-				name: values.name,
-				manifest: mapElementsToPayload(elements),
-			},
-			{
-				onSuccess: () => {
-					client.invalidateQueries(QueryKey.GetAutomation)
-					const triggers = mapElementsToTriggers(elements)
-						.map((trigger) => ({ ...trigger.data, pipeline_name: values.name }))
-						.filter((trigger): trigger is TriggerData => !!trigger)
-					updateTriggerMutation.mutate(triggers, {
-						onSuccess: () => {
-							client.invalidateQueries(QueryKey.GetAutomationTrigger)
-						},
-					})
-				},
-			}
+			{ name: values.name, manifest },
+			{ onSuccess: () => client.invalidateQueries(QueryKey.GetAutomation) }
 		)
 	}
 
@@ -121,9 +99,14 @@ export function useUpdateAutomation() {
 }
 
 function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {
-	return elements
+	const triggers = elements
 		.filter(isNode)
-		.filter((node) => node.type === NodeType.Trigger) as Node<TriggerData>[]
+		.filter((node) => node.type === NodeType.Trigger)
+		.map<Trigger>((node) => node.data)
+
+	const automationTriggers: Triggers = {}
+	triggers.forEach((trigger) => (automationTriggers[trigger.name] = trigger))
+	return automationTriggers
 }
 
 function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Manifest {
@@ -155,7 +138,9 @@ function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>): Mani
 		}
 	})
 
-	return { tasks, triggers: { defaultTrigger: { type: 'Manual' } } }
+	const triggers = mapElementsToTriggers(elements)
+
+	return { tasks, triggers }
 }
 
 function mapEdgesToExecuteAfter(
