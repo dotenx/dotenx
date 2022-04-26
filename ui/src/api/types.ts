@@ -3,6 +3,7 @@ export enum QueryKey {
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetAutomation = 'get-automation',
+	GetAutomationYaml = 'get-automation-yaml',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
 	GetIntegrationTypes = 'get-integration-types',

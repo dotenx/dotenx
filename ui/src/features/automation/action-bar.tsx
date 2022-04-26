@@ -4,6 +4,7 @@ import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
 	IoCalendarOutline,
+	IoCodeSlash,
 	IoCopyOutline,
 	IoHelpCircle,
 	IoPlayOutline,
@@ -19,6 +20,7 @@ import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
 import { SaveForm, useUpdateAutomation } from './save-form'
 import { useActionBar } from './use-action-bar'
+import { AutomationYaml } from './yaml'
 
 interface ActionBarProps {
 	automationName?: string
@@ -127,6 +129,13 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					>
 						<IoCopyOutline />
 					</IconButton>
+					<IconButton
+						tooltip="YAML"
+						disabled={!selectedAutomation}
+						onClick={() => modal.open(Modals.AutomationYaml)}
+					>
+						<IoCodeSlash />
+					</IconButton>
 					<IconButton tooltip="History" disabled={!automationName}>
 						{automationName && (
 							<Link to={`/automations/${automationName}/executions`}>
@@ -159,6 +168,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
 				</div>
 			</Modal>
+			{automationName && (
+				<Modal size="lg" title="Automation YAML" kind={Modals.AutomationYaml}>
+					<AutomationYaml name={automationName} />
+				</Modal>
+			)}
 		</>
 	)
 }

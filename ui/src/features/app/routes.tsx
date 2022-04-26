@@ -2,6 +2,7 @@ import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom'
 import AutomationPage from '../../pages/automation'
 import AutomationsPage from '../../pages/automations'
 import HistoryPage from '../../pages/history'
+import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
 import TriggersPage from '../../pages/triggers'
@@ -17,6 +18,7 @@ export function Routes() {
 			<Route path="/automations/:name" element={<AutomationPage />} />
 			<Route path="/automations-new" element={<AutomationPage />} />
 			<Route path="/automations" element={<AutomationsPage />} />
+			<Route path="/automations/yaml/import" element={<ImportYamlPage />} />
 			<Route path="/" element={<Navigate replace to="/automations" />} />
 		</ReactRoutes>
 	)

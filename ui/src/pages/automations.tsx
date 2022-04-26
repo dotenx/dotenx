@@ -1,4 +1,4 @@
-import { IoAdd } from 'react-icons/io5'
+import { IoAdd, IoCodeDownload } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
@@ -13,7 +13,7 @@ export default function AutomationsPage() {
 
 	return (
 		<div className="grow">
-			<div className="px-32 py-16 grow">
+			<div className="px-32 py-16">
 				<Table
 					title="Automations"
 					emptyText="You have no automation yet, try adding one."
@@ -51,9 +51,17 @@ function NewAutomation() {
 	const newAutomation = useNewAutomation()
 
 	return (
-		<Button className="max-w-min" onClick={newAutomation}>
-			<IoAdd className="text-2xl" />
-			New Automation
-		</Button>
+		<div className="flex gap-4">
+			<Link to="/automations/yaml/import">
+				<Button className="max-w-min">
+					<IoCodeDownload className="text-2xl" />
+					Import YAML
+				</Button>
+			</Link>
+			<Button className="max-w-min" onClick={newAutomation}>
+				<IoAdd className="text-2xl" />
+				New Automation
+			</Button>
+		</div>
 	)
 }
