@@ -93,8 +93,7 @@ outputs:
 # integration field is not necessary
 integration: integration type wich is needed to run your trigger
 author: your github username 
-```
-*** variables you set as output in your task or trigger will be avaliable to chose as input in other tasks in your automation   
+``` 
 
 # License 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
