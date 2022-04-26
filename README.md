@@ -68,6 +68,9 @@ image: Docker image that implements the task
 fields:
   - key: key of your variable
     type: type of your variable(currently text and JSON are supported)
+outputs:
+    - key: key of your output variable
+      type: type of your output variable(currently text and JSON are supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your task
 author: your github username 
@@ -84,10 +87,14 @@ image: Docker image that implements the trigger
 credentials:
   - key: key of your variable
     type: type of your variable(currently text is supported)
+outputs:
+    - key: key of your output variable
+      type: type of your output variable(currently text and JSON are supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your trigger
 author: your github username 
 ```
+*** variables you set as output in your task or trigger will be avaliable to chose as input in other tasks in your automation   
 
 # License 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
