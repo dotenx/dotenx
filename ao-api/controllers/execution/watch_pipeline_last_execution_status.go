@@ -3,6 +3,7 @@ package execution
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -25,11 +26,13 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 				c.JSON(http.StatusBadRequest, "there is no executon for this pipeline")
 				return
 			}
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		totalTasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
