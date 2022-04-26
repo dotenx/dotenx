@@ -7,7 +7,9 @@ import { Button } from '../features/ui'
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
 	const { handleSubmit, register } = useForm({ defaultValues: { code: '' } })
-	const { mutate } = useMutation(createAutomationYaml)
+	const { mutate } = useMutation(createAutomationYaml, {
+		onSuccess: ({ data }) => navigate(`/automations/${data.name}`),
+	})
 
 	return (
 		<div className="grow">

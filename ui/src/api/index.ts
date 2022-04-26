@@ -31,7 +31,9 @@ export function createAutomation(payload: CreateAutomationRequest) {
 }
 
 export function createAutomationYaml(payload: string) {
-	return api.post<void>('/pipeline', payload, { headers: { accept: 'application/x-yaml' } })
+	return api.post<{ name: string }>('/pipeline', payload, {
+		headers: { accept: 'application/x-yaml' },
+	})
 }
 
 export function updateAutomation(payload: CreateAutomationRequest) {
