@@ -3,6 +3,7 @@ package execution
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,6 +24,7 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 		}
 		totalTasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

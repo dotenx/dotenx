@@ -26,7 +26,6 @@ func (controller *TriggerController) GetAllTriggersForAccountByType() gin.Handle
 			return
 		}
 		c.JSON(http.StatusBadRequest, err.Error())
-
 	}
 }
 func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
@@ -105,6 +104,7 @@ func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -133,6 +133,7 @@ func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
