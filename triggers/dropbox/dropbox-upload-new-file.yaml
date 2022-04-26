@@ -1,7 +1,7 @@
 service: dropbox
 type: Dropbox upload new file
 integrations: [dropbox]
-image: hojjat12/dropbox-upload-new-file
+image: hojjat12/dropbox-upload-new-file:latest
 credentials:
     - key: path
       type: text
