@@ -69,7 +69,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, gin.H{"name": pipelineDto.Name})
 	}
 }
 
