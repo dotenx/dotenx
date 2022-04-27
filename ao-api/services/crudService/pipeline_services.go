@@ -11,7 +11,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return
 	}
-	_, e, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	_, e, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err != nil {
 		return
 	}
@@ -33,7 +33,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	p, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	p, _, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 	if err == nil && p.Id != "" {
 		err := cm.DeletePipeline(base.AccountId, base.Name)
 		if err != nil {
@@ -65,20 +65,20 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	}
 }
 
-func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, error) {
-	pipe, endpoint, err := cm.Store.GetByName(noContext, accountId, name)
+func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, error) {
+	pipe, endpoint, isActive, err := cm.Store.GetByName(noContext, accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", err
+		return models.PipelineVersion{}, "", false, err
 	}
 	triggers, err := cm.TriggerService.GetAllTriggersForPipeline(accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", err
+		return models.PipelineVersion{}, "", false, err
 	}
 	pipe.Manifest.Triggers = make(map[string]models.EventTrigger)
 	for _, tr := range triggers {
 		pipe.Manifest.Triggers[tr.Name] = tr
 	}
-	return pipe, endpoint, nil
+	return pipe, endpoint, isActive, nil
 }
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
 	return cm.Store.GetPipelines(noContext, accountId)
@@ -93,4 +93,12 @@ func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]models
 		return nil, err
 	}
 	return cm.Store.GetAllExecutions(noContext, pipelineId)
+}
+
+func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error) {
+	return cm.Store.ActivatePipeline(noContext, accountId, pipelineId)
+}
+
+func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string) (err error) {
+	return cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
 }

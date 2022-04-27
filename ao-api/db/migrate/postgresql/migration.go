@@ -76,6 +76,18 @@ var migrations = []struct {
 		name: "add-has-refresh-token-field",
 		stmt: addHasRefreshTokenField,
 	},
+	{
+		name: "add-is-active-field",
+		stmt: addIsActive,
+	},
+	{
+		name: "update-is-active-field",
+		stmt: updateIsActive,
+	},
+	{
+		name: "update-nill-is-active-field",
+		stmt: updateNillIsActive,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -167,6 +179,7 @@ id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
 account_id         			                 	VARCHAR(64),
 endpoint 							     		uuid DEFAULT uuid_generate_v4(),
+is_active                                       BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
@@ -286,3 +299,14 @@ var addHasRefreshTokenField = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `
+var addIsActive = `ALTER TABLE pipelines
+ADD COLUMN is_active BOOLEAN;`
+
+var updateIsActive = `
+ALTER TABLE pipelines
+ALTER COLUMN is_active
+SET DEFAULT FALSE;`
+
+var updateNillIsActive = `
+UPDATE pipelines
+SET is_active=FALSE;`

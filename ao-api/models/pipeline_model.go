@@ -11,6 +11,7 @@ type Pipeline struct {
 	Name      string `db:"name" json:"name"`
 	Endpoint  string `db:"endpoint" json:"endpoint"`
 	AccountId string `db:"account_id" json:"-"`
+	IsActive  bool   `db:"is_active" json:"is_active"`
 }
 
 type PipelineVersion struct {

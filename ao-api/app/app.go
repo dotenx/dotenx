@@ -128,6 +128,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name", crudController.GetPipeline())
+		pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
+		pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
 	}
 	execution := r.Group("/execution")
 	{
