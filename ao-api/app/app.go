@@ -100,12 +100,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	RedisStore := redisStore.New(redisClient)
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
-	crudServices := crudService.NewCrudService(pipelineStore)
+
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService)
+	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
 	OauthService := oauthService.NewOauthService(RedisStore)
-	crudController := crud.CRUDController{Service: crudServices}
+	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
@@ -127,6 +128,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name", crudController.GetPipeline())
+		pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
+		pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
 	}
 	execution := r.Group("/execution")
 	{

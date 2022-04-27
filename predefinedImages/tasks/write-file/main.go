@@ -27,11 +27,11 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	} else {
-		resultData2 := make(map[string]interface{})
-		resultData2["file"] = fmt.Sprintf("%s_bio.json", workspace)
+		outputs := make(map[string]interface{})
+		outputs["file"] = fmt.Sprintf("%s_bio.json", workspace)
 		data := map[string]interface{}{
 			"status":       "started",
-			"return_value": resultData2,
+			"return_value": outputs,
 			"log":          "",
 		}
 		json_data, err := json.Marshal(data)

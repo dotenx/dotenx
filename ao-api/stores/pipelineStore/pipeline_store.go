@@ -23,7 +23,7 @@ type PipelineStore interface {
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
-	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error)
+	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, err error)
 	// Check if the endpoint is valid return the pipeline id
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)
@@ -52,8 +52,12 @@ type PipelineStore interface {
 	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
 	// GetInitialData retrieves the initial data of an execution
 	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
+	UpdateInitialData(context context.Context, execId int, initialData models.InputData) error
 	// Get next job in an execution based on the status of a task in the execution
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
+
+	ActivatePipeline(context context.Context, accountId, pipelineId string) error
+	DeActivatePipeline(context context.Context, accountId, pipelineId string) error
 }
 
 type pipelineStore struct {
