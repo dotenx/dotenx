@@ -14,27 +14,19 @@ type Pipeline struct {
 }
 
 type PipelineVersion struct {
-	Id             string   `db:"id" json:"-" yaml:"-"`
-	PipelineId     int16    `db:"pipeline_id" json:"-"  yaml:"-"`
-	Manifest       Manifest `db:"manifest" json:"manifest" yaml:"manifest"`
-	Version        int16    `db:"version" json:"version" yaml:"version"`
-	FromVersion    int16    `db:"from_version" json:"fromVersion" yaml:"fromVersion"`
-	ServiceAccount string   `db:"service_account" json:"serviceAccount" yaml:"serviceAccount"`
-}
-
-type PipelineVersionSummary struct {
-	Version     int
-	FromVersion int `db:"from_version"`
+	Id         string   `db:"id" json:"-" yaml:"-"`
+	PipelineId int16    `db:"pipeline_id" json:"-"  yaml:"-"`
+	Manifest   Manifest `db:"manifest" json:"manifest" yaml:"manifest"`
 }
 
 type PipelineDto struct {
-	Name           string
-	ServiceAccount string `yaml:"serviceAccount"`
-	Manifest       Manifest
+	Name     string
+	Manifest Manifest
 }
 
 type Manifest struct {
-	Tasks map[string]Task `db:"tasks" json:"tasks" yaml:"tasks"`
+	Tasks    map[string]Task         `db:"tasks" json:"tasks" yaml:"tasks"`
+	Triggers map[string]EventTrigger `db:"triggers" json:"triggers" yaml:"triggers"`
 }
 
 func (m Manifest) Value() (driver.Value, error) {

@@ -1,9 +1,12 @@
 package crud
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -13,13 +16,38 @@ import (
 func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var pipelineDto PipelineDto
-		if err := c.ShouldBindJSON(&pipelineDto); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		accept := c.GetHeader("accept")
+		if accept == "application/x-yaml" {
+			var result map[string]interface{}
+			if err := c.ShouldBindYAML(&result); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			for key, val := range result {
+				if key == "manifest" {
+					var mani models.Manifest
+					var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
+					bytes, err1 := json2.Marshal(&val)
+					err2 := json.Unmarshal(bytes, &mani)
+					if err1 != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err1.Error()})
+						return
+					} else if err2 != nil {
+						c.JSON(http.StatusBadRequest, gin.H{"error": err2.Error()})
+						return
+					}
+					pipelineDto.Manifest = mani
+				}
+				if key == "name" {
+					pipelineDto.Name = val.(string)
+				}
+			}
+		} else {
+			if err := c.ShouldBindJSON(&pipelineDto); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
 		}
-		fmt.Println("################")
-		fmt.Println(pipelineDto)
-		fmt.Println("##################")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
@@ -28,8 +56,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest:    pipelineDto.Manifest,
-			FromVersion: pipelineDto.FromVersion,
+			Manifest: pipelineDto.Manifest,
 		}
 
 		err := mc.Service.CreatePipeLine(&base, &pipeline)
@@ -42,14 +69,13 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, gin.H{"name": pipelineDto.Name})
 	}
 }
 
 type PipelineDto struct {
-	Name        string
-	Manifest    models.Manifest
-	FromVersion int16 `json:"fromVersion"`
+	Name     string
+	Manifest models.Manifest
 }
 
 func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
@@ -70,8 +96,7 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest:    pipelineDto.Manifest,
-			FromVersion: pipelineDto.FromVersion,
+			Manifest: pipelineDto.Manifest,
 		}
 
 		err := mc.Service.UpdatePipeline(&base, &pipeline)

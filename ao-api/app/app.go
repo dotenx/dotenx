@@ -100,12 +100,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	RedisStore := redisStore.New(redisClient)
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
-	crudServices := crudService.NewCrudService(pipelineStore)
+
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService)
+	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
 	OauthService := oauthService.NewOauthService(RedisStore)
-	crudController := crud.CRUDController{Service: crudServices}
+	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
