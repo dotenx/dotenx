@@ -37,6 +37,7 @@ func (manager *TriggerManager) StartSchedulling(trigger models.EventTrigger) err
 	s.Every(freq).Second().Do(func() {
 		manager.ExecutionService.StartPipeline(inp, trigger.AccountId, trigger.Endpoint)
 	})
+	ActiveSchedulers[trigger.AccountId+"_"+trigger.Pipeline+"_"+trigger.Name] = s
 	go s.StartBlocking()
 
 	return nil
