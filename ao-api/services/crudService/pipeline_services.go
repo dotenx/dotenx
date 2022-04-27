@@ -43,7 +43,23 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
 		}
-		return nil
+		_, endpoint, err := cm.GetPipelineByName(base.AccountId, base.Name)
+		if err != nil {
+			return err
+		}
+		triggers := make([]*models.EventTrigger, 0)
+		for _, tr := range pipeline.Manifest.Triggers {
+			triggers = append(triggers, &models.EventTrigger{
+				Name:        tr.Name,
+				AccountId:   tr.AccountId,
+				Type:        tr.Type,
+				Endpoint:    tr.Endpoint,
+				Pipeline:    tr.Pipeline,
+				Integration: tr.Integration,
+				Credentials: tr.Credentials,
+			})
+		}
+		return cm.TriggerService.UpdateTriggers(base.AccountId, triggers, endpoint)
 	} else {
 		return errors.New("your Automation has not been saved yet")
 	}

@@ -52,6 +52,7 @@ type PipelineStore interface {
 	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
 	// GetInitialData retrieves the initial data of an execution
 	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
+	UpdateInitialData(context context.Context, execId int, initialData models.InputData) error
 	// Get next job in an execution based on the status of a task in the execution
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
 
