@@ -13,13 +13,13 @@ import {
 	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { NodeType } from '../flow'
 import { Modals, useModal } from '../hooks'
 import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
-import { SaveForm, useUpdateAutomation } from './save-form'
+import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
+import { useUpdateAutomation } from './use-update'
 import { AutomationYaml } from './yaml'
 
 interface ActionBarProps {
@@ -36,10 +36,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 	const { onUpdate } = useUpdateAutomation()
 	const handleSave = () => {
 		if (!automationName) modal.open(Modals.SaveAutomation)
-		else {
-			onUpdate({ name: automationName })
-			toast('Automation saved', { type: 'success' })
-		}
+		else onUpdate({ name: automationName })
 	}
 	useHotkeys(
 		'alt+s',
