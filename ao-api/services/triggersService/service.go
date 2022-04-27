@@ -22,6 +22,7 @@ func init() {
 type TriggerService interface {
 	GetTriggerTypes() (map[string][]triggerSummery, error)
 	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
+	GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
@@ -43,6 +44,7 @@ type TriggerManager struct {
 type triggerSummery struct {
 	Type        string `json:"type"`
 	IconUrl     string `json:"icon_url"`
+	NodeColor   string `json:"node_color"`
 	Description string `json:"description"`
 }
 
@@ -66,7 +68,7 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 		} else {
 			types := make([]triggerSummery, 0)
-			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
+			types = append(types, triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description, NodeColor: integ.NodeColor})
 			triggers[integ.Service] = types
 		}
 
@@ -140,9 +142,24 @@ func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipe
 	}
 	return errors.New("no trigger with this name")
 }
+
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggers(context.Background(), accountId)
 }
+func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error) {
+	triggers, err := manager.Store.GetAllTriggers(context.Background(), accountId)
+	if err != nil {
+		return nil, err
+	}
+	selected := make([]models.EventTrigger, 0)
+	for _, tr := range triggers {
+		if tr.Pipeline == pipelineName {
+			selected = append(selected, tr)
+		}
+	}
+	return selected, nil
+}
+
 func (manager *TriggerManager) GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error) {
 	return manager.Store.GetTriggersByType(context.Background(), accountId, triggerType)
 }

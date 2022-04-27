@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { z } from 'zod'
 import {
-	CreateTriggerRequest,
 	getAutomations,
 	getTriggerDefinition,
 	getTriggerKinds,
 	QueryKey,
+	TriggerData,
 } from '../../api'
 
 const schema = z.object({
@@ -24,8 +24,8 @@ export function useTriggerForm({
 	onSave,
 	defaultValues,
 }: {
-	onSave: (values: CreateTriggerRequest) => void
-	defaultValues?: CreateTriggerRequest
+	onSave: (values: TriggerData) => void
+	defaultValues?: TriggerData
 }) {
 	const {
 		control,
@@ -60,7 +60,7 @@ export function useTriggerForm({
 		.find((trigger) => trigger.type === triggerType)
 	const onSubmit = handleSubmit(() =>
 		onSave({
-			...(getValues() as CreateTriggerRequest),
+			...(getValues() as TriggerData),
 			iconUrl: selectedTriggerType?.icon_url,
 		})
 	)

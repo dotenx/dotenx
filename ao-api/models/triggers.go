@@ -19,12 +19,13 @@ type TriggerDefinition struct {
 	Outputs          []Credential `json:"outputs" yaml:"outputs"`
 	Author           string       `json:"author" yaml:"author"`
 	Icon             string       `json:"icon" yaml:"icon"`
+	NodeColor        string       `json:"node_color" yaml:"node_color"`
 	Description      string       `json:"description" yaml:"description"`
 }
 
 type Credential struct {
-	Key  string `yaml:"key"`
-	Type string `yaml:"type"`
+	Key  string `json:"key" yaml:"key"`
+	Type string `json:"type" yaml:"type"`
 }
 
 type EventTrigger struct {
@@ -72,6 +73,7 @@ func readTriggerFile(address string) {
 	if yamlFile.IntegrationTypes == nil {
 		yamlFile.IntegrationTypes = make([]string, 0)
 	}
+	yamlFile.NodeColor = "#" + yamlFile.NodeColor
 	AvaliableTriggers[yamlFile.Type] = yamlFile
 }
 

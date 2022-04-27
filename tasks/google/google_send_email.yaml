@@ -1,0 +1,17 @@
+service: google
+type: Google send email
+image: hojjat12/google-send-email
+integrations: [google]
+fields:
+    - key: from
+      type: text
+    - key: to
+      type: text
+    - key: subject
+      type: text
+    - key: message
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/281/281764.png
+node_color: FBFB11
+description: Send an email message with gmail service

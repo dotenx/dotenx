@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai'
-import ReactFlow from 'react-flow-renderer'
-import { CreateTriggerRequest } from '../../api'
+import { useEffect } from 'react'
+import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
+import { TriggerData } from '../../api'
 import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
@@ -13,7 +14,7 @@ import { TriggerEntity, TriggerNode } from './trigger-node'
 import { useFlow } from './use-flow'
 
 const nodeTypes = {
-	default: TaskNode,
+	task: TaskNode,
 	trigger: TriggerNode,
 }
 
@@ -32,6 +33,12 @@ export function Flow() {
 		onLoad,
 		updateElement,
 	} = useFlow()
+
+	const { fitView } = useZoomPanHelper()
+
+	useEffect(() => {
+		fitView()
+	}, [fitView])
 
 	return (
 		<>
@@ -75,7 +82,7 @@ function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const modal = useModal()
 
 	return (
-		<Modal kind={Modals.NodeSettings}>
+		<Modal title="Task Settings" kind={Modals.NodeSettings}>
 			{({ id, data }: TaskEntity) => (
 				<TaskSettings
 					defaultValues={data}
@@ -97,7 +104,7 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 	const modal = useModal()
 
 	return (
-		<Modal kind={Modals.EdgeSettings}>
+		<Modal title="Edge Settings" kind={Modals.EdgeSettings}>
 			{({ id, data }: EdgeEntity) => (
 				<EdgeSettings
 					defaultValues={data}
@@ -116,7 +123,7 @@ function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const [automation] = useAtom(selectedAutomationDataAtom)
 
 	return (
-		<Modal kind={Modals.TriggerSettings}>
+		<Modal title="Trigger Settings" kind={Modals.TriggerSettings}>
 			{({ id, data }: TriggerEntity) => (
 				<TriggerSettings
 					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
@@ -131,8 +138,8 @@ function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
 }
 
 interface TriggerSettingsProps {
-	defaultValues: CreateTriggerRequest
-	onSave: (values: CreateTriggerRequest) => void
+	defaultValues: TriggerData
+	onSave: (values: TriggerData) => void
 }
 
 export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {

@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -13,6 +14,7 @@ func (mc *CRUDController) GetListOfPipelineExecution() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		executions, err := mc.Service.GetAllExecutions(accountId, name)
 		if err != nil {
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err)
 			return
 		}

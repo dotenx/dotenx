@@ -9,6 +9,7 @@ import (
 type taskDetail struct {
 	Type        string `json:"type"`
 	IconUrl     string `json:"icon_url"`
+	NodeColor   string `json:"node_color"`
 	Description string `json:"description"`
 }
 
@@ -32,7 +33,7 @@ func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
 			types[t.Service] = append(types[t.Service], taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
 		} else {
 			detailes := make([]taskDetail, 0)
-			detailes = append(detailes, taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
+			detailes = append(detailes, taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description, NodeColor: t.NodeColor})
 			types[t.Service] = detailes
 		}
 	}

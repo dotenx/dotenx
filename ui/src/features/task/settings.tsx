@@ -1,15 +1,10 @@
 import { SelectIntegration } from '../integration'
-import { Button, Field, Form, GroupSelect, InputOrSelect, InputOrSelectValue } from '../ui'
+import { Button, Field, Form, GroupSelect, InputOrSelect } from '../ui'
 import { TaskSettingsSchema, useTaskSettings } from './use-settings'
 
 interface TaskSettingsProps {
 	defaultValues: TaskSettingsSchema
-	onSave: (
-		values: TaskSettingsSchema & { iconUrl?: string } & Record<
-				string,
-				string | InputOrSelectValue | undefined
-			>
-	) => void
+	onSave: (values: TaskSettingsSchema & { iconUrl?: string; color?: string }) => void
 }
 
 export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
@@ -26,7 +21,6 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
-			<h2 className="text-2xl">Task Settings</h2>
 			<div className="flex flex-col gap-5 grow">
 				<Field label="Name" type="text" name="name" control={control} errors={errors} />
 				<div>
@@ -41,11 +35,11 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 				</div>
 				{taskFields.map((taskField) => (
 					<InputOrSelect
-						key={taskField.key}
+						key={`others.${taskField.key}`}
 						control={control}
 						errors={errors}
 						label={taskField.key}
-						name={taskField.key}
+						name={`others.${taskField.key}`}
 						groups={outputGroups}
 					/>
 				))}

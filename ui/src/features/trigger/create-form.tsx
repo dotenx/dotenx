@@ -1,12 +1,12 @@
-import { CreateTriggerRequest } from '../../api'
+import { TriggerData } from '../../api'
 import { getDisplayText } from '../../utils'
 import { SelectIntegration } from '../integration'
-import { Button, Field, Form, GroupSelect, Select } from '../ui'
+import { Button, Field, Form, GroupSelect, NewSelect } from '../ui'
 import { useTriggerForm } from './use-form'
 
 interface TriggerFormProps {
-	onSave: (values: CreateTriggerRequest) => void
-	defaultValues?: CreateTriggerRequest
+	onSave: (values: TriggerData) => void
+	defaultValues?: TriggerData
 	mode: 'new' | 'settings'
 }
 
@@ -21,7 +21,6 @@ export function TriggerForm({
 		integrationTypes,
 		onSubmit,
 		automationOptions,
-		automationsQuery,
 		selectedTriggerType,
 		triggerDefinitionQuery,
 		triggerOptions,
@@ -29,7 +28,6 @@ export function TriggerForm({
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
-			<h2 className="text-2xl">{mode === 'new' ? 'Add trigger' : 'Trigger settings'}</h2>
 			<div className="flex flex-col gap-5 grow">
 				<Field
 					label="Name"
@@ -49,11 +47,10 @@ export function TriggerForm({
 					<div className="text-xs mt-1.5">{selectedTriggerType?.description}</div>
 				</div>
 				{mode === 'new' && (
-					<Select
+					<NewSelect
 						label="Automation"
 						name="pipeline_name"
 						control={control}
-						isLoading={automationsQuery.isLoading}
 						errors={errors}
 						options={automationOptions}
 						placeholder="Automation name"
@@ -68,9 +65,9 @@ export function TriggerForm({
 				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
 					<Field
-						key={triggerDefinition.Key}
-						label={getDisplayText(triggerDefinition.Key)}
-						name={`credentials.${triggerDefinition.Key}`}
+						key={triggerDefinition.key}
+						label={getDisplayText(triggerDefinition.key)}
+						name={`credentials.${triggerDefinition.key}`}
 						control={control}
 						required
 						errors={errors}

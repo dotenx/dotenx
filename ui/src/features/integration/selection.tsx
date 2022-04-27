@@ -1,7 +1,7 @@
 import { Control, FieldErrors } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { getIntegrationsByKinds, QueryKey } from '../../api'
-import { Select } from '../ui'
+import { NewSelect } from '../ui'
 
 interface SelectIntegrationProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,11 +18,10 @@ export function SelectIntegration({ control, errors, integrationTypes }: SelectI
 	)
 
 	return (
-		<Select
+		<NewSelect
 			label="Integration"
 			name="integration"
 			control={control}
-			isLoading={integrationQuery.isLoading}
 			errors={errors}
 			options={integrationQuery?.data?.data.map((integration) => ({
 				label: integration.name,

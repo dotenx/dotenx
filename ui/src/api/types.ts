@@ -3,6 +3,7 @@ export enum QueryKey {
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetAutomation = 'get-automation',
+	GetAutomationYaml = 'get-automation-yaml',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
 	GetIntegrationTypes = 'get-integration-types',
@@ -26,23 +27,24 @@ export enum TaskExecutionStatus {
 }
 
 export interface TaskTriggerOutput {
-	Key: string
-	Type: string
+	key: string
+	type: string
 }
 
 export interface TriggerKindData {
 	type: string
 	icon_url: string
 	description: string
+	node_color: string
 }
 
 export interface Trigger {
 	name: string
-	account_id: string
+	account_id?: string
 	type: string
-	endpoint: string
+	endpoint?: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	meta_data: Metadata
 }
@@ -75,6 +77,7 @@ export interface TaskKindData {
 	type: string
 	description: string
 	icon_url: string
+	node_color: string
 }
 
 export interface Automation {
@@ -82,8 +85,10 @@ export interface Automation {
 	endpoint: string
 }
 
+export type Triggers = Record<string, Trigger>
+
 export interface Manifest {
-	triggers: Record<string, { type: string }>
+	triggers: Triggers
 	tasks: Tasks
 }
 
@@ -92,13 +97,16 @@ export type Tasks = Record<string, Task>
 export interface Task {
 	type: string
 	executeAfter: Record<string, string[]>
-	body: Record<string, string | { source: string; key: string }>
+	body: TaskBody
 	integration: string
 	meta_data?: Metadata
 }
 
+export type TaskBody = Record<string, string | { source: string; key: string }>
+
 export interface Metadata {
 	icon: string
+	node_color: string
 }
 
 export type GetAutomationsResponse = Automation[]
@@ -138,8 +146,8 @@ export type GetTriggerDefinitionResponse = {
 	integrations: string[]
 	image: string
 	credentials: {
-		Key: string
-		Type: string
+		key: string
+		type: string
 	}[]
 	outputs: TaskTriggerOutput[]
 }
@@ -165,14 +173,16 @@ export type GetAutomationExecutionsResponse = {
 	InitialData: unknown | null
 }[]
 
-export type CreateTriggerRequest = {
+export interface TriggerData {
 	name: string
 	type: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	iconUrl?: string
 }
+
+export type CreateTriggerRequest = TriggerData[]
 
 export type CreateIntegrationRequest = {
 	name: string

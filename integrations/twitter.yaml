@@ -1,5 +1,11 @@
 type: twitter
 secrets:
+  - name: TWITTER CONSUMER KEY
+    key: CONSUMER_KEY
+  - name: TWITTER CONSUMER SECRET
+    key: CONSUMER_SECRET
   - name: TWITTER ACCESS TOKEN
     key: ACCESS_TOKEN
+  - name: TWITTER ACCESS TOKEN SECRET
+    key: ACCESS_TOKEN_SECRET
 oauth_provider: twitter

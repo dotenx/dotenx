@@ -29,7 +29,6 @@ export function EdgeSettings({ defaultValues, onSave }: EdgeSettingsProps) {
 
 	return (
 		<Form className="h-full" onSubmit={handleSubmit(onSave)}>
-			<h2 className="text-2xl">Edge Settings</h2>
 			<div className="flex flex-col gap-5 grow">
 				<Select
 					label="Triggers"

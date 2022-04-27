@@ -1,8 +1,9 @@
-import _ from 'lodash'
+import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteTrigger, getTriggers, QueryKey } from '../../api'
-import { getDisplayText } from '../../utils'
-import { Detail, Item, Table } from '../ui'
+import { CellProps } from 'react-table'
+import { deleteTrigger, getTriggers, QueryKey, TriggerData } from '../../api'
+import { Modals, useModal } from '../hooks'
+import { Button, DeleteButton, Table } from '../ui'
 
 function useTriggerList() {
 	const client = useQueryClient()
@@ -28,28 +29,46 @@ export function TriggerList() {
 	return (
 		<Table
 			title="Triggers"
-			headers={['Name', 'Type', 'Integration', 'Automation']}
-			items={triggers?.map((trigger, index) => (
-				<Item
-					key={index}
-					values={[
-						trigger.name,
-						getDisplayText(trigger.type),
-						trigger.integration,
-						trigger.pipeline_name,
-					]}
-					onDelete={() =>
-						deleteMutation.mutate({
-							triggerName: trigger.name,
-							automationName: trigger.pipeline_name,
-						})
-					}
-				>
-					{_.entries(trigger.credentials).map(([key, value]) => (
-						<Detail key={key} label={getDisplayText(key)} value={value} />
-					))}
-				</Item>
-			))}
+			emptyText="You have no trigger yet, try adding one."
+			actionBar={<NewTrigger />}
+			columns={[
+				{ Header: 'Name', accessor: 'name' },
+				{ Header: 'Type', accessor: 'type' },
+				{
+					Header: 'Integration',
+					accessor: 'integration',
+					Cell: ({ value }: { value: string }) => <span>{value || '-'}</span>,
+				},
+				{ Header: 'Automation', accessor: 'pipeline_name' },
+				{
+					Header: 'Action',
+					id: 'action',
+					Cell: (props: CellProps<TriggerData>) => {
+						return (
+							<DeleteButton
+								onClick={() =>
+									deleteMutation.mutate({
+										triggerName: props.row.original.name,
+										automationName: props.row.original.pipeline_name,
+									})
+								}
+							/>
+						)
+					},
+				},
+			]}
+			data={triggers}
 		/>
+	)
+}
+
+function NewTrigger() {
+	const modal = useModal()
+
+	return (
+		<Button className="max-w-min" onClick={() => modal.open(Modals.NewTrigger)}>
+			<IoAdd className="text-2xl" />
+			New trigger
+		</Button>
 	)
 }

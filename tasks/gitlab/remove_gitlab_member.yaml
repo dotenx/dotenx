@@ -12,4 +12,5 @@ fields:
       type: text
 author: Armingodiz
 icon: https://cdn-icons-png.flaticon.com/512/5968/5968853.png
+node_color: fca326	
 description: Removes a member with given userId from gitlab project or group(source must be "project" or "group")

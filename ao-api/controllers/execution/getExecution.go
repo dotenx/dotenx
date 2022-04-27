@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -13,6 +14,7 @@ func (e *ExecutionController) GetExecution() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		execution, err := e.Service.GetExecution(accountId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
