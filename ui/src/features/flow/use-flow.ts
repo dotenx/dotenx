@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai'
 import _ from 'lodash'
+import { nanoid } from 'nanoid'
 import { DragEventHandler, useEffect, useRef, useState } from 'react'
 import {
 	addEdge,
@@ -12,9 +13,8 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { useQuery } from 'react-query'
-import { AutomationData, getAutomationTriggers, QueryKey, Trigger } from '../../api'
-import { flowAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
+import { AutomationData, Triggers } from '../../api'
+import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
@@ -25,17 +25,11 @@ export enum NodeType {
 	Trigger = 'trigger',
 }
 
-let id = 1
-const getId = () => `task ${id++}`
-
-let triggerId = 1
-const getTriggerId = () => `trigger ${triggerId++}`
-
 export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
-		id: getId(),
+		id: nanoid(),
 		type: NodeType.Task,
-		data: { name: 'task 1', type: '' },
+		data: { name: 'task', type: '' },
 		position: { x: 0, y: 0 },
 	},
 ]
@@ -45,23 +39,14 @@ export function useFlow() {
 	const [reactFlowInstance, setReactFlowInstance] = useState<OnLoadParams | null>(null)
 	const [elements, setElements] = useAtom(flowAtom)
 	const [automation] = useAtom(selectedAutomationAtom)
-	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
-
-	const triggersQuery = useQuery(
-		[QueryKey.GetAutomationTrigger, selectedAutomationData?.name],
-		() => {
-			if (selectedAutomationData) return getAutomationTriggers(selectedAutomationData.name)
-		},
-		{ enabled: !!selectedAutomationData }
-	)
 
 	useEffect(() => {
 		if (!automation) return
 		const elements = mapAutomationToElements(automation)
-		const triggers = mapTriggersToElements(triggersQuery.data?.data)
+		const triggers = mapTriggersToElements(automation.manifest.triggers)
 		const layout = getLaidOutElements([...elements, ...triggers], 'TB', NODE_WIDTH, NODE_HEIGHT)
 		setElements(layout)
-	}, [automation, setElements, triggersQuery.data])
+	}, [automation, setElements])
 
 	const onConnect = (params: Edge | Connection) => {
 		setElements((els) => addEdge({ ...params, arrowHeadType: ArrowHeadType.Arrow }, els))
@@ -86,17 +71,18 @@ export function useFlow() {
 
 		const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect()
 		const type = event.dataTransfer.getData('application/reactflow')
+		if (!type) return
 		if (!reactFlowInstance || !reactFlowBounds) return
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		})
-		const id = type === NodeType.Task ? getId() : getTriggerId()
+		const id = nanoid()
 		const newNode: FlowElement<TaskNodeData> = {
 			id,
 			type,
 			position,
-			data: { name: id, type: '' },
+			data: { name: type === NodeType.Task ? 'task' : 'trigger', type: '' },
 		}
 
 		setElements((es) => es.concat(newNode))
@@ -167,14 +153,14 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function mapTriggersToElements(triggers: Trigger[] | undefined) {
+function mapTriggersToElements(triggers: Triggers | undefined) {
 	if (!triggers) return []
 
-	const triggerNodes = triggers.map((trigger) => ({
-		id: trigger.name,
+	const triggerNodes = _.entries(triggers).map(([name, triggerData]) => ({
+		id: name,
 		position: { x: 0, y: 0 },
 		type: NodeType.Trigger,
-		data: { ...trigger, iconUrl: trigger.meta_data.icon },
+		data: { ...triggerData, iconUrl: triggerData.meta_data.icon },
 	}))
 
 	return triggerNodes

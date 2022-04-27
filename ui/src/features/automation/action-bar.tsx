@@ -1,9 +1,10 @@
-import { DragEvent } from 'react'
+import { DragEvent, ReactNode } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
 	IoCalendarOutline,
+	IoCodeSlash,
 	IoCopyOutline,
 	IoHelpCircle,
 	IoPlayOutline,
@@ -19,6 +20,7 @@ import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
 import { SaveForm, useUpdateAutomation } from './save-form'
 import { useActionBar } from './use-action-bar'
+import { AutomationYaml } from './yaml'
 
 interface ActionBarProps {
 	automationName?: string
@@ -127,6 +129,13 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					>
 						<IoCopyOutline />
 					</IconButton>
+					<IconButton
+						tooltip="YAML"
+						disabled={!selectedAutomation}
+						onClick={() => modal.open(Modals.AutomationYaml)}
+					>
+						<IoCodeSlash />
+					</IconButton>
 					<IconButton tooltip="History" disabled={!automationName}>
 						{automationName && (
 							<Link to={`/automations/${automationName}/executions`}>
@@ -143,8 +152,15 @@ export function ActionBar({ automationName }: ActionBarProps) {
 			<Modal title="New Automation" kind={Modals.SaveAutomation}>
 				<SaveForm />
 			</Modal>
-			<Modal title="Keyboard shortcuts" kind={Modals.HotKeys}>
+			<Modal title="Help" kind={Modals.HotKeys}>
 				<div className="space-y-1 text-sm">
+					<div className="pb-2">
+						To delete a node <Key>Left Click</Key> on it and press <Key>Backspace</Key>
+					</div>
+					<div className="pb-4">
+						To open node menu <Key>Right Click</Key> on it
+					</div>
+
 					<HelpItem label="Save Automation" hotkey="Alt + S" />
 					<HelpItem label="Run Automation" hotkey="Alt + R" />
 					<HelpItem label="New Automation" hotkey="Alt + N" />
@@ -152,6 +168,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
 				</div>
 			</Modal>
+			{automationName && (
+				<Modal size="lg" title="Automation YAML" kind={Modals.AutomationYaml}>
+					<AutomationYaml name={automationName} />
+				</Modal>
+			)}
 		</>
 	)
 }
@@ -160,9 +181,15 @@ function HelpItem({ label, hotkey }: { label: string; hotkey: string }) {
 	return (
 		<div className="flex items-center justify-between px-2 py-1 rounded even:bg-slate-100">
 			<span>{label}</span>
-			<span className="px-2 font-mono border-b rounded border-slate-400 bg-slate-50">
-				{hotkey}
-			</span>
+			<Key>{hotkey}</Key>
 		</div>
+	)
+}
+
+function Key({ children }: { children: ReactNode }) {
+	return (
+		<span className="px-2 font-mono border-b rounded border-slate-400 bg-slate-50">
+			{children}
+		</span>
 	)
 }

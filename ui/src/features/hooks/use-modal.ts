@@ -10,6 +10,7 @@ export enum Modals {
 	NewIntegration = 'new-integration',
 	NewTrigger = 'new-trigger',
 	HotKeys = 'hot-keys',
+	AutomationYaml = 'automation-yaml',
 }
 
 export function useModal() {

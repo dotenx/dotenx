@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -25,6 +26,7 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}

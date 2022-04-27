@@ -1,10 +1,13 @@
 import clsx from 'clsx'
 import Color from 'color'
+import { useState } from 'react'
 import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
 import { Modals, useModal } from '../hooks'
 import { Button, InputOrSelectValue } from '../ui'
+import { ContextMenu } from './context-menu'
+import { useDeleteNode } from './use-delete-node'
 import { useIsAcyclic } from './use-is-acyclic'
 
 export interface TaskNodeData {
@@ -29,6 +32,8 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	const isAcyclic = useIsAcyclic()
 	const color = nodeEntity.data.color || '#059669'
 	const lightColor = Color(color).lightness(90).string()
+	const [menuIsOpen, setMenuIsOpen] = useState(false)
+	const deleteNode = useDeleteNode()
 
 	const wrapperStyle = {
 		backgroundColor: color,
@@ -42,7 +47,13 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 	}
 
 	return (
-		<div className="group">
+		<div
+			className="relative group"
+			onContextMenu={(e) => {
+				e.preventDefault()
+				setMenuIsOpen((menuIsOpen) => !menuIsOpen)
+			}}
+		>
 			<div
 				className={clsx(
 					'flex gap-0.5 group items-center relative justify-between text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4  focus:ring-4 outline-none',
@@ -53,7 +64,14 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 			>
 				<div className="text-left">
 					<div className="flex items-center gap-2">
-						{data.iconUrl && <img className="w-4 h-4" src={data.iconUrl} alt="" />}
+						{data.iconUrl && (
+							<img
+								className="w-4 h-4 p-px bg-white rounded-sm"
+								src={data.iconUrl}
+								alt=""
+								draggable={false}
+							/>
+						)}
 						<span>{data.name}</span>
 					</div>
 					{data.status && (
@@ -90,6 +108,11 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 				type="source"
 				position={Position.Bottom}
 				isValidConnection={({ source, target }) => isAcyclic.check(source, target)}
+			/>
+			<ContextMenu
+				onClose={() => setMenuIsOpen(false)}
+				onDelete={() => deleteNode(id)}
+				isOpen={menuIsOpen}
 			/>
 		</div>
 	)

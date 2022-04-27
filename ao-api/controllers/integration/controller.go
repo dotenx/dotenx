@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -98,6 +99,7 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 
 		err := controller.Service.AddIntegration(accountId, integration)
 		if err != nil {
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}

@@ -19,6 +19,7 @@ func New(service predifinedService.PredifinedTaskService) *PredefinedTaskControl
 func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
 	tasks, err := r.service.GetTasks()
 	if err != nil {
+		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
@@ -33,7 +34,7 @@ func (r *PredefinedTaskController) GetFields(ctx *gin.Context) {
 	taskName := ctx.Param("task_name")
 	fields, integrationTypes, outputs, err := r.service.GetTaskFields(taskName)
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}

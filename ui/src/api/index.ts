@@ -30,6 +30,12 @@ export function createAutomation(payload: CreateAutomationRequest) {
 	return api.post<void>('/pipeline', payload)
 }
 
+export function createAutomationYaml(payload: string) {
+	return api.post<{ name: string }>('/pipeline', payload, {
+		headers: { accept: 'application/x-yaml' },
+	})
+}
+
 export function updateAutomation(payload: CreateAutomationRequest) {
 	return api.put<void>('/pipeline', payload)
 }
@@ -40,6 +46,10 @@ export function getAutomations() {
 
 export function getAutomation(name: string) {
 	return api.get<GetAutomationResponse>(`/pipeline/name/${name}`)
+}
+
+export function getAutomationYaml(name: string) {
+	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
 }
 
 export function startAutomation(endpoint: string) {
