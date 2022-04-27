@@ -1,6 +1,6 @@
 service: facebook
 type: Publish post
-image: hojjat12/facebook-publish-post
+image: hojjat12/facebook-publish-post:latest
 integrations: [facebook]
 fields:
     - key: page_id
