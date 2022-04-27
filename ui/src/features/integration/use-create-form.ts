@@ -44,18 +44,19 @@ export function useNewIntegration() {
 	const client = useQueryClient()
 	const modal = useModal()
 
-	useEffect(() => {
-		resetField('secrets')
-	}, [integrationType, resetField])
-
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
-	const oauth = useOauth({
+	const { invalidate, ...oauth } = useOauth({
 		onSuccess: (accessToken, refreshToken) => {
 			setValue('secrets.ACCESS_TOKEN', accessToken)
 			setValue('secrets.REFRESH_TOKEN', refreshToken)
 		},
 	})
+
+	useEffect(() => {
+		resetField('secrets')
+		invalidate()
+	}, [integrationType, invalidate, resetField])
 
 	const onSave = () => {
 		const fieldValues = getValues()
