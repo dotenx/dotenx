@@ -115,7 +115,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<BsFillCalendar3WeekFill />
 				</div>
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
-					<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
+					<IconButton
+						tooltip="Run"
+						onClick={onRun}
+						disabled={!selectedAutomation || !selectedAutomation.is_active}
+					>
 						<IoPlayOutline />
 					</IconButton>
 					<IconButton
