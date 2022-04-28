@@ -168,11 +168,13 @@ export interface GetExecutionResultResponse {
 	return_value: string
 }
 
-export type GetAutomationExecutionsResponse = {
-	Id: number
+export interface Execution {
+	Id: string
 	StartedAt: string
 	InitialData: unknown | null
-}[]
+}
+
+export type GetAutomationExecutionsResponse = Execution[]
 
 export interface TriggerData {
 	name: string
