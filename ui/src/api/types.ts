@@ -71,6 +71,7 @@ export interface AutomationData {
 	serviceAccount: string
 	endpoint: string
 	manifest: Manifest
+	is_active: boolean
 }
 
 export interface TaskKindData {

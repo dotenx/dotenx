@@ -4,6 +4,8 @@ import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
 	IoCalendarOutline,
+	IoCheckmark,
+	IoClose,
 	IoCodeSlash,
 	IoCopyOutline,
 	IoHelpCircle,
@@ -19,6 +21,7 @@ import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
+import { useActivateAutomation } from './use-activate'
 import { useUpdateAutomation } from './use-update'
 import { AutomationYaml } from './yaml'
 
@@ -81,6 +84,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 		[modal, automationName]
 	)
 
+	const { handleActivate } = useActivateAutomation(
+		selectedAutomation?.is_active ?? false,
+		automationName ?? ''
+	)
+
 	return (
 		<>
 			<div className="fixed z-10 right-11 top-8">
@@ -109,6 +117,13 @@ export function ActionBar({ automationName }: ActionBarProps) {
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
 					<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
 						<IoPlayOutline />
+					</IconButton>
+					<IconButton
+						tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
+						onClick={handleActivate}
+						disabled={!selectedAutomation}
+					>
+						{selectedAutomation?.is_active ? <IoClose /> : <IoCheckmark />}
 					</IconButton>
 					<IconButton tooltip="Save" onClick={handleSave}>
 						<IoSaveOutline />
