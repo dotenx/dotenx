@@ -160,26 +160,3 @@ func (store *triggerStore) DeleteTriggersForPipeline(ctx context.Context, accoun
 	}
 	return nil
 }
-
-var deleteTriggers = `
-delete from event_triggers
-where account_id = $1 and pipeline = $2;
-`
-
-func (store *triggerStore) DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error {
-	var stmt string
-	switch store.db.Driver {
-	case db.Postgres:
-		stmt = deleteTriggers
-	default:
-		return fmt.Errorf("driver not supported")
-	}
-	res, err := store.db.Connection.Exec(stmt, accountId, pipeline)
-	if err != nil {
-		return err
-	}
-	if count, _ := res.RowsAffected(); count == 0 {
-		return fmt.Errorf("can not delete triggers, try again")
-	}
-	return nil
-}
