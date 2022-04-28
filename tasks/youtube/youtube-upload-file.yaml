@@ -1,0 +1,21 @@
+service: youtube
+type: Upload file
+image: hojjat12/youtube-upload-file:latest
+integrations: [google]
+fields:
+    - key: fileName
+      type: text
+    - key: title
+      type: text
+    - key: description
+      type: text
+    - key: category
+      type: text
+    - key: keywords
+      type: text
+    - key: privacy
+      type: text
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/1384/1384060.png
+node_color: ff3a3a
+description: Publish a file (probably video, music, ...) on your own youtube channel

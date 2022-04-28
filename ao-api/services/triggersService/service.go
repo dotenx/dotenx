@@ -10,7 +10,14 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/go-co-op/gocron"
 )
+
+var ActiveSchedulers map[string]*gocron.Scheduler
+
+func init() {
+	ActiveSchedulers = make(map[string]*gocron.Scheduler)
+}
 
 type TriggerService interface {
 	GetTriggerTypes() (map[string][]triggerSummery, error)
@@ -23,6 +30,7 @@ type TriggerService interface {
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(accId string, store integrationStore.IntegrationStore) error
 	StartScheduller(accId string) error
+	StopScheduler(accId, pipelineName, triggerName string) error
 	StartSchedulling(trigger models.EventTrigger) error
 }
 
@@ -42,6 +50,15 @@ type triggerSummery struct {
 
 func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService) TriggerService {
 	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService, IntegrationService: intService}
+}
+
+func (manager *TriggerManager) StopScheduler(accId, pipelineName, triggerName string) error {
+	sch, ok := ActiveSchedulers[accId+"_"+pipelineName+"_"+triggerName]
+	if !ok {
+		return errors.New("no scheduler found")
+	}
+	sch.Stop()
+	return nil
 }
 
 func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
@@ -108,7 +125,22 @@ func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*mode
 }
 
 func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipeline string) error {
-	return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName, pipeline)
+	triggers, err := manager.GetAllTriggers(accountId)
+	if err != nil {
+		return err
+	}
+	for _, tr := range triggers {
+		if tr.Name == triggerName {
+			if tr.Type == "Schedule" {
+				err = manager.StopScheduler(accountId, pipeline, triggerName)
+				if err != nil {
+					return err
+				}
+			}
+			return manager.Store.DeleteTrigger(context.Background(), accountId, triggerName, pipeline)
+		}
+	}
+	return errors.New("no trigger with this name")
 }
 
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {

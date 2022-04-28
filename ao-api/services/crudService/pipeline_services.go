@@ -43,7 +43,7 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
 		}
-		_, endpoint, err := cm.GetPipelineByName(base.AccountId, base.Name)
+		_, endpoint, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 		if err != nil {
 			return err
 		}
