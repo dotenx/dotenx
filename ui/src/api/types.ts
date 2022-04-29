@@ -6,6 +6,7 @@ export enum QueryKey {
 	GetAutomationYaml = 'get-automation-yaml',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
+	GetExecution = 'get-execution',
 	GetIntegrationTypes = 'get-integration-types',
 	GetIntegrationTypeFields = 'get-integration-type-fields',
 	GetIntegrations = 'get-integrations',

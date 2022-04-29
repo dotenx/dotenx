@@ -3,8 +3,8 @@ import { useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
-import { getAutomation, QueryKey } from '../api'
+import { Link, useParams } from 'react-router-dom'
+import { getAutomation, getExecution, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
@@ -36,11 +36,11 @@ function Content() {
 			setSelected({ name: automationName, endpoint: automation.endpoint })
 	}, [automation, automationName, setSelected])
 
-	if (!automationName) return null
+	if (!automationName || !executionId) return null
 
 	return (
 		<>
-			<ExecutionDetails automationName={automationName} />
+			<ExecutionDetails automationName={automationName} executionId={executionId} />
 			<div className="grow">
 				<Flow isEditable={false} />
 			</div>
@@ -48,13 +48,30 @@ function Content() {
 	)
 }
 
-function ExecutionDetails({ automationName }: { automationName: string }) {
+function ExecutionDetails({
+	automationName,
+	executionId,
+}: {
+	automationName: string
+	executionId: string
+}) {
+	const query = useQuery([QueryKey.GetExecution, executionId], () => getExecution(executionId))
+	const execution = query.data?.data
+
+	if (!execution) return null
+
 	return (
-		<div className="fixed flex flex-col items-center leading-loose right-16 top-10">
-			<div className="text-lg font-bold">{automationName}</div>
+		<div className="fixed z-10 flex flex-col items-center px-1 leading-loose rounded-lg right-12 top-10 backdrop-blur-sm bg-white/50 drop-shadow-sm">
+			<Link className="text-lg font-bold" to={`/automations/${automationName}`}>
+				{automationName}
+			</Link>
 			<div>
-				<span className="text-sm">{format(new Date(), 'yyyy/MM/dd')}</span>
-				<span className="ml-3 text-xs">{format(new Date(), 'HH:mm:ss')}</span>
+				<span className="text-sm">
+					{format(new Date(execution?.StartedAt), 'yyyy/MM/dd')}
+				</span>
+				<span className="ml-3 text-xs">
+					{format(new Date(execution?.StartedAt), 'HH:mm:ss')}
+				</span>
 			</div>
 		</div>
 	)
