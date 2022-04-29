@@ -133,6 +133,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	}
 	execution := r.Group("/execution")
 	{
+		execution.GET("/id/:id/details", executionController.GetExecutionDetails())
 		execution.POST("/ep/:endpoint/start", executionController.StartPipeline())
 		execution.POST("/name/:name/start", executionController.StartPipelineByName())
 		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())

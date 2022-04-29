@@ -46,6 +46,7 @@ type PipelineStore interface {
 	GetNumberOfExecutions(context context.Context, pipelineId int) (id int, err error)
 	GetAllExecutions(context context.Context, pipelineId int) ([]models.Execution, error)
 	GetLastExecution(context context.Context, pipelineId int) (id int, err error)
+	GetExecutionDetailes(context context.Context, executionId int) (models.Execution, error)
 	// Add execution
 	CreateExecution(context context.Context, execution models.Execution) (id int, err error)
 	// Get initial job of an execution
