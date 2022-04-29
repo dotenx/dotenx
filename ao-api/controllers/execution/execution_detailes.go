@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (mc *ExecutionController) GetExecutionDetailes() gin.HandlerFunc {
+func (mc *ExecutionController) GetExecutionDetails() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		executionId, err := strconv.Atoi(c.Param("id"))
@@ -16,7 +16,7 @@ func (mc *ExecutionController) GetExecutionDetailes() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid execution id"})
 			return
 		}
-		detailes, err := mc.Service.GetExecutionDetailes(executionId)
+		detailes, err := mc.Service.GetExecutionDetails(executionId)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, err.Error())
