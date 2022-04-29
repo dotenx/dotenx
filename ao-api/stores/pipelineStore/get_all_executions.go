@@ -41,3 +41,34 @@ select *
 from executions
 where pipeline_id = $1;
 `
+
+func (ps *pipelineStore) GetExecutionDetailes(context context.Context, execId int) (models.Execution, error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		conn := ps.db.Connection
+		rows, err := conn.Queryx(getExecutionDetailes, execId)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return models.Execution{}, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var cur models.Execution
+			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData)
+			if err != nil {
+				return models.Execution{}, err
+			}
+			return cur, nil
+		}
+	}
+	return models.Execution{}, errors.New("execution not found")
+}
+
+var getExecutionDetailes = `
+select *
+from executions
+where id = $1;
+`
