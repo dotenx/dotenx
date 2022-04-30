@@ -43,6 +43,10 @@ Each `Automation` is comprised of three main building blocks:
 
 **Integration**: In order to be able to connect different third party applications, e.g., Twitter, Airtable, Notion, Shopify, etc, you need to add an integration. Integrations in simple terms allow DoTenX to automate certain activities (tasks to be specific) on your behalf.
 
+# Getting started
+
+After `docker-compose up` open `localhost:3010` in your browser to use ui.
+
 # Contributing
 
 The most common scenario for contributing to DoTenX is adding new `Tasks`, `Triggers` or `Integrations` which are the main components of `Automations`.
