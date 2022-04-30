@@ -22,7 +22,7 @@ const edgeTypes = {
 	default: PipeEdge,
 }
 
-export function Flow() {
+export function Flow({ isEditable = true }: { isEditable?: boolean }) {
 	const {
 		reactFlowWrapper,
 		elements,
@@ -47,11 +47,12 @@ export function Flow() {
 					nodeTypes={nodeTypes}
 					edgeTypes={edgeTypes}
 					elements={elements}
-					onConnect={onConnect}
-					onElementsRemove={onElementsRemove}
+					onConnect={isEditable ? onConnect : undefined}
+					onElementsRemove={isEditable ? onElementsRemove : undefined}
 					onLoad={onLoad}
-					onDragOver={onDragOver}
-					onDrop={onDrop}
+					onDragOver={isEditable ? onDragOver : undefined}
+					onDrop={isEditable ? onDrop : undefined}
+					nodesConnectable={isEditable}
 				/>
 			</div>
 

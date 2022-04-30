@@ -1,4 +1,7 @@
-import { useForm } from 'react-hook-form'
+import { yaml } from '@codemirror/legacy-modes/mode/yaml'
+import { StreamLanguage } from '@codemirror/stream-parser'
+import CodeMirror from '@uiw/react-codemirror'
+import { useState } from 'react'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { createAutomationYaml } from '../api'
@@ -6,10 +9,10 @@ import { Button } from '../features/ui'
 
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
-	const { handleSubmit, register } = useForm({ defaultValues: { code: '' } })
 	const { mutate } = useMutation(createAutomationYaml, {
 		onSuccess: ({ data }) => navigate(`/automations/${data.name}`),
 	})
+	const [code, setCode] = useState('')
 
 	return (
 		<div className="grow">
@@ -17,11 +20,16 @@ export default function ImportYamlPage() {
 				<h3 className="text-2xl font-bold">Import YAML</h3>
 				<form
 					className="flex flex-col gap-6 grow"
-					onSubmit={handleSubmit((values) => mutate(values.code))}
+					onSubmit={(e) => {
+						e.preventDefault()
+						mutate(code)
+					}}
 				>
-					<textarea
-						className="w-full px-2 py-1 overflow-y-auto font-mono rounded-md outline-none resize-none grow bg-slate-50"
-						{...register('code')}
+					<CodeMirror
+						minHeight="60vh	"
+						height="100%"
+						extensions={[StreamLanguage.define(yaml)]}
+						onChange={(value) => setCode(value)}
 					/>
 					<Button type="submit" className="self-end w-48">
 						Import and Save

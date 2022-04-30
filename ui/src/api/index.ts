@@ -3,6 +3,7 @@ import {
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateTriggerRequest,
+	Execution,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
 	GetAutomationsResponse,
@@ -129,4 +130,16 @@ export function getExecutionResult(executionId: string, taskName: string) {
 
 export function getAutomationExecutions(name: string) {
 	return api.get<GetAutomationExecutionsResponse>(`/pipeline/name/${name}/executions`)
+}
+
+export function activateAutomation(name: string) {
+	return api.get<void>(`/pipeline/name/${name}/activate`)
+}
+
+export function deactivateAutomation(name: string) {
+	return api.get<void>(`/pipeline/name/${name}/deactivate`)
+}
+
+export function getExecution(id: string) {
+	return api.get<Execution>(`/execution/id/${id}/details`)
 }
