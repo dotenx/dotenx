@@ -75,6 +75,30 @@ outputs:
 integration: integration type wich is needed to run your task
 author: your github username 
 ```
+* If your task has outputs you need to set them using RESULT_ENDPOINT which is an environment variable that all containers have. suppose you have an output with name as key and armin as value. you must send a post request to RESULT_ENDPOINT to set your output with this body:
+
+``` json
+{
+  "status": "started",
+  "return_value" : {
+    "name": "armin"
+  }
+}
+```
+
+* If your task create a file and you want to share that file with other tasks you need to create your file in /tmp directory of your container and your file name must start with workspace_(you can get workspace from environment variable with key WORKSPACE). 
+And to pass file name to other tasks you need to set that as an output.
+forexample if you want to share your created WORKSPACE_result.json with other tasks you must send a post request to RESULT_ENDPOINT with this body:
+
+``` json
+{
+  "status": "started",
+  "return_value" : {
+    "file": "WORKSPACE_result.json"
+  }
+}
+```
+
 
 ## Adding new trigger type
 
