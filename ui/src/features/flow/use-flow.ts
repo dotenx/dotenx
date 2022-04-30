@@ -74,8 +74,8 @@ export function useFlow() {
 		if (!type) return
 		if (!reactFlowInstance || !reactFlowBounds) return
 		const position = reactFlowInstance.project({
-			x: event.clientX - reactFlowBounds.left,
-			y: event.clientY - reactFlowBounds.top,
+			x: event.clientX - reactFlowBounds.left - 45,
+			y: event.clientY - reactFlowBounds.top - 24,
 		})
 		const id = nanoid()
 		const newNode: FlowElement<TaskNodeData> = {

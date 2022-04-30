@@ -55,10 +55,9 @@ export function PipeEdge({
 		<>
 			<path
 				id={id}
-				style={style}
-				className="react-flow__edge-path"
+				style={{ strokeDasharray: 5, strokeDashoffset: 50 }}
+				className="react-flow__edge-path animate-path"
 				d={edgePath}
-				markerEnd={markerEnd}
 			/>
 			<foreignObject
 				width={foreignObjectSize}
