@@ -5,6 +5,7 @@ integrations: [twitter]
 fields:
     - key: text
       type: text
+      description: text of tweet that will share
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/3128/3128310.png
 node_color: 00acee
