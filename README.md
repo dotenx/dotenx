@@ -131,6 +131,7 @@ If your trigger has outputs you must send them with body when you want to trigge
     }
 }
 ```
+you can get WORKSPACE, TRIGGER_NAME and PIPELINE_ENDPOINT from environment variables
 
 # License 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
