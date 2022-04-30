@@ -6,6 +6,7 @@ export enum QueryKey {
 	GetAutomationYaml = 'get-automation-yaml',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
+	GetExecution = 'get-execution',
 	GetIntegrationTypes = 'get-integration-types',
 	GetIntegrationTypeFields = 'get-integration-type-fields',
 	GetIntegrations = 'get-integrations',
@@ -71,6 +72,7 @@ export interface AutomationData {
 	serviceAccount: string
 	endpoint: string
 	manifest: Manifest
+	is_active: boolean
 }
 
 export interface TaskKindData {
@@ -167,11 +169,13 @@ export interface GetExecutionResultResponse {
 	return_value: string
 }
 
-export type GetAutomationExecutionsResponse = {
-	Id: number
+export interface Execution {
+	Id: string
 	StartedAt: string
 	InitialData: unknown | null
-}[]
+}
+
+export type GetAutomationExecutionsResponse = Execution[]
 
 export interface TriggerData {
 	name: string

@@ -1,30 +1,39 @@
-import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import { useSetAtom } from 'jotai'
+import { ReactFlowProvider } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { getAutomation, QueryKey } from '../api'
-import { selectedAutomationAtom } from '../features/atoms'
+import { selectedAutomationAtom, selectedAutomationDataAtom } from '../features/atoms'
 import { ActionBar } from '../features/automation'
 import { Flow } from '../features/flow'
-import { useTaskStatus } from '../features/task'
 
 export default function AutomationPage() {
-	const { name, id: executionId } = useParams()
-	const setSelectedAutomation = useAtom(selectedAutomationAtom)[1]
-	const automationQuery = useQuery(
+	return (
+		<ReactFlowProvider>
+			<Content />
+		</ReactFlowProvider>
+	)
+}
+
+function Content() {
+	const { name } = useParams()
+	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
+	const setSelected = useSetAtom(selectedAutomationDataAtom)
+	useQuery(
 		[QueryKey.GetAutomation, name],
 		() => {
 			if (!name) return
 			return getAutomation(name)
 		},
-		{ enabled: !!name, onSuccess: (data) => setSelectedAutomation(data?.data) }
+		{
+			enabled: !!name,
+			onSuccess: (data) => {
+				if (!name || !data) return
+				setSelectedAutomation(data.data)
+				setSelected({ name, endpoint: data?.data.endpoint })
+			},
+		}
 	)
-	const { setSelected } = useTaskStatus(executionId)
-	const automation = automationQuery.data?.data
-
-	useEffect(() => {
-		if (name && automation) setSelected({ name, endpoint: automation.endpoint })
-	}, [automation, name, setSelected])
 
 	return (
 		<>

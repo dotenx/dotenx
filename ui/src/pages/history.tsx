@@ -1,6 +1,8 @@
+import { format } from 'date-fns'
 import { useQuery } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
-import { getAutomationExecutions, QueryKey } from '../api'
+import { Link, Navigate, useParams } from 'react-router-dom'
+import { CellProps } from 'react-table'
+import { Execution, getAutomationExecutions, QueryKey } from '../api'
 import { Table } from '../features/ui'
 
 export default function HistoryPage() {
@@ -20,7 +22,25 @@ export default function HistoryPage() {
 		<div className="px-32 py-16 grow">
 			<Table
 				title="Execution History"
-				columns={[{ Header: 'Date', Cell: () => null }]}
+				columns={[
+					{
+						Header: 'Date',
+						Cell: (props: CellProps<Execution>) => (
+							<Link
+								className="rounded hover:bg-slate-50"
+								to={`/automations/${automationName}/executions/${props.row.original.Id}`}
+							>
+								<span>
+									{format(new Date(props.row.original.StartedAt), 'yyyy/MM/dd')}
+								</span>
+								<span className="ml-4 text-xs">
+									{format(new Date(props.row.original.StartedAt), 'HH:mm:ss')}
+								</span>
+							</Link>
+						),
+					},
+					{ Header: 'ID', accessor: 'Id' },
+				]}
 				data={executions}
 				emptyText="This automation has no execution history yet."
 			/>

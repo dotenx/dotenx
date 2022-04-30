@@ -4,6 +4,8 @@ import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
 import {
 	IoAdd,
 	IoCalendarOutline,
+	IoCheckmark,
+	IoClose,
 	IoCodeSlash,
 	IoCopyOutline,
 	IoHelpCircle,
@@ -13,13 +15,14 @@ import {
 	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { NodeType } from '../flow'
 import { Modals, useModal } from '../hooks'
 import { Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
-import { SaveForm, useUpdateAutomation } from './save-form'
+import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
+import { useActivateAutomation } from './use-activate'
+import { useUpdateAutomation } from './use-update'
 import { AutomationYaml } from './yaml'
 
 interface ActionBarProps {
@@ -36,10 +39,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 	const { onUpdate } = useUpdateAutomation()
 	const handleSave = () => {
 		if (!automationName) modal.open(Modals.SaveAutomation)
-		else {
-			onUpdate({ name: automationName })
-			toast('Automation saved', { type: 'success' })
-		}
+		else onUpdate({ name: automationName })
 	}
 	useHotkeys(
 		'alt+s',
@@ -84,6 +84,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 		[modal, automationName]
 	)
 
+	const { handleActivate } = useActivateAutomation(
+		selectedAutomation?.is_active ?? false,
+		automationName ?? ''
+	)
+
 	return (
 		<>
 			<div className="fixed z-10 right-11 top-8">
@@ -110,8 +115,19 @@ export function ActionBar({ automationName }: ActionBarProps) {
 					<BsFillCalendar3WeekFill />
 				</div>
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
-					<IconButton tooltip="Run" onClick={onRun} disabled={!selectedAutomation}>
+					<IconButton
+						tooltip="Run"
+						onClick={onRun}
+						disabled={!selectedAutomation || !selectedAutomation.is_active}
+					>
 						<IoPlayOutline />
+					</IconButton>
+					<IconButton
+						tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
+						onClick={handleActivate}
+						disabled={!selectedAutomation}
+					>
+						{selectedAutomation?.is_active ? <IoClose /> : <IoCheckmark />}
 					</IconButton>
 					<IconButton tooltip="Save" onClick={handleSave}>
 						<IoSaveOutline />

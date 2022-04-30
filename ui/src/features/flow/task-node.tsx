@@ -26,7 +26,7 @@ export interface TaskEntity {
 	data: TaskNodeData
 }
 
-export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
+export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 	const modal = useModal()
 	const nodeEntity: TaskEntity = { id, data }
 	const isAcyclic = useIsAcyclic()
@@ -90,30 +90,36 @@ export function TaskNode({ id, data }: NodeProps<TaskNodeData>) {
 						</div>
 					)}
 				</div>
-				<button
-					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 focus:opacity-100"
-					style={settingsButtonStyle}
-					onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
-				>
-					<BsGearFill />
-				</button>
+				{isConnectable && (
+					<button
+						className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 focus:opacity-100"
+						style={settingsButtonStyle}
+						onClick={() => modal.open(Modals.NodeSettings, nodeEntity)}
+					>
+						<BsGearFill />
+					</button>
+				)}
 			</div>
-			<Handle
-				className="transition opacity-0 group-hover:opacity-100"
-				type="target"
-				position={Position.Top}
-			/>
-			<Handle
-				className="transition opacity-0 group-hover:opacity-100"
-				type="source"
-				position={Position.Bottom}
-				isValidConnection={({ source, target }) => isAcyclic.check(source, target)}
-			/>
-			<ContextMenu
-				onClose={() => setMenuIsOpen(false)}
-				onDelete={() => deleteNode(id)}
-				isOpen={menuIsOpen}
-			/>
+			{isConnectable && (
+				<>
+					<Handle
+						className="transition opacity-0 group-hover:opacity-100"
+						type="target"
+						position={Position.Top}
+					/>
+					<Handle
+						className="transition opacity-0 group-hover:opacity-100"
+						type="source"
+						position={Position.Bottom}
+						isValidConnection={({ source, target }) => isAcyclic.check(source, target)}
+					/>
+					<ContextMenu
+						onClose={() => setMenuIsOpen(false)}
+						onDelete={() => deleteNode(id)}
+						isOpen={menuIsOpen}
+					/>
+				</>
+			)}
 		</div>
 	)
 }

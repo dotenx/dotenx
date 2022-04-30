@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { ReactFlowProvider } from 'react-flow-renderer'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter } from 'react-router-dom'
@@ -21,12 +20,10 @@ export function App() {
 	return (
 		<BrowserRouter>
 			<QueryClientProvider client={queryClient}>
-				<ReactFlowProvider>
-					<Layout>
-						<Routes />
-						<ToastContainer />
-					</Layout>
-				</ReactFlowProvider>
+				<Layout>
+					<Routes />
+					<ToastContainer />
+				</Layout>
 			</QueryClientProvider>
 		</BrowserRouter>
 	)
