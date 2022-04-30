@@ -1,7 +1,8 @@
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { getAutomationExecutions, QueryKey } from '../api'
+import { CellProps } from 'react-table'
+import { Execution, getAutomationExecutions, QueryKey } from '../api'
 import { Table } from '../features/ui'
 
 export default function HistoryPage() {
@@ -21,36 +22,28 @@ export default function HistoryPage() {
 		<div className="px-32 py-16 grow">
 			<Table
 				title="Execution History"
-				headers={['Date', '']}
-				items={executions.map((execution) => (
-					<Item
-						key={execution.Id}
-						date={format(new Date(execution.StartedAt), 'yyyy/MM/dd HH:mm:ss')}
-						automationName={automationName}
-						executionId={execution.Id}
-					/>
-				))}
+				columns={[
+					{
+						Header: 'Date',
+						Cell: (props: CellProps<Execution>) => (
+							<Link
+								className="rounded hover:bg-slate-50"
+								to={`/automations/${automationName}/executions/${props.row.original.Id}`}
+							>
+								<span>
+									{format(new Date(props.row.original.StartedAt), 'yyyy/MM/dd')}
+								</span>
+								<span className="ml-4 text-xs">
+									{format(new Date(props.row.original.StartedAt), 'HH:mm:ss')}
+								</span>
+							</Link>
+						),
+					},
+					{ Header: 'ID', accessor: 'Id' },
+				]}
+				data={executions}
 				emptyText="This automation has no execution history yet."
 			/>
-		</div>
-	)
-}
-
-interface ItemProps {
-	date: string
-	automationName: string
-	executionId: number
-}
-
-function Item({ date, automationName, executionId }: ItemProps) {
-	return (
-		<div className="flex items-center justify-between p-6 even:bg-gray-50 text-slate-500">
-			<Link
-				className="hover:underline underline-offset-2"
-				to={`/automations/${automationName}/executions/${executionId}`}
-			>
-				{date}
-			</Link>
 		</div>
 	)
 }

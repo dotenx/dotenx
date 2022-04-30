@@ -3,6 +3,7 @@ import {
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateTriggerRequest,
+	Execution,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
 	GetAutomationsResponse,
@@ -30,6 +31,12 @@ export function createAutomation(payload: CreateAutomationRequest) {
 	return api.post<void>('/pipeline', payload)
 }
 
+export function createAutomationYaml(payload: string) {
+	return api.post<{ name: string }>('/pipeline', payload, {
+		headers: { accept: 'application/x-yaml' },
+	})
+}
+
 export function updateAutomation(payload: CreateAutomationRequest) {
 	return api.put<void>('/pipeline', payload)
 }
@@ -40,6 +47,10 @@ export function getAutomations() {
 
 export function getAutomation(name: string) {
 	return api.get<GetAutomationResponse>(`/pipeline/name/${name}`)
+}
+
+export function getAutomationYaml(name: string) {
+	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
 }
 
 export function startAutomation(endpoint: string) {
@@ -119,4 +130,16 @@ export function getExecutionResult(executionId: string, taskName: string) {
 
 export function getAutomationExecutions(name: string) {
 	return api.get<GetAutomationExecutionsResponse>(`/pipeline/name/${name}/executions`)
+}
+
+export function activateAutomation(name: string) {
+	return api.get<void>(`/pipeline/name/${name}/activate`)
+}
+
+export function deactivateAutomation(name: string) {
+	return api.get<void>(`/pipeline/name/${name}/deactivate`)
+}
+
+export function getExecution(id: string) {
+	return api.get<Execution>(`/execution/id/${id}/details`)
 }

@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -20,6 +21,11 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		}
 		id, err := e.Service.StartPipelineByName(input, accountId, name)
 		if err != nil {
+			if err.Error() == "automation is not active" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

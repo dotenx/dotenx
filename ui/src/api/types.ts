@@ -3,8 +3,10 @@ export enum QueryKey {
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetAutomation = 'get-automation',
+	GetAutomationYaml = 'get-automation-yaml',
 	GetResult = 'get-result',
 	GetExecutions = 'get-executions',
+	GetExecution = 'get-execution',
 	GetIntegrationTypes = 'get-integration-types',
 	GetIntegrationTypeFields = 'get-integration-type-fields',
 	GetIntegrations = 'get-integrations',
@@ -39,11 +41,11 @@ export interface TriggerKindData {
 
 export interface Trigger {
 	name: string
-	account_id: string
+	account_id?: string
 	type: string
-	endpoint: string
+	endpoint?: string
 	pipeline_name: string
-	integration: string
+	integration?: string
 	credentials: Record<string, string>
 	meta_data: Metadata
 }
@@ -70,6 +72,7 @@ export interface AutomationData {
 	serviceAccount: string
 	endpoint: string
 	manifest: Manifest
+	is_active: boolean
 }
 
 export interface TaskKindData {
@@ -84,8 +87,10 @@ export interface Automation {
 	endpoint: string
 }
 
+export type Triggers = Record<string, Trigger>
+
 export interface Manifest {
-	triggers: Record<string, { type: string }>
+	triggers: Triggers
 	tasks: Tasks
 }
 
@@ -164,11 +169,13 @@ export interface GetExecutionResultResponse {
 	return_value: string
 }
 
-export type GetAutomationExecutionsResponse = {
-	Id: number
+export interface Execution {
+	Id: string
 	StartedAt: string
 	InitialData: unknown | null
-}[]
+}
+
+export type GetAutomationExecutionsResponse = Execution[]
 
 export interface TriggerData {
 	name: string

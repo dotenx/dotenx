@@ -2,6 +2,7 @@ package oauthController
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -31,6 +32,7 @@ func (controller *OauthController) OAuthCallback(c *gin.Context) {
 	c.Request.URL.RawQuery = q.Encode()
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
+		log.Println(err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

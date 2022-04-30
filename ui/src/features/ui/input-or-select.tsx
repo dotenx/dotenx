@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { IoChevronDown, IoClose } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
+import { Fade } from './animation/fade'
 import { FieldError } from './field'
 
 interface InputOrSelectProps {
@@ -109,25 +110,29 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 					/>
 				)}
 			</div>
-			{isOpen && groups.length !== 0 && (
-				<div className="absolute border border-slate-300 rounded-lg mt-1 left-0 right-0 p-2 flex flex-col gap-1.5 bg-white z-10 shadow-md select-none">
-					{groups.map((group, index) => (
-						<Group
-							key={index}
-							name={group.name}
-							options={group.options}
-							iconUrl={group.iconUrl}
-							onSelect={(value) => {
-								onChange({
-									type: InputOrSelectKind.Option,
-									data: value,
-									groupName: group.name,
-									iconUrl: group.iconUrl,
-								})
-								setIsOpen(false)
-							}}
-						/>
-					))}
+			{groups.length !== 0 && (
+				<div className="absolute left-0 right-0 z-10">
+					<Fade isOpen={isOpen}>
+						<div className="border border-slate-300 rounded-lg mt-1 p-2 flex flex-col gap-1.5 bg-white shadow-md select-none">
+							{groups.map((group, index) => (
+								<Group
+									key={index}
+									name={group.name}
+									options={group.options}
+									iconUrl={group.iconUrl}
+									onSelect={(value) => {
+										onChange({
+											type: InputOrSelectKind.Option,
+											data: value,
+											groupName: group.name,
+											iconUrl: group.iconUrl,
+										})
+										setIsOpen(false)
+									}}
+								/>
+							))}
+						</div>
+					</Fade>
 				</div>
 			)}
 		</div>

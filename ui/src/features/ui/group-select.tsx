@@ -1,9 +1,10 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { useMemo, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 import { IoChevronDown, IoSearch } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
+import { Fade } from './animation/fade'
 import { FieldError } from './field'
 
 export interface GroupSelectOption {
@@ -79,7 +80,6 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 	const groupsSearch = useMemo(() => new Fuse(options, { keys: ['group'] }), [options])
 	const itemOptions = useMemo(() => selectedGroup?.options ?? [], [selectedGroup?.options])
 	const itemsSearch = useMemo(() => new Fuse(itemOptions, { keys: ['value'] }), [itemOptions])
-	const searchRef = useRef<HTMLInputElement>(null)
 
 	const searchedGroups = useMemo(() => {
 		const result = groupsSearch.search(searchText)
@@ -123,66 +123,106 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 				<IoChevronDown className="text-slate-400" />
 			</button>
 
-			{isOpen && (
-				<div className="absolute left-0 right-0 z-10 flex flex-col pr-1 mt-1 overflow-y-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thin">
-					<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded-md focus-within:bg-slate-50 transition">
-						<IoSearch className="text-slate-500" />
-						<input
-							className="p-0 m-0 text-sm transition border-none rounded focus:ring-0 focus:outline-none focus:bg-slate-50 placeholder:text-slate-500"
-							ref={searchRef}
-							type="text"
-							placeholder="Search a task"
-							onChange={(e) => setSearchText(e.target.value)}
-							value={searchText}
-							autoFocus
-						/>
-					</div>
-					<div className="pb-1">
-						{!selectedGroup && searchedGroups.length === 0 && (
-							<div className="pb-2 pt-1.5 text-xs font-thin text-center">
-								No group found
-							</div>
-						)}
-						{!selectedGroup &&
-							searchedGroups.map(({ item, refIndex }) => (
-								<div className="px-2 py-0.5" key={refIndex}>
-									<DropdownItem
-										key={refIndex}
-										label={item.group}
-										iconUrl={item.options[0].iconUrl}
-										onSelect={() => {
-											setSelectedGroup(item)
-											setSearchText('')
-											searchRef.current?.focus()
-										}}
-									/>
-								</div>
-							))}
-						{selectedGroup && searchedItems.length === 0 && (
-							<div className="pb-2 pt-1.5 text-xs font-thin text-center">
-								No item found
-							</div>
-						)}
-						{selectedGroup &&
-							searchedItems.map(({ item, refIndex }) => (
-								<div className="px-2 py-0.5" key={refIndex}>
-									<DropdownItem
-										label={item.label}
-										iconUrl={item.iconUrl}
-										onSelect={() => {
-											onChange(item)
-											close()
-										}}
-									/>
-								</div>
-							))}
-					</div>
-				</div>
-			)}
+			<div className="absolute left-0 right-0 z-10">
+				<Fade isOpen={isOpen}>
+					<OpenedMenu
+						onChange={onChange}
+						searchText={searchText}
+						setSearchText={setSearchText}
+						selectedGroup={selectedGroup}
+						setSelectedGroup={setSelectedGroup}
+						searchedGroups={searchedGroups}
+						searchedItems={searchedItems}
+						close={close}
+					/>
+				</Fade>
+			</div>
 		</div>
 	)
 }
 
+interface OpenedMenuProps {
+	onChange: (value: GroupSelectOption) => void
+	searchText: string
+	setSearchText: Dispatch<SetStateAction<string>>
+	selectedGroup: GroupOption | undefined
+	setSelectedGroup: Dispatch<SetStateAction<GroupOption | undefined>>
+	searchedGroups: {
+		item: GroupOption
+		refIndex: number
+	}[]
+	searchedItems: {
+		item: GroupSelectOption
+		refIndex: number
+	}[]
+	close: () => void
+}
+
+function OpenedMenu({
+	close,
+	onChange,
+	searchText,
+	searchedGroups,
+	searchedItems,
+	selectedGroup,
+	setSearchText,
+	setSelectedGroup,
+}: OpenedMenuProps) {
+	const searchRef = useRef<HTMLInputElement>(null)
+
+	return (
+		<div className="flex flex-col pr-1 mt-1 overflow-y-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thin">
+			<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded-md focus-within:bg-slate-50 transition">
+				<IoSearch className="text-slate-500" />
+				<input
+					className="p-0 m-0 text-sm transition border-none rounded focus:ring-0 focus:outline-none focus:bg-slate-50 placeholder:text-slate-500"
+					ref={searchRef}
+					type="text"
+					placeholder="Search a task"
+					onChange={(e) => setSearchText(e.target.value)}
+					value={searchText}
+					autoFocus
+				/>
+			</div>
+			<div className="pb-1">
+				{!selectedGroup && searchedGroups.length === 0 && (
+					<div className="pb-2 pt-1.5 text-xs font-thin text-center">No group found</div>
+				)}
+				{!selectedGroup &&
+					searchedGroups.map(({ item, refIndex }) => (
+						<div className="px-2 py-0.5" key={refIndex}>
+							<DropdownItem
+								key={refIndex}
+								label={item.group}
+								iconUrl={item.options[0].iconUrl}
+								onSelect={() => {
+									setSelectedGroup(item)
+									setSearchText('')
+									searchRef.current?.focus()
+								}}
+							/>
+						</div>
+					))}
+				{selectedGroup && searchedItems.length === 0 && (
+					<div className="pb-2 pt-1.5 text-xs font-thin text-center">No item found</div>
+				)}
+				{selectedGroup &&
+					searchedItems.map(({ item, refIndex }) => (
+						<div className="px-2 py-0.5" key={refIndex}>
+							<DropdownItem
+								label={item.label}
+								iconUrl={item.iconUrl}
+								onSelect={() => {
+									onChange(item)
+									close()
+								}}
+							/>
+						</div>
+					))}
+			</div>
+		</div>
+	)
+}
 interface DropdownItemProps {
 	onSelect: () => void
 	iconUrl?: string

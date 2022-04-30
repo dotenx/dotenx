@@ -34,10 +34,11 @@ export function NewIntegration() {
 				{!isAdvanced && integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"
-						className="self-end w-24 text-sm"
+						disabled={oauth.isSuccess}
+						className="self-end w-24 text-sm disabled:text-green-600 disabled:bg-green-100"
 						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
 					>
-						Connect
+						{oauth.isSuccess ? 'Connected' : 'Connect'}
 					</Button>
 				)}
 				{integrationTypeFields?.secrets
