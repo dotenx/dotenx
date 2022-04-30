@@ -79,10 +79,10 @@ author: your github username
 
 ``` json
 {
-  "status": "started",
-  "return_value" : {
-    "name": "armin"
-  }
+    "status": "started",
+    "return_value": {
+        "name": "armin"
+    }
 }
 ```
 
@@ -92,10 +92,10 @@ forexample if you want to share your created WORKSPACE_result.json with other ta
 
 ``` json
 {
-  "status": "started",
-  "return_value" : {
-    "file": "WORKSPACE_result.json"
-  }
+    "status": "started",
+    "return_value": {
+        "file": "WORKSPACE_result.json"
+    }
 }
 ```
 
@@ -118,6 +118,19 @@ outputs:
 integration: integration type wich is needed to run your trigger
 author: your github username 
 ``` 
+* Your image for trigger must send a post request to PIPELINE_ENDPOINT to trigger an Automation otherwise it won't be usable as an image for trigger.
+
+If your trigger has outputs you must send them with body when you want to trigger your Automation; forexample if you have an output with name as key and armin as value and a created file named WORKSPACE_result.json(like tasks in /tmp directory) you must send this body with your post request:
+
+``` json
+{
+    "workspace": "WORKSPACE",
+    "TRIGGER_NAME": {
+        "name": "armin",
+        "file": "WORKSPACE_result.json"
+    }
+}
+```
 
 # License 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.
