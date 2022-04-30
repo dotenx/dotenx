@@ -1,7 +1,8 @@
 import { Control, FieldErrors } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { getIntegrationsByKinds, QueryKey } from '../../api'
-import { NewSelect } from '../ui'
+import { Modals, useModal } from '../hooks'
+import { Button, NewSelect } from '../ui'
 
 interface SelectIntegrationProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,6 +17,9 @@ export function SelectIntegration({ control, errors, integrationTypes }: SelectI
 		() => getIntegrationsByKinds(integrationTypes),
 		{ enabled: !!integrationTypes }
 	)
+	const availableIntegrations = integrationQuery?.data?.data ?? []
+
+	if (availableIntegrations.length === 0) return <AddIntegrationButton />
 
 	return (
 		<NewSelect
@@ -23,11 +27,25 @@ export function SelectIntegration({ control, errors, integrationTypes }: SelectI
 			name="integration"
 			control={control}
 			errors={errors}
-			options={integrationQuery?.data?.data.map((integration) => ({
+			options={availableIntegrations.map((integration) => ({
 				label: integration.name,
 				value: integration.name,
 			}))}
 			placeholder="Integration name"
 		/>
+	)
+}
+
+function AddIntegrationButton() {
+	const modal = useModal()
+
+	return (
+		<Button
+			type="button"
+			className="w-40 ml-auto text-sm"
+			onClick={() => modal.open(Modals.NewIntegration)}
+		>
+			Add integration
+		</Button>
 	)
 }
