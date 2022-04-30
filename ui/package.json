@@ -2,9 +2,12 @@
 	"name": "ao-ui",
 	"version": "0.1.0",
 	"dependencies": {
+		"@codemirror/legacy-modes": "^0.19.0",
+		"@codemirror/stream-parser": "^0.19.9",
 		"@hookform/error-message": "^2.0.0",
 		"@hookform/resolvers": "^2.8.8",
 		"@types/use-persisted-state": "^0.3.1",
+		"@uiw/react-codemirror": "4.3.3",
 		"axios": "^0.26.1",
 		"clsx": "^1.1.1",
 		"color": "^4.2.3",

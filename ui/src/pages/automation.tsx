@@ -6,6 +6,9 @@ import { getAutomation, QueryKey } from '../api'
 import { selectedAutomationAtom, selectedAutomationDataAtom } from '../features/atoms'
 import { ActionBar } from '../features/automation'
 import { Flow } from '../features/flow'
+import { Modals } from '../features/hooks'
+import { NewIntegration } from '../features/integration'
+import { Modal } from '../features/ui'
 
 export default function AutomationPage() {
 	return (
@@ -43,6 +46,9 @@ function Content() {
 					<Flow />
 				</div>
 			</div>
+			<Modal kind={Modals.NewIntegration} title="New Integration">
+				<NewIntegration />
+			</Modal>
 		</>
 	)
 }
