@@ -16,6 +16,7 @@ type ExecutionService interface {
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
 	GetExecution(string) (interface{}, error)
+	GetExecutionDetails(executionId int) (models.Execution, error)
 	GetExecutionIdForPipeline(accountId, pipeLineName string) (int, error)
 
 	// tasks
