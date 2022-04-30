@@ -86,7 +86,7 @@ author: your github username
 }
 ```
 
-* If your task create a file and you want to share that file with other tasks you need to create your file in /tmp directory of your container and your file name must start with workspace_(you can get workspace from environment variable with key WORKSPACE). 
+* If your task creates a file and you want to share that file with other tasks you need to create your file in /tmp directory of your container and your file name must start with workspace_(you can get workspace from environment variable with key WORKSPACE). 
 And to pass file name to other tasks you need to set that as an output.
 forexample if you want to share your created WORKSPACE_result.json with other tasks you must send a post request to RESULT_ENDPOINT with this body:
 
