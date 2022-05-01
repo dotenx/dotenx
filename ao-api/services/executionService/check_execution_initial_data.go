@@ -4,7 +4,6 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
@@ -32,9 +31,8 @@ func (manage *executionManager) CheckExecutionInitialDataForWorkSpace(executionI
 	workSpace, ok := initialData["workspace"]
 	if !ok {
 		workSpace := utils.GetNewUuid()
-		data := models.InputData{}
-		data["workspace"] = workSpace
-		manage.Store.UpdateInitialData(noContext, executionId, data)
+		initialData["workspace"] = workSpace
+		manage.Store.UpdateInitialData(noContext, executionId, initialData)
 		return workSpace, nil
 	}
 	return workSpace.(string), nil
