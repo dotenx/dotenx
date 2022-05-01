@@ -300,7 +300,7 @@ ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `
 var addIsActive = `ALTER TABLE pipelines
-ADD COLUMN is_active BOOLEAN;`
+ADD COLUMN IF NOT EXISTS is_active BOOLEAN;`
 
 var updateIsActive = `
 ALTER TABLE pipelines
