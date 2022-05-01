@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,6 +21,8 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
+		fmt.Println("##################execution received initial data: ")
+		log.Println(input)
 		id, err := e.Service.StartPipeline(input, accountId, endpoint)
 		if err != nil {
 			if err.Error() == "automation is not active" {
