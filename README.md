@@ -51,14 +51,16 @@ After `docker-compose up` open `localhost:3010` in your browser to use ui.
 
 If you already have credentials to create your integration such as access token, secret or ... click advanced and insert them to create your integration otherwise click connect and give us needed scopes.
 
-// image from integration panel
+<img width="1435" alt="Screen Shot 1401-02-12 at 17 49 37" src="https://user-images.githubusercontent.com/58859939/166241145-84f32235-f358-4595-b97c-955d0f799712.png">
+
 
 ## Create Automation 
 
 You can drag and drop tasks and triggers to add them to your automation and then you must save it and also activate it(deactive automatios won't be run if be trigger or even run them manually). 
 * you can only run an automation manually if there is no dependency between task inputs and trigger outputs.
 
-// image from automation page
+
+<img width="1435" alt="Screen Shot 1401-02-12 at 17 51 53" src="https://user-images.githubusercontent.com/58859939/166241353-96ee8401-44c8-4fef-89a6-85257f2c11a4.png">
 
 
 # Contributing
