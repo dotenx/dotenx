@@ -88,6 +88,14 @@ var migrations = []struct {
 		name: "update-nill-is-active-field",
 		stmt: updateNillIsActive,
 	},
+	{
+		name: "update-nill-is-active-field",
+		stmt: updateNillIsActive,
+	},
+	{
+		name: "add-execution-time",
+		stmt: addExectuionTime,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -233,6 +241,9 @@ initial_data							        JSONB,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
+
+var addExectuionTime = `ALTER TABLE executions
+ADD COLUMN execution_time INT DEFAULT 0;`
 
 //var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
