@@ -102,3 +102,17 @@ func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error
 func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string) (err error) {
 	return cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
 }
+
+func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, error) {
+	pipelines, err := cm.Store.GetPipelines(noContext, accountId)
+	if err != nil {
+		return nil, err
+	}
+	actives := make([]models.Pipeline, 0)
+	for _, p := range pipelines {
+		if p.IsActive {
+			actives = append(actives, p)
+		}
+	}
+	return actives, nil
+}
