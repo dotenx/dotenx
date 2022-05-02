@@ -113,6 +113,19 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
+		numberOftasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		summeries, err := e.Service.GetTasksWithStatusForExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		if isExecutionDone(numberOftasks, summeries) {
+			// tell plan manager execution is done and set execution time
+		}
 		c.Status(http.StatusOK)
 	}
 }
