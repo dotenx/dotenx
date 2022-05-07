@@ -7,8 +7,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -124,7 +126,24 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		if isExecutionDone(numberOftasks, summeries) {
-			// tell plan manager execution is done and set execution time
+			exec, err := e.Service.GetExecutionDetails(executionId)
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			accId, err := utils.GetAccountId(c)
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			err = e.Service.SetExecutionTime(accId, executionId, int(time.Now().Unix())-int(exec.StartedAt.Unix()))
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
 		}
 		c.Status(http.StatusOK)
 	}
