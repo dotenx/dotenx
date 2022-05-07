@@ -29,6 +29,8 @@ type ExecutionService interface {
 	GetNextTask(taskId, executionId int, status, accountId string) error
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
+	SetExecutionTime(accountId string, executionId int, seconds int) error
+	CheckAccess(accId, resource string, excutionId int) (bool, error)
 }
 
 type executionManager struct {
