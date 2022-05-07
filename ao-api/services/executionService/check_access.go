@@ -13,8 +13,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (manager *executionManager) CheckAccess(accountId, resource string, excutionId int) (bool, error) {
-	dt := AutomationDto{AccountId: accountId, AutomationId: strconv.Itoa(excutionId)}
+func (manager *executionManager) CheckAccess(accountId string, excutionId int) (bool, error) {
+	dt := automationDto{AccountId: accountId, AutomationId: strconv.Itoa(excutionId)}
 	json_data, err := json.Marshal(dt)
 	if err != nil {
 		return false, errors.New("bad input body")
@@ -35,7 +35,7 @@ func (manager *executionManager) CheckAccess(accountId, resource string, excutio
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/user/access/"+resource, requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/user/access/executionMinutes", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}
@@ -53,7 +53,7 @@ func (manager *executionManager) CheckAccess(accountId, resource string, excutio
 	return res.Access, nil
 }
 
-type AutomationDto struct {
+type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
 }

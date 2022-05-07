@@ -19,6 +19,7 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
+
 		err = mc.Service.ActivatePipeline(accountId, pipeline.Id)
 		if err != nil {
 			log.Println(err.Error())

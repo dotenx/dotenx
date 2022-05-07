@@ -34,7 +34,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		return -1, errors.New("automation is not active")
 	}
 
-	hasAccess, err := manager.CheckAccess(accountId, "executionMinutes", pipelineId)
+	hasAccess, err := manager.CheckAccess(accountId, pipelineId)
 	if err != nil {
 		return -1, err
 	}

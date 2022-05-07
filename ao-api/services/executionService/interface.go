@@ -30,7 +30,7 @@ type ExecutionService interface {
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
 	SetExecutionTime(accountId string, executionId int, seconds int) error
-	CheckAccess(accId, resource string, excutionId int) (bool, error)
+	CheckAccess(accId string, excutionId int) (bool, error)
 }
 
 type executionManager struct {

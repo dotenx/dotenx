@@ -22,6 +22,8 @@ type CrudService interface {
 	ActivatePipeline(accountId, pipelineId string) (err error)
 	DeActivatePipeline(accountId, pipelineId string) (err error)
 	GetActivePipelines(accountId string) ([]models.Pipeline, error)
+	CheckAccess(accId string, excutionId int) (bool, error)
+	NotifyPlanmanageForActivation(accId, action string, pipelineId string) error
 }
 
 type crudManager struct {
