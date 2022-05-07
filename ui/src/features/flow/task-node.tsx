@@ -69,16 +69,16 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 					tabIndex={0}
 				>
 					<div className="text-left">
-						<div className="flex items-center gap-2">
-							{data.iconUrl && (
-								<img
-									className="w-4 h-4 p-px bg-white rounded-sm"
-									src={data.iconUrl}
-									alt=""
-									draggable={false}
-								/>
-							)}
-							<span>{data.name}</span>
+						<div className="flex flex-col items-center gap-2">
+							<img
+								className="w-4 h-4 p-px bg-white rounded-sm"
+								src={data.iconUrl}
+								alt=""
+								draggable={false}
+							/>
+							<div className="w-20 overflow-hidden text-center text-ellipsis whitespace-nowrap">
+								{data.name}
+							</div>
 						</div>
 						{data.status && (
 							<div className="flex gap-1 text-[8px] items-center">
