@@ -41,7 +41,9 @@ export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 							draggable={false}
 						/>
 					)}
-					<span>{data.name}</span>
+					<span className="w-20 overflow-hidden whitespace-nowrap text-ellipsis">
+						{data.name}
+					</span>
 				</div>
 				<button
 					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-orange-600 bg-orange-100 focus:opacity-100 outline-orange-500"
