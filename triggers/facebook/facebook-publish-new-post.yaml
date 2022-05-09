@@ -5,15 +5,20 @@ image: hojjat12/facebook-publish-new-post:latest
 credentials:
     - key: page_id
       type: text
+      description: id of Facebook page
     - key: passed_seconds
       type: text
+      description: passed seconds from creation time of post
 outputs:
     - key: created_time
       type: text
+      description: when the last post was created
     - key: message
       type: text
+      description: text of the last post
     - key: id
       type: text
+      description: the id of the last post
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/124/124010.png
 node_color: 3b5998
