@@ -7,6 +7,11 @@ import (
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) (err error) {
+	for _, task := range pipeline.Manifest.Tasks {
+		if err = task.IsValid(); err != nil {
+			return
+		}
+	}
 	err = cm.Store.Create(noContext, base, pipeline)
 	if err != nil {
 		return
@@ -17,6 +22,9 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	}
 	triggers := make([]*models.EventTrigger, 0)
 	for _, tr := range pipeline.Manifest.Triggers {
+		if err = tr.IsFieldsValid(); err != nil {
+			return
+		}
 		tr.Endpoint = e
 		tr.Pipeline = base.Name
 		triggers = append(triggers, &models.EventTrigger{

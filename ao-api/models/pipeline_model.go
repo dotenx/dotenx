@@ -4,6 +4,9 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
+
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 type Pipeline struct {
@@ -52,6 +55,37 @@ type Task struct {
 	Description  string              `db:"description" json:"description" yaml:"description"`
 	Integration  string              `db:"integration" json:"integration" yaml:"integration"`
 	MetaData     TaskDefinition      `json:"meta_data"`
+}
+
+type insertDto struct {
+	Source string `json:"source"`
+	Key    string `json:"key"`
+}
+
+func (task Task) IsValid() error {
+	body := task.Body.Get()
+	for key, value := range body {
+		var insertDt insertDto
+		b, _ := json.Marshal(value)
+		err := json.Unmarshal(b, &insertDt)
+		if err == nil && insertDt.Key != "" && insertDt.Source != "" {
+			continue
+		}
+		for _, f := range task.MetaData.Fields {
+			if f.Key == key {
+				stringValue := fmt.Sprintf("%v", value)
+				matched, err := utils.IsValid(stringValue, f.Validation)
+				if err != nil {
+					return err
+				} else if !matched {
+					return errors.New("field " + key + "not matched with validation")
+				} else {
+					break
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func (t *Task) UnmarshalJSON(data []byte) error {

@@ -1,10 +1,13 @@
 package models
 
 import (
+	"errors"
+	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -39,6 +42,26 @@ type EventTrigger struct {
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 	MetaData    TriggerDefinition      `json:"meta_data"`
+}
+
+func (tr EventTrigger) IsFieldsValid() error {
+	for key, value := range tr.Credentials {
+		for _, c := range tr.MetaData.Credentials {
+			if c.Key == key {
+				stringValue := fmt.Sprintf("%v", value)
+				matched, err := utils.IsValid(stringValue, c.Validation)
+				if err != nil {
+					return err
+				} else if !matched {
+					return errors.New("field " + key + "not matched with validation for trigger")
+				} else {
+					break
+				}
+			}
+		}
+	}
+	return nil
+
 }
 
 func (tr EventTrigger) IsValid() bool {

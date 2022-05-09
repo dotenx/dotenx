@@ -14,6 +14,7 @@ import (
 type TaskBody interface {
 	Value() (driver.Value, error)
 	Scan(interface{}) error
+	Get() map[string]interface{}
 }
 
 type TaskBodyMap map[string]interface{}
@@ -28,6 +29,10 @@ func (t TaskBodyMap) Scan(value interface{}) error {
 	} else {
 		return errors.New("type assertion to []byte failed")
 	}
+}
+
+func (t TaskBodyMap) Get() map[string]interface{} {
+	return t
 }
 
 type ReturnValue interface {

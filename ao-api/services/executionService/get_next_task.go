@@ -3,9 +3,11 @@ package executionService
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 // start first task (initial task) if you call this method wih task id <= 0,
@@ -44,7 +46,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			}
 			jobDTO.SetIntegration(integration)
 		}
-		body, err := manager.mapFields(executionId, accountId, jobDTO.Body)
+		body, err := manager.mapFields(executionId, accountId, jobDTO.Body, task.MetaData)
 		if err != nil {
 			return err
 		}
@@ -65,7 +67,7 @@ type insertDto struct {
 }
 
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
-func (manager *executionManager) mapFields(execId int, accountId string, taskBody map[string]interface{}) (map[string]interface{}, error) {
+func (manager *executionManager) mapFields(execId int, accountId string, taskBody map[string]interface{}, taskMetaData models.TaskDefinition) (map[string]interface{}, error) {
 	for key, value := range taskBody {
 		var insertDt insertDto
 		b, _ := json.Marshal(value)
@@ -81,8 +83,28 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 			if _, ok := body[insertDt.Key]; !ok {
 				return nil, errors.New("no value for this field in initial data or return values")
 			}
+			stringVal := fmt.Sprintf("%v", body[insertDt.Key])
+			if err := validateField(key, stringVal, taskMetaData.Fields); err != nil {
+				return nil, err
+			}
 			taskBody[key] = body[insertDt.Key]
 		}
 	}
 	return taskBody, nil
+}
+
+func validateField(key string, value interface{}, fields []models.TaskField) error {
+	for _, f := range fields {
+		if f.Key == key {
+			stringValue := fmt.Sprintf("%v", value)
+			matched, err := utils.IsValid(stringValue, f.Validation)
+			if err != nil {
+				return err
+			} else if !matched {
+				return errors.New("your field didn't matched with validation")
+			}
+			return nil
+		}
+	}
+	return errors.New("invalid key for task field")
 }
