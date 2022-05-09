@@ -22,8 +22,10 @@ type TaskDefinition struct {
 var AvaliableTasks map[string]TaskDefinition
 
 type TaskField struct {
-	Key  string `json:"key" yaml:"key"`
-	Type string `json:"type" yaml:"type"`
+	Key         string `json:"key" yaml:"key"`
+	Type        string `json:"type" yaml:"type"`
+	Description string `json:"description" yaml:"description"`
+	Validation  string `json:"validation" yaml:"validation"`
 }
 
 // Task Status
