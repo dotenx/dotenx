@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"errors"
 	"log"
 
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -65,4 +67,39 @@ func Decrypt(text, MySecret string) (string, error) {
 func GetNewUuid() string {
 	id := uuid.New()
 	return id.String()
+}
+
+func GetAuthorizedField(tokenString string) (bool, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return false, err
+	}
+	if authorizedField, hasAuthorizedField := claims["authorized"]; hasAuthorizedField {
+		if authorizedFieldBool, isAuthorizedFieldBool := authorizedField.(bool); isAuthorizedFieldBool {
+			return authorizedFieldBool, nil
+		}
+	}
+	return false, errors.New("claim not found")
+}
+
+func getClaims(tokenString string) (jwt.MapClaims, error) {
+	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signature")
+		}
+		return secret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, errors.New("invalid token")
+	}
+
 }
