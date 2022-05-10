@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-co-op/gocron v1.13.0
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0

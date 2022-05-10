@@ -37,7 +37,13 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if !isActive {
 		return -1, errors.New("automation is not active")
 	}
-
+	hasAccess, err := manager.CheckAccess(accountId, "executionMinutes", pipelineId)
+	if err != nil {
+		return -1, err
+	}
+	if !hasAccess {
+		return -1, errors.New("you have reached your limit")
+	}
 	execution := models.Execution{
 		PipelineVersionId: pipelineId,
 		StartedAt:         time.Now(),
