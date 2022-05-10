@@ -20,6 +20,7 @@ type (
 		FileSharing     string `envconfig:"AOA_FILE_DIR"`
 		SessionDuration string `envconfig:"AOA_SESSION_DURATION"`
 		AllowedOrigins  string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		RunLocally      bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
 	}
 
 	Queue struct {

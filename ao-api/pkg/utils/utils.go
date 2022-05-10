@@ -107,7 +107,7 @@ func getClaims(tokenString string) (jwt.MapClaims, error) {
 }
 
 func GeneratToken() (string, error) {
-	tokenString, err := GenerateJwtToken("123456")
+	tokenString, err := GenerateJwtToken()
 	if err != nil {
 		return "", err
 		log.Fatal("Unexpected error occurred!")
@@ -118,14 +118,13 @@ func GeneratToken() (string, error) {
 }
 
 // GenerateJwtToken function generates a jwt token based on HS256 algorithm
-func GenerateJwtToken(accountId string) (accToken string, err error) {
+func GenerateJwtToken() (accToken string, err error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
 	claims["iss"] = "dotenx-ao-api"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
-	claims["accountId"] = accountId
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
 	accToken, err = token.SignedString([]byte("another_secret"))
