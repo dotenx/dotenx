@@ -55,3 +55,12 @@ func GetProviderByName(name string) (*goth.Provider, error) {
 	}
 	return p, nil
 }
+
+func GetProviderModelByName(name string) (*models.OauthProvider, error) {
+	for _, v := range providers {
+		if v.Name == name {
+			return &v, nil
+		}
+	}
+	return nil, errors.New("provider not found")
+}

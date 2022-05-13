@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/gin-gonic/gin"
@@ -76,7 +77,19 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 		}
 
 		accessToken := integration.Secrets["ACCESS_TOKEN"]
+		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]
 		refreshToken, ok := integration.Secrets["REFRESH_TOKEN"]
+		if hasSecret && accessTokenSecret != "" {
+			provider, err := oauth.GetProviderModelByName(integration.Type)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "provider not found",
+				})
+				return
+			}
+			integration.Secrets["CONSUMER_KEY"] = provider.Key
+			integration.Secrets["CONSUMER_SECRET"] = provider.Secret
+		}
 		if ok && refreshToken != "" {
 			integration.HasRefreshToken = true
 			redisAccessTokenKey := "ao-api|" + accountId + "|" + integration.Name + "|access_token"
