@@ -3,13 +3,14 @@ package execution
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
@@ -23,6 +24,7 @@ func (e *ExecutionController) WatchExecutionStatus() gin.HandlerFunc {
 		}
 		totalTasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

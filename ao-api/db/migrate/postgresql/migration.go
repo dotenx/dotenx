@@ -53,16 +53,40 @@ var migrations = []struct {
 		stmt: createTableExecutionsResult,
 	},
 	{
-		name: "create-table-integrations",
+		name: "drop-table-integrations2",
+		stmt: dropIntegrations,
+	},
+	{
+		name: "create-table-integrations5",
 		stmt: createTableIntegrations,
 	},
 	{
-		name: "create-table-event_triggers3",
+		name: "drop-table-event_triggers4",
+		stmt: dropTriggers,
+	},
+	{
+		name: "create-table-event_triggers4",
 		stmt: createTableEventTriggers,
 	},
 	{
 		name: "create-table-author_state",
 		stmt: createAuthorState,
+	},
+	{
+		name: "add-has-refresh-token-field",
+		stmt: addHasRefreshTokenField,
+	},
+	{
+		name: "add-is-active-field",
+		stmt: addIsActive,
+	},
+	{
+		name: "update-is-active-field",
+		stmt: updateIsActive,
+	},
+	{
+		name: "update-nill-is-active-field",
+		stmt: updateNillIsActive,
 	},
 }
 
@@ -155,6 +179,7 @@ id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
 account_id         			                 	VARCHAR(64),
 endpoint 							     		uuid DEFAULT uuid_generate_v4(),
+is_active                                       BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
@@ -232,18 +257,19 @@ FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
 )`
 
+var dropIntegrations = ` DROP TABLE IF EXISTS integrations
+`
+
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
 account_id        varchar(32) NOT NULL,
 type              varchar(32) NOT NULL,
 name              varchar(32) NOT NULL,
-url               varchar(128),
-key               varchar(128),
-secret            varchar(128),
-access_token            varchar(128),
+secrets                          JSONB,
 UNIQUE (account_id, name)
 )
 `
+var dropTriggers = `DROP TABLE IF EXISTS event_triggers`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
@@ -254,7 +280,7 @@ integration              varchar(128) NOT NULL,
 endpoint                 varchar(128) NOT NULL,
 pipeline                 varchar(128) NOT NULL,
 credentials									JSONB,
-UNIQUE (account_id, name)
+UNIQUE (account_id, name, pipeline)
 )
 `
 
@@ -268,3 +294,19 @@ service                  varchar(128),
 UNIQUE (author, type, name)
 )
 `
+
+var addHasRefreshTokenField = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
+`
+var addIsActive = `ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS is_active BOOLEAN;`
+
+var updateIsActive = `
+ALTER TABLE pipelines
+ALTER COLUMN is_active
+SET DEFAULT FALSE;`
+
+var updateNillIsActive = `
+UPDATE pipelines
+SET is_active=FALSE;`

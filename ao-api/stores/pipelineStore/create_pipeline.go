@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 // Store the pipeline
 func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
-	var statement string
 	fmt.Println(pipeline)
 	switch j.db.Driver {
 	case db.Postgres:
@@ -70,9 +69,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 		err = tx.Commit()
 		return err
 	}
-
-	_, err := j.db.Connection.Exec(statement, base.AccountId, pipeline.Manifest, pipeline.Version, pipeline.FromVersion)
-	return err
+	return nil
 }
 
 // Select queries

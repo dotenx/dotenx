@@ -3,8 +3,8 @@ package pipelineStore
 import (
 	"context"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (ps *pipelineStore) GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error) {
@@ -17,6 +17,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 		if err != nil {
 			return nil, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var cur models.Pipeline
 			rows.StructScan(&cur)

@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/crudService"
-	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
 )
 
 type TriggerController struct {
@@ -26,7 +26,6 @@ func (controller *TriggerController) GetAllTriggersForAccountByType() gin.Handle
 			return
 		}
 		c.JSON(http.StatusBadRequest, err.Error())
-
 	}
 }
 func (controller *TriggerController) GetDefinitionForTrigger() gin.HandlerFunc {
@@ -46,7 +45,12 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		trigger := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
-		err := controller.Service.DeleteTrigger(accountId, trigger)
+		pipeline := c.Query("pipeline")
+		if pipeline == "" || trigger == "" {
+			c.JSON(http.StatusBadRequest, nil)
+			return
+		}
+		err := controller.Service.DeleteTrigger(accountId, trigger, pipeline)
 		if err == nil {
 			c.JSON(http.StatusOK, nil)
 			return
@@ -59,54 +63,85 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId, _ := utils.GetAccountId(c)
-		triggers, err := controller.Service.GetAllTriggers(accountId)
+		pipeline, ok := c.GetQuery("pipeline")
+		var err error
+		var triggers []models.EventTrigger
+		if !ok {
+			triggers, err = controller.Service.GetAllTriggers(accountId)
+		} else {
+			triggers, err = controller.Service.GetAllTriggersForPipeline(accountId, pipeline)
+		}
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		pipeline, ok := c.GetQuery("pipeline")
-		if ok {
-			selected := make([]models.EventTrigger, 0)
-			for _, tr := range triggers {
-				if tr.Pipeline == pipeline {
-					selected = append(selected, tr)
-				}
-			}
-			c.JSON(http.StatusOK, selected)
 			return
 		}
 		c.JSON(http.StatusOK, triggers)
 	}
 }
 
-func (controller *TriggerController) AddTrigger() gin.HandlerFunc {
+func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var trigger models.EventTrigger
+		var triggers []*models.EventTrigger
 		accountId, _ := utils.GetAccountId(c)
-		if err := c.ShouldBindJSON(&trigger); err != nil || accountId == "" {
+		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, err := controller.CrudService.GetPipelineByName(accountId, trigger.Pipeline)
+		_, endpoint, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		trigger.Endpoint = endpoint
-		err = controller.Service.AddTrigger(accountId, trigger)
+		err = controller.Service.AddTriggers(accountId, triggers, endpoint)
 		if err != nil {
+			if err.Error() == "invalid trigger dto" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		c.JSON(http.StatusOK, nil)
 	}
 }
+
+func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var triggers []*models.EventTrigger
+		accountId, _ := utils.GetAccountId(c)
+		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		_, endpoint, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		if err != nil {
+			log.Println(err.Error())
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		err = controller.Service.UpdateTriggers(accountId, triggers, endpoint)
+		if err != nil {
+			if err.Error() == "invalid trigger dto" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			log.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, nil)
+	}
+}
+
 func (controller *TriggerController) GetTriggersTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		triggers, _ := controller.Service.GetTriggerTypes()
-		//fmt.Println(triggers)
-		c.JSON(http.StatusOK, triggers)
+		c.JSON(http.StatusOK, gin.H{
+			"triggers": triggers,
+		})
 	}
 }

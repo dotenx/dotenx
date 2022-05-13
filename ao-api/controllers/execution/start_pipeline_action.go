@@ -1,10 +1,12 @@
 package execution
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
@@ -19,8 +21,15 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
+		fmt.Println("##################execution received initial data: ")
+		log.Println(input)
 		id, err := e.Service.StartPipeline(input, accountId, endpoint)
 		if err != nil {
+			if err.Error() == "automation is not active" {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}

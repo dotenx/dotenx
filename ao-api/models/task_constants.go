@@ -7,18 +7,24 @@ import (
 )
 
 type TaskDefinition struct {
-	Type        string
-	Fields      []TaskField
-	Image       string
-	Integration string
-	Author      string `json:"author" yaml:"author"`
+	Service      string `json:"service" yaml:"service"`
+	Type         string
+	Fields       []TaskField
+	Image        string
+	Integrations []string
+	Author       string      `json:"author" yaml:"author"`
+	Icon         string      `json:"icon" yaml:"icon"`
+	NodeColor    string      `json:"node_color" yaml:"node_color"`
+	Description  string      `json:"description" yaml:"description"`
+	Outputs      []TaskField `json:"outputs" yaml:"outputs"`
 }
 
 var AvaliableTasks map[string]TaskDefinition
 
 type TaskField struct {
-	Key  string `json:"key"`
-	Type string `json:"type"`
+	Key         string `json:"key" yaml:"key"`
+	Type        string `json:"type" yaml:"type"`
+	Description string `json:"description" yaml:"description"`
 }
 
 // Task Status

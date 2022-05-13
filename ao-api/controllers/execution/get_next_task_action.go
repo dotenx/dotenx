@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (e *ExecutionController) GetNextTask() gin.HandlerFunc {
@@ -26,12 +26,13 @@ func (e *ExecutionController) GetNextTask() gin.HandlerFunc {
 		// }
 		var dto models.TaskResultDto
 		if err := c.ShouldBindJSON(&dto); err != nil {
-			log.Println(err)
+			log.Println(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		err = e.Service.GetNextTask(dto.TaskId, executionId, dto.Status, dto.AccountId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

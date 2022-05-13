@@ -8,9 +8,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/lib/pq"
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
 )
 
 func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {
@@ -30,7 +30,7 @@ func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int,
 			// NOTE: Currently we allow the result to be overwritten which should be only in case we have
 			// for some reason received timeout before the result, but it doesn't care even if the current
 			// result is sth other than timeout
-			query = updateTaskResult
+			query = updateTaskStatus
 		}
 		_, err = tx.Exec(query, executionId, taskId, status)
 		if err != nil {
@@ -92,10 +92,19 @@ func (ps *pipelineStore) SetTaskResultDetails(context context.Context, execution
 			// NOTE: Currently we allow the result to be overwritten which should be only in case we have
 			// for some reason received timeout before the result, but it doesn't care even if the current
 			// result is sth other than timeout
-			query = updateTaskResultDetails
+			if len(returnValue) == 0 {
+				query = updateTaskResultDetailsWithoutReturnValue
+			} else {
+				query = updateTaskResultDetailsWithReturnValue
+			}
 		}
-		logs = strings.ReplaceAll(logs, "\u0000", "")
-		_, err = tx.Exec(query, executionId, taskId, status, returnValue, string(logs))
+		if len(returnValue) == 0 && count != 0 {
+			logs = strings.ReplaceAll(logs, "\u0000", "")
+			_, err = tx.Exec(query, executionId, taskId, status, string(logs))
+		} else {
+			logs = strings.ReplaceAll(logs, "\u0000", "")
+			_, err = tx.Exec(query, executionId, taskId, status, returnValue, string(logs))
+		}
 		if err != nil {
 			log.Println(err.Error())
 			if pgErr, isPGErr := err.(*pq.Error); isPGErr {
@@ -168,13 +177,18 @@ execution_id, task_id, status, return_value, log)
 VALUES ($1, $2, $3, $4, $5);
 `
 
-var updateTaskResult = `
+var updateTaskStatus = `
 UPDATE executions_status
 SET execution_id=$1, task_id=$2, status=$3
 WHERE execution_id = $1 AND task_id = $2;
 `
-var updateTaskResultDetails = `
+var updateTaskResultDetailsWithReturnValue = `
 UPDATE executions_result
 SET execution_id=$1, task_id=$2, status=$3, return_value=$4, log=$5
+WHERE execution_id = $1 AND task_id = $2;
+`
+var updateTaskResultDetailsWithoutReturnValue = `
+UPDATE executions_result
+SET execution_id=$1, task_id=$2, status=$3, log=$4
 WHERE execution_id = $1 AND task_id = $2;
 `

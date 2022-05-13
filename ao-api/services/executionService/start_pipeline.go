@@ -1,10 +1,11 @@
 package executionService
 
 import (
+	"errors"
 	"log"
 	"time"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 /*	Note: based on this implementation always the latest activated version will be executed. If you want to
@@ -24,6 +25,17 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		}
 		//return -1, http.StatusInternalServerError
 		return -1, err
+	}
+	name, err := manager.Store.GetPipelineNameById(noContext, accountId, pipelineId)
+	if err != nil {
+		return -1, err
+	}
+	_, _, isActive, err := manager.Store.GetByName(noContext, accountId, name)
+	if err != nil {
+		return -1, err
+	}
+	if !isActive {
+		return -1, errors.New("automation is not active")
 	}
 
 	execution := models.Execution{

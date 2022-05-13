@@ -4,10 +4,11 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +38,10 @@ func (e *ExecutionController) GetTaskExecutionResultByName() gin.HandlerFunc {
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
+		} else if err != nil {
+			log.Println(err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 		c.JSON(http.StatusOK, res)
 	}
@@ -59,6 +64,10 @@ func (e *ExecutionController) GetTaskExecutionResult() gin.HandlerFunc {
 		res, err := e.Service.GetTaskExecutionResult(executionId, taskId)
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		} else if err != nil {
+			log.Println(err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		c.JSON(http.StatusOK, res)
@@ -90,10 +99,18 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
+		} else if err != nil {
+			log.Println(err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 		err = e.Service.SetTaskExecutionResultDetails(executionId, taskId, taskResultDto.Status.String(), taskResultDto.ReturnValue, taskResultDto.Log)
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		} else if err != nil {
+			log.Println(err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		c.Status(http.StatusOK)

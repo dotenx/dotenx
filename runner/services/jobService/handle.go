@@ -3,14 +3,11 @@ package jobService
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"time"
 
-	"github.com/utopiops/automated-ops/runner/config"
-	"github.com/utopiops/automated-ops/runner/executors"
-	"github.com/utopiops/automated-ops/runner/models"
-	"github.com/utopiops/automated-ops/runner/shared"
+	"github.com/dotenx/dotenx/runner/executors"
+	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/shared"
 )
 
 func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper) {
@@ -34,12 +31,14 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	bytes, _ := json.Marshal(job.Data["task_meta_data"])
 	json.Unmarshal(bytes, &meta)
 	taskDetails := models.TaskDetails{
-		Name:     job.Data["name"].(string),
-		Type:     job.Data["type"].(string),
-		Body:     job.Data["body"].(map[string]interface{}),
-		Image:    job.Data["image"].(string),
-		MetaData: meta,
-		Timeout:  int(job.Data["timeout"].(float64)),
+		Name:           job.Data["name"].(string),
+		Type:           job.Data["type"].(string),
+		Body:           job.Data["body"].(map[string]interface{}),
+		Image:          job.Data["image"].(string),
+		MetaData:       meta,
+		Timeout:        int(job.Data["timeout"].(float64)),
+		ResultEndpoint: job.Data["result_endpoint"].(string),
+		Workspace:      job.Data["workspace"].(string),
 	}
 	err := manager.SetStatus(job.Id, models.TaskStatus{
 		ReturnValue: returnValue,
@@ -70,7 +69,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		fmt.Printf("error in setting job log: %s\n", err.Error())
 	} else {
 		fmt.Println("jobId: " + id)
-	}*/
+	}
 	if resultDto.Result == models.StatusCompleted {
 		resultFile, err := os.Open(config.Configs.App.FileSharing + "/task_" + taskDetails.Name + "_result.json")
 		if err != nil {
@@ -80,7 +79,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		byteValue, _ := ioutil.ReadAll(resultFile)
 		json.Unmarshal([]byte(byteValue), &returnValue)
 		resultDto.ReturnValue = returnValue
-	}
+	}*/
 	err = manager.SetStatus(job.Id, resultDto)
 	if err != nil {
 		fmt.Printf("error in setting job result: %s\n", err.Error())

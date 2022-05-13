@@ -3,11 +3,11 @@ package executionService
 import (
 	"context"
 
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
-	"github.com/utopiops/automated-ops/ao-api/services/queueService"
-	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
-	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/queueService"
+	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
+	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 )
 
 type ExecutionService interface {
@@ -16,6 +16,7 @@ type ExecutionService interface {
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
 	GetExecution(string) (interface{}, error)
+	GetExecutionDetails(executionId int) (models.Execution, error)
 	GetExecutionIdForPipeline(accountId, pipeLineName string) (int, error)
 
 	// tasks

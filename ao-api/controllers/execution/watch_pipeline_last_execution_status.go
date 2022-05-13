@@ -3,13 +3,14 @@ package execution
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/models"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
 )
 
 func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc {
@@ -25,11 +26,13 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 				c.JSON(http.StatusBadRequest, "there is no executon for this pipeline")
 				return
 			}
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		totalTasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
 		if err != nil {
+			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}

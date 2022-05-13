@@ -1,0 +1,9 @@
+service: dotenx
+type: Schedule
+credentials:
+    - key: frequency
+      type: text
+author: Armingodiz
+icon: https://iconape.com/wp-content/files/mw/372166/png/372166.png
+node_color: FFDB58
+description: Starts Automations in schedulled time

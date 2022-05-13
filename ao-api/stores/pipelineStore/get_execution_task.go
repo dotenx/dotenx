@@ -7,8 +7,8 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId int, taskId int) (task models.TaskDetails, err error) {

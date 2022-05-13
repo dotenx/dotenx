@@ -26,7 +26,8 @@ services:
         - default
     volumes:
      - ./ui:/usr/src/app
-      - /usr/src/app/node_modules
+     - ./ui/nginx.conf:/etc/nginx/nginx.conf
+     - /usr/src/app/node_modules
     
   
   redis:
@@ -53,10 +54,14 @@ services:
     build:
       context: .
       dockerfile: ao-api/Dockerfile
+    depends_on:
+      - psql
+      - scheduler_server
+      - redis
     hostname: ao-api
     working_dir: /root/
     volumes:
-     - ao_api_data:/go/src/github.com/utopiops/automated-ops/ao-api
+     - ao_api_data:/go/src/github.com/dotenx/dotenx/ao-api
      - /var/run/docker.sock:/var/run/docker.sock
     networks:
         - default
@@ -70,7 +75,7 @@ services:
     working_dir: /root/
     volumes:
       - /tmp/cache:/tmp/cache
-      - runner_data:/go/src/github.com/utopiops/automated-ops/runner
+      - runner_data:/go/src/github.com/dotenx/dotenx/runner
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default

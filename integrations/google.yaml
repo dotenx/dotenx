@@ -1,0 +1,7 @@
+type: google
+secrets:
+  - name: GOOGLE OAUTH2 ACCESS TOKEN
+    key: ACCESS_TOKEN 
+  - name: GOOGLE OAUTH2 REFRESH TOKEN
+    key: REFRESH_TOKEN 
+oauth_provider: google

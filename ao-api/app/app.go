@@ -3,29 +3,40 @@ package app
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/controllers/crud"
+	"github.com/dotenx/dotenx/ao-api/controllers/execution"
+	"github.com/dotenx/dotenx/ao-api/controllers/health"
+	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
+	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
+	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
+	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/oauth"
+	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/oauthService"
+	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
+	"github.com/dotenx/dotenx/ao-api/services/queueService"
+	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
+	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
+	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
+	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/dotenx/goth"
+	"github.com/dotenx/goth/gothic"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/utopiops/automated-ops/ao-api/config"
-	"github.com/utopiops/automated-ops/ao-api/controllers/crud"
-	"github.com/utopiops/automated-ops/ao-api/controllers/execution"
-	"github.com/utopiops/automated-ops/ao-api/controllers/health"
-	integrationController "github.com/utopiops/automated-ops/ao-api/controllers/integration"
-	predefinedtaskcontroller "github.com/utopiops/automated-ops/ao-api/controllers/predefinedTask"
-	"github.com/utopiops/automated-ops/ao-api/controllers/trigger"
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/pkg/middlewares"
-	"github.com/utopiops/automated-ops/ao-api/pkg/utils"
-	"github.com/utopiops/automated-ops/ao-api/services/crudService"
-	"github.com/utopiops/automated-ops/ao-api/services/executionService"
-	"github.com/utopiops/automated-ops/ao-api/services/integrationService"
-	predifinedTaskService "github.com/utopiops/automated-ops/ao-api/services/predefinedTaskService"
-	"github.com/utopiops/automated-ops/ao-api/services/queueService"
-	triggerService "github.com/utopiops/automated-ops/ao-api/services/triggersService"
-	"github.com/utopiops/automated-ops/ao-api/services/utopiopsService"
-	"github.com/utopiops/automated-ops/ao-api/stores/authorStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/integrationStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/pipelineStore"
-	"github.com/utopiops/automated-ops/ao-api/stores/triggerStore"
+	"github.com/go-redis/redis"
 )
 
 func init() {
@@ -40,9 +51,10 @@ func NewApp() *App {
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
+	redisClient, err := initializeRedis()
 	utils.FailOnError(err, "RDB initialization failed")
 	queue := queueService.NewBullQueue()
-	r := routing(db, queue)
+	r := routing(db, queue, redisClient)
 	if r == nil {
 		log.Fatalln("r is nil")
 	}
@@ -64,8 +76,18 @@ func (a *App) Start(restPort string) error {
 	return <-errChan
 }
 
-func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
+func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Client) *gin.Engine {
+	duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
+	if err != nil {
+		panic(err.Error())
+	}
 	r := gin.Default()
+	store := cookie.NewStore([]byte(config.Configs.Secrets.CookieSecret))
+	store.Options(sessions.Options{
+		MaxAge: int(time.Second * time.Duration(duration)), //30min
+		Path:   "/",
+	})
+	r.Use(sessions.Sessions("dotenx", store))
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
 	healthCheckController := health.HealthCheckController{}
@@ -75,19 +97,24 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
 	AuthorStore := authorStore.New(db)
+	RedisStore := redisStore.New(redisClient)
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
-	IntegrationService := integrationService.NewIntegrationService(IntegrationStore)
-	crudServices := crudService.NewCrudService(pipelineStore)
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
+
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService)
-	crudController := crud.CRUDController{Service: crudServices}
+	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService)
+	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
+	OauthService := oauthService.NewOauthService(RedisStore)
+	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
+	OauthController := oauthController.OauthController{Service: OauthService}
 
 	// Routes
+	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	{
 		tasks.GET("", predefinedController.GetTasks)
@@ -96,13 +123,17 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 	pipline := r.Group("/pipeline")
 	{
 		pipline.POST("", crudController.AddPipeline())
+		pipline.PUT("", crudController.UpdatePipeline())
 		pipline.GET("", crudController.GetPipelines())
 		pipline.DELETE("/name/:name", crudController.DeletePipeline())
 		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
 		pipline.GET("/name/:name", crudController.GetPipeline())
+		pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
+		pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
 	}
 	execution := r.Group("/execution")
 	{
+		execution.GET("/id/:id/details", executionController.GetExecutionDetails())
 		execution.POST("/ep/:endpoint/start", executionController.StartPipeline())
 		execution.POST("/name/:name/start", executionController.StartPipelineByName())
 		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
@@ -123,20 +154,50 @@ func routing(db *db.DB, queue queueService.QueueService) *gin.Engine {
 		intgration.POST("", IntegrationController.AddIntegration())
 		intgration.GET("", IntegrationController.GetAllIntegrations())
 		intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
-		intgration.GET("/type/:type", IntegrationController.GetAllIntegrationsForAccountByType())
 		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 	}
 	trigger := r.Group("/trigger")
 	{
-		trigger.POST("", TriggerController.AddTrigger())
+		trigger.POST("", TriggerController.AddTriggers())
+		trigger.PUT("", TriggerController.UpdateTriggers())
 		trigger.GET("", TriggerController.GetAllTriggers())
 		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
 		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
 		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
 	}
+	// authentication settings
+	gothic.Store = store
+	// integrationCallbackUrl := config.Configs.Endpoints.AoApi + "/oauth/integration/callbacks/"
+	integrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/oauth/integration/callbacks/"
+	providers, err := oauth.GetProviders(integrationCallbackUrl)
+	if err != nil {
+		panic(err.Error())
+	}
+	for _, provider := range providers {
+		goth.UseProviders(*provider)
+	}
+	oauth := r.Group("/oauth")
+	{
+		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
+		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
+		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
+	}
+
+	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")
+	// fmt.Println("****************************************")
+	// fmt.Printf("discord integration: %#v\n", discord)
+	// fmt.Printf("intgErr: %#v\n", intgErr)
+	// fmt.Println("****************************************")
+	// dropbox, intgErr := IntegrationService.GetIntegrationByName("123456", "test-dropbox01")
+	// fmt.Println("****************************************")
+	// fmt.Printf("dropbox integration: %#v\n", dropbox)
+	// fmt.Printf("intgErr: %#v\n", intgErr)
+	// fmt.Println("****************************************")
+
 	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
+	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
 	return r
 }
 
@@ -155,4 +216,13 @@ func initializeDB() (*db.DB, error) {
 	log.Println(connStr)
 	db, err := db.Connect(driver, connStr)
 	return db, err
+}
+
+func initializeRedis() (redisClient *redis.Client, err error) {
+	opt := &redis.Options{
+		Addr: fmt.Sprintf("%s:%d", config.Configs.Redis.Host, config.Configs.Redis.Port),
+		// Password: config.Configs.Redis.Password,
+	}
+	redisClient, err = db.RedisConnect(opt)
+	return
 }

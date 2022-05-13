@@ -1,0 +1,28 @@
+service: google
+type: Google new email
+integrations: [google]
+image: hojjat12/google-new-email:latest
+credentials:
+    - key: passed_seconds
+      type: text
+      description: passed seconds from creation time of email
+outputs:
+    - key: body
+      type: text
+      description: body of the last email
+    - key: date
+      type: text
+      description: the local time and date the message was written
+    - key: from
+      type: text
+      description: the email address and optionally, the name of the author(s) of the last email
+    - key: to
+      type: text
+      description: the email address(es), and optionally name(s) of the message's recipient(s)
+    - key: subject
+      type: text
+      description: subject of email
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/281/281764.png
+node_color: FBFB11
+description: Checks if there is a new email in inbox (sent before given number of seconds), tiggers a specefic pipeline

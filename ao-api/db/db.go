@@ -2,10 +2,12 @@ package db
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/db/migrate/postgresql"
+	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
-	"github.com/utopiops/automated-ops/ao-api/db/migrate/postgresql"
 )
 
 // Driver defines the database driver.
@@ -50,6 +52,17 @@ func Connect(driver, connStr string) (*DB, error) {
 		Connection: sqlx.NewDb(db, driver),
 		Driver:     engine,
 	}, nil
+}
+
+func RedisConnect(opt *redis.Options) (*redis.Client, error) {
+	rdb := redis.NewClient(opt)
+	err := rdb.Set("healthCheck", "OK", 1*time.Second).Err()
+	val, _ := rdb.Get("healthCheck").Result()
+	log.Println("healthCheck of redis -->", val)
+	if err != nil {
+		return nil, err
+	}
+	return rdb, nil
 }
 
 // helper function to ping the database with backoff to ensure

@@ -7,18 +7,18 @@ import (
 	"errors"
 	"log"
 
-	"github.com/utopiops/automated-ops/ao-api/db"
-	"github.com/utopiops/automated-ops/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	pipeline.Manifest.Tasks = make(map[string]models.Task)
 
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint)
+		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint, &isActive)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -27,7 +27,6 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
-		log.Println(pipeline.Id, accountId)
 		tasks := []models.Task{}
 		var rows *sql.Rows
 		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.Id)
@@ -35,6 +34,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
+		defer rows.Close()
 		for rows.Next() {
 			task := models.Task{}
 			var body interface{}
@@ -45,11 +45,11 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			var taskBody models.TaskBodyMap
 			json.Unmarshal(body.([]byte), &taskBody)
 			task.Body = taskBody
+			task.MetaData = models.AvaliableTasks[task.Type]
 			tasks = append(tasks, task)
 		}
 		taskIdToName := make(map[int]string)
 		for _, task := range tasks {
-			log.Println(task.Name)
 			taskIdToName[task.Id] = task.Name
 		}
 		for _, task := range tasks {
@@ -71,14 +71,15 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 				Body:         task.Body,
 				Description:  task.Description,
 				Integration:  task.Integration,
+				MetaData:     task.MetaData,
 			}
 		}
 	}
-	return pipeline, endpoint, nil
+	return pipeline, endpoint, isActive, nil
 }
 
 var select_pipeline = `
-SELECT id , endpoint
+SELECT id , endpoint, is_active
 FROM pipelines p
 WHERE account_id = $1 AND name = $2
 `
