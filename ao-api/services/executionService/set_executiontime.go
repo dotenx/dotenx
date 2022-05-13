@@ -35,7 +35,7 @@ func (manager *executionManager) SetExecutionTime(accountId string, executionId 
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/execution/submit", requestBody, Requestheaders, time.Minute, true)
+	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/execution/submit", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return err
 	}

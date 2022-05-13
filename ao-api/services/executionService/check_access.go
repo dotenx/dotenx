@@ -35,7 +35,7 @@ func (manager *executionManager) CheckAccess(accountId, resource string, excutio
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/user/access/"+resource, requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/user/access/"+resource, requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}
