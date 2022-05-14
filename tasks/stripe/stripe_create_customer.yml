@@ -1,0 +1,18 @@
+service: stripe
+type: Stripe create customer
+image: hawwwdi/stripe-create-customer:latest
+integrations: [stripe]
+fields:
+    - key: CUS_NAME
+      type: text
+      description: customer's name (e.g hadi)
+    - key: CUS_PHONE
+      type: text
+      description: customer's phone number (e.g +989123737689)
+    - key: CUS_EMAIL
+      type: text
+      description: customer's email address (e.g abc@gmail.com)
+author: hawwwdi
+icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
+node_color: FBFB11
+description: create new customer in stripe 
