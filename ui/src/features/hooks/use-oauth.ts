@@ -3,13 +3,14 @@ import { API_URL } from '../../api'
 import { OAuthMessage } from '../../pages/oauth'
 
 interface Options {
-	onSuccess: (accessToken: string, refreshToken: string) => void
+	onSuccess: (accessToken: string, refreshToken: string, accessTokenSecret: string) => void
 }
 
 export function useOauth({ onSuccess }: Options) {
 	const [error, setError] = useState('')
 	const [accessToken, setAccessToken] = useState('')
 	const [refreshToken, setRefreshToken] = useState('')
+	const [accessTokenSecret, setAccessTokenSecret] = useState('')
 	const [isSuccess, setIsSuccess] = useState(false)
 
 	function connect(providerName: string) {
@@ -24,12 +25,13 @@ export function useOauth({ onSuccess }: Options) {
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent<OAuthMessage>) => {
 			if (event.origin !== process.env.REACT_APP_URL) return
-			const { error, accessToken, refreshToken } = event.data
+			const { error, accessToken, refreshToken, accessTokenSecret } = event.data
 			if (error) setError(error)
 			if (accessToken) {
 				setAccessToken(accessToken)
 				setRefreshToken(refreshToken ?? '')
-				onSuccess(accessToken, refreshToken ?? '')
+				setAccessTokenSecret(accessTokenSecret ?? '')
+				onSuccess(accessToken, refreshToken ?? '', accessTokenSecret ?? '')
 				setIsSuccess(true)
 			}
 		}
@@ -41,6 +43,7 @@ export function useOauth({ onSuccess }: Options) {
 		setError('')
 		setAccessToken('')
 		setRefreshToken('')
+		setAccessTokenSecret('')
 		setIsSuccess(false)
 	}, [])
 
@@ -49,6 +52,7 @@ export function useOauth({ onSuccess }: Options) {
 		error,
 		accessToken,
 		refreshToken,
+		accessTokenSecret,
 		isSuccess,
 		invalidate,
 	}
