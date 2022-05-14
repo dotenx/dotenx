@@ -43,9 +43,7 @@ export function NewIntegration() {
 				)}
 				{integrationTypeFields?.secrets
 					.filter(({ key }) =>
-						isAdvanced || !integrationTypeFields.oauth_provider
-							? true
-							: key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN'
+						isAdvanced || !integrationTypeFields.oauth_provider ? true : isTokenKey(key)
 					)
 					.map((field) => (
 						<Field
@@ -61,4 +59,8 @@ export function NewIntegration() {
 			<Button type="submit">Add</Button>
 		</Form>
 	)
+}
+
+function isTokenKey(key: string): unknown {
+	return key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN' && key !== 'ACCESS_TOKEN_SECRET'
 }

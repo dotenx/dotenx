@@ -5,6 +5,7 @@ export interface OAuthMessage {
 	error: string | null
 	accessToken: string | null
 	refreshToken: string | null
+	accessTokenSecret: string | null
 }
 
 export default function OauthPage() {
@@ -14,8 +15,9 @@ export default function OauthPage() {
 		const error = searchParams.get('error')
 		const accessToken = searchParams.get('access_token')
 		const refreshToken = searchParams.get('refresh_token')
+		const accessTokenSecret = searchParams.get('access_token_secret')
 		if (!error && !accessToken) return
-		const data: OAuthMessage = { error, accessToken, refreshToken }
+		const data: OAuthMessage = { error, accessToken, refreshToken, accessTokenSecret }
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		window.opener.postMessage(data, process.env.REACT_APP_URL!)
 		window.close()
