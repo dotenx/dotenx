@@ -28,7 +28,8 @@ func (b *bullQueue) AddUser(accountId string) error {
 }
 
 func (b *bullQueue) QueueTasks(accountId, priority string, tasks ...interface{}) error {
-	queueName := fmt.Sprintf("%s-%s", accountId, priority)
+	// queueName := fmt.Sprintf("%s-%s", accountId, priority)
+	queueName := fmt.Sprintf("%s-%s", "123456", priority)
 	url := fmt.Sprintf("%s/queue/%s/job", config.Configs.Queue.BULL, queueName)
 	for _, task := range tasks {
 		body, err := json.Marshal(task)

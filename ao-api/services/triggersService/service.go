@@ -28,8 +28,8 @@ type TriggerService interface {
 	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
 	UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
-	StartChecking(accId string, store integrationStore.IntegrationStore) error
-	StartScheduller(accId string) error
+	StartChecking(store integrationStore.IntegrationStore) error
+	StartScheduller() error
 	StopScheduler(accId, pipelineName, triggerName string) error
 	StartSchedulling(trigger models.EventTrigger) error
 }
@@ -144,16 +144,16 @@ func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipe
 }
 
 func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
-	return manager.Store.GetAllTriggers(context.Background(), accountId)
+	return manager.Store.GetAllTriggers(context.Background())
 }
 func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error) {
-	triggers, err := manager.Store.GetAllTriggers(context.Background(), accountId)
+	triggers, err := manager.Store.GetAllTriggers(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	selected := make([]models.EventTrigger, 0)
 	for _, tr := range triggers {
-		if tr.Pipeline == pipelineName {
+		if tr.Pipeline == pipelineName && tr.AccountId == accountId {
 			selected = append(selected, tr)
 		}
 	}

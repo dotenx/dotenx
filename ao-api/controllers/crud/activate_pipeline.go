@@ -19,6 +19,7 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
+
 		err = mc.Service.ActivatePipeline(accountId, pipeline.Id)
 		if err != nil {
 			log.Println(err.Error())
@@ -39,7 +40,7 @@ func (mc *CRUDController) DeActivatePipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		err = mc.Service.DeActivatePipeline(accountId, pipeline.Id)
+		err = mc.Service.DeActivatePipeline(accountId, pipeline.Id, false)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)

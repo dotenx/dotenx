@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 
@@ -112,6 +113,30 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
+		}
+		numberOftasks, err := e.Service.GetNumberOfTasksByExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		summeries, err := e.Service.GetTasksWithStatusForExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+		if isExecutionDone(numberOftasks, summeries) {
+			exec, err := e.Service.GetExecutionDetails(executionId)
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			err = e.Service.SetExecutionTime(executionId, int(time.Now().Unix())-int(exec.StartedAt.Unix()))
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
 		}
 		c.Status(http.StatusOK)
 	}

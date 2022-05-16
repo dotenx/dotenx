@@ -25,6 +25,7 @@ type File struct {
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	triggerName := os.Getenv("TRIGGER_NAME")
+	accId := os.Getenv("ACCOUNT_ID")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
 		return
@@ -53,6 +54,7 @@ func main() {
 	}
 	if latestFileUnix.Unix() > selectedUnix {
 		body := make(map[string]interface{})
+		body["accountId"] = accId
 		innerBody := make(map[string]interface{})
 		innerBody["name"] = latestFile.Name
 		innerBody["path"] = latestFile.PathDisplay

@@ -23,6 +23,7 @@ type Post struct {
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	triggerName := os.Getenv("TRIGGER_NAME")
+	accId := os.Getenv("ACCOUNT_ID")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
 		return
@@ -49,6 +50,7 @@ func main() {
 		}
 		if lastPostUnix.Unix() > selectedUnix {
 			body := make(map[string]interface{})
+			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
 			innerBody["created_time"] = lastPostUnix.String()
 			innerBody["message"] = posts[0].Message

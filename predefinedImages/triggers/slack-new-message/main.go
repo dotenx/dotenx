@@ -20,6 +20,7 @@ import (
 func main() {
 	triggerName := os.Getenv("TRIGGER_NAME")
 	workspace := os.Getenv("WORKSPACE")
+	accId := os.Getenv("ACCOUNT_ID")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
 		return
@@ -50,6 +51,7 @@ func main() {
 		if selectedUnix < int64(intUnixTime) {
 			fmt.Println("calling endpoint")
 			body := make(map[string]interface{})
+			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
 			body["workspace"] = workspace
 			innerBody["text"] = res.Messages[0].Msg.Text

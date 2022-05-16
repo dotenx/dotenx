@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,9 +16,7 @@ func (mc *ExecutionController) GetInitialData() gin.HandlerFunc {
 			return
 		}
 
-		accountId, _ := utils.GetAccountId(c)
-
-		initialData, statusCode := mc.Service.GetInitialData(executionId, accountId)
+		initialData, statusCode := mc.Service.GetInitialData(executionId)
 		if statusCode != http.StatusOK {
 			c.Status(statusCode)
 			return

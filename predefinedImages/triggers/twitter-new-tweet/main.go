@@ -19,6 +19,7 @@ import (
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	triggerName := os.Getenv("TRIGGER_NAME")
+	accId := os.Getenv("ACCOUNT_ID")
 	consumerKey := os.Getenv("INTEGRATION_CONSUMER_KEY")
 	consumerSecret := os.Getenv("INTEGRATION_CONSUMER_SECRET")
 	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
@@ -40,6 +41,7 @@ func main() {
 		createdTime, _ := tweets[0].CreatedAtTime()
 		if createdTime.Unix() > selectedUnix {
 			body := make(map[string]interface{})
+			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
 			innerBody["created_at"] = createdTime.String()
 			innerBody["text"] = tweets[0].Text

@@ -8,7 +8,7 @@ import (
 )
 
 func (manage *executionManager) CheckExecutionInitialData(executionId int, accountId, source string) (input map[string]interface{}, err error) {
-	initialData, err := manage.Store.GetInitialData(noContext, executionId, accountId)
+	initialData, err := manage.Store.GetInitialData(noContext, executionId)
 	if err != nil {
 		return
 	}
@@ -23,8 +23,8 @@ func (manage *executionManager) CheckExecutionInitialData(executionId int, accou
 	return taskData.(map[string]interface{}), nil
 }
 
-func (manage *executionManager) CheckExecutionInitialDataForWorkSpace(executionId int, accountId string) (workspace string, err error) {
-	initialData, err := manage.Store.GetInitialData(noContext, executionId, accountId)
+func (manage *executionManager) CheckExecutionInitialDataForWorkSpace(executionId int) (workspace string, err error) {
+	initialData, err := manage.Store.GetInitialData(noContext, executionId)
 	if err != nil {
 		return
 	}
