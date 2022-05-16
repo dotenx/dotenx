@@ -1,0 +1,41 @@
+service: stripe
+type: Stripe payment completed
+integrations: [stripe]
+image: hawwwdi/stripe-payment-completed
+credentials:
+    - key: PAYMENT_STATUS
+      type: text
+      description: status of payment (`canceled`, or `succeeded`)
+    - key: passed_seconds
+      type: text
+      description: passed seconds from message
+outputs:
+    - key: id
+      type: text
+      description: id of payment
+    - key: amount
+      type: int
+      description: amount of payment
+    - key: currency
+      type: text
+      description: three letter currency code
+    - key: created
+      type: text
+      description: Time at which the payment was created
+    - key: customer_id
+      type: text
+      description: payment's customer identifier
+    - key: customer_email
+      type: text
+      description: payment's customer email
+    - key: description
+      type: text
+      description: payment's description
+    - key: status
+      type: text
+      description: status of payment
+
+author: hawwwdi
+icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
+node_color: E01E5A
+description: Checks if there is a new message(sent before given number of secnds), tiggers a specefic pipeline
