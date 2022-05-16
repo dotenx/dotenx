@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
 	"log"
+	"time"
 
 	"crypto/aes"
 	"crypto/cipher"
@@ -9,6 +12,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 )
 
@@ -65,4 +69,67 @@ func Decrypt(text, MySecret string) (string, error) {
 func GetNewUuid() string {
 	id := uuid.New()
 	return id.String()
+}
+
+func GetAuthorizedField(tokenString string) (bool, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return false, err
+	}
+	if authorizedField, hasAuthorizedField := claims["authorized"]; hasAuthorizedField {
+		if authorizedFieldBool, isAuthorizedFieldBool := authorizedField.(bool); isAuthorizedFieldBool {
+			return authorizedFieldBool, nil
+		}
+	}
+	return false, errors.New("claim not found")
+}
+
+func getClaims(tokenString string) (jwt.MapClaims, error) {
+	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signature")
+		}
+		return secret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, errors.New("invalid token")
+	}
+}
+
+func GeneratToken() (string, error) {
+	tokenString, err := GenerateJwtToken()
+	if err != nil {
+		return "", err
+		log.Fatal("Unexpected error occurred!")
+	}
+	token := fmt.Sprintf("Bearer %s", tokenString)
+	fmt.Printf("token:\n%s\n", token)
+	return token, nil
+}
+
+// GenerateJwtToken function generates a jwt token based on HS256 algorithm
+func GenerateJwtToken() (accToken string, err error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["iss"] = "dotenx-ao-api"
+	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
+
+	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
+	accToken, err = token.SignedString([]byte("another_secret"))
+	if err != nil {
+		return "", err
+	}
+
+	return
 }

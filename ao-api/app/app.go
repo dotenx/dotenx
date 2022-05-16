@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
@@ -114,6 +115,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService}
+	adminController := admin.AdminController{}
 
 	// endpoints which dont need authntication
 
@@ -136,6 +138,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	execution := r.Group("/execution")
 	intgration := r.Group("/integration")
 	trigger := r.Group("/trigger")
+	admin := r.Group("/internal")
+
+	admin.POST("/automation/activate", adminController.ActivateAutomation)
+	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
+	admin.POST("/execution/submit", adminController.SubmitExecution)
+	admin.POST("/user/access/:resource", adminController.CheckAccess)
 
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)
