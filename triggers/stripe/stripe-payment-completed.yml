@@ -36,6 +36,6 @@ outputs:
       description: status of payment
 
 author: hawwwdi
-icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
+icon: https://www.logo.wine/a/logo/Stripe_(company)/Stripe_(company)-Logo.wine.svg
 node_color: E01E5A
 description: Checks if there is a new message(sent before given number of secnds), tiggers a specefic pipeline
