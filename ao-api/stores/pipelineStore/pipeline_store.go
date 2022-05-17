@@ -52,13 +52,15 @@ type PipelineStore interface {
 	// Get initial job of an execution
 	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
 	// GetInitialData retrieves the initial data of an execution
-	GetInitialData(context context.Context, executionId int, accountId string) (InitialData models.InputData, err error)
+	GetInitialData(context context.Context, executionId int) (InitialData models.InputData, err error)
 	UpdateInitialData(context context.Context, execId int, initialData models.InputData) error
 	// Get next job in an execution based on the status of a task in the execution
 	GetNextTasks(context context.Context, executionId int, taskId int, status string) (taskIds []int, err error)
 
 	ActivatePipeline(context context.Context, accountId, pipelineId string) error
 	DeActivatePipeline(context context.Context, accountId, pipelineId string) error
+
+	GetAccountIdByExecutionId(context context.Context, executionId int) (string, error)
 }
 
 type pipelineStore struct {

@@ -12,7 +12,7 @@ import (
 
 type ExecutionService interface {
 	// execution
-	GetInitialData(executionId int, accountId string) (models.InputData, int)
+	GetInitialData(executionId int) (models.InputData, int)
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error)
 	GetExecution(string) (interface{}, error)
@@ -29,6 +29,8 @@ type ExecutionService interface {
 	GetNextTask(taskId, executionId int, status, accountId string) error
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
+	SetExecutionTime(executionId int, seconds int) error
+	CheckAccess(accId string, excutionId int) (bool, error)
 }
 
 type executionManager struct {

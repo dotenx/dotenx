@@ -7,8 +7,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (manager *executionManager) GetInitialData(executionId int, accountId string) (models.InputData, int) {
-	output, err := manager.Store.GetInitialData(noContext, executionId, accountId)
+func (manager *executionManager) GetInitialData(executionId int) (models.InputData, int) {
+	output, err := manager.Store.GetInitialData(noContext, executionId)
 	if err != nil {
 		if err.Error() == "Not found" {
 			return nil, http.StatusNotFound

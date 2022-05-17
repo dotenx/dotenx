@@ -37,7 +37,7 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 }
 
 var getAllExecution = `
-select *
+select id, pipeline_id, started_at, initial_data
 from executions
 where pipeline_id = $1;
 `
@@ -68,7 +68,7 @@ func (ps *pipelineStore) GetExecutionDetailes(context context.Context, execId in
 }
 
 var getExecutionDetailes = `
-select *
+select id, pipeline_id, started_at, initial_data
 from executions
 where id = $1;
 `

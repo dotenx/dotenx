@@ -10,8 +10,8 @@ import (
 	"github.com/go-co-op/gocron"
 )
 
-func (manager *TriggerManager) StartScheduller(accId string) error {
-	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
+func (manager *TriggerManager) StartScheduller() error {
+	triggers, err := manager.Store.GetAllTriggers(context.Background())
 	if err != nil {
 		return err
 	}
