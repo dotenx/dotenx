@@ -15,7 +15,7 @@ export function useActionBar() {
 	const deleteAutomationMutation = useMutation(deleteAutomation)
 	const newAutomation = useNewAutomation()
 
-	const mutation = useMutation((endpoint: string) => startAutomation(endpoint), {
+	const mutation = useMutation(startAutomation, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
@@ -24,7 +24,8 @@ export function useActionBar() {
 	})
 
 	const onRun = () => {
-		if (selectedAutomation) mutation.mutate(selectedAutomation.endpoint)
+		if (selectedAutomationData) mutation.mutate(selectedAutomationData.name)
+		else console.error('No automation is selected')
 	}
 
 	const onDelete = () => {

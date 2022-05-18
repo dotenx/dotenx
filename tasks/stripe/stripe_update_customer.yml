@@ -1,0 +1,21 @@
+service: stripe
+type: Stripe update customer
+image: hawwwdi/stripe-update-customer:latest
+integrations: [stripe]
+fields:
+    - key: CUS_NAME
+      type: text
+      description: customer's name (e.g hadi)
+    - key: CUS_PHONE
+      type: text
+      description: customer's phone number (e.g +989123737689)
+    - key: CUS_EMAIL
+      type: text
+      description: customer's email address (e.g abc@gmail.com)
+    - key: CUS_ID
+      type: text
+      description: customer's stripe Id (e.g cus_sadfa8234sad)
+author: hawwwdi
+icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
+node_color: FBFB11
+description: update an exesiting customer

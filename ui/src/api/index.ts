@@ -17,7 +17,7 @@ import {
 	GetTaskKindsResponse,
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
-	GetTriggersResponse,
+	GetTriggersResponse
 } from './types'
 export * from './types'
 
@@ -54,8 +54,8 @@ export function getAutomationYaml(name: string) {
 	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
 }
 
-export function startAutomation(endpoint: string) {
-	return api.post<void>(`/execution/ep/${endpoint}/start`, {})
+export function startAutomation(automationName: string) {
+	return api.post<void>(`/execution/name/${automationName}/start`, {})
 }
 
 export function deleteAutomation(name: string) {

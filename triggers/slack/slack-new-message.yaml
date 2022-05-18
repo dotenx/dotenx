@@ -18,6 +18,6 @@ outputs:
       description: timestamp of new message
 
 author: Armingodiz
-icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
-node_color: E01E5A
-description: Checks if there is a new message(sent before given number of secnds), tiggers a specefic pipeline
+icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
+node_color: FBFB11
+description: Triggers when a payment completed.
