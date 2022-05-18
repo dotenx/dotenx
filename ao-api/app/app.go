@@ -83,10 +83,14 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// }
 	r := gin.Default()
 	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
+	storeDomain := ""
+	if config.Configs.App.RunLocally {
+		storeDomain = "localhost"
+	} else {
+		storeDomain = ".dotenx.com"
+	}
 	store.Options(sessions.Options{
-		// for local test
-		Domain: "localhost",
-
+		Domain: storeDomain,
 		Path:   "/",
 		MaxAge: int(6 * time.Hour / time.Second),
 	})
