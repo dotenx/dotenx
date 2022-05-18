@@ -23,7 +23,15 @@ func FailOnError(err error, msg string) {
 }
 
 func GetAccountId(c *gin.Context) (string, error) {
-	return config.Configs.App.AccountId, nil
+	if config.Configs.App.RunLocally {
+		return config.Configs.App.AccountId, nil
+	} else {
+		accountId, exist := c.Get("accountId")
+		if !exist {
+			return "", errors.New("account id not exists")
+		}
+		return accountId.(string), nil
+	}
 }
 
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
