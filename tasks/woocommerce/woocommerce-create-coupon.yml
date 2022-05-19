@@ -1,0 +1,27 @@
+service: woocommerce
+type: WooCommerce create coupon
+image: hawwwdi/woocommerce-create-coupon:latest
+integrations: [woocommerce]
+fields:
+    - key: COUPON_CODE
+      type: text
+      description: coupon code (e.g "off33")
+    - key: COUPON_DISCOUNT_TYPE
+      type: text
+      description: "discount type (Options: percent, fixed_cart and fixed_product. Default is fixed_cart.)"
+    - key: COUPON_AMOUNT
+      type: text
+      description: coupon amount (e.g 9.99)
+    - key: COUPON_INDIVIDUAL_USE
+      type: boolean
+      description: coupon individual use
+    - key: COUPON_EXCLUDE_SALE_ITEMS
+      type: boolean
+      description: coupon individual use
+    - key: COUPON_MINIMUM_AMOUNT
+      type: text
+      description: coupon minimum amount
+author: hawwwdi
+icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
+node_color: FBFB11
+description: create new coupon in woocommerce 
