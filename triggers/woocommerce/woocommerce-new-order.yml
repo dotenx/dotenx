@@ -1,0 +1,25 @@
+service: woocommerce
+type: woocommerce new order created
+integrations: [woocommerce]
+image: hawwwdi/woocommerce-new-order
+credentials:
+    - key: passed_seconds
+      type: text
+      description: passed seconds from order creation time
+outputs:
+    - key: id
+      type: text
+      description: order id
+    - key: total
+      type: text
+      description: total amount of order
+    - key: customer_email
+      type: text
+      description: customer email
+    - key: status
+      type: text
+      description: order status
+author: hawwwdi
+icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
+node_color: E01E5A
+description: Checks if there is a new order(sent before given number of secnds), tiggers a specefic pipeline

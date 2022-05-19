@@ -1,5 +1,3 @@
-from matplotlib import category
-from numpy import percentile
 from woocommerce import API
 import os
 
