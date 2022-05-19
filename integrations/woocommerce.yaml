@@ -1,0 +1,8 @@
+type: woocommerce
+secrets:
+  - name: WOOCOMMERCE CONSUMER KEY
+    key: CONSUMER_KEY
+  - name: WOOCOMMERCE CONSUMER SECRET
+    key: CONSUMER_SECRET
+  - name: WEBSITE URL
+    key: WEBSITE_URL
