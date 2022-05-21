@@ -1,0 +1,30 @@
+service: woocommerce
+type: WooCommerce create customer
+image: hawwwdi/woocommerce-create-product:latest
+integrations: [woocommerce]
+fields:
+    - key: PRODUCT_NAME
+      type: text
+      description: product's name (e.g iphone)
+    - key: PRODUCT_TYPE
+      type: text
+      description: product type (e.g mobile)
+    - key: PRODUCT_PRICE
+      type: text
+      description: product price (e.g 9.99)
+    - key: PRODUCT_DESCRIPTION
+      type: text
+      description: product description
+    - key: PRODUCT_SHORT_DESCRIPTION
+      type: text
+      description: product short description
+    - key: PRODUCT_CATEGORY
+      type: text
+      description: product category id
+    - key: PRODUCT_IMAGE
+      type: text
+      description: product image link
+author: hawwwdi
+icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
+node_color: FBFB11
+description: create new product in woocommerce 

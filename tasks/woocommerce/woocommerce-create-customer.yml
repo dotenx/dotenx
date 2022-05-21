@@ -1,0 +1,36 @@
+service: woocommerce
+type: WooCommerce create customer
+image: hawwwdi/woocommerce-create-customer:latest
+integrations: [woocommerce]
+fields:
+    - key: CUSTOMER_FIRST_NAME
+      type: text
+      description: customer's first name (e.g hadi)
+    - key: CUSTOMER_LAST_NAME
+      type: text
+      description: customer's last name (e.g abbasi)
+    - key: CUSTOMER_PHONE
+      type: text
+      description: customer's phone number (e.g +989123737689)
+    - key: CUSTOMER_EMAIL
+      type: text
+      description: customer's email address (e.g hawwwdi@gmail.com)
+    - key: CUSTOMER_ADDRESS_1
+      type: text
+      description: customer's address
+    - key: CUSTOMER_CITY
+      type: text
+      description: customer's city (e.g tehran)
+    - key: CUSTOMER_STATE
+      type: text
+      description: customer's state (e.g US)
+    - key: CUSTOMER_POSTCODE
+      type: text
+      description: customer's postcode (e.g 94919)
+    - key: CUSTOMER_COUNTRY
+      type: text
+      description: customer's country (e.g Canada)
+author: hawwwdi
+icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
+node_color: FBFB11
+description: create new customer in woocommerce 
