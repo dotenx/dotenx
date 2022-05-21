@@ -59,6 +59,7 @@ type (
 		Encryption           string `envconfig:"AOA_ENCRYPTION_SECRET"`
 		SessionAuthSecret    string `envconfig:"AOA_SESSION_AUTH_SECRET"`
 		SessionEncryptSecret string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
+		RunnerToken          string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
 	}
 )
 

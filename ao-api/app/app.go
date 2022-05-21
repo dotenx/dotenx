@@ -121,15 +121,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	OauthController := oauthController.OauthController{Service: OauthService}
 	adminController := admin.AdminController{}
 
-	// endpoints which dont need authntication
-
+	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
-	r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
-	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
 	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
+
+	// unknown endpoint
 	r.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 
-	//
+	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
+	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())

@@ -5,12 +5,19 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 )
 
 func (e *ExecutionController) GetNextTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		runnerToken := c.GetHeader("authorization")
+		if runnerToken != config.Configs.Secrets.RunnerToken {
+			log.Println("invalid runner token: " + runnerToken)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid runner token"})
+			return
+		}
 		// accountId, _ := utils.GetAccountId(c)
 		// queryString := c.Request.URL.Query()
 		executionId, err := strconv.Atoi(c.Param("id"))
