@@ -13,6 +13,10 @@ import (
 )
 
 func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
+	err := manager.Store.SetExecutionTime(executionId, seconds)
+	if err != nil {
+		return err
+	}
 	accountId, err := manager.Store.GetAccountIdByExecutionId(noContext, executionId)
 	if err != nil {
 		return err
