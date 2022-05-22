@@ -69,6 +69,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	}
 	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
+	fmt.Println("### for task[" + task.Details.Name + "], created container id is: " + cont.ID)
 	var statusCode int
 	//time.Sleep(time.Duration(time.Minute * 5))
 	for start := time.Now(); time.Since(start) < time.Duration(task.Details.Timeout)*time.Second; {
