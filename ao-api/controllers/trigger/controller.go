@@ -67,7 +67,7 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 		var err error
 		var triggers []models.EventTrigger
 		if !ok {
-			triggers, err = controller.Service.GetAllTriggers(accountId)
+			triggers, err = controller.Service.GetAllTriggersForAccount(accountId)
 		} else {
 			triggers, err = controller.Service.GetAllTriggersForPipeline(accountId, pipeline)
 		}

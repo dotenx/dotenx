@@ -38,7 +38,7 @@ func (manager *TriggerManager) StartChecking(store integrationStore.IntegrationS
 	}
 }
 func (manager *TriggerManager) check(store integrationStore.IntegrationStore) error {
-	triggers, err := manager.Store.GetAllTriggers(context.Background())
+	triggers, err := manager.GetAllTriggers()
 	if err != nil {
 		return err
 	}

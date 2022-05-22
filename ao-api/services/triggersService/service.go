@@ -21,7 +21,8 @@ func init() {
 
 type TriggerService interface {
 	GetTriggerTypes() (map[string][]triggerSummery, error)
-	GetAllTriggers(accountId string) ([]models.EventTrigger, error)
+	GetAllTriggers() ([]models.EventTrigger, error)
+	GetAllTriggersForAccount(accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
@@ -125,7 +126,7 @@ func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*mode
 }
 
 func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipeline string) error {
-	triggers, err := manager.GetAllTriggers(accountId)
+	triggers, err := manager.GetAllTriggersForAccount(accountId)
 	if err != nil {
 		return err
 	}
@@ -143,9 +144,13 @@ func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipe
 	return errors.New("no trigger with this name")
 }
 
-func (manager *TriggerManager) GetAllTriggers(accountId string) ([]models.EventTrigger, error) {
+func (manager *TriggerManager) GetAllTriggers() ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggers(context.Background())
 }
+func (manager *TriggerManager) GetAllTriggersForAccount(accountId string) ([]models.EventTrigger, error) {
+	return manager.Store.GetAllTriggersForAccount(context.Background(), accountId)
+}
+
 func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error) {
 	triggers, err := manager.Store.GetAllTriggers(context.Background())
 	if err != nil {

@@ -18,6 +18,7 @@ type TriggerStore interface {
 	DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
 	GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error)
+	GetAllTriggersForAccount(ctx context.Context, accountId string) ([]models.EventTrigger, error)
 }
 
 type triggerStore struct {
@@ -93,6 +94,38 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context) ([]models.EventTr
 	case db.Postgres:
 		conn := store.db.Connection
 		rows, err := conn.Queryx(getTriggers)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return nil, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var cur models.EventTrigger
+			var cred []byte
+			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
+			json.Unmarshal(cred, &cur.Credentials)
+			if err != nil {
+				return nil, err
+			}
+			cur.MetaData = models.AvaliableTriggers[cur.Type]
+			res = append(res, cur)
+		}
+	}
+	return res, nil
+}
+
+var getTriggersForAccount = `
+select type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers where account_id = $1;`
+
+func (store *triggerStore) GetAllTriggersForAccount(ctx context.Context, accountId string) ([]models.EventTrigger, error) {
+	res := make([]models.EventTrigger, 0)
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getTriggersForAccount, accountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
