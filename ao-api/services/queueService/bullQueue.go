@@ -39,6 +39,7 @@ func (b *bullQueue) QueueTasks(accountId, priority string, tasks ...interface{})
 		fmt.Println(string(body))
 		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("authorization", config.Configs.Secrets.RunnerToken)
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			log.Println(err)
