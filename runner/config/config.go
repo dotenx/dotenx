@@ -27,6 +27,7 @@ type (
 		AuthServerJwtSecret string `envconfig:"AOR_AUTH_SERVER_JWT_SECRET"`
 		AppName             string `envconfig:"AOR_APP_NAME"`
 		AppSecret           string `envconfig:"AOR_APP_SECRET"`
+		RunnerToken         string `envconfig:"AOR_RUNNER_TOKEN_SECRET"`
 	}
 )
 

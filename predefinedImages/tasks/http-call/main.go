@@ -19,6 +19,7 @@ func main() {
 	body := os.Getenv("body")
 	//taskName := os.Getenv("TASK_NAME")
 	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
+	authorization := os.Getenv("AUTHORIZATION")
 	var out []byte
 	var err error
 	var statusCode int
@@ -51,13 +52,23 @@ func main() {
 			"return_value": resultData,
 			"log":          "",
 		}
+		headers := []Header{
+			{
+				Key:   "Content-Type",
+				Value: "application/json",
+			},
+			{
+				Key:   "authorization",
+				Value: authorization,
+			},
+		}
 		json_data, err := json.Marshal(data)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, nil, 0)
+		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println(status)

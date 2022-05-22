@@ -23,6 +23,7 @@ func main() {
 	email := os.Getenv("CUS_EMAIL")
 	id := os.Getenv("CUS_ID")
 	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
+	authorization := os.Getenv("AUTHORIZATION")
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	id, err := updateCustomer(sc, id, name, phone, email)
@@ -41,8 +42,18 @@ func main() {
 		log.Println(err)
 		return
 	}
+	headers := []Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+		{
+			Key:   "authorization",
+			Value: authorization,
+		},
+	}
 	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, nil, 0)
+	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println(status)
