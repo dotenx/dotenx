@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -43,7 +42,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
 	p, _, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 	if err == nil && p.Id != "" {
-		err := cm.DeletePipeline(base.AccountId, base.Name)
+		err := cm.DeletePipeline(base.AccountId, base.Name, true)
 		if err != nil {
 			return errors.New("error in deleting old version: " + err.Error())
 		}
@@ -91,7 +90,17 @@ func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
 	return cm.Store.GetPipelines(noContext, accountId)
 }
-func (cm *crudManager) DeletePipeline(accountId, name string) (err error) {
+func (cm *crudManager) DeletePipeline(accountId, name string, deleteRecord bool) (err error) {
+	p, _, isActive, err := cm.GetPipelineByName(accountId, name)
+	if err != nil {
+		return
+	}
+	if isActive {
+		err = cm.DeActivatePipeline(accountId, p.Id, deleteRecord)
+		if err != nil {
+			return
+		}
+	}
 	return cm.Store.DeletePipeline(noContext, accountId, name)
 }
 
@@ -116,7 +125,7 @@ func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error
 	if err != nil {
 		return
 	}
-	return cm.NotifyPlanmanageForActivation(accountId, "activate", pipelineId)
+	return cm.NotifyPlanmanageForActivation(accountId, "activate", pipelineId, false)
 }
 
 func (cm *crudManager) CheckAccess(accId string, excutionId int) (bool, error) {
@@ -133,7 +142,7 @@ func (cm *crudManager) CheckAccess(accId string, excutionId int) (bool, error) {
 	Requestheaders := []utils.Header{
 		{
 			Key:   "Authorization",
-			Value: fmt.Sprintf("Bearer %s", token),
+			Value: token,
 		},
 		{
 			Key:   "Content-Type",
@@ -141,7 +150,7 @@ func (cm *crudManager) CheckAccess(accId string, excutionId int) (bool, error) {
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/user/access/automation", requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/automation", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}
@@ -159,12 +168,12 @@ func (cm *crudManager) CheckAccess(accId string, excutionId int) (bool, error) {
 	return res.Access, nil
 }
 
-func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string) (err error) {
+func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error) {
 	err = cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
 	if err != nil {
 		return
 	}
-	return cm.NotifyPlanmanageForActivation(accountId, "deactivate", pipelineId)
+	return cm.NotifyPlanmanageForActivation(accountId, "deactivate", pipelineId, deleteRecord)
 }
 
 func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, error) {
@@ -184,4 +193,5 @@ func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, 
 type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
+	DeleteRecord bool   `json:"delete_record"`
 }

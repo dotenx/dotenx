@@ -20,6 +20,7 @@ type (
 		FileSharing     string `envconfig:"AOA_FILE_DIR"`
 		SessionDuration string `envconfig:"AOA_SESSION_DURATION"`
 		AllowedOrigins  string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		RunLocally      bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
 	}
 
 	Queue struct {
@@ -27,12 +28,12 @@ type (
 	}
 
 	Endpoints struct {
-		AoApi       string `envconfig:"AOA_AO_API_URL"`
-		AoApiLocal  string `envconfig:"AOA_AO_API_LOCAL_URL"`
-		Core        string `envconfig:"AOA_CORE_API_URL"`
-		UI          string `envconfig:"AOA_UI_URL"`
-		UILocal     string `envconfig:"AOA_UI_LOCAL_URL"`
-		PlanManager string `envconfig:"AO_PLM_URL"`
+		AoApi      string `envconfig:"AOA_AO_API_URL"`
+		AoApiLocal string `envconfig:"AOA_AO_API_LOCAL_URL"`
+		Core       string `envconfig:"AOA_CORE_API_URL"`
+		UI         string `envconfig:"AOA_UI_URL"`
+		UILocal    string `envconfig:"AOA_UI_LOCAL_URL"`
+		Admin      string `envconfig:"AOA_ADMIN_URL"`
 	}
 
 	Database struct {
@@ -51,11 +52,14 @@ type (
 	}
 
 	Secrets struct {
-		AuthServerJwtSecret string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
-		AppName             string `envconfig:"AOA_APP_NAME"`
-		AppSecret           string `envconfig:"AOA_APP_SECRET"`
-		CookieSecret        string `envconfig:"AOA_Cookie_SECRET"`
-		Encryption          string `envconfig:"AOA_ENCRYPTION_SECRET"`
+		AuthServerJwtSecret  string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
+		AppName              string `envconfig:"AOA_APP_NAME"`
+		AppSecret            string `envconfig:"AOA_APP_SECRET"`
+		CookieSecret         string `envconfig:"AOA_Cookie_SECRET"`
+		Encryption           string `envconfig:"AOA_ENCRYPTION_SECRET"`
+		SessionAuthSecret    string `envconfig:"AOA_SESSION_AUTH_SECRET"`
+		SessionEncryptSecret string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
+		RunnerToken          string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
 	}
 )
 

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,8 +12,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (manager *crudManager) NotifyPlanmanageForActivation(accId, action string, pipelineId string) error {
-	dt := automationDto{AccountId: accId, AutomationId: pipelineId}
+func (manager *crudManager) NotifyPlanmanageForActivation(accId, action string, pipelineId string, deleteRecord bool) error {
+	dt := automationDto{AccountId: accId, AutomationId: pipelineId, DeleteRecord: deleteRecord}
 	json_data, err := json.Marshal(dt)
 	if err != nil {
 		return errors.New("bad input body")
@@ -27,7 +26,7 @@ func (manager *crudManager) NotifyPlanmanageForActivation(accId, action string, 
 	Requestheaders := []utils.Header{
 		{
 			Key:   "Authorization",
-			Value: fmt.Sprintf("Bearer %s", token),
+			Value: token,
 		},
 		{
 			Key:   "Content-Type",
@@ -35,7 +34,7 @@ func (manager *crudManager) NotifyPlanmanageForActivation(accId, action string, 
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/automation/"+action, requestBody, Requestheaders, time.Minute, true)
+	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/automation/"+action, requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return err
 	}

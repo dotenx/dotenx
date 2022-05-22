@@ -5,19 +5,26 @@ image: hojjat12/dropbox-upload-new-file:latest
 credentials:
     - key: path
       type: text
+      description: the path in your dropbox account that should check for new file
     - key: passed_seconds
       type: text
+      description: passed seconds from creation time of the last uploaded file
 outputs:
     - key: name
       type: text
+      description: name of the last uploaded file
     - key: path
       type: text
+      description: the full path of uploaded file (e.g example/test.pdf)
     - key: id
       type: text
+      description: id of the last uploaded file
     - key: modified_time
       type: text
+      description: last modified time of the last uploaded file
     - key: file
       type: text
+      description: this field use for identifies the location of the last uploaded file that will save there
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/185/185969.png
 node_color: 4caaff

@@ -3,10 +3,10 @@ package app
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
@@ -34,7 +34,7 @@ import (
 	"github.com/dotenx/goth"
 	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	sessRedis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 )
@@ -77,15 +77,22 @@ func (a *App) Start(restPort string) error {
 }
 
 func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Client) *gin.Engine {
-	duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
-	if err != nil {
-		panic(err.Error())
-	}
+	// duration, err := strconv.Atoi(config.Configs.App.SessionDuration)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 	r := gin.Default()
-	store := cookie.NewStore([]byte(config.Configs.Secrets.CookieSecret))
+	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
+	storeDomain := ""
+	if config.Configs.App.RunLocally {
+		storeDomain = "localhost"
+	} else {
+		storeDomain = ".dotenx.com"
+	}
 	store.Options(sessions.Options{
-		MaxAge: int(time.Second * time.Duration(duration)), //30min
+		Domain: storeDomain,
 		Path:   "/",
+		MaxAge: int(6 * time.Hour / time.Second),
 	})
 	r.Use(sessions.Sessions("dotenx", store))
 	// Middlewares
@@ -112,61 +119,78 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService}
+	adminController := admin.AdminController{}
+
+	// endpoints with runner token
+	r.POST("/execution/id/:id/next", executionController.GetNextTask())
+	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
+
+	// unknown endpoint
+	r.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
+
+	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
+	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
+
+	if !config.Configs.App.RunLocally {
+		r.Use(middlewares.OauthMiddleware())
+	}
 
 	// Routes
 	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
-	{
-		tasks.GET("", predefinedController.GetTasks)
-		tasks.GET("/:task_name/fields", predefinedController.GetFields)
-	}
 	pipline := r.Group("/pipeline")
-	{
-		pipline.POST("", crudController.AddPipeline())
-		pipline.PUT("", crudController.UpdatePipeline())
-		pipline.GET("", crudController.GetPipelines())
-		pipline.DELETE("/name/:name", crudController.DeletePipeline())
-		pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
-		pipline.GET("/name/:name", crudController.GetPipeline())
-		pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
-		pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
-	}
 	execution := r.Group("/execution")
-	{
-		execution.GET("/id/:id/details", executionController.GetExecutionDetails())
-		execution.POST("/ep/:endpoint/start", executionController.StartPipeline())
-		execution.POST("/name/:name/start", executionController.StartPipelineByName())
-		execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
-		execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
-		//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
-
-		execution.GET("/queue", executionController.GetExecution())
-		execution.POST("/id/:id/next", executionController.GetNextTask())
-		execution.GET("/id/:id/initial_data", executionController.GetInitialData())
-		execution.GET("/id/:id/task/:taskId", executionController.GetTaskDetails())
-		execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
-		execution.POST("/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
-		execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
-		execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
-	}
 	intgration := r.Group("/integration")
-	{
-		intgration.POST("", IntegrationController.AddIntegration())
-		intgration.GET("", IntegrationController.GetAllIntegrations())
-		intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
-		intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
-		intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
-	}
 	trigger := r.Group("/trigger")
-	{
-		trigger.POST("", TriggerController.AddTriggers())
-		trigger.PUT("", TriggerController.UpdateTriggers())
-		trigger.GET("", TriggerController.GetAllTriggers())
-		trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
-		trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
-		trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
-		trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
-	}
+	admin := r.Group("/internal")
+
+	admin.POST("/automation/activate", adminController.ActivateAutomation)
+	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
+	admin.POST("/execution/submit", adminController.SubmitExecution)
+	admin.POST("/user/access/:resource", adminController.CheckAccess)
+
+	// tasks router
+	tasks.GET("", predefinedController.GetTasks)
+	tasks.GET("/:task_name/fields", predefinedController.GetFields)
+
+	// pipeline router
+	pipline.POST("", crudController.AddPipeline())
+	pipline.PUT("", crudController.UpdatePipeline())
+	pipline.GET("", crudController.GetPipelines())
+	pipline.DELETE("/name/:name", crudController.DeletePipeline())
+	pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
+	pipline.GET("/name/:name", crudController.GetPipeline())
+	pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
+	pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
+
+	// execution router
+	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
+	execution.POST("/name/:name/start", executionController.StartPipelineByName())
+	execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
+	execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
+	//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
+
+	execution.GET("/queue", executionController.GetExecution())
+	execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
+	execution.GET("/id/:id/task/:taskId/result", executionController.GetTaskExecutionResult())
+	execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
+
+	// integration router
+	intgration.POST("", IntegrationController.AddIntegration())
+	intgration.GET("", IntegrationController.GetAllIntegrations())
+	intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
+	intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
+	intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
+
+	// trigger router
+	trigger.POST("", TriggerController.AddTriggers())
+	trigger.PUT("", TriggerController.UpdateTriggers())
+	trigger.GET("", TriggerController.GetAllTriggers())
+	trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
+	trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
+	trigger.GET("/type/:type/definition", TriggerController.GetDefinitionForTrigger())
+	trigger.DELETE("/name/:name", TriggerController.DeleteTrigger())
+
 	// authentication settings
 	gothic.Store = store
 	// integrationCallbackUrl := config.Configs.Endpoints.AoApi + "/oauth/integration/callbacks/"
@@ -196,8 +220,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// fmt.Printf("intgErr: %#v\n", intgErr)
 	// fmt.Println("****************************************")
 
-	go TriggerServic.StartChecking(config.Configs.App.AccountId, IntegrationStore)
-	go TriggerServic.StartScheduller(config.Configs.App.AccountId)
+	go TriggerServic.StartChecking(IntegrationStore)
+	go TriggerServic.StartScheduller()
 	return r
 }
 

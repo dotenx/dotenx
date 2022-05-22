@@ -17,7 +17,7 @@ type TriggerStore interface {
 	DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error
 	DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
-	GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error)
+	GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error)
 }
 
 type triggerStore struct {
@@ -85,16 +85,14 @@ func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, tri
 }
 
 var getTriggers = `
-select  type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers 
-where account_id = $1;
-`
+select type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers;`
 
-func (store *triggerStore) GetAllTriggers(ctx context.Context, accountId string) ([]models.EventTrigger, error) {
+func (store *triggerStore) GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error) {
 	res := make([]models.EventTrigger, 0)
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection
-		rows, err := conn.Queryx(getTriggers, accountId)
+		rows, err := conn.Queryx(getTriggers)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {

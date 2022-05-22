@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +12,7 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Status(http.StatusOK)
 
-		accountId, _ := utils.GetAccountId(c)
+		// accountId, _ := utils.GetAccountId(c)
 
 		endpoint := c.Param("endpoint")
 		var input map[string]interface{}
@@ -21,9 +20,13 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
+		if input["accountId"] == nil {
+			c.JSON(http.StatusBadRequest, "accountId has not been set")
+			return
+		}
 		fmt.Println("##################execution received initial data: ")
 		log.Println(input)
-		id, err := e.Service.StartPipeline(input, accountId, endpoint)
+		id, err := e.Service.StartPipeline(input, input["accountId"].(string), endpoint)
 		if err != nil {
 			if err.Error() == "automation is not active" {
 				c.JSON(http.StatusBadRequest, err.Error())

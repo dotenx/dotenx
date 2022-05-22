@@ -5,16 +5,22 @@ integrations: [google]
 fields:
     - key: fileName
       type: text
+      description: this field identifies the location of the video file that you are uploading
     - key: title
       type: text
+      description: the title of the video that you are uploading, the default value is 'Test title'
     - key: description
       type: text
+      description: the description of the video that you're uploading, the default value is 'Test'
     - key: category
       type: text
+      description: the category ID for the YouTube video category associated with the video, the default value is 22, which refers to the People & Blogs category
     - key: keywords
       type: text
+      description: a comma-separated list of keywords associated with the video, the default value is an empty string
     - key: privacy
       type: text
+      description: the privacy status of the video, the default behavior is for an uploaded video to be publicly visible (public). When uploading test videos, you may want to specify a --privacyStatus argument value to ensure that those videos are private or unlisted. Valid values are public, private, and unlisted
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/1384/1384060.png
 node_color: ff3a3a

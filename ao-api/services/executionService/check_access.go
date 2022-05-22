@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,7 +26,7 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 	Requestheaders := []utils.Header{
 		{
 			Key:   "Authorization",
-			Value: fmt.Sprintf("Bearer %s", token),
+			Value: token,
 		},
 		{
 			Key:   "Content-Type",
@@ -35,7 +34,7 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/user/access/executionMinutes", requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/executionMinutes", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}

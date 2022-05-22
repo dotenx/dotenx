@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -22,7 +24,15 @@ func FailOnError(err error, msg string) {
 }
 
 func GetAccountId(c *gin.Context) (string, error) {
-	return config.Configs.App.AccountId, nil
+	if config.Configs.App.RunLocally {
+		return config.Configs.App.AccountId, nil
+	} else {
+		accountId, exist := c.Get("accountId")
+		if !exist {
+			return "", errors.New("account id not exists")
+		}
+		return accountId.(string), nil
+	}
 }
 
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
@@ -70,8 +80,42 @@ func GetNewUuid() string {
 	return id.String()
 }
 
+func GetAuthorizedField(tokenString string) (bool, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return false, err
+	}
+	if authorizedField, hasAuthorizedField := claims["authorized"]; hasAuthorizedField {
+		if authorizedFieldBool, isAuthorizedFieldBool := authorizedField.(bool); isAuthorizedFieldBool {
+			return authorizedFieldBool, nil
+		}
+	}
+	return false, errors.New("claim not found")
+}
+
+func getClaims(tokenString string) (jwt.MapClaims, error) {
+	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signature")
+		}
+		return secret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, errors.New("invalid token")
+	}
+}
+
 func GeneratToken() (string, error) {
-	tokenString, err := GenerateJwtToken("123456")
+	tokenString, err := GenerateJwtToken()
 	if err != nil {
 		return "", err
 		log.Fatal("Unexpected error occurred!")
@@ -82,14 +126,13 @@ func GeneratToken() (string, error) {
 }
 
 // GenerateJwtToken function generates a jwt token based on HS256 algorithm
-func GenerateJwtToken(accountId string) (accToken string, err error) {
+func GenerateJwtToken() (accToken string, err error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
 	claims["iss"] = "dotenx-ao-api"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
-	claims["accountId"] = accountId
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
 	accToken, err = token.SignedString([]byte("another_secret"))

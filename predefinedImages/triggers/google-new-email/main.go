@@ -21,6 +21,7 @@ import (
 
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	accId := os.Getenv("ACCOUNT_ID")
 	triggerName := os.Getenv("TRIGGER_NAME")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
@@ -49,6 +50,7 @@ func main() {
 	if len(messages) > 0 {
 		if messages[0].InternalDate/1000 > selectedUnix {
 			body := make(map[string]interface{})
+			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
 			msgBody, _ := base64.URLEncoding.DecodeString(messages[0].Payload.Body.Data)
 			innerBody["body"] = string(msgBody)

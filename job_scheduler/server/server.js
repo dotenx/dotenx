@@ -59,6 +59,8 @@ app.get('/next/queue/:qname/:token', async (req, res) => {
 app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
   const { qname, jobId } = req.params;
   const { returnValue, token, result } = req.body;
+  var authorazition = req.headers['authorization'];
+  console.log(`token: ${authorazition}`)
   console.log(`received the result for queue: ${qname}: ${jobId} result: ${result}`);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getJob(jobId);
@@ -77,6 +79,10 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
       status: result,
       account_id:account_id,
       task_id:taskId
+    },{
+      headers:{
+        "authorization": authorazition
+      }
     });
     res.sendStatus(200);
   } catch (error) {
@@ -92,6 +98,8 @@ app.post('/queue/:qname/job/:jobId/result', async (req, res) => {
 app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   const { qname, jobId } = req.params;
   const { status, return_value, log } = req.body;
+  var authorazition = req.headers['authorization'];
+  console.log(`token: ${authorazition}`)
   console.log(`received the status for queue: ${qname}: ${jobId} status: ${status}`);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getJob(jobId);
@@ -105,6 +113,10 @@ app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
       status: status,
       return_value: return_value,
       log: log
+    },{
+      headers:{
+        "authorization": authorazition
+      }
     });
     res.sendStatus(200);
     //res.sendStatus(200);
@@ -124,6 +136,8 @@ app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
 app.post('/queue/:qname/job', async (req, res) => {
   const { qname } = req.params;
   const payload = req.body;
+  var authorazition = req.headers['authorization'];
+  console.log(`token: ${authorazition}`)
   console.log(`Adding new job to queue: ${qname}`);
   //console.log(payload);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
@@ -136,6 +150,10 @@ app.post('/queue/:qname/job', async (req, res) => {
       await axios.post(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`, {
         status: "waiting",
         log:""
+      },{
+        headers:{
+          "authorization": authorazition
+        }
       });
       console.log(`${aoApiUrl}/execution/id/${executionId}/task/${taskId}/result`)
       res.send({

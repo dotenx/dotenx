@@ -43,6 +43,26 @@ Each `Automation` is comprised of three main building blocks:
 
 **Integration**: In order to be able to connect different third party applications, e.g., Twitter, Airtable, Notion, Shopify, etc, you need to add an integration. Integrations in simple terms allow DoTenX to automate certain activities (tasks to be specific) on your behalf.
 
+# Getting started
+
+After `docker-compose up` open `localhost:3010` in your browser to use ui.
+
+## Create integration 
+
+If you already have credentials to create your integration such as access token, secret or ... click advanced and insert them to create your integration otherwise click connect and give us needed scopes.
+
+<img width="1435" alt="Screen Shot 1401-02-12 at 17 49 37" src="https://user-images.githubusercontent.com/58859939/166241145-84f32235-f358-4595-b97c-955d0f799712.png">
+
+
+## Create Automation 
+
+You can drag and drop tasks and triggers to add them to your automation and then you must save it and also activate it(deactive automatios won't be run if be trigger or even run them manually). 
+* you can only run an automation manually if there is no dependency between task inputs and trigger outputs.
+
+
+<img width="1435" alt="Screen Shot 1401-02-12 at 17 51 53" src="https://user-images.githubusercontent.com/58859939/166241353-96ee8401-44c8-4fef-89a6-85257f2c11a4.png">
+
+
 # Contributing
 
 The most common scenario for contributing to DoTenX is adding new `Tasks`, `Triggers` or `Integrations` which are the main components of `Automations`.
@@ -68,10 +88,37 @@ image: Docker image that implements the task
 fields:
   - key: key of your variable
     type: type of your variable(currently text and JSON are supported)
+outputs:
+    - key: key of your output variable
+      type: type of your output variable(currently text and JSON are supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your task
 author: your github username 
 ```
+* If your task has outputs you need to set them using RESULT_ENDPOINT which is an environment variable that all containers have. suppose you have an output with name as key and armin as value. you must send a post request to RESULT_ENDPOINT to set your output with this body:
+
+``` json
+{
+    "status": "started",
+    "return_value": {
+        "name": "armin"
+    }
+}
+```
+
+* If your task creates a file and you want to share that file with other tasks you need to create your file in /tmp directory of your container and your file name must start with workspace_(you can get workspace from environment variable with key WORKSPACE). 
+And to pass file name to other tasks you need to set that as an output.
+forexample if you want to share your created WORKSPACE_result.json with other tasks you must send a post request to RESULT_ENDPOINT with this body:
+
+``` json
+{
+    "status": "started",
+    "return_value": {
+        "file": "WORKSPACE_result.json"
+    }
+}
+```
+
 
 ## Adding new trigger type
 
@@ -84,10 +131,27 @@ image: Docker image that implements the trigger
 credentials:
   - key: key of your variable
     type: type of your variable(currently text is supported)
+outputs:
+    - key: key of your output variable
+      type: type of your output variable(currently text and JSON are supported)
 # integration field is not necessary
 integration: integration type wich is needed to run your trigger
 author: your github username 
+``` 
+* Your image for trigger must send a post request to PIPELINE_ENDPOINT to trigger an Automation otherwise it won't be usable as an image for trigger.
+
+If your trigger has outputs you must send them with body when you want to trigger your Automation; forexample if you have an output with name as key and armin as value and a created file named WORKSPACE_result.json(like tasks in /tmp directory) you must send this body with your post request:
+
+``` json
+{
+    "workspace": "WORKSPACE",
+    "TRIGGER_NAME": {
+        "name": "armin",
+        "file": "WORKSPACE_result.json"
+    }
+}
 ```
+you can get WORKSPACE, TRIGGER_NAME and PIPELINE_ENDPOINT from environment variables
 
 # License 
 DoTenX is licensed in a way that it lets you use it for free but it doesn't give permission of sale.

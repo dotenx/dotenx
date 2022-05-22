@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
-	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -78,7 +78,12 @@ func (e *ExecutionController) GetTaskExecutionResult() gin.HandlerFunc {
 
 func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		runnerToken := c.GetHeader("authorization")
+		if runnerToken != config.Configs.Secrets.RunnerToken {
+			log.Println("invalid runner token: " + runnerToken)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid runner token"})
+			return
+		}
 		executionId, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.Status(http.StatusBadRequest)
@@ -132,13 +137,7 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 				c.AbortWithError(http.StatusInternalServerError, err)
 				return
 			}
-			accId, err := utils.GetAccountId(c)
-			if err != nil {
-				log.Println(err)
-				c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
-			err = e.Service.SetExecutionTime(accId, executionId, int(time.Now().Unix())-int(exec.StartedAt.Unix()))
+			err = e.Service.SetExecutionTime(executionId, int(time.Now().Unix())-int(exec.StartedAt.Unix()))
 			if err != nil {
 				log.Println(err)
 				c.AbortWithError(http.StatusInternalServerError, err)

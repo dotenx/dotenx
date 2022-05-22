@@ -20,6 +20,10 @@ func (manager *JobManager) SendResult(jobId string, status models.TaskStatus) er
 			Key:   "Content-Type",
 			Value: "application/json",
 		},
+		{
+			Key:   "authorization",
+			Value: config.Configs.Secrets.RunnerToken,
+		},
 	}
 	json_data, err := json.Marshal(status)
 	if err != nil {
@@ -40,6 +44,10 @@ func (manager *JobManager) SetStatus(jobId string, status models.TaskStatus) err
 		{
 			Key:   "Content-Type",
 			Value: "application/json",
+		},
+		{
+			Key:   "authorization",
+			Value: config.Configs.Secrets.RunnerToken,
 		},
 	}
 	data := map[string]interface{}{

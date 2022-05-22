@@ -25,20 +25,20 @@ type dockerCleint struct {
 	cli *client.Client
 }
 
-func (manager *TriggerManager) StartChecking(accId string, store integrationStore.IntegrationStore) error {
+func (manager *TriggerManager) StartChecking(store integrationStore.IntegrationStore) error {
 	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
 	if err != nil {
 		return err
 	}
 	for {
 		// todo: handle error
-		go manager.check(accId, store)
+		go manager.check(store)
 		time.Sleep(time.Duration(freq) * time.Second)
 		//time.Sleep(time.Duration(5) * time.Second)
 	}
 }
-func (manager *TriggerManager) check(accId string, store integrationStore.IntegrationStore) error {
-	triggers, err := manager.Store.GetAllTriggers(context.Background(), accId)
+func (manager *TriggerManager) check(store integrationStore.IntegrationStore) error {
+	triggers, err := manager.Store.GetAllTriggers(context.Background())
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (manager *TriggerManager) check(accId string, store integrationStore.Integr
 	//fmt.Println(triggers)
 	for _, trigger := range triggers {
 		if trigger.Type != "Schedule" {
-			go dc.handleTrigger(manager.IntegrationService, accId, trigger, store, utils.GetNewUuid())
+			go dc.handleTrigger(manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
@@ -68,7 +68,8 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 	envs := []string{
 		"PIPELINE_ENDPOINT=" + pipelineUrl,
 		"TRIGGER_NAME=" + trigger.Name,
-		"WORKSPACE=" + workspace}
+		"WORKSPACE=" + workspace,
+		"ACCOUNT_ID=" + accountId}
 	for key, value := range integration.Secrets {
 		envs = append(envs, "INTEGRATION_"+key+"="+value)
 	}

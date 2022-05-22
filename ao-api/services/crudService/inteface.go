@@ -18,12 +18,12 @@ type CrudService interface {
 	UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)
 	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, error)
-	DeletePipeline(accountId, name string) (err error)
+	DeletePipeline(accountId, name string, deleteRecord bool) (err error)
 	ActivatePipeline(accountId, pipelineId string) (err error)
-	DeActivatePipeline(accountId, pipelineId string) (err error)
+	DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error)
 	GetActivePipelines(accountId string) ([]models.Pipeline, error)
 	CheckAccess(accId string, excutionId int) (bool, error)
-	NotifyPlanmanageForActivation(accId, action string, pipelineId string) error
+	NotifyPlanmanageForActivation(accId, action string, pipelineId string, deleteRecord bool) error
 }
 
 type crudManager struct {

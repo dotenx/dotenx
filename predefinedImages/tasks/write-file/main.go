@@ -21,6 +21,7 @@ func main() {
 	resultData["age"] = age
 	workspace := os.Getenv("WORKSPACE")
 	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
+	authorization := os.Getenv("AUTHORIZATION")
 	file, _ := json.MarshalIndent(resultData, "", " ")
 	fileName := fmt.Sprintf("/tmp/%s_bio.json", workspace)
 	err := os.WriteFile(fileName, file, 0644)
@@ -39,8 +40,18 @@ func main() {
 			log.Println(err)
 			return
 		}
+		headers := []Header{
+			{
+				Key:   "Content-Type",
+				Value: "application/json",
+			},
+			{
+				Key:   "authorization",
+				Value: authorization,
+			},
+		}
 		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, nil, 0)
+		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println(status)

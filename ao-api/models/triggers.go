@@ -24,8 +24,9 @@ type TriggerDefinition struct {
 }
 
 type Credential struct {
-	Key  string `json:"key" yaml:"key"`
-	Type string `json:"type" yaml:"type"`
+	Key         string `json:"key" yaml:"key"`
+	Type        string `json:"type" yaml:"type"`
+	Description string `json:"description" yaml:"description"`
 }
 
 type EventTrigger struct {

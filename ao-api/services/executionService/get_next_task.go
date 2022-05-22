@@ -32,7 +32,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		jobDTO := models.NewJob(task, executionId, accountId)
-		workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId, accountId)
+		workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId)
 		if err != nil {
 			return err
 		}

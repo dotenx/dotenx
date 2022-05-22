@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/models"
 )
 
@@ -31,6 +32,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		processedTask.EnvironmentVariables = envs
 		processedTask.EnvironmentVariables = append(processedTask.EnvironmentVariables, "RESULT_ENDPOINT="+task.ResultEndpoint)
 		processedTask.EnvironmentVariables = append(processedTask.EnvironmentVariables, "WORKSPACE="+task.Workspace)
+		processedTask.EnvironmentVariables = append(processedTask.EnvironmentVariables, "AUTHORIZATION="+config.Configs.Secrets.RunnerToken)
 	}
 	return
 }

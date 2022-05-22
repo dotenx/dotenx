@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,7 +12,11 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (manager *executionManager) SetExecutionTime(accountId string, executionId int, seconds int) error {
+func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
+	accountId, err := manager.Store.GetAccountIdByExecutionId(noContext, executionId)
+	if err != nil {
+		return err
+	}
 	dt := ExecutionDto{AccountId: accountId, ExecutionId: strconv.Itoa(executionId), Seconds: seconds}
 	json_data, err := json.Marshal(dt)
 	if err != nil {
@@ -27,7 +30,7 @@ func (manager *executionManager) SetExecutionTime(accountId string, executionId 
 	Requestheaders := []utils.Header{
 		{
 			Key:   "Authorization",
-			Value: fmt.Sprintf("Bearer %s", token),
+			Value: token,
 		},
 		{
 			Key:   "Content-Type",
@@ -35,7 +38,7 @@ func (manager *executionManager) SetExecutionTime(accountId string, executionId 
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.PlanManager+"/execution/submit", requestBody, Requestheaders, time.Minute, true)
+	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/execution/submit", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return err
 	}

@@ -273,7 +273,7 @@ var dropIntegrations = ` DROP TABLE IF EXISTS integrations
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
-account_id        varchar(32) NOT NULL,
+account_id        varchar(64) NOT NULL,
 type              varchar(32) NOT NULL,
 name              varchar(32) NOT NULL,
 secrets                          JSONB,
@@ -284,7 +284,7 @@ var dropTriggers = `DROP TABLE IF EXISTS event_triggers`
 
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
-account_id               varchar(32) NOT NULL,
+account_id               varchar(64) NOT NULL,
 type                     varchar(64) NOT NULL,
 name                     varchar(32) NOT NULL,
 integration              varchar(128) NOT NULL,
@@ -311,7 +311,7 @@ ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 `
 var addIsActive = `ALTER TABLE pipelines
-ADD COLUMN is_active BOOLEAN;`
+ADD COLUMN IF NOT EXISTS is_active BOOLEAN;`
 
 var updateIsActive = `
 ALTER TABLE pipelines

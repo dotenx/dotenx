@@ -16,6 +16,7 @@ import (
 
 func main() {
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	accId := os.Getenv("ACCOUNT_ID")
 	triggerName := os.Getenv("TRIGGER_NAME")
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
@@ -47,6 +48,7 @@ func main() {
 		}
 		if lastPostUnix.Unix() > selectedUnix {
 			body := make(map[string]interface{})
+			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
 			innerBody["created_time"] = lastPostUnix.String()
 			body[triggerName] = innerBody
