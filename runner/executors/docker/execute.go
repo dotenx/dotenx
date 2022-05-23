@@ -67,7 +67,13 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 		result.Error = errors.New("error in creating container" + err.Error())
 		return
 	}
-	executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	err = executor.Client.ContainerStart(context.Background(), cont.ID, types.ContainerStartOptions{})
+	if err != nil {
+		log.Println(err)
+		result.Error = err
+		result.Log = "error while starting container"
+		return
+	}
 	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	fmt.Println("### for task[" + task.Details.Name + "], created container id is: " + cont.ID)
 	var statusCode int
@@ -87,6 +93,8 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 		return
 	}
 	result.Log, result.Error = executor.GetLogs(cont.ID)
+	log.Println("log: " + result.Log)
+	log.Println(result.Error)
 	return
 }
 
