@@ -100,6 +100,9 @@ func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.
 }
 
 func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+	if len(triggers) == 0 {
+		return nil
+	}
 	err = manager.Store.DeleteTriggersForPipeline(context.Background(), accountId, triggers[0].Pipeline)
 	if err != nil {
 		return errors.New("error in deleting old triggers: " + err.Error())

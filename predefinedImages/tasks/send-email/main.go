@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/sendgrid/sendgrid-go"
@@ -13,11 +14,12 @@ func main() {
 	text := os.Getenv("text")
 	apiKey := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	if apiKey == "" {
-		panic("no api key")
+		fmt.Println("no api key")
+		return
 	}
 	err := SendGridEmail(apiKey, sender, target, text)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
 	}
 }
 
