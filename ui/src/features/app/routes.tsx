@@ -1,4 +1,6 @@
+import Cookies from 'js-cookie'
 import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom'
+import { ADMIN_URL, IS_LOCAL } from '../../constants'
 import AutomationPage from '../../pages/automation'
 import AutomationsPage from '../../pages/automations'
 import ExecutionPage from '../../pages/execution'
@@ -9,6 +11,11 @@ import OauthPage from '../../pages/oauth'
 import TriggersPage from '../../pages/triggers'
 
 export function Routes() {
+	if (!IS_LOCAL) {
+		const token = Cookies.get('dotenx')
+		if (!token) window.location.replace(ADMIN_URL)
+	}
+
 	return (
 		<ReactRoutes>
 			<Route path="/integrations/add" element={<OauthPage />} />

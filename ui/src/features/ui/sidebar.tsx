@@ -4,7 +4,7 @@ import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
-import { IS_LOCAL } from '../../constants'
+import { ADMIN_URL, IS_LOCAL } from '../../constants'
 import { NavItem } from './nav-item'
 
 const items = [
@@ -40,7 +40,7 @@ export const Sidebar = memo(() => {
 
 function Logout() {
 	const logoutMutation = useMutation(logout, {
-		onSuccess: () => window.location.replace('https://admin.dotenx.com'),
+		onSuccess: () => window.location.replace(ADMIN_URL),
 	})
 
 	return (
