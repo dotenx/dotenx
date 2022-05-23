@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -37,22 +36,23 @@ func main() {
 	passedSeconds := os.Getenv("passed_seconds")
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
-		log.Println(err.Error())
-		return
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
 	workspace := os.Getenv("WORKSPACE")
 	triggerName := os.Getenv("TRIGGER_NAME")
 	if triggerName == "" {
-		log.Println("your trigger name is not set")
-		return
+		fmt.Println("your trigger name is not set")
+		os.Exit(1)
 	}
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	invoices, err := getInvoices(sc, selectedUnix)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	for _, i := range invoices {
 		body := map[string]interface{}{
@@ -61,15 +61,15 @@ func main() {
 		}
 		json_data, err := json.Marshal(body)
 		if err != nil {
-			log.Fatalln(err)
-			return
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		payload := bytes.NewBuffer(json_data)
 		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
 		if err != nil {
 			fmt.Println(status)
-			log.Fatalln(err)
-			return
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		fmt.Println(string(out))
 	}

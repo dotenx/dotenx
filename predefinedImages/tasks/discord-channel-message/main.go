@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 )
@@ -24,11 +24,13 @@ func main() {
 	req.Header["Content-Type"] = []string{"application/json"}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	if resp.StatusCode != http.StatusOK {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		log.Fatalf("send message failed, status: %v, response: %v", resp.StatusCode, string(bytes))
+		fmt.Printf("send message failed, status: %v, response: %v", resp.StatusCode, string(bytes))
+		os.Exit(1)
 	}
 	return
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -26,7 +25,8 @@ func main() {
 	sc.Init(secretKey, nil)
 	cus, err := findCustomer(sc, id, email)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	outputs := make(map[string]interface{})
 	outputs["customer"] = cus
@@ -47,8 +47,8 @@ func main() {
 	}
 	json_data, err := json.Marshal(data)
 	if err != nil {
-		log.Println(err)
-		return
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	payload := bytes.NewBuffer(json_data)
 	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
@@ -76,7 +76,7 @@ func findCustomer(sc *client.API, id, Email string) (string, error) {
 	if id != "" {
 		cus, err = sc.Customers.Get(id, nil)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 			return "", err
 		}
 	}

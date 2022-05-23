@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -28,7 +27,8 @@ func main() {
 	sc.Init(secretKey, nil)
 	id, err := updateCustomer(sc, id, name, phone, email)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	outputs := make(map[string]interface{})
 	outputs["customer_id"] = id
@@ -39,8 +39,8 @@ func main() {
 	}
 	json_data, err := json.Marshal(data)
 	if err != nil {
-		log.Println(err)
-		return
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	headers := []Header{
 		{
@@ -70,7 +70,7 @@ func updateCustomer(sc *client.API, id, Name, Phone, Email string) (string, erro
 	}
 	c, err := sc.Customers.Update(id, params)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return "", err
 	}
 	return c.ID, err
