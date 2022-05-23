@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -23,10 +22,10 @@ func main() {
 	// privacy can be one of this: [unlisted, public, private]
 	err := uploadVideo(fileName, title, description, category, keywords, privacy, accessToken, refreshToken)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Println("video uploaded successfully")
+	fmt.Println("video uploaded successfully")
 
 }
 
@@ -44,7 +43,7 @@ func uploadVideo(fileName, title, description, category, keywords, privacy, acce
 	// Create a new youtube service using the client
 	youtubeService, err := youtube.New(client)
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 
@@ -65,13 +64,13 @@ func uploadVideo(fileName, title, description, category, keywords, privacy, acce
 	file, err := os.Open("/tmp/" + fileName)
 	defer file.Close()
 	if err != nil {
-		log.Println("Error opening %v: %v", fileName, err)
+		fmt.Println("Error opening %v: %v", fileName, err)
 		return
 	}
 
 	response, err := call.Media(file).Do()
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	fmt.Printf("Upload successful! Video ID: %v\n", response.Id)
