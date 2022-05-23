@@ -17,7 +17,7 @@ import {
 	GetTaskKindsResponse,
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
-	GetTriggersResponse
+	GetTriggersResponse,
 } from './types'
 export * from './types'
 
