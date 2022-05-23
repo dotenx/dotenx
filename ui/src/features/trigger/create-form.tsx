@@ -1,20 +1,15 @@
-import { TriggerData } from '../../api'
 import { getDisplayText } from '../../utils'
 import { SelectIntegration } from '../integration'
 import { Button, Field, Form, GroupSelect, NewSelect } from '../ui'
-import { useTriggerForm } from './use-form'
+import { UseTriggerForm } from './use-form'
 
 interface TriggerFormProps {
-	onSave: (values: TriggerData) => void
-	defaultValues?: TriggerData
+	triggerForm: UseTriggerForm
 	mode: 'new' | 'settings'
+	onAddIntegration?: () => void
 }
 
-export function TriggerForm({
-	onSave,
-	defaultValues = { type: '', name: '', integration: '', pipeline_name: '', credentials: {} },
-	mode,
-}: TriggerFormProps) {
+export function TriggerForm({ triggerForm, mode, onAddIntegration }: TriggerFormProps) {
 	const {
 		control,
 		errors,
@@ -24,7 +19,7 @@ export function TriggerForm({
 		selectedTriggerType,
 		triggerDefinitionQuery,
 		triggerOptions,
-	} = useTriggerForm({ onSave, defaultValues })
+	} = triggerForm
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -61,6 +56,7 @@ export function TriggerForm({
 						control={control}
 						errors={errors}
 						integrationTypes={integrationTypes}
+						onAddIntegration={onAddIntegration}
 					/>
 				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (

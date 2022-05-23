@@ -2,9 +2,14 @@ import { useState } from 'react'
 import { Button, Field, Form, NewSelect, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
-export function NewIntegration() {
+interface NewIntegrationProps {
+	integrationKind?: string
+	onSuccess?: (addedIntegrationName: string) => void
+}
+
+export function NewIntegration({ integrationKind, onSuccess }: NewIntegrationProps) {
 	const { control, errors, integrationKindOptions, integrationTypeFields, oauth, onSubmit } =
-		useNewIntegration()
+		useNewIntegration({ integrationKind, onSuccess })
 	const [isAdvanced, setIsAdvanced] = useState(false)
 
 	return (
@@ -23,14 +28,16 @@ export function NewIntegration() {
 					control={control}
 					errors={errors}
 				/>
-				<NewSelect
-					label="Type"
-					name="type"
-					control={control}
-					errors={errors}
-					options={integrationKindOptions}
-					placeholder="Integration type"
-				/>
+				{!integrationKind && (
+					<NewSelect
+						label="Type"
+						name="type"
+						control={control}
+						errors={errors}
+						options={integrationKindOptions}
+						placeholder="Integration type"
+					/>
+				)}
 				{!isAdvanced && integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"

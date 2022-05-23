@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import _ from 'lodash'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { z } from 'zod'
@@ -23,9 +24,11 @@ type Schema = z.infer<typeof schema>
 export function useTriggerForm({
 	onSave,
 	defaultValues,
+	setIntegrationKind,
 }: {
 	onSave: (values: TriggerData) => void
 	defaultValues?: TriggerData
+	setIntegrationKind?: (value: string) => void
 }) {
 	const {
 		control,
@@ -33,6 +36,7 @@ export function useTriggerForm({
 		formState: { errors },
 		watch,
 		getValues,
+		setValue,
 	} = useForm<Schema>({
 		defaultValues: defaultValues,
 		resolver: zodResolver(schema),
@@ -69,6 +73,10 @@ export function useTriggerForm({
 		value: automation.name,
 	}))
 
+	useEffect(() => {
+		if (setIntegrationKind && integrationTypes) setIntegrationKind(integrationTypes[0])
+	}, [integrationTypes, setIntegrationKind])
+
 	return {
 		onSubmit,
 		control,
@@ -79,5 +87,9 @@ export function useTriggerForm({
 		automationOptions,
 		integrationTypes,
 		triggerDefinitionQuery,
+		setValue,
+		triggerType,
 	}
 }
+
+export type UseTriggerForm = ReturnType<typeof useTriggerForm>

@@ -1,16 +1,13 @@
-import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
-import { TriggerData } from '../../api'
-import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettings } from '../task'
-import { TriggerForm } from '../trigger'
+import { TriggerSettingsModal } from '../trigger/settings'
 import { Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
 import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
-import { TriggerEntity, TriggerNode } from './trigger-node'
+import { TriggerNode } from './trigger-node'
 import { useFlow } from './use-flow'
 
 const nodeTypes = {
@@ -116,37 +113,5 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 				/>
 			)}
 		</Modal>
-	)
-}
-
-function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
-	const modal = useModal()
-	const [automation] = useAtom(selectedAutomationDataAtom)
-
-	return (
-		<Modal title="Trigger Settings" kind={Modals.TriggerSettings}>
-			{({ id, data }: TriggerEntity) => (
-				<TriggerSettings
-					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
-					onSave={(values) => {
-						updateNode(id, values)
-						modal.close()
-					}}
-				/>
-			)}
-		</Modal>
-	)
-}
-
-interface TriggerSettingsProps {
-	defaultValues: TriggerData
-	onSave: (values: TriggerData) => void
-}
-
-export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {
-	return (
-		<div className="h-full">
-			<TriggerForm defaultValues={defaultValues} onSave={onSave} mode="settings" />
-		</div>
 	)
 }

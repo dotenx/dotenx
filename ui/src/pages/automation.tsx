@@ -46,7 +46,7 @@ function Content() {
 					<Flow />
 				</div>
 			</div>
-			<Modal kind={Modals.NewIntegration} title="New Integration">
+			<Modal kind={Modals.NewIntegration} title="New Integration" size="lg">
 				<NewIntegration />
 			</Modal>
 		</>
