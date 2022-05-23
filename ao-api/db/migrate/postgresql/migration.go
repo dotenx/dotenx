@@ -89,10 +89,6 @@ var migrations = []struct {
 		stmt: updateNillIsActive,
 	},
 	{
-		name: "update-nill-is-active-field",
-		stmt: updateNillIsActive,
-	},
-	{
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
