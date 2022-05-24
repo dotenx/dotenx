@@ -28,11 +28,9 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	outputs := make(map[string]interface{})
-	outputs["customer"] = cus
 	data := map[string]interface{}{
 		"status":       "started",
-		"return_value": outputs,
+		"return_value": cus,
 		"log":          "",
 	}
 	headers := []Header{
@@ -73,14 +71,17 @@ func findCustomer(sc *client.API, id, Email string) (string, error) {
 			break
 		}
 	}
-	if id != "" {
+	if id != "" && cus == nil {
 		cus, err = sc.Customers.Get(id, nil)
 		if err != nil {
 			fmt.Println(err)
 			return "", err
 		}
 	}
-	bytes, _ := json.Marshal(*cus)
+	res := make(map[string]interface{})
+	res["customer_id"] = cus.ID
+	res["customer_email"] = cus.Email
+	bytes, _ := json.Marshal(res)
 	return string(bytes), nil
 }
 
