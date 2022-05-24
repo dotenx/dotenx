@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"log"
+	"fmt"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -19,10 +19,10 @@ func main() {
 	message := os.Getenv("message")
 	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Println("message send successfully")
+	fmt.Println("message send successfully")
 
 }
 
@@ -52,7 +52,7 @@ func sendEmail(from, to, subject, message, accessToken, refreshToken string) (er
 	}
 	_, err = gmailService.Users.Messages.Send("me", &gMessage).Do()
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 
