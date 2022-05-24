@@ -39,9 +39,15 @@ export function SelectIntegration({
 					placeholder="Integration name"
 				/>
 			</div>
-			<Button type="button" className="w-auto px-1 py-1 text-sm" onClick={onAddIntegration}>
-				New
-			</Button>
+			{onAddIntegration && (
+				<Button
+					type="button"
+					className="w-auto px-1 py-1 text-sm"
+					onClick={onAddIntegration}
+				>
+					New
+				</Button>
+			)}
 		</div>
 	)
 }
