@@ -39,7 +39,9 @@ export function useTaskStatus(executionId?: string) {
 	useEffect(() => {
 		if (executionId) return
 		if (!selected) return
-		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`)
+		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`, {
+			withCredentials: true,
+		})
 		eventSource.addEventListener('message', handleReceiveMessage)
 		eventSource.addEventListener('end', () => eventSource.close())
 		return () => {
@@ -51,7 +53,9 @@ export function useTaskStatus(executionId?: string) {
 	useEffect(() => {
 		if (!executionId) return
 		clearStatus()
-		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`)
+		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`, {
+			withCredentials: true,
+		})
 		eventSource.addEventListener('message', handleReceiveMessage)
 		eventSource.addEventListener('end', () => eventSource.close())
 		return () => {
