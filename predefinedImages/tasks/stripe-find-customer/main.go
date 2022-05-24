@@ -58,7 +58,7 @@ func main() {
 	fmt.Println(string(out))
 }
 
-func findCustomer(sc *client.API, id, Email string) (string, error) {
+func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, error) {
 	var cus *stripe.Customer
 	var err error
 	if Email != "" {
@@ -75,14 +75,13 @@ func findCustomer(sc *client.API, id, Email string) (string, error) {
 		cus, err = sc.Customers.Get(id, nil)
 		if err != nil {
 			fmt.Println(err)
-			return "", err
+			return nil, err
 		}
 	}
 	res := make(map[string]interface{})
 	res["customer_id"] = cus.ID
 	res["customer_email"] = cus.Email
-	bytes, _ := json.Marshal(res)
-	return string(bytes), nil
+	return res, nil
 }
 
 type Header struct {
