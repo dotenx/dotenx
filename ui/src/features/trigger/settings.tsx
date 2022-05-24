@@ -68,6 +68,7 @@ function TriggerSettings({
 			pipeline_name: automation?.name ?? 'default',
 		},
 	})
+
 	useEffect(() => {
 		if (triggerForm.triggerType) setIsAddingIntegration(false)
 	}, [setIsAddingIntegration, triggerForm.triggerType])
