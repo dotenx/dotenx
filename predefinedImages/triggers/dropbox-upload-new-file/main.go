@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -27,7 +26,7 @@ func main() {
 	triggerName := os.Getenv("TRIGGER_NAME")
 	accId := os.Getenv("ACCOUNT_ID")
 	if triggerName == "" {
-		log.Println("your trigger name is not set")
+		fmt.Println("your trigger name is not set")
 		return
 	}
 	workspace := os.Getenv("WORKSPACE")
@@ -36,20 +35,20 @@ func main() {
 	passedSeconds := os.Getenv("passed_seconds")
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	latestFile, err := getLatestFile(accessToken, path)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	fmt.Printf("latest file in this path: %#v\n", latestFile)
 
 	latestFileUnix, err := time.Parse("2006-01-02T15:04:05Z", latestFile.ServerModified)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	if latestFileUnix.Unix() > selectedUnix {
@@ -65,26 +64,26 @@ func main() {
 		body[triggerName] = innerBody
 		json_data, err := json.Marshal(body)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 			return
 		}
 		payload := bytes.NewBuffer(json_data)
 		out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
 		if err != nil {
-			log.Println("response:", string(out))
-			log.Println("error:", err)
-			log.Println("status code:", status)
+			fmt.Println("response:", string(out))
+			fmt.Println("error:", err)
+			fmt.Println("status code:", status)
 			return
 		}
-		log.Println("trigger successfully started")
+		fmt.Println("trigger successfully started")
 		err = saveFile(accessToken, latestFile.PathDisplay, workspace)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 			return
 		}
 		return
 	} else {
-		log.Println("no new file in path")
+		fmt.Println("no new file in path")
 		return
 	}
 
@@ -103,7 +102,7 @@ func getLatestFile(accessToken, path string) (latestFile File, err error) {
 	}
 	jsonData, err := json.Marshal(body)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	fmt.Println("jsonData:", string(jsonData))
@@ -120,7 +119,7 @@ func getLatestFile(accessToken, path string) (latestFile File, err error) {
 	}
 	out, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
 	if err != nil || statusCode != http.StatusOK {
-		log.Println("dropbox response (get files of path request):", string(out))
+		fmt.Println("dropbox response (get files of path request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from dropbox")
 		}
@@ -131,7 +130,7 @@ func getLatestFile(accessToken, path string) (latestFile File, err error) {
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	var latestFileUnix int64 = 0
@@ -142,7 +141,7 @@ func getLatestFile(accessToken, path string) (latestFile File, err error) {
 		}
 		fileUnix, parseErr := time.Parse("2006-01-02T15:04:05Z", entry["server_modified"].(string))
 		if parseErr != nil {
-			log.Println(parseErr)
+			fmt.Println(parseErr)
 			err = errors.New(parseErr.Error())
 			return
 		}
@@ -177,7 +176,7 @@ func saveFile(accessToken, path, workspace string) (err error) {
 	}
 	out, err, statusCode, responseHeaders := httpRequest(http.MethodPost, url, nil, headers, 0)
 	if err != nil || statusCode != http.StatusOK {
-		log.Println("dropbox response (download file request):", string(out))
+		fmt.Println("dropbox response (download file request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from dropbox")
 		}
@@ -195,16 +194,16 @@ func saveFile(accessToken, path, workspace string) (err error) {
 	}
 	err = json.Unmarshal([]byte(responseHeaders.Get("Dropbox-Api-Result")), &resp)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	outputPath := fmt.Sprintf("/tmp/%s_%s", workspace, resp.Name)
 	err = os.WriteFile(outputPath, out, 0755)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Println("File saved successfully")
+	fmt.Println("File saved successfully")
 	return
 }
 

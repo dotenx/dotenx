@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -28,13 +28,13 @@ func main() {
 	passedSeconds := os.Getenv("passed_seconds")
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	tweets, err := getTweets(userName, consumerKey, consumerSecret, accessToken, accessTokenSecret)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	if len(tweets) > 0 {
@@ -48,25 +48,25 @@ func main() {
 			body[triggerName] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {
-				log.Println(err)
+				fmt.Println(err)
 				return
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
 			if err != nil {
-				log.Println("response:", string(out))
-				log.Println("error:", err)
-				log.Println("status code:", status)
+				fmt.Println("response:", string(out))
+				fmt.Println("error:", err)
+				fmt.Println("status code:", status)
 				return
 			}
-			log.Println("trigger successfully started")
+			fmt.Println("trigger successfully started")
 			return
 		} else {
-			log.Println("no new tweet found in last", passedSeconds, "seconds")
+			fmt.Println("no new tweet found in last", passedSeconds, "seconds")
 			return
 		}
 	} else {
-		log.Println("no new tweet found")
+		fmt.Println("no new tweet found")
 		return
 	}
 

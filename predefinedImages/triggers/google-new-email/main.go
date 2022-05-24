@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -24,27 +24,27 @@ func main() {
 	accId := os.Getenv("ACCOUNT_ID")
 	triggerName := os.Getenv("TRIGGER_NAME")
 	if triggerName == "" {
-		log.Println("your trigger name is not set")
+		fmt.Println("your trigger name is not set")
 		return
 	}
 	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
 	refreshToken := os.Getenv("INTEGRATION_REFRESH_TOKEN")
 	_, err := listMessages(accessToken, refreshToken)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 
 	passedSeconds := os.Getenv("passed_seconds")
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	messages, err := listMessages(accessToken, refreshToken)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	if len(messages) > 0 {
@@ -63,25 +63,25 @@ func main() {
 			body[triggerName] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {
-				log.Println(err)
+				fmt.Println(err)
 				return
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
 			if err != nil {
-				log.Println("response:", string(out))
-				log.Println("error:", err)
-				log.Println("status code:", status)
+				fmt.Println("response:", string(out))
+				fmt.Println("error:", err)
+				fmt.Println("status code:", status)
 				return
 			}
-			log.Println("trigger successfully started")
+			fmt.Println("trigger successfully started")
 			return
 		} else {
-			log.Println("no new message in inbox")
+			fmt.Println("no new message in inbox")
 			return
 		}
 	} else {
-		log.Println("no message in inbox")
+		fmt.Println("no message in inbox")
 		return
 	}
 
@@ -103,7 +103,7 @@ func listMessages(accessToken, refreshToken string) (messages []*gmail.Message, 
 
 	gMessages, err := gmailService.Users.Messages.List("me").Q("label:inbox").Do()
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	messages = make([]*gmail.Message, 0)

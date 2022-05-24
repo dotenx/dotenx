@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -19,15 +19,15 @@ func main() {
 	pageId := os.Getenv("page_id")
 	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	_, err = publishPost(text, pageId, pageAccessToken)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Println("post successfully published")
+	fmt.Println("post successfully published")
 }
 
 func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
@@ -36,7 +36,7 @@ func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
 	body["message"] = text
 	jsonData, err := json.Marshal(body)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	payload := bytes.NewBuffer(jsonData)
@@ -48,7 +48,7 @@ func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
 	}
 	out, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
 	if err != nil || statusCode != http.StatusOK {
-		log.Println("facebook response (publish post request):", string(out))
+		fmt.Println("facebook response (publish post request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from facebook")
 		}
@@ -59,7 +59,7 @@ func publishPost(text, pageId, pageAccessToken string) (id string, err error) {
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	id = resp.Id
@@ -70,7 +70,7 @@ func getPageAccessToken(accessToken, pageId string) (pageAccessToken string, err
 	url := "https://graph.facebook.com/" + pageId + "?fields=access_token&access_token=" + accessToken
 	out, err, statusCode, _ := httpRequest(http.MethodGet, url, nil, nil, 0)
 	if err != nil || statusCode != http.StatusOK {
-		log.Println("facebook response (get page access token request):", string(out))
+		fmt.Println("facebook response (get page access token request):", string(out))
 		if statusCode != http.StatusOK {
 			err = errors.New("can't get correct response from facebook")
 		}
@@ -82,7 +82,7 @@ func getPageAccessToken(accessToken, pageId string) (pageAccessToken string, err
 	}
 	err = json.Unmarshal(out, &resp)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 	pageAccessToken = resp.PageAccessToken
