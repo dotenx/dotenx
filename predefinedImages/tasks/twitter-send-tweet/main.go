@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -16,10 +16,10 @@ func main() {
 	text := os.Getenv("text")
 	err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
-	log.Println("tweet successfully published")
+	fmt.Println("tweet successfully published")
 }
 
 // send a tweet based on this repo examples: https://github.com/dghubble/go-twitter

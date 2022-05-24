@@ -1,5 +1,5 @@
 service: woocommerce
-type: WooCommerce create customer
+type: WooCommerce create product
 image: hawwwdi/woocommerce-create-product:latest
 integrations: [woocommerce]
 fields:
