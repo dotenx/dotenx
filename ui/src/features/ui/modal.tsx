@@ -55,7 +55,7 @@ function Content({ title, children, size }: ContentProps) {
 					size === 'xl' && 'mt-[5vh]'
 				)}
 				initial={false}
-				transition={{ type: 'spring', damping: 15, velocity: 5 }}
+				transition={{ type: 'spring' }}
 				animate={{ maxWidth: size === 'md' ? '30rem' : size === 'lg' ? '60rem' : '80rem' }}
 				onClick={(e) => e.stopPropagation()}
 			>
