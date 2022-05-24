@@ -58,7 +58,6 @@ function TriggerSettings({
 }: TriggerSettingsProps) {
 	const modal = useModal()
 	const [automation] = useAtom(selectedAutomationDataAtom)
-	const [integrationKind, setIntegrationKind] = useState<string>()
 	const triggerForm = useTriggerForm({
 		onSave: (values) => {
 			updateNode(id, values)
@@ -68,13 +67,9 @@ function TriggerSettings({
 			...data,
 			pipeline_name: automation?.name ?? 'default',
 		},
-		setIntegrationKind,
 	})
 	useEffect(() => {
-		if (triggerForm.triggerType) {
-			setIntegrationKind(undefined)
-			setIsAddingIntegration(false)
-		}
+		if (triggerForm.triggerType) setIsAddingIntegration(false)
 	}, [setIsAddingIntegration, triggerForm.triggerType])
 
 	return (
@@ -89,7 +84,7 @@ function TriggerSettings({
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
 					<NewIntegration
-						integrationKind={integrationKind}
+						integrationKind={triggerForm.selectedTriggerIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							setIsAddingIntegration(false)
 							triggerForm.setValue('integration', addedIntegrationName)
