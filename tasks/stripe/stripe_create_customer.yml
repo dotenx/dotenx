@@ -12,6 +12,10 @@ fields:
     - key: CUS_EMAIL
       type: text
       description: customer's email address (e.g abc@gmail.com)
+outputs:
+    - key: customer_id
+      type: text
+      description: customer id
 author: hawwwdi
 icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
 node_color: FBFB11
