@@ -44,6 +44,7 @@ export function useTaskSettings({
 		handleSubmit,
 		watch,
 		getValues,
+		setValue,
 	} = useForm<TaskSettingsSchema>({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
@@ -86,7 +87,7 @@ export function useTaskSettings({
 			iconUrl: node.data?.iconUrl,
 		}))
 
-	const results = useQueries(
+	const getTaskFieldsResults = useQueries(
 		nodes.map((node) => ({
 			queryKey: [QueryKey.GetTaskFields, node.name, node.type],
 			queryFn: async () => {
@@ -101,7 +102,9 @@ export function useTaskSettings({
 		}))
 	)
 
-	const outputGroups = results.map((result) => result.data).filter((r) => !!r) as GroupData[]
+	const outputGroups = getTaskFieldsResults
+		.map((result) => result.data)
+		.filter((r) => !!r) as GroupData[]
 
 	const onSubmit = handleSubmit(() => {
 		onSave({
@@ -120,5 +123,10 @@ export function useTaskSettings({
 		taskFields,
 		outputGroups,
 		integrationTypes,
+		setValue,
+		taskType,
+		selectedTaskIntegrationKind: taskFieldsQuery.data?.data.integration_types[0],
 	}
 }
+
+export type UseTaskForm = ReturnType<typeof useTaskSettings>

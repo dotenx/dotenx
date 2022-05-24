@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
-import { TaskLog, TaskLogProps, TaskSettings } from '../task'
+import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from '../task'
 import { TriggerSettingsModal } from '../trigger/settings'
 import { Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
@@ -53,7 +53,7 @@ export function Flow({ isEditable = true }: { isEditable?: boolean }) {
 				/>
 			</div>
 
-			<NodeSettingsModal updateNode={updateElement} />
+			<TaskSettingsModal updateNode={updateElement} />
 			<TriggerSettingsModal updateNode={updateElement} />
 			<EdgeSettingsModal updateEdge={updateElement} />
 			<TaskLogModal />
@@ -76,18 +76,29 @@ interface NodeSettingsModalProps {
 	updateNode: (id: string, data: TaskNodeData) => void
 }
 
-function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
+function TaskSettingsModal({ updateNode }: NodeSettingsModalProps) {
+	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
 
+	useEffect(() => {
+		if (!modal.isOpen) setIsAddingIntegration(false)
+	}, [modal.isOpen])
+
 	return (
-		<Modal title="Task Settings" kind={Modals.NodeSettings}>
+		<Modal
+			title="Task Settings"
+			kind={Modals.NodeSettings}
+			size={isAddingIntegration ? 'lg' : 'md'}
+		>
 			{({ id, data }: TaskEntity) => (
-				<TaskSettings
+				<TaskSettingsWithIntegration
 					defaultValues={data}
 					onSave={(values) => {
 						updateNode(id, values)
 						modal.close()
 					}}
+					isAddingIntegration={isAddingIntegration}
+					setIsAddingIntegration={setIsAddingIntegration}
 				/>
 			)}
 		</Modal>

@@ -1,13 +1,54 @@
-import { SelectIntegration } from '../integration'
+import clsx from 'clsx'
+import { useEffect } from 'react'
+import { NewIntegration, SelectIntegration } from '../integration'
 import { Button, Field, Form, GroupSelect, InputOrSelect } from '../ui'
-import { TaskSettingsSchema, useTaskSettings } from './use-settings'
+import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
-interface TaskSettingsProps {
+interface TaskSettingsWithIntegrationProps {
 	defaultValues: TaskSettingsSchema
 	onSave: (values: TaskSettingsSchema & { iconUrl?: string; color?: string }) => void
+	isAddingIntegration: boolean
+	setIsAddingIntegration: (value: boolean) => void
 }
 
-export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
+export function TaskSettingsWithIntegration({
+	defaultValues,
+	isAddingIntegration,
+	onSave,
+	setIsAddingIntegration,
+}: TaskSettingsWithIntegrationProps) {
+	const taskForm = useTaskSettings({ defaultValues, onSave })
+
+	useEffect(() => {
+		if (taskForm.taskType) setIsAddingIntegration(false)
+	}, [setIsAddingIntegration, taskForm.taskType])
+
+	return (
+		<div className={clsx('grid h-full', isAddingIntegration && 'grid-cols-2')}>
+			<div className={clsx(isAddingIntegration && 'pr-10')}>
+				<TaskSettings taskForm={taskForm} setIsAddingIntegration={setIsAddingIntegration} />
+			</div>
+			{isAddingIntegration && (
+				<div className="pl-10 border-l">
+					<NewIntegration
+						integrationKind={taskForm.selectedTaskIntegrationKind}
+						onSuccess={(addedIntegrationName) => {
+							setIsAddingIntegration(false)
+							taskForm.setValue('integration', addedIntegrationName)
+						}}
+					/>
+				</div>
+			)}
+		</div>
+	)
+}
+
+interface TaskSettingsProps {
+	taskForm: UseTaskForm
+	setIsAddingIntegration: (value: boolean) => void
+}
+
+function TaskSettings({ taskForm, setIsAddingIntegration }: TaskSettingsProps) {
 	const {
 		control,
 		errors,
@@ -17,7 +58,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 		selectedTaskType,
 		taskFields,
 		tasksOptions,
-	} = useTaskSettings({ defaultValues, onSave })
+	} = taskForm
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -48,6 +89,7 @@ export function TaskSettings({ defaultValues, onSave }: TaskSettingsProps) {
 						control={control}
 						errors={errors}
 						integrationTypes={integrationTypes}
+						onAddIntegration={() => setIsAddingIntegration(true)}
 					/>
 				)}
 			</div>
