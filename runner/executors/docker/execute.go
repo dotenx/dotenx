@@ -5,8 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -74,11 +74,26 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 		result.Log = "error while starting container"
 		return
 	}
-	defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
+	//defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	fmt.Println("### for task[" + task.Details.Name + "], created container id is: " + cont.ID)
-	var statusCode int
-	//time.Sleep(time.Duration(time.Minute * 5))
-	for start := time.Now(); time.Since(start) < time.Duration(task.Details.Timeout)*time.Second; {
+
+	statusCh, errCh := executor.Client.ContainerWait(context.Background(), cont.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			result.Error = err
+			result.Log = err.Error()
+			return
+		}
+	case <-statusCh:
+	}
+	out, err := executor.Client.ContainerLogs(context.Background(), cont.ID, types.ContainerLogsOptions{ShowStdout: true})
+	if err != nil {
+		result.Error = err
+		result.Log = "error while get log of container"
+		return
+	}
+	/*for start := time.Now(); time.Since(start) < time.Duration(task.Details.Timeout)*time.Second; {
 		statusCode = executor.CheckStatus(cont.ID)
 		if statusCode == -1 { // failed
 			break
@@ -91,9 +106,10 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 		result.Error = errors.New("timed out")
 		result.Log = "timed out"
 		return
-	}
-	result.Log, result.Error = executor.GetLogs(cont.ID)
+	}*/
+	result.Log = executor.GetLogs(out)
 	log.Println("log: " + result.Log)
+	log.Print("err: ")
 	log.Println(result.Error)
 	return
 }
@@ -110,14 +126,9 @@ func (executor *dockerExecutor) CheckStatus(containerId string) int {
 	return 0
 }
 
-func (executor *dockerExecutor) GetLogs(containerId string) (string, error) {
-	reader, err := executor.Client.ContainerLogs(context.Background(), containerId, types.ContainerLogsOptions{ShowStdout: true})
-	if err != nil {
-		log.Fatal(err)
-		return "", err
-	}
+func (executor *dockerExecutor) GetLogs(reader io.Reader) string {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
 	logs := buf.String()
-	return logs, nil
+	return logs
 }
