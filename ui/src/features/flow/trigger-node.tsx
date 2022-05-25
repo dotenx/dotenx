@@ -12,7 +12,7 @@ export interface TriggerEntity {
 	data: TriggerData
 }
 
-export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
+export function TriggerNode({ id, data, isConnectable }: NodeProps<TriggerData>) {
 	const modal = useModal()
 	const triggerEntity: TriggerEntity = { id, data }
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
@@ -45,17 +45,21 @@ export function TriggerNode({ id, data }: NodeProps<TriggerData>) {
 						{data.name}
 					</span>
 				</div>
-				<button
-					className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-orange-600 bg-orange-100 focus:opacity-100 outline-orange-500"
-					onClick={() => modal.open(Modals.TriggerSettings, triggerEntity)}
-				>
-					<BsGearFill />
-				</button>
-				<ContextMenu
-					onClose={() => setMenuIsOpen(false)}
-					onDelete={() => deleteNode(id)}
-					isOpen={menuIsOpen}
-				/>
+				{isConnectable && (
+					<>
+						<button
+							className="hover:animate-spin absolute p-0.5 text-[11px] transition rounded-full opacity-0 -right-2 group-hover:opacity-100 text-orange-600 bg-orange-100 focus:opacity-100 outline-orange-500"
+							onClick={() => modal.open(Modals.TriggerSettings, triggerEntity)}
+						>
+							<BsGearFill />
+						</button>
+						<ContextMenu
+							onClose={() => setMenuIsOpen(false)}
+							onDelete={() => deleteNode(id)}
+							isOpen={menuIsOpen}
+						/>
+					</>
+				)}
 			</div>
 		</motion.div>
 	)
