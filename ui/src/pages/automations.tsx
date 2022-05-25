@@ -32,6 +32,20 @@ export default function AutomationsPage() {
 							),
 						},
 						{
+							Header: 'Status',
+							accessor: 'is_active',
+							Cell: ({ value }: { value: boolean }) =>
+								value ? (
+									<span className="px-2 py-1 text-xs font-extrabold text-green-600 rounded-md bg-green-50">
+										Active
+									</span>
+								) : (
+									<span className="px-2 py-1 text-xs font-extrabold text-gray-600 rounded-md bg-gray-50">
+										Inactive
+									</span>
+								),
+						},
+						{
 							Header: 'Action',
 							id: 'action',
 							accessor: 'name',

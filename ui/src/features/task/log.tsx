@@ -17,8 +17,7 @@ export function TaskLog({ executionId, taskName }: TaskLogProps) {
 	const log = query.data?.data?.log
 
 	return (
-		<div className="flex flex-col gap-10">
-			<h2>Logs</h2>
+		<div>
 			<p className="font-mono">{log ? log : 'No log is available'}</p>
 		</div>
 	)

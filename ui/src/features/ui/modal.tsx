@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import { IoClose } from 'react-icons/io5'
 import ReactModal from 'react-modal'
@@ -6,7 +7,7 @@ import { Modals, useModal } from '../hooks'
 import { Fade } from './animation/fade'
 
 type RenderChildren = (data: unknown) => ReactNode
-type Size = 'md' | 'lg'
+type Size = 'md' | 'lg' | 'xl'
 
 interface ModalProps {
 	children: ReactNode | RenderChildren
@@ -46,12 +47,16 @@ function Content({ title, children, size }: ContentProps) {
 
 	return (
 		<div className="fixed inset-0 bg-slate-50/75" onClick={modal.close}>
-			<div
+			<motion.div
 				className={clsx(
 					'mx-auto overflow-hidden bg-white rounded-lg shadow-2xl text-slate-700 outline-none',
-					size === 'md' && 'max-w-md mt-[10vh]',
-					size === 'lg' && 'max-w-7xl mt-[5vh]'
+					size === 'md' && 'mt-[10vh]',
+					size === 'lg' && 'mt-[10vh]',
+					size === 'xl' && 'mt-[5vh]'
 				)}
+				initial={false}
+				transition={{ type: 'spring' }}
+				animate={{ maxWidth: size === 'md' ? '30rem' : size === 'lg' ? '60rem' : '80rem' }}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="flex items-center justify-between px-4 py-2 text-white bg-rose-600">
@@ -68,12 +73,13 @@ function Content({ title, children, size }: ContentProps) {
 					className={clsx(
 						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
 						size === 'md' && 'h-[75vh]',
-						size === 'lg' && 'h-[85vh]'
+						size === 'lg' && 'h-[75vh]',
+						size === 'xl' && 'h-[85vh]'
 					)}
 				>
 					{typeof children === 'function' ? children(modal.data ?? {}) : children}
 				</div>
-			</div>
+			</motion.div>
 		</div>
 	)
 }

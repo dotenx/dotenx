@@ -16,6 +16,6 @@ fields:
       type: text
       description: customer's stripe Id (e.g cus_sadfa8234sad)
 author: hawwwdi
-icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
+icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
 node_color: FBFB11
 description: update an exesiting customer

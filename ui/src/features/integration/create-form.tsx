@@ -1,21 +1,38 @@
 import { useState } from 'react'
+import { IoArrowBack } from 'react-icons/io5'
 import { Button, Field, Form, NewSelect, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
-export function NewIntegration() {
+interface NewIntegrationProps {
+	integrationKind?: string
+	onSuccess?: (addedIntegrationName: string) => void
+	onBack?: () => void
+}
+
+export function NewIntegration({ integrationKind, onSuccess, onBack }: NewIntegrationProps) {
 	const { control, errors, integrationKindOptions, integrationTypeFields, oauth, onSubmit } =
-		useNewIntegration()
+		useNewIntegration({ integrationKind, onSuccess })
 	const [isAdvanced, setIsAdvanced] = useState(false)
+	const hasOauth = integrationTypeFields?.oauth_provider
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
-				<Toggle
-					className="self-end"
-					checked={isAdvanced}
-					onClick={() => setIsAdvanced((isAdvanced) => !isAdvanced)}
-					label="Advanced"
-				/>
+				<div className="flex items-center justify-between">
+					{integrationKind && (
+						<button type="button" onClick={onBack}>
+							<IoArrowBack />
+						</button>
+					)}
+					{hasOauth && (
+						<Toggle
+							className="ml-auto"
+							checked={isAdvanced}
+							onClick={() => setIsAdvanced((isAdvanced) => !isAdvanced)}
+							label="Advanced"
+						/>
+					)}
+				</div>
 				<Field
 					label="Name"
 					name="name"
@@ -23,14 +40,16 @@ export function NewIntegration() {
 					control={control}
 					errors={errors}
 				/>
-				<NewSelect
-					label="Type"
-					name="type"
-					control={control}
-					errors={errors}
-					options={integrationKindOptions}
-					placeholder="Integration type"
-				/>
+				{!integrationKind && (
+					<NewSelect
+						label="Type"
+						name="type"
+						control={control}
+						errors={errors}
+						options={integrationKindOptions}
+						placeholder="Integration type"
+					/>
+				)}
 				{!isAdvanced && integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"

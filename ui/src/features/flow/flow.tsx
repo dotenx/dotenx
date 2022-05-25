@@ -1,16 +1,13 @@
-import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
-import { TriggerData } from '../../api'
-import { selectedAutomationDataAtom } from '../atoms'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
-import { TaskLog, TaskLogProps, TaskSettings } from '../task'
-import { TriggerForm } from '../trigger'
+import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from '../task'
+import { TriggerSettingsModal } from '../trigger/settings'
 import { Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
 import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
-import { TriggerEntity, TriggerNode } from './trigger-node'
+import { TriggerNode } from './trigger-node'
 import { useFlow } from './use-flow'
 
 const nodeTypes = {
@@ -56,7 +53,7 @@ export function Flow({ isEditable = true }: { isEditable?: boolean }) {
 				/>
 			</div>
 
-			<NodeSettingsModal updateNode={updateElement} />
+			<TaskSettingsModal updateNode={updateElement} />
 			<TriggerSettingsModal updateNode={updateElement} />
 			<EdgeSettingsModal updateEdge={updateElement} />
 			<TaskLogModal />
@@ -69,7 +66,7 @@ function TaskLogModal() {
 	const data = modal.data as TaskLogProps | undefined
 
 	return (
-		<Modal kind={Modals.TaskLog}>
+		<Modal kind={Modals.TaskLog} title="Task log">
 			<TaskLog executionId={data?.executionId} taskName={data?.taskName} />
 		</Modal>
 	)
@@ -79,18 +76,29 @@ interface NodeSettingsModalProps {
 	updateNode: (id: string, data: TaskNodeData) => void
 }
 
-function NodeSettingsModal({ updateNode }: NodeSettingsModalProps) {
+function TaskSettingsModal({ updateNode }: NodeSettingsModalProps) {
+	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
 
+	useEffect(() => {
+		if (!modal.isOpen) setIsAddingIntegration(false)
+	}, [modal.isOpen])
+
 	return (
-		<Modal title="Task Settings" kind={Modals.NodeSettings}>
+		<Modal
+			title="Task Settings"
+			kind={Modals.NodeSettings}
+			size={isAddingIntegration ? 'lg' : 'md'}
+		>
 			{({ id, data }: TaskEntity) => (
-				<TaskSettings
+				<TaskSettingsWithIntegration
 					defaultValues={data}
 					onSave={(values) => {
 						updateNode(id, values)
 						modal.close()
 					}}
+					isAddingIntegration={isAddingIntegration}
+					setIsAddingIntegration={setIsAddingIntegration}
 				/>
 			)}
 		</Modal>
@@ -116,37 +124,5 @@ function EdgeSettingsModal({ updateEdge }: EdgeSettingsModalProps) {
 				/>
 			)}
 		</Modal>
-	)
-}
-
-function TriggerSettingsModal({ updateNode }: NodeSettingsModalProps) {
-	const modal = useModal()
-	const [automation] = useAtom(selectedAutomationDataAtom)
-
-	return (
-		<Modal title="Trigger Settings" kind={Modals.TriggerSettings}>
-			{({ id, data }: TriggerEntity) => (
-				<TriggerSettings
-					defaultValues={{ ...data, pipeline_name: automation?.name ?? 'default' }}
-					onSave={(values) => {
-						updateNode(id, values)
-						modal.close()
-					}}
-				/>
-			)}
-		</Modal>
-	)
-}
-
-interface TriggerSettingsProps {
-	defaultValues: TriggerData
-	onSave: (values: TriggerData) => void
-}
-
-export function TriggerSettings({ defaultValues, onSave }: TriggerSettingsProps) {
-	return (
-		<div className="h-full">
-			<TriggerForm defaultValues={defaultValues} onSave={onSave} mode="settings" />
-		</div>
 	)
 }

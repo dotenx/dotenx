@@ -33,6 +33,7 @@ export function useTriggerForm({
 		formState: { errors },
 		watch,
 		getValues,
+		setValue,
 	} = useForm<Schema>({
 		defaultValues: defaultValues,
 		resolver: zodResolver(schema),
@@ -79,5 +80,10 @@ export function useTriggerForm({
 		automationOptions,
 		integrationTypes,
 		triggerDefinitionQuery,
+		setValue,
+		triggerType,
+		selectedTriggerIntegrationKind: triggerDefinitionQuery.data?.data.integrations[0],
 	}
 }
+
+export type UseTriggerForm = ReturnType<typeof useTriggerForm>

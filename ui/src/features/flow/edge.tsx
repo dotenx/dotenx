@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react'
-import { EdgeProps, getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
+import { EdgeProps, getBezierPath, getEdgeCenter } from 'react-flow-renderer'
 import { BsGearFill } from 'react-icons/bs'
 import { EdgeCondition } from '../automation'
 import { Modals, useModal } from '../hooks'
@@ -23,9 +23,6 @@ export function PipeEdge({
 	targetY,
 	sourcePosition,
 	targetPosition,
-	style = {},
-	arrowHeadType,
-	markerEndId,
 	data,
 }: EdgeProps) {
 	const edgePath = getBezierPath({
@@ -36,7 +33,6 @@ export function PipeEdge({
 		targetY,
 		targetPosition,
 	})
-	const markerEnd = getMarkerEnd(arrowHeadType, markerEndId)
 	const [edgeCenterX, edgeCenterY] = getEdgeCenter({
 		sourceX,
 		sourceY,
