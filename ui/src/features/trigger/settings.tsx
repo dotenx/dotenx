@@ -80,11 +80,13 @@ function TriggerSettings({
 					triggerForm={triggerForm}
 					mode="settings"
 					onAddIntegration={() => setIsAddingIntegration(true)}
+					disableSubmit={isAddingIntegration}
 				/>
 			</div>
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
 					<NewIntegration
+						onBack={() => setIsAddingIntegration(false)}
 						integrationKind={triggerForm.selectedTriggerIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							setIsAddingIntegration(false)

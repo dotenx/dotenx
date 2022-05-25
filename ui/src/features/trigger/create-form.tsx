@@ -7,9 +7,15 @@ interface TriggerFormProps {
 	triggerForm: UseTriggerForm
 	mode: 'new' | 'settings'
 	onAddIntegration?: () => void
+	disableSubmit?: boolean
 }
 
-export function TriggerForm({ triggerForm, mode, onAddIntegration }: TriggerFormProps) {
+export function TriggerForm({
+	triggerForm,
+	mode,
+	onAddIntegration,
+	disableSubmit,
+}: TriggerFormProps) {
 	const {
 		control,
 		errors,
@@ -70,7 +76,9 @@ export function TriggerForm({ triggerForm, mode, onAddIntegration }: TriggerForm
 					/>
 				))}
 			</div>
-			<Button type="submit">{mode === 'new' ? 'Add' : 'Save'}</Button>
+			<Button disabled={disableSubmit} type="submit">
+				{mode === 'new' ? 'Add' : 'Save'}
+			</Button>
 		</Form>
 	)
 }

@@ -26,11 +26,16 @@ export function TaskSettingsWithIntegration({
 	return (
 		<div className={clsx('grid h-full', isAddingIntegration && 'grid-cols-2')}>
 			<div className={clsx(isAddingIntegration && 'pr-10')}>
-				<TaskSettings taskForm={taskForm} setIsAddingIntegration={setIsAddingIntegration} />
+				<TaskSettings
+					taskForm={taskForm}
+					setIsAddingIntegration={setIsAddingIntegration}
+					disableSubmit={isAddingIntegration}
+				/>
 			</div>
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
 					<NewIntegration
+						onBack={() => setIsAddingIntegration(false)}
 						integrationKind={taskForm.selectedTaskIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							setIsAddingIntegration(false)
@@ -46,9 +51,10 @@ export function TaskSettingsWithIntegration({
 interface TaskSettingsProps {
 	taskForm: UseTaskForm
 	setIsAddingIntegration: (value: boolean) => void
+	disableSubmit: boolean
 }
 
-function TaskSettings({ taskForm, setIsAddingIntegration }: TaskSettingsProps) {
+function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskSettingsProps) {
 	const {
 		control,
 		errors,
@@ -94,7 +100,9 @@ function TaskSettings({ taskForm, setIsAddingIntegration }: TaskSettingsProps) {
 				)}
 			</div>
 
-			<Button type="submit">Save</Button>
+			<Button type="submit" disabled={disableSubmit}>
+				Save
+			</Button>
 		</Form>
 	)
 }
