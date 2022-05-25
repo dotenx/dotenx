@@ -17,6 +17,6 @@ outputs:
       type: text
       description: customer id
 author: hawwwdi
-icon: https://seeklogo.com/images/S/stripe-logo-C409DC9652-seeklogo.com.png
+icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
 node_color: FBFB11
-description: create new customer in stripe 
+description: create new customer in stripe
