@@ -30,7 +30,7 @@ function Content() {
 			onSuccess: (data) => {
 				if (!name || !data) return
 				setSelectedAutomation(data.data)
-				setSelected({ name, endpoint: data?.data.endpoint })
+				setSelected({ name, endpoint: data?.data.endpoint, is_active: data.data.is_active })
 			},
 		}
 	)

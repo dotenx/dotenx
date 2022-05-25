@@ -85,6 +85,7 @@ export interface TaskKindData {
 export interface Automation {
 	name: string
 	endpoint: string
+	is_active: boolean
 }
 
 export type Triggers = Record<string, Trigger>
