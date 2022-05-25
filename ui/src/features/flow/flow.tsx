@@ -66,7 +66,7 @@ function TaskLogModal() {
 	const data = modal.data as TaskLogProps | undefined
 
 	return (
-		<Modal kind={Modals.TaskLog}>
+		<Modal kind={Modals.TaskLog} title="Task log">
 			<TaskLog executionId={data?.executionId} taskName={data?.taskName} />
 		</Modal>
 	)
