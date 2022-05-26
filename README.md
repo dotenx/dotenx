@@ -56,7 +56,7 @@ If you already have credentials to create your integration such as access token,
 
 ## Create Automation 
 
-You can drag and drop tasks and triggers to add them to your automation and then you must save it and also activate it(deactive automatios won't be run if be trigger or even run them manually). 
+You can drag and drop tasks and triggers to add them to your automation and then you must save it and also activate it(inactive automatios won't run irrespective of the triggers or even manually). 
 * you can only run an automation manually if there is no dependency between task inputs and trigger outputs.
 
 

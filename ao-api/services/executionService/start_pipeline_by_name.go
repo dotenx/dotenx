@@ -63,14 +63,17 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 
 	//err = manager.redisQueue.StoreExecution(msg, accountId)
 	if err != nil {
+		manager.DeleteExecution(executionId)
 		return -1, err
 	}
 	err = manager.QueueService.AddUser(accountId)
 	if err != nil {
+		manager.DeleteExecution(executionId)
 		return -1, err
 	}
 	err = manager.GetNextTask(-1, executionId, "", accountId)
 	if err != nil {
+		manager.DeleteExecution(executionId)
 		return -1, err
 	} // ch, err := manager.QueueService.NewChannel()
 	// if err != nil {

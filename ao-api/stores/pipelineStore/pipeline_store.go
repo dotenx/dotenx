@@ -15,6 +15,7 @@ func New(db *db.DB) PipelineStore {
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
 	// pipelines
+	DeleteExecution(context context.Context, id int) (err error)
 	DeletePipeline(context context.Context, accountId, name string) (err error)
 	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)

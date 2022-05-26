@@ -33,7 +33,11 @@ function Content() {
 
 	useEffect(() => {
 		if (automationName && automation)
-			setSelected({ name: automationName, endpoint: automation.endpoint })
+			setSelected({
+				name: automationName,
+				endpoint: automation.endpoint,
+				is_active: automation.is_active,
+			})
 	}, [automation, automationName, setSelected])
 
 	if (!automationName || !executionId) return null

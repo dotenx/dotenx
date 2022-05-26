@@ -19,13 +19,15 @@ import (
 func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {
 	result = &models.TaskExecutionResult{}
 	result.Id = task.Details.Id
-	result.Status = models.StatusFailed
+	result.Status = models.StatusCompleted
 	if task.Details.Image == "" {
+		result.Status = models.StatusFailed
 		result.Error = errors.New("task dto is invalid and cant be processed")
 		return
 	}
 	/*reader,*/ _, err := executor.Client.ImagePull(context.Background(), task.Details.Image, types.ImagePullOptions{})
 	if err != nil {
+		result.Status = models.StatusFailed
 		result.Error = errors.New("error in pulling base image " + err.Error())
 		return
 	}
@@ -64,6 +66,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 			}, networkConfig, nil, "")
 	}
 	if err != nil {
+		result.Status = models.StatusFailed
 		result.Error = errors.New("error in creating container" + err.Error())
 		return
 	}
@@ -71,25 +74,37 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	if err != nil {
 		log.Println(err)
 		result.Error = err
+		result.Status = models.StatusFailed
 		result.Log = "error while starting container"
 		return
 	}
 	//defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	fmt.Println("### for task[" + task.Details.Name + "], created container id is: " + cont.ID)
-
+	var state container.ContainerWaitOKBody
 	statusCh, errCh := executor.Client.ContainerWait(context.Background(), cont.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
 		if err != nil {
 			result.Error = err
+			result.Status = models.StatusFailed
 			result.Log = err.Error()
 			return
 		}
-	case <-statusCh:
+	case state = <-statusCh:
+	}
+	if state.StatusCode != 0 {
+		result.Status = models.StatusFailed
+		result.Log = "error while running container"
+		if state.Error != nil {
+			log.Println(state.Error.Message)
+			result.Error = errors.New(state.Error.Message)
+		}
+		return
 	}
 	out, err := executor.Client.ContainerLogs(context.Background(), cont.ID, types.ContainerLogsOptions{ShowStdout: true})
 	if err != nil {
 		result.Error = err
+		result.Status = models.StatusFailed
 		result.Log = "error while get log of container"
 		return
 	}
@@ -112,18 +127,6 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	log.Print("err: ")
 	log.Println(result.Error)
 	return
-}
-
-func (executor *dockerExecutor) CheckStatus(containerId string) int {
-	inspect, err := executor.Client.ContainerInspect(context.Background(), containerId)
-	if err != nil || inspect.ContainerJSONBase.State.Error != "" {
-		fmt.Println(err)
-		return -1
-	}
-	if inspect.ContainerJSONBase.State.Running {
-		return 1
-	}
-	return 0
 }
 
 func (executor *dockerExecutor) GetLogs(reader io.Reader) string {

@@ -24,6 +24,9 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 			if err.Error() == "automation is not active" {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
+			} else if err.Error() == "no value for this field in initial data or return values" {
+				c.JSON(http.StatusBadRequest, "some of your task fields are dependent on your trigger")
+				return
 			}
 			log.Println(err.Error())
 			c.AbortWithError(http.StatusInternalServerError, err)

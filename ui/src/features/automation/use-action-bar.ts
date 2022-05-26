@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
@@ -14,6 +15,7 @@ export function useActionBar() {
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
 	const newAutomation = useNewAutomation()
+	const navigate = useNavigate()
 
 	const mutation = useMutation(startAutomation, {
 		onSuccess: () => {
@@ -24,7 +26,13 @@ export function useActionBar() {
 	})
 
 	const onRun = () => {
-		if (selectedAutomationData) mutation.mutate(selectedAutomationData.name)
+		if (selectedAutomationData)
+			mutation.mutate(selectedAutomationData.name, {
+				onSuccess: (data) =>
+					navigate(
+						`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
+					),
+			})
 		else console.error('No automation is selected')
 	}
 

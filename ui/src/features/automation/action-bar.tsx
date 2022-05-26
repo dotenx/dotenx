@@ -185,7 +185,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 				</div>
 			</Modal>
 			{automationName && (
-				<Modal size="lg" title="Automation YAML" kind={Modals.AutomationYaml}>
+				<Modal size="xl" title="Automation YAML" kind={Modals.AutomationYaml}>
 					<AutomationYaml name={automationName} />
 				</Modal>
 			)}

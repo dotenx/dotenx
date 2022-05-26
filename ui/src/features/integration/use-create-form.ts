@@ -10,7 +10,7 @@ import {
 	QueryKey,
 } from '../../api'
 import { getDisplayText } from '../../utils'
-import { useModal, useOauth } from '../hooks'
+import { useOauth } from '../hooks'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -20,7 +20,12 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-export function useNewIntegration() {
+interface Options {
+	integrationKind?: string
+	onSuccess?: (addedIntegrationName: string) => void
+}
+
+export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 	const {
 		control,
 		handleSubmit,
@@ -42,7 +47,6 @@ export function useNewIntegration() {
 	)
 	const mutation = useMutation(createIntegration)
 	const client = useQueryClient()
-	const modal = useModal()
 
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
@@ -59,12 +63,17 @@ export function useNewIntegration() {
 		invalidate()
 	}, [integrationType, invalidate, resetField])
 
+	useEffect(() => {
+		if (integrationKind) setValue('type', integrationKind)
+	}, [integrationKind, setValue])
+
 	const onSave = () => {
 		const fieldValues = getValues()
 		mutation.mutate(fieldValues, {
 			onSuccess: () => {
 				client.invalidateQueries(QueryKey.GetIntegrations)
-				modal.close()
+				client.invalidateQueries(QueryKey.GetIntegrationsByType)
+				onSuccess?.(fieldValues.name)
 			},
 		})
 	}
