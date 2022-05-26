@@ -80,7 +80,7 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 	}
 	//defer executor.Client.ContainerRemove(context.Background(), cont.ID, types.ContainerRemoveOptions{})
 	fmt.Println("### for task[" + task.Details.Name + "], created container id is: " + cont.ID)
-
+	var state container.ContainerWaitOKBody
 	statusCh, errCh := executor.Client.ContainerWait(context.Background(), cont.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
@@ -90,7 +90,16 @@ func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskE
 			result.Log = err.Error()
 			return
 		}
-	case <-statusCh:
+	case state = <-statusCh:
+	}
+	if state.StatusCode != 0 {
+		result.Status = models.StatusFailed
+		result.Log = "error while running container"
+		if state.Error != nil {
+			log.Println(state.Error.Message)
+			result.Error = errors.New(state.Error.Message)
+		}
+		return
 	}
 	out, err := executor.Client.ContainerLogs(context.Background(), cont.ID, types.ContainerLogsOptions{ShowStdout: true})
 	if err != nil {
