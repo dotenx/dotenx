@@ -14,7 +14,7 @@ type Body struct {
 }
 
 func main() {
-	webhookURL := os.Getenv("INTEGRATION_URL")
+	webhookURL := os.Getenv("WEBHOOK_URL")
 	text := os.Getenv("TEXT")
 	body := Body{
 		Content: text,
