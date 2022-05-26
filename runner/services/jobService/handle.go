@@ -58,13 +58,6 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	}
 	//var err error
 	//var id string
-	if result.Error == nil {
-		resultDto.Result = models.StatusCompleted
-		//id, err = manager.LogHelper.Log("log: "+result.Log, true, result.Id)
-	} else {
-		//id, err = manager.LogHelper.Log("error: "+result.Error.Error()+", log: "+result.Log, true, result.Id)
-		resultDto.Result = models.StatusFailed
-	}
 	/*if err != nil {
 		fmt.Printf("error in setting job log: %s\n", err.Error())
 	} else {
@@ -89,6 +82,6 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		fmt.Printf("error in sending job result: %s\n", err.Error())
 	}
 	fmt.Println("####### (" + time.Now().Local().Format(time.Stamp) + "), job result:")
-	fmt.Println(result)
+	fmt.Printf("%v\n", *result)
 	fmt.Println("################################")
 }
