@@ -7,8 +7,9 @@ type IntegrationDefinition struct {
 }
 
 type IntegrationSecret struct {
-	Name string `json:"name" yaml:"name"`
-	Key  string `json:"key" yaml:"key"`
+	Name     string `json:"name" yaml:"name"`
+	Key      string `json:"key" yaml:"key"`
+	Internal bool   `json:"internal" yaml:"internal"`
 }
 
 type Integration struct {
