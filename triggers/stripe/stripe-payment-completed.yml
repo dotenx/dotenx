@@ -6,34 +6,44 @@ credentials:
     - key: PAYMENT_STATUS
       type: text
       description: status of payment (`canceled`, or `succeeded`)
+      display_name: payment status
     - key: passed_seconds
       type: text
       description: passed seconds from message
+      display_name: passed seconds
 outputs:
     - key: id
       type: text
       description: id of payment
+      display_name: id
     - key: amount
       type: int
       description: amount of payment
+      display_name: amount
     - key: currency
       type: text
       description: three letter currency code
+      display_name: currency
     - key: created
       type: text
       description: Time at which the payment was created
+      display_name: created
     - key: customer_id
       type: text
       description: payment's customer identifier
+      display_name: customer id
     - key: customer_email
       type: text
       description: payment's customer email
+      display_name: customer email
     - key: description
       type: text
       description: payment's description
+      display_name: description
     - key: status
       type: text
       description: status of payment
+      display_name: payment status
 
 author: hawwwdi
 icon: https://www.logo.wine/a/logo/Stripe_(company)/Stripe_(company)-Logo.wine.svg

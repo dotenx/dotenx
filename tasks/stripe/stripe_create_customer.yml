@@ -6,16 +6,20 @@ fields:
     - key: CUS_NAME
       type: text
       description: customer's name (e.g hadi)
+      display_name: customer name
     - key: CUS_PHONE
       type: text
       description: customer's phone number (e.g +989123737689)
+      display_name: customer phone
     - key: CUS_EMAIL
       type: text
       description: customer's email address (e.g abc@gmail.com)
+      display_name: customer email
 outputs:
     - key: customer_id
       type: text
       description: customer id
+      display_name: customer id
 author: hawwwdi
 icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
 node_color: FBFB11

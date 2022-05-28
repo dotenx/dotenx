@@ -6,47 +6,60 @@ credentials:
     - key: passed_seconds
       type: text
       description: passed seconds from message
+      display_name: passed seconds
 outputs:
     - key: id
       type: text
       description: id of invoice
+      display_name: id
     - key: amount_due
       type: int
       description: amount due
+      display_name: amount due
     - key: amount_paid
       type: int
       description: amount paid
+      display_name: amount due
     - key: amount_remaining
       type: int
       description: amount remaining
+      display_name: amount remaining
     - key: currency
       type: text
       description: three letter currency code
+      display_name: currency
     - key: created
       type: text
       description: Time at which the invoice was created
+      display_name: created
     - key: customer_id
       type: text
       description: customer identifier
+      display_name: customer id
     - key: customer_email
       type: text
       description: customer email
+      diplay_name: customer email
     - key: description
       type: text
       description: description
+      display_name: description
     - key: status
       type: text
       description: status of payment
+      display_name: status
     - key: link
       type: text
       description: hosted invoice url
+      display_name: invoice url
     - key: pdf_link
       type: text
       description: pdf link
+      display_name: invoice pdf link
     - key: paid
       type: bool
       description: status of invoice
-
+      display_name: invoice status
 author: hawwwdi
 icon: https://www.logo.wine/a/logo/Stripe_(company)/Stripe_(company)-Logo.wine.svg
 node_color: E01E5A

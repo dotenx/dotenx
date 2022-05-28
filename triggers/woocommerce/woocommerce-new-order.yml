@@ -6,19 +6,24 @@ credentials:
     - key: passed_seconds
       type: text
       description: passed seconds from order creation time
+      display_name: passed seconds
 outputs:
     - key: id
       type: text
       description: order id
+      display_name: id
     - key: total
       type: text
       description: total amount of order
+      display_name: total amount
     - key: customer_email
       type: text
       description: customer email
+      display_name: customer email
     - key: status
       type: text
       description: order status
+      display_name: order status
 author: hawwwdi
 icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
 node_color: E01E5A

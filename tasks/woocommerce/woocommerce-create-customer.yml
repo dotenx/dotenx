@@ -6,30 +6,39 @@ fields:
     - key: CUSTOMER_FIRST_NAME
       type: text
       description: customer's first name (e.g hadi)
+      display_name: first name
     - key: CUSTOMER_LAST_NAME
       type: text
       description: customer's last name (e.g abbasi)
+      display_name: last name
     - key: CUSTOMER_PHONE
       type: text
       description: customer's phone number (e.g +989123737689)
+      display_name: phone number
     - key: CUSTOMER_EMAIL
       type: text
       description: customer's email address (e.g hawwwdi@gmail.com)
+      display_name: email
     - key: CUSTOMER_ADDRESS_1
       type: text
       description: customer's address
+      display_name: address
     - key: CUSTOMER_CITY
       type: text
       description: customer's city (e.g tehran)
+      display_name: city
     - key: CUSTOMER_STATE
       type: text
       description: customer's state (e.g US)
+      display_name: state
     - key: CUSTOMER_POSTCODE
       type: text
       description: customer's postcode (e.g 94919)
+      display_name: postcode
     - key: CUSTOMER_COUNTRY
       type: text
       description: customer's country (e.g Canada)
+      display_name: country
 author: hawwwdi
 icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
 node_color: FBFB11
