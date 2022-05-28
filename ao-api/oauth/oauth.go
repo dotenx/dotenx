@@ -64,3 +64,11 @@ func GetProviderModelByName(name string) (*models.OauthProvider, error) {
 	}
 	return nil, errors.New("provider not found")
 }
+
+func GetProvidersMap() map[string]models.OauthProvider {
+	res := make(map[string]models.OauthProvider)
+	for _, p := range providers {
+		res[p.Name] = p
+	}
+	return res
+}
