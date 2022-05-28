@@ -6,9 +6,11 @@ credentials:
     - key: channel_id
       type: text
       description: id of the channel you want to check for new messages
+      display_name: channel id
     - key: passed_seconds
       type: text
       description: passed seconds from message
+      display_name: passed seconds
 outputs:
     - key: text
       type: text
