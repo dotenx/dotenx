@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -40,7 +41,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	p, _, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	p, _, isActive, err := cm.GetPipelineByName(base.AccountId, base.Name)
 	if err == nil && p.Id != "" {
 		err := cm.DeletePipeline(base.AccountId, base.Name, true)
 		if err != nil {
@@ -50,9 +51,17 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
 		}
-		_, endpoint, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+		newP, endpoint, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 		if err != nil {
+			log.Println(err)
 			return err
+		}
+		if isActive {
+			err := cm.ActivatePipeline(base.AccountId, newP.Id)
+			if err != nil {
+				log.Println(err)
+				return err
+			}
 		}
 		triggers := make([]*models.EventTrigger, 0)
 		for _, tr := range pipeline.Manifest.Triggers {
