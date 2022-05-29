@@ -68,7 +68,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	q := c.Request.URL.Query()
 	providerStr := c.Param("provider")
 	if providerStr == "slack" {
-		code := c.Param("code")
+		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
 		accessToekn, err := getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/slack")
 		if err != nil {
@@ -101,12 +101,10 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 	var dto struct {
 		AccessToekn string `json:"access_token"`
 	}
-	data := map[string]string{
-		"client_id":     clientId,
-		"client_secret": clientSecret,
-		"code":          code,
-		"redirect_uri":  redirectUrl,
-	}
+	data := "client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&code=" + code
+	data += "&redirect_uri=" + redirectUrl
 	url := "https://slack.com/api/oauth.v2.access"
 	headers := []utils.Header{
 		{
@@ -114,13 +112,11 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 			Value: "application/x-www-form-urlencoded",
 		},
 	}
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		return "", err
-	}
-	body := bytes.NewBuffer(json_data)
+	body := bytes.NewBuffer([]byte(data))
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("slack response:", string(out))
+	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
