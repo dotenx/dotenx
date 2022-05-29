@@ -6,6 +6,7 @@ import requests
 url = os.environ['WEBSITE_URL']
 consumer_key = os.environ['CONSUMER_KEY']
 consumer_secret = os.environ['CONSUMER_SECRET']
+accId = os.environ['ACCOUNT_ID']
 
 
 wcapi = API(
@@ -33,5 +34,5 @@ total = result[0]['total']
 status = result[0]['status']
 customer_email = result[0]['billing']['email']
 
-body = f'{ workspace:{workspace}, {trigger}:{id:{id}, total:{total}, customer_email:{customer_email}, status:{status}}}'
+body = f'{ workspace:{workspace}, accountId:{accId}, {trigger}:{id:{id}, total:{total}, customer_email:{customer_email}, status:{status}}}'
 requests.post(url=pipeline_endpoint, data=body)
