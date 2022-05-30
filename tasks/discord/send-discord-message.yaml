@@ -4,8 +4,10 @@ image: hawwwdi/send-discord-message
 fields:
     - key: TEXT
       type: text
+      display_name: text
     - key: WEBHOOK_URL
       type: text
+      display_name: webhook url
 author: hawwwdi
 icon: https://www.svgrepo.com/show/353655/discord-icon.svg
 node_color: 5865F2

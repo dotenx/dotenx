@@ -6,24 +6,31 @@ fields:
     - key: PRODUCT_NAME
       type: text
       description: product's name (e.g iphone)
+      display_name: name
     - key: PRODUCT_TYPE
       type: text
       description: product type (e.g mobile)
+      display_name: type
     - key: PRODUCT_PRICE
       type: text
       description: product price (e.g 9.99)
+      display_name: price
     - key: PRODUCT_DESCRIPTION
       type: text
       description: product description
+      display_name: description
     - key: PRODUCT_SHORT_DESCRIPTION
       type: text
       description: product short description
+      display_name: short description
     - key: PRODUCT_CATEGORY
       type: text
       description: product category id
+      display_name: category
     - key: PRODUCT_IMAGE
       type: text
       description: product image link
+      display_name: image link
 author: hawwwdi
 icon: https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce.svg
 node_color: FBFB11

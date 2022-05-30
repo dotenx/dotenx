@@ -32,6 +32,7 @@ type payment struct {
 func main() {
 	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
 	passedSeconds := os.Getenv("passed_seconds")
+	accId := os.Getenv("ACCOUNT_ID")
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		fmt.Println(err)
@@ -57,6 +58,7 @@ func main() {
 		body := map[string]interface{}{
 			"workspace": workspace,
 			triggerName: p,
+			"accountId": accId,
 		}
 		json_data, err := json.Marshal(body)
 		if err != nil {
