@@ -38,7 +38,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 						log.Println(err)
 						return &models.Task{}
 					}
-					processedTask.EnvironmentVariables = append(processedTask.EnvironmentVariables, field.Key+"="+fileName)
+					envVar = field.Key + "=/tmp/" + fileName
 				} else {
 					envVar = field.Key + "=" + fmt.Sprintf("%v", value)
 				}
