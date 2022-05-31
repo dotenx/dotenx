@@ -17,7 +17,6 @@ interface TriggerSettingsModalProps {
 export function TriggerSettingsModal({ updateNode }: TriggerSettingsModalProps) {
 	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
-
 	useEffect(() => {
 		if (!modal.isOpen) setIsAddingIntegration(false)
 	}, [modal.isOpen])
