@@ -1,0 +1,12 @@
+service: dotenx
+type: Run node code
+image: “your image”
+fields:
+    - key: code
+      type: code
+    - key: dependency
+      type: code
+author: mohsen
+icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
+node_color: 2ECC71
+description: runs your node code
