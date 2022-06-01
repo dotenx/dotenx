@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { deleteAutomation, QueryKey, startAutomation } from '../../api'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
+import { Modals, useModal } from '../hooks'
 import { useNewAutomation } from './use-new'
 
 export function useActionBar() {
@@ -16,6 +17,7 @@ export function useActionBar() {
 	const deleteAutomationMutation = useMutation(deleteAutomation)
 	const newAutomation = useNewAutomation()
 	const navigate = useNavigate()
+	const modal = useModal()
 
 	const mutation = useMutation(startAutomation, {
 		onSuccess: () => {
@@ -37,11 +39,16 @@ export function useActionBar() {
 	}
 
 	const onDelete = () => {
+		modal.open(Modals.DeleteAutomation)
+	}
+
+	const handleDeleteAutomation = () => {
 		if (!selectedAutomationData) return
 		deleteAutomationMutation.mutate(selectedAutomationData.name, {
 			onSuccess: () => {
 				newAutomation()
 				client.invalidateQueries(QueryKey.GetAutomations)
+				modal.close()
 			},
 		})
 	}
@@ -49,9 +56,9 @@ export function useActionBar() {
 	return {
 		selectedAutomation,
 		onDelete,
-		deleteAutomationMutation,
 		onRun,
 		newAutomation,
 		onLayout,
+		handleDeleteAutomation,
 	}
 }

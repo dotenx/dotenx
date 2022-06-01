@@ -14,9 +14,10 @@ interface ModalProps {
 	kind: Modals
 	title?: string
 	size?: Size
+	fluid?: boolean
 }
 
-export function Modal({ children, kind, title, size = 'md' }: ModalProps) {
+export function Modal({ children, kind, title, size = 'md', fluid = false }: ModalProps) {
 	const modal = useModal()
 
 	return (
@@ -28,7 +29,7 @@ export function Modal({ children, kind, title, size = 'md' }: ModalProps) {
 			closeTimeoutMS={100}
 		>
 			<Fade isOpen={modal.isOpen}>
-				<Content title={title} size={size}>
+				<Content title={title} size={size} fluid={fluid}>
 					{children}
 				</Content>
 			</Fade>
@@ -40,9 +41,10 @@ interface ContentProps {
 	title?: string
 	children: ReactNode | RenderChildren
 	size: Size
+	fluid: boolean
 }
 
-function Content({ title, children, size }: ContentProps) {
+function Content({ title, children, size, fluid }: ContentProps) {
 	const modal = useModal()
 
 	return (
@@ -72,9 +74,7 @@ function Content({ title, children, size }: ContentProps) {
 				<div
 					className={clsx(
 						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
-						size === 'md' && 'h-[75vh]',
-						size === 'lg' && 'h-[75vh]',
-						size === 'xl' && 'h-[85vh]'
+						fluid ? 'h-auto' : getModalHeight(size)
 					)}
 				>
 					{typeof children === 'function' ? children(modal.data ?? {}) : children}
@@ -82,4 +82,17 @@ function Content({ title, children, size }: ContentProps) {
 			</motion.div>
 		</div>
 	)
+}
+
+const getModalHeight = (size: Size) => {
+	switch (size) {
+		case 'md':
+			return 'h-[75vh]'
+		case 'lg':
+			return 'h-[75vh]'
+		case 'xl':
+			return 'h-[85vh]'
+		default:
+			return 'h-auto'
+	}
 }
