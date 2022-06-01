@@ -23,7 +23,7 @@ func main() {
 	err := uploadVideo(fileName, title, description, category, keywords, privacy, accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	fmt.Println("video uploaded successfully")
 

@@ -21,11 +21,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		for _, field := range task.MetaData.Fields {
 			if value, ok := task.Body[field.Key]; ok {
 				var envVar string
-				if field.Type == "text" {
-					envVar = field.Key + "=" + value.(string)
-				} else {
-					envVar = field.Key + "=" + fmt.Sprintf("%v", value)
-				}
+				envVar = field.Key + "=" + fmt.Sprintf("%v", value)
 				envs = append(envs, envVar)
 			}
 		}
