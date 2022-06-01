@@ -20,7 +20,7 @@ func main() {
 	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	fmt.Println("message send successfully")
 

@@ -20,12 +20,12 @@ func main() {
 	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	_, err = publishPost(text, pageId, pageAccessToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	fmt.Println("post successfully published")
 }
