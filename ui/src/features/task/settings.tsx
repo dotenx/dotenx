@@ -85,7 +85,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						key={`others.${taskField.key}`}
 						control={control}
 						errors={errors}
-						label={taskField.key}
+						label={taskField.display_name || taskField.key}
 						name={`others.${taskField.key}`}
 						groups={outputGroups}
 					/>

@@ -17,7 +17,7 @@ import {
 import { Link } from 'react-router-dom'
 import { NodeType } from '../flow'
 import { Modals, useModal } from '../hooks'
-import { Modal } from '../ui'
+import { Button, Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
@@ -31,7 +31,8 @@ interface ActionBarProps {
 
 export function ActionBar({ automationName }: ActionBarProps) {
 	const modal = useModal()
-	const { onDelete, onRun, selectedAutomation, onLayout, newAutomation } = useActionBar()
+	const { onDelete, onRun, selectedAutomation, onLayout, newAutomation, handleDeleteAutomation } =
+		useActionBar()
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)
 		event.dataTransfer.effectAllowed = 'move'
@@ -168,6 +169,9 @@ export function ActionBar({ automationName }: ActionBarProps) {
 			<Modal title="New Automation" kind={Modals.SaveAutomation}>
 				<SaveForm />
 			</Modal>
+			<Modal title="Delete Automation" kind={Modals.DeleteAutomation} fluid>
+				<ConfirmDelete onSubmit={handleDeleteAutomation} />
+			</Modal>
 			<Modal title="Help" kind={Modals.HotKeys}>
 				<div className="space-y-1 text-sm">
 					<div className="pb-2">
@@ -207,5 +211,14 @@ function Key({ children }: { children: ReactNode }) {
 		<span className="px-2 font-mono border-b rounded border-slate-400 bg-slate-50">
 			{children}
 		</span>
+	)
+}
+
+function ConfirmDelete({ onSubmit }: { onSubmit: () => void }) {
+	return (
+		<div className="space-y-10">
+			<p>Are you sure you want to delete this automation?</p>
+			<Button onClick={onSubmit}>Delete</Button>
+		</div>
 	)
 }

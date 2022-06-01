@@ -11,6 +11,7 @@ export enum Modals {
 	NewTrigger = 'new-trigger',
 	HotKeys = 'hot-keys',
 	AutomationYaml = 'automation-yaml',
+	DeleteAutomation = 'delete-automation',
 }
 
 export function useModal() {
