@@ -4,6 +4,9 @@ const spawn = require('child_process').spawn;
 
 const filePath = process.env.code; //+ '.js';
 const dependenciesPath = process.env.dependency;// + '.json';
+const resultEndpoint = process.env.RESULT_ENDPOINT;
+const Aauthorization = process.env.AUTHORIZATION;
+
 
 // Read function arguments from environment variables based on VARIABLE
 const variables = (process.env.VARIABLES || '').split(',').map(v => process.env[v.trim()])
@@ -38,12 +41,23 @@ fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
     // File entry.js will be created or overwritten by default.
     fs.copyFile(filePath, './workGround/entry.js', (err) => {
       if (err) throw err;
-
       console.log(`${filePath} was copied to entry.js`);
-
       const f = require('./workGround/entry.js');
       const result  = f(...variables) || {};
       console.log(result)
+      try {
+        await axios.post(resultEndpoint, {
+          status: "completed",
+          return_value: [],
+          log: result.toString()
+        },{
+          headers:{
+            "authorization": Aauthorization
+          }
+        });
+      } catch (error) {
+        console.error(error.message);
+      }
     });
   });
 });
