@@ -160,12 +160,17 @@ export type GetTriggerDefinitionResponse = {
 export interface GetTaskFieldsResponse {
 	fields: {
 		key: string
-		type: string
+		type: FieldType
 		display_name: string
 		description: string
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+}
+
+export enum FieldType {
+	Text = 'text',
+	Code = 'code',
 }
 
 export interface GetExecutionResultResponse {
