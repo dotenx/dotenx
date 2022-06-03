@@ -70,6 +70,7 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 				body[key] = taskOtherValue.data
 			}
 		}
+		node.data.vars?.forEach((variable) => (body[variable.key] = variable.value.data))
 		tasks[node.data.name] = {
 			type: node.data.type,
 			body,

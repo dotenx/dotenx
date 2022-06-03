@@ -106,23 +106,12 @@ export function useFlow() {
 
 function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
-		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
-			let inputOrSelectValue = {
-				type: InputOrSelectKind.Text,
-				data: '',
-			} as InputOrSelectValue
-			if (typeof fieldValue === 'string') {
-				inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
-			} else {
-				inputOrSelectValue = {
-					type: InputOrSelectKind.Option,
-					data: fieldValue.key,
-					groupName: fieldValue.source,
-					iconUrl: '',
-				}
-			}
-			return [fieldName, inputOrSelectValue]
-		})
+		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) =>
+			toTextOrOutput(fieldValue, fieldName)
+		)
+		const vars = _.toPairs(_.omit(value.body, ['code', 'dependency']))
+			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue, fieldName))
+			.map(([fieldName, fieldValue]) => ({ key: fieldName, value: fieldValue }))
 		const body = _.fromPairs(bodyEntries)
 		return {
 			id: key,
@@ -135,6 +124,8 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
 				others: body,
+				// TODO: THIS IS HARDCODED :(
+				vars: value.type.includes('code') ? vars : undefined,
 			},
 		}
 	})
@@ -151,6 +142,24 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	)
 
 	return [...nodes, ...edges]
+}
+
+function toTextOrOutput(fieldValue: string | { source: string; key: string }, fieldName: string) {
+	let inputOrSelectValue = {
+		type: InputOrSelectKind.Text,
+		data: '',
+	} as InputOrSelectValue
+	if (typeof fieldValue === 'string') {
+		inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
+	} else {
+		inputOrSelectValue = {
+			type: InputOrSelectKind.Option,
+			data: fieldValue.key,
+			groupName: fieldValue.source,
+			iconUrl: '',
+		}
+	}
+	return [fieldName, inputOrSelectValue] as [string, InputOrSelectValue]
 }
 
 function mapTriggersToElements(triggers: Triggers | undefined) {
