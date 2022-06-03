@@ -1,6 +1,7 @@
 // read environment variable file_path into filePath
 const fs = require('fs');
 const spawn = require('child_process').spawn;
+const axios = require('axios');
 
 const filePath = process.env.code; //+ '.js';
 const dependenciesPath = process.env.dependency;// + '.json';
@@ -46,15 +47,18 @@ fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
       const result  = f(...variables) || {};
       console.log(result)
       try {
-        await axios.post(resultEndpoint, {
+          axios.post(resultEndpoint, {
           status: "completed",
-          return_value: [],
+          return_value: {
+            test: "ok",
+          },
           log: result.toString()
         },{
           headers:{
             "authorization": Aauthorization
           }
         });
+        console.log("tssss")
       } catch (error) {
         console.error(error.message);
       }

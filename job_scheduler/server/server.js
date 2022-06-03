@@ -99,7 +99,6 @@ app.post('/queue/:qname/job/:jobId/status', async (req, res) => {
   const { qname, jobId } = req.params;
   const { status, return_value, log } = req.body;
   var authorazition = req.headers['authorization'];
-  console.log(`token: ${authorazition}`)
   console.log(`received the status for queue: ${qname}: ${jobId} status: ${status}`);
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getJob(jobId);
