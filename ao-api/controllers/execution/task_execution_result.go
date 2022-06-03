@@ -4,7 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -103,10 +102,6 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-
-		fmt.Println("****************************")
-		fmt.Println(taskResultDto.ReturnValue)
-		fmt.Println("****************************")
 		err = e.Service.SetTaskExecutionResult(executionId, taskId, taskResultDto.Status.String())
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
