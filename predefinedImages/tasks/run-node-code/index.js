@@ -50,9 +50,8 @@ fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
           axios.post(resultEndpoint, {
           status: "completed",
           return_value: {
-            test: "ok",
-          },
-          log: result.toString()
+            output: result.toString(),
+          }
         },{
           headers:{
             "authorization": Aauthorization
