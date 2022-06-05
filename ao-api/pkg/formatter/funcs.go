@@ -14,23 +14,26 @@ const (
 )
 
 type FormatFunc struct {
-	Inputs   []string `json:"inputs"`
-	Output   string   `json:"output"`
-	function func(args ...interface{}) (string, error)
+	Inputs      []string `json:"inputs"`
+	Output      string   `json:"output"`
+	Description string   `json:"description"`
+	function    func(args ...interface{}) (string, error)
 }
 
 var ErrInvalidInput = errors.New("invalid input error")
 
 var formatFuncs = map[string]FormatFunc{
 	"ToUpper": {
-		Inputs:   []string{String},
-		Output:   String,
-		function: ToUpper,
+		Inputs:      []string{String},
+		Output:      String,
+		Description: "returns input with all Unicode letters mapped to their upper case.",
+		function:    ToUpper,
 	},
 	"String": {
-		Inputs:   []string{String},
-		Output:   String,
-		function: ToString,
+		Inputs:      []string{String},
+		Output:      String,
+		Description: "converts input to string",
+		function:    ToString,
 	},
 }
 

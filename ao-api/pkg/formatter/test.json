@@ -1,0 +1,213 @@
+{
+  "name": "demo",
+  "manifest": {
+    "tasks": {
+      "echo yay": {
+        "executeAfter": {
+          "send timestamp of message": [
+            "completed"
+          ]
+        },
+        "type": "Run image",
+        "body": {
+          "image": "alpine",
+          "script": "echo yay"
+        },
+        "description": "description",
+        "integration": "“”",
+        "metadata": {
+          "service": "etc",
+          "type": "Run image",
+          "fields": [
+            {
+              "key": "image",
+              "type": "text",
+              "description": "“”",
+              "display_name": "“”"
+            },
+            {
+              "key": "script",
+              "type": "text",
+              "description": "“”",
+              "display_name": "“”"
+            }
+          ],
+          "image": "“”",
+          "integrations": [],
+          "author": "Armingodiz",
+          "icon": "https://cdn-icons-png.flaticon.com/512/5969/5969059.png",
+          "node_color": "‘#0DB7ED’",
+          "description": "Runs given script in mentioned image",
+          "outputs": []
+        }
+      },
+      "send message to email": {
+        "type": "Send email",
+        "body": {
+          "sender": "armin.godarzi@utopiops.com",
+          "target": "arminquera@gmail.com",
+          "text": {
+            "formatter": {
+              "format_str": "hello $1, do you want $2?",
+              "func_calls": {
+                "1": {
+                  "func_name": "toUpper",
+                  "args": [
+                    {
+                      "key": "text",
+                      "source": "slack new message in test-dotenx"
+                    }
+                  ]
+                },
+                "2": {
+                  "func_name": "direct_value",
+                  "args": [
+                    {
+                      "key": "text",
+                      "source": "slack new message in test-dotenx"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "description",
+        "integration": "sendGrid",
+        "metadata": {
+          "service": "sendGrid",
+          "type": "Send email",
+          "fields": [
+            {
+              "key": "sender",
+              "type": "text",
+              "description": "“”",
+              "display_name": "“”"
+            },
+            {
+              "key": "target",
+              "type": "text",
+              "description": "“”",
+              "display_name": "“”"
+            },
+            {
+              "key": "text",
+              "type": "text",
+              "description": "“”",
+              "display_name": "“”"
+            }
+          ],
+          "image": "awrmin/sendemail",
+          "integrations": [
+            "sendGrid"
+          ],
+          "author": "Armingodiz",
+          "icon": "https://sendgrid.com/wp-content/themes/sgdotcom/pages/resource/brand/2016/SendGrid-Logomark.png",
+          "node_color": "‘#1A82E2’",
+          "description": "Sends email using send grid",
+          "outputs": []
+        }
+      },
+      "send timestamp of message": {
+        "executeAfter": {
+          "send message to email": [
+            "completed"
+          ]
+        },
+        "type": "Send slack message",
+        "body": {
+          "target_id": "U029SRPEUH0",
+          "text": {
+            "key": "timestamp",
+            "source": "slack new message in test-dotenx"
+          }
+        },
+        "description": "description",
+        "integration": "pipeline-bot",
+        "metadata": {
+          "service": "slack",
+          "type": "Send slack message",
+          "fields": [
+            {
+              "key": "target_id",
+              "type": "text",
+              "description": "user or channel id",
+              "display_name": "target id"
+            },
+            {
+              "key": "text",
+              "type": "text",
+              "description": "text you want to send in your message",
+              "display_name": "text"
+            }
+          ],
+          "image": "awrmin/slack-send-message",
+          "integrations": [
+            "slack-bot"
+          ],
+          "author": "Armingodiz",
+          "icon": "https://cdn-icons-png.flaticon.com/512/2111/2111615.png",
+          "node_color": "‘#E01E5A’",
+          "description": "Sends slack message using slack bot",
+          "outputs": []
+        }
+      }
+    },
+    "triggers": {
+      "slack new message in test-dotenx": {
+        "name": "slack new message in test-dotenx",
+        "accountid": "c5a1a699-e170-4fc2-a343-1f13973cd026",
+        "type": "Slack new message",
+        "endpoint": "210eaca5-f3eb-40a5-9734-3850ad4db89f",
+        "pipeline": "demo",
+        "integration": "pipeline-bot",
+        "credentials": {
+          "channel_id": "C03H8QH6C0M",
+          "passed_seconds": "“100”"
+        },
+        "metadata": {
+          "service": "slack",
+          "type": "Slack new message",
+          "integrations": [
+            "slack-bot"
+          ],
+          "image": "awrmin/slack-new-message",
+          "credentials": [
+            {
+              "key": "channel_id",
+              "type": "text",
+              "description": "id of the channel you want to check for new messages",
+              "display_name": "channel id"
+            },
+            {
+              "key": "passed_seconds",
+              "type": "text",
+              "description": "passed seconds from message",
+              "display_name": "passed seconds"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "text",
+              "type": "text",
+              "description": "text of new message",
+              "display_name": "“”"
+            },
+            {
+              "key": "timestamp",
+              "type": "text",
+              "description": "timestamp of new message",
+              "display_name": "“”"
+            }
+          ],
+          "author": "Armingodiz",
+          "icon": "https://cdn-icons-png.flaticon.com/512/2111/2111615.png",
+          "node_color": "‘#FBFB11’",
+          "description": "Triggers when a payment completed."
+        }
+      }
+    }
+  },
+  "endpoint": "210eaca5-f3eb-40a5-9734-3850ad4db89f",
+  "is_active": false
+}
