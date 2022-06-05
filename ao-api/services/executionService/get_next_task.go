@@ -3,9 +3,11 @@ package executionService
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/formatter"
 )
 
 // start first task (initial task) if you call this method wih task id <= 0,
@@ -60,8 +62,9 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 }
 
 type insertDto struct {
-	Source string `json:"source"`
-	Key    string `json:"key"`
+	Formatter *formatter.Formatter `json:"formatter"`
+	Source    string               `json:"source"`
+	Key       string               `json:"key"`
 }
 
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
@@ -70,18 +73,42 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskBod
 		var insertDt insertDto
 		b, _ := json.Marshal(value)
 		err := json.Unmarshal(b, &insertDt)
-		if err == nil && insertDt.Key != "" && insertDt.Source != "" {
-			body, err := manager.CheckExecutionInitialData(execId, accountId, insertDt.Source)
-			if err != nil {
-				body, err = manager.CheckReturnValues(execId, accountId, insertDt.Source)
+		if err == nil {
+			if insertDt.Key != "" && insertDt.Source != "" {
+				body, err := manager.CheckExecutionInitialData(execId, accountId, insertDt.Source)
 				if err != nil {
+					body, err = manager.CheckReturnValues(execId, accountId, insertDt.Source)
+					if err != nil {
+						return nil, errors.New("no value for this field in initial data or return values")
+					}
+				}
+				if _, ok := body[insertDt.Key]; !ok {
 					return nil, errors.New("no value for this field in initial data or return values")
 				}
+				taskBody[key] = body[insertDt.Key]
+			} else if insertDt.Formatter != nil {
+				values := make(map[string]interface{})
+				args := insertDt.Formatter.GetArgs()
+				for _, arg := range args {
+					body, err := manager.CheckExecutionInitialData(execId, accountId, arg.Source)
+					if err != nil {
+						body, err = manager.CheckReturnValues(execId, accountId, arg.Source)
+						if err != nil {
+							return nil, errors.New("no value for this field in initial data or return values")
+						}
+					}
+					if _, ok := body[arg.Key]; !ok {
+						return nil, errors.New("no value for this field in initial data or return values")
+					}
+					argKey := fmt.Sprintf("%s.%s", arg.Source, arg.Key)
+					values[argKey] = body[arg.Key]
+				}
+				result, err := insertDt.Formatter.Format(values)
+				if err != nil {
+					return nil, err
+				}
+				taskBody[key] = result
 			}
-			if _, ok := body[insertDt.Key]; !ok {
-				return nil, errors.New("no value for this field in initial data or return values")
-			}
-			taskBody[key] = body[insertDt.Key]
 		}
 	}
 	return taskBody, nil
