@@ -3,12 +3,10 @@ const fs = require('fs');
 const spawn = require('child_process').spawn;
 const axios = require('axios');
 
-const filePath = process.env.code; //+ '.js';
-const dependenciesPath = process.env.dependency;// + '.json';
+const filePath = process.env.code;
+const dependenciesPath = process.env.dependency;
 const resultEndpoint = process.env.RESULT_ENDPOINT;
 const Aauthorization = process.env.AUTHORIZATION;
-
-console.log(`variables: ${process.env.VARIABLES}`)
 
 
 // Read function arguments from environment variables based on VARIABLE
@@ -48,19 +46,16 @@ fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
       const f = require('./workGround/entry.js');
       const result  = f(...variables) || {};
       console.log(result)
-      console.log(`result: ${result.uuid}`)
       try {
           axios.post(resultEndpoint, {
           status: "completed",
-          return_value: {
-            output: result.toString(),
-          }
+          return_value: result
         },{
           headers:{
             "authorization": Aauthorization
           }
         });
-        console.log("tssss")
+        console.log("result set successfully")
       } catch (error) {
         console.error(error.message);
       }
