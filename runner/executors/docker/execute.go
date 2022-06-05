@@ -17,7 +17,7 @@ import (
 )
 
 func (executor *dockerExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {
-	log.Println(task)
+	log.Println(task.EnvironmentVariables)
 	result = &models.TaskExecutionResult{}
 	result.Id = task.Details.Id
 	result.Status = models.StatusFailed

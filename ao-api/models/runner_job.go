@@ -49,13 +49,14 @@ func (job *Job) SetIntegration(integration Integration) {
 func (job *Job) SetRunCodeFields() {
 	variables := ""
 	for key, _ := range job.Body {
-		if variables != "" {
-			variables += ","
-		}
 		if key != "code" && key != "dependency" {
+			if variables != "" {
+				variables += ","
+			}
 			variables += key
 			job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: key, Type: "text"})
 		}
 	}
+	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "VARIABLES", Type: "text"})
 	job.Body["VARIABLES"] = variables
 }

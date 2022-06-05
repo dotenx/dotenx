@@ -8,6 +8,8 @@ const dependenciesPath = process.env.dependency;// + '.json';
 const resultEndpoint = process.env.RESULT_ENDPOINT;
 const Aauthorization = process.env.AUTHORIZATION;
 
+console.log(`variables: ${process.env.VARIABLES}`)
+
 
 // Read function arguments from environment variables based on VARIABLE
 const variables = (process.env.VARIABLES || '').split(',').map(v => process.env[v.trim()])
@@ -46,6 +48,7 @@ fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
       const f = require('./workGround/entry.js');
       const result  = f(...variables) || {};
       console.log(result)
+      console.log(`result: ${result.uuid}`)
       try {
           axios.post(resultEndpoint, {
           status: "completed",
