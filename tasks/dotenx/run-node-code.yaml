@@ -6,6 +6,8 @@ fields:
       type: code
     - key: dependency
       type: code
+    - key: outputs
+      type: string-array
 
 author: mohsen
 icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
