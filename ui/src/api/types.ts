@@ -134,7 +134,7 @@ export type GetIntegrationsByKindsResponse = Integration[]
 export type GetIntegrationKindsResponse = string[]
 
 export type GetIntegrationKindFieldsResponse = {
-	secrets: { key: string; name: string }[]
+	secrets: { key: string; name: string; internal: boolean }[]
 	oauth_provider: string
 }
 
@@ -151,6 +151,8 @@ export type GetTriggerDefinitionResponse = {
 	credentials: {
 		key: string
 		type: string
+		description: string
+		display_name: string
 	}[]
 	outputs: TaskTriggerOutput[]
 }
@@ -158,10 +160,17 @@ export type GetTriggerDefinitionResponse = {
 export interface GetTaskFieldsResponse {
 	fields: {
 		key: string
-		type: string
+		type: FieldType
+		display_name: string
+		description: string
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+}
+
+export enum FieldType {
+	Text = 'text',
+	Code = 'code',
 }
 
 export interface GetExecutionResultResponse {

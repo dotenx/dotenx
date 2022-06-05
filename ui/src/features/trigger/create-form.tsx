@@ -1,4 +1,3 @@
-import { getDisplayText } from '../../utils'
 import { SelectIntegration } from '../integration'
 import { Button, Field, Form, GroupSelect, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
@@ -68,7 +67,7 @@ export function TriggerForm({
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
 					<Field
 						key={triggerDefinition.key}
-						label={getDisplayText(triggerDefinition.key)}
+						label={triggerDefinition.display_name || triggerDefinition.key}
 						name={`credentials.${triggerDefinition.key}`}
 						control={control}
 						required

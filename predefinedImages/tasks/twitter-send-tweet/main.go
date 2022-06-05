@@ -17,7 +17,7 @@ func main() {
 	err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	fmt.Println("tweet successfully published")
 }

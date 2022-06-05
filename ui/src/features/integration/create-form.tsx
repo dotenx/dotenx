@@ -64,6 +64,7 @@ export function NewIntegration({ integrationKind, onSuccess, onBack }: NewIntegr
 					.filter(({ key }) =>
 						isAdvanced || !integrationTypeFields.oauth_provider ? true : isTokenKey(key)
 					)
+					.filter(({ internal }) => !internal)
 					.map((field) => (
 						<Field
 							key={field.key}
