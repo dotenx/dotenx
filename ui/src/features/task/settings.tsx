@@ -35,6 +35,7 @@ export function TaskSettingsWithIntegration({
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
 	const hasSecondPanel = isAddingIntegration || taskCode.isOpen
+	console.log(taskForm.watch())
 
 	useEffect(() => {
 		if (taskForm.taskType) setIsAddingIntegration(false)
