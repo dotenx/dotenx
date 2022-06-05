@@ -143,6 +143,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	intgration := r.Group("/integration")
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
+	funcs := r.Group("/funcs")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -152,6 +153,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)
 	tasks.GET("/:task_name/fields", predefinedController.GetFields)
+
+	// funcs router
+	funcs.GET("", predefinedController.GetFuncs)
 
 	// pipeline router
 	pipline.POST("", crudController.AddPipeline())

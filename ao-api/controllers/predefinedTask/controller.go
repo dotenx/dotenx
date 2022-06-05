@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/formatter"
 	predifinedService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/gin-gonic/gin"
 )
@@ -43,4 +44,9 @@ func (r *PredefinedTaskController) GetFields(ctx *gin.Context) {
 		"integration_types": integrationTypes,
 		"outputs":           outputs,
 	})
+}
+
+func (r *PredefinedTaskController) GetFuncs(ctx *gin.Context) {
+	funcs := formatter.GetFuncs()
+	ctx.JSON(http.StatusOK, funcs)
 }
