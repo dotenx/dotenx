@@ -26,6 +26,7 @@ const schema = z.object({
 	integration: z.string().optional(),
 	others: z.record(textOrOption).optional(),
 	vars: z.array(z.object({ key: z.string(), value: textOrOption })).optional(),
+	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
 
 export type TaskSettingsSchema = z.infer<typeof schema>
@@ -48,6 +49,7 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
+	console.log(watch())
 	const taskType = watch('type')
 	const taskName = watch('name')
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)

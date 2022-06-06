@@ -61,7 +61,9 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 		if (!node.data?.name) return console.error('Node data does not exists')
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
 		const others = node.data.others
-		const body: TaskBody = {}
+		const body: TaskBody = {
+			outputs: node.data.outputs?.map((output) => output.value) ?? null,
+		}
 		for (const key in others) {
 			const taskOtherValue = others[key]
 			if (taskOtherValue.type === 'option') {
