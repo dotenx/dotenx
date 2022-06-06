@@ -89,6 +89,18 @@ var migrations = []struct {
 		stmt: updateNillIsActive,
 	},
 	{
+		name: "add-is-template-field",
+		stmt: addIsTemplate,
+	},
+	{
+		name: "update-is-template-field",
+		stmt: updateIsTemplate,
+	},
+	{
+		name: "update-nill-is-template-field",
+		stmt: updateNillIsTemplate,
+	},
+	{
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
@@ -184,6 +196,7 @@ name											VARCHAR(128),
 account_id         			                 	VARCHAR(64),
 endpoint 							     		uuid DEFAULT uuid_generate_v4(),
 is_active                                       BOOLEAN,
+is_template                                     BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
@@ -309,11 +322,23 @@ ADD COLUMN IF NOT EXISTS hasRefreshToken BOOLEAN
 var addIsActive = `ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS is_active BOOLEAN;`
 
+var addIsTemplate = `ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS is_template BOOLEAN;`
+
 var updateIsActive = `
 ALTER TABLE pipelines
 ALTER COLUMN is_active
 SET DEFAULT FALSE;`
 
+var updateIsTemplate = `
+ALTER TABLE pipelines
+ALTER COLUMN is_template
+SET DEFAULT FALSE;`
+
 var updateNillIsActive = `
 UPDATE pipelines
 SET is_active=FALSE;`
+
+var updateNillIsTemplate = `
+UPDATE pipelines
+SET is_template=FALSE;`
