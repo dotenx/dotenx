@@ -49,7 +49,6 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
-	console.log(watch())
 	const taskType = watch('type')
 	const taskName = watch('name')
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
@@ -83,7 +82,10 @@ export function useTaskSettings({
 		.map((node) => ({
 			name: node.data?.name ?? '',
 			type: node.data?.type,
-			options: [],
+			options:
+				node.data && 'outputs' in node.data
+					? node.data?.outputs?.map((output) => output.value) ?? []
+					: [],
 			nodeType: node.type as NodeType,
 			iconUrl: node.data?.iconUrl,
 		}))
@@ -103,9 +105,11 @@ export function useTaskSettings({
 		}))
 	)
 
-	const outputGroups = getTaskFieldsResults
+	const noneCodeOutputGroups = getTaskFieldsResults
 		.map((result) => result.data)
 		.filter((r) => !!r) as GroupData[]
+	const codeOutputGroups = nodes.filter((node) => node.type?.includes('code'))
+	const outputGroups = [...noneCodeOutputGroups, ...codeOutputGroups]
 
 	const onSubmit = handleSubmit(() => {
 		onSave({
