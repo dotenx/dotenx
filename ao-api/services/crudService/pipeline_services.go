@@ -199,6 +199,50 @@ func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, 
 	return actives, nil
 }
 
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}) (name string, err error) {
+	for _, task := range pipeline.Manifest.Tasks {
+		body := task.Body.(models.TaskBodyMap)
+		for k, v := range body {
+			value, ok := fields[v.(string)]
+			if ok {
+				body[k] = value
+			}
+		}
+		task.Body = body
+	}
+	for _, trigger := range pipeline.Manifest.Triggers {
+		for k, v := range trigger.Credentials {
+			value, ok := fields[v.(string)]
+			if ok {
+				trigger.Credentials[k] = value
+			}
+		}
+	}
+	err = cm.Store.Create(noContext, base, pipeline, false)
+	if err != nil {
+		return
+	}
+	_, e, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	if err != nil {
+		return
+	}
+	triggers := make([]*models.EventTrigger, 0)
+	for _, tr := range pipeline.Manifest.Triggers {
+		tr.Endpoint = e
+		tr.Pipeline = base.Name
+		triggers = append(triggers, &models.EventTrigger{
+			Name:        tr.Name,
+			AccountId:   tr.AccountId,
+			Type:        tr.Type,
+			Endpoint:    e,
+			Pipeline:    base.Name,
+			Integration: tr.Integration,
+			Credentials: tr.Credentials,
+		})
+	}
+	return "", cm.TriggerService.AddTriggers(base.AccountId, triggers, e)
+}
+
 type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
