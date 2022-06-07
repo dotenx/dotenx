@@ -106,13 +106,17 @@ export function useFlow() {
 
 function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
-		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) =>
-			toTextOrOutput(fieldValue, fieldName)
-		)
-		const vars = _.toPairs(_.omit(value.body, ['code', 'dependency']))
-			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue, fieldName))
+		const bodyEntries = _.toPairs(value.body)
+			.filter(([, fieldValue]) => !!fieldValue)
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue!, fieldName))
+		const vars = _.toPairs(_.omit(value.body, ['code', 'dependency', 'outputs']))
+			.filter(([, fieldValue]) => !!fieldValue)
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue!, fieldName))
 			.map(([fieldName, fieldValue]) => ({ key: fieldName, value: fieldValue }))
 		const body = _.fromPairs(bodyEntries)
+		const isCodeTask = value.type.includes('code')
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -123,9 +127,12 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
-				others: body,
+				others: isCodeTask ? { code: body.code, dependency: body.dependency } : body,
 				// TODO: THIS IS HARDCODED :(
-				vars: value.type.includes('code') ? vars : undefined,
+				vars: isCodeTask ? vars : undefined,
+				outputs: _.isArray(value.body.outputs)
+					? value.body.outputs.map((value) => ({ value }))
+					: undefined,
 			},
 		}
 	})
@@ -144,13 +151,18 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function toTextOrOutput(fieldValue: string | { source: string; key: string }, fieldName: string) {
+function toTextOrOutput(
+	fieldValue: string | { source: string; key: string } | string[],
+	fieldName: string
+) {
 	let inputOrSelectValue = {
 		type: InputOrSelectKind.Text,
 		data: '',
-	} as InputOrSelectValue
+	} as InputOrSelectValue | { value: string }[]
 	if (typeof fieldValue === 'string') {
 		inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
+	} else if (_.isArray(fieldValue)) {
+		inputOrSelectValue = fieldValue.map((value) => ({ value }))
 	} else {
 		inputOrSelectValue = {
 			type: InputOrSelectKind.Option,

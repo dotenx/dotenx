@@ -99,6 +99,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 		tasksOptions,
 	} = taskForm
 	const setTaskCodeState = useSetAtom(taskCodeState)
+	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -139,9 +140,10 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						onAddIntegration={() => setIsAddingIntegration(true)}
 					/>
 				)}
-				{taskFields.some((field) => field.type === FieldType.Code) && (
+				{isCodeTask && (
 					<Variables control={control} errors={errors} outputGroups={outputGroups} />
 				)}
+				{isCodeTask && <Outputs control={control} errors={errors} />}
 			</div>
 
 			<Button type="submit" disabled={disableSubmit}>
@@ -199,6 +201,49 @@ function Variables({ control, errors, outputGroups }: VariablesProps) {
 						key={`vars.${index}.value`}
 						placeholder="Value"
 					/>
+					<button
+						type="button"
+						className="flex items-center justify-center w-4 h-4 text-lg transition rounded-lg shrink-0 bg-rose-50 hover:bg-rose-100 text-rose-600"
+						onClick={() => remove(index)}
+					>
+						<IoClose />
+					</button>
+				</div>
+			))}
+
+			<button
+				type="button"
+				className="flex items-center justify-center w-8 h-8 mt-2 text-xl transition rounded-lg bg-gray-50 hover:bg-gray-100"
+				onClick={() => append({})}
+			>
+				<IoAdd />
+			</button>
+		</div>
+	)
+}
+
+interface OutputsProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	control: Control<any>
+	errors: FieldErrors
+}
+function Outputs({ control, errors }: OutputsProps) {
+	const { fields, append, remove } = useFieldArray({ control, name: 'outputs' })
+
+	return (
+		<div className="flex flex-col gap-2">
+			<p className="text-sm font-bold">Outputs</p>
+			{fields.map((field, index) => (
+				<div key={field.id} className="flex items-center gap-2">
+					<div className="w-full">
+						<Field
+							control={control}
+							errors={errors}
+							name={`outputs.${index}.value`}
+							key={`outputs.${index}.value`}
+							placeholder="name"
+						/>
+					</div>
 					<button
 						type="button"
 						className="flex items-center justify-center w-4 h-4 text-lg transition rounded-lg shrink-0 bg-rose-50 hover:bg-rose-100 text-rose-600"
