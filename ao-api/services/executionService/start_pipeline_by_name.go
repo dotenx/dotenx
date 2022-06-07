@@ -26,7 +26,10 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
-	_, _, isActive, err := manager.Store.GetByName(noContext, accountId, name)
+	_, _, isActive, isTemplate, err := manager.Store.GetByName(noContext, accountId, name)
+	if isTemplate {
+		return -1, errors.New("automation is a template so you can't execute it")
+	}
 	if err != nil {
 		return -1, err
 	}

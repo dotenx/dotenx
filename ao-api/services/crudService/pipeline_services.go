@@ -14,12 +14,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) (err error) {
-	err = cm.Store.Create(noContext, base, pipeline)
+func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool) (err error) {
+	err = cm.Store.Create(noContext, base, pipeline, isTemplate)
 	if err != nil {
 		return
 	}
-	_, e, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	_, e, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err != nil {
 		return
 	}
@@ -41,17 +41,17 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	p, _, isActive, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	p, _, isActive, isTemplate, err := cm.GetPipelineByName(base.AccountId, base.Name)
 	if err == nil && p.Id != "" {
 		err := cm.DeletePipeline(base.AccountId, base.Name, true)
 		if err != nil {
 			return errors.New("error in deleting old version: " + err.Error())
 		}
-		err = cm.Store.Create(noContext, base, pipeline)
+		err = cm.Store.Create(noContext, base, pipeline, isTemplate)
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
 		}
-		newP, endpoint, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+		newP, endpoint, _, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -81,26 +81,26 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	}
 }
 
-func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, error) {
-	pipe, endpoint, isActive, err := cm.Store.GetByName(noContext, accountId, name)
+func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, bool, error) {
+	pipe, endpoint, isActive, isTemplate, err := cm.Store.GetByName(noContext, accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", false, err
+		return models.PipelineVersion{}, "", false, false, err
 	}
 	triggers, err := cm.TriggerService.GetAllTriggersForPipeline(accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", false, err
+		return models.PipelineVersion{}, "", false, false, err
 	}
 	pipe.Manifest.Triggers = make(map[string]models.EventTrigger)
 	for _, tr := range triggers {
 		pipe.Manifest.Triggers[tr.Name] = tr
 	}
-	return pipe, endpoint, isActive, nil
+	return pipe, endpoint, isActive, isTemplate, nil
 }
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
 	return cm.Store.GetPipelines(noContext, accountId)
 }
 func (cm *crudManager) DeletePipeline(accountId, name string, deleteRecord bool) (err error) {
-	p, _, isActive, err := cm.GetPipelineByName(accountId, name)
+	p, _, isActive, _, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}

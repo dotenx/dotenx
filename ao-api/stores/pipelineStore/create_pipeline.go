@@ -11,7 +11,7 @@ import (
 )
 
 // Store the pipeline
-func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error {
+func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool) error {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	fmt.Println(pipeline)
 	switch j.db.Driver {
@@ -29,7 +29,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 			return errors.New("pipeline already exists")
 		}
 		// Add the pipeline
-		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId).Scan(&pipelineId)
+		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId, isTemplate).Scan(&pipelineId)
 		if err != nil {
 			return err
 		}
@@ -81,8 +81,8 @@ WHERE account_id = $1 AND name = $2
 // Insert queries
 
 const create_pipeline = `
-INSERT INTO pipelines (name, account_id)
-VALUES ($1, $2) RETURNING id
+INSERT INTO pipelines (name, account_id, is_template)
+VALUES ($1, $2, $3) RETURNING id
 `
 
 const create_task = `

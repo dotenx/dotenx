@@ -88,7 +88,7 @@ func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		_, endpoint, _, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
@@ -117,7 +117,7 @@ func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		_, endpoint, _, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)

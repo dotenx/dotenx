@@ -14,10 +14,10 @@ func NewCrudService(store pipelineStore.PipelineStore, trService triggerService.
 
 type CrudService interface {
 	GetAllExecutions(accountId string, name string) ([]models.Execution, error)
-	CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) error
+	CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool) error
 	UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)
-	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, error)
+	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, bool, error)
 	DeletePipeline(accountId, name string, deleteRecord bool) (err error)
 	ActivatePipeline(accountId, pipelineId string) (err error)
 	DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error)

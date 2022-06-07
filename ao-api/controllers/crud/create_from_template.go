@@ -12,7 +12,16 @@ import (
 func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
-		mc.Service.GetPipelineByName("accountId", name)
+		p, _, _, isTemplate, err := mc.Service.GetPipelineByName("accountId", name)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if !isTemplate {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "you just can create automation from a template"})
+			return
+		}
 		var pipelineDto PipelineDto
 		if err := c.ShouldBindJSON(&pipelineDto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -29,7 +38,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			Manifest: pipelineDto.Manifest,
 		}
 
-		err := mc.Service.CreatePipeLine(&base, &pipeline)
+		err := mc.Service.CreatePipeLine(&base, &pipeline, false)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
