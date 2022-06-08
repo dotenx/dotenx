@@ -203,7 +203,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	for _, task := range pipeline.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
-			value, ok := fields[v.(string)]
+			value, ok := fields["$$$"+v.(string)]
 			if ok {
 				body[k] = value
 			}
@@ -212,7 +212,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	}
 	for _, trigger := range pipeline.Manifest.Triggers {
 		for k, v := range trigger.Credentials {
-			value, ok := fields[v.(string)]
+			value, ok := fields["$$$"+v.(string)]
 			if ok {
 				trigger.Credentials[k] = value
 			}

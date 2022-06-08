@@ -7,11 +7,12 @@ import (
 )
 
 type Pipeline struct {
-	Id        int    `db:"id" json:"-"`
-	Name      string `db:"name" json:"name"`
-	Endpoint  string `db:"endpoint" json:"endpoint"`
-	AccountId string `db:"account_id" json:"-"`
-	IsActive  bool   `db:"is_active" json:"is_active"`
+	Id         int    `db:"id" json:"-"`
+	Name       string `db:"name" json:"name"`
+	Endpoint   string `db:"endpoint" json:"endpoint"`
+	AccountId  string `db:"account_id" json:"-"`
+	IsActive   bool   `db:"is_active" json:"is_active"`
+	IsTemplate bool   `db:"is_template" json:"is_template"`
 }
 
 type PipelineVersion struct {
