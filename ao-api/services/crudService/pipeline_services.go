@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -203,21 +205,30 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	for _, task := range pipeline.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
-			value, ok := fields["$$$"+v.(string)]
-			if ok {
-				body[k] = value
+			val := fmt.Sprintf("%v", v)
+			if strings.Contains(val, "$$$.") {
+				val = strings.Replace(val, "$$$.", "", 1)
+				value, ok := fields[val]
+				if ok {
+					body[k] = value
+				}
 			}
 		}
 		task.Body = body
 	}
 	for _, trigger := range pipeline.Manifest.Triggers {
 		for k, v := range trigger.Credentials {
-			value, ok := fields["$$$"+v.(string)]
-			if ok {
-				trigger.Credentials[k] = value
+			val := fmt.Sprintf("%v", v)
+			if strings.Contains(val, "$$$.") {
+				val = strings.Replace(val, "$$$.", "", 1)
+				value, ok := fields[val]
+				if ok {
+					trigger.Credentials[k] = value
+				}
 			}
 		}
 	}
+	base.Name = base.Name + "_" + utils.GetNewUuid()
 	err = cm.Store.Create(noContext, base, pipeline, false)
 	if err != nil {
 		return
@@ -240,7 +251,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 			Credentials: tr.Credentials,
 		})
 	}
-	return "", cm.TriggerService.AddTriggers(base.AccountId, triggers, e)
+	return base.Name, cm.TriggerService.AddTriggers(base.AccountId, triggers, e)
 }
 
 type automationDto struct {

@@ -155,6 +155,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// pipeline router
 	pipline.POST("", crudController.AddPipeline())
+	pipline.POST("/template/name/:name", crudController.CreateFromTemplate())
+
 	pipline.PUT("", crudController.UpdatePipeline())
 	pipline.GET("", crudController.GetPipelines())
 	pipline.DELETE("/name/:name", crudController.DeletePipeline())

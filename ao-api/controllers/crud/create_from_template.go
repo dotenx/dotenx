@@ -12,7 +12,13 @@ import (
 func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
-		p, _, _, isTemplate, err := mc.Service.GetPipelineByName("accountId", name)
+		accountId, err := utils.GetAccountId(c)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		p, _, _, isTemplate, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -27,7 +33,6 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
 			AccountId: accountId,
