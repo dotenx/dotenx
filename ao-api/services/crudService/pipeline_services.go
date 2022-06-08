@@ -215,6 +215,17 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 			}
 		}
 		task.Body = body
+		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
+			value, ok := fields[task.Integration]
+			if ok {
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + "does not exists")
+				}
+				task.Integration = fmt.Sprintf("%v", value)
+			}
+		}
 	}
 	for _, trigger := range pipeline.Manifest.Triggers {
 		for k, v := range trigger.Credentials {
@@ -225,6 +236,17 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 				if ok {
 					trigger.Credentials[k] = value
 				}
+			}
+		}
+		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
+			trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
+			value, ok := fields[trigger.Integration]
+			if ok {
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + "does not exists")
+				}
+				trigger.Integration = fmt.Sprintf("%v", value)
 			}
 		}
 	}
@@ -258,4 +280,17 @@ type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
 	DeleteRecord bool   `json:"delete_record"`
+}
+
+func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (exists bool, err error) {
+	integrations, err := cm.IntegrationService.GetAllIntegrations(accountId)
+	if err != nil {
+		return
+	}
+	for _, intg := range integrations {
+		if intg.Name == integration {
+			return true, nil
+		}
+	}
+	return
 }
