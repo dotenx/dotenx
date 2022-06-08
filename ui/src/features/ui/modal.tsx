@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import { IoClose } from 'react-icons/io5'
@@ -50,15 +49,13 @@ function Content({ title, children, size, fluid }: ContentProps) {
 	return (
 		<div className="fixed inset-0 bg-slate-50/75" onClick={modal.close}>
 			<motion.div
-				className={clsx(
-					'mx-auto overflow-hidden bg-white rounded-lg shadow-2xl text-slate-700 outline-none',
-					size === 'md' && 'mt-[10vh]',
-					size === 'lg' && 'mt-[10vh]',
-					size === 'xl' && 'mt-[5vh]'
-				)}
+				className="mx-auto overflow-hidden bg-white rounded-lg shadow-2xl outline-none text-slate-700"
 				initial={false}
 				transition={{ type: 'spring' }}
-				animate={{ maxWidth: size === 'md' ? '30rem' : size === 'lg' ? '60rem' : '80rem' }}
+				animate={{
+					maxWidth: size === 'md' ? '30rem' : size === 'lg' ? '60rem' : '80rem',
+					marginTop: size === 'md' ? '10vh' : size === 'lg' ? '10vh' : '5vh',
+				}}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="flex items-center justify-between px-4 py-2 text-white bg-rose-600">
@@ -71,14 +68,13 @@ function Content({ title, children, size, fluid }: ContentProps) {
 						<IoClose />
 					</button>
 				</div>
-				<div
-					className={clsx(
-						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
-						fluid ? 'h-auto' : getModalHeight(size)
-					)}
+				<motion.div
+					className="p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300"
+					initial={false}
+					animate={{ height: fluid ? 'auto' : getModalHeight(size) }}
 				>
 					{typeof children === 'function' ? children(modal.data ?? {}) : children}
-				</div>
+				</motion.div>
 			</motion.div>
 		</div>
 	)
@@ -87,12 +83,12 @@ function Content({ title, children, size, fluid }: ContentProps) {
 const getModalHeight = (size: Size) => {
 	switch (size) {
 		case 'md':
-			return 'h-[75vh]'
+			return '75vh'
 		case 'lg':
-			return 'h-[75vh]'
+			return '75vh'
 		case 'xl':
-			return 'h-[85vh]'
+			return '85vh'
 		default:
-			return 'h-auto'
+			return 'auto'
 	}
 }
