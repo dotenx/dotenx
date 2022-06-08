@@ -105,7 +105,9 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBody = Record<string, string | { source: string; key: string }>
+export type TaskBodyValue = string | { source: string; key: string } | string[] | null
+
+export type TaskBody = Record<string, TaskBodyValue>
 
 export interface Metadata {
 	icon: string
@@ -160,12 +162,17 @@ export type GetTriggerDefinitionResponse = {
 export interface GetTaskFieldsResponse {
 	fields: {
 		key: string
-		type: string
+		type: FieldType
 		display_name: string
 		description: string
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+}
+
+export enum FieldType {
+	Text = 'text',
+	Code = 'code',
 }
 
 export interface GetExecutionResultResponse {
