@@ -3,6 +3,7 @@ package crud
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -46,8 +47,8 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields)
 		if err != nil {
 			log.Println(err.Error())
-			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
-				c.Status(http.StatusBadRequest)
+			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 			c.Status(http.StatusInternalServerError)
