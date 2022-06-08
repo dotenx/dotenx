@@ -1,4 +1,4 @@
-service: etc
+service: dotenx
 type: Write file
 image: awrmin/write-file
 fields:
