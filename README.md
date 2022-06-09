@@ -1,5 +1,5 @@
 # Do10X
-DoTenX, allows you to automate everything for yourself or offer it as a service with no-code.
+DoTenX, allows you to automate anything for yourself or offer it as a SaaS with no-code.
 
 
 Discord:
