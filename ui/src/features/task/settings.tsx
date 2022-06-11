@@ -8,14 +8,15 @@ import { taskCodeState } from '../flow'
 import { NewIntegration, SelectIntegration } from '../integration'
 import {
 	Button,
+	Description,
 	Field,
 	Form,
 	GroupData,
 	GroupSelect,
 	InputOrSelect,
 	InputOrSelectKind,
-	InputOrSelectProps,
 } from '../ui'
+import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -35,6 +36,7 @@ export function TaskSettingsWithIntegration({
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
 	const hasSecondPanel = isAddingIntegration || taskCode.isOpen
+	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
 
 	useEffect(() => {
 		if (taskForm.taskType) setIsAddingIntegration(false)
@@ -74,7 +76,7 @@ export function TaskSettingsWithIntegration({
 						})
 						setTaskCode({ isOpen: false })
 					}}
-					defaultValue={taskForm.watch(`others.${taskCode.key}`)?.data}
+					defaultValue={'data' in codeFieldValue ? codeFieldValue.data : undefined}
 				/>
 			)}
 		</div>
@@ -113,7 +115,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						errors={errors}
 						placeholder="Task type"
 					/>
-					<div className="text-xs mt-1.5">{selectedTaskType?.description}</div>
+					<Description>{selectedTaskType?.description}</Description>
 				</div>
 				{taskFields.map((taskField) => {
 					const label = taskField.display_name || taskField.key
@@ -155,11 +157,11 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: InputOrSelectProps & { key: string; onClick: () => void }
+	props: ComplexFieldProps & { key: string; onClick: () => void }
 ) => {
 	switch (kind) {
 		case FieldType.Text:
-			return <InputOrSelect {...props} key={props.key} />
+			return <ComplexField {...props} key={props.key} />
 		case FieldType.Code:
 			return (
 				<Button key={props.key} type="button" onClick={props.onClick}>
