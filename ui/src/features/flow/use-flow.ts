@@ -13,11 +13,12 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { AutomationData, Triggers } from '../../api'
+import { AutomationData, TaskBodyValue, Triggers } from '../../api'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 export enum NodeType {
@@ -109,12 +110,15 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 		const bodyEntries = _.toPairs(value.body)
 			.filter(([, fieldValue]) => !!fieldValue)
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue!, fieldName))
+			.map(([fieldName, fieldValue]) => toFieldValue(fieldValue!, fieldName))
 		const vars = _.toPairs(_.omit(value.body, ['code', 'dependency', 'outputs']))
 			.filter(([, fieldValue]) => !!fieldValue)
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			.map(([fieldName, fieldValue]) => toTextOrOutput(fieldValue!, fieldName))
-			.map(([fieldName, fieldValue]) => ({ key: fieldName, value: fieldValue }))
+			.map(([fieldName, fieldValue]) => toFieldValue(fieldValue!, fieldName))
+			.map(([fieldName, fieldValue]) => ({
+				key: fieldName,
+				value: fieldValue as InputOrSelectValue,
+			}))
 		const body = _.fromPairs(bodyEntries)
 		const isCodeTask = value.type.includes('code')
 		return {
@@ -151,27 +155,30 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function toTextOrOutput(
-	fieldValue: string | { source: string; key: string } | string[],
-	fieldName: string
-) {
-	let inputOrSelectValue = {
+function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
+	if (!fieldValue) return ['', '']
+	let complexFieldValue = {
 		type: InputOrSelectKind.Text,
 		data: '',
-	} as InputOrSelectValue | { value: string }[]
+	} as ComplexFieldValue | { value: string }[]
 	if (typeof fieldValue === 'string') {
-		inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
+		complexFieldValue = { type: InputOrSelectKind.Text, data: fieldValue }
 	} else if (_.isArray(fieldValue)) {
-		inputOrSelectValue = fieldValue.map((value) => ({ value }))
-	} else {
-		inputOrSelectValue = {
+		complexFieldValue = fieldValue.map((value) => ({ value }))
+	} else if ('key' in fieldValue) {
+		complexFieldValue = {
 			type: InputOrSelectKind.Option,
 			data: fieldValue.key,
 			groupName: fieldValue.source,
 			iconUrl: '',
 		}
+	} else {
+		const fn = fieldValue.formatter.func_calls[1]
+		const args = fn?.args.filter((arg): arg is string => typeof arg === 'string')
+		complexFieldValue = { fn: fn?.func_name, args }
 	}
-	return [fieldName, inputOrSelectValue] as [string, InputOrSelectValue]
+
+	return [fieldName, complexFieldValue] as [string, ComplexFieldValue]
 }
 
 function mapTriggersToElements(triggers: Triggers | undefined) {
