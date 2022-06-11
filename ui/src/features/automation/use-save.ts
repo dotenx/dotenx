@@ -66,13 +66,28 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 		}
 		for (const key in others) {
 			const taskOtherValue = others[key]
-			if (taskOtherValue.type === 'option') {
-				body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
+			if ('data' in taskOtherValue) {
+				if (taskOtherValue.type === 'option') {
+					body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
+				} else {
+					body[key] = taskOtherValue.data
+				}
 			} else {
-				body[key] = taskOtherValue.data
+				body[key] = {
+					formatter: {
+						format_str: '$1',
+						func_calls: {
+							'1': { func_name: taskOtherValue.fn, args: taskOtherValue.args },
+						},
+					},
+				}
 			}
 		}
-		node.data.vars?.forEach((variable) => (body[variable.key] = variable.value.data))
+		node.data.vars?.forEach((variable) => {
+			if ('data' in variable.value) {
+				body[variable.key] = variable.value.data
+			}
+		})
 		tasks[node.data.name] = {
 			type: node.data.type,
 			body,
