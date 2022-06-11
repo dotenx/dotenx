@@ -1,13 +1,18 @@
 import clsx from 'clsx'
 import { ButtonHTMLAttributes } from 'react'
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+	variant?: 'filled' | 'outlined'
+}
 
-export function Button({ className, ...rest }: ButtonProps) {
+export function Button({ variant = 'filled', className, ...rest }: ButtonProps) {
 	return (
 		<button
 			className={clsx(
-				'flex items-center justify-center gap-1 w-full py-2 px-3 font-medium text-white bg-rose-600 transition  rounded-lg cursor-pointer disabled:cursor-not-allowed hover:bg-rose-700 focus:bg-rose-700 outline-rose-500 outline-offset-4 whitespace-nowrap disabled:bg-gray-400',
+				'flex items-center justify-center gap-1 w-full py-1.5 px-3 font-medium text-white transition rounded-lg cursor-pointer disabled:cursor-not-allowed outline-rose-500 outline-offset-4 whitespace-nowrap disabled:bg-gray-400 border border-rose-600',
+				variant === 'filled' && 'bg-rose-600 hover:bg-rose-700 focus:bg-rose-700',
+				variant === 'outlined' &&
+					'bg-white hover:bg-rose-50 focus:bg-rose-50 text-rose-600',
 				className
 			)}
 			{...rest}
