@@ -13,7 +13,7 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { AutomationData, TaskBodyValue, Triggers } from '../../api'
+import { Arg, AutomationData, TaskBodyValue, Triggers } from '../../api'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
@@ -174,11 +174,17 @@ function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
 		}
 	} else {
 		const fn = fieldValue.formatter.func_calls[1]
-		const args = fn?.args.filter((arg): arg is string => typeof arg === 'string')
+		const args = fn?.args?.map(argToInputOrSelect)
 		complexFieldValue = { fn: fn?.func_name, args }
 	}
 
 	return [fieldName, complexFieldValue] as [string, ComplexFieldValue]
+}
+
+const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
+	return typeof arg === 'string'
+		? { type: InputOrSelectKind.Text, data: arg }
+		: { type: InputOrSelectKind.Option, data: arg.key, groupName: arg.source, iconUrl: '' }
 }
 
 function mapTriggersToElements(triggers: Triggers | undefined) {

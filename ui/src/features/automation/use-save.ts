@@ -9,6 +9,7 @@ import { createAutomation, Manifest, QueryKey, TaskBody, Tasks, Trigger, Trigger
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { useModal } from '../hooks'
+import { InputOrSelectKind } from '../ui'
 import { saveFormSchema, SaveFormSchema } from './save-form'
 
 export function useSaveForm() {
@@ -77,7 +78,14 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 					formatter: {
 						format_str: '$1',
 						func_calls: {
-							'1': { func_name: taskOtherValue.fn, args: taskOtherValue.args },
+							'1': {
+								func_name: taskOtherValue.fn,
+								args: taskOtherValue.args.map((arg) =>
+									arg.type === InputOrSelectKind.Text
+										? arg.data
+										: { source: arg.groupName, key: arg.data }
+								),
+							},
 						},
 					},
 				}

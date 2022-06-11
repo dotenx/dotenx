@@ -6,13 +6,15 @@ import { useQuery } from 'react-query'
 import { getFormatterFunctions, QueryKey } from '../../api'
 import { Button } from './button'
 import { Description } from './description'
-import { Field, FieldError } from './field'
+import { FieldError } from './field'
 import {
 	GroupData,
+	InputOrSelect,
 	InputOrSelectKind,
 	InputOrSelectRaw,
 	InputOrSelectRawProps,
 	InputOrSelectValue,
+	SelectValue,
 } from './input-or-select'
 import { NewSelect } from './new-select'
 
@@ -20,7 +22,7 @@ export type ComplexFieldValue = InputOrSelectValue | FormattedValue
 
 interface FormattedValue {
 	fn: string
-	args: string[]
+	args: InputOrSelectValue[]
 }
 
 export interface ComplexFieldProps {
@@ -93,8 +95,6 @@ function ComplexFieldRaw({
 		onChange({ type: InputOrSelectKind.Text, data: '' })
 	}
 
-	console.log(value)
-
 	return (
 		<div>
 			{view === 'input-or-select' && !isFnValue(value) && (
@@ -109,7 +109,11 @@ function ComplexFieldRaw({
 				/>
 			)}
 			{view === 'formatting' && (
-				<FormatterFnForm onSubmit={switchToFormatted} onCancel={switchToText} />
+				<FormatterFnForm
+					onSubmit={switchToFormatted}
+					onCancel={switchToText}
+					groups={groups}
+				/>
 			)}
 			{(view === 'formatted' || isFnValue(value)) && (
 				<FormattedBox label={label} value={value} onClose={resetFormatter} />
@@ -142,8 +146,9 @@ function Formatter({ onClickFormatter, ...rest }: FormatterProps) {
 interface FormatterFnFormProps {
 	onSubmit: (values: FormattedValue) => void
 	onCancel: () => void
+	groups: GroupData[]
 }
-function FormatterFnForm({ onSubmit, onCancel }: FormatterFnFormProps) {
+function FormatterFnForm({ onSubmit, onCancel, groups }: FormatterFnFormProps) {
 	const form = useForm<FormattedValue>({ defaultValues: { fn: '', args: [] } })
 	const fnsQuery = useQuery(QueryKey.GetFormatterFunctions, getFormatterFunctions)
 	const options = _.entries(fnsQuery.data?.data).map(([key]) => ({
@@ -176,7 +181,8 @@ function FormatterFnForm({ onSubmit, onCancel }: FormatterFnFormProps) {
 				{args && <p className="text-sm font-bold">Arguments</p>}
 				<div className="flex flex-col gap-2 mt-1.5">
 					{args?.map((_, index) => (
-						<Field
+						<InputOrSelect
+							groups={groups}
 							key={index}
 							control={form.control}
 							errors={form.formState.errors}
@@ -205,13 +211,27 @@ interface FormattedValueProps {
 function FormattedBox({ value, onClose, label }: FormattedValueProps) {
 	if (!value || !isFnValue(value)) return null
 
+	const args = value.args.map((arg, index) =>
+		arg.type === InputOrSelectKind.Text ? (
+			<span key={index}>
+				{`"${arg.data}"`}
+				{index !== value.args.length - 1 ? ',' : ''}
+			</span>
+		) : (
+			<span key={index} className="flex">
+				<FormattedOutput value={arg} />
+				{index !== value.args.length - 1 ? ',' : ''}
+			</span>
+		)
+	)
+
 	return (
 		<div className="flex flex-col gap-1">
 			{label && <div className="text-sm font-bold">{label}</div>}
 			<div className="flex items-center justify-between p-1 border rounded-lg border-slate-400">
 				<div className="bg-gray-800 text-white px-1.5 rounded flex self-stretch items-center">
-					<span className="font-mono text-xs font-black">
-						{value.fn}({value.args.map((arg) => `"${arg}"`).join(', ')})
+					<span className="flex font-mono text-xs font-black">
+						{value.fn}(<div className="flex gap-1">{args}</div>)
 					</span>
 				</div>
 				<button
@@ -227,4 +247,14 @@ function FormattedBox({ value, onClose, label }: FormattedValueProps) {
 
 function isFnValue(value: ComplexFieldValue): value is FormattedValue {
 	return 'fn' in value
+}
+
+function FormattedOutput({ value }: { value: SelectValue }) {
+	return (
+		<span className="flex items-center gap-2 px-1 py-px rounded bg-gray-50 text-slate-700">
+			{value.iconUrl && <img className="w-4 h-4" src={value.iconUrl} alt="" />}
+			<span className="font-medium">{value.groupName}</span>
+			<span>{value.data}</span>
+		</span>
+	)
 }

@@ -18,8 +18,8 @@ const selectValue = z.object({
 	data: z.string(),
 	groupName: z.string(),
 })
-const fnValue = z.object({ fn: z.string(), args: z.array(z.string()) })
 const inputOrSelectValue = z.object(textValue).or(selectValue)
+const fnValue = z.object({ fn: z.string(), args: z.array(inputOrSelectValue) })
 const complexValue = inputOrSelectValue.or(fnValue)
 
 const schema = z.object({

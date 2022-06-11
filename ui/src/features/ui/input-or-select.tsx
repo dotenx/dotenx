@@ -62,7 +62,7 @@ interface InputValue {
 	data: string
 }
 
-interface SelectValue {
+export interface SelectValue {
 	type: InputOrSelectKind.Option
 	data: string
 	groupName: string
