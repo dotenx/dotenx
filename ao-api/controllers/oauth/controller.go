@@ -183,7 +183,7 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	refreshUrl += "&client_secret=" + clientSecret
 	refreshUrl += "&access_token=" + dto.AccessToken
 
-	out, err, status, _ = helper.HttpRequest(http.MethodGet, refreshUrl, nil, time.Minute, true)
+	out, err, status, _ = helper.HttpRequest(http.MethodGet, refreshUrl, nil, nil, time.Minute, true)
 	log.Println("instagram response:", string(out))
 	log.Println("-----------------------------------------------------------")
 	if err != nil {
