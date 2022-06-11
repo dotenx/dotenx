@@ -11,7 +11,7 @@ interface Option {
 	value: string
 }
 
-interface SelectProps {
+export interface NewSelectProps {
 	label?: string
 	errors?: FieldErrors
 	name: string
@@ -29,7 +29,7 @@ export function NewSelect({
 	options = [],
 	placeholder,
 	...rest
-}: SelectProps) {
+}: NewSelectProps) {
 	return (
 		<div className="flex flex-col gap-1" {...rest}>
 			<label htmlFor={name} className="text-sm font-bold">
