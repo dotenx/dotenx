@@ -1,0 +1,17 @@
+service: slack
+type: Send slack message
+image: awrmin/slack-send-message
+integrations: [slack-bot]
+fields:
+    - key: target_id
+      type: text
+      description: user or channel id
+      display_name: target id
+    - key: text
+      type: text
+      description: text you want to send in your message
+      display_name: text
+author: Armingodiz
+icon: https://cdn-icons-png.flaticon.com/512/2111/2111615.png
+node_color: E01E5A
+description: Sends slack message using slack bot

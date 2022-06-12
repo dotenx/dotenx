@@ -1,0 +1,15 @@
+service: dotenx
+type: Run node code
+image: awrmin/run-node-code
+fields:
+    - key: code
+      type: code
+    - key: dependency
+      type: code
+    - key: outputs
+      type: string-array
+
+author: mohsen
+icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
+node_color: 2ECC71
+description: runs your node code

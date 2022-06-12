@@ -1,0 +1,26 @@
+service: stripe
+type: Stripe find customer
+image: hawwwdi/stripe-find-customer:latest
+integrations: [stripe]
+fields:
+    - key: CUS_EMAIL
+      type: text
+      description: customer's email address (e.g abc@gmail.com)
+      display_name: customer email
+    - key: CUS_ID
+      type: text
+      description: customer's stripe Id (e.g cus_sadfa8234sad)
+      display_name: customer id
+outputs:
+    - key: customer_id
+      type: text
+      description: customer id
+      display_name: customer id
+    - key: customer_email
+      type: text
+      description: customer email address
+      display_name: customer email
+author: hawwwdi
+icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
+node_color: FBFB11
+description: Finds an existing customer by their email address or Stripe ID.

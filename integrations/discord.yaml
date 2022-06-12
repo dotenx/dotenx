@@ -1,0 +1,7 @@
+type: discord
+secrets:
+  - name: DISCORD ACCESS TOKEN
+    key: ACCESS_TOKEN
+  - name: REFRESH TOKEN 
+    key: REFRESH_TOKEN
+oauth_provider: discord
