@@ -1,6 +1,0 @@
-type: aws
-secrets:
-  - name: AWS KEY
-    key: KEY
-  - name: AWS SECRET 
-    key: SECRET

@@ -1,4 +1,0 @@
-type: discord webhook
-secrets:
-  - name: USER URL
-    key: URL

@@ -1,4 +1,0 @@
-type: jira
-secrets:
-  - name: JIRA ACCESS TOKEN
-    key: ACCESS_TOKEN

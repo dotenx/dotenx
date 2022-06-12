@@ -1,5 +1,0 @@
-.vscode
-*.out
-release/
-vendor/
-providers.json
