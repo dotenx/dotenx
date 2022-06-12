@@ -1,0 +1,6 @@
+.vscode
+*.out
+release/
+vendor/
+providers.json
+# .env.production

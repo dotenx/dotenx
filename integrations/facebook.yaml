@@ -1,0 +1,5 @@
+type: facebook
+secrets:
+  - name: FACEBOOK ACCESS TOKEN
+    key: ACCESS_TOKEN
+oauth_provider: facebook
