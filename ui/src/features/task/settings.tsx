@@ -14,9 +14,9 @@ import {
 	GroupData,
 	GroupSelect,
 	InputOrSelect,
-	InputOrSelectKind,
+	InputOrSelectKind
 } from '../ui'
-import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
+import { ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -164,7 +164,8 @@ const getFieldComponent = (
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					<ComplexField {...props} />
+					{/* TODO: PLEASE USE ComplexField WHEN BACKEND FORMATTER IS READY */}
+					<InputOrSelect {...props} />
 					<Description>{props.description}</Description>
 				</div>
 			)
