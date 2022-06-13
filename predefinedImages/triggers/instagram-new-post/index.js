@@ -6,12 +6,23 @@ const main = async function () {
 	const triggerName = process.env.TRIGGER_NAME
 	const workspace = process.env.WORKSPACE
   const triggerFrequency = process.env.TRIGGER_FREQUENCY || 90
+	const accessToken = process.env.INTEGRATION_ACCESS_TOKEN
 
-	if (triggerName == "") {
+  const variables = {
+    pipelineEndpoint,
+    accountId,
+    triggerName,
+    workspace,
+    triggerFrequency,
+    accessToken
+  }
+
+  console.log('Trigger variables: ', variables)
+
+  if (triggerName == "") {
 		console.log("your trigger name is not set")
 		return
 	}
-	const accessToken = process.env.INTEGRATION_ACCESS_TOKEN
 
   try {
     const getAllPostsUrl = "https://graph.instagram.com/me/media?fields=id,timestamp&access_token=" + accessToken
@@ -60,6 +71,7 @@ const main = async function () {
     }
 
     await axios.post(pipelineEndpoint, body)
+    console.log('Pipeline start data: ', body)
     console.log("trigger successfully started")
   } catch (error) {
     console.log("Somthing went wrong: ", error)
