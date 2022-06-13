@@ -1,0 +1,12 @@
+service: google
+type: Create google spreadsheet
+image: mehrdadesh/create-google-spreadsheet
+integrations: [google]
+fields:
+    - key: title
+      type: text
+      description: your google spreadsheet title
+author: mehrdadesh
+icon: https://cdn-icons-png.flaticon.com/512/281/281761.png
+node_color: FBFB11
+description: Create a new google spreadsheet
