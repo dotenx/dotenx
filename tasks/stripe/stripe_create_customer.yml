@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create customer
-image: hawwwdi/stripe-create-customer:latest
+image: stripe/stripe-create-customer:lambda
 integrations: [stripe]
 fields:
     - key: CUS_NAME
