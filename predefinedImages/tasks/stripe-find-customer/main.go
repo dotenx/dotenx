@@ -8,25 +8,37 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
-func main() {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	email := os.Getenv("CUS_EMAIL")
-	id := os.Getenv("CUS_ID")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
+type Event struct {
+	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+	CUS_ID         string `json:"CUS_ID"`
+	CusEmail       string `json:"CUS_EMAIL"`
+	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+	Authorization  string `json:"AUTHORIZATION"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	secretKey := event.SecretKey
+	email := event.CusEmail
+	id := event.CUS_ID
+	resultEndpoint := event.ResultEndpoint
+	authorization := event.Authorization
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	cus, err := findCustomer(sc, id, email)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return Response{Successfull: false}, err
 	}
 	data := map[string]interface{}{
 		"status":       "started",
@@ -46,16 +58,16 @@ func main() {
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return Response{Successfull: false}, err
 	}
 	payload := bytes.NewBuffer(json_data)
 	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println(status)
-		return
 	}
 	fmt.Println(string(out))
+	return Response{Successfull: true}, nil
 }
 
 func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, error) {
@@ -82,6 +94,10 @@ func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, err
 	res["customer_id"] = cus.ID
 	res["customer_email"] = cus.Email
 	return res, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

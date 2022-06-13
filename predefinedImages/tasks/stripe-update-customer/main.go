@@ -11,11 +11,25 @@ import (
 	"os"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
-func main() {
+type Event struct {
+	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+	CusName        string `json:"CUS_NAME"`
+	CusPhone       string `json:"CUS_PHONE"`
+	CusEmail       string `json:"CUS_EMAIL"`
+	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+	Authorization  string `json:"AUTHORIZATION"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
 	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
 	name := os.Getenv("CUS_NAME")
 	phone := os.Getenv("CUS_PHONE")
@@ -28,7 +42,7 @@ func main() {
 	id, err := updateCustomer(sc, id, name, phone, email)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return Response{Successfull: false}, err
 	}
 	outputs := make(map[string]interface{})
 	outputs["customer_id"] = id
@@ -40,7 +54,7 @@ func main() {
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return Response{Successfull: false}, err
 	}
 	headers := []Header{
 		{
@@ -57,9 +71,13 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println(status)
-		return
 	}
 	fmt.Println(string(out))
+	return Response{Successfull: true}, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func updateCustomer(sc *client.API, id, Name, Phone, Email string) (string, error) {
