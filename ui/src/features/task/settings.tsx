@@ -126,6 +126,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						label: label,
 						name: `others.${taskField.key}`,
 						groups: outputGroups,
+						description: taskField.description,
 						onClick: () =>
 							setTaskCodeState({
 								isOpen: true,
@@ -157,11 +158,16 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: ComplexFieldProps & { key: string; onClick: () => void }
+	props: ComplexFieldProps & { key: string; onClick: () => void; description: string }
 ) => {
 	switch (kind) {
 		case FieldType.Text:
-			return <ComplexField {...props} key={props.key} />
+			return (
+				<div key={props.key}>
+					<ComplexField {...props} />
+					<Description>{props.description}</Description>
+				</div>
+			)
 		case FieldType.Code:
 			return (
 				<Button key={props.key} type="button" onClick={props.onClick}>
