@@ -31,6 +31,11 @@ func (controller *OauthController) OAuth(c *gin.Context) {
 		c.Redirect(307, providers["slack"].DirectUrl)
 		return
 	}
+	if c.Param("provider") == "instagram" {
+		providers := oauth.GetProvidersMap()
+		c.Redirect(307, providers["instagram"].DirectUrl)
+		return
+	}
 	c.Request.URL.RawQuery = q.Encode()
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
@@ -76,6 +81,17 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 			return
 		}
 		c.Redirect(307, UI+"?access_token="+accessToekn)
+		return
+	}
+	if providerStr == "instagram" {
+		code := c.Query("code")
+		providers := oauth.GetProvidersMap()
+		accessToken, err := getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/instagram")
+		if err != nil {
+			c.Redirect(307, UI+"?error="+err.Error())
+			return
+		}
+		c.Redirect(307, UI+"?access_token="+accessToken)
 		return
 	}
 	q.Add("provider", providerStr)
@@ -125,4 +141,57 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 	}
 	err = json.Unmarshal(out, &dto)
 	return dto.AccessToekn, err
+}
+
+func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
+	var dto struct {
+		AccessToken string `json:"access_token"`
+	}
+	data := "client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://api.instagram.com/oauth/access_token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("instagram response:", string(out))
+	log.Println("-----------------------------------------------------------")
+	if err != nil {
+		return "", err
+	}
+	if status != 200 {
+		return "", errors.New("not ok with status ")
+	}
+	err = json.Unmarshal(out, &dto)
+
+	var refreshDto struct {
+		AccessToken string `json:"access_token"`
+		TokenType   string `json:"token_type"`
+		ExpiresIn   int    `json:"expires_in"`
+	}
+
+	refreshUrl := "https://graph.instagram.com/access_token"
+	refreshUrl += "?grant_type=ig_exchange_token"
+	refreshUrl += "&client_secret=" + clientSecret
+	refreshUrl += "&access_token=" + dto.AccessToken
+
+	out, err, status, _ = helper.HttpRequest(http.MethodGet, refreshUrl, nil, nil, time.Minute, true)
+	log.Println("instagram response:", string(out))
+	log.Println("-----------------------------------------------------------")
+	if err != nil {
+		return "", err
+	}
+	if status != 200 {
+		return "", errors.New("not ok with status ")
+	}
+	err = json.Unmarshal(out, &refreshDto)
+	return refreshDto.AccessToken, err
 }
