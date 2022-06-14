@@ -1,9 +1,9 @@
 #! /bin/bash
 
-region="us-east-1"
-function_name="hojjat12-twitter-send-tweet-lambda"
-repository_name="hojjat12/twitter-send-tweet"
-image_name="hojjat12/twitter-send-tweet:lambda"
+export region="us-east-1"
+export function_name="hawwwdi-stripe-payment-completed-lambda"
+export repository_name="hawwwdi/stripe-payment-completed"
+export image_name="hawwwdi/stripe-payment-completed:lambda"
 
 ##### only once
 # aws iam create-role --role-name lambda-ex --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'

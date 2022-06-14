@@ -9,25 +9,45 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	text := os.Getenv("text")
-	pageId := os.Getenv("page_id")
+type Event struct {
+	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+	PageId      string `json:"page_id"`
+	Text        string `json:"text"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	accessToken := event.AccessToken
+	text := event.Text
+	pageId := event.PageId
 	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		return resp, err
 	}
 	_, err = publishPost(text, pageId, pageAccessToken)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		return resp, err
 	}
 	fmt.Println("post successfully published")
+	resp.Successfull = true
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func publishPost(text, pageId, pageAccessToken string) (id string, err error) {

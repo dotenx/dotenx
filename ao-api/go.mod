@@ -3,6 +3,7 @@ module github.com/dotenx/dotenx/ao-api
 go 1.17
 
 require (
+	github.com/aws/aws-sdk-go v1.44.33
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/docker v20.10.14+incompatible
 	github.com/dotenx/goth v1.69.2
@@ -11,7 +12,6 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-co-op/gocron v1.13.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
@@ -40,6 +40,7 @@ require (
 	github.com/gorilla/pat v1.0.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/markbates/going v1.0.0 // indirect

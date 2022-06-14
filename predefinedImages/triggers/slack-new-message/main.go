@@ -4,49 +4,65 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/slack-go/slack"
 )
 
-func main() {
-	triggerName := os.Getenv("TRIGGER_NAME")
-	workspace := os.Getenv("WORKSPACE")
-	accId := os.Getenv("ACCOUNT_ID")
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	Workspace        string `json:"WORKSPACE"`
+	AccessToken      string `json:"INTEGRATION_ACCESS_TOKEN"`
+	ChannelId        string `json:"channel_id"`
+	PassedSeconds    string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	triggerName := event.TriggerName
+	workspace := event.Workspace
+	accId := event.AccountId
 	if triggerName == "" {
 		log.Println("your trigger name is not set")
-		return
+		return resp, errors.New("trigger name is not set")
 	}
-	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	channelId := os.Getenv("channel_id")
-	passedSeconds := os.Getenv("passed_seconds")
+	access_token := event.AccessToken
+	channelId := event.ChannelId
+	passedSeconds := event.PassedSeconds
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		log.Println(err.Error())
-		return
+		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
+	pipelineEndpoint := event.PipelineEndpoint
+
 	api := slack.New(access_token)
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId})
 	if err != nil {
 		log.Println(err.Error())
-		return
+		return resp, err
 	}
 	if len(res.Messages) > 0 {
 		unixTime := strings.Split(res.Messages[0].Timestamp, ".")
 		intUnixTime, err := strconv.Atoi(unixTime[0])
 		if err != nil {
 			log.Println(err.Error())
-			return
+			return resp, err
 		}
 		if selectedUnix < int64(intUnixTime) {
 			fmt.Println("calling endpoint")
@@ -60,22 +76,30 @@ func main() {
 			json_data, err := json.Marshal(body)
 			if err != nil {
 				log.Println(err)
-				return
+				return resp, err
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
 			if err != nil {
 				fmt.Println(err)
 				fmt.Println(status)
-				return
+				return resp, err
 			}
 			fmt.Println(string(out))
+			fmt.Println("trigger successfully started")
+			return resp, nil
 		} else {
 			fmt.Println("no new message in channel")
+			return resp, nil
 		}
 	} else {
 		fmt.Println("no message in channel")
+		return resp, nil
 	}
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

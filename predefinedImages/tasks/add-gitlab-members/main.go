@@ -3,25 +3,40 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	privateToken := os.Getenv("privateToken")
-	id := os.Getenv("id")
-	userID := os.Getenv("userId")
-	accessLevel := os.Getenv("accessLevel")
-	expiresAt := os.Getenv("expiresAt")
-	memberType := os.Getenv("source")
+type Event struct {
+	PrivateToken string `json:"privateToken"`
+	Id           string `json:"id"`
+	UserId       string `json:"userId"`
+	AccessLevel  string `json:"accessLevel"`
+	ExpiresAt    string `json:"expiresAt"`
+	Source       string `json:"source"`
+}
 
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	privateToken := event.PrivateToken
+	id := event.Id
+	userID := event.UserId
+	accessLevel := event.AccessLevel
+	expiresAt := event.ExpiresAt
+	memberType := event.Source
 	fmt.Printf("adding user %s to %s %s\n", userID, memberType, id)
 
 	endpoint := fmt.Sprintf("/%s/%s/members", memberType, id)
@@ -56,6 +71,8 @@ func main() {
 	if err != nil {
 		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
 		fmt.Printf("Error: %s\n", err.Error())
+		resp.Successfull = false
+		return resp, err
 	}
 
 	// Todo: should I show this?
@@ -66,11 +83,17 @@ func main() {
 		json.Unmarshal(out, &resultData)
 		fmt.Println(resultData)
 		fmt.Println("action done successfully")
-		return
+		resp.Successfull = true
+		return resp, nil
 	} else {
-		fmt.Println("action Failed")
-		panic("Failed")
+		fmt.Println("action failed")
+		resp.Successfull = false
+		return resp, errors.New("action failed")
 	}
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

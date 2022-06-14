@@ -1,6 +1,6 @@
 service: gitlab
 type: Remove gitlab member
-image: awrmin/remove_gitlab_members
+image: awrmin/remove_gitlab_members:lambda
 fields:
     - key: privateToken
       type: text

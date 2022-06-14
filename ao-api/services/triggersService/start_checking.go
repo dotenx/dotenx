@@ -3,11 +3,19 @@ package triggerService
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
@@ -64,7 +72,7 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 		return
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image
-	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApi, trigger.Endpoint)
+	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApiLocal, trigger.Endpoint)
 	envs := []string{
 		"PIPELINE_ENDPOINT=" + pipelineUrl,
 		"TRIGGER_NAME=" + trigger.Name,
@@ -76,7 +84,11 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
-	dc.checkTrigger(trigger.Name, img, envs)
+	if config.Configs.App.RunLocally {
+		dc.checkTrigger(trigger.Name, img, envs)
+	} else {
+		dc.invokeAwsLambda(trigger.Name, img, envs)
+	}
 }
 
 func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
@@ -147,4 +159,60 @@ func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 	_, err = buf.ReadFrom(reader)
 	logs := buf.String()
 	return logs, err
+}
+
+func (dc dockerCleint) invokeAwsLambda(triggerName, img string, envs []string) {
+	awsRegion := config.Configs.Secrets.AwsRegion
+	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
+	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config: aws.Config{
+			Region:      &awsRegion,
+			Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
+		},
+	}))
+	svc := lambda.New(sess)
+
+	lambdaPayload := make(map[string]string)
+	for _, env := range envs {
+		key := strings.Split(env, "=")[0]
+		value := strings.Split(env, "=")[1]
+		lambdaPayload[key] = value
+	}
+	payload, err := json.Marshal(lambdaPayload)
+	if err != nil {
+		log.Println("error in json.Marshal: " + err.Error())
+		return
+	}
+	functionName := strings.ReplaceAll(img, ":", "-")
+	functionName = strings.ReplaceAll(functionName, "/", "-")
+	logType := "Tail"
+	log.Println("triggerName:", triggerName)
+	log.Println("functionName:", functionName)
+	log.Println("payload:", string(payload))
+	input := &lambda.InvokeInput{
+		FunctionName: &functionName,
+		Payload:      payload,
+		LogType:      &logType,
+	}
+	lambdaResult, err := svc.Invoke(input)
+	if err != nil {
+		log.Println("error in invoking lambda function: " + err.Error())
+		return
+	}
+	log.Printf("Full log of function %s:\n%s\n", functionName, lambdaResult.GoString())
+	if lambdaResult.LogResult != nil {
+		logs, _ := base64.StdEncoding.DecodeString(*lambdaResult.LogResult)
+		log.Println("function log:", string(logs))
+	} else {
+		log.Println("function payload:", string(lambdaResult.Payload))
+	}
+	if lambdaResult.FunctionError != nil {
+		log.Println("error during function execution: " + *lambdaResult.FunctionError)
+		return
+	}
+	if *lambdaResult.StatusCode != http.StatusOK {
+		log.Println("error after invoking lambda function. status code: " + strconv.Itoa(int(*lambdaResult.StatusCode)))
+		return
+	}
 }

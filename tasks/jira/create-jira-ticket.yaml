@@ -1,6 +1,6 @@
 service: jira
 type: Create jira ticket
-image: awrmin/create-jira-ticket
+image: awrmin/create-jira-ticket:lambda
 integrations: [jira]
 fields:
     - key: project_key

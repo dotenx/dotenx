@@ -3,27 +3,47 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"os"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-func main() {
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	refreshToken := os.Getenv("INTEGRATION_REFRESH_TOKEN")
-	from := os.Getenv("from")
-	to := os.Getenv("to")
-	subject := os.Getenv("subject")
-	message := os.Getenv("message")
+type Event struct {
+	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
+	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
+	From         string `json:"from"`
+	To           string `json:"to"`
+	Subject      string `json:"subject"`
+	Message      string `json:"message"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	accessToken := event.AccessToken
+	refreshToken := event.RefreshToken
+	from := event.From
+	to := event.To
+	subject := event.Subject
+	message := event.Message
 	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		return resp, err
 	}
 	fmt.Println("message send successfully")
+	resp.Successfull = true
+	return resp, nil
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func sendEmail(from, to, subject, message, accessToken, refreshToken string) (err error) {
