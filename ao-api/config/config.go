@@ -60,6 +60,9 @@ type (
 		SessionAuthSecret    string `envconfig:"AOA_SESSION_AUTH_SECRET"`
 		SessionEncryptSecret string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
 		RunnerToken          string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
+		AwsAccessKeyId       string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
+		AwsSecretAccessKey   string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
+		AwsRegion            string `envconfig:"AOA_AWS_REGION"`
 	}
 )
 

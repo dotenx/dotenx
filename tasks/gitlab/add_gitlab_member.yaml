@@ -1,6 +1,6 @@
 service: gitlab
 type: Add gitlab member
-image: awrmin/add_gitlab_members
+image: awrmin/add_gitlab_members:lambda
 fields:
     - key: privateToken
       type: text

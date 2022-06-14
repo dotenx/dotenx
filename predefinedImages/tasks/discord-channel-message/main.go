@@ -6,16 +6,27 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Body struct {
 	Content string `json:"content"`
 }
 
-func main() {
-	webhookURL := os.Getenv("WEBHOOK_URL")
-	text := os.Getenv("TEXT")
+type Event struct {
+	WebhookUrl string `json:"WEBHOOK_URL"`
+	Text       string `json:"TEXT"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	lambdaResp := Response{}
+	webhookURL := event.WebhookUrl
+	text := event.Text
 	body := Body{
 		Content: text,
 	}
@@ -25,12 +36,19 @@ func main() {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		lambdaResp.Successfull = false
+		return lambdaResp, err
 	}
 	if resp.StatusCode != http.StatusOK {
 		bytes, _ := ioutil.ReadAll(resp.Body)
 		fmt.Printf("send message failed, status: %v, response: %v", resp.StatusCode, string(bytes))
-		os.Exit(1)
+		lambdaResp.Successfull = false
+		return lambdaResp, err
 	}
-	return
+	lambdaResp.Successfull = true
+	return lambdaResp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }

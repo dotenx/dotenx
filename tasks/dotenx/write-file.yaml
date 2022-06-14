@@ -1,6 +1,6 @@
 service: dotenx
 type: Write file
-image: awrmin/write-file
+image: awrmin/write-file:lambda
 fields:
     - key: name
       type: text

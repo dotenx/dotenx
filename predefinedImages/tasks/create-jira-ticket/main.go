@@ -2,24 +2,47 @@ package main
 
 import (
 	"errors"
-	"os"
+	"fmt"
 	"strings"
 
 	jira "github.com/andygrunwald/go-jira"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	project_key := os.Getenv("project_key")
-	issueType := os.Getenv("issue_type")
-	description := os.Getenv("description")
-	summery := os.Getenv("summery")
-	jiraUrl := os.Getenv("jira_url")
+type Event struct {
+	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+	ProjectKey  string `json:"project_key"`
+	IssueType   string `json:"issue_type"`
+	Description string `json:"description"`
+	Summery     string `json:"summery"`
+	JiraUrl     string `json:"jira_url"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	access_token := event.AccessToken
+	project_key := event.ProjectKey
+	issueType := event.IssueType
+	description := event.Description
+	summery := event.Summery
+	jiraUrl := event.JiraUrl
 	err := CreateTicket(project_key, issueType, description, summery, jiraUrl, access_token)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		resp.Successfull = false
+		return resp, err
 	}
+	fmt.Println("ticket creation done successfully")
+	resp.Successfull = true
+	return resp, nil
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func CreateTicket(ProjectKey, issueType, description, summery, jiraUrl, accessToken string) error {

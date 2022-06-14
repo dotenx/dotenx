@@ -8,34 +8,50 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )
 
-func main() {
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	triggerName := os.Getenv("TRIGGER_NAME")
-	accId := os.Getenv("ACCOUNT_ID")
-	consumerKey := os.Getenv("INTEGRATION_CONSUMER_KEY")
-	consumerSecret := os.Getenv("INTEGRATION_CONSUMER_SECRET")
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	accessTokenSecret := os.Getenv("INTEGRATION_ACCESS_TOKEN_SECRET")
-	userName := os.Getenv("username")
-	passedSeconds := os.Getenv("passed_seconds")
+type Event struct {
+	PipelineEndpoint  string `json:"PIPELINE_ENDPOINT"`
+	TriggerName       string `json:"TRIGGER_NAME"`
+	AccountId         string `json:"ACCOUNT_ID"`
+	ConsumerKey       string `json:"INTEGRATION_CONSUMER_KEY"`
+	ConsumerSecret    string `json:"INTEGRATION_CONSUMER_SECRET"`
+	AccessToken       string `json:"INTEGRATION_ACCESS_TOKEN"`
+	AccessTokenSecret string `json:"INTEGRATION_ACCESS_TOKEN_SECRET"`
+	Username          string `json:"username"`
+	PassedSeconds     string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	pipelineEndpoint := event.PipelineEndpoint
+	triggerName := event.TriggerName
+	accId := event.AccountId
+	consumerKey := event.ConsumerKey
+	consumerSecret := event.ConsumerSecret
+	accessToken := event.AccessToken
+	accessTokenSecret := event.AccessTokenSecret
+	userName := event.Username
+	passedSeconds := event.PassedSeconds
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	tweets, err := getTweets(userName, consumerKey, consumerSecret, accessToken, accessTokenSecret)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 	if len(tweets) > 0 {
 		createdTime, _ := tweets[0].CreatedAtTime()
@@ -49,7 +65,7 @@ func main() {
 			json_data, err := json.Marshal(body)
 			if err != nil {
 				fmt.Println(err)
-				return
+				return resp, err
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
@@ -57,19 +73,22 @@ func main() {
 				fmt.Println("response:", string(out))
 				fmt.Println("error:", err)
 				fmt.Println("status code:", status)
-				return
+				return resp, err
 			}
 			fmt.Println("trigger successfully started")
-			return
+			return resp, nil
 		} else {
 			fmt.Println("no new tweet found in last", passedSeconds, "seconds")
-			return
+			return resp, nil
 		}
 	} else {
 		fmt.Println("no new tweet found")
-		return
+		return resp, nil
 	}
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 // get tweets timeline based on this repo: https://github.com/dghubble/go-twitter

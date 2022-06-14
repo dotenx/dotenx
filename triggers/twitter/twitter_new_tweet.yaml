@@ -1,7 +1,7 @@
 service: twitter
 type: Twitter new tweet
 integrations: [twitter]
-image: hojjat12/twitter-new-tweet:latest
+image: hojjat12/twitter-new-tweet:lambda
 credentials:
     - key: username
       type: text

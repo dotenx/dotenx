@@ -4,17 +4,80 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
+
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	SecretKey        string `json:"INTEGRATION_SECRET_KEY"`
+	Workspace        string `json:"WORKSPACE"`
+	PassedSeconds    string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	secretKey := event.SecretKey
+	passedSeconds := event.PassedSeconds
+	accId := event.AccountId
+	seconds, err := strconv.Atoi(passedSeconds)
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	selectedUnix := time.Now().Unix() - (int64(seconds))
+	pipelineEndpoint := event.PipelineEndpoint
+	workspace := event.Workspace
+	triggerName := event.TriggerName
+
+	if triggerName == "" {
+		fmt.Println("your trigger name is not set")
+		return resp, errors.New("trigger name is not set")
+	}
+	sc := &client.API{}
+	sc.Init(secretKey, nil)
+	invoices, err := getInvoices(sc, selectedUnix)
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	for _, i := range invoices {
+		body := map[string]interface{}{
+			"workspace": workspace,
+			triggerName: i,
+			"accountId": accId,
+		}
+		json_data, err := json.Marshal(body)
+		if err != nil {
+			fmt.Println(err)
+			return resp, err
+		}
+		payload := bytes.NewBuffer(json_data)
+		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+		if err != nil {
+			fmt.Println(status)
+			fmt.Println(err)
+			return resp, err
+		}
+		fmt.Println(string(out))
+	}
+	fmt.Println("trigger successfully ended")
+	return resp, nil
+}
 
 type Invoice struct {
 	Id              string `json:"id"`
@@ -32,49 +95,7 @@ type Invoice struct {
 }
 
 func main() {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	passedSeconds := os.Getenv("passed_seconds")
-	accId := os.Getenv("ACCOUNT_ID")
-	seconds, err := strconv.Atoi(passedSeconds)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	selectedUnix := time.Now().Unix() - (int64(seconds))
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	workspace := os.Getenv("WORKSPACE")
-	triggerName := os.Getenv("TRIGGER_NAME")
-	if triggerName == "" {
-		fmt.Println("your trigger name is not set")
-		os.Exit(1)
-	}
-	sc := &client.API{}
-	sc.Init(secretKey, nil)
-	invoices, err := getInvoices(sc, selectedUnix)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	for _, i := range invoices {
-		body := map[string]interface{}{
-			"workspace": workspace,
-			triggerName: i,
-			"accountId": accId,
-		}
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println(status)
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		fmt.Println(string(out))
-	}
+	lambda.Start(HandleLambdaEvent)
 }
 
 func getInvoices(sc *client.API, interval int64) ([]Invoice, error) {

@@ -4,19 +4,84 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
 //status: `requires_payment_method`, `requires_confirmation`, `requires_action`, `processing`, `requires_capture`, `canceled`, or `succeeded`
+
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	SecretKey        string `json:"INTEGRATION_SECRET_KEY"`
+	Workspace        string `json:"WORKSPACE"`
+	Status           string `json:"PAYMENT_STATUS"`
+	PassedSeconds    string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	secretKey := event.SecretKey
+	passedSeconds := event.PassedSeconds
+	accId := event.AccountId
+	seconds, err := strconv.Atoi(passedSeconds)
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	status := event.Status
+	selectedUnix := time.Now().Unix() - (int64(seconds))
+	pipelineEndpoint := event.PipelineEndpoint
+	workspace := event.Workspace
+	triggerName := event.TriggerName
+
+	if triggerName == "" {
+		fmt.Println("your trigger name is not set")
+		return resp, errors.New("trigger name is not set")
+	}
+	sc := &client.API{}
+	sc.Init(secretKey, nil)
+	payments, err := retrivePayments(sc, status, int(selectedUnix))
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	for _, p := range payments {
+		body := map[string]interface{}{
+			"workspace": workspace,
+			triggerName: p,
+			"accountId": accId,
+		}
+		json_data, err := json.Marshal(body)
+		if err != nil {
+			fmt.Println(err)
+			return resp, err
+		}
+		payload := bytes.NewBuffer(json_data)
+		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+		if err != nil {
+			fmt.Println(status)
+			fmt.Println(err)
+			return resp, err
+		}
+		fmt.Println(string(out))
+	}
+	fmt.Println("trigger successfully ended")
+	return resp, nil
+}
 
 type payment struct {
 	ID            string `json:"id"`
@@ -30,50 +95,7 @@ type payment struct {
 }
 
 func main() {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	passedSeconds := os.Getenv("passed_seconds")
-	accId := os.Getenv("ACCOUNT_ID")
-	seconds, err := strconv.Atoi(passedSeconds)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	status := os.Getenv("PAYMENT_STATUS")
-	selectedUnix := time.Now().Unix() - (int64(seconds))
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	workspace := os.Getenv("WORKSPACE")
-	triggerName := os.Getenv("TRIGGER_NAME")
-	if triggerName == "" {
-		fmt.Println("your trigger name is not set")
-		os.Exit(1)
-	}
-	sc := &client.API{}
-	sc.Init(secretKey, nil)
-	payments, err := retrivePayments(sc, status, int(selectedUnix))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	for _, p := range payments {
-		body := map[string]interface{}{
-			"workspace": workspace,
-			triggerName: p,
-			"accountId": accId,
-		}
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println(status)
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		fmt.Println(string(out))
-	}
+	lambda.Start(HandleLambdaEvent)
 }
 
 func retrivePayments(sc *client.API, status string, interval int) ([]payment, error) {

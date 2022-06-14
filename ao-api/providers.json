@@ -1,0 +1,47 @@
+[
+    {
+        "name": "github",
+        "secret": "secret",
+        "key": "key"
+    },
+    {
+        "name": "twitter",
+        "secret": "4g9FRhxbwmBjf4YXWtqRfcMJNXa5Z2BS4bX2gonEw6Ob8vgQiu",
+        "key": "iUvodKTz9cSs68vkrRBERubjk"
+    },
+    {
+        "name": "facebook",
+        "secret": "204efd1fa2379b65be3cf334b5d0b9f4",
+        "key": "431879378741523",
+        "scopes": ["email", "public_profile", "pages_manage_posts", "pages_read_engagement", "publish_to_groups", "ads_management", "business_management", "instagram_basic", "instagram_content_publish", "pages_read_engagement"]
+    },
+    {
+        "name": "instagram",
+        "secret": "4c66d6af1357e434518f4a048c6f2055",
+        "key": "313920727611695",
+        "direct_url": "https://api.instagram.com/oauth/authorize?client_id=313920727611695&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/instagram&response_type=code&scope=user_profile,user_media"
+    },
+    {
+        "name": "dropbox",
+        "secret": "phhpxepagdkb3l2",
+        "key": "8mwek47s34krny7"
+    },
+    {
+        "name": "discord",
+        "secret": "Xa333r4NsuHHtYu22ykbds8jnZGzaUZ0",
+        "key": "961960540069044224",
+        "scopes": ["email", "identify", "messages.read"]
+    },
+    {
+        "name": "slack",
+        "secret": "7ced68760661e15695f6d8d16aba44fe",
+        "key": "1390586298022.3553550438982",
+        "direct_url":"https://slack.com/oauth/authorize?client_id=1390586298022.3553550438982&scope=app_mentions:read,bookmarks:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,conversations.connect:read,conversations.connect:write,files:read,files:write,groups:history,users:read,users:write&user_scope=channels:write,chat:write,users:write&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/slack&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team="
+    },
+    {
+        "name": "google",
+        "secret": "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",
+        "key": "202712498600-gjd4vtp1727j1ucpsjucv52tqg8r0da9.apps.googleusercontent.com",
+        "scopes": ["email", "https://mail.google.com/", "https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/spreadsheets"]
+    }
+]

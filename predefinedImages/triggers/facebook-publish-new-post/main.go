@@ -9,44 +9,53 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-type Post struct {
-	CreatedTime string `json:"created_time"`
-	Message     string `json:"message"`
-	Id          string `json:"id"`
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	AccessToken      string `json:"INTEGRATION_ACCESS_TOKEN"`
+	PageId           string `json:"page_id"`
+	PassedSeconds    string `json:"passed_seconds"`
 }
 
-func main() {
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	triggerName := os.Getenv("TRIGGER_NAME")
-	accId := os.Getenv("ACCOUNT_ID")
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	pipelineEndpoint := event.PipelineEndpoint
+	triggerName := event.TriggerName
+	accId := event.AccountId
 	if triggerName == "" {
 		fmt.Println("your trigger name is not set")
-		return
+		return resp, errors.New("trigger name is not set")
 	}
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	pageId := os.Getenv("page_id")
-	passedSeconds := os.Getenv("passed_seconds")
+	accessToken := event.AccessToken
+	pageId := event.PageId
+	passedSeconds := event.PassedSeconds
+
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	posts, err := getPostsList(pageId, accessToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 	if len(posts) > 0 {
 		lastPostUnix, err := time.Parse("2006-01-02T15:04:05-0700", posts[0].CreatedTime)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return resp, err
 		}
 		if lastPostUnix.Unix() > selectedUnix {
 			body := make(map[string]interface{})
@@ -59,7 +68,7 @@ func main() {
 			json_data, err := json.Marshal(body)
 			if err != nil {
 				fmt.Println(err)
-				return
+				return resp, err
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
@@ -67,19 +76,28 @@ func main() {
 				fmt.Println("response:", string(out))
 				fmt.Println("error:", err)
 				fmt.Println("status code:", status)
-				return
+				return resp, err
 			}
 			fmt.Println("trigger successfully started")
-			return
+			return resp, nil
 		} else {
-			fmt.Println("no new post in page")
-			return
+			fmt.Println("no new post in page in last", passedSeconds, "seconds")
+			return resp, nil
 		}
 	} else {
 		fmt.Println("no post in page")
-		return
+		return resp, nil
 	}
+}
 
+type Post struct {
+	CreatedTime string `json:"created_time"`
+	Message     string `json:"message"`
+	Id          string `json:"id"`
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func getPostsList(pageId, accessToken string) (posts []Post, err error) {

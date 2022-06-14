@@ -3,21 +3,39 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/slack-go/slack"
 )
 
-func main() {
-	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	text := os.Getenv("text")
-	target := os.Getenv("target_id")
+type Event struct {
+	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+	Target      string `json:"target_id"`
+	Text        string `json:"text"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	access_token := event.AccessToken
+	text := event.Text
+	target := event.Target
 	err := SendSlackMessage(text, target, access_token)
 	if err != nil {
 		log.Println(err)
-		return
+		resp.Successfull = false
+		return resp, err
 	}
-	fmt.Println("message sent")
+	fmt.Println("message sent successfully")
+	resp.Successfull = true
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func SendSlackMessage(text, targetId, botAccessToken string) error {

@@ -4,22 +4,35 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	method := os.Getenv("method")
-	url := os.Getenv("url")
-	body := os.Getenv("body")
-	//taskName := os.Getenv("TASK_NAME")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
+type Event struct {
+	Method         string `json:"method"`
+	Url            string `json:"url"`
+	Body           string `json:"body"`
+	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+	Authorization  string `json:"AUTHORIZATION"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	method := event.Method
+	url := event.Url
+	body := event.Body
+	resultEndpoint := event.ResultEndpoint
+	authorization := event.Authorization
 	var out []byte
 	var err error
 	var statusCode int
@@ -28,7 +41,8 @@ func main() {
 	} else {
 		json_data, err := json.Marshal(body)
 		if err != nil {
-			return
+			resp.Successfull = false
+			return resp, err
 		}
 		payload := bytes.NewBuffer(json_data)
 
@@ -38,7 +52,8 @@ func main() {
 	if err != nil {
 		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
 		fmt.Printf("Error: %s", err.Error())
-		return
+		resp.Successfull = false
+		return resp, err
 	}
 
 	var resultData map[string]interface{}
@@ -64,20 +79,30 @@ func main() {
 		}
 		json_data, err := json.Marshal(data)
 		if err != nil {
-			log.Println(err)
-			return
+			fmt.Println(err)
+			resp.Successfull = false
+			return resp, err
 		}
 		payload := bytes.NewBuffer(json_data)
 		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println(status)
-			return
+			resp.Successfull = false
+			return resp, err
 		}
 		fmt.Println(string(out))
 	} else {
-		panic("Failed")
+		resp.Successfull = false
+		return resp, errors.New("request failed with status code " + fmt.Sprint(statusCode))
 	}
+	fmt.Println("send request was successfull")
+	resp.Successfull = true
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

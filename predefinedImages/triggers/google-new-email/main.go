@@ -5,47 +5,61 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-func main() {
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	accId := os.Getenv("ACCOUNT_ID")
-	triggerName := os.Getenv("TRIGGER_NAME")
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	AccessToken      string `json:"INTEGRATION_ACCESS_TOKEN"`
+	RefreshToken     string `json:"INTEGRATION_REFRESH_TOKEN"`
+	PassedSeconds    string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	pipelineEndpoint := event.PipelineEndpoint
+	accId := event.AccountId
+	triggerName := event.TriggerName
 	if triggerName == "" {
 		fmt.Println("your trigger name is not set")
-		return
+		return resp, errors.New("trigger name is not set")
 	}
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	refreshToken := os.Getenv("INTEGRATION_REFRESH_TOKEN")
+	accessToken := event.AccessToken
+	refreshToken := event.RefreshToken
 	_, err := listMessages(accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 
-	passedSeconds := os.Getenv("passed_seconds")
+	passedSeconds := event.PassedSeconds
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	messages, err := listMessages(accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 	if len(messages) > 0 {
 		if messages[0].InternalDate/1000 > selectedUnix {
@@ -64,7 +78,7 @@ func main() {
 			json_data, err := json.Marshal(body)
 			if err != nil {
 				fmt.Println(err)
-				return
+				return resp, err
 			}
 			payload := bytes.NewBuffer(json_data)
 			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
@@ -72,19 +86,22 @@ func main() {
 				fmt.Println("response:", string(out))
 				fmt.Println("error:", err)
 				fmt.Println("status code:", status)
-				return
+				return resp, err
 			}
 			fmt.Println("trigger successfully started")
-			return
+			return resp, nil
 		} else {
 			fmt.Println("no new message in inbox")
-			return
+			return resp, nil
 		}
 	} else {
 		fmt.Println("no message in inbox")
-		return
+		return resp, nil
 	}
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func listMessages(accessToken, refreshToken string) (messages []*gmail.Message, err error) {

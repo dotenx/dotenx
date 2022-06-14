@@ -1,7 +1,7 @@
 service: stripe
 type: Stripe payment completed
 integrations: [stripe]
-image: hawwwdi/stripe-payment-completed
+image: hawwwdi/stripe-payment-completed:lambda
 credentials:
     - key: PAYMENT_STATUS
       type: text

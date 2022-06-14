@@ -1,6 +1,6 @@
 service: sendGrid
 type: Send email
-image: awrmin/sendemail
+image: awrmin/sendemail:lambda
 integrations: [sendGrid]
 fields:
     - key: sender

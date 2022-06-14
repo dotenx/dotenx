@@ -1,6 +1,6 @@
 service: dotenx
 type: Read file
-image: awrmin/read-file
+image: awrmin/read-file:lambda
 fields:
     - key: file
       type: text

@@ -1,7 +1,7 @@
 service: stripe
 type: Stripe new invoice
 integrations: [stripe]
-image: hawwwdi/stripe-new-invoice
+image: hawwwdi/stripe-new-invoice:lambda
 credentials:
     - key: passed_seconds
       type: text
