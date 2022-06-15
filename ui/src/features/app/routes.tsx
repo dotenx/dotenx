@@ -9,6 +9,7 @@ import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
 import TriggersPage from '../../pages/triggers'
+import TryOutPage from '../../pages/try-out'
 
 export function Routes() {
 	if (!IS_LOCAL) {
@@ -18,6 +19,7 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
+			<Route path="/try-out" element={<TryOutPage />} />
 			<Route path="/integrations/add" element={<OauthPage />} />
 			<Route path="/integrations" element={<IntegrationsPage />} />
 			<Route path="/triggers" element={<TriggersPage />} />
