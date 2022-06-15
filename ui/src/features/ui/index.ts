@@ -1,5 +1,6 @@
 export * from './animation/fade'
 export * from './button'
+export * from './creatable-select'
 export * from './delete-button'
 export * from './field'
 export * from './form'
