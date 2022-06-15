@@ -1,5 +1,5 @@
 import { SelectIntegration } from '../integration'
-import { Button, Field, Form, GroupSelect, NewSelect } from '../ui'
+import { Button, Description, Field, Form, GroupSelect, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
 
 interface TriggerFormProps {
@@ -65,14 +65,16 @@ export function TriggerForm({
 					/>
 				)}
 				{triggerDefinitionQuery?.data?.data.credentials.map((triggerDefinition) => (
-					<Field
-						key={triggerDefinition.key}
-						label={triggerDefinition.display_name || triggerDefinition.key}
-						name={`credentials.${triggerDefinition.key}`}
-						control={control}
-						required
-						errors={errors}
-					/>
+					<div key={triggerDefinition.key}>
+						<Field
+							label={triggerDefinition.display_name || triggerDefinition.key}
+							name={`credentials.${triggerDefinition.key}`}
+							control={control}
+							required
+							errors={errors}
+						/>
+						<Description>{triggerDefinition.description}</Description>
+					</div>
 				))}
 			</div>
 			<Button disabled={disableSubmit} type="submit">

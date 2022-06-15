@@ -9,6 +9,7 @@ import {
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
 	GetExecutionResultResponse,
+	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
@@ -143,4 +144,8 @@ export function deactivateAutomation(name: string) {
 
 export function getExecution(id: string) {
 	return api.get<Execution>(`/execution/id/${id}/details`)
+}
+
+export function getFormatterFunctions() {
+	return api.get<GetFormatterFunctionsResponse>(`/funcs`)
 }

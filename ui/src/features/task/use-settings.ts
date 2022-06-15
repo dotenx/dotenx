@@ -12,20 +12,22 @@ import { NodeType, TaskNodeData } from '../flow'
 import { GroupData } from '../ui'
 import { InputOrSelectKind } from '../ui/input-or-select'
 
-const textOrOption = z.object({ type: z.literal(InputOrSelectKind.Text), data: z.string() }).or(
-	z.object({
-		type: z.literal(InputOrSelectKind.Option),
-		data: z.string(),
-		groupName: z.string(),
-	})
-)
+const textValue = { type: z.literal(InputOrSelectKind.Text), data: z.string() }
+const selectValue = z.object({
+	type: z.literal(InputOrSelectKind.Option),
+	data: z.string(),
+	groupName: z.string(),
+})
+const inputOrSelectValue = z.object(textValue).or(selectValue)
+const fnValue = z.object({ fn: z.string(), args: z.array(inputOrSelectValue) })
+const complexValue = inputOrSelectValue.or(fnValue)
 
 const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
 	integration: z.string().optional(),
-	others: z.record(textOrOption).optional(),
-	vars: z.array(z.object({ key: z.string(), value: textOrOption })).optional(),
+	others: z.record(complexValue).optional(),
+	vars: z.array(z.object({ key: z.string(), value: inputOrSelectValue })).optional(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
 
