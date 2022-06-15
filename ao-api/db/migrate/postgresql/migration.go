@@ -92,6 +92,14 @@ var migrations = []struct {
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
+	{
+		name: "create-user-provider-table",
+		stmt: createUserProviderTable,
+	},
+	{
+		name: "add-provider-field-to-integrations",
+		stmt: addProviderFieldToIntegrations,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -317,3 +325,22 @@ SET DEFAULT FALSE;`
 var updateNillIsActive = `
 UPDATE pipelines
 SET is_active=FALSE;`
+
+var createUserProviderTable = `
+CREATE TABLE IF NOT EXISTS user_provider (
+account_id        varchar(64) NOT NULL,
+name              varchar(64) NOT NULL,
+type              varchar(64) NOT NULL,
+key               varchar(256) NOT NULL,
+secret            varchar(256) NOT NULL,
+direct_url        text,
+scopes            text[],
+front_end_url     text,
+UNIQUE (account_id, name)
+)
+`
+
+var addProviderFieldToIntegrations = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS provider varchar(64);
+`

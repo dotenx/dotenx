@@ -3,14 +3,18 @@ package integrationService
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth"
+	"github.com/dotenx/dotenx/ao-api/oauth/provider"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
+	"github.com/dotenx/goth"
 )
 
 type IntegrationService interface {
@@ -27,12 +31,14 @@ type IntegrationService interface {
 type IntegrationManager struct {
 	Store      integrationStore.IntegrationStore
 	RedisStore redisStore.RedisStore
+	OauthStore oauthStore.OauthStore
 }
 
-func NewIntegrationService(store integrationStore.IntegrationStore, redisStore redisStore.RedisStore) IntegrationService {
+func NewIntegrationService(store integrationStore.IntegrationStore, redisStore redisStore.RedisStore, OauthStore oauthStore.OauthStore) IntegrationService {
 	return &IntegrationManager{
 		Store:      store,
 		RedisStore: redisStore,
+		OauthStore: OauthStore,
 	}
 }
 
@@ -105,12 +111,36 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 		}
 		return integration, err
 	} else {
-		providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
-		provider, err := oauth.GetProviderByName(providerName)
-		if err != nil {
-			return models.Integration{}, err
+		var gothProvider *goth.Provider
+		if integration.Provider == "" {
+			providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+			gothProvider, err = oauth.GetProviderByName(providerName)
+			if err != nil {
+				return models.Integration{}, err
+			}
+		} else {
+			userProvider, err := manager.OauthStore.GetUserProviderByName(context.Background(), accountId, integration.Provider)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedKey, err := utils.Decrypt(userProvider.Key, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedSecret, err := utils.Decrypt(userProvider.Secret, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			userProvider.Key = decryptedKey
+			userProvider.Secret = decryptedSecret
+			redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", integration.Provider, accountId)
+			gothProvider, err = provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
+			if err != nil {
+				return models.Integration{}, err
+			}
 		}
-		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*provider, integration.Name, accountId, manager.RedisStore)
+
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, integration.Name, accountId, manager.RedisStore)
 		if err != nil {
 			return models.Integration{}, err
 		}
