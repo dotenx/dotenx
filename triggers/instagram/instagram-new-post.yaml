@@ -1,7 +1,7 @@
 service: instagram
 type: Instagram new post
 integrations: [instagram]
-image: alirezaheydar/instagram-new-post:latest
+image: alirezaheydar/instagram-new-post
 credentials:
 outputs:
     - key: created_at

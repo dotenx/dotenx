@@ -1,3 +1,4 @@
+import { atom, useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
 import { EdgeSettings } from '../automation'
@@ -76,20 +77,25 @@ interface NodeSettingsModalProps {
 	updateNode: (id: string, data: TaskNodeData) => void
 }
 
+export const taskCodeState = atom<{ isOpen: boolean; key?: string; label?: string }>({
+	isOpen: false,
+})
+
 function TaskSettingsModal({ updateNode }: NodeSettingsModalProps) {
 	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
+	const [taskCode, setTaskCode] = useAtom(taskCodeState)
+	const modalSize = taskCode.isOpen ? 'xl' : isAddingIntegration ? 'lg' : 'md'
 
 	useEffect(() => {
-		if (!modal.isOpen) setIsAddingIntegration(false)
-	}, [modal.isOpen])
+		if (!modal.isOpen) {
+			setIsAddingIntegration(false)
+			setTaskCode({ isOpen: false })
+		}
+	}, [modal.isOpen, setTaskCode])
 
 	return (
-		<Modal
-			title="Task Settings"
-			kind={Modals.NodeSettings}
-			size={isAddingIntegration ? 'lg' : 'md'}
-		>
+		<Modal title="Task Settings" kind={Modals.NodeSettings} size={modalSize}>
 			{({ id, data }: TaskEntity) => (
 				<TaskSettingsWithIntegration
 					defaultValues={data}

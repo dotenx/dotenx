@@ -12,21 +12,21 @@ import { NodeType, TaskNodeData } from '../flow'
 import { GroupData } from '../ui'
 import { InputOrSelectKind } from '../ui/input-or-select'
 
+const textOrOption = z.object({ type: z.literal(InputOrSelectKind.Text), data: z.string() }).or(
+	z.object({
+		type: z.literal(InputOrSelectKind.Option),
+		data: z.string(),
+		groupName: z.string(),
+	})
+)
+
 const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
 	integration: z.string().optional(),
-	others: z
-		.record(
-			z.object({ type: z.literal(InputOrSelectKind.Text), data: z.string() }).or(
-				z.object({
-					type: z.literal(InputOrSelectKind.Option),
-					data: z.string(),
-					groupName: z.string(),
-				})
-			)
-		)
-		.optional(),
+	others: z.record(textOrOption).optional(),
+	vars: z.array(z.object({ key: z.string(), value: textOrOption })).optional(),
+	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
 
 export type TaskSettingsSchema = z.infer<typeof schema>
@@ -82,7 +82,10 @@ export function useTaskSettings({
 		.map((node) => ({
 			name: node.data?.name ?? '',
 			type: node.data?.type,
-			options: [],
+			options:
+				node.data && 'outputs' in node.data
+					? node.data?.outputs?.map((output) => output.value) ?? []
+					: [],
 			nodeType: node.type as NodeType,
 			iconUrl: node.data?.iconUrl,
 		}))
@@ -102,9 +105,11 @@ export function useTaskSettings({
 		}))
 	)
 
-	const outputGroups = getTaskFieldsResults
+	const noneCodeOutputGroups = getTaskFieldsResults
 		.map((result) => result.data)
 		.filter((r) => !!r) as GroupData[]
+	const codeOutputGroups = nodes.filter((node) => node.type?.includes('code'))
+	const outputGroups = [...noneCodeOutputGroups, ...codeOutputGroups]
 
 	const onSubmit = handleSubmit(() => {
 		onSave({
@@ -126,6 +131,7 @@ export function useTaskSettings({
 		setValue,
 		taskType,
 		selectedTaskIntegrationKind: taskFieldsQuery.data?.data.integration_types[0],
+		watch,
 	}
 }
 

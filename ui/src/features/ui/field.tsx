@@ -3,7 +3,7 @@ import { InputHTMLAttributes } from 'react'
 import { Control, Controller, FieldErrors } from 'react-hook-form'
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
-	label: string
+	label?: string
 	errors: FieldErrors
 	name: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,9 +13,11 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 export function Field({ label, errors, control, ...rest }: FieldProps) {
 	return (
 		<div className="flex flex-col gap-1">
-			<label htmlFor={rest.name} className="text-sm font-bold">
-				{label}
-			</label>
+			{label && (
+				<label htmlFor={rest.name} className="text-sm font-bold">
+					{label}
+				</label>
+			)}
 			<Controller
 				control={control}
 				name={rest.name}

@@ -1,5 +1,5 @@
 # Do10X
-DoTenX, extremely simple and most flexible way to build any automation with no-code.
+DoTenX, allows you to automate anything for yourself or offer automations as a SaaS with no-code.
 
 
 Discord:

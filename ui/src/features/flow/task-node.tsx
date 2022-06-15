@@ -20,6 +20,8 @@ export interface TaskNodeData {
 	iconUrl?: string
 	color?: string
 	others?: Record<string, InputOrSelectValue>
+	vars?: { key: string; value: InputOrSelectValue }[]
+	outputs?: { value: string }[]
 }
 
 export interface TaskEntity {

@@ -70,8 +70,8 @@ const main = async function () {
       created_at: newPost.timestamp
     }
 
-    await axios.post(pipelineEndpoint, body)
     console.log('Pipeline start data: ', body)
+    await axios.post(pipelineEndpoint, body)
     console.log("trigger successfully started")
   } catch (error) {
     console.log("Somthing went wrong: ", error)

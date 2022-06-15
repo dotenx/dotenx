@@ -56,6 +56,9 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Toekn:       job.Token,
 		Logs:        result.Log,
 	}
+	if resultDto.Logs == "" && result.Error != nil {
+		resultDto.Logs = result.Error.Error()
+	}
 	//var err error
 	//var id string
 	/*if err != nil {
