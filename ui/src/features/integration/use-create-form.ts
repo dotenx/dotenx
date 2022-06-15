@@ -7,7 +7,7 @@ import {
 	createIntegration,
 	getIntegrationKindFields,
 	getIntegrationKinds,
-	QueryKey
+	QueryKey,
 } from '../../api'
 import { toOption } from '../../utils'
 import { useOauth } from '../hooks'
