@@ -13,11 +13,13 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProvidersResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	Provider,
 } from './types'
 export * from './types'
 
@@ -143,4 +145,20 @@ export function deactivateAutomation(name: string) {
 
 export function getExecution(id: string) {
 	return api.get<Execution>(`/execution/id/${id}/details`)
+}
+
+export function createProvider(payload: Provider) {
+	return api.post<void>('/oauth/user/provider', payload)
+}
+
+export function getProviders() {
+	return api.get<GetProvidersResponse>('/oauth/user/provider')
+}
+
+export function getProvider(name: string) {
+	return api.get<Provider>(`/oauth/user/provider/${name}`)
+}
+
+export function deleteProvider(name: string) {
+	return api.delete<void>(`/oauth/user/provider/${name}`)
 }
