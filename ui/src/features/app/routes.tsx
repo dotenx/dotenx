@@ -8,6 +8,7 @@ import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
+import ProvidersPage from '../../pages/providers'
 import TriggersPage from '../../pages/triggers'
 
 export function Routes() {
@@ -18,6 +19,7 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
+			<Route path="/providers" element={<ProvidersPage />} />
 			<Route path="/integrations/add" element={<OauthPage />} />
 			<Route path="/integrations" element={<IntegrationsPage />} />
 			<Route path="/triggers" element={<TriggersPage />} />
