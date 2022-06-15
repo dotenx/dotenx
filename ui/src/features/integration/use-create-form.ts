@@ -7,9 +7,9 @@ import {
 	createIntegration,
 	getIntegrationKindFields,
 	getIntegrationKinds,
-	QueryKey,
+	QueryKey
 } from '../../api'
-import { getDisplayText } from '../../utils'
+import { toOption } from '../../utils'
 import { useOauth } from '../hooks'
 
 const schema = z.object({
@@ -78,10 +78,7 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		})
 	}
 
-	const integrationKindOptions = availableIntegrations?.map((integrationType) => ({
-		label: getDisplayText(integrationType),
-		value: integrationType,
-	}))
+	const integrationKindOptions = availableIntegrations?.map(toOption)
 
 	const onSubmit = handleSubmit(onSave)
 

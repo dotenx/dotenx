@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { z } from 'zod'
-import { createProvider, QueryKey } from '../../api'
+import { createProvider, getIntegrationKinds, QueryKey } from '../../api'
+import { toOption } from '../../utils'
 import { useModal } from '../hooks'
-import { Button, CreatableSelect, Field, Form } from '../ui'
+import { Button, CreatableSelect, Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -30,7 +31,10 @@ export function ProviderForm() {
 		defaultValues: { name: '', type: '', key: '', secret: '', scopes: [], front_end_url: '' },
 		resolver: zodResolver(schema),
 	})
+	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
+	const availableIntegrations = integrationTypesQuery.data?.data
+	const integrationKindOptions = availableIntegrations?.map(toOption)
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -40,30 +44,36 @@ export function ProviderForm() {
 					errors={form.formState.errors}
 					name="name"
 					label="Name"
+					placeholder="Provider name"
 				/>
-				<Field
+				<NewSelect
 					control={form.control}
 					errors={form.formState.errors}
+					options={integrationKindOptions}
 					name="type"
 					label="Type"
+					placeholder="Provider kind"
 				/>
 				<Field
 					control={form.control}
 					errors={form.formState.errors}
 					name="key"
 					label="Key"
+					placeholder="Provider key"
 				/>
 				<Field
 					control={form.control}
 					errors={form.formState.errors}
 					name="secret"
 					label="Secret"
+					placeholder="Provider secret"
 				/>
 				<Field
 					control={form.control}
 					errors={form.formState.errors}
 					name="front_end_url"
 					label="Front-end URL"
+					placeholder="Front-end URL to redirect page"
 				/>
 				<CreatableSelect
 					control={form.control}
