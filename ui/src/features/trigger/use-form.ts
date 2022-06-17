@@ -8,7 +8,7 @@ import {
 	getTriggerDefinition,
 	getTriggerKinds,
 	QueryKey,
-	TriggerData,
+	TriggerData
 } from '../../api'
 
 const schema = z.object({
@@ -83,6 +83,7 @@ export function useTriggerForm({
 		setValue,
 		triggerType,
 		selectedTriggerIntegrationKind: triggerDefinitionQuery.data?.data.integrations[0],
+		triggerTypesQuery,
 	}
 }
 
