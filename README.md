@@ -1,5 +1,5 @@
 # Do10X
-DoTenX, helps you build automations or backends with no-code which are extendable with custom code.
+DoTenX help you build backends with no-code which are extendable with custom code. You can also build automation with DoTenX.
 
 
 Join our discord community to learn about the opportunities DoTenX can bring to you, what we do, or ask your questions:
