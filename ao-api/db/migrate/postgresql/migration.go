@@ -92,6 +92,10 @@ var migrations = []struct {
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
+	{
+		name: "create-table-projects",
+		stmt: createTableProjects,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -317,3 +321,13 @@ SET DEFAULT FALSE;`
 var updateNillIsActive = `
 UPDATE pipelines
 SET is_active=FALSE;`
+
+var createTableProjects = `
+CREATE TABLE IF NOT EXISTS projects (
+id														SERIAL PRIMARY KEY,
+name													VARCHAR(128),
+account_id									  VARCHAR(64),
+description										VARCHAR(128),
+UNIQUE (account_id, name)
+)
+`
