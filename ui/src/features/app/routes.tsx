@@ -25,7 +25,8 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
-			<Route path="/providers" element={<ProvidersPage />} />
+			<Route path="/builder/providers" element={<ProvidersPage />} />
+
 			<Route path="/try-out" element={<TryOutPage />} />
 			<Route path="/integrations/add" element={<OauthPage />} />
 			<Route path="/integrations" element={<IntegrationsPage />} />
