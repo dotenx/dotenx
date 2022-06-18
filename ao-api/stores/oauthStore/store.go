@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -15,6 +16,7 @@ type OauthStore interface {
 	DeleteUserProvider(ctx context.Context, accountId, userProviderName string) error
 	GetUserProviderByName(ctx context.Context, accountId, name string) (models.UserProvider, error)
 	UpdateUserProvider(ctx context.Context, userProvider models.UserProvider) error
+	GetAllUserProviders(ctx context.Context, accountId string) ([]models.UserProvider, error)
 }
 
 type oauthStore struct {
@@ -140,6 +142,32 @@ func (store *oauthStore) UpdateUserProvider(ctx context.Context, userProvider mo
 	return nil
 }
 
+func (store *oauthStore) GetAllUserProviders(ctx context.Context, accountId string) ([]models.UserProvider, error) {
+	providers := make([]models.UserProvider, 0)
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getAllUserProvidersStmt, accountId)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return nil, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var cur models.UserProvider
+			rows.Scan(&cur.AccountId, &cur.Name, &cur.Type, &cur.DirectUrl, &cur.Scopes, &cur.FrontEndUrl)
+			if err != nil {
+				return providers, err
+			}
+			providers = append(providers, cur)
+		}
+	}
+	return providers, nil
+}
+
 var countExistingUserProviderStmt = `
 SELECT count(*) FROM user_provider
 WHERE account_id = $1 and name = $2;
@@ -164,4 +192,9 @@ var updateUserProviderStmt = `
 UPDATE user_provider
 SET    type = $1, key = $2, secret = $3, direct_url = $4, scopes = $5, front_end_url = $6
 WHERE  account_id = $7 and name = $8;
+`
+
+var getAllUserProvidersStmt = `
+SELECT account_id, name, type, direct_url, scopes, front_end_url FROM user_provider 
+WHERE account_id = $1;
 `

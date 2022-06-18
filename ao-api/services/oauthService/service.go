@@ -18,6 +18,7 @@ type OauthService interface {
 	DeleteUserProvider(accountId, userProviderName string) error
 	GetUserProviderByName(accountId, name string) (models.UserProvider, error)
 	UpdateUserProvider(userProvider models.UserProvider) error
+	GetAllUserProviders(accountId string) ([]models.UserProvider, error)
 }
 
 type OauthManager struct {
@@ -90,4 +91,8 @@ func (manager *OauthManager) UpdateUserProvider(userProvider models.UserProvider
 	userProvider.Key = encryptedKey
 	userProvider.Secret = encryptedSecret
 	return manager.Store.UpdateUserProvider(context.Background(), userProvider)
+}
+
+func (manager *OauthManager) GetAllUserProviders(accountId string) (providers []models.UserProvider, err error) {
+	return manager.Store.GetAllUserProviders(context.Background(), accountId)
 }

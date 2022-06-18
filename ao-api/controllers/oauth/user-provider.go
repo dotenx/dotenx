@@ -104,3 +104,18 @@ func (controller *OauthController) UpdateUserProvider() gin.HandlerFunc {
 		return
 	}
 }
+
+func (controller *OauthController) GetAllUserProviders() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		accountId, _ := utils.GetAccountId(c)
+		providers, err := controller.Service.GetAllUserProviders(accountId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, providers)
+		return
+	}
+}

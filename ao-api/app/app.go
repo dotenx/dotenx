@@ -210,6 +210,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		oauth.GET("/user/provider/:name", OauthController.GetUserProvider())
 		oauth.DELETE("/user/provider/:name", OauthController.DeleteUserProvider())
 		oauth.PUT("/user/provider", OauthController.UpdateUserProvider())
+		oauth.GET("/user/provider/list", OauthController.GetAllUserProviders())
+
 		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
 		oauth.GET("/user/provider/auth/provider/:provider_name/account_id/:account_id",
