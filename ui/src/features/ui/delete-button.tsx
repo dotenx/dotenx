@@ -1,17 +1,10 @@
 import { IoTrash } from 'react-icons/io5'
+import { Button, ButtonProps } from './button'
 
-interface DeleteButtonProps {
-	onClick: () => void
-}
-
-export function DeleteButton({ onClick }: DeleteButtonProps) {
+export function DeleteButton(props: ButtonProps) {
 	return (
-		<button
-			className="p-1 text-2xl transition rounded-md hover:text-rose-600 hover:bg-rose-50"
-			type="button"
-			onClick={onClick}
-		>
+		<Button {...props} className="ml-auto" type="button" variant="icon">
 			<IoTrash />
-		</button>
+		</Button>
 	)
 }

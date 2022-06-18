@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useMutation } from 'react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { createAutomation, CreateAutomationRequest } from '../api'
+import { Loader } from '../features/ui'
 
 export default function TryOutPage() {
 	const [params] = useSearchParams()
@@ -25,5 +26,9 @@ export default function TryOutPage() {
 		}
 	}, [])
 
-	return <main>Loading...</main>
+	return (
+		<main className="flex items-center justify-center grow">
+			<Loader />
+		</main>
+	)
 }

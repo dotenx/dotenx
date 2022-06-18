@@ -1,5 +1,5 @@
 import { SelectIntegration } from '../integration'
-import { Button, Description, Field, Form, GroupSelect, NewSelect } from '../ui'
+import { Button, Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
 
 interface TriggerFormProps {
@@ -7,6 +7,7 @@ interface TriggerFormProps {
 	mode: 'new' | 'settings'
 	onAddIntegration?: () => void
 	disableSubmit?: boolean
+	submitting?: boolean
 }
 
 export function TriggerForm({
@@ -14,6 +15,7 @@ export function TriggerForm({
 	mode,
 	onAddIntegration,
 	disableSubmit,
+	submitting,
 }: TriggerFormProps) {
 	const {
 		control,
@@ -24,6 +26,8 @@ export function TriggerForm({
 		selectedTriggerType,
 		triggerDefinitionQuery,
 		triggerOptions,
+		triggerTypesQuery,
+		automationsQuery,
 	} = triggerForm
 
 	return (
@@ -43,6 +47,7 @@ export function TriggerForm({
 						errors={errors}
 						options={triggerOptions}
 						placeholder="Trigger type"
+						loading={triggerTypesQuery.isLoading}
 					/>
 					<div className="text-xs mt-1.5">{selectedTriggerType?.description}</div>
 				</div>
@@ -54,8 +59,10 @@ export function TriggerForm({
 						errors={errors}
 						options={automationOptions}
 						placeholder="Automation name"
+						loading={automationsQuery.isLoading}
 					/>
 				)}
+				{triggerDefinitionQuery.isLoading && <Loader />}
 				{integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
 						control={control}
@@ -77,7 +84,7 @@ export function TriggerForm({
 					</div>
 				))}
 			</div>
-			<Button disabled={disableSubmit} type="submit">
+			<Button loading={submitting} disabled={disableSubmit} type="submit">
 				{mode === 'new' ? 'Add' : 'Save'}
 			</Button>
 		</Form>

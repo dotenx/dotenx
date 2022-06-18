@@ -46,7 +46,7 @@ export function useSaveForm() {
 		onSubmit: handleSubmit(onSave),
 		control,
 		errors,
-		addAutomationMutation: addAutomationMutation,
+		addAutomationMutation,
 	}
 }
 

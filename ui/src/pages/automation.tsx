@@ -6,6 +6,7 @@ import { getAutomation, QueryKey } from '../api'
 import { selectedAutomationAtom, selectedAutomationDataAtom } from '../features/atoms'
 import { ActionBar } from '../features/automation'
 import { Flow } from '../features/flow'
+import { Loader } from '../features/ui'
 
 export default function AutomationPage() {
 	return (
@@ -19,7 +20,7 @@ function Content() {
 	const { name } = useParams()
 	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
 	const setSelected = useSetAtom(selectedAutomationDataAtom)
-	useQuery(
+	const { isLoading } = useQuery(
 		[QueryKey.GetAutomation, name],
 		() => {
 			if (!name) return
@@ -34,6 +35,13 @@ function Content() {
 			},
 		}
 	)
+
+	if (isLoading)
+		return (
+			<div className="flex justify-center grow">
+				<Loader />
+			</div>
+		)
 
 	return (
 		<>

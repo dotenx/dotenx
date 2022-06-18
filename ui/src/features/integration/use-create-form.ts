@@ -90,8 +90,10 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		control,
 		errors,
 		integrationTypesQuery,
+		integrationTypeFieldsQuery,
 		integrationKindOptions,
 		integrationTypeFields,
 		oauth,
+		isSubmitting: mutation.isLoading,
 	}
 }

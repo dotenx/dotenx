@@ -5,7 +5,7 @@ import { Control, FieldErrors, useFieldArray } from 'react-hook-form'
 import { IoAdd, IoClose } from 'react-icons/io5'
 import { FieldType } from '../../api'
 import { taskCodeState } from '../flow'
-import { NewIntegration, SelectIntegration } from '../integration'
+import { IntegrationForm, SelectIntegration } from '../integration'
 import {
 	Button,
 	Description,
@@ -14,7 +14,8 @@ import {
 	GroupData,
 	GroupSelect,
 	InputOrSelect,
-	InputOrSelectKind
+	InputOrSelectKind,
+	Loader,
 } from '../ui'
 import { ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
@@ -53,7 +54,7 @@ export function TaskSettingsWithIntegration({
 			</div>
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
-					<NewIntegration
+					<IntegrationForm
 						onBack={() => setIsAddingIntegration(false)}
 						integrationKind={taskForm.selectedTaskIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
@@ -76,7 +77,11 @@ export function TaskSettingsWithIntegration({
 						})
 						setTaskCode({ isOpen: false })
 					}}
-					defaultValue={'data' in codeFieldValue ? codeFieldValue.data : undefined}
+					defaultValue={
+						typeof codeFieldValue === 'object' && 'data' in codeFieldValue
+							? codeFieldValue.data
+							: undefined
+					}
 				/>
 			)}
 		</div>
@@ -99,6 +104,8 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 		selectedTaskType,
 		taskFields,
 		tasksOptions,
+		taskTypesLoading,
+		taskFieldsLoading,
 	} = taskForm
 	const setTaskCodeState = useSetAtom(taskCodeState)
 	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
@@ -114,9 +121,11 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						name="type"
 						errors={errors}
 						placeholder="Task type"
+						loading={taskTypesLoading}
 					/>
 					<Description>{selectedTaskType?.description}</Description>
 				</div>
+				{taskFieldsLoading && <Loader className="py-4" />}
 				{taskFields.map((taskField) => {
 					const label = taskField.display_name || taskField.key
 					return getFieldComponent(taskField.type, {
