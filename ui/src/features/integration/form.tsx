@@ -1,17 +1,26 @@
 import { useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
-import { Button, Field, Form, NewSelect, Toggle } from '../ui'
+import { Button, Field, Form, Loader, NewSelect, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
-interface NewIntegrationProps {
+interface IntegrationFormProps {
 	integrationKind?: string
 	onSuccess?: (addedIntegrationName: string) => void
 	onBack?: () => void
 }
 
-export function NewIntegration({ integrationKind, onSuccess, onBack }: NewIntegrationProps) {
-	const { control, errors, integrationKindOptions, integrationTypeFields, oauth, onSubmit } =
-		useNewIntegration({ integrationKind, onSuccess })
+export function IntegrationForm({ integrationKind, onSuccess, onBack }: IntegrationFormProps) {
+	const {
+		control,
+		errors,
+		integrationKindOptions,
+		integrationTypeFields,
+		oauth,
+		onSubmit,
+		isSubmitting,
+		integrationTypesQuery,
+		integrationTypeFieldsQuery,
+	} = useNewIntegration({ integrationKind, onSuccess })
 	const [isAdvanced, setIsAdvanced] = useState(false)
 	const hasOauth = integrationTypeFields?.oauth_provider
 
@@ -48,13 +57,15 @@ export function NewIntegration({ integrationKind, onSuccess, onBack }: NewIntegr
 						errors={errors}
 						options={integrationKindOptions}
 						placeholder="Integration type"
+						loading={integrationTypesQuery.isLoading}
 					/>
 				)}
+				{integrationTypeFieldsQuery.isLoading && <Loader className="py-2" />}
 				{!isAdvanced && integrationTypeFields?.oauth_provider && (
 					<Button
 						type="button"
 						disabled={oauth.isSuccess}
-						className="self-end w-24 text-sm disabled:text-green-600 disabled:bg-green-100"
+						className="self-end disabled:!border-green-100 w-24 text-sm disabled:!text-green-600 disabled:!bg-green-100"
 						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
 					>
 						{oauth.isSuccess ? 'Connected' : 'Connect'}
@@ -76,7 +87,9 @@ export function NewIntegration({ integrationKind, onSuccess, onBack }: NewIntegr
 						/>
 					))}
 			</div>
-			<Button type="submit">Add</Button>
+			<Button type="submit" loading={isSubmitting}>
+				Add
+			</Button>
 		</Form>
 	)
 }

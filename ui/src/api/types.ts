@@ -16,6 +16,7 @@ export enum QueryKey {
 	GetAutomationTrigger = 'get-automation-triggers',
 	GetIntegrationsByType = 'get-integration-by-type',
 	GetProviders = 'get-providers',
+	GetFormatterFunctions = 'get-formatter-functions',
 }
 
 export enum TaskExecutionStatus {
@@ -106,7 +107,7 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBodyValue = string | { source: string; key: string } | string[] | null
+export type TaskBodyValue = string | FromSource | string[] | FormatterBody | null
 
 export type TaskBody = Record<string, TaskBodyValue>
 
@@ -216,4 +217,33 @@ export interface Provider {
 	secret: string
 	scopes: string[]
 	front_end_url: string
+}
+
+export type GetFormatterFunctionsResponse = Record<string, FormatterFunction>
+
+export interface FormatterFunction {
+	inputs: string[]
+	output: string
+	description: string
+}
+
+export interface FormatterBody {
+	formatter: Formatter
+}
+
+export interface Formatter {
+	format_str: string
+	func_calls: Record<string, FuncCall>
+}
+
+export interface FuncCall {
+	func_name: string
+	args: Arg[]
+}
+
+export type Arg = FromSource | string
+
+interface FromSource {
+	key: string
+	source: string
 }

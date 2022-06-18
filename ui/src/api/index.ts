@@ -9,6 +9,7 @@ import {
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
 	GetExecutionResultResponse,
+	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
@@ -161,4 +162,8 @@ export function getProvider(name: string) {
 
 export function deleteProvider(name: string) {
 	return api.delete<void>(`/oauth/user/provider/${name}`)
+}
+
+export function getFormatterFunctions() {
+	return api.get<GetFormatterFunctionsResponse>(`/funcs`)
 }
