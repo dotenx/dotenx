@@ -16,6 +16,7 @@ export function ProviderList() {
 		<Table
 			title="Providers"
 			emptyText="You have no provider yet, try adding one."
+			loading={query.isLoading}
 			actionBar={<ActionBar />}
 			columns={[
 				{ Header: 'Name', accessor: 'name' },
@@ -25,7 +26,10 @@ export function ProviderList() {
 					id: 'action',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<DeleteButton onClick={() => deleteMutation.mutate(value)} />
+						<DeleteButton
+							loading={deleteMutation.isLoading}
+							onClick={() => deleteMutation.mutate(value)}
+						/>
 					),
 				},
 			]}

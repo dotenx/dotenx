@@ -21,6 +21,7 @@ type Schema = z.infer<typeof schema>
 export function ProviderForm() {
 	const modal = useModal()
 	const client = useQueryClient()
+	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const mutation = useMutation(createProvider, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetProviders)
@@ -31,7 +32,6 @@ export function ProviderForm() {
 		defaultValues: { name: '', type: '', key: '', secret: '', scopes: [], front_end_url: '' },
 		resolver: zodResolver(schema),
 	})
-	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
 	const availableIntegrations = integrationTypesQuery.data?.data
 	const integrationKindOptions = availableIntegrations?.map(toOption)
@@ -50,6 +50,7 @@ export function ProviderForm() {
 					control={form.control}
 					errors={form.formState.errors}
 					options={integrationKindOptions}
+					loading={integrationTypesQuery.isLoading}
 					name="type"
 					label="Type"
 					placeholder="Provider kind"
@@ -82,7 +83,9 @@ export function ProviderForm() {
 					label="Scopes"
 				/>
 			</div>
-			<Button type="submit">Add</Button>
+			<Button loading={mutation.isLoading} type="submit">
+				Add
+			</Button>
 		</Form>
 	)
 }
