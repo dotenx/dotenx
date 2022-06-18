@@ -97,11 +97,11 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 		}
 
 		var taskResultDto taskResultDto
+
 		if err := c.ShouldBindJSON(&taskResultDto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-
 		err = e.Service.SetTaskExecutionResult(executionId, taskId, taskResultDto.Status.String())
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)
@@ -111,6 +111,7 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
+
 		err = e.Service.SetTaskExecutionResultDetails(executionId, taskId, taskResultDto.Status.String(), taskResultDto.ReturnValue, taskResultDto.Log)
 		if err != nil && err.Error() == "Foreign key constraint violence" {
 			c.AbortWithError(http.StatusBadRequest, err)

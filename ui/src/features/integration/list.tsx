@@ -16,6 +16,7 @@ export function IntegrationList() {
 		<Table
 			title="Integrations"
 			emptyText="You have no integration yet, try adding one."
+			loading={query.isLoading}
 			actionBar={<ActionBar />}
 			columns={[
 				{ Header: 'Name', accessor: 'name' },
@@ -25,7 +26,10 @@ export function IntegrationList() {
 					id: 'action',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<DeleteButton onClick={() => deleteMutation.mutate(value)} />
+						<DeleteButton
+							onClick={() => deleteMutation.mutate(value)}
+							loading={deleteMutation.isLoading}
+						/>
 					),
 				},
 			]}

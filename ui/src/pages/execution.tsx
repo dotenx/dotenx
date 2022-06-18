@@ -8,6 +8,7 @@ import { getAutomation, getExecution, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
+import { Loader } from '../features/ui'
 
 export default function ExecutionPage() {
 	return (
@@ -40,6 +41,12 @@ function Content() {
 			})
 	}, [automation, automationName, setSelected])
 
+	if (automationQuery.isLoading)
+		return (
+			<div className="flex items-center justify-center grow">
+				<Loader />
+			</div>
+		)
 	if (!automationName || !executionId) return null
 
 	return (
@@ -61,22 +68,26 @@ function ExecutionDetails({
 }) {
 	const query = useQuery([QueryKey.GetExecution, executionId], () => getExecution(executionId))
 	const execution = query.data?.data
-
-	if (!execution) return null
+	const loading = query.isLoading || !execution
 
 	return (
 		<div className="fixed z-10 flex flex-col items-center px-1 leading-loose rounded-lg right-12 top-10 backdrop-blur-sm bg-white/50 drop-shadow-sm">
-			<Link className="text-lg font-bold" to={`/automations/${automationName}`}>
-				{automationName}
-			</Link>
-			<div>
-				<span className="text-sm">
-					{format(new Date(execution?.StartedAt), 'yyyy/MM/dd')}
-				</span>
-				<span className="ml-3 text-xs">
-					{format(new Date(execution?.StartedAt), 'HH:mm:ss')}
-				</span>
-			</div>
+			{loading && <Loader className="p-4" />}
+			{!loading && (
+				<>
+					<Link className="text-lg font-bold" to={`/automations/${automationName}`}>
+						{automationName}
+					</Link>
+					<div>
+						<span className="text-sm">
+							{format(new Date(execution?.StartedAt), 'yyyy/MM/dd')}
+						</span>
+						<span className="ml-3 text-xs">
+							{format(new Date(execution?.StartedAt), 'HH:mm:ss')}
+						</span>
+					</div>
+				</>
+			)}
 		</div>
 	)
 }

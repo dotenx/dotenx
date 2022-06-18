@@ -5,6 +5,7 @@ import { ReactNode, useMemo, useState } from 'react'
 import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
 import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
+import { Loader } from './loader'
 
 interface TableProps<D extends object = Record<string, string>> {
 	title: string
@@ -12,6 +13,7 @@ interface TableProps<D extends object = Record<string, string>> {
 	emptyText?: string
 	columns: Column<D>[]
 	data: D[] | undefined
+	loading?: boolean
 }
 
 export function Table<D extends object = Record<string, string>>({
@@ -20,6 +22,7 @@ export function Table<D extends object = Record<string, string>>({
 	emptyText,
 	columns,
 	data = [],
+	loading,
 }: TableProps<D>) {
 	const [search, setSearch] = useState('')
 	const fuzzySearch = useMemo(
@@ -46,7 +49,8 @@ export function Table<D extends object = Record<string, string>>({
 				<h3 className="text-2xl font-bold">{title}</h3>
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>
-			{data.length === 0 && (
+			{loading && <Loader />}
+			{!loading && data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
 					<span className="text-lg">{emptyText}</span>
 					{actionBar}

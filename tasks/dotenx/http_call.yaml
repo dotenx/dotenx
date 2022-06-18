@@ -1,4 +1,4 @@
-service: etc
+service: dotenx
 type: Http request
 image: awrmin/utopiopshttpcall
 fields:

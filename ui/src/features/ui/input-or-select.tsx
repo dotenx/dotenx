@@ -6,18 +6,26 @@ import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
 import { FieldError } from './field'
 
-interface InputOrSelectProps {
+export interface InputOrSelectProps {
 	name: string
-	label: string
+	label?: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>
 	groups: GroupData[]
 	errors: FieldErrors
+	placeholder?: string
 }
 
-export function InputOrSelect({ control, label, name, groups, errors }: InputOrSelectProps) {
+export function InputOrSelect({
+	control,
+	label,
+	name,
+	groups,
+	errors,
+	placeholder,
+}: InputOrSelectProps) {
 	return (
-		<div>
+		<div className="w-full">
 			<Controller
 				control={control}
 				name={name}
@@ -29,6 +37,7 @@ export function InputOrSelect({ control, label, name, groups, errors }: InputOrS
 						label={label}
 						name={name}
 						groups={groups}
+						placeholder={placeholder}
 					/>
 				)}
 			/>
@@ -53,7 +62,7 @@ interface InputValue {
 	data: string
 }
 
-interface SelectValue {
+export interface SelectValue {
 	type: InputOrSelectKind.Option
 	data: string
 	groupName: string
@@ -62,28 +71,38 @@ interface SelectValue {
 
 export type InputOrSelectValue = InputValue | SelectValue
 
-interface InputOrSelectRawProps {
+export interface InputOrSelectRawProps {
 	name: string
-	label: string
+	label?: string
 	groups: GroupData[]
 	value: InputOrSelectValue
 	onChange: (value: InputOrSelectValue) => void
+	placeholder?: string
 }
 
-function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelectRawProps) {
+export function InputOrSelectRaw({
+	name,
+	groups,
+	value,
+	onChange,
+	label,
+	placeholder,
+}: InputOrSelectRawProps) {
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	const close = useCallback(() => setIsOpen(false), [])
 	useOutsideClick(wrapperRef, close)
 	const [isOpen, setIsOpen] = useState(false)
 
 	return (
-		<div className="relative" ref={wrapperRef}>
+		<div className="relative grow" ref={wrapperRef}>
 			<div className="flex flex-col gap-1">
-				<label className="text-sm font-bold" htmlFor={name}>
-					{label}
-				</label>
+				{label && (
+					<label className="text-sm font-bold" htmlFor={name}>
+						{label}
+					</label>
+				)}
 				{value.type === 'option' && (
-					<SelectedData
+					<InputValueBox
 						value={value}
 						onClose={() =>
 							onChange({
@@ -99,6 +118,7 @@ function InputOrSelectRaw({ name, groups, value, onChange, label }: InputOrSelec
 							'px-2 py-1 border rounded-lg border-slate-400 outline-rose-500',
 							isOpen && 'outline-2 outline-offset-[-0.5px]'
 						)}
+						placeholder={placeholder}
 						onFocus={() => setIsOpen(true)}
 						id={name}
 						autoComplete="off"
@@ -182,12 +202,11 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 	)
 }
 
-interface SelectedDataProps {
+interface InputValueBoxProps {
 	value: SelectValue
 	onClose: () => void
 }
-
-function SelectedData({ value, onClose }: SelectedDataProps) {
+function InputValueBox({ value, onClose }: InputValueBoxProps) {
 	return (
 		<div className="flex items-center justify-between p-1 border rounded-lg border-slate-400">
 			<div className="bg-gray-50 px-1.5 flex items-center gap-2 rounded">

@@ -2,6 +2,8 @@ package executors
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/dotenx/dotenx/runner/config"
@@ -21,7 +23,25 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		for _, field := range task.MetaData.Fields {
 			if value, ok := task.Body[field.Key]; ok {
 				var envVar string
-				envVar = field.Key + "=" + fmt.Sprintf("%v", value)
+				if field.Type == "code" {
+					str := value.(string)
+					fileName := task.Workspace + "_" + field.Key
+					f, err := os.Create(config.Configs.App.FileSharing + "/" + fileName)
+					if err != nil {
+						log.Println(err)
+						return &models.Task{}
+					}
+					defer f.Close()
+					d2 := []byte(str)
+					_, err = f.Write(d2)
+					if err != nil {
+						log.Println(err)
+						return &models.Task{}
+					}
+					envVar = field.Key + "=/tmp/" + fileName
+				} else {
+					envVar = field.Key + "=" + fmt.Sprintf("%v", value)
+				}
 				envs = append(envs, envVar)
 			}
 		}

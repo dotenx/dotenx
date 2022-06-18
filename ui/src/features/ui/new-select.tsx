@@ -5,13 +5,14 @@ import { IoChevronDown } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
 import { FieldError } from './field'
+import { Loader } from './loader'
 
 interface Option {
 	label: string
 	value: string
 }
 
-interface SelectProps {
+export interface NewSelectProps {
 	label?: string
 	errors?: FieldErrors
 	name: string
@@ -19,6 +20,7 @@ interface SelectProps {
 	control: Control<any>
 	options?: Option[]
 	placeholder?: string
+	loading?: boolean
 }
 
 export function NewSelect({
@@ -28,8 +30,9 @@ export function NewSelect({
 	control,
 	options = [],
 	placeholder,
+	loading,
 	...rest
-}: SelectProps) {
+}: NewSelectProps) {
 	return (
 		<div className="flex flex-col gap-1" {...rest}>
 			<label htmlFor={name} className="text-sm font-bold">
@@ -40,6 +43,7 @@ export function NewSelect({
 				control={control}
 				options={options}
 				placeholder={placeholder}
+				loading={loading}
 			/>
 			{name && errors && <FieldError errors={errors} name={name} />}
 		</div>
@@ -51,9 +55,10 @@ interface SelectControllerProps {
 	control: Control
 	options: Option[]
 	placeholder?: string
+	loading?: boolean
 }
 
-function SelectController({ control, name, options, placeholder }: SelectControllerProps) {
+function SelectController({ control, name, options, placeholder, loading }: SelectControllerProps) {
 	return (
 		<Controller
 			control={control}
@@ -66,6 +71,7 @@ function SelectController({ control, name, options, placeholder }: SelectControl
 						value={options.find((option) => option.value === value)}
 						options={options}
 						placeholder={placeholder}
+						loading={loading}
 					/>
 				)
 			}}
@@ -78,11 +84,13 @@ function RawSelect({
 	options,
 	value,
 	placeholder,
+	loading,
 }: {
 	value?: Option
 	onChange: (value: Option) => void
 	options: Option[]
 	placeholder?: string
+	loading?: boolean
 }) {
 	const [isOpen, setIsOpen] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement>(null)
@@ -105,7 +113,8 @@ function RawSelect({
 			<div className="absolute inset-x-0 z-10">
 				<Fade isOpen={isOpen}>
 					<div className="p-1 bg-white border rounded-lg shadow-md border-slate-300">
-						{options.length === 0 && (
+						{loading && <Loader className="py-4" />}
+						{!loading && options.length === 0 && (
 							<div className="p-1.5 text-xs font-thin text-center">No options</div>
 						)}
 						{options.map((option) => (

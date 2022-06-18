@@ -50,7 +50,12 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore) er
 	dc := dockerCleint{cli: cli}
 	//fmt.Println(triggers)
 	for _, trigger := range triggers {
-		if trigger.Type != "Schedule" {
+		_, _, isActive, err := manager.PipelineStore.GetByName(context.Background(), trigger.AccountId, trigger.Pipeline)
+		if err != nil {
+			fmt.Println("Unable to start checking this trigger:", err.Error())
+			continue
+		}
+		if trigger.Type != "Schedule" && isActive {
 			go dc.handleTrigger(manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
