@@ -36,6 +36,11 @@ func (controller *OauthController) OAuth(c *gin.Context) {
 		c.Redirect(307, providers["instagram"].DirectUrl)
 		return
 	}
+	if c.Param("provider") == "typeform" {
+		providers := oauth.GetProvidersMap()
+		c.Redirect(307, providers["typeform"].DirectUrl)
+		return
+	}
 	c.Request.URL.RawQuery = q.Encode()
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
@@ -75,7 +80,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	if providerStr == "slack" {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
-		accessToekn, err := getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/slack")
+		accessToekn, err := getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/slack")
 		if err != nil {
 			c.Redirect(307, UI+"?error="+err.Error())
 			return
@@ -86,7 +91,18 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	if providerStr == "instagram" {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
-		accessToken, err := getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/instagram")
+		accessToken, err := getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/instagram")
+		if err != nil {
+			c.Redirect(307, UI+"?error="+err.Error())
+			return
+		}
+		c.Redirect(307, UI+"?access_token="+accessToken)
+		return
+	}
+	if providerStr == "typeform" {
+		code := c.Query("code")
+		providers := oauth.GetProvidersMap()
+		accessToken, err := getTypeformAccessToken(providers["typeform"].Key, providers["typeform"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/typeform")
 		if err != nil {
 			c.Redirect(307, UI+"?error="+err.Error())
 			return
@@ -194,4 +210,35 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	}
 	err = json.Unmarshal(out, &refreshDto)
 	return refreshDto.AccessToken, err
+}
+
+func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
+	var dto struct {
+		AccessToekn string `json:"access_token"`
+	}
+	data := "client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://api.typeform.com/oauth/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("typeform response:", string(out))
+	log.Println("-----------------------------------------------------------")
+	if err != nil {
+		return "", err
+	}
+	if status != 200 {
+		return "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToekn, err
 }

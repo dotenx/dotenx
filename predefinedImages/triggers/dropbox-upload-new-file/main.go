@@ -9,9 +9,13 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 type File struct {
@@ -21,35 +25,49 @@ type File struct {
 	ServerModified string `json:"server_modified"`
 }
 
-func main() {
-	pipelineEndpoint := os.Getenv("PIPELINE_ENDPOINT")
-	triggerName := os.Getenv("TRIGGER_NAME")
-	accId := os.Getenv("ACCOUNT_ID")
+type Event struct {
+	PipelineEndpoint string `json:"PIPELINE_ENDPOINT"`
+	TriggerName      string `json:"TRIGGER_NAME"`
+	AccountId        string `json:"ACCOUNT_ID"`
+	Workspace        string `json:"WORKSPACE"`
+	AccessToken      string `json:"INTEGRATION_ACCESS_TOKEN"`
+	Path             string `json:"path"`
+	PassedSeconds    string `json:"passed_seconds"`
+}
+
+type Response struct {
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	resp := Response{}
+	pipelineEndpoint := event.PipelineEndpoint
+	triggerName := event.TriggerName
+	accId := event.AccountId
 	if triggerName == "" {
 		fmt.Println("your trigger name is not set")
-		return
+		return resp, errors.New("trigger name is not set")
 	}
-	workspace := os.Getenv("WORKSPACE")
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	path := os.Getenv("path")
-	passedSeconds := os.Getenv("passed_seconds")
+	workspace := event.Workspace
+	accessToken := event.AccessToken
+	path := event.Path
+	passedSeconds := event.PassedSeconds
 	seconds, err := strconv.Atoi(passedSeconds)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
 	latestFile, err := getLatestFile(accessToken, path)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 	fmt.Printf("latest file in this path: %#v\n", latestFile)
 
 	latestFileUnix, err := time.Parse("2006-01-02T15:04:05Z", latestFile.ServerModified)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return resp, err
 	}
 	if latestFileUnix.Unix() > selectedUnix {
 		body := make(map[string]interface{})
@@ -65,7 +83,7 @@ func main() {
 		json_data, err := json.Marshal(body)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return resp, err
 		}
 		payload := bytes.NewBuffer(json_data)
 		out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
@@ -73,20 +91,23 @@ func main() {
 			fmt.Println("response:", string(out))
 			fmt.Println("error:", err)
 			fmt.Println("status code:", status)
-			return
+			return resp, err
 		}
-		fmt.Println("trigger successfully started")
 		err = saveFile(accessToken, latestFile.PathDisplay, workspace)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return resp, err
 		}
-		return
+		fmt.Println("trigger successfully started")
+		return resp, nil
 	} else {
 		fmt.Println("no new file in path")
-		return
+		return resp, nil
 	}
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func getLatestFile(accessToken, path string) (latestFile File, err error) {
@@ -197,8 +218,26 @@ func saveFile(accessToken, path, workspace string) (err error) {
 		fmt.Println(err)
 		return
 	}
-	outputPath := fmt.Sprintf("/tmp/%s_%s", workspace, resp.Name)
-	err = os.WriteFile(outputPath, out, 0755)
+
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1")},
+	)
+	bucketName := "dotenx"
+	fileName := fmt.Sprintf("%s_%s", workspace, resp.Name)
+
+	// Setup the S3 Upload Manager. Also see the SDK doc for the Upload Manager
+	// for more information on configuring part size, and concurrency.
+	//
+	// http://docs.aws.amazon.com/sdk-for-go/api/service/s3/s3manager/#NewUploader
+	uploader := s3manager.NewUploader(sess)
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(fileName),
+		Body:   bytes.NewReader(out),
+	})
+
+	// outputPath := fmt.Sprintf("/tmp/%s_%s", workspace, resp.Name)
+	// err = os.WriteFile(outputPath, out, 0755)
 	if err != nil {
 		fmt.Println(err)
 		return
