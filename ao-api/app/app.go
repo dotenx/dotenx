@@ -84,7 +84,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// if err != nil {
 	// 	panic(err.Error())
 	// }
+
 	r := gin.Default()
+	RegisterCustomValidators()
 	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
 	storeDomain := ""
 	if config.Configs.App.RunLocally {
