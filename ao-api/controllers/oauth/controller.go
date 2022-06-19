@@ -41,6 +41,14 @@ func (controller *OauthController) OAuth(c *gin.Context) {
 		c.Redirect(307, providers["instagram"].DirectUrl)
 		return
 	}
+	gothProvider, err := oauth.GetProviderByName(c.Param("provider"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	goth.UseProviders(*gothProvider)
 	c.Request.URL.RawQuery = q.Encode()
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
@@ -127,6 +135,14 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 		c.Redirect(307, UI+"?access_token="+accessToken)
 		return
 	}
+	gothProvider, err := oauth.GetProviderByName(providerStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	goth.UseProviders(*gothProvider)
 	q.Add("provider", providerStr)
 	c.Request.URL.RawQuery = q.Encode()
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
