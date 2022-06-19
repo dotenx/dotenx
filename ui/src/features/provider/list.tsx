@@ -22,6 +22,12 @@ export function ProviderList() {
 				{ Header: 'Name', accessor: 'name' },
 				{ Header: 'Type', accessor: 'type' },
 				{
+					Header: 'Scopes',
+					id: 'scopes',
+					accessor: 'scopes',
+					Cell: ({ value }: { value: string[] }) => <Scopes data={value} />,
+				},
+				{
 					Header: 'Action',
 					id: 'action',
 					accessor: 'name',
@@ -35,6 +41,18 @@ export function ProviderList() {
 			]}
 			data={providers}
 		/>
+	)
+}
+
+function Scopes({ data }: { data: string[] }) {
+	return (
+		<div className="flex items-center gap-2">
+			{data.map((scope) => (
+				<span key={scope} className="p-1 text-xs font-semibold rounded-md bg-emerald-50">
+					{scope}
+				</span>
+			))}
+		</div>
 	)
 }
 

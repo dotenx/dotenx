@@ -153,7 +153,7 @@ export function createProvider(payload: Provider) {
 }
 
 export function getProviders() {
-	return api.get<GetProvidersResponse>('/oauth/user/provider')
+	return api.get<GetProvidersResponse>('/oauth/user/provider/list')
 }
 
 export function getProvider(name: string) {
