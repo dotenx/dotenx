@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -13,7 +12,7 @@ func (pc *ProjectController) AddProject() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dto models.Project
 		accountId, _ := utils.GetAccountId(c)
-		fmt.Println(accountId)
+
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return

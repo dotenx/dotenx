@@ -223,6 +223,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// project router
 	project.POST("", projectController.AddProject())
+	project.GET("", projectController.ListProjects())
 
 	// TODO: delete the commented code
 	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")

@@ -13,6 +13,7 @@ func NewProjectService(store projectStore.ProjectStore) ProjectService {
 
 type ProjectService interface {
 	AddProject(accountId string, project models.Project) error
+	ListProjects(accountId string) ([]models.Project, error)
 }
 
 type projectService struct {

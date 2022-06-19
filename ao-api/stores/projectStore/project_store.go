@@ -14,6 +14,7 @@ func New(db *db.DB) ProjectStore {
 type ProjectStore interface {
 	AddProject(ctx context.Context, accountId string, project models.Project) error
 	CreateProjectDatabase(ctx context.Context, accountId string, projectName string) error
+	ListProjects(ctx context.Context, accountId string) ([]models.Project, error)
 }
 
 type projectStore struct {
