@@ -9,6 +9,7 @@ import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
+import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
@@ -25,6 +26,7 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
+			<Route path="/builder/providers/:name" element={<ProviderPage />} />
 			<Route path="/builder/providers" element={<ProvidersPage />} />
 
 			<Route path="/try-out" element={<TryOutPage />} />

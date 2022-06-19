@@ -1,5 +1,6 @@
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { Link } from 'react-router-dom'
 import { deleteProvider, getProviders, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
 import { Button, DeleteButton, Table } from '../ui'
@@ -19,14 +20,19 @@ export function ProviderList() {
 			loading={query.isLoading}
 			actionBar={<ActionBar />}
 			columns={[
-				{ Header: 'Name', accessor: 'name' },
-				{ Header: 'Type', accessor: 'type' },
 				{
-					Header: 'Scopes',
-					id: 'scopes',
-					accessor: 'scopes',
-					Cell: ({ value }: { value: string[] }) => <Scopes data={value} />,
+					Header: 'Name',
+					accessor: 'name',
+					Cell: ({ value }: { value: string }) => (
+						<Link
+							className="hover:underline underline-offset-2"
+							to={`/builder/providers/${value}`}
+						>
+							{value}
+						</Link>
+					),
 				},
+				{ Header: 'Type', accessor: 'type' },
 				{
 					Header: 'Action',
 					id: 'action',
@@ -41,18 +47,6 @@ export function ProviderList() {
 			]}
 			data={providers}
 		/>
-	)
-}
-
-function Scopes({ data }: { data: string[] }) {
-	return (
-		<div className="flex items-center gap-2">
-			{data.map((scope) => (
-				<span key={scope} className="p-1 text-xs font-semibold rounded-md bg-emerald-50">
-					{scope}
-				</span>
-			))}
-		</div>
 	)
 }
 
