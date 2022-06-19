@@ -17,6 +17,7 @@ type OauthService interface {
 	AddUserProvider(userProvider models.UserProvider) error
 	DeleteUserProvider(accountId, userProviderName string) error
 	GetUserProviderByName(accountId, name string) (models.UserProvider, error)
+	GetUserProviderByTag(tag string) (models.UserProvider, error)
 	UpdateUserProvider(userProvider models.UserProvider) error
 	GetAllUserProviders(accountId string) ([]models.UserProvider, error)
 }
@@ -52,6 +53,7 @@ func (manager *OauthManager) AddUserProvider(userProvider models.UserProvider) e
 	}
 	userProvider.Key = encryptedKey
 	userProvider.Secret = encryptedSecret
+	userProvider.Tag = utils.RandStringRunes(16, utils.FullRunes)
 	return manager.Store.AddUserProvider(context.Background(), userProvider)
 }
 
@@ -62,6 +64,25 @@ func (manager *OauthManager) DeleteUserProvider(accountId, userProviderName stri
 func (manager *OauthManager) GetUserProviderByName(accountId, name string) (models.UserProvider, error) {
 
 	userProvider, err := manager.Store.GetUserProviderByName(context.Background(), accountId, name)
+	if err != nil {
+		return models.UserProvider{}, err
+	}
+
+	decryptedKey, err := utils.Decrypt(userProvider.Key, config.Configs.Secrets.Encryption)
+	if err != nil {
+		return models.UserProvider{}, err
+	}
+	decryptedSecret, err := utils.Decrypt(userProvider.Secret, config.Configs.Secrets.Encryption)
+	if err != nil {
+		return models.UserProvider{}, err
+	}
+	userProvider.Key = decryptedKey
+	userProvider.Secret = decryptedSecret
+	return userProvider, nil
+}
+
+func (manager *OauthManager) GetUserProviderByTag(tag string) (models.UserProvider, error) {
+	userProvider, err := manager.Store.GetUserProviderByTag(context.Background(), tag)
 	if err != nil {
 		return models.UserProvider{}, err
 	}

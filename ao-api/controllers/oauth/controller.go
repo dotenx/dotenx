@@ -116,7 +116,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	if providerStr == "slack" {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
-		accessToekn, err := getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/slack")
+		accessToekn, err := getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/slack")
 		if err != nil {
 			c.Redirect(307, UI+"?error="+err.Error())
 			return
@@ -127,7 +127,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	if providerStr == "instagram" {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
-		accessToken, err := getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, "https://ao-api.dotenx.com/oauth/integration/callbacks/instagram")
+		accessToken, err := getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/instagram")
 		if err != nil {
 			c.Redirect(307, UI+"?error="+err.Error())
 			return

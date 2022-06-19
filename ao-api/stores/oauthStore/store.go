@@ -15,6 +15,7 @@ type OauthStore interface {
 	AddUserProvider(ctx context.Context, userProvider models.UserProvider) error
 	DeleteUserProvider(ctx context.Context, accountId, userProviderName string) error
 	GetUserProviderByName(ctx context.Context, accountId, name string) (models.UserProvider, error)
+	GetUserProviderByTag(ctx context.Context, tag string) (models.UserProvider, error)
 	UpdateUserProvider(ctx context.Context, userProvider models.UserProvider) error
 	GetAllUserProviders(ctx context.Context, accountId string) ([]models.UserProvider, error)
 }
@@ -47,7 +48,7 @@ func (store *oauthStore) AddUserProvider(ctx context.Context, userProvider model
 	}
 	res, err := store.db.Connection.Exec(stmt, userProvider.AccountId, userProvider.Name,
 		userProvider.Type, userProvider.Key, userProvider.Secret, userProvider.DirectUrl,
-		userProvider.Scopes, userProvider.FrontEndUrl)
+		userProvider.Scopes, userProvider.FrontEndUrl, userProvider.Tag)
 	if err != nil {
 		return err
 	}
@@ -114,6 +115,34 @@ func (store *oauthStore) GetUserProviderByName(ctx context.Context, accountId, u
 	return res, err
 }
 
+func (store *oauthStore) GetUserProviderByTag(ctx context.Context, tag string) (models.UserProvider, error) {
+	var cnt int
+	err := store.db.Connection.Get(&cnt, countExistingUserProviderByTagStmt, tag)
+	if err != nil {
+		return models.UserProvider{}, err
+	}
+	if cnt == 0 {
+		return models.UserProvider{}, errors.New("provider not found")
+	}
+
+	var stmt string
+	switch store.db.Driver {
+	case db.Postgres:
+		stmt = getUserProviderByTagStmt
+	default:
+		return models.UserProvider{}, fmt.Errorf("driver not supported")
+	}
+	res := models.UserProvider{}
+	err = store.db.Connection.QueryRowx(stmt, tag).StructScan(&res)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			err = errors.New("provider not found")
+		}
+		return models.UserProvider{}, err
+	}
+	return res, err
+}
+
 func (store *oauthStore) UpdateUserProvider(ctx context.Context, userProvider models.UserProvider) error {
 	var cnt int
 	err := store.db.Connection.Get(&cnt, countExistingUserProviderStmt, userProvider.AccountId, userProvider.Name)
@@ -158,7 +187,7 @@ func (store *oauthStore) GetAllUserProviders(ctx context.Context, accountId stri
 		defer rows.Close()
 		for rows.Next() {
 			var cur models.UserProvider
-			rows.Scan(&cur.AccountId, &cur.Name, &cur.Type, &cur.DirectUrl, &cur.Scopes, &cur.FrontEndUrl)
+			rows.Scan(&cur.AccountId, &cur.Name, &cur.Type, &cur.DirectUrl, &cur.Scopes, &cur.FrontEndUrl, &cur.Tag)
 			if err != nil {
 				return providers, err
 			}
@@ -173,9 +202,14 @@ SELECT count(*) FROM user_provider
 WHERE account_id = $1 and name = $2;
 `
 
+var countExistingUserProviderByTagStmt = `
+SELECT count(*) FROM user_provider
+WHERE tag = $1;
+`
+
 var insertUserProviderStmt = `
-INSERT INTO user_provider (account_id, name, type, key, secret, direct_url, scopes, front_end_url)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO user_provider (account_id, name, type, key, secret, direct_url, scopes, front_end_url, tag)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 `
 
 var deleteUserProviderStmt = `
@@ -188,6 +222,11 @@ SELECT * FROM user_provider
 WHERE account_id = $1 and name = $2;
 `
 
+var getUserProviderByTagStmt = `
+SELECT * FROM user_provider 
+WHERE tag = $1;
+`
+
 var updateUserProviderStmt = `
 UPDATE user_provider
 SET    type = $1, key = $2, secret = $3, direct_url = $4, scopes = $5, front_end_url = $6
@@ -195,6 +234,6 @@ WHERE  account_id = $7 and name = $8;
 `
 
 var getAllUserProvidersStmt = `
-SELECT account_id, name, type, direct_url, scopes, front_end_url FROM user_provider 
+SELECT account_id, name, type, direct_url, scopes, front_end_url, tag FROM user_provider 
 WHERE account_id = $1;
 `

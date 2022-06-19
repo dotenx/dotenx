@@ -229,11 +229,11 @@ FOREIGN KEY (status) REFERENCES task_status(name)
 `
 
 var createIndexTaskPreconditionsPreconditions = `
-CREATE INDEX task_preconditions_preconditions ON task_preconditions (precondition_id, status)
+CREATE INDEX IF NOT EXISTS task_preconditions_preconditions ON task_preconditions (precondition_id, status)
 `
 
 var createIndexTaskPreconditionsTasks = `
-CREATE INDEX task_preconditions_tasks ON task_preconditions (task_id)
+CREATE INDEX IF NOT EXISTS task_preconditions_tasks ON task_preconditions (task_id)
 `
 
 var createTableExecutions = `
@@ -247,7 +247,7 @@ FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 `
 
 var addExectuionTime = `ALTER TABLE executions
-ADD COLUMN execution_time INT DEFAULT 0;`
+ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
 
 //var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
@@ -336,6 +336,7 @@ secret            varchar(256) NOT NULL,
 direct_url        text,
 scopes            text[],
 front_end_url     text,
+tag               varchar(32) NOT NULL,
 UNIQUE (account_id, name)
 )
 `
