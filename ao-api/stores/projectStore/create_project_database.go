@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 var createDatabase = `
@@ -16,7 +17,7 @@ func (store *projectStore) CreateProjectDatabase(ctx context.Context, accountId 
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
-		stmt = fmt.Sprintf(createDatabase, "u"+accountId+"__"+projectName)
+		stmt = fmt.Sprintf(createDatabase, utils.GetProjectDatabaseName(accountId, projectName))
 	default:
 		return fmt.Errorf("driver not supported")
 	}
