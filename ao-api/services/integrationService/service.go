@@ -21,7 +21,7 @@ type IntegrationService interface {
 	GetIntegrationFields(name string) (models.IntegrationDefinition, error)
 	GetIntegrationByName(accountId, name string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
-	GetIntegrationTypes() ([]string, error)
+	GetIntegrationTypes() ([]models.IntegrationDefinition, error)
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
 	GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
@@ -50,10 +50,10 @@ func (manager *IntegrationManager) GetIntegrationFields(name string) (models.Int
 	}
 	return models.IntegrationDefinition{}, errors.New("no integration with this name")
 }
-func (manager *IntegrationManager) GetIntegrationTypes() ([]string, error) {
-	integrations := make([]string, 0)
+func (manager *IntegrationManager) GetIntegrationTypes() ([]models.IntegrationDefinition, error) {
+	integrations := make([]models.IntegrationDefinition, 0)
 	for _, integ := range models.AvaliableIntegrations {
-		integrations = append(integrations, integ.Type)
+		integrations = append(integrations, integ)
 	}
 	return integrations, nil
 }
