@@ -78,7 +78,9 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		})
 	}
 
-	const integrationKindOptions = availableIntegrations?.map(toOption)
+	const integrationKindOptions = availableIntegrations
+		?.map((integration) => integration.type)
+		.map(toOption)
 
 	const onSubmit = handleSubmit(onSave)
 

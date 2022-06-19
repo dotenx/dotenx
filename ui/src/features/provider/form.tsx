@@ -33,8 +33,10 @@ export function ProviderForm() {
 		resolver: zodResolver(schema),
 	})
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
-	const availableIntegrations = integrationTypesQuery.data?.data
-	const integrationKindOptions = availableIntegrations?.map(toOption)
+	const integrationKindOptions = integrationTypesQuery.data?.data
+		.filter((integration) => !!integration.oauth_provider)
+		.map((integration) => integration.type)
+		.map(toOption)
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>

@@ -136,7 +136,19 @@ export type GetIntegrationsResponse = Integration[]
 
 export type GetIntegrationsByKindsResponse = Integration[]
 
-export type GetIntegrationKindsResponse = string[]
+export type GetIntegrationKindsResponse = IntegrationKind[]
+
+export interface IntegrationKind {
+	type: string
+	secrets: Secret[]
+	oauth_provider: string
+}
+
+export interface Secret {
+	name: string
+	key: string
+	internal: boolean
+}
 
 export type GetIntegrationKindFieldsResponse = {
 	secrets: { key: string; name: string; internal: boolean }[]
