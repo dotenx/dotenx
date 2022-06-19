@@ -13,6 +13,7 @@ import (
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
+	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/oauth"
@@ -23,6 +24,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
+	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
@@ -30,6 +32,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/dotenx/goth"
@@ -107,6 +110,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	AuthorStore := authorStore.New(db)
 	RedisStore := redisStore.New(redisClient)
 	OauthStore := oauthStore.New(db)
+	ProjectStore := projectStore.New(db)
+
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 
@@ -115,6 +120,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
+	ProjectService := projectService.NewProjectService(ProjectStore)
+
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
@@ -122,6 +129,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
 	adminController := admin.AdminController{}
+	projectController := project.ProjectController{Service: ProjectService}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -140,11 +148,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// Routes
 	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
-	pipline := r.Group("/pipeline")
+	pipeline := r.Group("/pipeline")
 	execution := r.Group("/execution")
-	intgration := r.Group("/integration")
+	integration := r.Group("/integration")
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
+	project := r.Group("/project")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -156,14 +165,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	tasks.GET("/:task_name/fields", predefinedController.GetFields)
 
 	// pipeline router
-	pipline.POST("", crudController.AddPipeline())
-	pipline.PUT("", crudController.UpdatePipeline())
-	pipline.GET("", crudController.GetPipelines())
-	pipline.DELETE("/name/:name", crudController.DeletePipeline())
-	pipline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
-	pipline.GET("/name/:name", crudController.GetPipeline())
-	pipline.GET("/name/:name/activate", crudController.ActivatePipeline())
-	pipline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
+	// TODO: fix the type of the pipeline
+	pipeline.POST("", crudController.AddPipeline())
+	pipeline.PUT("", crudController.UpdatePipeline())
+	pipeline.GET("", crudController.GetPipelines())
+	pipeline.DELETE("/name/:name", crudController.DeletePipeline())
+	pipeline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
+	pipeline.GET("/name/:name", crudController.GetPipeline())
+	pipeline.GET("/name/:name/activate", crudController.ActivatePipeline())
+	pipeline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
 
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
@@ -178,11 +188,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	execution.GET("/id/:id/task_name/:task_name/result", executionController.GetTaskExecutionResultByName())
 
 	// integration router
-	intgration.POST("", IntegrationController.AddIntegration())
-	intgration.GET("", IntegrationController.GetAllIntegrations())
-	intgration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
-	intgration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
-	intgration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
+	integration.POST("", IntegrationController.AddIntegration())
+	integration.GET("", IntegrationController.GetAllIntegrations())
+	integration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
+	integration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
+	integration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 
 	// trigger router
 	trigger.POST("", TriggerController.AddTriggers())
@@ -221,6 +231,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
+	// project router
+	project.POST("", projectController.AddProject())
+
+	// TODO: delete the commented code
 	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")
 	// fmt.Println("****************************************")
 	// fmt.Printf("discord integration: %#v\n", discord)

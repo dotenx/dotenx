@@ -100,6 +100,10 @@ var migrations = []struct {
 		name: "add-provider-field-to-integrations",
 		stmt: addProviderFieldToIntegrations,
 	},
+	{
+		name: "create-table-projects",
+		stmt: createTableProjects,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -344,4 +348,13 @@ UNIQUE (account_id, name)
 var addProviderFieldToIntegrations = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS provider varchar(64);
+`
+var createTableProjects = `
+CREATE TABLE IF NOT EXISTS projects (
+id														SERIAL PRIMARY KEY,
+name													VARCHAR(128),
+account_id									  VARCHAR(64),
+description										VARCHAR(128),
+UNIQUE (account_id, name)
+)
 `

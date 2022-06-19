@@ -16,6 +16,7 @@ export enum QueryKey {
 	GetAutomationTrigger = 'get-automation-triggers',
 	GetIntegrationsByType = 'get-integration-by-type',
 	GetProviders = 'get-providers',
+	GetProvider = 'get-provider',
 	GetFormatterFunctions = 'get-formatter-functions',
 }
 
@@ -208,7 +209,7 @@ export type CreateIntegrationRequest = {
 	secrets: Record<string, string>
 }
 
-export type GetProvidersResponse = Provider[]
+export type GetProvidersResponse = ProviderDetail[]
 
 export interface Provider {
 	name: string
@@ -217,6 +218,18 @@ export interface Provider {
 	secret: string
 	scopes: string[]
 	front_end_url: string
+}
+
+export interface ProviderDetail {
+	name: string
+	type: string
+	key: string
+	secret: string
+	scopes?: string[]
+	front_end_url: string
+	account_id: string
+	direct_url: string
+	tag: string
 }
 
 export type GetFormatterFunctionsResponse = Record<string, FormatterFunction>
@@ -247,3 +260,5 @@ interface FromSource {
 	key: string
 	source: string
 }
+
+export type GetProviderResponse = { provider: ProviderDetail }

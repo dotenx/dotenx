@@ -14,6 +14,7 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProviderResponse,
 	GetProvidersResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
@@ -157,7 +158,7 @@ export function getProviders() {
 }
 
 export function getProvider(name: string) {
-	return api.get<Provider>(`/oauth/user/provider/${name}`)
+	return api.get<GetProviderResponse>(`/oauth/user/provider/${name}`)
 }
 
 export function deleteProvider(name: string) {
