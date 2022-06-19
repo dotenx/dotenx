@@ -8,5 +8,17 @@ import (
 
 func (ps *projectService) AddProject(accountId string, project models.Project) error {
 	noContext := context.Background()
-	return ps.Store.AddProject(noContext, accountId, project)
+
+	// Add project to database
+	if err := ps.Store.AddProject(noContext, accountId, project); err != nil {
+		return err
+	}
+
+	// Create a database for the project
+	if err := ps.Store.CreateProjectDatabase(noContext, accountId, project.Name); err != nil {
+		return err
+	}
+
+	// todo: add rollback if database creation fails
+	return nil
 }
