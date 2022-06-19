@@ -15,6 +15,7 @@ export enum QueryKey {
 	GetTriggerDefinition = 'get-trigger-definition',
 	GetAutomationTrigger = 'get-automation-triggers',
 	GetIntegrationsByType = 'get-integration-by-type',
+	GetProviders = 'get-providers',
 	GetFormatterFunctions = 'get-formatter-functions',
 }
 
@@ -205,6 +206,17 @@ export type CreateIntegrationRequest = {
 	name: string
 	type: string
 	secrets: Record<string, string>
+}
+
+export type GetProvidersResponse = Provider[]
+
+export interface Provider {
+	name: string
+	type: string
+	key: string
+	secret: string
+	scopes: string[]
+	front_end_url: string
 }
 
 export type GetFormatterFunctionsResponse = Record<string, FormatterFunction>
