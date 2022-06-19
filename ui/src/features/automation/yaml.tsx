@@ -9,7 +9,7 @@ export function AutomationYaml({ name }: { name: string }) {
 	const query = useQuery([QueryKey.GetAutomationYaml, name], () => getAutomationYaml(name))
 	const code = query.data?.data
 
-	if (query.isLoading) return <Loader/>
+	if (query.isLoading) return <Loader />
 
 	return (
 		<CodeMirror

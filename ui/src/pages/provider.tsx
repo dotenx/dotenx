@@ -56,7 +56,7 @@ function Scopes({ data }: { data?: string[] }) {
 	if (!data) return <p>No scopes</p>
 
 	return (
-		<div className="flex items-center gap-2 mt-2">
+		<div className="flex items-center gap-2 mt-2 flex-wrap">
 			{data.map((scope) => (
 				<span key={scope} className="px-2 py-1 rounded-md bg-emerald-50">
 					{scope}
