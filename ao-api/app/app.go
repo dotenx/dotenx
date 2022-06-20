@@ -32,6 +32,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
@@ -113,26 +114,27 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerStore := triggerStore.New(db)
 	AuthorStore := authorStore.New(db)
 	RedisStore := redisStore.New(redisClient)
+	OauthStore := oauthStore.New(db)
 	ProjectStore := projectStore.New(db)
 	UserManagementStore := userManagementStore.New()
 
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
-	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
-	OauthService := oauthService.NewOauthService(RedisStore)
+	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
-	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
+	IntegrationController := integrationController.IntegrationController{Service: IntegrationService, OauthService: OauthService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
-	OauthController := oauthController.OauthController{Service: OauthService}
+	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService}
@@ -223,9 +225,19 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	}
 	oauth := r.Group("/oauth")
 	{
+		oauth.POST("/user/provider", OauthController.AddUserProvider())
+		oauth.GET("/user/provider/:name", OauthController.GetUserProvider())
+		oauth.DELETE("/user/provider/:name", OauthController.DeleteUserProvider())
+		oauth.PUT("/user/provider", OauthController.UpdateUserProvider())
+		oauth.GET("/user/provider/list", OauthController.GetAllUserProviders())
+
 		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
+		oauth.GET("/user/provider/auth/provider/:provider_name/account_id/:account_id",
+			sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
+		oauth.GET("/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
+			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
 	// project router
