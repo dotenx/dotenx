@@ -1,7 +1,10 @@
 import axios from 'axios'
 import {
+	AddColumnRequest,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
+	CreateProjectRequest,
+	CreateTableRequest,
 	CreateTriggerRequest,
 	Execution,
 	GetAutomationExecutionsResponse,
@@ -14,8 +17,11 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProjectResponse,
+	GetProjectsResponse,
 	GetProviderResponse,
 	GetProvidersResponse,
+	GetTablesResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
 	GetTriggerDefinitionResponse,
@@ -166,5 +172,29 @@ export function deleteProvider(name: string) {
 }
 
 export function getFormatterFunctions() {
-	return api.get<GetFormatterFunctionsResponse>(`/funcs`)
+	return api.get<GetFormatterFunctionsResponse>('/funcs')
+}
+
+export function createProject(payload: CreateProjectRequest) {
+	return api.post<void>('/project', payload)
+}
+
+export function getProjects() {
+	return api.get<GetProjectsResponse>('/project')
+}
+
+export function getProject(name: string) {
+	return api.get<GetProjectResponse>(`/project/${name}`)
+}
+
+export function getTables(projectName: string) {
+	return api.get<GetTablesResponse>(`/project/${projectName}/table`)
+}
+
+export function createTable(projectName: string, payload: CreateTableRequest) {
+	return api.post<void>(`/database/table`, { projectName, ...payload })
+}
+
+export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
+	return api.post<void>(`/database/table/column`, { projectName, tableName, ...payload })
 }
