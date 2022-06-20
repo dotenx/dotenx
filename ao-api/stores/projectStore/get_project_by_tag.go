@@ -8,27 +8,27 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-var getProject = `
-Select id, name, description, tag from projects
-WHERE account_id = $1 AND name = $2
+var getProjectByTag = `
+Select id, name, account_id, description, tag from projects
+WHERE tag = $1
 `
 
-func (store *projectStore) GetProject(ctx context.Context, accountId string, projectName string) (models.Project, error) {
+func (store *projectStore) GetProjectByTag(ctx context.Context, tag string) (models.Project, error) {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
-		stmt = getProject
+		stmt = getProjectByTag
 	default:
 		return models.Project{}, fmt.Errorf("driver not supported")
 	}
-	rows, err := store.db.Connection.Query(stmt, accountId, projectName)
+	rows, err := store.db.Connection.Query(stmt, tag)
 	if err != nil {
 		return models.Project{}, err
 	}
 	defer rows.Close()
 	var project models.Project
 	for rows.Next() {
-		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag); err != nil {
+		if err := rows.Scan(&project.Id, &project.Name, &project.AccountId, &project.Description, &project.Tag); err != nil {
 			return models.Project{}, err
 		}
 	}

@@ -9,8 +9,8 @@ import (
 )
 
 var addProject = `
-INSERT INTO projects (account_id, name, description)
-VALUES ($1, $2, $3)
+INSERT INTO projects (account_id, name, description, tag)
+VALUES ($1, $2, $3, $4)
 `
 
 func (store *projectStore) AddProject(ctx context.Context, accountId string, project models.Project) error {
@@ -21,7 +21,7 @@ func (store *projectStore) AddProject(ctx context.Context, accountId string, pro
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, accountId, project.Name, project.Description)
+	res, err := store.db.Connection.Exec(stmt, accountId, project.Name, project.Description, project.Tag)
 	if err != nil {
 		return err
 	}
