@@ -8,6 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
+	"github.com/dotenx/dotenx/ao-api/controllers/database"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
@@ -21,6 +22,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
@@ -31,6 +33,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
@@ -116,6 +119,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	RedisStore := redisStore.New(redisClient)
 	OauthStore := oauthStore.New(db)
 	ProjectStore := projectStore.New(db)
+	DatabaseStore := databaseStore.New(db)
 	UserManagementStore := userManagementStore.New()
 
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
@@ -125,6 +129,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
+	DatabaseService := databaseService.NewDatabaseService(DatabaseStore)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
@@ -137,6 +142,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
+	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService}
 
 	// endpoints with runner token
@@ -162,6 +168,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
 	project := r.Group("/project")
+	database := r.Group("/database")
 	userManagement := r.Group("/user/management")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
@@ -245,6 +252,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.GET("", projectController.ListProjects())
 	project.GET("/:name", projectController.GetProject())
 
+	// database router
+	database.POST("/table", databaseController.AddTable())
+	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
+	database.POST("/table/column", databaseController.AddTableColumn())
+	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
 	// user management router
 	userManagement.POST("/project/:tag/register", userManagementController.Register())
 	userManagement.POST("/project/:tag/login", userManagementController.Login())

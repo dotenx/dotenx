@@ -9,7 +9,7 @@ import (
 )
 
 var createDatabase = `
-CREATE DATABASE %s
+CREATE DATABASE %s WITH TEMPLATE template_base
 `
 
 func (store *projectStore) CreateProjectDatabase(ctx context.Context, accountId string, projectName string) error {
