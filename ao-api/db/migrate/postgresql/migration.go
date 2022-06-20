@@ -351,10 +351,11 @@ ADD COLUMN IF NOT EXISTS provider varchar(64);
 `
 var createTableProjects = `
 CREATE TABLE IF NOT EXISTS projects (
-id														SERIAL PRIMARY KEY,
-name													VARCHAR(128),
-account_id									  VARCHAR(64),
-description										VARCHAR(128),
+id                           SERIAL PRIMARY KEY,
+name                         VARCHAR(128),
+account_id                   VARCHAR(64),
+description                  VARCHAR(128),
+tag                          varchar(32) NOT NULL,
 UNIQUE (account_id, name)
 )
 `

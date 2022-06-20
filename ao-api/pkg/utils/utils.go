@@ -154,3 +154,24 @@ func RandStringRunes(n int, letterRunes []rune) string {
 	}
 	return string(b)
 }
+
+// GenerateJwtToken function generates a jwt token based on HS256 algorithm
+func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["iss"] = "dotenx-ao-api"
+	claims["account_id"] = accountId
+	claims["tp_account_id"] = tpAccountId
+	claims["token_type"] = "third-party"
+	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
+
+	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
+	accToken, err = token.SignedString([]byte("another_secret"))
+	if err != nil {
+		return "", err
+	}
+
+	return
+}
