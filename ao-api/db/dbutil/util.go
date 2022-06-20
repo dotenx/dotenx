@@ -33,27 +33,26 @@ func usage_example() {
 type PostQueryCallback func(*sqlx.DB) error
 
 func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCallback, error) {
-	host := config.Configs.Database.Host
-	port := config.Configs.Database.Port
-	user := config.Configs.Database.User
-	password := config.Configs.Database.Password
-	dbName := utils.GetProjectDatabaseName(accountId, projectName)
-	extras := config.Configs.Database.Extras
-	driver := config.Configs.Database.Driver
+	// TODO: Check if the database exists at all
 
 	connStr := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s %s",
-		host, port, user, password, dbName, extras)
+		config.Configs.Database.Host,
+		config.Configs.Database.Port,
+		config.Configs.Database.User,
+		config.Configs.Database.Password,
+		utils.GetProjectDatabaseName(accountId, projectName),
+		config.Configs.Database.Extras)
 
-	// connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", config.Configs.Database.User, config.Configs.Database.Password, config.Configs.Database.Host, config.Configs.Database.Port, utils.GetProjectDatabaseName(accountId, projectName))
-	db, err := sql.Open(driver, connStr)
+	// The driver is intentionally hardcoded to postgres.
+	db, err := sql.Open("postgres", connStr)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
 	return &dbpkg.DB{
-		Connection: sqlx.NewDb(db, driver),
+		Connection: sqlx.NewDb(db, "postgres"),
 		Driver:     dbpkg.Postgres,
 	}, closeAfterQuery, nil
 
