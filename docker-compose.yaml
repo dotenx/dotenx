@@ -1,33 +1,33 @@
 version: "3"
 services:
-    # scheduler_server:
-    #     build:
-    #         context: ./job_scheduler/server
-    #         dockerfile: Dockerfile
-    #     ports:
-    #         - "9090:9090"
-    #     networks:
-    #         - default
-    #     volumes:
-    #         - ./job_scheduler/server:/usr/src/app
-    #         - /usr/src/app/node_modules
-    #     environment:
-    #         - REDIS_HOST=redis
-    #         - AO_API_URL=http://ao-api:3004
-    #     command: npm run dev
+    scheduler_server:
+        build:
+            context: ./job_scheduler/server
+            dockerfile: Dockerfile
+        ports:
+            - "9090:9090"
+        networks:
+            - default
+        volumes:
+            - ./job_scheduler/server:/usr/src/app
+            - /usr/src/app/node_modules
+        environment:
+            - REDIS_HOST=redis
+            - AO_API_URL=http://ao-api:3004
+        command: npm run dev
 
-    # ui:
-    #     build:
-    #         context: ./ui
-    #         dockerfile: Dockerfile
-    #     ports:
-    #         - "3010:80"
-    #     networks:
-    #         - default
-    #     volumes:
-    #         - ./ui:/usr/src/app
-    #         - ./ui/nginx.conf:/etc/nginx/nginx.conf
-    #         - /usr/src/app/node_modules
+    ui:
+        build:
+            context: ./ui
+            dockerfile: Dockerfile
+        ports:
+            - "3010:80"
+        networks:
+            - default
+        volumes:
+            - ./ui:/usr/src/app
+            - ./ui/nginx.conf:/etc/nginx/nginx.conf
+            - /usr/src/app/node_modules
 
     redis:
         image: redis
@@ -54,7 +54,7 @@ services:
             dockerfile: ao-api/Dockerfile
         depends_on:
             - psql
-            # - scheduler_server
+            - scheduler_server
             - redis
         hostname: ao-api
         working_dir: /root/
