@@ -18,6 +18,10 @@ export enum QueryKey {
 	GetProviders = 'get-providers',
 	GetProvider = 'get-provider',
 	GetFormatterFunctions = 'get-formatter-functions',
+	GetProjects = 'get-projects',
+	GetProject = 'get-project',
+	GetTables = 'get-tables',
+	GetTable = 'get-table',
 }
 
 export enum TaskExecutionStatus {
@@ -274,3 +278,29 @@ interface FromSource {
 }
 
 export type GetProviderResponse = { provider: ProviderDetail }
+
+export type CreateProjectRequest = Project
+
+export type GetProjectsResponse = Project[] | null
+
+export type GetProjectResponse = Project
+
+export interface Project {
+	name: string
+	description: string
+}
+
+export type GetTablesResponse = Table[]
+
+export interface Table {
+	tableName: string
+}
+
+export type CreateTableRequest = Table
+
+export type AddColumnRequest = Column
+
+export interface Column {
+	columnName: string
+	columnType: string
+}
