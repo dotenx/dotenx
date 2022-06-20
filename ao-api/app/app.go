@@ -8,6 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
+	"github.com/dotenx/dotenx/ao-api/controllers/database"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
@@ -20,6 +21,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
@@ -29,6 +31,7 @@ import (
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
@@ -111,6 +114,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	AuthorStore := authorStore.New(db)
 	RedisStore := redisStore.New(redisClient)
 	ProjectStore := projectStore.New(db)
+	DatabaseStore := databaseStore.New(db)
 
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
@@ -121,6 +125,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
 	OauthService := oauthService.NewOauthService(RedisStore)
 	ProjectService := projectService.NewProjectService(ProjectStore)
+	DatabaseService := databaseService.NewDatabaseService(DatabaseStore)
 
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
@@ -130,6 +135,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	OauthController := oauthController.OauthController{Service: OauthService}
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
+	databaseController := database.DatabaseController{Service: DatabaseService}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -154,6 +160,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
 	project := r.Group("/project")
+	database := r.Group("/database")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -225,6 +232,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.POST("", projectController.AddProject())
 	project.GET("", projectController.ListProjects())
 	project.GET("/:name", projectController.GetProject())
+
+	// database router
+	database.POST("/table", databaseController.AddTable())
+	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
+	database.POST("/table/column", databaseController.AddTableColumn())
+	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
 
 	// TODO: delete the commented code
 	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")

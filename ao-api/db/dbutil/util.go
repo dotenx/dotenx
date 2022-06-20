@@ -33,7 +33,18 @@ func usage_example() {
 type PostQueryCallback func(*sqlx.DB) error
 
 func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCallback, error) {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", config.Configs.Database.User, config.Configs.Database.Password, config.Configs.Database.Host, config.Configs.Database.Port, utils.GetProjectDatabaseName(accountId, projectName))
+	// TODO: Check if the database exists at all
+
+	connStr := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s %s",
+		config.Configs.Database.Host,
+		config.Configs.Database.Port,
+		config.Configs.Database.User,
+		config.Configs.Database.Password,
+		utils.GetProjectDatabaseName(accountId, projectName),
+		config.Configs.Database.Extras)
+
+	fmt.Println(connStr)
 	db, err := sql.Open("postgres", connStr)
 
 	if err != nil {
