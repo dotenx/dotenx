@@ -44,7 +44,7 @@ func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCa
 		utils.GetProjectDatabaseName(accountId, projectName),
 		config.Configs.Database.Extras)
 
-	fmt.Println(connStr)
+	// The driver is intentionally hardcoded to postgres.
 	db, err := sql.Open("postgres", connStr)
 
 	if err != nil {
