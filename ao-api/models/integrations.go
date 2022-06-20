@@ -18,6 +18,7 @@ type Integration struct {
 	Type            string            `db:"type" json:"type"`
 	Secrets         map[string]string `db:"secrets" json:"secrets"`
 	HasRefreshToken bool              `db:"hasRefreshToken" json:"hasRefreshToken"`
+	Provider        string            `db:"provider" json:"provider"`
 }
 
 func (intg Integration) IsValid() bool {

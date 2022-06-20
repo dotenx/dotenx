@@ -8,7 +8,7 @@ import {
 	getTriggerDefinition,
 	getTriggerKinds,
 	QueryKey,
-	TriggerData
+	TriggerData,
 } from '../../api'
 
 const schema = z.object({

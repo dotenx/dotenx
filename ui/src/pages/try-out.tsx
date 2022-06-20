@@ -24,6 +24,7 @@ export default function TryOutPage() {
 			console.error(error)
 			navigate('/')
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return (
