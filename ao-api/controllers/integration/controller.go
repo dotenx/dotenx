@@ -10,11 +10,13 @@ import (
 	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/gin-gonic/gin"
 )
 
 type IntegrationController struct {
-	Service integrationService.IntegrationService
+	Service      integrationService.IntegrationService
+	OauthService oauthService.OauthService
 }
 
 func (controller *IntegrationController) GetIntegrationTypeFields() gin.HandlerFunc {
@@ -80,15 +82,27 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]
 		refreshToken, ok := integration.Secrets["REFRESH_TOKEN"]
 		if hasSecret && accessTokenSecret != "" {
-			provider, err := oauth.GetProviderModelByName(integration.Type)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"message": "provider not found",
-				})
-				return
+			if integration.Provider == "" {
+				provider, err := oauth.GetProviderModelByName(integration.Type)
+				if err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{
+						"message": "provider not found",
+					})
+					return
+				}
+				integration.Secrets["CONSUMER_KEY"] = provider.Key
+				integration.Secrets["CONSUMER_SECRET"] = provider.Secret
+			} else {
+				userProvider, err := controller.OauthService.GetUserProviderByName(accountId, integration.Provider)
+				if err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{
+						"message": err.Error(),
+					})
+					return
+				}
+				integration.Secrets["CONSUMER_KEY"] = userProvider.Key
+				integration.Secrets["CONSUMER_SECRET"] = userProvider.Secret
 			}
-			integration.Secrets["CONSUMER_KEY"] = provider.Key
-			integration.Secrets["CONSUMER_SECRET"] = provider.Secret
 		}
 		if ok && refreshToken != "" {
 			integration.HasRefreshToken = true

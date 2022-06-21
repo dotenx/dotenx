@@ -8,6 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
+	"github.com/dotenx/dotenx/ao-api/controllers/database"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
@@ -15,11 +16,13 @@ import (
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
+	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
@@ -27,13 +30,17 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
+	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 	"github.com/dotenx/goth"
 	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
@@ -84,7 +91,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// if err != nil {
 	// 	panic(err.Error())
 	// }
+
 	r := gin.Default()
+	RegisterCustomValidators()
 	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
 	storeDomain := ""
 	if config.Configs.App.RunLocally {
@@ -108,26 +117,33 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerStore := triggerStore.New(db)
 	AuthorStore := authorStore.New(db)
 	RedisStore := redisStore.New(redisClient)
+	OauthStore := oauthStore.New(db)
 	ProjectStore := projectStore.New(db)
+	DatabaseStore := databaseStore.New(db)
+	UserManagementStore := userManagementStore.New()
 
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
-	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore)
+	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
-	OauthService := oauthService.NewOauthService(RedisStore)
-	ProjectService := projectService.NewProjectService(ProjectStore)
+	DatabaseService := databaseService.NewDatabaseService(DatabaseStore)
+	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
+	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
+	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
-	IntegrationController := integrationController.IntegrationController{Service: IntegrationService}
+	IntegrationController := integrationController.IntegrationController{Service: IntegrationService, OauthService: OauthService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
-	OauthController := oauthController.OauthController{Service: OauthService}
+	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
+	databaseController := database.DatabaseController{Service: DatabaseService}
+	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -152,6 +168,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
 	project := r.Group("/project")
+	database := r.Group("/database")
+	userManagement := r.Group("/user/management")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -214,13 +232,34 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	}
 	oauth := r.Group("/oauth")
 	{
+		oauth.POST("/user/provider", OauthController.AddUserProvider())
+		oauth.GET("/user/provider/:name", OauthController.GetUserProvider())
+		oauth.DELETE("/user/provider/:name", OauthController.DeleteUserProvider())
+		oauth.PUT("/user/provider", OauthController.UpdateUserProvider())
+		oauth.GET("/user/provider/list", OauthController.GetAllUserProviders())
+
 		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
+		oauth.GET("/user/provider/auth/provider/:provider_name/account_id/:account_id",
+			sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
+		oauth.GET("/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
+			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
 	// project router
 	project.POST("", projectController.AddProject())
+	project.GET("", projectController.ListProjects())
+	project.GET("/:name", projectController.GetProject())
+
+	// database router
+	database.POST("/table", databaseController.AddTable())
+	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
+	database.POST("/table/column", databaseController.AddTableColumn())
+	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
+	// user management router
+	userManagement.POST("/project/:tag/register", userManagementController.Register())
+	userManagement.POST("/project/:tag/login", userManagementController.Login())
 
 	// TODO: delete the commented code
 	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")

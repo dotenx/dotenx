@@ -1,5 +1,4 @@
-import _ from 'lodash'
-
-export function getDisplayText(str: string) {
-	return _.upperFirst(str).replaceAll('-', ' ').replaceAll('_', ' ')
-}
+export const toOption = (value: string) => ({
+	label: value,
+	value,
+})
