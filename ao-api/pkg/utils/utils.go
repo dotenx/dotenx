@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"crypto/aes"
@@ -131,6 +132,39 @@ func GenerateJwtToken() (accToken string, err error) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
 	claims["iss"] = "dotenx-ao-api"
+	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
+
+	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
+	accToken, err = token.SignedString([]byte("another_secret"))
+	if err != nil {
+		return "", err
+	}
+
+	return
+}
+
+var FullRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var LowercaseRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyz")
+
+func RandStringRunes(n int, letterRunes []rune) string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
+// GenerateJwtToken function generates a jwt token based on HS256 algorithm
+func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["iss"] = "dotenx-ao-api"
+	claims["account_id"] = accountId
+	claims["tp_account_id"] = tpAccountId
+	claims["token_type"] = "third-party"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
