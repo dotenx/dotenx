@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import { BsFillCalendar3WeekFill, BsFillDiagram3Fill, BsHddNetworkFill } from 'react-icons/bs'
+import {FaUsers} from 'react-icons/fa'
 import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { logout } from '../../api/admin'
@@ -8,6 +9,7 @@ import { ADMIN_URL, IS_LOCAL } from '../../constants'
 import { NavItem } from './nav-item'
 
 const items = [
+	{ to: '/authentication', label: 'Authentication', icon: <FaUsers /> },
 	{ to: '/automations', label: 'Automations', icon: <BsFillDiagram3Fill /> },
 	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
 	{ to: '/triggers', label: 'Triggers', icon: <BsFillCalendar3WeekFill /> },

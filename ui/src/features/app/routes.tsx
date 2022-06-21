@@ -11,6 +11,7 @@ import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
+import Authentication from '../../pages/authentication'
 
 export function Routes() {
 	const location = useLocation()
@@ -24,6 +25,7 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
+			<Route path="/authentication" element={<Authentication />} />
 			<Route path="/try-out" element={<TryOutPage />} />
 			<Route path="/integrations/add" element={<OauthPage />} />
 			<Route path="/integrations" element={<IntegrationsPage />} />
