@@ -192,9 +192,13 @@ export function getTables(projectName: string) {
 }
 
 export function createTable(projectName: string, payload: CreateTableRequest) {
-	return api.post<void>(`/database/table`, { projectName, ...payload })
+	return api.post<void>('/database/table', { projectName, ...payload })
 }
 
 export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
-	return api.post<void>(`/database/table/column`, { projectName, tableName, ...payload })
+	return api.post<void>('/database/table/column', { projectName, tableName, ...payload })
+}
+
+export function deleteTable(projectName: string, tableName: string) {
+	return api.delete<void>(`/database/project/${projectName}/table/${tableName}`)
 }
