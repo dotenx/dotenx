@@ -71,7 +71,11 @@ func (store *userManagementStore) SetUserInfo(db *db.DB, userInfo models.ThirdUs
 	var stmt string
 	switch db.Driver {
 	case dbPkg.Postgres:
-		err = db.Connection.Get(&cnt, countExistingUserByEmailStmt, userInfo.Email)
+		if userInfo.Email != "" {
+			err = db.Connection.Get(&cnt, countExistingUserByEmailStmt, userInfo.Email)
+		} else {
+			err = db.Connection.Get(&cnt, countExistingUserStmt, userInfo.AccountId)
+		}
 		if err != nil {
 			return err
 		}
