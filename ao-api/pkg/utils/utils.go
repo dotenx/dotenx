@@ -175,3 +175,12 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 
 	return
 }
+
+func ContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
