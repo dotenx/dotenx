@@ -71,6 +71,10 @@ func (store *userManagementStore) SetUserInfo(db *db.DB, userInfo models.ThirdUs
 	var stmt string
 	switch db.Driver {
 	case dbPkg.Postgres:
+		// Some third-party user registers with email and some others can register with oauth flow
+		// if a third-party user register with oauth flow sometimes we haven't access to email
+		// and also if a third-party user register with email we haven't access to account_id and we generate a new one
+		// so we should check the user has email or not and then check existence
 		if userInfo.Email != "" {
 			err = db.Connection.Get(&cnt, countExistingUserByEmailStmt, userInfo.Email)
 		} else {
