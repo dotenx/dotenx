@@ -34,6 +34,7 @@ export function Routes() {
 			<Route path="/builder/projects" element={<ProjectsPage />} />
 			<Route path="/builder/providers/:name" element={<ProviderPage />} />
 			<Route path="/builder/providers" element={<ProvidersPage />} />
+			<Route path="/builder" element={<Navigate replace to="/builder/projects"  />} />
 
 			<Route path="/try-out" element={<TryOutPage />} />
 			<Route path="/integrations/add" element={<OauthPage />} />
