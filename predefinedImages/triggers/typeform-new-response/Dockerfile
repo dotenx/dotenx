@@ -7,10 +7,10 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o ./dropbox-new-file
+RUN go build -o ./submit-new-response
 
 FROM alpine 
 
-COPY --from=build /app/dropbox-new-file ./
+COPY --from=build /app/submit-new-response ./
 
-CMD [ "/dropbox-new-file" ]
+CMD [ "/submit-new-response" ]
