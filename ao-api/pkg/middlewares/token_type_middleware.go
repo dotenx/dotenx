@@ -27,7 +27,7 @@ func TokenTypeMiddleware(types []string) gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		if tokenType == "third-party" && utils.ContainsString(types, "third-party") {
+		if tokenType == "tp" && utils.ContainsString(types, "tp") {
 			c.Next()
 			return
 		}

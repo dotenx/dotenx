@@ -35,7 +35,7 @@ func OauthMiddleware() gin.HandlerFunc {
 			}
 			c.Set("accountId", accountId)
 			c.Set("tpAccountId", tpAccountId)
-			c.Set("tokenType", "third-party")
+			c.Set("tokenType", "tp")
 			c.Next()
 			return
 		} else {
@@ -53,9 +53,7 @@ func OauthMiddleware() gin.HandlerFunc {
 				session.Clear()
 				err := session.Save()
 				if err != nil {
-					log.Println(err.Error())
-					// c.AbortWithError(http.StatusInternalServerError, err)
-					// return
+					log.Println("error while saving session:", err.Error())
 				}
 				c.AbortWithStatus(http.StatusUnauthorized)
 				return

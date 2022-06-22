@@ -253,8 +253,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
-	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'third-party' or both of them
-	// 'user' used for DoTenX users and 'third-party' used for third-party users
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
 	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())

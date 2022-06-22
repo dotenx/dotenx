@@ -191,7 +191,7 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	claims["iss"] = "dotenx-ao-api"
 	claims["account_id"] = accountId
 	claims["tp_account_id"] = tpAccountId
-	claims["token_type"] = "third-party"
+	claims["token_type"] = "tp"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
