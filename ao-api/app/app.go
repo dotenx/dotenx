@@ -253,16 +253,19 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
-	project.POST("", projectController.AddProject())
-	project.GET("", projectController.ListProjects())
-	project.GET("/:name", projectController.GetProject())
+	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
+	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
+	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
 
 	// database router
-	database.POST("/table", databaseController.AddTable())
-	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
-	database.POST("/table/column", databaseController.AddTableColumn())
-	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
+	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
+	database.DELETE("/project/:project_name/table/:table_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTable())
+	database.POST("/table/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTableColumn())
+	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTableColumn())
+	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
 
 	// TODO: delete the commented code
 	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")
