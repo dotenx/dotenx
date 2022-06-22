@@ -93,6 +93,33 @@ func GetAuthorizedField(tokenString string) (bool, error) {
 	return false, errors.New("claim not found")
 }
 
+func GetAccountIdField(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+
+	if accountIdField, hasAccountIdField := claims["account_id"]; hasAccountIdField {
+		if accountIdFieldString, isAccountIdFieldString := accountIdField.(string); isAccountIdFieldString {
+			return accountIdFieldString, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
+func GetTpAccountIdField(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+	if tpAccountIdField, hasTpAccountIdField := claims["tp_account_id"]; hasTpAccountIdField {
+		if tpAccountIdFieldString, isTpAccountIdFieldString := tpAccountIdField.(string); isTpAccountIdFieldString {
+			return tpAccountIdFieldString, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
 func getClaims(tokenString string) (jwt.MapClaims, error) {
 	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
 
@@ -135,7 +162,7 @@ func GenerateJwtToken() (accToken string, err error) {
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
-	accToken, err = token.SignedString([]byte("another_secret"))
+	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -168,7 +195,7 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
-	accToken, err = token.SignedString([]byte("another_secret"))
+	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))
 	if err != nil {
 		return "", err
 	}

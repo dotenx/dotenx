@@ -11,6 +11,7 @@ type DatabaseService interface {
 	DeleteTable(accountId string, projectName string, tableName string) error
 	AddTableColumn(accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
+	GetTablesList(accountId string, projectName string) ([]string, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
