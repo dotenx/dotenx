@@ -29,7 +29,7 @@ func (store *projectStore) ListProjects(ctx context.Context, accountId string) (
 	var projects []models.Project
 	for rows.Next() {
 		var project models.Project
-		if err := rows.Scan(&project.Id, &project.Name, &project.Description); err != nil {
+		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag); err != nil {
 			return nil, err
 		}
 		projects = append(projects, project)
