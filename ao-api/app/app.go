@@ -257,6 +257,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
 	database.POST("/table/column", databaseController.AddTableColumn())
 	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
+	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
+	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
+
 	// user management router
 	userManagement.POST("/project/:tag/register", userManagementController.Register())
 	userManagement.POST("/project/:tag/login", userManagementController.Login())

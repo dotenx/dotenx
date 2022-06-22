@@ -11,6 +11,9 @@ type DatabaseService interface {
 	DeleteTable(accountId string, projectName string, tableName string) error
 	AddTableColumn(accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
+
+	InsertRow(projectTag string, tableName string, row map[string]string) error
+	DeleteRow(projectTag string, tableName string, id int) error
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
@@ -19,6 +22,7 @@ func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
 
 type databaseService struct {
 	Store databaseStore.DatabaseStore
+	// ProjectStore projectStore.ProjectStore
 }
 
 var noContext = context.Background()
