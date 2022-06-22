@@ -290,7 +290,9 @@ export interface Project {
 	description: string
 }
 
-export type GetTablesResponse = Table[]
+export type GetTablesResponse = {
+	tables: string[]
+}
 
 export interface Table {
 	tableName: string

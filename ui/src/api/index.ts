@@ -188,7 +188,7 @@ export function getProject(name: string) {
 }
 
 export function getTables(projectName: string) {
-	return api.get<GetTablesResponse>(`/project/${projectName}/table`)
+	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
 }
 
 export function createTable(projectName: string, payload: CreateTableRequest) {
@@ -201,4 +201,12 @@ export function addColumn(projectName: string, tableName: string, payload: AddCo
 
 export function deleteTable(projectName: string, tableName: string) {
 	return api.delete<void>(`/database/project/${projectName}/table/${tableName}`)
+}
+
+export function deleteProject(projectName: string) {
+	return api.delete<void>(`/project/${projectName}`)
+}
+
+export function deleteColumn(projectName: string, tableName: string, columnName: string) {
+	return api.delete<void>(`/project/${projectName}/table/${tableName}/column/${columnName}`)
 }
