@@ -7,7 +7,7 @@ import { Loader } from '../ui'
 
 export function TableList({ projectName }: { projectName: string }) {
 	const query = useQuery(QueryKey.GetTables, () => getTables(projectName))
-	const tables = query.data?.data ?? []
+	const tables = query.data?.data.tables ?? []
 
 	if (query.isLoading) return <Loader />
 
@@ -16,7 +16,7 @@ export function TableList({ projectName }: { projectName: string }) {
 			<h3 className="text-xl font-medium">Tables</h3>
 			<div className="flex flex-wrap gap-8 mt-4">
 				{tables.map((table) => (
-					<TableItem key={table.tableName} table={table} />
+					<TableItem key={table} name={table} />
 				))}
 				<AddTableButton />
 			</div>
@@ -24,13 +24,13 @@ export function TableList({ projectName }: { projectName: string }) {
 	)
 }
 
-function TableItem({ table }: { table: { tableName: string } }) {
+function TableItem({ name }: { name: string }) {
 	return (
 		<Link
 			className="flex items-center justify-center w-40 h-20 transition rounded shadow-sm bg-rose-50 shadow-rose-50 text-rose-900 hover:bg-rose-100 hover:shadow hover:shadow-rose-100 outline-rose-400"
-			to={`tables/${table.tableName}`}
+			to={`tables/${name}`}
 		>
-			{table.tableName}
+			{name}
 		</Link>
 	)
 }
