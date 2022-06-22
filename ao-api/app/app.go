@@ -175,7 +175,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	admin := r.Group("/internal")
 	project := r.Group("/project")
 	database := r.Group("/database")
-	// userManagement := r.Group("/user/management")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -227,7 +226,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// authentication settings
 	gothic.Store = store
-	// integrationCallbackUrl := config.Configs.Endpoints.AoApi + "/oauth/integration/callbacks/"
 	integrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/oauth/integration/callbacks/"
 	providers, err := oauth.GetProviders(integrationCallbackUrl)
 	if err != nil {
@@ -266,18 +264,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/table/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTableColumn())
 	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTableColumn())
 	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
-
-	// TODO: delete the commented code
-	// discord, intgErr := IntegrationService.GetIntegrationByName("123456", "test-discord02")
-	// fmt.Println("****************************************")
-	// fmt.Printf("discord integration: %#v\n", discord)
-	// fmt.Printf("intgErr: %#v\n", intgErr)
-	// fmt.Println("****************************************")
-	// dropbox, intgErr := IntegrationService.GetIntegrationByName("123456", "test-dropbox01")
-	// fmt.Println("****************************************")
-	// fmt.Printf("dropbox integration: %#v\n", dropbox)
-	// fmt.Printf("intgErr: %#v\n", intgErr)
-	// fmt.Println("****************************************")
+	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
+	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
+	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 
 	go TriggerServic.StartChecking(IntegrationStore)
 	go TriggerServic.StartScheduller()

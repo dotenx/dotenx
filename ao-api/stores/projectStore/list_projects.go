@@ -9,7 +9,7 @@ import (
 )
 
 var ListProjects = `
-Select id, name, description from projects
+Select id, name, description, tag from projects
 WHERE account_id = $1
 `
 
