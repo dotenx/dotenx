@@ -18,6 +18,7 @@ type DatabaseStore interface {
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]string) error
 	DeleteRow(ctx context.Context, projectTag string, tableName string, id int) error
+	SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, offset int, size int) ([]map[string]interface{}, error)
 }
 
 type databaseStore struct {

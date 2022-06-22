@@ -14,6 +14,7 @@ type DatabaseService interface {
 
 	InsertRow(projectTag string, tableName string, row map[string]string) error
 	DeleteRow(projectTag string, tableName string, id int) error
+	SelectRows(projectTag string, tableName string, columns []string, page int, size int) ([]map[string]interface{}, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
