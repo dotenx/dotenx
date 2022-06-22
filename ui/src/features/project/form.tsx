@@ -7,7 +7,10 @@ import { useModal } from '../hooks'
 import { Button, Field, Form } from '../ui'
 
 const schema = z.object({
-	name: z.string().min(1),
+	name: z
+		.string()
+		.min(1)
+		.refine((val) => !val.includes(' '), { message: "String can't contain space" }),
 	description: z.string(),
 })
 
