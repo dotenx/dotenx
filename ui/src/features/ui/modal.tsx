@@ -47,7 +47,7 @@ function Content({ title, children, size, fluid }: ContentProps) {
 	const modal = useModal()
 
 	return (
-		<div className="fixed inset-0 bg-slate-50/75" onClick={modal.close}>
+		<div className="fixed inset-0 bg-slate-50/75 selection:bg-rose-400" onClick={modal.close}>
 			<motion.div
 				className="mx-auto overflow-hidden bg-white rounded-lg shadow-2xl outline-none text-slate-700"
 				initial={false}

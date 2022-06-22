@@ -9,6 +9,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/go-co-op/gocron"
 )
@@ -40,6 +41,7 @@ type TriggerManager struct {
 	UtopiopsService    utopiopsService.UtopiopsService
 	ExecutionService   executionService.ExecutionService
 	IntegrationService integrationService.IntegrationService
+	PipelineStore      pipelineStore.PipelineStore
 }
 
 type triggerSummery struct {
@@ -49,8 +51,8 @@ type triggerSummery struct {
 	Description string `json:"description"`
 }
 
-func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService) TriggerService {
-	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService, IntegrationService: intService}
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService, pipeStore pipelineStore.PipelineStore) TriggerService {
+	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService, IntegrationService: intService, PipelineStore: pipeStore}
 }
 
 func (manager *TriggerManager) StopScheduler(accId, pipelineName, triggerName string) error {

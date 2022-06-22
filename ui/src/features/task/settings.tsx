@@ -5,17 +5,19 @@ import { Control, FieldErrors, useFieldArray } from 'react-hook-form'
 import { IoAdd, IoClose } from 'react-icons/io5'
 import { FieldType } from '../../api'
 import { taskCodeState } from '../flow'
-import { NewIntegration, SelectIntegration } from '../integration'
+import { IntegrationForm, SelectIntegration } from '../integration'
 import {
 	Button,
+	Description,
 	Field,
 	Form,
 	GroupData,
 	GroupSelect,
 	InputOrSelect,
 	InputOrSelectKind,
-	InputOrSelectProps,
+	Loader,
 } from '../ui'
+import { ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -35,6 +37,7 @@ export function TaskSettingsWithIntegration({
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
 	const hasSecondPanel = isAddingIntegration || taskCode.isOpen
+	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
 
 	useEffect(() => {
 		if (taskForm.taskType) setIsAddingIntegration(false)
@@ -51,7 +54,7 @@ export function TaskSettingsWithIntegration({
 			</div>
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
-					<NewIntegration
+					<IntegrationForm
 						onBack={() => setIsAddingIntegration(false)}
 						integrationKind={taskForm.selectedTaskIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
@@ -74,7 +77,11 @@ export function TaskSettingsWithIntegration({
 						})
 						setTaskCode({ isOpen: false })
 					}}
-					defaultValue={taskForm.watch(`others.${taskCode.key}`)?.data}
+					defaultValue={
+						typeof codeFieldValue === 'object' && 'data' in codeFieldValue
+							? codeFieldValue.data
+							: undefined
+					}
 				/>
 			)}
 		</div>
@@ -97,6 +104,8 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 		selectedTaskType,
 		taskFields,
 		tasksOptions,
+		taskTypesLoading,
+		taskFieldsLoading,
 	} = taskForm
 	const setTaskCodeState = useSetAtom(taskCodeState)
 	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
@@ -112,9 +121,11 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						name="type"
 						errors={errors}
 						placeholder="Task type"
+						loading={taskTypesLoading}
 					/>
-					<div className="text-xs mt-1.5">{selectedTaskType?.description}</div>
+					<Description>{selectedTaskType?.description}</Description>
 				</div>
+				{taskFieldsLoading && <Loader className="py-4" />}
 				{taskFields.map((taskField) => {
 					const label = taskField.display_name || taskField.key
 					return getFieldComponent(taskField.type, {
@@ -124,6 +135,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 						label: label,
 						name: `others.${taskField.key}`,
 						groups: outputGroups,
+						description: taskField.description,
 						onClick: () =>
 							setTaskCodeState({
 								isOpen: true,
@@ -155,11 +167,17 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: InputOrSelectProps & { key: string; onClick: () => void }
+	props: ComplexFieldProps & { key: string; onClick: () => void; description: string }
 ) => {
 	switch (kind) {
 		case FieldType.Text:
-			return <InputOrSelect {...props} key={props.key} />
+			return (
+				<div key={props.key}>
+					{/* TODO: PLEASE USE ComplexField WHEN BACKEND FORMATTER IS READY */}
+					<InputOrSelect {...props} />
+					<Description>{props.description}</Description>
+				</div>
+			)
 		case FieldType.Code:
 			return (
 				<Button key={props.key} type="button" onClick={props.onClick}>

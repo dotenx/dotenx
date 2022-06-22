@@ -18,5 +18,6 @@ export function useCreateTrigger() {
 
 	return {
 		onSave,
+		isLoading: mutation.isLoading,
 	}
 }

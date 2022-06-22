@@ -9,14 +9,16 @@ export const saveFormSchema = z.object({
 export type SaveFormSchema = z.infer<typeof saveFormSchema>
 
 export function SaveForm() {
-	const { control, errors, onSubmit } = useSaveForm()
+	const { control, errors, onSubmit, addAutomationMutation } = useSaveForm()
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
 				<Field name="name" label="Automation name" control={control} errors={errors} />
 			</div>
-			<Button type="submit">Save</Button>
+			<Button loading={addAutomationMutation.isLoading} type="submit">
+				Save
+			</Button>
 		</Form>
 	)
 }

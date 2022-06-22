@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Loader } from '../features/ui'
 
 export interface OAuthMessage {
 	error: string | null
@@ -23,5 +24,9 @@ export default function OauthPage() {
 		window.close()
 	}, [searchParams])
 
-	return <div className="mt-10 text-xl text-center">Please wait...</div>
+	return (
+		<main className="flex items-center justify-center grow">
+			<Loader />
+		</main>
+	)
 }

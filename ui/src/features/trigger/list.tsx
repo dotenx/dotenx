@@ -19,17 +19,19 @@ function useTriggerList() {
 
 	return {
 		triggers,
+		isLoading: query.isLoading,
 		deleteMutation,
 	}
 }
 
 export function TriggerList() {
-	const { deleteMutation, triggers } = useTriggerList()
+	const { deleteMutation, triggers, isLoading } = useTriggerList()
 
 	return (
 		<Table
 			title="Triggers"
 			emptyText="You have no trigger yet, try adding one."
+			loading={isLoading}
 			actionBar={<NewTrigger />}
 			columns={[
 				{ Header: 'Name', accessor: 'name' },
@@ -46,6 +48,7 @@ export function TriggerList() {
 					Cell: (props: CellProps<TriggerData>) => {
 						return (
 							<DeleteButton
+								loading={deleteMutation.isLoading}
 								onClick={() =>
 									deleteMutation.mutate({
 										triggerName: props.row.original.name,
