@@ -1,9 +1,9 @@
 #! /bin/bash
 
 export region="us-east-1"
-export function_name="hawwwdi-stripe-payment-completed-lambda"
-export repository_name="hawwwdi/stripe-payment-completed"
-export image_name="hawwwdi/stripe-payment-completed:lambda"
+export function_name="hojjat12-typeform-new-response-lambda"
+export repository_name="hojjat12/typeform-new-response"
+export image_name="hojjat12/typeform-new-response:lambda"
 
 ##### only once
 # aws iam create-role --role-name lambda-ex --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'

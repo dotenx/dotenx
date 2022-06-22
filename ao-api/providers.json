@@ -39,6 +39,12 @@
         "direct_url":"https://slack.com/oauth/authorize?client_id=1390586298022.3553550438982&scope=app_mentions:read,bookmarks:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,conversations.connect:read,conversations.connect:write,files:read,files:write,groups:history,users:read,users:write&user_scope=channels:write,chat:write,users:write&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/slack&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team="
     },
     {
+        "name": "typeform",
+        "secret": "BeMjzLPYgLU2NryGMwGGqaG2YqXFR8tns8Vx4iWhtApE",
+        "key": "BKHZR7zTpQ7cEgwkS9i2QiDBk35tk7258XsP5kfSVhVU",
+        "direct_url":"https://api.typeform.com/oauth/authorize?client_id=BKHZR7zTpQ7cEgwkS9i2QiDBk35tk7258XsP5kfSVhVU&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/typeform&scope=forms:read+forms:write+webhooks:read+webhooks:write+responses:read+accounts:read+workspaces:read"
+    },
+    {
         "name": "google",
         "secret": "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",
         "key": "202712498600-gjd4vtp1727j1ucpsjucv52tqg8r0da9.apps.googleusercontent.com",
