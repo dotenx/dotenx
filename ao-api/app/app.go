@@ -143,7 +143,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
-	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService}
+	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -154,6 +154,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
+
+	// user management router (without any authentication)
+	r.POST("/user/management/project/:tag/register", userManagementController.Register())
+	r.POST("/user/management/project/:tag/login", userManagementController.Login())
+	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
+	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
@@ -247,16 +253,20 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
-	project.POST("", projectController.AddProject())
-	project.GET("", projectController.ListProjects())
-	project.GET("/:name", projectController.GetProject())
+	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
+	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
+	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
 
 	// database router
-	database.POST("/table", databaseController.AddTable())
-	database.DELETE("/project/:project_name/table/:table_name", databaseController.DeleteTable())
-	database.POST("/table/column", databaseController.AddTableColumn())
-	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", databaseController.DeleteTableColumn())
+
+	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
+	database.DELETE("/project/:project_name/table/:table_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTable())
+	database.POST("/table/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTableColumn())
+	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTableColumn())
+	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
 	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())

@@ -15,26 +15,49 @@ import (
 
 func OauthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		fmt.Println("expTime:", session.Get("expirationTime"))
-		expTime, ok := session.Get("expirationTime").(int64)
-		if ok && expTime > time.Now().Unix() {
-			accountId := session.Get("accountId").(string)
-			fmt.Println("Successfully authenticated: token type is external")
+		authHeader := c.Request.Header.Get("Authorization")
+		if authHeader != "" {
+			if len(strings.SplitN(authHeader, "Bearer", 2)) != 2 {
+				err := errors.New("token must in Bearer type: 'Bearer YOUR_TOKEN'")
+				c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
+			tokenString := strings.TrimSpace(strings.SplitN(authHeader, "Bearer", 2)[1])
+			accountId, err := utils.GetAccountIdField(tokenString)
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
+			tpAccountId, err := utils.GetTpAccountIdField(tokenString)
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
 			c.Set("accountId", accountId)
-			c.Set("tokenType", "external")
+			c.Set("tpAccountId", tpAccountId)
+			c.Set("tokenType", "tp")
 			c.Next()
 			return
 		} else {
-			session.Clear()
-			err := session.Save()
-			if err != nil {
-				log.Println(err.Error())
-				// c.AbortWithError(http.StatusInternalServerError, err)
-				// return
+			session := sessions.Default(c)
+			fmt.Println("expTime:", session.Get("expirationTime"))
+			expTime, ok := session.Get("expirationTime").(int64)
+			if ok && expTime > time.Now().Unix() {
+				accountId := session.Get("accountId").(string)
+				fmt.Println("Successfully authenticated: token type is external")
+				c.Set("accountId", accountId)
+				c.Set("tokenType", "external")
+				c.Next()
+				return
+			} else {
+				session.Clear()
+				err := session.Save()
+				if err != nil {
+					log.Println("error while saving session:", err.Error())
+				}
+				c.AbortWithStatus(http.StatusUnauthorized)
+				return
 			}
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
 		}
 	}
 }

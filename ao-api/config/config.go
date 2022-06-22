@@ -60,6 +60,7 @@ type (
 		SessionAuthSecret    string `envconfig:"AOA_SESSION_AUTH_SECRET"`
 		SessionEncryptSecret string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
 		RunnerToken          string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
+		CodeChallenge        string `envconfig:"AOA_CODE_CHALLENGE"`
 	}
 )
 
