@@ -16,6 +16,7 @@ export enum Modals {
 	NewProject = 'new-project',
 	NewTable = 'new-table',
 	NewColumn = 'new-column',
+	TableEndpoints = 'table-endpoints',
 }
 
 export function useModal() {

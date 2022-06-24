@@ -1,29 +1,46 @@
-import { IoAdd, IoTrash } from 'react-icons/io5'
-import { useMutation } from 'react-query'
+import { IoAdd, IoList, IoTrash } from 'react-icons/io5'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { deleteTable } from '../api'
-import { ColumnForm } from '../features/database'
+import { deleteColumn, getColumns, getTableRecords, QueryKey } from '../api'
+import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, name } = useParams()
-
 	if (!projectName || !name) return <Navigate to="/builder/projects" replace />
+
+	return <TableContent projectName={projectName} tableName={name} />
+}
+
+function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
+	const recordsQuery = useQuery(QueryKey.GetTableRecords, () =>
+		getTableRecords(projectName, tableName)
+	)
+	// const records = recordsQuery.data?.data
+	const headers =
+		columnsQuery.data?.data.columns.map((column) => ({
+			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
+			accessor: column,
+		})) ?? []
 
 	return (
 		<>
 			<ContentWrapper>
 				<Table
-					title={`Table ${name}`}
-					columns={[]}
+					title={`Table ${tableName}`}
+					columns={headers}
 					data={[{}]}
-					actionBar={<ActionBar projectName={projectName} tableName={name} />}
-					loading={false}
+					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
+					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>
 			</ContentWrapper>
 			<Modal kind={Modals.NewColumn} title="New Column">
-				<ColumnForm projectName={projectName} tableName={name} />
+				<ColumnForm projectName={projectName} tableName={tableName} />
+			</Modal>
+			<Modal kind={Modals.TableEndpoints} title="Endpoints" size="xl">
+				<TableEndpoints projectTag={projectName} tableName={tableName} />
 			</Modal>
 		</>
 	)
@@ -34,7 +51,15 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 
 	return (
 		<div className="flex gap-4">
-			<DeleteTableButton projectName={projectName} tableName={tableName} />
+			<TableDeletion projectName={projectName} tableName={tableName} />
+			<Button
+				className="w-40"
+				type="button"
+				onClick={() => modal.open(Modals.TableEndpoints)}
+			>
+				<IoList className="text-2xl" />
+				Endpoints
+			</Button>
 			<Button className="w-40" type="button" onClick={() => modal.open(Modals.NewColumn)}>
 				<IoAdd className="text-2xl" />
 				New Column
@@ -43,19 +68,24 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	)
 }
 
-function DeleteTableButton({ projectName, tableName }: { projectName: string; tableName: string }) {
-	const deleteMutation = useMutation(() => deleteTable(projectName, tableName))
+interface ColumnProps {
+	projectName: string
+	tableName: string
+	name: string
+}
+
+function Column({ projectName, tableName, name }: ColumnProps) {
+	const client = useQueryClient()
+	const deleteMutation = useMutation(() => deleteColumn(projectName, tableName, name), {
+		onSuccess: () => client.invalidateQueries(QueryKey.GetColumns),
+	})
 
 	return (
-		<Button
-			className="w-40"
-			type="button"
-			variant="outlined"
-			onClick={() => deleteMutation.mutate()}
-			loading={deleteMutation.isLoading}
-		>
-			<IoTrash className="text-lg" />
-			Delete Table
-		</Button>
+		<div className="flex items-center gap-2">
+			{name}
+			<Button variant="icon" type="button" onClick={() => deleteMutation.mutate()}>
+				<IoTrash />
+			</Button>
+		</div>
 	)
 }
