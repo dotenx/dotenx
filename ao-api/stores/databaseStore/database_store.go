@@ -15,11 +15,12 @@ type DatabaseStore interface {
 	DeleteTable(ctx context.Context, accountId string, projectName string, tableName string) error
 	AddTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string) error
+	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)
+	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]string, error)
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]string) error
 	DeleteRow(ctx context.Context, projectTag string, tableName string, id int) error
 	SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, offset int, size int) ([]map[string]interface{}, error)
-	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)
 }
 
 type databaseStore struct {
