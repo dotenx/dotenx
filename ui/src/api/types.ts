@@ -22,6 +22,8 @@ export enum QueryKey {
 	GetProject = 'get-project',
 	GetTables = 'get-tables',
 	GetTable = 'get-table',
+	GetTableRecords = 'get-table-records',
+	GetColumns = 'get-columns',
 }
 
 export enum TaskExecutionStatus {
@@ -305,4 +307,8 @@ export type AddColumnRequest = Column
 export interface Column {
 	columnName: string
 	columnType: string
+}
+
+export type GetColumnsResponse = {
+	columns: string[]
 }

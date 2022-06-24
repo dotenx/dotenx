@@ -11,6 +11,7 @@ import {
 	GetAutomationResponse,
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
+	GetColumnsResponse,
 	GetExecutionResultResponse,
 	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
@@ -208,5 +209,15 @@ export function deleteProject(projectName: string) {
 }
 
 export function deleteColumn(projectName: string, tableName: string, columnName: string) {
-	return api.delete<void>(`/project/${projectName}/table/${tableName}/column/${columnName}`)
+	return api.delete<void>(
+		`/database/project/${projectName}/table/${tableName}/column/${columnName}`
+	)
+}
+
+export function getTableRecords(projectTag: string, tableName: string) {
+	return api.post<unknown[]>(`/query/select/project/${projectTag}/table/${tableName}`)
+}
+
+export function getColumns(projectName: string, tableName: string) {
+	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }
