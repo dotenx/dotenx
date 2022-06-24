@@ -24,7 +24,7 @@ export function ColumnForm({ projectName, tableName }: { projectName: string; ta
 		(payload: AddColumnRequest) => addColumn(projectName, tableName, payload),
 		{
 			onSuccess: () => {
-				client.invalidateQueries(QueryKey.GetTable)
+				client.invalidateQueries(QueryKey.GetColumns)
 				modal.close()
 			},
 		}
