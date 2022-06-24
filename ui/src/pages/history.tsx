@@ -22,6 +22,7 @@ export default function HistoryPage() {
 		<div className="px-32 py-16 grow">
 			<Table
 				title="Execution History"
+				loading={query.isLoading}
 				columns={[
 					{
 						Header: 'Date',

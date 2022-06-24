@@ -1,0 +1,34 @@
+service: instagram
+type: Instagram new post
+integrations: [instagram]
+image: alirezaheydar/instagram-new-post
+credentials:
+outputs:
+    - key: created_at
+      type: text
+      description: when the last post was created
+    - key: caption
+      type: text
+      description: caption of the last post
+    - key: media_type
+      type: text
+      description: media type of the last post
+    - key: media_url
+      type: text
+      description: media url of the last post
+    - key: permalink
+      type: text
+      description: permalink of the last post
+    - key: thumbnail_url
+      type: text
+      description: thumbnail_url of the last post
+    - key: username
+      type: text
+      description: username of the account owner
+    - key: id
+      type: text
+      description: the id of the last post
+author: AlirezaHeydari
+icon: https://cdn-icons-png.flaticon.com/512/2111/2111463.png
+node_color: da0078
+description: Checks if there is a new post(sent before given number of seconds), tiggers a specefic pipeline

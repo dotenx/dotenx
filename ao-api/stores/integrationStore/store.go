@@ -31,8 +31,8 @@ func New(db *db.DB) IntegrationStore {
 }
 
 var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken, provider)
+VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 func (store *integrationStore) AddIntegration(ctx context.Context, accountId string, integration models.Integration) error {
@@ -44,7 +44,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 		return fmt.Errorf("driver not supported")
 	}
 	marshalled, _ := json.Marshal(integration.Secrets)
-	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken)
+	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken, integration.Provider)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 }
 
 var getIntegrationsByType = `
-select account_id, type, name, secrets, hasRefreshToken from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
 where account_id = $1 and type = $2;
 `
 
@@ -76,7 +76,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
 			if err != nil {
 				return res, err
 			}
@@ -91,7 +91,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 }
 
 var getIntegrations = `
-select account_id, type, name, secrets, hasRefreshToken from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
 where account_id = $1;
 `
 
@@ -112,7 +112,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
 			if err != nil {
 				return res, err
 			}
@@ -127,7 +127,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 }
 
 var getIntegrationsByName = `
-select account_id, type, name, secrets, hasRefreshToken from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
 where account_id = $1 and name = $2;
 `
 
@@ -147,7 +147,7 @@ func (store *integrationStore) GetIntegrationByName(ctx context.Context, account
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
 			if err != nil {
 				return models.Integration{}, err
 			}

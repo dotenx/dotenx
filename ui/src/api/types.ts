@@ -15,6 +15,9 @@ export enum QueryKey {
 	GetTriggerDefinition = 'get-trigger-definition',
 	GetAutomationTrigger = 'get-automation-triggers',
 	GetIntegrationsByType = 'get-integration-by-type',
+	GetProviders = 'get-providers',
+	GetProvider = 'get-provider',
+	GetFormatterFunctions = 'get-formatter-functions',
 }
 
 export enum TaskExecutionStatus {
@@ -105,7 +108,9 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBody = Record<string, string | { source: string; key: string }>
+export type TaskBodyValue = string | FromSource | string[] | FormatterBody | null
+
+export type TaskBody = Record<string, TaskBodyValue>
 
 export interface Metadata {
 	icon: string
@@ -131,7 +136,19 @@ export type GetIntegrationsResponse = Integration[]
 
 export type GetIntegrationsByKindsResponse = Integration[]
 
-export type GetIntegrationKindsResponse = string[]
+export type GetIntegrationKindsResponse = IntegrationKind[]
+
+export interface IntegrationKind {
+	type: string
+	secrets: Secret[]
+	oauth_provider: string
+}
+
+export interface Secret {
+	name: string
+	key: string
+	internal: boolean
+}
 
 export type GetIntegrationKindFieldsResponse = {
 	secrets: { key: string; name: string; internal: boolean }[]
@@ -160,12 +177,17 @@ export type GetTriggerDefinitionResponse = {
 export interface GetTaskFieldsResponse {
 	fields: {
 		key: string
-		type: string
+		type: FieldType
 		display_name: string
 		description: string
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+}
+
+export enum FieldType {
+	Text = 'text',
+	Code = 'code',
 }
 
 export interface GetExecutionResultResponse {
@@ -198,3 +220,57 @@ export type CreateIntegrationRequest = {
 	type: string
 	secrets: Record<string, string>
 }
+
+export type GetProvidersResponse = ProviderDetail[]
+
+export interface Provider {
+	name: string
+	type: string
+	key: string
+	secret: string
+	scopes: string[]
+	front_end_url: string
+}
+
+export interface ProviderDetail {
+	name: string
+	type: string
+	key: string
+	secret: string
+	scopes?: string[]
+	front_end_url: string
+	account_id: string
+	direct_url: string
+	tag: string
+}
+
+export type GetFormatterFunctionsResponse = Record<string, FormatterFunction>
+
+export interface FormatterFunction {
+	inputs: string[]
+	output: string
+	description: string
+}
+
+export interface FormatterBody {
+	formatter: Formatter
+}
+
+export interface Formatter {
+	format_str: string
+	func_calls: Record<string, FuncCall>
+}
+
+export interface FuncCall {
+	func_name: string
+	args: Arg[]
+}
+
+export type Arg = FromSource | string
+
+interface FromSource {
+	key: string
+	source: string
+}
+
+export type GetProviderResponse = { provider: ProviderDetail }

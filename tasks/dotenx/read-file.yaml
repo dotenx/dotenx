@@ -1,4 +1,4 @@
-service: etc
+service: dotenx
 type: Read file
 image: awrmin/read-file
 fields:

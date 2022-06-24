@@ -9,13 +9,16 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth/provider"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/goth"
 )
 
 var providers []models.OauthProvider
 var gothProviders map[string]*goth.Provider
+var gothNotSupported []string
 
 func init() {
+	gothNotSupported = append(gothNotSupported, "typeform")
 	jsonFile, err := os.Open("providers.json")
 	if err != nil {
 		fmt.Println(err)
@@ -38,6 +41,9 @@ func GetProviders(cbURIBase string) (map[string]*goth.Provider, error) {
 		return gothProviders, nil
 	}
 	for _, v := range providers {
+		if utils.ContainsString(gothNotSupported, v.Name) {
+			continue
+		}
 		uri := cbURIBase + v.Name
 		p, err := provider.New(v.Name, &v.Secret, &v.Key, uri, v.Scopes...)
 		if err != nil {

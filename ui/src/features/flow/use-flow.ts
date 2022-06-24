@@ -13,11 +13,12 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { AutomationData, Triggers } from '../../api'
+import { Arg, AutomationData, TaskBodyValue, Triggers } from '../../api'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
 export enum NodeType {
@@ -106,24 +107,20 @@ export function useFlow() {
 
 function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeData | EdgeData> {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
-		const bodyEntries = _.toPairs(value.body).map(([fieldName, fieldValue]) => {
-			let inputOrSelectValue = {
-				type: InputOrSelectKind.Text,
-				data: '',
-			} as InputOrSelectValue
-			if (typeof fieldValue === 'string') {
-				inputOrSelectValue = { type: InputOrSelectKind.Text, data: fieldValue }
-			} else {
-				inputOrSelectValue = {
-					type: InputOrSelectKind.Option,
-					data: fieldValue.key,
-					groupName: fieldValue.source,
-					iconUrl: '',
-				}
-			}
-			return [fieldName, inputOrSelectValue]
-		})
+		const bodyEntries = _.toPairs(value.body)
+			.filter(([, fieldValue]) => !!fieldValue)
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.map(([fieldName, fieldValue]) => toFieldValue(fieldValue!, fieldName))
+		const vars = _.toPairs(_.omit(value.body, ['code', 'dependency', 'outputs']))
+			.filter(([, fieldValue]) => !!fieldValue)
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.map(([fieldName, fieldValue]) => toFieldValue(fieldValue!, fieldName))
+			.map(([fieldName, fieldValue]) => ({
+				key: fieldName,
+				value: fieldValue as InputOrSelectValue,
+			}))
 		const body = _.fromPairs(bodyEntries)
+		const isCodeTask = value.type.includes('code')
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -134,7 +131,12 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
-				others: body,
+				others: isCodeTask ? { code: body.code, dependency: body.dependency } : body,
+				// TODO: THIS IS HARDCODED :(
+				vars: isCodeTask ? vars : undefined,
+				outputs: _.isArray(value.body.outputs)
+					? value.body.outputs.map((value) => ({ value }))
+					: undefined,
 			},
 		}
 	})
@@ -151,6 +153,38 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	)
 
 	return [...nodes, ...edges]
+}
+
+function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
+	if (!fieldValue) return ['', '']
+	let complexFieldValue = {
+		type: InputOrSelectKind.Text,
+		data: '',
+	} as ComplexFieldValue | { value: string }[]
+	if (typeof fieldValue === 'string') {
+		complexFieldValue = { type: InputOrSelectKind.Text, data: fieldValue }
+	} else if (_.isArray(fieldValue)) {
+		complexFieldValue = fieldValue.map((value) => ({ value }))
+	} else if ('key' in fieldValue) {
+		complexFieldValue = {
+			type: InputOrSelectKind.Option,
+			data: fieldValue.key,
+			groupName: fieldValue.source,
+			iconUrl: '',
+		}
+	} else {
+		const fn = fieldValue.formatter.func_calls[1]
+		const args = fn?.args?.map(argToInputOrSelect)
+		complexFieldValue = { fn: fn?.func_name, args }
+	}
+
+	return [fieldName, complexFieldValue] as [string, ComplexFieldValue]
+}
+
+const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
+	return typeof arg === 'string'
+		? { type: InputOrSelectKind.Text, data: arg }
+		: { type: InputOrSelectKind.Option, data: arg.key, groupName: arg.source, iconUrl: '' }
 }
 
 function mapTriggersToElements(triggers: Triggers | undefined) {
