@@ -17,7 +17,7 @@ import {
 	InputOrSelectKind,
 	Loader,
 } from '../ui'
-import { ComplexFieldProps } from '../ui/complex-field'
+import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -174,7 +174,7 @@ const getFieldComponent = (
 			return (
 				<div key={props.key}>
 					{/* TODO: PLEASE USE ComplexField WHEN BACKEND FORMATTER IS READY */}
-					<InputOrSelect {...props} />
+					<ComplexField {...props} />
 					<Description>{props.description}</Description>
 				</div>
 			)
