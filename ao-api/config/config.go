@@ -63,6 +63,7 @@ type (
 		AwsAccessKeyId       string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
 		AwsSecretAccessKey   string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
 		AwsRegion            string `envconfig:"AOA_AWS_REGION"`
+		CodeChallenge        string `envconfig:"AOA_CODE_CHALLENGE"`
 	}
 )
 

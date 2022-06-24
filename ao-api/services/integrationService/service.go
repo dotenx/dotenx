@@ -3,21 +3,25 @@ package integrationService
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth"
+	"github.com/dotenx/dotenx/ao-api/oauth/provider"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
+	"github.com/dotenx/goth"
 )
 
 type IntegrationService interface {
 	GetIntegrationFields(name string) (models.IntegrationDefinition, error)
 	GetIntegrationByName(accountId, name string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
-	GetIntegrationTypes() ([]string, error)
+	GetIntegrationTypes() ([]models.IntegrationDefinition, error)
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
 	GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
@@ -27,12 +31,14 @@ type IntegrationService interface {
 type IntegrationManager struct {
 	Store      integrationStore.IntegrationStore
 	RedisStore redisStore.RedisStore
+	OauthStore oauthStore.OauthStore
 }
 
-func NewIntegrationService(store integrationStore.IntegrationStore, redisStore redisStore.RedisStore) IntegrationService {
+func NewIntegrationService(store integrationStore.IntegrationStore, redisStore redisStore.RedisStore, OauthStore oauthStore.OauthStore) IntegrationService {
 	return &IntegrationManager{
 		Store:      store,
 		RedisStore: redisStore,
+		OauthStore: OauthStore,
 	}
 }
 
@@ -44,10 +50,10 @@ func (manager *IntegrationManager) GetIntegrationFields(name string) (models.Int
 	}
 	return models.IntegrationDefinition{}, errors.New("no integration with this name")
 }
-func (manager *IntegrationManager) GetIntegrationTypes() ([]string, error) {
-	integrations := make([]string, 0)
+func (manager *IntegrationManager) GetIntegrationTypes() ([]models.IntegrationDefinition, error) {
+	integrations := make([]models.IntegrationDefinition, 0)
 	for _, integ := range models.AvaliableIntegrations {
-		integrations = append(integrations, integ.Type)
+		integrations = append(integrations, integ)
 	}
 	return integrations, nil
 }
@@ -105,12 +111,36 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 		}
 		return integration, err
 	} else {
-		providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
-		provider, err := oauth.GetProviderByName(providerName)
-		if err != nil {
-			return models.Integration{}, err
+		var gothProvider *goth.Provider
+		if integration.Provider == "" {
+			providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+			gothProvider, err = oauth.GetProviderByName(providerName)
+			if err != nil {
+				return models.Integration{}, err
+			}
+		} else {
+			userProvider, err := manager.OauthStore.GetUserProviderByName(context.Background(), accountId, integration.Provider)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedKey, err := utils.Decrypt(userProvider.Key, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedSecret, err := utils.Decrypt(userProvider.Secret, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			userProvider.Key = decryptedKey
+			userProvider.Secret = decryptedSecret
+			redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", integration.Provider, accountId)
+			gothProvider, err = provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
+			if err != nil {
+				return models.Integration{}, err
+			}
 		}
-		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*provider, integration.Name, accountId, manager.RedisStore)
+
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, integration.Name, accountId, manager.RedisStore)
 		if err != nil {
 			return models.Integration{}, err
 		}

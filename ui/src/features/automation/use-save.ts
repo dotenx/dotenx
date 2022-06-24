@@ -9,6 +9,7 @@ import { createAutomation, Manifest, QueryKey, TaskBody, Tasks, Trigger, Trigger
 import { flowAtom } from '../atoms'
 import { EdgeData, NodeType, TaskNodeData } from '../flow'
 import { useModal } from '../hooks'
+import { InputOrSelectKind } from '../ui'
 import { saveFormSchema, SaveFormSchema } from './save-form'
 
 export function useSaveForm() {
@@ -45,7 +46,7 @@ export function useSaveForm() {
 		onSubmit: handleSubmit(onSave),
 		control,
 		errors,
-		addAutomationMutation: addAutomationMutation,
+		addAutomationMutation,
 	}
 }
 
@@ -66,13 +67,35 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 		}
 		for (const key in others) {
 			const taskOtherValue = others[key]
-			if (taskOtherValue.type === 'option') {
-				body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
+			if ('data' in taskOtherValue) {
+				if (taskOtherValue.type === 'option') {
+					body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
+				} else {
+					body[key] = taskOtherValue.data
+				}
 			} else {
-				body[key] = taskOtherValue.data
+				body[key] = {
+					formatter: {
+						format_str: '$1',
+						func_calls: {
+							'1': {
+								func_name: taskOtherValue.fn,
+								args: taskOtherValue.args.map((arg) =>
+									arg.type === InputOrSelectKind.Text
+										? arg.data
+										: { source: arg.groupName, key: arg.data }
+								),
+							},
+						},
+					},
+				}
 			}
 		}
-		node.data.vars?.forEach((variable) => (body[variable.key] = variable.value.data))
+		node.data.vars?.forEach((variable) => {
+			if ('data' in variable.value) {
+				body[variable.key] = variable.value.data
+			}
+		})
 		tasks[node.data.name] = {
 			type: node.data.type,
 			body,
