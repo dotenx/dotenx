@@ -31,13 +31,20 @@ interface ActionBarProps {
 
 export function ActionBar({ automationName }: ActionBarProps) {
 	const modal = useModal()
-	const { onDelete, onRun, selectedAutomation, onLayout, newAutomation, handleDeleteAutomation } =
-		useActionBar()
+	const {
+		onDelete,
+		onRun,
+		selectedAutomation,
+		onLayout,
+		newAutomation,
+		handleDeleteAutomation,
+		isRunning,
+	} = useActionBar()
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)
 		event.dataTransfer.effectAllowed = 'move'
 	}
-	const { onUpdate } = useUpdateAutomation()
+	const { onUpdate, isUpdating } = useUpdateAutomation()
 	const handleSave = () => {
 		if (!automationName) modal.open(Modals.SaveAutomation)
 		else onUpdate({ name: automationName })
@@ -85,7 +92,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 		[modal, automationName]
 	)
 
-	const { handleActivate } = useActivateAutomation(
+	const { handleActivate, activateIsLoading } = useActivateAutomation(
 		selectedAutomation?.is_active ?? false,
 		automationName ?? ''
 	)
@@ -120,6 +127,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 						tooltip="Run"
 						onClick={onRun}
 						disabled={!selectedAutomation || !selectedAutomation.is_active}
+						loading={isRunning}
 					>
 						<IoPlayOutline />
 					</IconButton>
@@ -127,10 +135,11 @@ export function ActionBar({ automationName }: ActionBarProps) {
 						tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
 						onClick={handleActivate}
 						disabled={!selectedAutomation}
+						loading={activateIsLoading}
 					>
 						{selectedAutomation?.is_active ? <IoClose /> : <IoCheckmark />}
 					</IconButton>
-					<IconButton tooltip="Save" onClick={handleSave}>
+					<IconButton tooltip="Save" onClick={handleSave} loading={isUpdating}>
 						<IoSaveOutline />
 					</IconButton>
 					<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>

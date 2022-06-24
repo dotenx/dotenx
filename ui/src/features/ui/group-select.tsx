@@ -6,6 +6,7 @@ import { IoChevronDown, IoSearch } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
 import { FieldError } from './field'
+import { Loader } from './loader'
 
 export interface GroupSelectOption {
 	value: string
@@ -20,9 +21,17 @@ interface GroupSelectProps {
 	options: GroupOption[]
 	errors?: FieldErrors
 	placeholder: string
+	loading?: boolean
 }
 
-export function GroupSelect({ control, name, options, errors, placeholder }: GroupSelectProps) {
+export function GroupSelect({
+	control,
+	name,
+	options,
+	errors,
+	placeholder,
+	loading,
+}: GroupSelectProps) {
 	return (
 		<div className="flex flex-col gap-1">
 			<span className="text-sm font-bold cursor-default">Type</span>
@@ -31,13 +40,20 @@ export function GroupSelect({ control, name, options, errors, placeholder }: Gro
 				control={control}
 				options={options}
 				placeholder={placeholder}
+				loading={loading}
 			/>
 			{name && errors && <FieldError errors={errors} name={name} />}
 		</div>
 	)
 }
 
-export function ControlledGroupSelect({ control, name, options, placeholder }: GroupSelectProps) {
+export function ControlledGroupSelect({
+	control,
+	name,
+	options,
+	placeholder,
+	loading,
+}: GroupSelectProps) {
 	return (
 		<Controller
 			control={control}
@@ -53,6 +69,7 @@ export function ControlledGroupSelect({ control, name, options, placeholder }: G
 						options={options}
 						invalid={invalid}
 						placeholder={placeholder}
+						loading={loading}
 					/>
 				)
 			}}
@@ -71,9 +88,16 @@ interface GroupSelectInnerProps {
 	options: GroupOption[]
 	invalid: boolean
 	placeholder: string
+	loading?: boolean
 }
 
-function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelectInnerProps) {
+function GroupSelectInner({
+	value,
+	onChange,
+	options,
+	placeholder,
+	loading,
+}: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [searchText, setSearchText] = useState('')
 	const [selectedGroup, setSelectedGroup] = useState<GroupOption>()
@@ -134,6 +158,7 @@ function GroupSelectInner({ value, onChange, options, placeholder }: GroupSelect
 						searchedGroups={searchedGroups}
 						searchedItems={searchedItems}
 						close={close}
+						loading={loading}
 					/>
 				</Fade>
 			</div>
@@ -156,6 +181,7 @@ interface OpenedMenuProps {
 		refIndex: number
 	}[]
 	close: () => void
+	loading?: boolean
 }
 
 function OpenedMenu({
@@ -167,6 +193,7 @@ function OpenedMenu({
 	selectedGroup,
 	setSearchText,
 	setSelectedGroup,
+	loading,
 }: OpenedMenuProps) {
 	const searchRef = useRef<HTMLInputElement>(null)
 
@@ -185,7 +212,8 @@ function OpenedMenu({
 				/>
 			</div>
 			<div className="pb-1">
-				{!selectedGroup && searchedGroups.length === 0 && (
+				{loading && <Loader className="py-6" />}
+				{!loading && !selectedGroup && searchedGroups.length === 0 && (
 					<div className="pb-2 pt-1.5 text-xs font-thin text-center">No group found</div>
 				)}
 				{!selectedGroup &&

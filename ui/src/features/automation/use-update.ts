@@ -26,5 +26,6 @@ export function useUpdateAutomation() {
 
 	return {
 		onUpdate,
+		isUpdating: updateAutomationMutation.isLoading,
 	}
 }

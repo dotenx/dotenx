@@ -9,7 +9,7 @@ import { Button } from '../features/ui'
 
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
-	const { mutate } = useMutation(createAutomationYaml, {
+	const { mutate, isLoading } = useMutation(createAutomationYaml, {
 		onSuccess: ({ data }) => navigate(`/automations/${data.name}`),
 	})
 	const [code, setCode] = useState('')
@@ -31,7 +31,7 @@ export default function ImportYamlPage() {
 						extensions={[StreamLanguage.define(yaml)]}
 						onChange={(value) => setCode(value)}
 					/>
-					<Button type="submit" className="self-end w-48">
+					<Button loading={isLoading} type="submit" className="self-end w-48">
 						Import and Save
 					</Button>
 				</form>

@@ -9,7 +9,6 @@ import { Button, DeleteButton, Table } from '../features/ui'
 export default function AutomationsPage() {
 	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
 	const automations = automationsQuery.data?.data
-	const deleteMutation = useDeleteAutomation()
 
 	return (
 		<div className="grow">
@@ -17,6 +16,7 @@ export default function AutomationsPage() {
 				<Table
 					title="Automations"
 					emptyText="You have no automation yet, try adding one."
+					loading={automationsQuery.isLoading}
 					actionBar={<NewAutomation />}
 					columns={[
 						{
@@ -49,9 +49,7 @@ export default function AutomationsPage() {
 							Header: 'Action',
 							id: 'action',
 							accessor: 'name',
-							Cell: ({ value }: { value: string }) => (
-								<DeleteButton onClick={() => deleteMutation.mutate(value)} />
-							),
+							Cell: DeletionCell,
 						},
 					]}
 					data={automations}
@@ -77,5 +75,16 @@ function NewAutomation() {
 				New Automation
 			</Button>
 		</div>
+	)
+}
+
+function DeletionCell({ value }: { value: string }) {
+	const deleteMutation = useDeleteAutomation()
+
+	return (
+		<DeleteButton
+			loading={deleteMutation.isLoading}
+			onClick={() => deleteMutation.mutate(value)}
+		/>
 	)
 }

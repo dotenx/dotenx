@@ -5,9 +5,9 @@ import { TriggerData } from '../../api'
 import { selectedAutomationDataAtom } from '../atoms'
 import { TaskNodeData, TriggerEntity } from '../flow'
 import { Modals, useModal } from '../hooks'
-import { NewIntegration } from '../integration'
+import { IntegrationForm } from '../integration'
 import { Modal } from '../ui'
-import { TriggerForm } from './create-form'
+import { TriggerForm } from './form'
 import { useTriggerForm } from './use-form'
 
 interface TriggerSettingsModalProps {
@@ -84,7 +84,7 @@ function TriggerSettings({
 			</div>
 			{isAddingIntegration && (
 				<div className="pl-10 border-l">
-					<NewIntegration
+					<IntegrationForm
 						onBack={() => setIsAddingIntegration(false)}
 						integrationKind={triggerForm.selectedTriggerIntegrationKind}
 						onSuccess={(addedIntegrationName) => {

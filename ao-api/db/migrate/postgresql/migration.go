@@ -92,6 +92,18 @@ var migrations = []struct {
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
+	{
+		name: "create-user-provider-table",
+		stmt: createUserProviderTable,
+	},
+	{
+		name: "add-provider-field-to-integrations",
+		stmt: addProviderFieldToIntegrations,
+	},
+	{
+		name: "create-table-projects",
+		stmt: createTableProjects,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -221,11 +233,11 @@ FOREIGN KEY (status) REFERENCES task_status(name)
 `
 
 var createIndexTaskPreconditionsPreconditions = `
-CREATE INDEX task_preconditions_preconditions ON task_preconditions (precondition_id, status)
+CREATE INDEX IF NOT EXISTS task_preconditions_preconditions ON task_preconditions (precondition_id, status)
 `
 
 var createIndexTaskPreconditionsTasks = `
-CREATE INDEX task_preconditions_tasks ON task_preconditions (task_id)
+CREATE INDEX IF NOT EXISTS task_preconditions_tasks ON task_preconditions (task_id)
 `
 
 var createTableExecutions = `
@@ -239,7 +251,7 @@ FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 `
 
 var addExectuionTime = `ALTER TABLE executions
-ADD COLUMN execution_time INT DEFAULT 0;`
+ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
 
 //var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
@@ -317,3 +329,33 @@ SET DEFAULT FALSE;`
 var updateNillIsActive = `
 UPDATE pipelines
 SET is_active=FALSE;`
+
+var createUserProviderTable = `
+CREATE TABLE IF NOT EXISTS user_provider (
+account_id        varchar(64) NOT NULL,
+name              varchar(64) NOT NULL,
+type              varchar(64) NOT NULL,
+key               varchar(256) NOT NULL,
+secret            varchar(256) NOT NULL,
+direct_url        text,
+scopes            text[],
+front_end_url     text,
+tag               varchar(32) NOT NULL,
+UNIQUE (account_id, name)
+)
+`
+
+var addProviderFieldToIntegrations = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS provider varchar(64);
+`
+var createTableProjects = `
+CREATE TABLE IF NOT EXISTS projects (
+id                           SERIAL PRIMARY KEY,
+name                         VARCHAR(128),
+account_id                   VARCHAR(64),
+description                  VARCHAR(128),
+tag                          varchar(32) NOT NULL,
+UNIQUE (account_id, name)
+)
+`

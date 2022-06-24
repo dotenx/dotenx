@@ -37,6 +37,7 @@ export function SelectIntegration({
 						value: integration.name,
 					}))}
 					placeholder="Integration name"
+					loading={integrationQuery.isLoading}
 				/>
 			</div>
 			{onAddIntegration && (

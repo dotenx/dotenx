@@ -1,5 +1,6 @@
 import { useQuery } from 'react-query'
 import { getExecutionResult, QueryKey } from '../../api'
+import { Loader } from '../ui'
 
 export interface TaskLogProps {
 	executionId?: string
@@ -15,6 +16,8 @@ export function TaskLog({ executionId, taskName }: TaskLogProps) {
 		{ enabled: !!(executionId && taskName) }
 	)
 	const log = query.data?.data?.log
+
+	if (query.isLoading) return <Loader />
 
 	return (
 		<div>

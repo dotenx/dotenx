@@ -1,10 +1,24 @@
 # Do10X
-DoTenX, allows you to automate anything for yourself or offer automations as a SaaS with no-code.
+DoTenX help you build backends with no-code which are extendable with custom code. You can also build automation with DoTenX.
 
 
-Discord:
+Join our discord community to learn about the opportunities DoTenX can bring to you, what we do, or ask your questions:
 
 https://discord.gg/kpCmHtKYHd
+
+Documentation:
+
+https://docs.dotenx.com
+
+Try it on cloud (no credit cards needed):
+
+https://dotenx.com
+
+
+
+# ⭐️ `Star us`
+
+If you want to support our work - please star this project, every star makes us very happy!
 
 
 
@@ -18,13 +32,6 @@ The following commands run all the components of DoTenX on your machine:
 docker network create -d bridge local --attachable
 docker compose up
 ```
-
-# ⭐️ `Star us`
-
-If you want to support our work - please star this project, every star makes us very happy!
-
-![Screen Shot 2022-04-19 at 8 06 49 pm](https://user-images.githubusercontent.com/15846333/163980940-dd63f362-dfdc-45e5-9d4c-68a144434905.png)
-
 
 
 # Introduction
