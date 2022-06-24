@@ -11,11 +11,12 @@ type DatabaseService interface {
 	DeleteTable(accountId string, projectName string, tableName string) error
 	AddTableColumn(accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
+	GetTablesList(accountId string, projectName string) ([]string, error)
+	ListTableColumns(accountId string, projectName string, tableName string) ([]string, error)
 
 	InsertRow(projectTag string, tableName string, row map[string]string) error
 	DeleteRow(projectTag string, tableName string, id int) error
 	SelectRows(projectTag string, tableName string, columns []string, page int, size int) ([]map[string]interface{}, error)
-	GetTablesList(accountId string, projectName string) ([]string, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
