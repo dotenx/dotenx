@@ -29,7 +29,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 			return errors.New("pipeline already exists")
 		}
 		// Add the pipeline
-		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId, isTemplate).Scan(&pipelineId)
+		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId, isTemplate, isInteraction).Scan(&pipelineId)
 		if err != nil {
 			return err
 		}
