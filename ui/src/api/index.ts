@@ -215,7 +215,12 @@ export function deleteColumn(projectName: string, tableName: string, columnName:
 }
 
 export function getTableRecords(projectTag: string, tableName: string) {
-	return api.post<unknown[]>(`/query/select/project/${projectTag}/table/${tableName}`)
+	return api.post<Record<string, string>[]>(
+		`/database/query/select/project/${projectTag}/table/${tableName}`,
+		{
+			columns: [],
+		}
+	)
 }
 
 export function getColumns(projectName: string, tableName: string) {

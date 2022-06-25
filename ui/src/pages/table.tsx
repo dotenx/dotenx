@@ -1,7 +1,7 @@
 import { IoAdd, IoList, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { deleteColumn, getColumns, getTableRecords, QueryKey } from '../api'
+import { deleteColumn, getColumns, getProject, getTableRecords, QueryKey } from '../api'
 import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
@@ -14,11 +14,15 @@ export default function TablePage() {
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
+	const projectTag = projectDetails.data?.data.tag ?? ''
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
-	const recordsQuery = useQuery(QueryKey.GetTableRecords, () =>
-		getTableRecords(projectName, tableName)
+	const recordsQuery = useQuery(
+		QueryKey.GetTableRecords,
+		() => getTableRecords(projectTag, tableName),
+		{ enabled: !!projectTag }
 	)
-	// const records = recordsQuery.data?.data
+	const records = recordsQuery.data?.data
 	const headers =
 		columnsQuery.data?.data.columns.map((column) => ({
 			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
@@ -31,7 +35,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<Table
 					title={`Table ${tableName}`}
 					columns={headers}
-					data={[{}]}
+					data={records}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>
@@ -79,13 +83,16 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 	const deleteMutation = useMutation(() => deleteColumn(projectName, tableName, name), {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetColumns),
 	})
+	const showDelete = name !== 'id'
 
 	return (
 		<div className="flex items-center gap-2">
 			{name}
-			<Button variant="icon" type="button" onClick={() => deleteMutation.mutate()}>
-				<IoTrash />
-			</Button>
+			{showDelete && (
+				<button type="button" onClick={() => deleteMutation.mutate()}>
+					<IoTrash />
+				</button>
+			)}
 		</div>
 	)
 }

@@ -71,12 +71,12 @@ export function Table<D extends object = Record<string, string>>({
 					</div>
 					<div className="overflow-hidden border rounded-md">
 						<table className="w-full" {...getTableProps()}>
-							<thead className="bg-gray-300">
+							<thead className="bg-gray-200">
 								{headerGroups.map((headerGroup) => (
 									<tr className="" {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="px-6 py-2 text-left last:text-right"
+												className="px-6 py-2 text-left last:text-right last:flex last:justify-end first:!justify-start"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}
@@ -93,7 +93,7 @@ export function Table<D extends object = Record<string, string>>({
 											{row.cells.map((cell) => {
 												return (
 													<td
-														className="px-6 py-6 text-slate-500 last:text-right"
+														className="px-6 py-6 text-slate-500 last:text-right first:!text-left"
 														{...cell.getCellProps()}
 													>
 														{cell.render('Cell')}

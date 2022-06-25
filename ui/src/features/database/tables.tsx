@@ -15,9 +15,11 @@ export function TableList({ projectName }: { projectName: string }) {
 		<div>
 			<h3 className="text-xl font-medium">Tables</h3>
 			<div className="flex flex-wrap gap-8 mt-4">
-				{tables.map((table) => (
-					<TableItem key={table} name={table} />
-				))}
+				{tables
+					.filter((table) => table !== 'user_info')
+					.map((table) => (
+						<TableItem key={table} name={table} />
+					))}
 				<AddTableButton />
 			</div>
 		</div>

@@ -285,7 +285,7 @@ export type CreateProjectRequest = Project
 
 export type GetProjectsResponse = Project[] | null
 
-export type GetProjectResponse = Project
+export type GetProjectResponse = Project & { tag: string }
 
 export interface Project {
 	name: string
