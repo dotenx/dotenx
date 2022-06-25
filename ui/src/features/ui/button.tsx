@@ -19,13 +19,16 @@ export function Button({
 		<button
 			className={clsx(
 				'flex items-center justify-center gap-1 font-medium text-white transition rounded-lg cursor-pointer disabled:cursor-not-allowed outline-rose-500 outline-offset-4 whitespace-nowrap disabled:bg-gray-400 border-rose-600 disabled:border-gray-400',
-				variant === 'filled' &&
-					'bg-rose-600 hover:bg-rose-700 focus:bg-rose-700 w-full border',
+				variant === 'filled' && 'bg-rose-600 hover:bg-rose-700 focus:bg-rose-700 border',
 				variant === 'outlined' &&
-					'bg-white hover:bg-rose-50 focus:bg-rose-50 text-rose-600 w-full border',
+					'bg-white hover:bg-rose-50 focus:bg-rose-50 text-rose-600 border',
 				variant !== 'icon' && 'py-[7px] px-3',
 				variant === 'icon' && 'text-rose-600 hover:bg-rose-50 w-10 h-10',
-				loading && variant !== 'icon' && 'disabled:bg-rose-600 disabled:border-rose-600',
+				loading && variant === 'outlined' && 'disabled:bg-rose-50 disabled:border-rose-300',
+				loading &&
+					variant !== 'icon' &&
+					variant !== 'outlined' &&
+					'disabled:bg-rose-600 disabled:border-rose-600',
 				loading &&
 					variant === 'icon' &&
 					'disabled:bg-transparent disabled:border-transparent',

@@ -4,6 +4,7 @@ import {
 	BsFillDiagram3Fill,
 	BsFillXDiamondFill,
 	BsHddNetworkFill,
+	BsHeptagonFill,
 } from 'react-icons/bs'
 import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
@@ -20,6 +21,7 @@ const studioLinks = [
 ]
 
 const builderLinks = [
+	{ to: '/builder/projects', label: 'Projects', icon: <BsHeptagonFill /> },
 	{ to: '/builder/providers', label: 'Providers', icon: <BsFillXDiamondFill /> },
 ]
 
