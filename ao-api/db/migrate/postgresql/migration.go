@@ -101,6 +101,18 @@ var migrations = []struct {
 		stmt: updateNillIsTemplate,
 	},
 	{
+		name: "add-is-Interaction-field",
+		stmt: addIsInteraction,
+	},
+	{
+		name: "update-is-Interaction-field",
+		stmt: updateIsInteraction,
+	},
+	{
+		name: "update-nill-is-Interaction-field",
+		stmt: updateNillIsInteraction,
+	},
+	{
 		name: "add-execution-time",
 		stmt: addExectuionTime,
 	},
@@ -209,6 +221,7 @@ account_id         			                 	VARCHAR(64),
 endpoint 							     		uuid DEFAULT uuid_generate_v4(),
 is_active                                       BOOLEAN,
 is_template                                     BOOLEAN,
+is_interaction                                  BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
@@ -354,6 +367,18 @@ SET is_active=FALSE;`
 var updateNillIsTemplate = `
 UPDATE pipelines
 SET is_template=FALSE;`
+
+var addIsInteraction = `ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS is_interaction BOOLEAN;`
+
+var updateIsInteraction = `
+ALTER TABLE pipelines
+ALTER COLUMN is_interaction
+SET DEFAULT FALSE;`
+
+var updateNillIsInteraction = `
+UPDATE pipelines
+SET is_interaction=FALSE;`
 
 var createUserProviderTable = `
 CREATE TABLE IF NOT EXISTS user_provider (
