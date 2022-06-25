@@ -48,7 +48,7 @@ func (f *Formatter) Format(values map[string]interface{}) (string, error) {
 			key := fmt.Sprintf("%s.%s", arg.Source, arg.Key)
 			args = append(args, values[key])
 		}
-		output, err := fn.function(args)
+		output, err := fn.function(args...)
 		if err != nil {
 			log.Printf("func %s error: %v\n", v.FuncName, err.Error())
 			return "", err
