@@ -19,7 +19,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		p, _, _, isTemplate, err := mc.Service.GetPipelineByName(accountId, name)
+		p, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

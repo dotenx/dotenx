@@ -13,7 +13,7 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, _, _, isTemplate, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -38,7 +38,7 @@ func (mc *CRUDController) DeActivatePipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, _, _, isTemplate, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)

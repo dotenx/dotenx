@@ -59,7 +59,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			Manifest: pipelineDto.Manifest,
 		}
 
-		err := mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate)
+		err := mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
@@ -74,9 +74,10 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 }
 
 type PipelineDto struct {
-	Name       string
-	IsTemplate bool
-	Manifest   models.Manifest
+	Name          string
+	IsTemplate    bool
+	IsInteraction bool
+	Manifest      models.Manifest
 }
 
 func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {

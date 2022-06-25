@@ -88,10 +88,14 @@ func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, _, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		_, endpoint, _, _, isInteraction, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		if isInteraction {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
 			return
 		}
 		err = controller.Service.AddTriggers(accountId, triggers, endpoint)
@@ -117,10 +121,14 @@ func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		_, endpoint, _, _, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+		_, endpoint, _, _, isInteraction, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
 		if err != nil {
 			log.Println(err.Error())
 			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		if isInteraction {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
 			return
 		}
 		err = controller.Service.UpdateTriggers(accountId, triggers, endpoint)
