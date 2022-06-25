@@ -31,6 +31,8 @@ type ExecutionService interface {
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
 	SetExecutionTime(executionId int, seconds int) error
 	CheckAccess(accId string, excutionId int) (bool, error)
+	IsChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool
+	IsExecutionDone(totalTasks int, currentTasks []models.TaskStatusSummery) bool
 }
 
 type executionManager struct {

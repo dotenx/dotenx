@@ -71,5 +71,5 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if !isInteraction {
 		return gin.H{"id": executionId}, err
 	}
-	return nil, nil
+	return manager.getResponse(executionId)
 }
