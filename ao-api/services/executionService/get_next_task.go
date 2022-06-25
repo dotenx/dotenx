@@ -94,6 +94,9 @@ func (manager *executionManager) mapFields(execId int, accountId string, taksTyp
 				values := make(map[string]interface{})
 				args := insertDt.Formatter.GetArgs()
 				for _, arg := range args {
+					if arg.Value != nil {
+						continue
+					}
 					body, err := manager.CheckExecutionInitialData(execId, accountId, arg.Source)
 					if err != nil {
 						body, err = manager.CheckReturnValues(execId, accountId, arg.Source)

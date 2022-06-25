@@ -11,8 +11,9 @@ const DirectValue = "direct_value"
 var ErrFuncNotFound = fmt.Errorf("function not found")
 
 type Arg struct {
-	Source string `json:"source"`
-	Key    string `json:"key"`
+	Source string  `json:"source"`
+	Key    string  `json:"key"`
+	Value  *string `json:"value"`
 }
 
 type FuncCall struct {
@@ -45,6 +46,10 @@ func (f *Formatter) Format(values map[string]interface{}) (string, error) {
 		}
 		args := make([]interface{}, 0)
 		for _, arg := range v.Args {
+			if arg.Value != nil {
+				args = append(args, arg.Value)
+				continue
+			}
 			key := fmt.Sprintf("%s.%s", arg.Source, arg.Key)
 			args = append(args, values[key])
 		}
