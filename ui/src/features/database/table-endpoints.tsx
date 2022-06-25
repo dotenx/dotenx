@@ -23,7 +23,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 			/>
 			<Endpoint
 				label="Delete Record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
 				kind="DELETE"
 			/>
 		</div>
