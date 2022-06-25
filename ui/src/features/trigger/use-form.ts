@@ -83,6 +83,7 @@ export function useTriggerForm({
 		setValue,
 		triggerType,
 		selectedTriggerIntegrationKind: triggerDefinitionQuery.data?.data.integrations[0],
+		triggerTypesQuery,
 	}
 }
 

@@ -1,5 +1,5 @@
 import { Modals, useModal } from '../features/hooks'
-import { IntegrationList, NewIntegration } from '../features/integration'
+import { IntegrationForm, IntegrationList } from '../features/integration'
 import { Modal } from '../features/ui'
 
 export default function IntegrationsPage() {
@@ -11,7 +11,7 @@ export default function IntegrationsPage() {
 				<IntegrationList />
 			</div>
 			<Modal kind={Modals.NewIntegration} title="New Integration">
-				<NewIntegration onSuccess={() => modal.close()} />
+				<IntegrationForm onSuccess={() => modal.close()} />
 			</Modal>
 		</div>
 	)

@@ -60,5 +60,6 @@ export function useActionBar() {
 		newAutomation,
 		onLayout,
 		handleDeleteAutomation,
+		isRunning: mutation.isLoading,
 	}
 }

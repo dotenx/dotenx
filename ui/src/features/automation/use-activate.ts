@@ -13,5 +13,8 @@ export function useActivateAutomation(isActive: boolean, automationName: string)
 		if (isActive) deactivateMutation.mutate(automationName)
 		else activateMutation.mutate(automationName)
 	}
-	return { handleActivate }
+	return {
+		handleActivate,
+		activateIsLoading: activateMutation.isLoading || deactivateMutation.isLoading,
+	}
 }

@@ -6,7 +6,8 @@ import { Handle, NodeProps, Position } from 'react-flow-renderer'
 import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, InputOrSelectValue } from '../ui'
+import { InputOrSelectValue } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
 import { ContextMenu } from './context-menu'
 import { useDeleteNode } from './use-delete-node'
 import { useIsAcyclic } from './use-is-acyclic'
@@ -19,7 +20,7 @@ export interface TaskNodeData {
 	executionId?: string
 	iconUrl?: string
 	color?: string
-	others?: Record<string, InputOrSelectValue>
+	others?: Record<string, ComplexFieldValue>
 	vars?: { key: string; value: InputOrSelectValue }[]
 	outputs?: { value: string }[]
 }
@@ -63,10 +64,7 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 				transition={{ type: 'spring', bounce: 0.5 }}
 			>
 				<div
-					className={clsx(
-						'flex gap-0.5 group items-center relative justify-between text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4  focus:ring-4 outline-none',
-						getStatusColor(data.status)
-					)}
+					className="flex gap-0.5 group items-center relative justify-between text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4  focus:ring-4 outline-none"
 					style={wrapperStyle}
 					tabIndex={0}
 				>
@@ -83,9 +81,17 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 							</div>
 						</div>
 						{data.status && (
-							<div className="flex gap-1 text-[8px] items-center">
-								<p>{data.status}</p>
-								<Button
+							<div className="flex gap-1 text-[8px] items-center justify-between mt-1">
+								<p
+									className={clsx(
+										'rounded py-px px-1',
+										getStatusColor(data.status)
+									)}
+								>
+									{data.status}
+								</p>
+								<button
+									className="p-1 rounded bg-black/10"
 									onClick={() =>
 										modal.open(Modals.TaskLog, {
 											executionId: data.executionId,
@@ -94,7 +100,7 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 									}
 								>
 									<LogIcon />
-								</Button>
+								</button>
 							</div>
 						)}
 					</div>
@@ -136,20 +142,20 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 function getStatusColor(status?: TaskExecutionStatus) {
 	switch (status) {
 		case TaskExecutionStatus.Cancelled:
-			return 'bg-white'
+			return 'bg-gray-700'
 		case TaskExecutionStatus.Completed:
-			return 'bg-green-400'
+			return 'bg-green-700'
 		case TaskExecutionStatus.Failed:
-			return 'bg-red-400'
+			return 'bg-red-700'
 		case TaskExecutionStatus.Started:
-			return 'bg-blue-400'
+			return 'bg-blue-700'
 		case TaskExecutionStatus.Success:
-			return 'bg-green-400'
+			return 'bg-green-700'
 		case TaskExecutionStatus.Timedout:
-			return 'bg-red-400'
+			return 'bg-red-700'
 		case TaskExecutionStatus.Waiting:
-			return 'bg-white'
+			return 'bg-gray-700'
 		default:
-			return 'bg-white'
+			return 'bg-gray-700'
 	}
 }

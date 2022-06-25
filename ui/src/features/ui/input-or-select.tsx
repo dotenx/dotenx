@@ -62,7 +62,7 @@ interface InputValue {
 	data: string
 }
 
-interface SelectValue {
+export interface SelectValue {
 	type: InputOrSelectKind.Option
 	data: string
 	groupName: string
@@ -71,7 +71,7 @@ interface SelectValue {
 
 export type InputOrSelectValue = InputValue | SelectValue
 
-interface InputOrSelectRawProps {
+export interface InputOrSelectRawProps {
 	name: string
 	label?: string
 	groups: GroupData[]
@@ -80,7 +80,7 @@ interface InputOrSelectRawProps {
 	placeholder?: string
 }
 
-function InputOrSelectRaw({
+export function InputOrSelectRaw({
 	name,
 	groups,
 	value,
@@ -102,7 +102,7 @@ function InputOrSelectRaw({
 					</label>
 				)}
 				{value.type === 'option' && (
-					<SelectedData
+					<InputValueBox
 						value={value}
 						onClose={() =>
 							onChange({
@@ -202,12 +202,11 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 	)
 }
 
-interface SelectedDataProps {
+interface InputValueBoxProps {
 	value: SelectValue
 	onClose: () => void
 }
-
-function SelectedData({ value, onClose }: SelectedDataProps) {
+function InputValueBox({ value, onClose }: InputValueBoxProps) {
 	return (
 		<div className="flex items-center justify-between p-1 border rounded-lg border-slate-400">
 			<div className="bg-gray-50 px-1.5 flex items-center gap-2 rounded">
