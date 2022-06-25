@@ -4,6 +4,7 @@ import {
 	BsFillDiagram3Fill,
 	BsFillXDiamondFill,
 	BsHddNetworkFill,
+	BsHeptagonFill,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
 import { IoExit } from 'react-icons/io5'
@@ -21,6 +22,7 @@ const studioLinks = [
 ]
 
 const builderLinks = [
+	{ to: '/builder/projects', label: 'Projects', icon: <BsHeptagonFill /> },
 	{ to: '/builder/providers', label: 'Providers', icon: <BsFillXDiamondFill /> },
 	{ to: '/builder/authentication', label: 'Authentication', icon: <FaUsers /> },
 ]
