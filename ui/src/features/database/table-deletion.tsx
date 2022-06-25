@@ -12,7 +12,7 @@ interface TableDeletionProps {
 export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 	const navigate = useNavigate()
 	const deleteMutation = useMutation(() => deleteTable(projectName, tableName), {
-		onSuccess: () => navigate(`/builder/projects/${projectName}`),
+		onSuccess: () => navigate(`/builder/projects/${projectName}/tables`),
 	})
 
 	return (
