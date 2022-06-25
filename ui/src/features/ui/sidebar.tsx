@@ -50,7 +50,7 @@ export const Sidebar = memo(() => {
 				<div className="px-6 mt-10 text-slate-700 ">
 					<a
 						className="block px-3 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
-						href="https://admin.dotenx.com/builder/projects"
+						href="https://admin.dotenx.com/projects"
 					>
 						<span className="capitalize">{projectName[0]}</span>
 						<span className="transition opacity-0 group-hover:opacity-100">
