@@ -93,6 +93,33 @@ func GetAuthorizedField(tokenString string) (bool, error) {
 	return false, errors.New("claim not found")
 }
 
+func GetAccountIdField(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+
+	if accountIdField, hasAccountIdField := claims["account_id"]; hasAccountIdField {
+		if accountIdFieldString, isAccountIdFieldString := accountIdField.(string); isAccountIdFieldString {
+			return accountIdFieldString, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
+func GetTpAccountIdField(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+	if tpAccountIdField, hasTpAccountIdField := claims["tp_account_id"]; hasTpAccountIdField {
+		if tpAccountIdFieldString, isTpAccountIdFieldString := tpAccountIdField.(string); isTpAccountIdFieldString {
+			return tpAccountIdFieldString, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
 func getClaims(tokenString string) (jwt.MapClaims, error) {
 	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
 
@@ -135,7 +162,7 @@ func GenerateJwtToken() (accToken string, err error) {
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
-	accToken, err = token.SignedString([]byte("another_secret"))
+	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))
 	if err != nil {
 		return "", err
 	}
@@ -164,14 +191,23 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	claims["iss"] = "dotenx-ao-api"
 	claims["account_id"] = accountId
 	claims["tp_account_id"] = tpAccountId
-	claims["token_type"] = "third-party"
+	claims["token_type"] = "tp"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
-	accToken, err = token.SignedString([]byte("another_secret"))
+	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))
 	if err != nil {
 		return "", err
 	}
 
 	return
+}
+
+func ContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
