@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/gin-gonic/gin"
 )
 
 /*	Note: based on this implementation always the latest activated version will be executed. If you want to
@@ -15,7 +16,7 @@ import (
 	and at any time you are able to re-run it.
 */
 
-func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (int, error) {
+func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (interface{}, error) {
 	pipelineId, err := manager.Store.GetPipelineIdByEndpoint(noContext, accountId, endpoint)
 	if err != nil {
 		log.Println(err.Error())
@@ -30,7 +31,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
-	_, _, isActive, isTemplate, _, err := manager.Store.GetByName(noContext, accountId, name)
+	_, _, isActive, isTemplate, isInteraction, err := manager.Store.GetByName(noContext, accountId, name)
 	if isTemplate {
 		return -1, errors.New("automation is a template so you can't execute it")
 	}
@@ -67,5 +68,8 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
-	return executionId, nil
+	if !isInteraction {
+		return gin.H{"id": executionId}, err
+	}
+	return nil, nil
 }

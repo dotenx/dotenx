@@ -19,7 +19,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 			c.Status(http.StatusBadRequest)
 			return
 		}
-		id, err := e.Service.StartPipelineByName(input, accountId, name)
+		res, err := e.Service.StartPipelineByName(input, accountId, name)
 		if err != nil {
 			if err.Error() == "automation is not active" {
 				c.JSON(http.StatusBadRequest, err.Error())
@@ -32,6 +32,6 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"id": id})
+		c.JSON(http.StatusOK, res)
 	}
 }
