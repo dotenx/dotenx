@@ -13,6 +13,10 @@ export enum Modals {
 	AutomationYaml = 'automation-yaml',
 	DeleteAutomation = 'delete-automation',
 	NewProvider = 'new-provider',
+	NewProject = 'new-project',
+	NewTable = 'new-table',
+	NewColumn = 'new-column',
+	TableEndpoints = 'table-endpoints',
 }
 
 export function useModal() {
