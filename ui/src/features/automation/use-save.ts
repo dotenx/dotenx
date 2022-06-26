@@ -52,7 +52,9 @@ export function useSaveForm(kind: AutomationKind) {
 					const redirectLink =
 						kind === 'automation'
 							? `/automations/${values.name}`
-							: `/builder/projects/${projectName}/templates/${values.name}`
+							: kind === 'template'
+							? `/builder/projects/${projectName}/templates/${values.name}`
+							: `/builder/projects/${projectName}/interactions/${values.name}`
 					navigate(redirectLink)
 				},
 			}
