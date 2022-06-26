@@ -1,7 +1,19 @@
 import { atom } from 'jotai'
+import { nanoid } from 'nanoid'
+import { Elements } from 'react-flow-renderer'
 import { Automation, AutomationData } from '../../api'
-import { initialElements } from '../flow'
+import { EdgeData, TaskNodeData } from '../flow'
+import { NodeType } from '../flow/types'
 import { Modals } from '../hooks'
+
+export const initialElements: Elements<TaskNodeData | EdgeData> = [
+	{
+		id: nanoid(),
+		type: NodeType.Task,
+		data: { name: 'task', type: '' },
+		position: { x: 0, y: 0 },
+	},
+]
 
 export const listenAtom = atom(0)
 export const selectedAutomationDataAtom = atom<Automation | undefined>(undefined)

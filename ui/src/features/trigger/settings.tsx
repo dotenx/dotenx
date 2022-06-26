@@ -12,9 +12,10 @@ import { useTriggerForm } from './use-form'
 
 interface TriggerSettingsModalProps {
 	updateNode: (id: string, data: TaskNodeData) => void
+	withIntegration: boolean
 }
 
-export function TriggerSettingsModal({ updateNode }: TriggerSettingsModalProps) {
+export function TriggerSettingsModal({ updateNode, withIntegration }: TriggerSettingsModalProps) {
 	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
 	useEffect(() => {
@@ -34,6 +35,7 @@ export function TriggerSettingsModal({ updateNode }: TriggerSettingsModalProps) 
 					updateNode={updateNode}
 					isAddingIntegration={isAddingIntegration}
 					setIsAddingIntegration={setIsAddingIntegration}
+					withIntegration={withIntegration}
 				/>
 			)}
 		</Modal>
@@ -46,6 +48,7 @@ interface TriggerSettingsProps {
 	updateNode: (id: string, data: TaskNodeData) => void
 	isAddingIntegration: boolean
 	setIsAddingIntegration: (value: boolean) => void
+	withIntegration: boolean
 }
 
 function TriggerSettings({
@@ -54,6 +57,7 @@ function TriggerSettings({
 	updateNode,
 	isAddingIntegration,
 	setIsAddingIntegration,
+	withIntegration,
 }: TriggerSettingsProps) {
 	const modal = useModal()
 	const [automation] = useAtom(selectedAutomationDataAtom)
@@ -80,6 +84,7 @@ function TriggerSettings({
 					mode="settings"
 					onAddIntegration={() => setIsAddingIntegration(true)}
 					disableSubmit={isAddingIntegration}
+					withIntegration={withIntegration}
 				/>
 			</div>
 			{isAddingIntegration && (

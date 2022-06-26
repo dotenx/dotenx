@@ -15,7 +15,7 @@ export function useActionBar() {
 	const setListen = useAtom(listenAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
-	const newAutomation = useNewAutomation()
+	const newAutomation = useNewAutomation('/automations/new')
 	const navigate = useNavigate()
 	const modal = useModal()
 
