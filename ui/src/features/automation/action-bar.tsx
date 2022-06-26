@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { DragEvent, ReactNode } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
@@ -12,7 +13,7 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline
+	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'
@@ -181,7 +182,7 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					</IconButton>
 				</div>
 			</div>
-			<Modal title="New Automation" kind={Modals.SaveAutomation}>
+			<Modal title={`New ${_.capitalize(kind)}`} kind={Modals.SaveAutomation}>
 				<SaveForm kind={kind} />
 			</Modal>
 			<Modal title="Delete Automation" kind={Modals.DeleteAutomation} fluid>
