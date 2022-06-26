@@ -17,6 +17,7 @@ type CrudService interface {
 	GetAllExecutions(accountId string, name string) ([]models.Execution, error)
 	CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) error
 	CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}) (string, error)
+	GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error)
 	UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)
 	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, bool, bool, error)

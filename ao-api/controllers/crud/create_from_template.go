@@ -58,3 +58,22 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"name": automationName})
 	}
 }
+
+func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		name := c.Param("name")
+		accountId, err := utils.GetAccountId(c)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		temp, err := mc.Service.GetTemplateDetailes(accountId, name)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, temp)
+	}
+}

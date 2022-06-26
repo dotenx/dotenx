@@ -189,6 +189,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// TODO: fix the type of the pipeline
 	pipeline.POST("", crudController.AddPipeline())
 	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
+	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())
 	pipeline.PUT("", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
 	pipeline.DELETE("/name/:name", crudController.DeletePipeline())

@@ -319,3 +319,25 @@ func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (
 	}
 	return
 }
+
+func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
+	detailes = make(map[string]string)
+	temp, _, _, isTemplate, _, err := cm.Store.GetByName(noContext, accountId, name)
+	if err != nil {
+		return
+	}
+	if !isTemplate {
+		return nil, errors.New("it is now a template")
+	}
+	for _, task := range temp.Manifest.Tasks {
+		body := task.Body.(models.TaskBodyMap)
+		for key, value := range body {
+			strVal := fmt.Sprintf("%v", value)
+			if strings.Contains(strVal, "$$$.") {
+				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+				detailes[task.Name+":"+key] = keyValue
+			}
+		}
+	}
+	return
+}
