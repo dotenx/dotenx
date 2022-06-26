@@ -110,8 +110,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
 	healthCheckController := health.HealthCheckController{}
-	// Routes
 	r.GET("/health", healthCheckController.GetStatus())
+	// Routes
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
