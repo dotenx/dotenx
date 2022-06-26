@@ -53,7 +53,7 @@ function Content() {
 		<>
 			<ExecutionDetails automationName={automationName} executionId={executionId} />
 			<div className="grow">
-				<Flow isEditable={false} />
+				<Flow isEditable={false} kind="automation" />
 			</div>
 		</>
 	)
