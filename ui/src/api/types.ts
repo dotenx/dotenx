@@ -289,6 +289,7 @@ export type GetProviderResponse = { provider: ProviderDetail }
 export type CreateProjectRequest = Project
 
 export type GetProjectsResponse = Project[] | null
+
 export type GetUserManagementDataResponse = {
 	account_id: string
 	created_at: string

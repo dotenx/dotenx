@@ -1,8 +1,8 @@
+import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { getUserManagementData, getProject, QueryKey } from '../api'
+import { getProject, getUserManagementData, QueryKey } from '../api'
 import { Table } from '../features/ui'
-import { format } from 'date-fns'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -10,24 +10,23 @@ export default function UserManagementPage() {
 	return <UMTableContent projectName={projectName} />
 }
 function UMTableContent({ projectName }: { projectName: string }) {
-	const { data: projectDetails, isLoading } = useQuery(QueryKey.GetProject, () =>
-		getProject(projectName)
+	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
+		QueryKey.GetProject,
+		() => getProject(projectName)
 	)
 	const projectTag = projectDetails?.data.tag
-	const { data: usersData } = useQuery(
+	const { data: usersData, isLoading: usersDataLoading } = useQuery(
 		QueryKey.GetUserManagementData,
 		() => getUserManagementData(projectTag || ''),
-		{
-			enabled: !!projectTag,
-		}
+		{ enabled: !!projectTag }
 	)
-	const tableData = usersData?.data
+	const tableData = usersData?.data ?? []
 
 	return (
 		<div className="grow">
 			<div className="px-32 py-16">
 				<Table
-					loading={isLoading}
+					loading={projectDetailsLoading || usersDataLoading}
 					title="User management"
 					emptyText="Your users list will display here."
 					columns={[

@@ -1,7 +1,6 @@
 import axios from 'axios'
 import {
 	AddColumnRequest,
-	GetUserManagementDataResponse,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateProjectRequest,
@@ -29,6 +28,7 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserManagementDataResponse,
 	Provider,
 } from './types'
 export * from './types'
@@ -57,7 +57,6 @@ export function updateAutomation(payload: CreateAutomationRequest) {
 export function getAutomations() {
 	return api.get<GetAutomationsResponse>('/pipeline')
 }
-
 
 export function getAutomation(name: string) {
 	return api.get<GetAutomationResponse>(`/pipeline/name/${name}`)
@@ -231,6 +230,8 @@ export function getColumns(projectName: string, tableName: string) {
 }
 
 export function getUserManagementData(projectTag: string) {
-	return api.post<GetUserManagementDataResponse>(`/database/query/select/project/${projectTag}/table/user_info`, { columns: ["account_id", "created_at", "email", "fullname"] })
+	return api.post<GetUserManagementDataResponse | null>(
+		`/database/query/select/project/${projectTag}/table/user_info`,
+		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
+	)
 }
-
