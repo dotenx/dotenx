@@ -58,12 +58,14 @@ function NewAutomation({ kind }: { kind: string }) {
 
 	return (
 		<div className="flex gap-4">
-			<Link to="yaml/import">
-				<Button className="max-w-min">
-					<IoCodeDownload className="text-2xl" />
-					Import YAML
-				</Button>
-			</Link>
+			{kind === 'automation' && (
+				<Link to="yaml/import">
+					<Button className="max-w-min">
+						<IoCodeDownload className="text-2xl" />
+						Import YAML
+					</Button>
+				</Link>
+			)}
 			<Button className="max-w-min" onClick={newAutomation}>
 				<IoAdd className="text-2xl" />
 				New {kind}
