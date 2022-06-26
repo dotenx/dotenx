@@ -130,6 +130,8 @@ export type GetAutomationsResponse = Automation[]
 export type CreateAutomationRequest = {
 	name: string
 	manifest: Manifest
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type GetAutomationResponse = AutomationData
