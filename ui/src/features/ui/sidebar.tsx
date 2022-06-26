@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { memo, ReactNode } from 'react'
 import {
 	BsBricks,
@@ -101,9 +102,10 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
 					<span
-						className={`transition opacity-0 group-hover:opacity-100 ${
+						className={clsx(
+							'transition opacity-0 whitespace-nowrap group-hover:opacity-100',
 							item.label.length > 10 && 'text-sm'
-						} whitespace-nowrap`}
+						)}
 					>
 						{item.label}
 					</span>

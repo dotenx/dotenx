@@ -1,8 +1,7 @@
 import { useQuery } from 'react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { getUserManagementData, getProject, QueryKey } from '../api'
-import { Loader, Table } from '../features/ui'
-import { useState } from 'react'
+import { Table } from '../features/ui'
 import { format } from 'date-fns'
 
 export default function UserManagementPage() {
@@ -11,28 +10,24 @@ export default function UserManagementPage() {
 	return <UMTableContent projectName={projectName} />
 }
 function UMTableContent({ projectName }: { projectName: string }) {
-	const [projectTag, setProjectTag] = useState('')
-
-	useQuery(QueryKey.GetProject, () => getProject(projectName), {
-		onSuccess: (project) => {
-			setProjectTag(project.data.tag)
-		},
-	})
-
-	const { isFetched, data: usersData } = useQuery(
+	const { data: projectDetails, isLoading } = useQuery(QueryKey.GetProject, () =>
+		getProject(projectName)
+	)
+	const projectTag = projectDetails?.data.tag
+	const { data: usersData } = useQuery(
 		QueryKey.GetUserManagementData,
-		() => getUserManagementData(projectTag),
+		() => getUserManagementData(projectTag || ''),
 		{
-			enabled: projectTag !== '',
+			enabled: !!projectTag,
 		}
 	)
 	const tableData = usersData?.data
-	if (!isFetched) return <Loader />
 
 	return (
 		<div className="grow">
 			<div className="px-32 py-16">
 				<Table
+					loading={isLoading}
 					title="User management"
 					emptyText="Your users list will display here."
 					columns={[
@@ -43,14 +38,6 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						{
 							Header: 'Username',
 							accessor: 'email',
-							Cell: ({ value }: { value: string }) => (
-								<Link
-									className="hover:underline underline-offset-2"
-									to={`/automations/${value}`}
-								>
-									{value}
-								</Link>
-							),
 						},
 						{
 							Header: 'Created',
@@ -66,14 +53,6 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						{
 							Header: 'User ID',
 							accessor: 'account_id',
-							Cell: ({ value }: { value: string }) => (
-								<Link
-									className="hover:underline underline-offset-2"
-									to={`/automations/${value}`}
-								>
-									{value}
-								</Link>
-							),
 						},
 					]}
 					data={tableData}
