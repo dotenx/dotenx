@@ -66,7 +66,10 @@ export function getAutomationYaml(name: string) {
 }
 
 export function startAutomation(automationName: string) {
-	return api.post<{ id: number }>(`/execution/name/${automationName}/start`, {})
+	return api.post<{ id: number } | Record<string, unknown>>(
+		`/execution/name/${automationName}/start`,
+		{}
+	)
 }
 
 export function deleteAutomation(name: string) {
