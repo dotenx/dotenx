@@ -314,3 +314,5 @@ export interface Column {
 export type GetColumnsResponse = {
 	columns: string[]
 }
+
+export type AutomationKind = 'automation' | 'template' | 'interaction'
