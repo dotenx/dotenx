@@ -35,6 +35,8 @@ build api: &build
   except:
     - schedules
   only:
+    refs:
+      - master
     changes:
       - "ao-api/**/*"
 
@@ -53,6 +55,8 @@ build scheduler:
     repo_name: dotenx/scheduler
     DOCKER_FILE_PATH: job_scheduler/server/Dockerfile
   only:
+    refs:
+      - master
     changes:
       - "job_scheduler/**/*"
 
@@ -71,6 +75,8 @@ build runner:
     repo_name: dotenx/runner
     DOCKER_FILE_PATH: runner/Dockerfile
   only:
+    refs:
+      - master
     changes:
       - "runner/**/*"
 
@@ -95,6 +101,8 @@ build ui:
     paths:
       - ${environment}_build.tar.gz
   only:
+    refs:
+      - master
     changes:
       - "ui/**/*"
 
@@ -126,6 +134,8 @@ deploy api: &deploy
     - echo "Updating the service..."
     - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
   only:
+    refs:
+      - master
     changes:
       - "ao-api/**/*" 
 
@@ -146,6 +156,8 @@ deploy scheduler:
     CLUSTER_NAME: dotenx
     SERVICE_NAME: scheduler
   only:
+    refs:
+      - master
     changes:
       - "job_scheduler/**/*" 
 
@@ -166,6 +178,8 @@ deploy runner:
     CLUSTER_NAME: dotenx
     SERVICE_NAME: runner
   only:
+    refs:
+      - master
     changes:
       - "runner/**/*" 
 
@@ -181,6 +195,7 @@ deploy ui:
     AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
     BUCKET: app.dotenx.com
     environment: prod
+    DISTRIBUTION_ID: EXE3WNBU24B4E
   environment:
     name: production-ui
     url: https://app.dotenx.com
@@ -189,8 +204,11 @@ deploy ui:
     - tar -xzvf ${environment}_build.tar.gz
     - cd ./build
     - aws s3 sync --delete --acl public-read . s3://${BUCKET}
+    - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/index.html"
   except:
     - schedules
   only:
+    refs:
+      - master
     changes:
       - "ui/**/*" 
