@@ -25,6 +25,7 @@ const routes = [
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
 
