@@ -14,6 +14,7 @@ import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
 import TablePage from '../../pages/table'
 import TablesPage from '../../pages/tables'
+import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
 import { Layout } from '../ui'
@@ -23,15 +24,16 @@ const routes = [
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },
 	{ path: '/integrations', element: <IntegrationsPage /> },
 	{ path: '/triggers', element: <TriggersPage /> },
+	{ path: '/automations/new', element: <AutomationPage /> },
 	{ path: '/automations/:name/executions/:id', element: <ExecutionPage /> },
 	{ path: '/automations/:name/executions', element: <HistoryPage /> },
 	{ path: '/automations/:name', element: <AutomationPage /> },
-	{ path: '/automations-new', element: <AutomationPage /> },
 	{ path: '/automations', element: <AutomationsPage /> },
 	{ path: '/automations/yaml/import', element: <ImportYamlPage /> },
 	{ path: '/', element: <Navigate replace to="/automations" /> },
