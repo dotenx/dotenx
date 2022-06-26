@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
-import { Automation, AutomationKind } from '../../api'
+import { API_URL, Automation, AutomationKind } from '../../api'
 import { Endpoint } from '../database'
 import { Modals, useModal } from '../hooks'
 import { Button, DeleteButton, Modal, Table } from '../ui'
@@ -97,7 +97,7 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 		<>
 			<div className="flex items-center justify-end gap-4">
 				<div className="flex gap-4">
-					{kind === 'template' && (
+					{kind !== 'automation' && (
 						<Button
 							variant="outlined"
 							onClick={() => modal.open(Modals.TemplateEndpoint)}
@@ -112,13 +112,8 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 				</div>
 			</div>
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
-				<div className="px-4 pt-6 pb-10">
-					<Endpoint
-						label="Add Automation"
-						url={`https://api.dotenx.com/pipeline/template/name/${automationName}`}
-						kind="POST"
-					/>
-				</div>
+				{kind === 'template' && <TemplateEndpoint automationName={automationName} />}
+				{kind === 'interaction' && <InteractionEndpoint automationName={automationName} />}
 			</Modal>
 		</>
 	)
@@ -133,5 +128,29 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 		<span className="px-2 py-1 text-xs font-extrabold text-gray-600 rounded-md bg-gray-50">
 			Inactive
 		</span>
+	)
+}
+
+function TemplateEndpoint({ automationName }: { automationName: string }) {
+	return (
+		<div className="px-4 pt-6 pb-10">
+			<Endpoint
+				label="Add an automation"
+				url={`https://api.dotenx.com/pipeline/template/name/${automationName}`}
+				kind="POST"
+			/>
+		</div>
+	)
+}
+
+function InteractionEndpoint({ automationName }: { automationName: string }) {
+	return (
+		<div className="px-4 pt-6 pb-10">
+			<Endpoint
+				label="Run interaction"
+				url={`${API_URL}/execution/name/${automationName}/start`}
+				kind="POST"
+			/>
+		</div>
 	)
 }
