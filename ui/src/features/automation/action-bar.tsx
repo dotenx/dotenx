@@ -12,9 +12,10 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline,
+	IoTrashOutline
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
+import { AutomationKind } from '../../api'
 import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
 import { Button, Modal } from '../ui'
@@ -27,9 +28,10 @@ import { AutomationYaml } from './yaml'
 
 interface ActionBarProps {
 	automationName?: string
+	kind: AutomationKind
 }
 
-export function ActionBar({ automationName }: ActionBarProps) {
+export function ActionBar({ automationName, kind }: ActionBarProps) {
 	const modal = useModal()
 	const {
 		onDelete,
@@ -176,7 +178,7 @@ export function ActionBar({ automationName }: ActionBarProps) {
 				</div>
 			</div>
 			<Modal title="New Automation" kind={Modals.SaveAutomation}>
-				<SaveForm />
+				<SaveForm kind={kind} />
 			</Modal>
 			<Modal title="Delete Automation" kind={Modals.DeleteAutomation} fluid>
 				<ConfirmDelete onSubmit={handleDeleteAutomation} />

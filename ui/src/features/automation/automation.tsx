@@ -48,7 +48,7 @@ function Content({ name, kind }: AutomationProps) {
 
 	return (
 		<>
-			<ActionBar automationName={name} />
+			<ActionBar automationName={name} kind={kind} />
 			<div className="flex gap-2 grow">
 				<Flow kind={kind} />
 			</div>
