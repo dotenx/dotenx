@@ -15,7 +15,7 @@ import {
 	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
-import { NodeType } from '../flow'
+import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
 import { Button, Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
-import { Automation } from '../../api'
+import { Automation, AutomationKind } from '../../api'
 import { Button, DeleteButton, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
@@ -10,7 +10,7 @@ interface AutomationListProps {
 	automations?: Automation[]
 	loading: boolean
 	title: string
-	kind: 'automation' | 'template' | 'interaction'
+	kind: AutomationKind
 }
 
 export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {

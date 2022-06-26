@@ -1,6 +1,7 @@
 import { atom, useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
+import { AutomationKind } from '../../api'
 import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from '../task'
@@ -20,7 +21,7 @@ const edgeTypes = {
 	default: PipeEdge,
 }
 
-export function Flow({ isEditable = true }: { isEditable?: boolean }) {
+export function Flow({ isEditable = true }: { isEditable?: boolean; kind: AutomationKind }) {
 	const {
 		reactFlowWrapper,
 		elements,
