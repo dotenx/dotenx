@@ -203,7 +203,7 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 
 					<HelpItem label="Save Automation" hotkey="Alt + S" />
 					<HelpItem label="Run Automation" hotkey="Alt + R" />
-					<HelpItem label="New Automation" hotkey="Alt + N" />
+					{kind === 'automation' && <HelpItem label="New Automation" hotkey="Alt + N" />}
 					<HelpItem label="Arrange Nodes" hotkey="Alt + A" />
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
 				</div>
