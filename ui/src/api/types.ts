@@ -95,6 +95,8 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type Triggers = Record<string, Trigger>
