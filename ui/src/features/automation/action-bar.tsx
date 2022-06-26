@@ -209,7 +209,7 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 				</Modal>
 			)}
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
-				<InteractionResponse code={JSON.stringify(runResponse, null, 2)} />
+				<InteractionResponse code={JSON.stringify(runResponse ?? {}, null, 2)} />
 			</Modal>
 		</>
 	)
