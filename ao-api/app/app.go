@@ -106,12 +106,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		Path:   "/",
 		MaxAge: int(6 * time.Hour / time.Second),
 	})
+
+	healthCheckController := health.HealthCheckController{}
+	r.GET("/health", healthCheckController.GetStatus())
+
 	r.Use(sessions.Sessions("dotenx", store))
 	// Middlewares
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
-	healthCheckController := health.HealthCheckController{}
+
 	// Routes
-	r.GET("/health", healthCheckController.GetStatus())
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
