@@ -322,21 +322,40 @@ func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (
 
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
 	detailes = make(map[string]string)
-	temp, _, _, isTemplate, _, err := cm.Store.GetByName(noContext, accountId, name)
+	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}
 	if !isTemplate {
 		return nil, errors.New("it is now a template")
 	}
-	for _, task := range temp.Manifest.Tasks {
+	for taskName, task := range temp.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
 			strVal := fmt.Sprintf("%v", value)
 			if strings.Contains(strVal, "$$$.") {
 				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
-				detailes[task.Name+":"+key] = keyValue
+				detailes[taskName+":"+key] = keyValue
 			}
+		}
+		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			strIntegration := strings.Replace(task.Integration, "$$$.", "", 1)
+			detailes[taskName+":integration"] = strIntegration
+
+		}
+	}
+
+	for triggerName, trigger := range temp.Manifest.Triggers {
+		for key, value := range trigger.Credentials {
+			strVal := fmt.Sprintf("%v", value)
+			if strings.Contains(strVal, "$$$.") {
+				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+				detailes[triggerName+":"+key] = keyValue
+			}
+		}
+		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
+			strIntegration := strings.Replace(trigger.Integration, "$$$.", "", 1)
+			detailes[triggerName+":integration"] = strIntegration
 		}
 	}
 	return
