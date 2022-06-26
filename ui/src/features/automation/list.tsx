@@ -2,7 +2,9 @@ import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { Automation, AutomationKind } from '../../api'
-import { Button, DeleteButton, Table } from '../ui'
+import { Endpoint } from '../database'
+import { Modals, useModal } from '../hooks'
+import { Button, DeleteButton, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -42,7 +44,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 							id: 'action',
 							accessor: 'name',
 							Cell: ({ value }: { value: string }) => (
-								<AutomationDeletion automationName={value} />
+								<AutomationActions automationName={value} kind={kind} />
 							),
 						},
 					]}
@@ -82,14 +84,43 @@ function AutomationLink({ automationName }: { automationName: string }) {
 	)
 }
 
-function AutomationDeletion({ automationName }: { automationName: string }) {
+interface AutomationActionsProps {
+	automationName: string
+	kind: AutomationKind
+}
+
+function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 	const deleteMutation = useDeleteAutomation()
+	const modal = useModal()
 
 	return (
-		<DeleteButton
-			loading={deleteMutation.isLoading}
-			onClick={() => deleteMutation.mutate(automationName)}
-		/>
+		<>
+			<div className="flex items-center justify-end gap-4">
+				<div className="flex gap-4">
+					{kind === 'template' && (
+						<Button
+							variant="outlined"
+							onClick={() => modal.open(Modals.TemplateEndpoint)}
+						>
+							Endpoint
+						</Button>
+					)}
+					<DeleteButton
+						loading={deleteMutation.isLoading}
+						onClick={() => deleteMutation.mutate(automationName)}
+					/>
+				</div>
+			</div>
+			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
+				<div className="px-4 pt-6 pb-10">
+					<Endpoint
+						label="Add Automation"
+						url={`https://api.dotenx.com/pipeline/template/name/${automationName}`}
+						kind="POST"
+					/>
+				</div>
+			</Modal>
+		</>
 	)
 }
 

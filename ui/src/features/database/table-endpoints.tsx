@@ -36,7 +36,7 @@ interface EndpointProps {
 	kind: 'GET' | 'POST' | 'DELETE'
 }
 
-function Endpoint({ label, url, kind }: EndpointProps) {
+export function Endpoint({ label, url, kind }: EndpointProps) {
 	const [isCopied, setCopied] = useClipboard(url, { successDuration: 3000 })
 
 	return (
@@ -47,7 +47,7 @@ function Endpoint({ label, url, kind }: EndpointProps) {
 					variant="icon"
 					className={clsx(
 						isCopied &&
-							'bg-green-100 hover:bg-green-100 text-green-700 border !border-green-400'
+							'bg-green-100 hover:!bg-green-100 !text-green-700 border !border-green-400'
 					)}
 					onClick={setCopied}
 				>

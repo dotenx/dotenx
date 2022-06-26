@@ -18,6 +18,7 @@ export enum Modals {
 	NewColumn = 'new-column',
 	TableEndpoints = 'table-endpoints',
 	InteractionResponse = 'table-endpoints',
+	TemplateEndpoint = 'template-endpoint',
 }
 
 export function useModal() {
