@@ -95,6 +95,8 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type Triggers = Record<string, Trigger>
@@ -128,6 +130,8 @@ export type GetAutomationsResponse = Automation[]
 export type CreateAutomationRequest = {
 	name: string
 	manifest: Manifest
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type GetAutomationResponse = AutomationData
@@ -312,3 +316,5 @@ export interface Column {
 export type GetColumnsResponse = {
 	columns: string[]
 }
+
+export type AutomationKind = 'automation' | 'template' | 'interaction'

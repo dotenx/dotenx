@@ -19,21 +19,8 @@ import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
 import { ComplexFieldValue } from '../ui/complex-field'
+import { NodeType } from './types'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
-
-export enum NodeType {
-	Task = 'task',
-	Trigger = 'trigger',
-}
-
-export const initialElements: Elements<TaskNodeData | EdgeData> = [
-	{
-		id: nanoid(),
-		type: NodeType.Task,
-		data: { name: 'task', type: '' },
-		position: { x: 0, y: 0 },
-	},
-]
 
 export function useFlow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null)

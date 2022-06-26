@@ -26,6 +26,7 @@ interface TaskSettingsWithIntegrationProps {
 	onSave: (values: TaskSettingsSchema & { iconUrl?: string; color?: string }) => void
 	isAddingIntegration: boolean
 	setIsAddingIntegration: (value: boolean) => void
+	withIntegration: boolean
 }
 
 export function TaskSettingsWithIntegration({
@@ -33,6 +34,7 @@ export function TaskSettingsWithIntegration({
 	isAddingIntegration,
 	onSave,
 	setIsAddingIntegration,
+	withIntegration,
 }: TaskSettingsWithIntegrationProps) {
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
@@ -50,6 +52,7 @@ export function TaskSettingsWithIntegration({
 					taskForm={taskForm}
 					setIsAddingIntegration={setIsAddingIntegration}
 					disableSubmit={hasSecondPanel}
+					withIntegration={withIntegration}
 				/>
 			</div>
 			{isAddingIntegration && (
@@ -92,9 +95,15 @@ interface TaskSettingsProps {
 	taskForm: UseTaskForm
 	setIsAddingIntegration: (value: boolean) => void
 	disableSubmit: boolean
+	withIntegration: boolean
 }
 
-function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskSettingsProps) {
+function TaskSettings({
+	taskForm,
+	setIsAddingIntegration,
+	disableSubmit,
+	withIntegration,
+}: TaskSettingsProps) {
 	const {
 		control,
 		errors,
@@ -144,7 +153,7 @@ function TaskSettings({ taskForm, setIsAddingIntegration, disableSubmit }: TaskS
 							}),
 					})
 				})}
-				{integrationTypes && integrationTypes.length !== 0 && (
+				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
 						control={control}
 						errors={errors}

@@ -8,6 +8,7 @@ interface TriggerFormProps {
 	onAddIntegration?: () => void
 	disableSubmit?: boolean
 	submitting?: boolean
+	withIntegration: boolean
 }
 
 export function TriggerForm({
@@ -16,6 +17,7 @@ export function TriggerForm({
 	onAddIntegration,
 	disableSubmit,
 	submitting,
+	withIntegration,
 }: TriggerFormProps) {
 	const {
 		control,
@@ -63,7 +65,7 @@ export function TriggerForm({
 					/>
 				)}
 				{triggerDefinitionQuery.isLoading && <Loader />}
-				{integrationTypes && integrationTypes.length !== 0 && (
+				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
 						control={control}
 						errors={errors}
