@@ -14,6 +14,7 @@ import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
 import TablePage from '../../pages/table'
 import TablesPage from '../../pages/tables'
+import TemplatePage from '../../pages/template'
 import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
@@ -24,6 +25,7 @@ const routes = [
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
