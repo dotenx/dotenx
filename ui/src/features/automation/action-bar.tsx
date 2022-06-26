@@ -152,9 +152,11 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>
 						<IoSwapVertical />
 					</IconButton>
-					<IconButton tooltip="New" onClick={newAutomation}>
-						<IoAdd />
-					</IconButton>
+					{kind === 'automation' && (
+						<IconButton tooltip="New" onClick={newAutomation}>
+							<IoAdd />
+						</IconButton>
+					)}
 					<IconButton
 						tooltip="Clone"
 						onClick={() => modal.open(Modals.SaveAutomation)}
@@ -169,14 +171,16 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					>
 						<IoCodeSlash />
 					</IconButton>
-					<IconButton tooltip="History" disabled={!automationName}>
-						{automationName && (
-							<Link to={`/automations/${automationName}/executions`}>
-								<IoCalendarOutline />
-							</Link>
-						)}
-						{!automationName && <IoCalendarOutline />}
-					</IconButton>
+					{kind === 'automation' && (
+						<IconButton tooltip="History" disabled={!automationName}>
+							{automationName && (
+								<Link to={`/automations/${automationName}/executions`}>
+									<IoCalendarOutline />
+								</Link>
+							)}
+							{!automationName && <IoCalendarOutline />}
+						</IconButton>
+					)}
 					<IconButton tooltip="Delete" disabled={!selectedAutomation} onClick={onDelete}>
 						<IoTrashOutline />
 					</IconButton>
