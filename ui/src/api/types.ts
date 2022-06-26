@@ -18,6 +18,12 @@ export enum QueryKey {
 	GetProviders = 'get-providers',
 	GetProvider = 'get-provider',
 	GetFormatterFunctions = 'get-formatter-functions',
+	GetProjects = 'get-projects',
+	GetProject = 'get-project',
+	GetTables = 'get-tables',
+	GetTable = 'get-table',
+	GetTableRecords = 'get-table-records',
+	GetColumns = 'get-columns',
 }
 
 export enum TaskExecutionStatus {
@@ -89,6 +95,8 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type Triggers = Record<string, Trigger>
@@ -122,6 +130,8 @@ export type GetAutomationsResponse = Automation[]
 export type CreateAutomationRequest = {
 	name: string
 	manifest: Manifest
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type GetAutomationResponse = AutomationData
@@ -274,3 +284,37 @@ interface FromSource {
 }
 
 export type GetProviderResponse = { provider: ProviderDetail }
+
+export type CreateProjectRequest = Project
+
+export type GetProjectsResponse = Project[] | null
+
+export type GetProjectResponse = Project & { tag: string }
+
+export interface Project {
+	name: string
+	description: string
+}
+
+export type GetTablesResponse = {
+	tables: string[]
+}
+
+export interface Table {
+	tableName: string
+}
+
+export type CreateTableRequest = Table
+
+export type AddColumnRequest = Column
+
+export interface Column {
+	columnName: string
+	columnType: string
+}
+
+export type GetColumnsResponse = {
+	columns: string[]
+}
+
+export type AutomationKind = 'automation' | 'template' | 'interaction'

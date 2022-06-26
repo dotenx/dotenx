@@ -34,6 +34,7 @@
 		"react-select": "^5.2.2",
 		"react-table": "^7.7.0",
 		"react-toastify": "^8.2.0",
+		"react-use-clipboard": "^1.0.8",
 		"use-persisted-state": "^0.3.3",
 		"web-vitals": "^2.1.4",
 		"zod": "^3.13.4"

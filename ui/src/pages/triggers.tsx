@@ -15,7 +15,12 @@ export default function TriggersPage() {
 				<TriggerList />
 			</div>
 			<Modal title="New Trigger" kind={Modals.NewTrigger}>
-				<TriggerForm triggerForm={triggerForm} mode="new" submitting={isLoading} />
+				<TriggerForm
+					withIntegration
+					triggerForm={triggerForm}
+					mode="new"
+					submitting={isLoading}
+				/>
 			</Modal>
 		</div>
 	)

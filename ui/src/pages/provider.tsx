@@ -5,8 +5,8 @@ import { getProvider, QueryKey } from '../api'
 import { Loader } from '../features/ui'
 
 export default function ProviderPage() {
-	const { name } = useParams()
-	const query = useQuery(QueryKey.GetProvider, () => getProvider(name ?? ''))
+	const { providerName } = useParams()
+	const query = useQuery(QueryKey.GetProvider, () => getProvider(providerName ?? ''))
 	const provider = query.data?.data.provider
 
 	if (query.isLoading || !provider) return <Loader />
@@ -56,7 +56,7 @@ function Scopes({ data }: { data?: string[] }) {
 	if (!data) return <p>No scopes</p>
 
 	return (
-		<div className="flex items-center gap-2 mt-2 flex-wrap">
+		<div className="flex flex-wrap items-center gap-2 mt-2">
 			{data.map((scope) => (
 				<span key={scope} className="px-2 py-1 rounded-md bg-emerald-50">
 					{scope}

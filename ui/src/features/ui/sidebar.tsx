@@ -1,13 +1,16 @@
 import { memo, ReactNode } from 'react'
 import {
+	BsBricks,
 	BsFillCalendar3WeekFill,
 	BsFillDiagram3Fill,
 	BsFillXDiamondFill,
 	BsHddNetworkFill,
+	BsTable,
+	BsWindowSidebar,
 } from 'react-icons/bs'
 import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
-import { useMatch } from 'react-router-dom'
+import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
 import { ADMIN_URL, IS_LOCAL } from '../../constants'
@@ -19,12 +22,32 @@ const studioLinks = [
 	{ to: '/triggers', label: 'Triggers', icon: <BsFillCalendar3WeekFill /> },
 ]
 
-const builderLinks = [
-	{ to: '/builder/providers', label: 'Providers', icon: <BsFillXDiamondFill /> },
-]
-
 export const Sidebar = memo(() => {
 	const isBuilder = useMatch('/builder/*')
+	const { projectName } = useParams()
+
+	const builderLinks = [
+		{
+			to: `/builder/projects/${projectName}/templates`,
+			label: 'Templates',
+			icon: <BsWindowSidebar />,
+		},
+		{
+			to: `/builder/projects/${projectName}/interactions`,
+			label: 'Interactions',
+			icon: <BsBricks />,
+		},
+		{
+			to: `/builder/projects/${projectName}/tables`,
+			label: 'Tables',
+			icon: <BsTable />,
+		},
+		{
+			to: `/builder/projects/${projectName}/providers`,
+			label: 'Providers',
+			icon: <BsFillXDiamondFill />,
+		},
+	]
 
 	return (
 		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-56 overflow-hidden">
@@ -35,6 +58,19 @@ export const Sidebar = memo(() => {
 					<h2 className="text-xs">{isBuilder ? 'Builder' : 'Studio'}</h2>
 				</div>
 			</div>
+			{projectName && (
+				<div className="px-6 mt-10 text-slate-700 ">
+					<a
+						className="block px-3 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
+						href="https://admin.dotenx.com/projects"
+					>
+						<span className="capitalize">{projectName[0]}</span>
+						<span className="transition opacity-0 group-hover:opacity-100">
+							{projectName.substring(1)}
+						</span>
+					</a>
+				</div>
+			)}
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
 
@@ -54,7 +90,7 @@ type SidebarLinksProps = {
 
 function SidebarLinks({ links }: SidebarLinksProps) {
 	return (
-		<div className="flex flex-col gap-6 mt-20">
+		<div className="flex flex-col gap-6 mt-16">
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>

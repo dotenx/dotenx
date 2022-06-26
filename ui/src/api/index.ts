@@ -1,21 +1,28 @@
 import axios from 'axios'
 import {
+	AddColumnRequest,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
+	CreateProjectRequest,
+	CreateTableRequest,
 	CreateTriggerRequest,
 	Execution,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
+	GetColumnsResponse,
 	GetExecutionResultResponse,
 	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProjectResponse,
+	GetProjectsResponse,
 	GetProviderResponse,
 	GetProvidersResponse,
+	GetTablesResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
 	GetTriggerDefinitionResponse,
@@ -166,5 +173,54 @@ export function deleteProvider(name: string) {
 }
 
 export function getFormatterFunctions() {
-	return api.get<GetFormatterFunctionsResponse>(`/funcs`)
+	return api.get<GetFormatterFunctionsResponse>('/funcs')
+}
+
+export function createProject(payload: CreateProjectRequest) {
+	return api.post<void>('/project', payload)
+}
+
+export function getProjects() {
+	return api.get<GetProjectsResponse>('/project')
+}
+
+export function getProject(name: string) {
+	return api.get<GetProjectResponse>(`/project/${name}`)
+}
+
+export function getTables(projectName: string) {
+	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
+}
+
+export function createTable(projectName: string, payload: CreateTableRequest) {
+	return api.post<void>('/database/table', { projectName, ...payload })
+}
+
+export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
+	return api.post<void>('/database/table/column', { projectName, tableName, ...payload })
+}
+
+export function deleteTable(projectName: string, tableName: string) {
+	return api.delete<void>(`/database/project/${projectName}/table/${tableName}`)
+}
+
+export function deleteProject(projectName: string) {
+	return api.delete<void>(`/project/${projectName}`)
+}
+
+export function deleteColumn(projectName: string, tableName: string, columnName: string) {
+	return api.delete<void>(
+		`/database/project/${projectName}/table/${tableName}/column/${columnName}`
+	)
+}
+
+export function getTableRecords(projectTag: string, tableName: string) {
+	return api.post<Record<string, string>[] | null>(
+		`/database/query/select/project/${projectTag}/table/${tableName}`,
+		{ columns: [] }
+	)
+}
+
+export function getColumns(projectName: string, tableName: string) {
+	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }
