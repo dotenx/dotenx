@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -8,29 +9,38 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
+type Status struct {
+	summeries []models.TaskStatusSummery
+	lastTask  int
+}
+
 func (manager *executionManager) getResponse(executionId int) (interface{}, error) {
 	totalTasks, err := manager.GetNumberOfTasksByExecution(executionId)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
 	}
-	var lastSummeries []models.TaskStatusSummery
+	status := Status{summeries: []models.TaskStatusSummery{}}
 	for {
-		if manager.IsExecutionDone(totalTasks, lastSummeries) {
-			lastTaskId := getLastTaskId(lastSummeries)
-			return manager.Store.GetTaskResultDetails(noContext, executionId, lastTaskId)
+		if manager.IsExecutionDone(totalTasks, status.summeries) {
+			return manager.Store.GetTaskResultDetails(noContext, executionId, status.lastTask)
 		}
 		tasks, err := manager.GetTasksWithStatusForExecution(executionId)
 		if err != nil {
 			fmt.Println(err.Error())
 			return nil, err
 		}
-		if len(lastSummeries) > 0 && !manager.IsChanged(tasks, lastSummeries) {
-			time.Sleep(600 * time.Millisecond)
-			continue
+		if len(tasks) > len(status.summeries) {
+			newTask, err := findNewAddedTask(status.summeries, tasks)
+			if err != nil {
+				return nil, err
+			}
+			status.lastTask = newTask
+			status.summeries = tasks
+		} else if manager.IsChanged(tasks, status.summeries) {
+			status.summeries = tasks
 		}
-		lastSummeries = tasks
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 	}
 	//	return nil, errors.New("no task for this interaction")
 }
@@ -58,12 +68,18 @@ func (manager *executionManager) IsChanged(inputSummeries, lastSummeries []model
 	return false
 }
 
-func getLastTaskId(summeries []models.TaskStatusSummery) int {
-	last := -100
-	for _, sum := range summeries {
-		if sum.Id > last {
-			last = sum.Id
+func findNewAddedTask(oldTasks, newTasks []models.TaskStatusSummery) (int, error) {
+	for _, t := range newTasks {
+		var exists bool
+		for _, ot := range oldTasks {
+			if t.Id == ot.Id {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			return t.Id, nil
 		}
 	}
-	return last
+	return 0, errors.New("no new task found")
 }
