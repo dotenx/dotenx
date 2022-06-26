@@ -1,10 +1,12 @@
 import { memo, ReactNode } from 'react'
 import {
+	BsBricks,
 	BsFillCalendar3WeekFill,
 	BsFillDiagram3Fill,
 	BsFillXDiamondFill,
 	BsHddNetworkFill,
 	BsTable,
+	BsWindowSidebar,
 } from 'react-icons/bs'
 import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
@@ -25,6 +27,16 @@ export const Sidebar = memo(() => {
 	const { projectName } = useParams()
 
 	const builderLinks = [
+		{
+			to: `/builder/projects/${projectName}/templates`,
+			label: 'Templates',
+			icon: <BsWindowSidebar />,
+		},
+		{
+			to: `/builder/projects/${projectName}/interactions`,
+			label: 'Interactions',
+			icon: <BsBricks />,
+		},
 		{
 			to: `/builder/projects/${projectName}/tables`,
 			label: 'Tables',
