@@ -8,6 +8,7 @@ import ExecutionPage from '../../pages/execution'
 import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
+import NotFoundPage from '../../pages/not-found'
 import OauthPage from '../../pages/oauth'
 import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
@@ -34,6 +35,7 @@ const routes = [
 	{ path: '/automations', element: <AutomationsPage /> },
 	{ path: '/automations/yaml/import', element: <ImportYamlPage /> },
 	{ path: '/', element: <Navigate replace to="/automations" /> },
+	{ path: '/*', element: <NotFoundPage /> },
 ]
 
 export function Routes() {
