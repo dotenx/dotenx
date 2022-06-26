@@ -1,0 +1,196 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  AWS_DEFAULT_REGION: us-east-1
+
+
+build api: &build
+  image: utopiops/devops:assume-role-12
+  stage: build
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/api
+    DOCKER_FILE_PATH: ao-api/Dockerfile
+  script:
+    - cd ao-api
+    - docker version
+    - cp .env.${environment} .env
+    - cd -
+    - docker build -f $DOCKER_FILE_PATH -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_commit_sha} -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id} .
+    - docker push ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_commit_sha}
+    - docker push ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
+    - docker images
+  except:
+    - schedules
+  only:
+    changes:
+      - "ao-api/**/*"
+
+build scheduler:
+  <<: *build
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/scheduler
+    DOCKER_FILE_PATH: job_scheduler/server/Dockerfile
+  only:
+    changes:
+      - "job_scheduler/**/*"
+
+build runner:
+  <<: *build
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/runner
+    DOCKER_FILE_PATH: runner/Dockerfile
+  only:
+    changes:
+      - "runner/**/*"
+
+
+build ui:
+  image: node:16.15.1-slim
+  stage: build
+  services:
+    - docker:stable-dind
+  variables:
+    environment: prod
+  script:
+    - cd ui
+    - cp .env.${environment} .env
+    - npm install
+    - CI='' npm run build
+    - tar -czvf ${environment}_build.tar.gz ./build
+    - mv ${environment}_build.tar.gz ../${environment}_build.tar.gz
+  except:
+    - schedules
+  artifacts:
+    paths:
+      - ${environment}_build.tar.gz
+  only:
+    changes:
+      - "ui/**/*"
+
+
+deploy api: &deploy
+  image: utopiops/devops:assume-role-12
+  stage: deploy
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/api
+    TASK_DEFINITION_NAME: dotenx-api
+    CLUSTER_NAME: dotenx
+    SERVICE_NAME: api
+  script:
+    - echo ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
+    - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
+    - echo $TASK_DEFINITION
+    - NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
+    - echo "Registering new container definition..."
+    - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --family "${TASK_DEFINITION_NAME}" --container-definitions "${NEW_CONTAINER_DEFINTIION}"
+    - echo "Updating the service..."
+    - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
+  only:
+    changes:
+      - "ao-api/**/*" 
+
+deploy scheduler:
+  <<: *deploy
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/scheduler
+    TASK_DEFINITION_NAME: scheduler
+    CLUSTER_NAME: dotenx
+    SERVICE_NAME: scheduler
+  only:
+    changes:
+      - "job_scheduler/**/*" 
+
+deploy runner:
+  <<: *deploy
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_DRIVER: overlay2
+    ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
+    image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image_tag_pipeline_id: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_IID}
+    environment: production
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    repo_name: dotenx/runner
+    TASK_DEFINITION_NAME: dotenx-runner
+    CLUSTER_NAME: dotenx
+    SERVICE_NAME: runner
+  only:
+    changes:
+      - "runner/**/*" 
+
+  
+
+deploy ui:
+  image: utopiops/devops:assume-role-12
+  stage: deploy
+  variables:
+    CORE_USERNAME: ${DEV_CORE_USERNAME}
+    CORE_PASSWORD: ${DEV_CORE_PASSWORD}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    BUCKET: app.dotenx.com
+    environment: prod
+  environment:
+    name: production-ui
+    url: https://app.dotenx.com
+  script:
+    - mkdir build
+    - tar -xzvf ${environment}_build.tar.gz
+    - cd ./build
+    - aws s3 sync --delete --acl public-read . s3://${BUCKET}
+  except:
+    - schedules
+  only:
+    changes:
+      - "ui/**/*" 
