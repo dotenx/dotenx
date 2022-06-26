@@ -12,17 +12,22 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	return (
 		<div className="space-y-8">
 			<Endpoint
-				label="Get Record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
-				kind="GET"
-			/>
-			<Endpoint
-				label="Add Record"
+				label="Add a record"
 				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
 				kind="POST"
 			/>
 			<Endpoint
-				label="Delete Record"
+				label="Get a record by id"
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
+				kind="GET"
+			/>
+			<Endpoint
+				label="Update a record by id"
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
+				kind="POST"
+			/>
+			<Endpoint
+				label="Delete a record by id"
 				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
 				kind="DELETE"
 			/>
