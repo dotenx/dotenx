@@ -30,7 +30,7 @@ function TableItem({ name }: { name: string }) {
 	return (
 		<Link
 			className="flex items-center justify-center w-40 h-20 transition rounded shadow-sm bg-rose-50 shadow-rose-50 text-rose-900 hover:bg-rose-100 hover:shadow hover:shadow-rose-100 outline-rose-400"
-			to={`tables/${name}`}
+			to={name}
 		>
 			{name}
 		</Link>

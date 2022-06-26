@@ -7,10 +7,10 @@ import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
 
 export default function TablePage() {
-	const { projectName, name } = useParams()
-	if (!projectName || !name) return <Navigate to="/builder/projects" replace />
+	const { projectName, tableName } = useParams()
+	if (!projectName || !tableName) return <Navigate to="/builder/projects" replace />
 
-	return <TableContent projectName={projectName} tableName={name} />
+	return <TableContent projectName={projectName} tableName={tableName} />
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
@@ -22,7 +22,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data
+	const records = recordsQuery.data?.data ?? [{}]
 	const headers =
 		columnsQuery.data?.data.columns.map((column) => ({
 			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
@@ -38,13 +38,14 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					data={records}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
+					emptyText="There's no record yet"
 				/>
 			</ContentWrapper>
 			<Modal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</Modal>
 			<Modal kind={Modals.TableEndpoints} title="Endpoints" size="xl">
-				<TableEndpoints projectTag={projectName} tableName={tableName} />
+				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
 		</>
 	)

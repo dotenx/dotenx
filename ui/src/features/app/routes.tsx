@@ -9,14 +9,33 @@ import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import OauthPage from '../../pages/oauth'
-import ProjectPage from '../../pages/project'
-import ProjectsPage from '../../pages/projects'
 import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
 import TablePage from '../../pages/table'
+import TablesPage from '../../pages/tables'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
 import Authentication from '../../pages/authentication'
+import { Layout } from '../ui'
+
+const routes = [
+	{ path: '/builder/projects/:projectName/providers/:providerName', element: <ProviderPage /> },
+	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
+	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
+	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+
+	{ path: '/try-out', element: <TryOutPage /> },
+	{ path: '/integrations/add', element: <OauthPage /> },
+	{ path: '/integrations', element: <IntegrationsPage /> },
+	{ path: '/triggers', element: <TriggersPage /> },
+	{ path: '/automations/:name/executions/:id', element: <ExecutionPage /> },
+	{ path: '/automations/:name/executions', element: <HistoryPage /> },
+	{ path: '/automations/:name', element: <AutomationPage /> },
+	{ path: '/automations-new', element: <AutomationPage /> },
+	{ path: '/automations', element: <AutomationsPage /> },
+	{ path: '/automations/yaml/import', element: <ImportYamlPage /> },
+	{ path: '/', element: <Navigate replace to="/automations" /> },
+]
 
 export function Routes() {
 	const location = useLocation()
@@ -30,28 +49,13 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
-<<<<<<< HEAD
-			<Route path="/builder/authentication" element={<Authentication />} />
-=======
-			<Route path="/builder/projects/:projectName/tables/:name" element={<TablePage />} />
-			<Route path="/builder/projects/:name" element={<ProjectPage />} />
-			<Route path="/builder/projects" element={<ProjectsPage />} />
->>>>>>> main
-			<Route path="/builder/providers/:name" element={<ProviderPage />} />
-			<Route path="/builder/providers" element={<ProvidersPage />} />
-			<Route path="/builder" element={<Navigate replace to="/builder/projects"  />} />
-
-			<Route path="/try-out" element={<TryOutPage />} />
-			<Route path="/integrations/add" element={<OauthPage />} />
-			<Route path="/integrations" element={<IntegrationsPage />} />
-			<Route path="/triggers" element={<TriggersPage />} />
-			<Route path="/automations/:name/executions/:id" element={<ExecutionPage />} />
-			<Route path="/automations/:name/executions" element={<HistoryPage />} />
-			<Route path="/automations/:name" element={<AutomationPage />} />
-			<Route path="/automations-new" element={<AutomationPage />} />
-			<Route path="/automations" element={<AutomationsPage />} />
-			<Route path="/automations/yaml/import" element={<ImportYamlPage />} />
-			<Route path="/" element={<Navigate replace to="/automations" />} />
+			{routes.map((route) => (
+				<Route
+					key={route.path}
+					path={route.path}
+					element={<Layout>{route.element}</Layout>}
+				/>
+			))}
 		</ReactRoutes>
 	)
 }
