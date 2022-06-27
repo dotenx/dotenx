@@ -12,18 +12,23 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	return (
 		<div className="space-y-8">
 			<Endpoint
-				label="Get Record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
-				kind="GET"
-			/>
-			<Endpoint
-				label="Add Record"
+				label="Add a record"
 				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
 				kind="POST"
 			/>
 			<Endpoint
-				label="Delete Record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
+				label="Get a record by id"
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
+				kind="GET"
+			/>
+			<Endpoint
+				label="Update a record by id"
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
+				kind="POST"
+			/>
+			<Endpoint
+				label="Delete a record by id"
+				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
 				kind="DELETE"
 			/>
 		</div>
@@ -36,7 +41,7 @@ interface EndpointProps {
 	kind: 'GET' | 'POST' | 'DELETE'
 }
 
-function Endpoint({ label, url, kind }: EndpointProps) {
+export function Endpoint({ label, url, kind }: EndpointProps) {
 	const [isCopied, setCopied] = useClipboard(url, { successDuration: 3000 })
 
 	return (
@@ -47,7 +52,7 @@ function Endpoint({ label, url, kind }: EndpointProps) {
 					variant="icon"
 					className={clsx(
 						isCopied &&
-							'bg-green-100 hover:bg-green-100 text-green-700 border !border-green-400'
+							'bg-green-100 hover:!bg-green-100 !text-green-700 border !border-green-400'
 					)}
 					onClick={setCopied}
 				>

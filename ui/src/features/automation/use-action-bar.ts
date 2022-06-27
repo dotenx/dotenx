@@ -1,13 +1,13 @@
 import { useAtom } from 'jotai'
 import { useMutation, useQueryClient } from 'react-query'
 import { useNavigate } from 'react-router-dom'
-import { deleteAutomation, QueryKey, startAutomation } from '../../api'
+import { AutomationKind, deleteAutomation, QueryKey, startAutomation } from '../../api'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
 import { Modals, useModal } from '../hooks'
 import { useNewAutomation } from './use-new'
 
-export function useActionBar() {
+export function useActionBar(kind: AutomationKind) {
 	const { onLayout } = useLayout()
 	const [selectedAutomation] = useAtom(selectedAutomationAtom)
 	const clearStatus = useClearStatus()
@@ -15,11 +15,11 @@ export function useActionBar() {
 	const setListen = useAtom(listenAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
-	const newAutomation = useNewAutomation()
+	const newAutomation = useNewAutomation('/automations/new')
 	const navigate = useNavigate()
 	const modal = useModal()
 
-	const mutation = useMutation(startAutomation, {
+	const runMutation = useMutation(startAutomation, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetExecutions)
 			clearStatus()
@@ -29,11 +29,16 @@ export function useActionBar() {
 
 	const onRun = () => {
 		if (selectedAutomationData)
-			mutation.mutate(selectedAutomationData.name, {
-				onSuccess: (data) =>
-					navigate(
-						`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
-					),
+			runMutation.mutate(selectedAutomationData.name, {
+				onSuccess: (data) => {
+					if (kind !== 'interaction') {
+						navigate(
+							`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
+						)
+					} else {
+						modal.open(Modals.InteractionResponse)
+					}
+				},
 			})
 		else console.error('No automation is selected')
 	}
@@ -60,6 +65,7 @@ export function useActionBar() {
 		newAutomation,
 		onLayout,
 		handleDeleteAutomation,
-		isRunning: mutation.isLoading,
+		isRunning: runMutation.isLoading,
+		runResponse: runMutation.data?.data,
 	}
 }

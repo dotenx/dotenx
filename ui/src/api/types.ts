@@ -1,4 +1,5 @@
 export enum QueryKey {
+	GetUserManagementData = 'get-usermanagement-data',
 	GetAutomations = 'get-automation',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
@@ -95,6 +96,8 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type Triggers = Record<string, Trigger>
@@ -128,6 +131,8 @@ export type GetAutomationsResponse = Automation[]
 export type CreateAutomationRequest = {
 	name: string
 	manifest: Manifest
+	is_template?: boolean
+	is_interaction?: boolean
 }
 
 export type GetAutomationResponse = AutomationData
@@ -285,6 +290,13 @@ export type CreateProjectRequest = Project
 
 export type GetProjectsResponse = Project[] | null
 
+export type GetUserManagementDataResponse = {
+	account_id: string
+	created_at: string
+	email: string
+	fullname: string
+}[]
+
 export type GetProjectResponse = Project & { tag: string }
 
 export interface Project {
@@ -312,3 +324,5 @@ export interface Column {
 export type GetColumnsResponse = {
 	columns: string[]
 }
+
+export type AutomationKind = 'automation' | 'template' | 'interaction'
