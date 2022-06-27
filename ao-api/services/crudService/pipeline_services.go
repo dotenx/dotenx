@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -14,12 +16,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion) (err error) {
-	err = cm.Store.Create(noContext, base, pipeline)
+func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
+	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
 	if err != nil {
 		return
 	}
-	_, e, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	_, e, _, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err != nil {
 		return
 	}
@@ -41,17 +43,17 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	p, _, isActive, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	p, _, isActive, isTemplate, isInteraction, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err == nil && p.Id != "" {
 		err := cm.DeletePipeline(base.AccountId, base.Name, true)
 		if err != nil {
 			return errors.New("error in deleting old version: " + err.Error())
 		}
-		err = cm.Store.Create(noContext, base, pipeline)
+		err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
 		}
-		newP, endpoint, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
+		newP, endpoint, _, _, _, err := cm.GetPipelineByName(base.AccountId, base.Name)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -81,26 +83,26 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	}
 }
 
-func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, error) {
-	pipe, endpoint, isActive, err := cm.Store.GetByName(noContext, accountId, name)
+func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, bool, bool, error) {
+	pipe, endpoint, isActive, isTemplate, isInteraction, err := cm.Store.GetByName(noContext, accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", false, err
+		return models.PipelineVersion{}, "", false, false, false, err
 	}
 	triggers, err := cm.TriggerService.GetAllTriggersForPipeline(accountId, name)
 	if err != nil {
-		return models.PipelineVersion{}, "", false, err
+		return models.PipelineVersion{}, "", false, false, false, err
 	}
 	pipe.Manifest.Triggers = make(map[string]models.EventTrigger)
 	for _, tr := range triggers {
 		pipe.Manifest.Triggers[tr.Name] = tr
 	}
-	return pipe, endpoint, isActive, nil
+	return pipe, endpoint, isActive, isTemplate, isInteraction, nil
 }
 func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error) {
 	return cm.Store.GetPipelines(noContext, accountId)
 }
 func (cm *crudManager) DeletePipeline(accountId, name string, deleteRecord bool) (err error) {
-	p, _, isActive, err := cm.GetPipelineByName(accountId, name)
+	p, _, isActive, _, _, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}
@@ -199,8 +201,162 @@ func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, 
 	return actives, nil
 }
 
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}) (name string, err error) {
+	tasks := make(map[string]models.Task)
+	for _, task := range pipeline.Manifest.Tasks {
+		body := task.Body.(models.TaskBodyMap)
+		for k, v := range body {
+			val := fmt.Sprintf("%v", v)
+			if strings.Contains(val, "$$$.") {
+				val = strings.Replace(val, "$$$.", "", 1)
+				value, ok := fields[val]
+				if ok {
+					body[k] = value
+				}
+			}
+		}
+		task.Body = body
+		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
+			value, ok := fields[task.Integration]
+			if ok {
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+				}
+				task.Integration = fmt.Sprintf("%v", value)
+			}
+		}
+		tasks[task.Name] = models.Task{
+			Name:         task.Name,
+			Description:  task.Description,
+			ExecuteAfter: task.ExecuteAfter,
+			Type:         task.Type,
+			Body:         task.Body,
+			Integration:  task.Integration,
+			MetaData:     task.MetaData,
+		}
+	}
+	pipeline.Manifest.Tasks = tasks
+	triggers := make(map[string]models.EventTrigger)
+	for _, trigger := range pipeline.Manifest.Triggers {
+		for k, v := range trigger.Credentials {
+			val := fmt.Sprintf("%v", v)
+			if strings.Contains(val, "$$$.") {
+				val = strings.Replace(val, "$$$.", "", 1)
+				value, ok := fields[val]
+				if ok {
+					trigger.Credentials[k] = value
+				}
+			}
+		}
+		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
+			trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
+			value, ok := fields[trigger.Integration]
+			if ok {
+				log.Println("tsssssssss")
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+				}
+				trigger.Integration = fmt.Sprintf("%v", value)
+				log.Println(trigger.Integration)
+			}
+		}
+		triggers[trigger.Name] = models.EventTrigger{
+			Name:        trigger.Name,
+			AccountId:   trigger.AccountId,
+			Type:        trigger.Type,
+			Endpoint:    trigger.Endpoint,
+			Pipeline:    trigger.Pipeline,
+			Integration: trigger.Integration,
+			Credentials: trigger.Credentials,
+			MetaData:    trigger.MetaData,
+		}
+	}
+	pipeline.Manifest.Triggers = triggers
+	base.Name = base.Name + "_" + utils.GetNewUuid()
+	err = cm.Store.Create(noContext, base, pipeline, false, false)
+	if err != nil {
+		return
+	}
+	_, e, _, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	if err != nil {
+		return
+	}
+	triggers2 := make([]*models.EventTrigger, 0)
+	for _, tr := range pipeline.Manifest.Triggers {
+		tr.Endpoint = e
+		tr.Pipeline = base.Name
+		triggers2 = append(triggers2, &models.EventTrigger{
+			Name:        tr.Name,
+			AccountId:   tr.AccountId,
+			Type:        tr.Type,
+			Endpoint:    e,
+			Pipeline:    base.Name,
+			Integration: tr.Integration,
+			Credentials: tr.Credentials,
+		})
+	}
+	return base.Name, cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
+}
+
 type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
 	DeleteRecord bool   `json:"delete_record"`
+}
+
+func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (exists bool, err error) {
+	integrations, err := cm.IntegrationService.GetAllIntegrations(accountId)
+	if err != nil {
+		return
+	}
+	for _, intg := range integrations {
+		if intg.Name == integration {
+			return true, nil
+		}
+	}
+	return
+}
+
+func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
+	detailes = make(map[string]string)
+	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
+	if err != nil {
+		return
+	}
+	if !isTemplate {
+		return nil, errors.New("it is now a template")
+	}
+	for taskName, task := range temp.Manifest.Tasks {
+		body := task.Body.(models.TaskBodyMap)
+		for key, value := range body {
+			strVal := fmt.Sprintf("%v", value)
+			if strings.Contains(strVal, "$$$.") {
+				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+				detailes[taskName+":"+key] = keyValue
+			}
+		}
+		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			strIntegration := strings.Replace(task.Integration, "$$$.", "", 1)
+			detailes[taskName+":integration"] = strIntegration
+
+		}
+	}
+
+	for triggerName, trigger := range temp.Manifest.Triggers {
+		for key, value := range trigger.Credentials {
+			strVal := fmt.Sprintf("%v", value)
+			if strings.Contains(strVal, "$$$.") {
+				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+				detailes[triggerName+":"+key] = keyValue
+			}
+		}
+		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
+			strIntegration := strings.Replace(trigger.Integration, "$$$.", "", 1)
+			detailes[triggerName+":integration"] = strIntegration
+		}
+	}
+	return
 }

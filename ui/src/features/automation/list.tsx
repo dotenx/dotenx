@@ -1,10 +1,12 @@
 import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
+import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
-import { Automation, AutomationKind } from '../../api'
+import { API_URL, Automation, AutomationKind, getTemplateEndpointFields, QueryKey } from '../../api'
 import { Endpoint } from '../database'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Modal, Table } from '../ui'
+import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
+import { JsonCode } from './json-code'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -97,7 +99,7 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 		<>
 			<div className="flex items-center justify-end gap-4">
 				<div className="flex gap-4">
-					{kind === 'template' && (
+					{kind !== 'automation' && (
 						<Button
 							variant="outlined"
 							onClick={() => modal.open(Modals.TemplateEndpoint)}
@@ -112,13 +114,8 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 				</div>
 			</div>
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
-				<div className="px-4 pt-6 pb-10">
-					<Endpoint
-						label="Add Automation"
-						url={`https://api.dotenx.com/pipeline/template/name/${automationName}`}
-						kind="POST"
-					/>
-				</div>
+				{kind === 'template' && <TemplateEndpoint automationName={automationName} />}
+				{kind === 'interaction' && <InteractionEndpoint automationName={automationName} />}
 			</Modal>
 		</>
 	)
@@ -133,5 +130,36 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 		<span className="px-2 py-1 text-xs font-extrabold text-gray-600 rounded-md bg-gray-50">
 			Inactive
 		</span>
+	)
+}
+
+function TemplateEndpoint({ automationName }: { automationName: string }) {
+	const fieldsQuery = useQuery(QueryKey.GetTemplateEndpointFields, () =>
+		getTemplateEndpointFields(automationName)
+	)
+	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
+	if (fieldsQuery.isLoading || !fields) return <Loader />
+
+	return (
+		<div className="px-4 pt-6 pb-10 space-y-6">
+			<Endpoint
+				label="Add an automation"
+				url={`${API_URL}/pipeline/template/name/${automationName}`}
+				kind="POST"
+			/>
+			<JsonCode code={JSON.stringify(fields, null, 2)} />
+		</div>
+	)
+}
+
+function InteractionEndpoint({ automationName }: { automationName: string }) {
+	return (
+		<div className="px-4 pt-6 pb-10">
+			<Endpoint
+				label="Run interaction"
+				url={`${API_URL}/execution/name/${automationName}/start`}
+				kind="POST"
+			/>
+		</div>
 	)
 }
