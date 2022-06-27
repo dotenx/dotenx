@@ -70,5 +70,5 @@ const columnTypeOptions = [
 	{ label: 'Number', value: 'num' },
 	{ label: 'Short text', value: 'short_text' },
 	{ label: 'Long text', value: 'long_text' },
-	{ label: 'Link', value: 'link_filed' },
+	{ label: 'Link to table', value: 'link_field' },
 ]

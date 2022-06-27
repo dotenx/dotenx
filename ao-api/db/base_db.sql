@@ -16,4 +16,4 @@ CREATE DOMAIN date_time AS DATE;
 CREATE DOMAIN num AS int;
 CREATE DOMAIN short_text AS VARCHAR;
 CREATE DOMAIN long_text AS TEXT;
-CREATE DOMAIN link_filed AS int;
+CREATE DOMAIN link_field AS int;
