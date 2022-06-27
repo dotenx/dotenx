@@ -47,7 +47,7 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 		go func() {
 			defer close(chanStream)
 			for {
-				if isExecutionDone(totalTasks, lastSummeries) {
+				if e.Service.IsExecutionDone(totalTasks, lastSummeries) {
 					done <- true
 					break
 				}
@@ -57,7 +57,7 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 					done <- true
 					break
 				}
-				if len(lastSummeries) > 0 && !isChanged(tasks, lastSummeries) {
+				if len(lastSummeries) > 0 && !e.Service.IsChanged(tasks, lastSummeries) {
 					time.Sleep(time.Second)
 					continue
 				}
@@ -82,17 +82,4 @@ func (e *ExecutionController) WatchPipelineLastExecutionStatus() gin.HandlerFunc
 			}
 		})
 	}
-}
-
-func isChanged(inputSummeries, lastSummeries []models.TaskStatusSummery) bool {
-	for _, inTask := range inputSummeries {
-		for _, oldTask := range lastSummeries {
-			if inTask.Name == oldTask.Name {
-				if inTask.Status != oldTask.Status {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }

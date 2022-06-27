@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/gin-gonic/gin"
 )
 
 /*	Note: based on this implementation always the latest activated version will be executed. If you want to
@@ -14,7 +15,7 @@ import (
 	Current approach doesn't match the cases like the build pipelines in repositories where you have particular pipeline per git push
 	and at any time you are able to re-run it.
 */
-func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name string) (int, error) {
+func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name string) (interface{}, error) {
 
 	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name)
 	if err != nil {
@@ -26,7 +27,10 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
-	_, _, isActive, err := manager.Store.GetByName(noContext, accountId, name)
+	_, _, isActive, isTemplate, isInteraction, err := manager.Store.GetByName(noContext, accountId, name)
+	if isTemplate {
+		return -1, errors.New("automation is a template so you can't execute it")
+	}
 	if err != nil {
 		return -1, err
 	}
@@ -86,5 +90,8 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	// 	log.Println(err.Error())
 	// 	return -1, http.StatusInternalServerError
 	// }
-	return executionId, err
+	if !isInteraction {
+		return gin.H{"id": executionId}, err
+	}
+	return manager.getResponse(executionId)
 }
