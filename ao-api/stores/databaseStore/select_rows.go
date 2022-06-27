@@ -9,11 +9,13 @@ import (
 	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 // We first convert this to a parameterized query and then execute it with the values
 var selectRows = `
-SELECT %s FROM %s 
+SELECT %s 
+FROM %s 
 LIMIT $1 OFFSET $2
 `
 
@@ -42,8 +44,34 @@ func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tabl
 		return nil, err
 	}
 
+	tableNameStmt := tableName
+	joinedTables := make([]string, 0)
+	for i, _ := range columns {
+		if strings.HasPrefix(columns[i], "__") {
+			continue
+		}
+		if strings.Contains(columns[i], "__") {
+			if len(strings.Split(columns[i], "__")) != 2 {
+				return nil, errors.New("invalid column name")
+			}
+			joinTable := strings.Split(columns[i], "__")[0]
+			// we should check that join each table just once so we need joinedTables slice
+			if !utils.ContainsString(joinedTables, joinTable) {
+				joinedTables = append(joinedTables, joinTable)
+				tableNameStmt += " JOIN " + joinTable
+				tableNameStmt += " ON " + "__" + joinTable + " = " + fmt.Sprintf("%s.id", joinTable)
+				tableNameStmt += "\n"
+			}
+			// convert TABLE__FIELD to TABLE.FIELD for sql query statement
+			columns[i] = strings.Replace(columns[i], "__", ".", 1) + " AS " + columns[i]
+		} else {
+			columns[i] = fmt.Sprintf("%s.%s", tableName, columns[i])
+		}
+	}
+
 	cl := strings.TrimSuffix(strings.Join(columns, ","), ",")
-	stmt := fmt.Sprintf(selectRows, cl, tableName)
+	stmt := fmt.Sprintf(selectRows, cl, tableNameStmt)
+	log.Println("stmt:", stmt)
 
 	result, err := db.Connection.Query(stmt, limit, offset)
 

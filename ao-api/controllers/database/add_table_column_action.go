@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,22 @@ func (dc *DatabaseController) AddTableColumn() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
+		if dto.ColumnType == "link_field" {
+			if strings.Count(dto.ColumnName, "__") != 1 || !strings.HasPrefix(dto.ColumnName, "__") {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "column name should be in this format: '__TABLENAME'",
+				})
+				return
+			}
+		} else {
+			if strings.Count(dto.ColumnName, "__") != 0 {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "column name can't contain two consecutive underline '__' (according to selected column type)",
+				})
+				return
+			}
+		}
+
 		if err := dc.Service.AddTableColumn(accountId, dto.ProjectName, dto.TableName, dto.ColumnName, dto.ColumnType); err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
@@ -44,6 +61,6 @@ func (dc *DatabaseController) AddTableColumn() gin.HandlerFunc {
 type addTableColumnDTO struct {
 	ProjectName string `json:"projectName"`
 	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
-	ColumnName  string `json:"columnName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
-	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_filed"`
+	ColumnName  string `json:"columnName" binding:"regexp=^(__)?[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
+	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_field"`
 }
