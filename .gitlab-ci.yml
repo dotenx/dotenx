@@ -106,8 +106,8 @@ build ui:
     paths:
       - ${environment}_build.tar.gz
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ui/**/*"
 
@@ -213,7 +213,7 @@ deploy ui:
   except:
     - schedules
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ui/**/*" 
