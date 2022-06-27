@@ -9,10 +9,10 @@ import {google} from 'googleapis'
  */
  async function batchGetValues(auth, spreadsheetId, _ranges) {
   const service = google.sheets({version: 'v4', auth});
-  // const arrayRanges = _ranges.split(',');
+  const arrayRanges = _ranges.split(',');
 
   let ranges = [
-    'A1:A2'
+    ...arrayRanges
   ];
 
   try {
@@ -47,5 +47,5 @@ import {google} from 'googleapis'
 
 
 const oath2Client = authorize();
-const result = await batchGetValues(oath2Client, '1uMXD1wjLO8v1k94OfmFhtcbMk1WJn1Qsz7yt-BcTh6c', process.env._ranges);
-console.log(result.data.valueRanges);
+const result = await batchGetValues(oath2Client, process.env.spreadsheetId, process.env._ranges);
+
