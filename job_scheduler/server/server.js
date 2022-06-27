@@ -40,6 +40,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
+
 serverAdapter.setBasePath('/admin/queues'); // An arbitrary path to serve the dashboard
 app.use('/admin/queues', serverAdapter.getRouter());
 
