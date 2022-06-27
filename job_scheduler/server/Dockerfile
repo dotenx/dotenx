@@ -12,4 +12,3 @@ RUN npm install
 COPY ./job_scheduler/server .
 
 CMD ["npm", "start"]
-
