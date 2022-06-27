@@ -28,6 +28,7 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserManagementDataResponse,
 	Provider,
 } from './types'
 export * from './types'
@@ -66,7 +67,10 @@ export function getAutomationYaml(name: string) {
 }
 
 export function startAutomation(automationName: string) {
-	return api.post<{ id: number }>(`/execution/name/${automationName}/start`, {})
+	return api.post<{ id: number } | Record<string, unknown>>(
+		`/execution/name/${automationName}/start`,
+		{}
+	)
 }
 
 export function deleteAutomation(name: string) {
@@ -223,4 +227,11 @@ export function getTableRecords(projectTag: string, tableName: string) {
 
 export function getColumns(projectName: string, tableName: string) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
+}
+
+export function getUserManagementData(projectTag: string) {
+	return api.post<GetUserManagementDataResponse | null>(
+		`/database/query/select/project/${projectTag}/table/user_info`,
+		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
+	)
 }

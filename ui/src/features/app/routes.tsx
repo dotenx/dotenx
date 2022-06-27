@@ -8,6 +8,8 @@ import ExecutionPage from '../../pages/execution'
 import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
+import InteractionPage from '../../pages/interaction'
+import InteractionsPage from '../../pages/interactions'
 import NotFoundPage from '../../pages/not-found'
 import OauthPage from '../../pages/oauth'
 import ProviderPage from '../../pages/provider'
@@ -18,6 +20,7 @@ import TemplatePage from '../../pages/template'
 import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
+import UserManagementPage from '../../pages/user-management'
 import { Layout } from '../ui'
 
 const routes = [
@@ -25,9 +28,13 @@ const routes = [
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
-	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
+	{ path: '/builder/projects/:projectName/interactions/new', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/interactions/:name', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/interactions', element: <InteractionsPage /> },
 	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
+	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
+	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },

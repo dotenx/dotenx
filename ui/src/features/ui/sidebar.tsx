@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { memo, ReactNode } from 'react'
 import {
 	BsBricks,
@@ -8,6 +9,7 @@ import {
 	BsTable,
 	BsWindowSidebar,
 } from 'react-icons/bs'
+import { FaUsers } from 'react-icons/fa'
 import { IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
@@ -27,6 +29,11 @@ export const Sidebar = memo(() => {
 	const { projectName } = useParams()
 
 	const builderLinks = [
+		{
+			to: `/builder/projects/${projectName}/user-management`,
+			label: 'User management',
+			icon: <FaUsers />,
+		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
 			label: 'Templates',
@@ -50,8 +57,8 @@ export const Sidebar = memo(() => {
 	]
 
 	return (
-		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-56 overflow-hidden">
-			<div className="flex items-center gap-6 px-5 text-xl font-medium">
+		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-60 overflow-hidden">
+			<div className="flex items-center gap-6 px-4 text-xl font-medium">
 				<img className="w-10 rounded" src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
 					<h1>DoTenX</h1>
@@ -59,13 +66,13 @@ export const Sidebar = memo(() => {
 				</div>
 			</div>
 			{projectName && (
-				<div className="px-6 mt-10 text-slate-700 ">
+				<div className="px-4 mt-10 text-slate-700 ">
 					<a
 						className="block px-3 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
 						<span className="capitalize">{projectName[0]}</span>
-						<span className="transition opacity-0 group-hover:opacity-100">
+						<span className="transition  opacity-0 group-hover:opacity-100">
 							{projectName.substring(1)}
 						</span>
 					</a>
@@ -94,7 +101,12 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
-					<span className="transition opacity-0 group-hover:opacity-100">
+					<span
+						className={clsx(
+							'transition opacity-0 whitespace-nowrap group-hover:opacity-100',
+							item.label.length > 10 && 'text-sm'
+						)}
+					>
 						{item.label}
 					</span>
 				</NavItem>
