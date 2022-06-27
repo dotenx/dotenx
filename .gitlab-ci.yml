@@ -95,7 +95,7 @@ build ui:
     environment: prod
   script:
     - cd ui
-    - cp .env.${environment} .env
+    - cp .env.${environment} .env.production
     - npm install
     - CI='' npm run build
     - tar -czvf ${environment}_build.tar.gz ./build
