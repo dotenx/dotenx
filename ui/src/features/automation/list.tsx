@@ -1,10 +1,12 @@
 import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
+import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
-import { API_URL, Automation, AutomationKind } from '../../api'
+import { API_URL, Automation, AutomationKind, getTemplateEndpointFields, QueryKey } from '../../api'
 import { Endpoint } from '../database'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Modal, Table } from '../ui'
+import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
+import { JsonCode } from './json-code'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -132,13 +134,20 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 }
 
 function TemplateEndpoint({ automationName }: { automationName: string }) {
+	const fieldsQuery = useQuery(QueryKey.GetTemplateEndpointFields, () =>
+		getTemplateEndpointFields(automationName)
+	)
+	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
+	if (fieldsQuery.isLoading || !fields) return <Loader />
+
 	return (
-		<div className="px-4 pt-6 pb-10">
+		<div className="px-4 pt-6 pb-10 space-y-6">
 			<Endpoint
 				label="Add an automation"
-				url={`https://api.dotenx.com/pipeline/template/name/${automationName}`}
+				url={`${API_URL}/pipeline/template/name/${automationName}`}
 				kind="POST"
 			/>
+			<JsonCode code={JSON.stringify(fields, null, 2)} />
 		</div>
 	)
 }
