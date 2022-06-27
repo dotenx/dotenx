@@ -19,6 +19,7 @@ export enum Modals {
 	TableEndpoints = 'table-endpoints',
 	InteractionResponse = 'table-endpoints',
 	TemplateEndpoint = 'template-endpoint',
+	UserManagementEndpoint = 'user-management-endpoint',
 }
 
 export function useModal() {

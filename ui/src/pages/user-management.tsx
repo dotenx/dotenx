@@ -1,8 +1,11 @@
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { getProject, getUserManagementData, QueryKey } from '../api'
-import { Table } from '../features/ui'
+import { API_URL, getProject, getUserManagementData, QueryKey } from '../api'
+import { JsonCode } from '../features/automation/json-code'
+import { Endpoint } from '../features/database'
+import { Modals, useModal } from '../features/hooks'
+import { Button, Modal, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -14,10 +17,10 @@ function UMTableContent({ projectName }: { projectName: string }) {
 		QueryKey.GetProject,
 		() => getProject(projectName)
 	)
-	const projectTag = projectDetails?.data.tag
+	const projectTag = projectDetails?.data.tag ?? ''
 	const { data: usersData, isLoading: usersDataLoading } = useQuery(
 		QueryKey.GetUserManagementData,
-		() => getUserManagementData(projectTag || ''),
+		() => getUserManagementData(projectTag),
 		{ enabled: !!projectTag }
 	)
 	const tableData = usersData?.data ?? []
@@ -55,8 +58,37 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						},
 					]}
 					data={tableData}
+					actionBar={<ActionBar projectTag={projectTag} />}
 				/>
 			</div>
 		</div>
+	)
+}
+
+const exampleUser = {
+	email: 'example@email.com',
+	password: 'abcdefg1234',
+	fullname: 'John Smith',
+}
+
+function ActionBar({ projectTag }: { projectTag: string }) {
+	const modal = useModal()
+
+	return (
+		<>
+			<Button variant="outlined" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
+				Endpoint
+			</Button>
+			<Modal kind={Modals.UserManagementEndpoint} title="Endpoint" fluid size="lg">
+				<div className="px-4 pt-6 pb-10 space-y-6">
+					<Endpoint
+						label="Sign up a user"
+						url={`${API_URL}/user/management/project/${projectTag}/register`}
+						kind="POST"
+					/>
+					<JsonCode code={JSON.stringify(exampleUser, null, 2)} />
+				</div>
+			</Modal>
+		</>
 	)
 }

@@ -131,7 +131,7 @@ func (e *ExecutionController) TaskExecutionResult() gin.HandlerFunc {
 			log.Println(err)
 			c.AbortWithError(http.StatusInternalServerError, err)
 		}
-		if isExecutionDone(numberOftasks, summeries) {
+		if e.Service.IsExecutionDone(numberOftasks, summeries) {
 			exec, err := e.Service.GetExecutionDetails(executionId)
 			if err != nil {
 				log.Println(err)
