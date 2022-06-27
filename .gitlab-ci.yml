@@ -59,8 +59,8 @@ build scheduler:
   before_script:
     - ls
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "job_scheduler/**/*"
 
