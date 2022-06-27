@@ -1,5 +1,5 @@
 export enum QueryKey {
-	GetUserManagementData = 'get-usermanagement-data',
+	GetUserManagementData = 'get-user-management-data',
 	GetAutomations = 'get-automation',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
@@ -25,6 +25,7 @@ export enum QueryKey {
 	GetTable = 'get-table',
 	GetTableRecords = 'get-table-records',
 	GetColumns = 'get-columns',
+	GetTemplateEndpointFields = 'get-template-endpoint-fields',
 }
 
 export enum TaskExecutionStatus {

@@ -2,7 +2,7 @@
 import clsx from 'clsx'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 
-export function InteractionResponse({ code }: { code: string }) {
+export function JsonCode({ code }: { code: string }) {
 	return (
 		<main className="overflow-hidden rounded">
 			<Highlight {...defaultProps} code={code} language="json">

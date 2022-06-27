@@ -16,7 +16,7 @@ func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 		accept := c.GetHeader("accept")
 		accountId, _ := utils.GetAccountId(c)
 
-		pipeline, endpoint, isActive, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, endpoint, isActive, isTemplate, isInteraction, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -27,7 +27,9 @@ func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 			models.Manifest `json:"manifest" yaml:"manifest"`
 			Endpoint        string `json:"endpoint" yaml:"endpoint"`
 			IsActive        bool   `json:"is_active" yaml:"is_active"`
-		}{name, pipeline.Manifest, endpoint, isActive}
+			IsTemplate      bool   `json:"is_template" yaml:"is_template"`
+			IsInteraction   bool   `json:"is_interaction" yaml:"is_interaction"`
+		}{name, pipeline.Manifest, endpoint, isActive, isTemplate, isInteraction}
 		switch accept {
 		case "application/json":
 			c.JSON(http.StatusOK, output)

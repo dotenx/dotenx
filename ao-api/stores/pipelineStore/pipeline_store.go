@@ -20,11 +20,11 @@ type PipelineStore interface {
 	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
 	// Create pipelineStore a new pipeline
-	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion) error // todo: return the endpoint
+	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) error // todo: return the endpoint
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
-	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, err error)
+	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, isTemplate bool, is_interaction bool, err error)
 	// Check if the endpoint is valid return the pipeline id
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)

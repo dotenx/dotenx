@@ -51,15 +51,17 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
-			AccountId: accountId,
-			Name:      pipelineDto.Name,
+			AccountId:     accountId,
+			Name:          pipelineDto.Name,
+			IsInteraction: pipelineDto.IsInteraction,
+			IsTemplate:    pipelineDto.IsTemplate,
 		}
 
 		pipeline := models.PipelineVersion{
 			Manifest: pipelineDto.Manifest,
 		}
 
-		err := mc.Service.CreatePipeLine(&base, &pipeline)
+		err := mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
@@ -74,8 +76,10 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 }
 
 type PipelineDto struct {
-	Name     string
-	Manifest models.Manifest
+	Name          string          `json:"name"`
+	IsTemplate    bool            `json:"is_template"`
+	IsInteraction bool            `json:"is_interaction"`
+	Manifest      models.Manifest `json:"manifest"`
 }
 
 func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
