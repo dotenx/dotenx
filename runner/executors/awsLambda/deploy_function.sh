@@ -11,7 +11,6 @@ export image_name="hojjat12/typeform-new-response:lambda"
 #####
 
 
-
 aws ecr create-repository --repository-name ${repository_name} --image-scanning-configuration scanOnPush=false
 docker tag ${image_name} 994147050565.dkr.ecr.${region}.amazonaws.com/${image_name} # this line can change based on the local image name
 aws ecr get-login-password | docker login --username AWS --password-stdin 994147050565.dkr.ecr.${region}.amazonaws.com
