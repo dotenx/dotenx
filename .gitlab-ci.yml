@@ -56,9 +56,11 @@ build scheduler:
     repo_name: dotenx/scheduler
     DOCKER_FILE_PATH: job_scheduler/server/Dockerfile
     FOLDER: job_scheduler/server
+  before_script:
+    - ls
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "job_scheduler/**/*"
 
