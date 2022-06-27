@@ -1,4 +1,5 @@
 export enum QueryKey {
+	GetUserManagementData = 'get-usermanagement-data',
 	GetAutomations = 'get-automation',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
@@ -288,6 +289,13 @@ export type GetProviderResponse = { provider: ProviderDetail }
 export type CreateProjectRequest = Project
 
 export type GetProjectsResponse = Project[] | null
+
+export type GetUserManagementDataResponse = {
+	account_id: string
+	created_at: string
+	email: string
+	fullname: string
+}[]
 
 export type GetProjectResponse = Project & { tag: string }
 
