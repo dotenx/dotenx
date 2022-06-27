@@ -8,14 +8,47 @@ import ExecutionPage from '../../pages/execution'
 import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
+import InteractionPage from '../../pages/interaction'
+import InteractionsPage from '../../pages/interactions'
+import NotFoundPage from '../../pages/not-found'
 import OauthPage from '../../pages/oauth'
-import ProjectPage from '../../pages/project'
-import ProjectsPage from '../../pages/projects'
 import ProviderPage from '../../pages/provider'
 import ProvidersPage from '../../pages/providers'
 import TablePage from '../../pages/table'
+import TablesPage from '../../pages/tables'
+import TemplatePage from '../../pages/template'
+import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
+import UserManagementPage from '../../pages/user-management'
+import { Layout } from '../ui'
+
+const routes = [
+	{ path: '/builder/projects/:projectName/providers/:providerName', element: <ProviderPage /> },
+	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
+	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
+	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{ path: '/builder/projects/:projectName/interactions/new', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/interactions/:name', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/interactions', element: <InteractionsPage /> },
+	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
+	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
+	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
+	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
+
+	{ path: '/try-out', element: <TryOutPage /> },
+	{ path: '/integrations/add', element: <OauthPage /> },
+	{ path: '/integrations', element: <IntegrationsPage /> },
+	{ path: '/triggers', element: <TriggersPage /> },
+	{ path: '/automations/new', element: <AutomationPage /> },
+	{ path: '/automations/:name/executions/:id', element: <ExecutionPage /> },
+	{ path: '/automations/:name/executions', element: <HistoryPage /> },
+	{ path: '/automations/:name', element: <AutomationPage /> },
+	{ path: '/automations', element: <AutomationsPage /> },
+	{ path: '/automations/yaml/import', element: <ImportYamlPage /> },
+	{ path: '/', element: <Navigate replace to="/automations" /> },
+	{ path: '/*', element: <NotFoundPage /> },
+]
 
 export function Routes() {
 	const location = useLocation()
@@ -29,24 +62,13 @@ export function Routes() {
 
 	return (
 		<ReactRoutes>
-			<Route path="/builder/projects/:projectName/tables/:name" element={<TablePage />} />
-			<Route path="/builder/projects/:name" element={<ProjectPage />} />
-			<Route path="/builder/projects" element={<ProjectsPage />} />
-			<Route path="/builder/providers/:name" element={<ProviderPage />} />
-			<Route path="/builder/providers" element={<ProvidersPage />} />
-			<Route path="/builder" element={<Navigate replace to="/builder/projects"  />} />
-
-			<Route path="/try-out" element={<TryOutPage />} />
-			<Route path="/integrations/add" element={<OauthPage />} />
-			<Route path="/integrations" element={<IntegrationsPage />} />
-			<Route path="/triggers" element={<TriggersPage />} />
-			<Route path="/automations/:name/executions/:id" element={<ExecutionPage />} />
-			<Route path="/automations/:name/executions" element={<HistoryPage />} />
-			<Route path="/automations/:name" element={<AutomationPage />} />
-			<Route path="/automations-new" element={<AutomationPage />} />
-			<Route path="/automations" element={<AutomationsPage />} />
-			<Route path="/automations/yaml/import" element={<ImportYamlPage />} />
-			<Route path="/" element={<Navigate replace to="/automations" />} />
+			{routes.map((route) => (
+				<Route
+					key={route.path}
+					path={route.path}
+					element={<Layout>{route.element}</Layout>}
+				/>
+			))}
 		</ReactRoutes>
 	)
 }

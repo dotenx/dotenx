@@ -3,21 +3,32 @@ import { useAtom } from 'jotai'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { createAutomation, Manifest, QueryKey, TaskBody, Tasks, Trigger, Triggers } from '../../api'
+import {
+	AutomationKind,
+	createAutomation,
+	Manifest,
+	QueryKey,
+	TaskBody,
+	Tasks,
+	Trigger,
+	Triggers,
+} from '../../api'
 import { flowAtom } from '../atoms'
-import { EdgeData, NodeType, TaskNodeData } from '../flow'
+import { EdgeData, TaskNodeData } from '../flow'
+import { NodeType } from '../flow/types'
 import { useModal } from '../hooks'
 import { InputOrSelectKind } from '../ui'
 import { saveFormSchema, SaveFormSchema } from './save-form'
 
-export function useSaveForm() {
+export function useSaveForm(kind: AutomationKind) {
 	const {
 		control,
 		formState: { errors },
 		handleSubmit,
 	} = useForm<SaveFormSchema>({ resolver: zodResolver(saveFormSchema) })
+	const { projectName } = useParams()
 
 	const modal = useModal()
 	const addAutomationMutation = useMutation(createAutomation)
@@ -30,13 +41,21 @@ export function useSaveForm() {
 			{
 				name: values.name,
 				manifest: mapElementsToPayload(elements),
+				is_template: kind === 'template',
+				is_interaction: kind === 'interaction',
 			},
 			{
 				onSuccess: () => {
 					client.invalidateQueries(QueryKey.GetAutomation)
 					toast('Automation saved', { type: 'success' })
 					modal.close()
-					navigate(`/automations/${values.name}`)
+					const redirectLink =
+						kind === 'automation'
+							? `/automations/${values.name}`
+							: kind === 'template'
+							? `/builder/projects/${projectName}/templates/${values.name}`
+							: `/builder/projects/${projectName}/interactions/${values.name}`
+					navigate(redirectLink)
 				},
 			}
 		)
