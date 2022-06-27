@@ -19,7 +19,7 @@ export function NavItem({ to, children }: NavItemProps) {
 			<div
 				className={clsx('w-1 h-8 rounded-sm shrink-0 transition', selected && 'bg-white')}
 			/>
-			<div className="flex items-center gap-4 grow">{children}</div>
+			<div className="flex items-center gap-3 grow">{children}</div>
 		</Link>
 	)
 }

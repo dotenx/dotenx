@@ -1,4 +1,5 @@
 export enum QueryKey {
+	GetUserManagementData = 'get-user-management-data',
 	GetAutomations = 'get-automation',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
@@ -24,6 +25,7 @@ export enum QueryKey {
 	GetTable = 'get-table',
 	GetTableRecords = 'get-table-records',
 	GetColumns = 'get-columns',
+	GetTemplateEndpointFields = 'get-template-endpoint-fields',
 }
 
 export enum TaskExecutionStatus {
@@ -288,6 +290,13 @@ export type GetProviderResponse = { provider: ProviderDetail }
 export type CreateProjectRequest = Project
 
 export type GetProjectsResponse = Project[] | null
+
+export type GetUserManagementDataResponse = {
+	account_id: string
+	created_at: string
+	email: string
+	fullname: string
+}[]
 
 export type GetProjectResponse = Project & { tag: string }
 

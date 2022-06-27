@@ -28,6 +28,7 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserManagementDataResponse,
 	Provider,
 } from './types'
 export * from './types'
@@ -226,4 +227,15 @@ export function getTableRecords(projectTag: string, tableName: string) {
 
 export function getColumns(projectName: string, tableName: string) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
+}
+
+export function getUserManagementData(projectTag: string) {
+	return api.post<GetUserManagementDataResponse | null>(
+		`/database/query/select/project/${projectTag}/table/user_info`,
+		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
+	)
+}
+
+export function getTemplateEndpointFields(templateName: string) {
+	return api.get<Record<string, string>>(`pipeline/template/name/${templateName}`)
 }

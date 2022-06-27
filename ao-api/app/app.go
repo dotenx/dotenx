@@ -128,7 +128,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
-	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic)
+	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic, IntegrationService)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
@@ -188,6 +188,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// pipeline router
 	// TODO: fix the type of the pipeline
 	pipeline.POST("", crudController.AddPipeline())
+	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
+	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())
 	pipeline.PUT("", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
 	pipeline.DELETE("/name/:name", crudController.DeletePipeline())
