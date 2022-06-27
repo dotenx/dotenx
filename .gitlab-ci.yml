@@ -55,7 +55,7 @@ build scheduler:
     AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
     repo_name: dotenx/scheduler
     DOCKER_FILE_PATH: job_scheduler/server/Dockerfile
-    FOLDER: job_scheduler
+    FOLDER: job_scheduler/server
   only:
     refs:
       - master
