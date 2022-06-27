@@ -20,6 +20,7 @@ import TemplatePage from '../../pages/template'
 import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
+import UserManagementPage from '../../pages/user-management'
 import { Layout } from '../ui'
 
 const routes = [
@@ -33,6 +34,7 @@ const routes = [
 	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
+	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },
