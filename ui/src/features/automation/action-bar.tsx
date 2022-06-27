@@ -21,7 +21,7 @@ import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
 import { Button, Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
-import { InteractionResponse } from './interaction-response'
+import { JsonCode } from './json-code'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 import { useActivateAutomation } from './use-activate'
@@ -130,22 +130,26 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					</div>
 				)}
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
-					<IconButton
-						tooltip="Run"
-						onClick={onRun}
-						disabled={!selectedAutomation || !selectedAutomation.is_active}
-						loading={isRunning}
-					>
-						<IoPlayOutline />
-					</IconButton>
-					<IconButton
-						tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
-						onClick={handleActivate}
-						disabled={!selectedAutomation}
-						loading={activateIsLoading}
-					>
-						{selectedAutomation?.is_active ? <IoClose /> : <IoCheckmark />}
-					</IconButton>
+					{kind !== 'template' && (
+						<IconButton
+							tooltip="Run"
+							onClick={onRun}
+							disabled={!selectedAutomation || !selectedAutomation.is_active}
+							loading={isRunning}
+						>
+							<IoPlayOutline />
+						</IconButton>
+					)}
+					{kind !== 'template' && (
+						<IconButton
+							tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
+							onClick={handleActivate}
+							disabled={!selectedAutomation}
+							loading={activateIsLoading}
+						>
+							{selectedAutomation?.is_active ? <IoClose /> : <IoCheckmark />}
+						</IconButton>
+					)}
 					<IconButton tooltip="Save" onClick={handleSave} loading={isUpdating}>
 						<IoSaveOutline />
 					</IconButton>
@@ -202,7 +206,7 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					</div>
 
 					<HelpItem label="Save Automation" hotkey="Alt + S" />
-					<HelpItem label="Run Automation" hotkey="Alt + R" />
+					{kind !== 'template' && <HelpItem label="Run Automation" hotkey="Alt + R" />}
 					{kind === 'automation' && <HelpItem label="New Automation" hotkey="Alt + N" />}
 					<HelpItem label="Arrange Nodes" hotkey="Alt + A" />
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
@@ -214,7 +218,7 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 				</Modal>
 			)}
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
-				<InteractionResponse code={JSON.stringify(runResponse ?? {}, null, 2)} />
+				<JsonCode code={JSON.stringify(runResponse ?? {}, null, 2)} />
 			</Modal>
 		</>
 	)

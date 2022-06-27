@@ -235,3 +235,7 @@ export function getUserManagementData(projectTag: string) {
 		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
 	)
 }
+
+export function getTemplateEndpointFields(templateName: string) {
+	return api.get<Record<string, string>>(`pipeline/template/name/${templateName}`)
+}
