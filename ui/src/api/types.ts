@@ -279,7 +279,7 @@ export interface FuncCall {
 	args: Arg[]
 }
 
-export type Arg = FromSource | string
+export type Arg = FromSource | { value: string }
 
 interface FromSource {
 	key: string
