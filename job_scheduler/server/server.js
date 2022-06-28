@@ -48,6 +48,7 @@ app.get('/next/queue/:qname/:token', async (req, res) => {
   const worker = new Queue(qname, { redis: { port: redisPort, host: redisHost } });
   const job = await worker.getNextJob(req.params.token);
   if (!job) {
+    await worker.close();
     return res.sendStatus(400);
   }
   console.log(`started processing job: ${job.id}`);
