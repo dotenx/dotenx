@@ -26,6 +26,7 @@ export enum QueryKey {
 	GetTableRecords = 'get-table-records',
 	GetColumns = 'get-columns',
 	GetTemplateEndpointFields = 'get-template-endpoint-fields',
+	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
 }
 
 export enum TaskExecutionStatus {
@@ -327,3 +328,7 @@ export type GetColumnsResponse = {
 }
 
 export type AutomationKind = 'automation' | 'template' | 'interaction'
+
+export type StartAutomationRequest =
+	| Record<string, never>
+	| { interactionRunTime: Record<string, string> }
