@@ -15,7 +15,7 @@ import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
-import { ADMIN_URL, IS_LOCAL } from '../../constants'
+import { ADMIN_URL, IS_LOCAL, VERSION } from '../../constants'
 import { NavItem } from './nav-item'
 
 const studioLinks = [
@@ -83,6 +83,7 @@ export const Sidebar = memo(() => {
 
 				{!IS_LOCAL && <Logout />}
 			</div>
+			<div className="pt-4 text-xs text-center">{VERSION}</div>
 		</div>
 	)
 })
