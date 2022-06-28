@@ -340,10 +340,14 @@ func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (
 	}
 	for _, intg := range integrations {
 		if intg.Name == integration {
-			return true, nil
+			if intg.Provider != "" {
+				return true, nil
+			} else {
+				return false, errors.New("all integration for template must have provider")
+			}
 		}
 	}
-	return
+	return false, errors.New("no integration was found")
 }
 
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
