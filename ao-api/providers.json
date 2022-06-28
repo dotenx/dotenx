@@ -36,7 +36,7 @@
         "name": "slack",
         "secret": "7ced68760661e15695f6d8d16aba44fe",
         "key": "1390586298022.3553550438982",
-        "direct_url":"https://slack.com/oauth/authorize?client_id=1390586298022.3553550438982&scope=app_mentions:read,bookmarks:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,conversations.connect:read,conversations.connect:write,files:read,files:write,groups:history,users:read,users:write&user_scope=channels:write,chat:write,users:write&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/slack&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team="
+        "direct_url":"https://slack.com/oauth/v2/authorize?client_id=1390586298022.3553550438982&scope=app_mentions:read,bookmarks:read,channels:history,channels:join,channels:read,chat:write,chat:write.public,conversations.connect:read,conversations.connect:write,files:read,files:write,groups:history,users:read,users:write&user_scope=channels:write,chat:write,users:write&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/slack&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team="
     },
     {
         "name": "typeform",

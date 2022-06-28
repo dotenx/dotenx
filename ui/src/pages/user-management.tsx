@@ -65,10 +65,15 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	)
 }
 
-const exampleUser = {
+const registerExample = {
 	email: 'example@email.com',
 	password: 'abcdefg1234',
 	fullname: 'John Smith',
+}
+
+const loginExample = {
+	email: 'example@email.com',
+	password: 'abcdefg1234',
 }
 
 function ActionBar({ projectTag }: { projectTag: string }) {
@@ -80,13 +85,21 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 				Endpoint
 			</Button>
 			<Modal kind={Modals.UserManagementEndpoint} title="Endpoint" fluid size="lg">
-				<div className="px-4 pt-6 pb-10 space-y-6">
+				<div className="px-4 pt-6 pb-10 space-y-4">
 					<Endpoint
 						label="Sign up a user"
 						url={`${API_URL}/user/management/project/${projectTag}/register`}
 						kind="POST"
 					/>
-					<JsonCode code={JSON.stringify(exampleUser, null, 2)} />
+					<JsonCode code={JSON.stringify(registerExample, null, 2)} />
+				</div>
+				<div className="px-4 pt-6 pb-10 space-y-4">
+					<Endpoint
+						label="Sign in"
+						url={`${API_URL}/user/management/project/${projectTag}/login`}
+						kind="POST"
+					/>
+					<JsonCode code={JSON.stringify(loginExample, null, 2)} />
 				</div>
 			</Modal>
 		</>
