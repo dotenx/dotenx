@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import { IoClose } from 'react-icons/io5'
@@ -69,7 +70,10 @@ function Content({ title, children, size, fluid }: ContentProps) {
 					</button>
 				</div>
 				<motion.div
-					className="p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300"
+					className={clsx(
+						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
+						fluid && 'max-h-[75vh]'
+					)}
 					initial={false}
 					animate={{ height: fluid ? 'auto' : getModalHeight(size) }}
 				>
