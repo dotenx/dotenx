@@ -77,6 +77,9 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
+		// This endpoint is called in studio mode so we should set provider empty
+		// to know that this integration use our provider not user's provider
+		integration.Provider = ""
 
 		accessToken := integration.Secrets["ACCESS_TOKEN"]
 		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]
@@ -92,7 +95,10 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 				}
 				integration.Secrets["CONSUMER_KEY"] = provider.Key
 				integration.Secrets["CONSUMER_SECRET"] = provider.Secret
-			} else {
+			}
+			// TODO: we should check that this part of code can cause a security issue or not (Hojjat-1)
+			// Please don't delete comments
+			/*else {
 				userProvider, err := controller.OauthService.GetUserProviderByName(accountId, integration.Provider)
 				if err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{
@@ -102,7 +108,7 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 				}
 				integration.Secrets["CONSUMER_KEY"] = userProvider.Key
 				integration.Secrets["CONSUMER_SECRET"] = userProvider.Secret
-			}
+			}*/
 		}
 		if ok && refreshToken != "" {
 			integration.HasRefreshToken = true

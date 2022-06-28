@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import { IoCopyOutline } from 'react-icons/io5'
 import useClipboard from 'react-use-clipboard'
+import { API_URL } from '../../api'
+import { JsonCode } from '../automation/json-code'
 import { Button } from '../ui'
 
 interface TableEndpointsProps {
@@ -11,26 +13,45 @@ interface TableEndpointsProps {
 export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	return (
 		<div className="space-y-8">
-			<Endpoint
+			<EndpointWithBody
 				label="Add a record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
+				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
 				kind="POST"
+				code={{ column_01: 'value_01', column_02: 'value_02', column_03: 'value_03' }}
 			/>
-			<Endpoint
-				label="Get a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
-				kind="GET"
+			<EndpointWithBody
+				label="Get records"
+				url={`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${tableName}`}
+				kind="POST"
+				code={{ columns: [] }}
 			/>
-			<Endpoint
+			<EndpointWithBody
 				label="Update a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
+				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
 				kind="POST"
+				code={{ column_01: 'value_01', column_02: 'value_02', column_03: 'value_03' }}
 			/>
 			<Endpoint
 				label="Delete a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
-				kind="DELETE"
+				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}/row/:id`}
+				kind="POST"
 			/>
+		</div>
+	)
+}
+
+interface EndpointWithBodyProps {
+	label: string
+	url: string
+	kind: 'POST'
+	code: Record<string, unknown>
+}
+
+function EndpointWithBody({ label, url, kind, code }: EndpointWithBodyProps) {
+	return (
+		<div className="space-y-2">
+			<Endpoint label={label} url={url} kind={kind} />
+			<JsonCode code={code} />
 		</div>
 	)
 }
