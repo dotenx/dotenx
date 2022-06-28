@@ -66,13 +66,13 @@ export const Sidebar = memo(() => {
 				</div>
 			</div>
 			{projectName && (
-				<div className="px-4 mt-10 text-slate-700 ">
+				<div className="px-5 mt-10 text-slate-700 ">
 					<a
-						className="block px-3 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
+						className="block px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
-						<span className="capitalize">{projectName[0]}</span>
-						<span className="transition  opacity-0 group-hover:opacity-100">
+						<span className="text-center capitalize">{projectName[0]}</span>
+						<span className="transition opacity-0 group-hover:opacity-100">
 							{projectName.substring(1)}
 						</span>
 					</a>
