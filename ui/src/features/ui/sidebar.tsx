@@ -15,7 +15,7 @@ import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
-import { ADMIN_URL, IS_LOCAL } from '../../constants'
+import { ADMIN_URL, IS_LOCAL, PRIVATE_VERSION, VERSION } from '../../constants'
 import { NavItem } from './nav-item'
 
 const studioLinks = [
@@ -66,13 +66,13 @@ export const Sidebar = memo(() => {
 				</div>
 			</div>
 			{projectName && (
-				<div className="px-4 mt-10 text-slate-700 ">
+				<div className="px-5 mt-10 text-slate-700 ">
 					<a
-						className="block px-3 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
+						className="block px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
-						<span className="capitalize">{projectName[0]}</span>
-						<span className="transition  opacity-0 group-hover:opacity-100">
+						<span className="text-center capitalize">{projectName[0]}</span>
+						<span className="transition opacity-0 group-hover:opacity-100">
 							{projectName.substring(1)}
 						</span>
 					</a>
@@ -82,6 +82,15 @@ export const Sidebar = memo(() => {
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
 
 				{!IS_LOCAL && <Logout />}
+			</div>
+			<div className="pt-4 text-[10px] text-center">
+				<span title="GitHub Version">{VERSION}</span>
+				{PRIVATE_VERSION && (
+					<>
+						<span> - </span>
+						<span title="GitLab Version">{PRIVATE_VERSION}</span>
+					</>
+				)}
 			</div>
 		</div>
 	)

@@ -101,7 +101,7 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 								func_name: taskOtherValue.fn,
 								args: taskOtherValue.args.map((arg) =>
 									arg.type === InputOrSelectKind.Text
-										? arg.data
+										? { value: arg.data }
 										: { source: arg.groupName, key: arg.data }
 								),
 							},
