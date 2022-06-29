@@ -12,14 +12,40 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
+type condition struct {
+	Key      string      `json:"key"`
+	Operator string      `json:"operator"`
+	Value    interface{} `json:"value"`
+}
+
+type ConditionGroup struct {
+	FilterSet   []condition `json:"filterSet"`
+	Conjunction string      `json:"conjunction,omitempty" binding:"oneof='and' 'or' ''"`
+}
+
+var getColumnType = `
+SELECT data_type
+FROM   information_schema.columns
+WHERE  table_schema = 'public'
+AND    table_name = $1
+AND    column_name = $2
+`
+
 // We first convert this to a parameterized query and then execute it with the values
 var selectRows = `
 SELECT %s 
-FROM %s 
-LIMIT $1 OFFSET $2
+FROM   %s 
+LIMIT $1 OFFSET $2;
 `
 
-func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, offset int, limit int) ([]map[string]interface{}, error) {
+var conditionalSelectRows = `
+SELECT %s 
+FROM   %s 
+WHERE  %s
+LIMIT %s OFFSET %s;
+`
+
+func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, limit int) ([]map[string]interface{}, error) {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
@@ -69,11 +95,79 @@ func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tabl
 		}
 	}
 
-	cl := strings.TrimSuffix(strings.Join(columns, ","), ",")
-	stmt := fmt.Sprintf(selectRows, cl, tableNameStmt)
-	log.Println("stmt:", stmt)
+	whereCondition := ""
+	signCnt := 1
+	values := make([]interface{}, 0)
+	if len(filters.FilterSet) != 0 {
+		for i, cond := range filters.FilterSet {
+			currentTableName := tableName
+			columnName := cond.Key
+			if strings.Contains(cond.Key, "__") && !strings.HasPrefix(cond.Key, "__") {
+				currentTableName = strings.Split(cond.Key, "__")[0]
+				columnName = strings.Split(cond.Key, "__")[1]
+				cond.Key = strings.Replace(cond.Key, "__", ".", 1)
+			} else {
+				cond.Key = fmt.Sprintf("%s.%s", tableName, cond.Key)
+			}
+			log.Println("currentTableName:", currentTableName)
+			log.Println("columnName:", columnName)
+			var columnType string
+			err := db.Connection.QueryRowx(getColumnType, currentTableName, columnName).Scan(&columnType)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					err = errors.New("column not found")
+				}
+				log.Println("error:", err)
+				return nil, err
+			}
+			log.Println("columnType:", columnType)
+			if columnType == "character varying" {
+				switch cond.Operator {
+				case "=", "!=":
+					whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, signCnt)
+					signCnt += 1
+					values = append(values, cond.Value)
+				}
+			} else if columnType == "integer" {
+				supportedOperator := []string{"=", "!=", ">", "<", ">=", "<="}
+				if utils.ContainsString(supportedOperator, cond.Operator) {
+					whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, signCnt)
+					signCnt += 1
+					values = append(values, cond.Value)
+				} else {
+					err = errors.New("operator not supported in filtering")
+					return nil, err
+				}
+			} else {
+				err = errors.New("column type not supported in filtering")
+				return nil, err
+			}
+			if i < len(filters.FilterSet)-1 {
+				whereCondition += fmt.Sprintf(" %s ", filters.Conjunction)
+			}
+		}
+	}
 
-	result, err := db.Connection.Query(stmt, limit, offset)
+	cl := strings.TrimSuffix(strings.Join(columns, ","), ",")
+
+	var result *sql.Rows
+	if len(filters.FilterSet) == 0 {
+		stmt := fmt.Sprintf(selectRows, cl, tableNameStmt)
+		log.Println("stmt:", stmt)
+		result, err = db.Connection.Query(stmt, limit, offset)
+	} else {
+		stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
+		log.Println("stmt:", stmt)
+		values = append(values, limit)
+		values = append(values, offset)
+		log.Println("values:", values)
+		log.Printf("values: %#v\n", values)
+		result, err = db.Connection.Query(stmt, values...)
+		// log.Println("result:", result.)
+	}
+	if err != nil {
+		return nil, err
+	}
 
 	return SelectScan(result)
 }
