@@ -161,6 +161,16 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
+	// oauth user providers routes
+	r.GET("/oauth/user/provider/auth/provider/:provider_name/account_id/:account_id",
+		middlewares.OauthMiddleware(),
+		middlewares.TokenTypeMiddleware([]string{"tp"}),
+		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
+	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
+		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
+
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
 	}
@@ -247,11 +257,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
-		oauth.GET("/user/provider/auth/provider/:provider_name/account_id/:account_id",
-			sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
-		oauth.GET("/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
-			OauthController.OAuthThirdPartyIntegrationCallback)
 	}
 
 	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them

@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'
 import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
+import { RunInteractionForm } from '../interaction'
 import { Button, Modal } from '../ui'
 import { IconButton } from '../ui/icon-button'
 import { JsonCode } from './json-code'
@@ -217,8 +218,11 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					<AutomationYaml name={automationName} />
 				</Modal>
 			)}
+			<Modal kind={Modals.InteractionBody} title="Request Body" size="md" fluid>
+				<RunInteractionForm interactionName={automationName ?? ''} />
+			</Modal>
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
-				<JsonCode code={JSON.stringify(runResponse ?? {}, null, 2)} />
+				{(data: Record<string, unknown>) => <JsonCode code={data} />}
 			</Modal>
 		</>
 	)
