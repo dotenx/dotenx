@@ -26,6 +26,12 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return
 		}
 	}
+	/*pipeId, err := manager.Store.GetPipelineIdByExecution(noContext, executionId)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	manager.Store.GetPip*/
 	for _, taskId := range taskIds {
 		task, err := manager.Store.GetTaskByExecution(noContext, executionId, taskId)
 		if err != nil {
