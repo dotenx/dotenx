@@ -37,27 +37,23 @@ VALUES ($1, $2, $3, $4) RETURNING id
 func (ps *pipelineStore) GetThirdPartyAccountId(context context.Context, executionId int) (string, error) {
 	switch ps.db.Driver {
 	case db.Postgres:
-		var id int
+		var id string
 		conn := ps.db.Connection
-		err := conn.Get(&id, getInitialTask, executionId)
+		err := conn.Get(&id, gettpAccountId, executionId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
-				return 0, errors.New("task id not found")
+				return "", errors.New("task id not found")
 			}
-			return 0, err
+			return "", err
 		}
 		return id, nil
 	}
-	return 0, nil
+	return "", nil
 
 }
 
-var getInitialTask = `
-select ts.id id
-from executions as e
-join pipelines as pv on e.pipeline_id = pv.id
-join tasks as ts on ts.pipeline_id = pv.id
-where e.id = $1
-and not exists (select * from task_preconditions as tp where tp.task_id = ts.id);
+var gettpAccountId = `
+select tp_account_id from executions
+where id = $1;
 `
