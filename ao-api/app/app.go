@@ -161,11 +161,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
-	// oauth user providers routes (without any authentication)
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
+	// oauth user providers routes
 	r.GET("/oauth/user/provider/auth/provider/:provider_name/account_id/:account_id",
+		middlewares.OauthMiddleware(),
+		middlewares.TokenTypeMiddleware([]string{"tp"}),
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
-		OauthController.OAuthThirdPartyIntegrationCallback)
+		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
