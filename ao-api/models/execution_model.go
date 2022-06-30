@@ -34,8 +34,9 @@ func (e *InputData) Scan(value interface{}) error {
 }
 
 type Execution struct {
-	Id                int
-	PipelineVersionId int       `db:"pipeline_version_id"`
-	StartedAt         time.Time `db:"started_at"`
-	InitialData       InputData `db:"initial_data"`
+	Id                  int
+	PipelineVersionId   int       `db:"pipeline_version_id"`
+	StartedAt           time.Time `db:"started_at"`
+	InitialData         InputData `db:"initial_data"`
+	ThirdPartyAccountId int       `db:"tp_account_id"`
 }

@@ -132,6 +132,18 @@ var migrations = []struct {
 		name: "add-tp-account-id-field-to-integrations",
 		stmt: addTpAccountIdFieldToIntegrations,
 	},
+	{
+		name: "add-tpAccountId-field",
+		stmt: addTpAccountId,
+	},
+	{
+		name: "update-tpAccountId-field",
+		stmt: updateTpAccountId,
+	},
+	{
+		name: "update-nill-tpAccountId-field",
+		stmt: updateNillTpAccountId,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -279,6 +291,18 @@ initial_data							        JSONB,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
+
+var addTpAccountId = `ALTER TABLE executions
+ADD COLUMN IF NOT EXISTS tp_account_id INT;`
+
+var updateTpAccountId = `
+ALTER TABLE executions
+ALTER COLUMN tp_account_id
+SET DEFAULT -1;`
+
+var updateNillTpAccountId = `
+UPDATE executions
+SET tp_account_id=-1;`
 
 var addExectuionTime = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
