@@ -17,7 +17,7 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 
 	return (
 		<Button
-			className="w-40"
+			className="w-44"
 			type="button"
 			variant="outlined"
 			onClick={() => deleteMutation.mutate()}

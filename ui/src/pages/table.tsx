@@ -1,8 +1,9 @@
-import { IoAdd, IoList, IoTrash } from 'react-icons/io5'
+import { IoAdd, IoList, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { deleteColumn, getColumns, getProject, getTableRecords, QueryKey } from '../api'
 import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
+import QueryBuilder from '../features/database/query-builder'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
 
@@ -47,6 +48,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			<Modal kind={Modals.TableEndpoints} title="Endpoints" size="xl">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
+			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
+				<QueryBuilder />
+			</Modal>
 		</>
 	)
 }
@@ -57,15 +61,19 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	return (
 		<div className="flex gap-4">
 			<TableDeletion projectName={projectName} tableName={tableName} />
+			<Button className="w-44" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
+				<IoSearch className="text-2xl" />
+				Query Builder
+			</Button>
 			<Button
-				className="w-40"
+				className="w-44"
 				type="button"
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
 				<IoList className="text-2xl" />
 				Endpoints
 			</Button>
-			<Button className="w-40" type="button" onClick={() => modal.open(Modals.NewColumn)}>
+			<Button className="w-44" type="button" onClick={() => modal.open(Modals.NewColumn)}>
 				<IoAdd className="text-2xl" />
 				New Column
 			</Button>
