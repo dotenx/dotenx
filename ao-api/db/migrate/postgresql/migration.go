@@ -293,16 +293,16 @@ FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 `
 
 var addTpAccountId = `ALTER TABLE executions
-ADD COLUMN IF NOT EXISTS tp_account_id INT;`
+ADD COLUMN IF NOT EXISTS tp_account_id varchar(64);`
 
 var updateTpAccountId = `
 ALTER TABLE executions
 ALTER COLUMN tp_account_id
-SET DEFAULT -1;`
+SET DEFAULT 'no third party user';`
 
 var updateNillTpAccountId = `
 UPDATE executions
-SET tp_account_id=-1;`
+SET tp_account_id= 'no third party user';`
 
 var addExectuionTime = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
