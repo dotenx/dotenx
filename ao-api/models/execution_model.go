@@ -38,5 +38,5 @@ type Execution struct {
 	PipelineVersionId   int       `db:"pipeline_version_id"`
 	StartedAt           time.Time `db:"started_at"`
 	InitialData         InputData `db:"initial_data"`
-	ThirdPartyAccountId int       `db:"tp_account_id"`
+	ThirdPartyAccountId string    `db:"tp_account_id"`
 }

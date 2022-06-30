@@ -26,12 +26,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return
 		}
 	}
-	/*pipeId, err := manager.Store.GetPipelineIdByExecution(noContext, executionId)
+	tpAccountId, err := manager.Store.GetThirdPartyAccountId(noContext, executionId)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	manager.Store.GetPip*/
 	for _, taskId := range taskIds {
 		task, err := manager.Store.GetTaskByExecution(noContext, executionId, taskId)
 		if err != nil {
@@ -49,6 +48,17 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				return err
 			}
 			jobDTO.SetIntegration(integration)
+		} else {
+			if tpAccountId == "" {
+				log.Println("task does not have an integration")
+			} else {
+				// TODO what if for tasks with several types of integrations
+				integration, err := manager.IntegrationService.GetIntegrationForThirdPartyAccount(accountId, tpAccountId, task.MetaData.Integrations[0])
+				if err != nil {
+					return err
+				}
+				jobDTO.SetIntegration(integration)
+			}
 		}
 		body, err := manager.mapFields(executionId, accountId, task.Type, jobDTO.Body)
 		if err != nil {

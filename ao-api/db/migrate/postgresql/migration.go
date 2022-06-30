@@ -133,7 +133,11 @@ var migrations = []struct {
 		stmt: addTpAccountIdFieldToIntegrations,
 	},
 	{
-		name: "add-tpAccountId-field",
+		name: "remove-tpAccountId-field2",
+		stmt: removeTpAccountId,
+	},
+	{
+		name: "add-tpAccountId-field2",
 		stmt: addTpAccountId,
 	},
 	{
@@ -291,6 +295,8 @@ initial_data							        JSONB,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
+var removeTpAccountId = `ALTER TABLE executions
+DROP COLUMN IF EXISTS tp_account_id;`
 
 var addTpAccountId = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS tp_account_id varchar(64);`
