@@ -128,6 +128,10 @@ var migrations = []struct {
 		name: "create-table-projects",
 		stmt: createTableProjects,
 	},
+	{
+		name: "add-tp-account-id-field-to-integrations",
+		stmt: addTpAccountIdFieldToIntegrations,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -408,4 +412,9 @@ description                  VARCHAR(128),
 tag                          varchar(32) NOT NULL,
 UNIQUE (account_id, name)
 )
+`
+
+var addTpAccountIdFieldToIntegrations = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS tp_account_id varchar(64);
 `
