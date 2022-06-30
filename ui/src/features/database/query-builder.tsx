@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { IoTrash } from 'react-icons/io5'
 import { Field, NewSelect } from '../ui'
 
-export default function QueryConditions() {
+export default function QueryBuilder() {
 	const [conditions, setConditions] = useState<string[]>([])
 
 	const deleteCondition = (id: string) =>
@@ -15,7 +15,7 @@ export default function QueryConditions() {
 		<div className="p-4 border rounded-2xl">
 			<p>Select records from this table</p>
 			{conditions.length === 0 && (
-				<p className="mt-3.5 text-xs text-slate-500">
+				<p className="mt-[18px] text-xs text-slate-500">
 					No filter conditions are applied to this table
 				</p>
 			)}
