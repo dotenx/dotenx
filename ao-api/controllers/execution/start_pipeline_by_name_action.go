@@ -1,6 +1,7 @@
 package execution
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -11,7 +12,11 @@ import (
 func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId, _ := utils.GetAccountId(c)
-
+		var tpAccountId string
+		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
+			accId, _ := c.Get("tpAccountId")
+			tpAccountId = fmt.Sprintf("%v", accId)
+		}
 		name := c.Param("name")
 		// Get the `input data` from the request body
 		var input map[string]interface{}
@@ -19,7 +24,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 			c.Status(http.StatusBadRequest)
 			return
 		}
-		res, err := e.Service.StartPipelineByName(input, accountId, name)
+		res, err := e.Service.StartPipelineByName(input, accountId, name, tpAccountId)
 		if err != nil {
 			if err.Error() == "automation is not active" {
 				c.JSON(http.StatusBadRequest, err.Error())

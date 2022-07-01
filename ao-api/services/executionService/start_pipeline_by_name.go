@@ -15,7 +15,7 @@ import (
 	Current approach doesn't match the cases like the build pipelines in repositories where you have particular pipeline per git push
 	and at any time you are able to re-run it.
 */
-func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name string) (interface{}, error) {
+func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId string) (interface{}, error) {
 
 	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name)
 	if err != nil {
@@ -50,6 +50,9 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		PipelineVersionId: pipelineId,
 		StartedAt:         time.Now(),
 		InitialData:       input,
+	}
+	if isInteraction {
+		execution.ThirdPartyAccountId = tpAccountId
 	}
 
 	executionId, err := manager.Store.CreateExecution(noContext, execution)

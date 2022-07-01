@@ -77,3 +77,22 @@ func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 		c.JSON(http.StatusOK, temp)
 	}
 }
+
+func (mc *CRUDController) GetInteractionDetailes() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		name := c.Param("name")
+		accountId, err := utils.GetAccountId(c)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		temp, err := mc.Service.GetInteractionDetailes(accountId, name)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, temp)
+	}
+}

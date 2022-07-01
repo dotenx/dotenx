@@ -9,14 +9,17 @@
   With DoTenX you can build massively scalable and powerful backends with no-code which are extendable with custom code. You can also build automation with DoTenX.
 </p>
 
+---
 
-Join our discord community to connect with like-minded individuals, get the latest news and shape our roadmap with your feedbacks or feature requests:
+Try DoTenX on cloud (no credit cards needed - unlimited access):
+
+https://dotenx.com
+
+
+Discord:
 
 https://discord.gg/kpCmHtKYHd
 
-Try it on cloud (no credit cards needed - unlimited access):
-
-https://dotenx.com
 
 Blog:
 
