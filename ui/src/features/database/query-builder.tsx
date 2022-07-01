@@ -57,19 +57,13 @@ export default function QueryBuilder({ projectName, tableName }: QueryBuilderPro
 		label: column.name,
 		value: column.name,
 	}))
+	const addCondition = () => fieldArray.append({ key: '', operator: '', value: '' })
 
 	return (
-		<div>
-			<form
-				className="p-4 border rounded"
-				onSubmit={form.handleSubmit((values) => console.log(values))}
-			>
-				<p>Select records from this table</p>
-				{fieldArray.fields.length === 0 && (
-					<p className="mt-[18px] text-xs text-slate-500">
-						No filter condition are applied to this table
-					</p>
-				)}
+		<div className="space-y-10">
+			<div className="p-4 border rounded">
+				<Title />
+				{fieldArray.fields.length === 0 && <EmptyMessage />}
 				<div className="mt-6 space-y-4">
 					{fieldArray.fields.map((field, index) => (
 						<div key={field.id} className="grid items-center grid-cols-12 gap-2 px-4">
@@ -115,28 +109,50 @@ export default function QueryBuilder({ projectName, tableName }: QueryBuilderPro
 										control={form.control}
 									/>
 								</div>
-								<button
-									className="p-2 transition rounded hover:bg-gray-50 place-self-start"
-									type="button"
-									onClick={() => fieldArray.remove(index)}
-								>
-									<IoTrash />
-								</button>
+								<DeleteButton onClick={() => fieldArray.remove(index)} />
 							</div>
 						</div>
 					))}
 				</div>
-				<button
-					className="mt-6 font-semibold transition hover:text-slate-900 text-slate-600"
-					type="button"
-					onClick={() => fieldArray.append({ key: '', operator: '', value: '' })}
-				>
-					+ Add condition
-				</button>
-			</form>
-			<div className="mt-10">
-				<JsonCode code={{ columns: [], filters: form.watch() }} />
+				<AddButton onClick={addCondition} />
 			</div>
+			<JsonCode code={{ columns: [], filters: form.watch() }} />
 		</div>
+	)
+}
+
+function Title() {
+	return <p>Select records from this table</p>
+}
+
+function EmptyMessage() {
+	return (
+		<p className="mt-[18px] text-xs text-slate-500">
+			No filter condition are applied to this table
+		</p>
+	)
+}
+
+function DeleteButton({ onClick }: { onClick: () => void }) {
+	return (
+		<button
+			className="p-2 transition rounded hover:bg-gray-50 place-self-start"
+			type="button"
+			onClick={onClick}
+		>
+			<IoTrash />
+		</button>
+	)
+}
+
+function AddButton({ onClick }: { onClick: () => void }) {
+	return (
+		<button
+			className="mt-6 font-semibold transition hover:text-slate-900 text-slate-600"
+			type="button"
+			onClick={onClick}
+		>
+			+ Add condition
+		</button>
 	)
 }
