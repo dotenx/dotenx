@@ -47,7 +47,7 @@ interface EndpointWithBodyProps {
 	code: Record<string, unknown>
 }
 
-function EndpointWithBody({ label, url, kind, code }: EndpointWithBodyProps) {
+export function EndpointWithBody({ label, url, kind, code }: EndpointWithBodyProps) {
 	return (
 		<div className="space-y-2">
 			<Endpoint label={label} url={url} kind={kind} />

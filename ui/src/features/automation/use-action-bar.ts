@@ -29,18 +29,19 @@ export function useActionBar(kind: AutomationKind) {
 
 	const onRun = () => {
 		if (selectedAutomationData)
-			runMutation.mutate(selectedAutomationData.name, {
-				onSuccess: (data) => {
-					if (kind !== 'interaction') {
+			if (kind !== 'interaction') {
+				runMutation.mutate(selectedAutomationData.name, {
+					onSuccess: (data) =>
 						navigate(
 							`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
-						)
-					} else {
-						modal.open(Modals.InteractionResponse)
-					}
-				},
-			})
-		else console.error('No automation is selected')
+						),
+				})
+			} else {
+				modal.open(Modals.InteractionBody)
+			}
+		else {
+			console.error('No automation is selected')
+		}
 	}
 
 	const onDelete = () => {

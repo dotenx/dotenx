@@ -80,6 +80,24 @@ func (controller *OauthController) ThirdPartyOAuth(c *gin.Context) {
 	}
 	goth.UseProviders(*gothProvider)
 
+	tpAccountId, exist := c.Get("tpAccountId")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "can't authorize you (we missed your token)",
+		})
+		return
+	}
+	log.Println("tpAccountId:", tpAccountId)
+	session := sessions.Default(c)
+	session.Set("tpAccountId", tpAccountId)
+	err = session.Save()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
 	q := c.Request.URL.Query()
 	q.Add("provider", userProvider.Type)
 	c.Request.URL.RawQuery = q.Encode()
@@ -201,13 +219,23 @@ func (controller *OauthController) OAuthThirdPartyIntegrationCallback(c *gin.Con
 	}
 	goth.UseProviders(*gothProvider)
 
+	session := sessions.Default(c)
+	tpAccountId, ok := session.Get("tpAccountId").(string)
+	if tpAccountId == "" || !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "your session is not valid please try again later",
+		})
+		return
+	}
+
 	fields, err := controller.IntegrationService.GetIntegrationFields(userProvider.Type)
 	fields.Secrets = make([]models.IntegrationSecret, 0)
 	integration := models.Integration{
-		Name:      userProvider.Type + "-" + utils.RandStringRunes(8, utils.FullRunes),
-		AccountId: accountId,
-		Type:      userProvider.Type,
-		Provider:  userProvider.Name,
+		Name:        userProvider.Type + "-" + utils.RandStringRunes(8, utils.FullRunes),
+		AccountId:   accountId,
+		Type:        userProvider.Type,
+		Provider:    userProvider.Name,
+		TpAccountId: tpAccountId,
 	}
 	integration.Secrets = make(map[string]string)
 
