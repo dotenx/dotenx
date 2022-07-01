@@ -49,7 +49,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
 			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
-				<QueryBuilder />
+				<QueryBuilder projectName={projectName} tableName={tableName} />
 			</Modal>
 		</>
 	)
