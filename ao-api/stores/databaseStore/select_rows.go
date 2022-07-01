@@ -127,6 +127,17 @@ func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tabl
 					whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, signCnt)
 					signCnt += 1
 					values = append(values, cond.Value)
+				case "contains":
+					whereCondition += fmt.Sprintf("%s LIKE $%d", cond.Key, signCnt)
+					signCnt += 1
+					values = append(values, fmt.Sprintf("%%%s%%", cond.Value))
+				case "doesNotContain":
+					whereCondition += fmt.Sprintf("%s NOT LIKE $%d", cond.Key, signCnt)
+					signCnt += 1
+					values = append(values, fmt.Sprintf("%%%s%%", cond.Value))
+				default:
+					err = errors.New("operator not supported in filtering")
+					return nil, err
 				}
 			} else if columnType == "integer" {
 				supportedOperator := []string{"=", "!=", ">", "<", ">=", "<="}
