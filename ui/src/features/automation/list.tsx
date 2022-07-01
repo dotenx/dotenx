@@ -2,8 +2,15 @@ import _ from 'lodash'
 import { IoAdd, IoCodeDownload } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
-import { API_URL, Automation, AutomationKind, getTemplateEndpointFields, QueryKey } from '../../api'
-import { Endpoint } from '../database'
+import {
+	API_URL,
+	Automation,
+	AutomationKind,
+	getInteractionEndpointFields,
+	getTemplateEndpointFields,
+	QueryKey,
+} from '../../api'
+import { Endpoint, EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
 import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
 import { JsonCode } from './json-code'
@@ -53,6 +60,18 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					data={automations}
 				/>
 			</div>
+			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
+				{(data: { automationName: string }) => (
+					<>
+						{kind === 'template' && (
+							<TemplateEndpoint automationName={data.automationName} />
+						)}
+						{kind === 'interaction' && (
+							<InteractionEndpoint automationName={data.automationName} />
+						)}
+					</>
+				)}
+			</Modal>
 		</div>
 	)
 }
@@ -102,7 +121,7 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 					{kind !== 'automation' && (
 						<Button
 							variant="outlined"
-							onClick={() => modal.open(Modals.TemplateEndpoint)}
+							onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
 						>
 							Endpoint
 						</Button>
@@ -113,10 +132,6 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 					/>
 				</div>
 			</div>
-			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
-				{kind === 'template' && <TemplateEndpoint automationName={automationName} />}
-				{kind === 'interaction' && <InteractionEndpoint automationName={automationName} />}
-			</Modal>
 		</>
 	)
 }
@@ -153,13 +168,20 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 }
 
 function InteractionEndpoint({ automationName }: { automationName: string }) {
+	const query = useQuery([QueryKey.GetInteractionEndpointFields, automationName], () =>
+		getInteractionEndpointFields(automationName)
+	)
+	const pairs = query.data?.data.map((value) => [value, value])
+	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
+
+	if (query.isLoading) return <Loader />
+
 	return (
-		<div className="px-4 pt-6 pb-10">
-			<Endpoint
-				label="Run interaction"
-				url={`${API_URL}/execution/name/${automationName}/start`}
-				kind="POST"
-			/>
-		</div>
+		<EndpointWithBody
+			label="Run interaction"
+			url={`${API_URL}/execution/name/${automationName}/start`}
+			kind="POST"
+			code={body}
+		/>
 	)
 }

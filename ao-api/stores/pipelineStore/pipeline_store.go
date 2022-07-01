@@ -51,6 +51,7 @@ type PipelineStore interface {
 	SetExecutionTime(executionId, seconds int) error
 	// Add execution
 	CreateExecution(context context.Context, execution models.Execution) (id int, err error)
+	GetThirdPartyAccountId(context context.Context, executionId int) (string, error)
 	// Get initial job of an execution
 	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
 	// GetInitialData retrieves the initial data of an execution

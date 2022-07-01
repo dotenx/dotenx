@@ -41,6 +41,12 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 				if key == "name" {
 					pipelineDto.Name = val.(string)
 				}
+				if key == "is_interaction" {
+					pipelineDto.IsInteraction = val.(bool)
+				}
+				if key == "is_template" {
+					pipelineDto.IsTemplate = val.(bool)
+				}
 			}
 		} else {
 			if err := c.ShouldBindJSON(&pipelineDto); err != nil {
@@ -48,6 +54,9 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 				return
 			}
 		}
+		fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
+		fmt.Printf("%v\n", pipelineDto)
+		fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{

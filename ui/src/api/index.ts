@@ -30,6 +30,7 @@ import {
 	GetTriggersResponse,
 	GetUserManagementDataResponse,
 	Provider,
+	StartAutomationRequest,
 } from './types'
 export * from './types'
 
@@ -66,10 +67,10 @@ export function getAutomationYaml(name: string) {
 	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
 }
 
-export function startAutomation(automationName: string) {
+export function startAutomation(automationName: string, payload: StartAutomationRequest = {}) {
 	return api.post<{ id: number } | Record<string, unknown>>(
 		`/execution/name/${automationName}/start`,
-		{}
+		payload
 	)
 }
 
@@ -237,5 +238,9 @@ export function getUserManagementData(projectTag: string) {
 }
 
 export function getTemplateEndpointFields(templateName: string) {
-	return api.get<Record<string, string>>(`pipeline/template/name/${templateName}`)
+	return api.get<Record<string, string>>(`/pipeline/template/name/${templateName}`)
+}
+
+export function getInteractionEndpointFields(interactionName: string) {
+	return api.get<string[]>(`/pipeline/interaction/name/${interactionName}`)
 }

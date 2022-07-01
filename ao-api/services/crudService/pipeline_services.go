@@ -17,6 +17,32 @@ import (
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
+	// checking if all integrations in an interaction or template have provider
+	for _, task := range pipeline.Manifest.Tasks {
+		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			integration, err := cm.IntegrationService.GetIntegrationByName(base.AccountId, task.Integration)
+			if err != nil {
+				return err
+			}
+			if integration.Provider == "" {
+				if isInteraction || isTemplate {
+					return errors.New("your integrations must have provider")
+				}
+			}
+		}
+		if isInteraction {
+			body := task.Body.(models.TaskBodyMap)
+			for key, value := range body {
+				if fmt.Sprintf("%v", value) == "" {
+					val := insertDto{
+						Source: "interactionRunTime",
+						Key:    key,
+					}
+					body[key] = val
+				}
+			}
+		}
+	}
 	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
 	if err != nil {
 		return
@@ -314,10 +340,14 @@ func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (
 	}
 	for _, intg := range integrations {
 		if intg.Name == integration {
-			return true, nil
+			if intg.Provider != "" {
+				return true, nil
+			} else {
+				return false, errors.New("all integration for template must have provider")
+			}
 		}
 	}
-	return
+	return false, errors.New("no integration was found")
 }
 
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
@@ -359,4 +389,33 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 		}
 	}
 	return
+}
+func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes []string, err error) {
+	detailes = make([]string, 0)
+	temp, _, _, _, isInteraction, err := cm.GetPipelineByName(accountId, name)
+	if err != nil {
+		return
+	}
+	if !isInteraction {
+		return nil, errors.New("it is not a interaction")
+	}
+	for _, task := range temp.Manifest.Tasks {
+		body := task.Body.(models.TaskBodyMap)
+		for key, value := range body {
+			var insertDt insertDto
+			b, _ := json.Marshal(value)
+			err := json.Unmarshal(b, &insertDt)
+			if err == nil && insertDt.Key != "" && insertDt.Source != "" {
+				if insertDt.Source == "interactionRunTime" {
+					detailes = append(detailes, key)
+				}
+			}
+		}
+	}
+	return
+}
+
+type insertDto struct {
+	Source string `json:"source"`
+	Key    string `json:"key"`
 }
