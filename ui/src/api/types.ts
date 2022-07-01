@@ -324,7 +324,7 @@ export interface Column {
 }
 
 export type GetColumnsResponse = {
-	columns: string[]
+	columns: { name: string; type: 'integer' | 'character varying' }[]
 }
 
 export type AutomationKind = 'automation' | 'template' | 'interaction'

@@ -26,8 +26,8 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const records = recordsQuery.data?.data ?? [{}]
 	const headers =
 		columnsQuery.data?.data.columns.map((column) => ({
-			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
-			accessor: column,
+			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
+			accessor: column.name,
 		})) ?? []
 
 	return (
