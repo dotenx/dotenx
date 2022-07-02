@@ -14,7 +14,7 @@ type DatabaseService interface {
 	GetTablesList(accountId string, projectName string) ([]string, error)
 	ListTableColumns(accountId string, projectName string, tableName string) ([]string, error)
 
-	InsertRow(projectTag string, tableName string, row map[string]string) error
+	InsertRow(projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(projectTag string, tableName string, id int, row map[string]string) error
 	DeleteRow(projectTag string, tableName string, id int) error
 	SelectRows(projectTag string, tableName string, columns []string, page int, size int) ([]map[string]interface{}, error)
