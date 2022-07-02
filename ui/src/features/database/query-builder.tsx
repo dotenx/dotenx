@@ -1,9 +1,9 @@
+import { ReactNode } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { z } from 'zod'
 import { getColumns, QueryKey } from '../../api'
-import { JsonCode } from '../automation/json-code'
 import { Field, NewSelect } from '../ui'
 
 const chainedConditionOptions = [
@@ -39,16 +39,23 @@ const schema = z.object({
 	),
 })
 
-type Schema = z.infer<typeof schema>
+export type QueryBuilderValues = z.infer<typeof schema>
 
 interface QueryBuilderProps {
 	projectName: string
 	tableName: string
+	children: (values: QueryBuilderValues) => ReactNode
+	defaultValues?: QueryBuilderValues
 }
 
-export default function QueryBuilder({ projectName, tableName }: QueryBuilderProps) {
+export default function QueryBuilder({
+	projectName,
+	tableName,
+	children,
+	defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' },
+}: QueryBuilderProps) {
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
-	const form = useForm<Schema>({ defaultValues: { filterSet: [], conjunction: 'and' } })
+	const form = useForm<QueryBuilderValues>({ defaultValues })
 	const fieldArray = useFieldArray({ control: form.control, name: 'filterSet' })
 	const conjunction = form.watch('conjunction')
 	const filterSet = form.watch('filterSet')
@@ -116,7 +123,7 @@ export default function QueryBuilder({ projectName, tableName }: QueryBuilderPro
 				</div>
 				<AddButton onClick={addCondition} />
 			</div>
-			<JsonCode code={{ columns: [], filters: form.watch() }} />
+			{children(form.watch())}
 		</div>
 	)
 }
