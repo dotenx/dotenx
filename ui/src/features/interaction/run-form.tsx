@@ -16,8 +16,10 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 		(values: StartAutomationRequest) => startAutomation(interactionName, values),
 		{ onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data) }
 	)
-	const query = useQuery(QueryKey.GetInteractionEndpointFields, () =>
-		getInteractionEndpointFields(interactionName)
+	const query = useQuery(
+		[QueryKey.GetInteractionEndpointFields, interactionName],
+		() => getInteractionEndpointFields(interactionName),
+		{ enabled: !!interactionName }
 	)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate({ interactionRunTime: values }))
 	if (query.isLoading) return <Loader />

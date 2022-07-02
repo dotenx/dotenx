@@ -44,7 +44,6 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 		newAutomation,
 		handleDeleteAutomation,
 		isRunning,
-		runResponse,
 	} = useActionBar(kind)
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)

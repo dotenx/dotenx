@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +39,7 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 			return
 		}
 
-		rows, err := dc.Service.SelectRows(projectTag, tableName, dto.Columns, page, size)
+		rows, err := dc.Service.SelectRows(projectTag, tableName, dto.Columns, dto.Filters, page, size)
 		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
@@ -49,5 +50,6 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 }
 
 type selectDto struct {
-	Columns []string `json:"columns"`
+	Columns []string                     `json:"columns"`
+	Filters databaseStore.ConditionGroup `json:"filters,omitempty"`
 }

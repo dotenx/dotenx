@@ -53,7 +53,7 @@ function Detail({ label, value }: { label: string; value: string | ReactNode }) 
 }
 
 function Scopes({ data }: { data?: string[] }) {
-	if (!data) return <p>No scopes</p>
+	if (!data || data.length === 0) return <p>No scopes</p>
 
 	return (
 		<div className="flex flex-wrap items-center gap-2 mt-2">
