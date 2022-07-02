@@ -53,6 +53,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				log.Println("task does not have an integration")
 			} else {
 				// TODO what if for tasks with several types of integrations
+				task.MetaData = models.AvaliableTasks[task.Type]
 				if len(task.MetaData.Integrations) > 0 {
 					integration, err := manager.IntegrationService.GetIntegrationForThirdPartyAccount(accountId, tpAccountId, task.MetaData.Integrations[0])
 					if err != nil {
