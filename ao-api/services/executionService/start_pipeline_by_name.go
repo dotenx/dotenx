@@ -52,6 +52,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		InitialData:       input,
 	}
 	if isInteraction {
+		log.Println("tpAccountId:", tpAccountId)
 		execution.ThirdPartyAccountId = tpAccountId
 	}
 
