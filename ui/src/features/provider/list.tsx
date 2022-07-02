@@ -24,10 +24,7 @@ export function ProviderList() {
 					Header: 'Name',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<Link
-							className="hover:underline underline-offset-2"
-							to={`/builder/providers/${value}`}
-						>
+						<Link className="hover:underline underline-offset-2" to={value}>
 							{value}
 						</Link>
 					),
