@@ -1,9 +1,18 @@
-import { IoAdd, IoList, IoSearch, IoTrash } from 'react-icons/io5'
+import { useState } from 'react'
+import { IoAdd, IoFilter, IoList, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { deleteColumn, getColumns, getProject, getTableRecords, QueryKey } from '../api'
+import {
+	deleteColumn,
+	getColumns,
+	getProject,
+	getTableRecords,
+	GetTableRecordsRequest,
+	QueryKey,
+} from '../api'
+import { JsonCode } from '../features/automation/json-code'
 import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
-import QueryBuilder from '../features/database/query-builder'
+import QueryBuilder, { QueryBuilderValues } from '../features/database/query-builder'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
 
@@ -15,12 +24,14 @@ export default function TablePage() {
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const modal = useModal()
+	const [filters, setFilters] = useState<GetTableRecordsRequest>({ columns: [] })
 	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
 	const projectTag = projectDetails.data?.data.tag ?? ''
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
-		QueryKey.GetTableRecords,
-		() => getTableRecords(projectTag, tableName),
+		[QueryKey.GetTableRecords, projectTag, tableName, filters],
+		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
 	const records = recordsQuery.data?.data ?? [{}]
@@ -49,7 +60,21 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
 			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
-				<QueryBuilder projectName={projectName} tableName={tableName} />
+				<QueryBuilder projectName={projectName} tableName={tableName}>
+					{(values) => <JsonCode code={{ columns: [], filters: values }} />}
+				</QueryBuilder>
+			</Modal>
+			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
+				<RecordFilter
+					projectName={projectName}
+					tableName={tableName}
+					defaultValues={filters.filters}
+					onSubmit={(values) => {
+						setFilters({ columns: [], filters: values })
+						recordsQuery.refetch()
+						modal.close()
+					}}
+				/>
 			</Modal>
 		</>
 	)
@@ -59,22 +84,26 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	const modal = useModal()
 
 	return (
-		<div className="flex gap-4">
+		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
-			<Button className="w-44" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
-				<IoSearch className="text-2xl" />
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.TableFilter)}>
+				<IoFilter />
+				Filter
+			</Button>
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
+				<IoSearch />
 				Query Builder
 			</Button>
 			<Button
-				className="w-44"
+				className="w-32"
 				type="button"
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
-				<IoList className="text-2xl" />
+				<IoList />
 				Endpoints
 			</Button>
-			<Button className="w-44" type="button" onClick={() => modal.open(Modals.NewColumn)}>
-				<IoAdd className="text-2xl" />
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewColumn)}>
+				<IoAdd />
 				New Column
 			</Button>
 		</div>
@@ -103,5 +132,27 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 				</button>
 			)}
 		</div>
+	)
+}
+
+function RecordFilter({
+	projectName,
+	tableName,
+	defaultValues,
+	onSubmit,
+}: {
+	projectName: string
+	tableName: string
+	defaultValues?: QueryBuilderValues
+	onSubmit: (values: QueryBuilderValues) => void
+}) {
+	return (
+		<QueryBuilder projectName={projectName} tableName={tableName} defaultValues={defaultValues}>
+			{(values) => (
+				<Button type="button" onClick={() => onSubmit(values)}>
+					Apply Filter
+				</Button>
+			)}
+		</QueryBuilder>
 	)
 }

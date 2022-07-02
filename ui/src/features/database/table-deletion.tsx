@@ -17,13 +17,13 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 
 	return (
 		<Button
-			className="w-44"
+			className="w-32"
 			type="button"
 			variant="outlined"
 			onClick={() => deleteMutation.mutate()}
 			loading={deleteMutation.isLoading}
 		>
-			<IoTrash className="text-lg" />
+			<IoTrash />
 			Delete Table
 		</Button>
 	)
