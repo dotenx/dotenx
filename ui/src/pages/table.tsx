@@ -3,6 +3,7 @@ import { IoAdd, IoFilter, IoList, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import {
+	API_URL,
 	deleteColumn,
 	getColumns,
 	getProject,
@@ -11,7 +12,7 @@ import {
 	QueryKey,
 } from '../api'
 import { JsonCode } from '../features/automation/json-code'
-import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
+import { ColumnForm, Endpoint, TableDeletion, TableEndpoints } from '../features/database'
 import QueryBuilder, { QueryBuilderValues } from '../features/database/query-builder'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
@@ -60,9 +61,11 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
 			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
-				<QueryBuilder projectName={projectName} tableName={tableName}>
-					{(values) => <JsonCode code={{ columns: [], filters: values }} />}
-				</QueryBuilder>
+				<QueryTable
+					projectName={projectName}
+					projectTag={projectTag}
+					tableName={tableName}
+				/>
 			</Modal>
 			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
 				<RecordFilter
@@ -77,6 +80,31 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				/>
 			</Modal>
 		</>
+	)
+}
+
+function QueryTable({
+	projectName,
+	projectTag,
+	tableName,
+}: {
+	projectName: string
+	projectTag: string
+	tableName: string
+}) {
+	return (
+		<QueryBuilder projectName={projectName} tableName={tableName}>
+			{(values) => (
+				<div className="space-y-6">
+					<Endpoint
+						kind="POST"
+						label="Get records"
+						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+					/>
+					<JsonCode code={{ columns: [], filters: values }} />
+				</div>
+			)}
+		</QueryBuilder>
 	)
 }
 
