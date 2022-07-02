@@ -75,6 +75,31 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		if err != nil {
 			return errors.New("error in deleting old version: " + err.Error())
 		}
+		for _, task := range pipeline.Manifest.Tasks {
+			if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+				integration, err := cm.IntegrationService.GetIntegrationByName(base.AccountId, task.Integration)
+				if err != nil {
+					return err
+				}
+				if integration.Provider == "" {
+					if isInteraction || isTemplate {
+						return errors.New("your integrations must have provider")
+					}
+				}
+			}
+			if isInteraction {
+				body := task.Body.(models.TaskBodyMap)
+				for key, value := range body {
+					if fmt.Sprintf("%v", value) == "" {
+						val := insertDto{
+							Source: "interactionRunTime",
+							Key:    key,
+						}
+						body[key] = val
+					}
+				}
+			}
+		}
 		err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
