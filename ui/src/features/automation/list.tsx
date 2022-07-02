@@ -150,8 +150,10 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 }
 
 function TemplateEndpoint({ automationName }: { automationName: string }) {
-	const fieldsQuery = useQuery(QueryKey.GetTemplateEndpointFields, () =>
-		getTemplateEndpointFields(automationName)
+	const fieldsQuery = useQuery(
+		[QueryKey.GetTemplateEndpointFields, automationName],
+		() => getTemplateEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
 	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
 	if (fieldsQuery.isLoading || !fields) return <Loader />
@@ -169,8 +171,10 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 }
 
 function InteractionEndpoint({ automationName }: { automationName: string }) {
-	const query = useQuery([QueryKey.GetInteractionEndpointFields, automationName], () =>
-		getInteractionEndpointFields(automationName)
+	const query = useQuery(
+		[QueryKey.GetInteractionEndpointFields, automationName],
+		() => getInteractionEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
 	const pairs = query.data?.data.map((value) => [value, value])
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
