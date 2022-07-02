@@ -7,8 +7,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes []string, err error) {
-	detailes = make([]string, 0)
+func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
+	detailes = make(map[string]interface{})
 	temp, _, _, _, isInteraction, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
@@ -16,18 +16,20 @@ func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (de
 	if !isInteraction {
 		return nil, errors.New("it is not a interaction")
 	}
-	for _, task := range temp.Manifest.Tasks {
+	for taskName, task := range temp.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
+		fields := make([]string, 0)
 		for key, value := range body {
 			var insertDt insertDto
 			b, _ := json.Marshal(value)
 			err := json.Unmarshal(b, &insertDt)
 			if err == nil && insertDt.Key != "" && insertDt.Source != "" {
 				if insertDt.Source == "interactionRunTime" {
-					detailes = append(detailes, key)
+					fields = append(fields, key)
 				}
 			}
 		}
+		detailes[taskName] = fields
 	}
 	return
 }
