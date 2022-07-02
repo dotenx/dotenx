@@ -24,6 +24,7 @@ const operatorOptions = {
 		{ label: 'is', value: '=' },
 		{ label: 'is not', value: '!=' },
 		{ label: 'contains', value: 'contains' },
+		{ label: 'does not contain', value: 'doesNotContain' },
 	],
 	none: [],
 }
