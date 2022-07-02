@@ -32,7 +32,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					title={title}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
 					loading={loading}
-					actionBar={<NewAutomation kind={_.capitalize(kind)} />}
+					actionBar={<NewAutomation kind={kind} />}
 					columns={[
 						{
 							Header: 'Name',
@@ -76,8 +76,9 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 	)
 }
 
-function NewAutomation({ kind }: { kind: string }) {
+function NewAutomation({ kind }: { kind: AutomationKind }) {
 	const newAutomation = useNewAutomation('new')
+	const newButtonText = kind === 'template' ? 'Automation' : kind
 
 	return (
 		<div className="flex gap-4">
@@ -91,7 +92,7 @@ function NewAutomation({ kind }: { kind: string }) {
 			)}
 			<Button className="max-w-min" onClick={newAutomation}>
 				<IoAdd className="text-2xl" />
-				New {kind}
+				New {_.capitalize(newButtonText)}
 			</Button>
 		</div>
 	)
