@@ -11,10 +11,9 @@ import {
 	getTemplateEndpointFields,
 	QueryKey,
 } from '../../api'
-import { Endpoint, EndpointWithBody } from '../database'
+import { EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
 import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
-import { JsonCode } from './json-code'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -162,14 +161,12 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
-		<div className="px-4 pt-6 pb-10 space-y-6">
-			<Endpoint
-				label="Add an automation"
-				url={`${API_URL}/pipeline/template/name/${automationName}`}
-				kind="POST"
-			/>
-			<JsonCode code={body} />
-		</div>
+		<EndpointWithBody
+			label="Add an automation"
+			url={`${API_URL}/pipeline/template/name/${automationName}`}
+			kind="POST"
+			code={body}
+		/>
 	)
 }
 
