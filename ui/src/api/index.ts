@@ -247,5 +247,5 @@ export function getTemplateEndpointFields(templateName: string) {
 }
 
 export function getInteractionEndpointFields(interactionName: string) {
-	return api.get<string[]>(`/pipeline/interaction/name/${interactionName}`)
+	return api.get<Record<string, string[]>>(`/pipeline/interaction/name/${interactionName}`)
 }
