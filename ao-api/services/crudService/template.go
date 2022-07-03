@@ -11,88 +11,10 @@ import (
 )
 
 func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string) (name string, err error) {
-	tasks := make(map[string]models.Task)
-	for taskName, task := range pipeline.Manifest.Tasks {
-		body := task.Body.(models.TaskBodyMap)
-		for k, v := range body {
-			val := fmt.Sprintf("%v", v)
-			//log.Println("valueeeeeeeeeee:" + val)
-			if val == "" {
-				if ok, taskFields := checkAndPars(fields, taskName); ok {
-					value, ok := taskFields[k]
-					if ok {
-						body[k] = value
-					} else {
-						return "", errors.New("there is no field named " + k + " in " + taskName + " body")
-					}
-				} else {
-					return "", errors.New("there is no body for task named " + taskName)
-				}
-			}
-		}
-		task.Body = body
-		if task.Integration == "" {
-			task.MetaData = models.AvaliableTasks[task.Type]
-			if len(task.MetaData.Integrations) > 0 {
-				// TODO handle multiple integraton type tasks and triggers
-				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(base.AccountId, tpAccountId, task.MetaData.Integrations[0])
-				if err != nil {
-					return "", err
-				}
-				task.Integration = integ.Name
-			}
-		}
-		tasks[taskName] = models.Task{
-			Name:         task.Name,
-			Description:  task.Description,
-			ExecuteAfter: task.ExecuteAfter,
-			Type:         task.Type,
-			Body:         task.Body,
-			Integration:  task.Integration,
-			MetaData:     task.MetaData,
-		}
+	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
+	if err != nil {
+		return "", err
 	}
-	pipeline.Manifest.Tasks = tasks
-	triggers := make(map[string]models.EventTrigger)
-	for triggerName, trigger := range pipeline.Manifest.Triggers {
-		for k, v := range trigger.Credentials {
-			val := fmt.Sprintf("%v", v)
-			if val == "" {
-				if ok, triggerFields := checkAndPars(fields, triggerName); ok {
-					value, ok := triggerFields[k]
-					if ok {
-						trigger.Credentials[k] = value
-					} else {
-						return "", errors.New("there is no field named " + k + " in " + triggerName + " body")
-					}
-				} else {
-					return "", errors.New("there is no body for trigger named " + triggerName)
-				}
-			}
-		}
-		if trigger.Integration == "" {
-			trigger.MetaData = models.AvaliableTriggers[trigger.Type]
-			if len(trigger.MetaData.IntegrationTypes) > 0 {
-				// TODO handle multiple integraton type tasks and triggers
-				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(base.AccountId, tpAccountId, trigger.MetaData.IntegrationTypes[0])
-				if err != nil {
-					return "", err
-				}
-				trigger.Integration = integ.Name
-			}
-		}
-		triggers[trigger.Name] = models.EventTrigger{
-			Name:        trigger.Name,
-			AccountId:   trigger.AccountId,
-			Type:        trigger.Type,
-			Endpoint:    trigger.Endpoint,
-			Pipeline:    trigger.Pipeline,
-			Integration: trigger.Integration,
-			Credentials: trigger.Credentials,
-			MetaData:    trigger.MetaData,
-		}
-	}
-	pipeline.Manifest.Triggers = triggers
 	base.Name = base.Name + "_" + utils.GetNewUuid()
 	err = cm.Store.Create(noContext, base, pipeline, false, false)
 	if err != nil {
@@ -102,21 +24,11 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return
 	}
-	triggers2 := make([]*models.EventTrigger, 0)
-	for _, tr := range pipeline.Manifest.Triggers {
-		tr.Endpoint = e
-		tr.Pipeline = base.Name
-		triggers2 = append(triggers2, &models.EventTrigger{
-			Name:        tr.Name,
-			AccountId:   tr.AccountId,
-			Type:        tr.Type,
-			Endpoint:    e,
-			Pipeline:    base.Name,
-			Integration: tr.Integration,
-			Credentials: tr.Credentials,
-		})
+	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, e, base.Name)
+	if err != nil {
+		return "", err
 	}
-	err = cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
+	err = cm.TriggerService.AddTriggers(base.AccountId, filledTriggers, e)
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -175,4 +87,89 @@ func checkAndPars(body map[string]interface{}, key string) (bool, map[string]int
 		return true, taskFields.(map[string]interface{})
 	}
 	return false, nil
+}
+
+func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[string]interface{}, accountId, tpAccountId string) (map[string]models.Task, error) {
+	tasks := make(map[string]models.Task)
+	for taskName, task := range emptyTasks {
+		body := task.Body.(models.TaskBodyMap)
+		for k, v := range body {
+			val := fmt.Sprintf("%v", v)
+			if val == "" {
+				if ok, taskFields := checkAndPars(fields, taskName); ok {
+					value, ok := taskFields[k]
+					if ok {
+						body[k] = value
+					} else {
+						return nil, errors.New("there is no field named " + k + " in " + taskName + " body")
+					}
+				} else {
+					return nil, errors.New("there is no body for task named " + taskName)
+				}
+			}
+		}
+		task.Body = body
+		if task.Integration == "" {
+			task.MetaData = models.AvaliableTasks[task.Type]
+			if len(task.MetaData.Integrations) > 0 {
+				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(accountId, tpAccountId, task.MetaData.Integrations[0])
+				if err != nil {
+					return nil, err
+				}
+				task.Integration = integ.Name
+			}
+		}
+		tasks[taskName] = models.Task{
+			Name:         task.Name,
+			Description:  task.Description,
+			ExecuteAfter: task.ExecuteAfter,
+			Type:         task.Type,
+			Body:         task.Body,
+			Integration:  task.Integration,
+			MetaData:     task.MetaData,
+		}
+	}
+	return tasks, nil
+}
+
+func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName string) ([]*models.EventTrigger, error) {
+	triggers := make([]*models.EventTrigger, 0)
+	for triggerName, trigger := range emptyTriggers {
+		for k, v := range trigger.Credentials {
+			val := fmt.Sprintf("%v", v)
+			if val == "" {
+				if ok, triggerFields := checkAndPars(fields, triggerName); ok {
+					value, ok := triggerFields[k]
+					if ok {
+						trigger.Credentials[k] = value
+					} else {
+						return nil, errors.New("there is no field named " + k + " in " + triggerName + " body")
+					}
+				} else {
+					return nil, errors.New("there is no body for trigger named " + triggerName)
+				}
+			}
+		}
+		if trigger.Integration == "" {
+			trigger.MetaData = models.AvaliableTriggers[trigger.Type]
+			if len(trigger.MetaData.IntegrationTypes) > 0 {
+				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(accountId, tpAccountId, trigger.MetaData.IntegrationTypes[0])
+				if err != nil {
+					return nil, err
+				}
+				trigger.Integration = integ.Name
+			}
+		}
+		triggers = append(triggers, &models.EventTrigger{
+			Name:        trigger.Name,
+			AccountId:   trigger.AccountId,
+			Type:        trigger.Type,
+			Endpoint:    endpoint,
+			Pipeline:    pipelineName,
+			Integration: trigger.Integration,
+			Credentials: trigger.Credentials,
+			MetaData:    trigger.MetaData,
+		})
+	}
+	return triggers, nil
 }
