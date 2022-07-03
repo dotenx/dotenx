@@ -138,7 +138,9 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 				fields = append(fields, key)
 			}
 		}
-		detailes[taskName] = fields
+		if len(fields) > 0 {
+			detailes[taskName] = fields
+		}
 	}
 
 	for triggerName, trigger := range temp.Manifest.Triggers {
@@ -150,7 +152,9 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 				fields = append(fields, key)
 			}
 		}
-		detailes[triggerName] = fields
+		if len(fields) > 0 {
+			detailes[triggerName] = fields
+		}
 	}
 	return
 }
