@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
 import {
@@ -23,16 +24,18 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 	)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate({ interactionRunTime: values }))
 	if (query.isLoading) return <Loader />
-	const fields = query.data?.data ?? []
+	const fields = _.toPairs(query.data?.data).flatMap(([taskName, fields]) =>
+		fields.map((field) => ({ name: `${taskName}.${field}`, value: field }))
+	)
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
 				{fields.map((field) => (
 					<Field
-						key={field}
-						name={field}
-						label={field}
+						key={field.name}
+						name={field.name}
+						label={field.name}
 						control={form.control}
 						errors={form.formState.errors}
 					/>
