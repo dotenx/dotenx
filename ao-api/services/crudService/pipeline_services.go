@@ -9,6 +9,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
+// TODO refactor this file
+
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
 	// checking if all integrations in an interaction or template have provider
 	for _, task := range pipeline.Manifest.Tasks {
@@ -193,23 +195,6 @@ type automationDto struct {
 	AccountId    string `json:"account_id" binding:"required"`
 	AutomationId string `json:"automation_id" binding:"required"`
 	DeleteRecord bool   `json:"delete_record"`
-}
-
-func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (exists bool, err error) {
-	integrations, err := cm.IntegrationService.GetAllIntegrations(accountId)
-	if err != nil {
-		return
-	}
-	for _, intg := range integrations {
-		if intg.Name == integration {
-			if intg.Provider != "" {
-				return true, nil
-			} else {
-				return false, errors.New("all integration for template must have provider")
-			}
-		}
-	}
-	return false, errors.New("no integration was found")
 }
 
 type insertDto struct {

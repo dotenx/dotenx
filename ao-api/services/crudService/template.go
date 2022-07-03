@@ -10,6 +10,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
+// this methods create an Automation from given base template and fields
 func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string) (name string, err error) {
 	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
 	if err != nil {
@@ -38,7 +39,6 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 
 // function to iterate over template tasks and triggers fields and if their value were empty,
 // we will pass them to front to get them when we want create from template
-
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
 	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
@@ -77,7 +77,6 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 }
 
 // this function checks if interface with given key in given map is parsable to map[string]inerface{}
-
 func checkAndPars(body map[string]interface{}, key string) (bool, map[string]interface{}) {
 	if taskFields, ok := body[key]; ok {
 		var testType map[string]interface{}
@@ -89,6 +88,7 @@ func checkAndPars(body map[string]interface{}, key string) (bool, map[string]int
 	return false, nil
 }
 
+// this function iterates over tasks and for each task field with empty value checks fields map for it and finally set tasks integration (based on third party account id)
 func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[string]interface{}, accountId, tpAccountId string) (map[string]models.Task, error) {
 	tasks := make(map[string]models.Task)
 	for taskName, task := range emptyTasks {
@@ -132,6 +132,7 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 	return tasks, nil
 }
 
+// this function iterates over triggers and for each trigger field with empty value checks fields map for it and finally set triggers integration (based on third party account id)
 func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName string) ([]*models.EventTrigger, error) {
 	triggers := make([]*models.EventTrigger, 0)
 	for triggerName, trigger := range emptyTriggers {
