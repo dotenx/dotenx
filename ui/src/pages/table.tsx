@@ -1,8 +1,19 @@
-import { IoAdd, IoList, IoTrash } from 'react-icons/io5'
+import { useState } from 'react'
+import { IoAdd, IoFilter, IoList, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
-import { deleteColumn, getColumns, getProject, getTableRecords, QueryKey } from '../api'
-import { ColumnForm, TableDeletion, TableEndpoints } from '../features/database'
+import {
+	API_URL,
+	deleteColumn,
+	getColumns,
+	getProject,
+	getTableRecords,
+	GetTableRecordsRequest,
+	QueryKey,
+} from '../api'
+import { JsonCode } from '../features/automation/json-code'
+import { ColumnForm, Endpoint, TableDeletion, TableEndpoints } from '../features/database'
+import QueryBuilder, { QueryBuilderValues } from '../features/database/query-builder'
 import { Modals, useModal } from '../features/hooks'
 import { Button, ContentWrapper, Modal, Table } from '../features/ui'
 
@@ -14,19 +25,21 @@ export default function TablePage() {
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const modal = useModal()
+	const [filters, setFilters] = useState<GetTableRecordsRequest>({ columns: [] })
 	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
 	const projectTag = projectDetails.data?.data.tag ?? ''
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
-		QueryKey.GetTableRecords,
-		() => getTableRecords(projectTag, tableName),
+		[QueryKey.GetTableRecords, projectTag, tableName, filters],
+		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
 	const records = recordsQuery.data?.data ?? [{}]
 	const headers =
 		columnsQuery.data?.data.columns.map((column) => ({
-			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
-			accessor: column,
+			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
+			accessor: column.name,
 		})) ?? []
 
 	return (
@@ -47,7 +60,51 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			<Modal kind={Modals.TableEndpoints} title="Endpoints" size="xl">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Modal>
+			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
+				<QueryTable
+					projectName={projectName}
+					projectTag={projectTag}
+					tableName={tableName}
+				/>
+			</Modal>
+			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
+				<RecordFilter
+					projectName={projectName}
+					tableName={tableName}
+					defaultValues={filters.filters}
+					onSubmit={(values) => {
+						setFilters({ columns: [], filters: values })
+						recordsQuery.refetch()
+						modal.close()
+					}}
+				/>
+			</Modal>
 		</>
+	)
+}
+
+function QueryTable({
+	projectName,
+	projectTag,
+	tableName,
+}: {
+	projectName: string
+	projectTag: string
+	tableName: string
+}) {
+	return (
+		<QueryBuilder projectName={projectName} tableName={tableName}>
+			{(values) => (
+				<div className="space-y-6">
+					<Endpoint
+						kind="POST"
+						label="Get records"
+						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+					/>
+					<JsonCode code={{ columns: [], filters: values }} />
+				</div>
+			)}
+		</QueryBuilder>
 	)
 }
 
@@ -55,18 +112,26 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	const modal = useModal()
 
 	return (
-		<div className="flex gap-4">
+		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.TableFilter)}>
+				<IoFilter />
+				Filter
+			</Button>
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
+				<IoSearch />
+				Query Builder
+			</Button>
 			<Button
-				className="w-40"
+				className="w-32"
 				type="button"
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
-				<IoList className="text-2xl" />
+				<IoList />
 				Endpoints
 			</Button>
-			<Button className="w-40" type="button" onClick={() => modal.open(Modals.NewColumn)}>
-				<IoAdd className="text-2xl" />
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewColumn)}>
+				<IoAdd />
 				New Column
 			</Button>
 		</div>
@@ -95,5 +160,27 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 				</button>
 			)}
 		</div>
+	)
+}
+
+function RecordFilter({
+	projectName,
+	tableName,
+	defaultValues,
+	onSubmit,
+}: {
+	projectName: string
+	tableName: string
+	defaultValues?: QueryBuilderValues
+	onSubmit: (values: QueryBuilderValues) => void
+}) {
+	return (
+		<QueryBuilder projectName={projectName} tableName={tableName} defaultValues={defaultValues}>
+			{(values) => (
+				<Button type="button" onClick={() => onSubmit(values)}>
+					Apply Filter
+				</Button>
+			)}
+		</QueryBuilder>
 	)
 }

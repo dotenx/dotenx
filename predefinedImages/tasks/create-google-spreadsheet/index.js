@@ -35,11 +35,12 @@ const {google} = require('googleapis');
   const oAuth2Client = new google.auth.OAuth2();
 
   const token = {
-    AccessToken: process.env.INTEGRATION_ACCESS_TOKEN,
-    RefressToken: process.env.INTEGRATION_REFRESH_TOKEN
+    access_token: process.env.INTEGRATION_ACCESS_TOKEN,
+    refresh_token: process.env.INTEGRATION_REFRESH_TOKEN
   }
 
-  return oAuth2Client.setCredentials(token);
+  oAuth2Client.setCredentials(token);
+  return oAuth2Client;
 }
 
 

@@ -22,6 +22,7 @@ import {
 	GetProjectsResponse,
 	GetProviderResponse,
 	GetProvidersResponse,
+	GetTableRecordsRequest,
 	GetTablesResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
@@ -219,10 +220,14 @@ export function deleteColumn(projectName: string, tableName: string, columnName:
 	)
 }
 
-export function getTableRecords(projectTag: string, tableName: string) {
+export function getTableRecords(
+	projectTag: string,
+	tableName: string,
+	payload: GetTableRecordsRequest
+) {
 	return api.post<Record<string, string>[] | null>(
 		`/database/query/select/project/${projectTag}/table/${tableName}`,
-		{ columns: [] }
+		payload
 	)
 }
 

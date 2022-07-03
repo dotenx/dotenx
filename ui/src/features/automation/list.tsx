@@ -32,7 +32,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					title={title}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
 					loading={loading}
-					actionBar={<NewAutomation kind={_.capitalize(kind)} />}
+					actionBar={<NewAutomation kind={kind} />}
 					columns={[
 						{
 							Header: 'Name',
@@ -76,8 +76,9 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 	)
 }
 
-function NewAutomation({ kind }: { kind: string }) {
+function NewAutomation({ kind }: { kind: AutomationKind }) {
 	const newAutomation = useNewAutomation('new')
+	const newButtonText = kind === 'template' ? 'Automation' : kind
 
 	return (
 		<div className="flex gap-4">
@@ -91,7 +92,7 @@ function NewAutomation({ kind }: { kind: string }) {
 			)}
 			<Button className="max-w-min" onClick={newAutomation}>
 				<IoAdd className="text-2xl" />
-				New {kind}
+				New {_.capitalize(newButtonText)}
 			</Button>
 		</div>
 	)
@@ -149,8 +150,10 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 }
 
 function TemplateEndpoint({ automationName }: { automationName: string }) {
-	const fieldsQuery = useQuery(QueryKey.GetTemplateEndpointFields, () =>
-		getTemplateEndpointFields(automationName)
+	const fieldsQuery = useQuery(
+		[QueryKey.GetTemplateEndpointFields, automationName],
+		() => getTemplateEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
 	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
 	if (fieldsQuery.isLoading || !fields) return <Loader />
@@ -168,8 +171,10 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 }
 
 function InteractionEndpoint({ automationName }: { automationName: string }) {
-	const query = useQuery([QueryKey.GetInteractionEndpointFields, automationName], () =>
-		getInteractionEndpointFields(automationName)
+	const query = useQuery(
+		[QueryKey.GetInteractionEndpointFields, automationName],
+		() => getInteractionEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
 	const pairs = query.data?.data.map((value) => [value, value])
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }

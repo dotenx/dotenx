@@ -1,7 +1,13 @@
 import { useAtom } from 'jotai'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useNavigate } from 'react-router-dom'
-import { AutomationKind, deleteAutomation, QueryKey, startAutomation } from '../../api'
+import {
+	AutomationKind,
+	deleteAutomation,
+	getInteractionEndpointFields,
+	QueryKey,
+	startAutomation,
+} from '../../api'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
 import { Modals, useModal } from '../hooks'
@@ -18,26 +24,33 @@ export function useActionBar(kind: AutomationKind) {
 	const newAutomation = useNewAutomation('/automations/new')
 	const navigate = useNavigate()
 	const modal = useModal()
+	const query = useQuery(
+		[QueryKey.GetInteractionEndpointFields, selectedAutomationData?.name],
+		() => getInteractionEndpointFields(selectedAutomationData?.name ?? ''),
+		{ enabled: !!selectedAutomationData?.name }
+	)
 
-	const runMutation = useMutation(startAutomation, {
-		onSuccess: () => {
-			client.invalidateQueries(QueryKey.GetExecutions)
-			clearStatus()
-			setListen((x) => x + 1)
-		},
-	})
+	const runMutation = useMutation(startAutomation)
 
 	const onRun = () => {
 		if (selectedAutomationData)
-			if (kind !== 'interaction') {
+			if (kind === 'automation') {
 				runMutation.mutate(selectedAutomationData.name, {
-					onSuccess: (data) =>
+					onSuccess: (data) => {
 						navigate(
 							`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
-						),
+						)
+						client.invalidateQueries(QueryKey.GetExecutions)
+						clearStatus()
+						setListen((x) => x + 1)
+					},
 				})
 			} else {
-				modal.open(Modals.InteractionBody)
+				if (query.data?.data.length !== 0) modal.open(Modals.InteractionBody)
+				else
+					runMutation.mutate(selectedAutomationData.name, {
+						onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data),
+					})
 			}
 		else {
 			console.error('No automation is selected')
