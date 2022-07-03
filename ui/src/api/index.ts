@@ -6,6 +6,7 @@ import {
 	CreateProjectRequest,
 	CreateTableRequest,
 	CreateTriggerRequest,
+	EndpointFields,
 	Execution,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
@@ -243,11 +244,9 @@ export function getUserManagementData(projectTag: string) {
 }
 
 export function getTemplateEndpointFields(templateName: string) {
-	return api.get<Record<string, Record<string, string>>>(
-		`/pipeline/template/name/${templateName}`
-	)
+	return api.get<EndpointFields>(`/pipeline/template/name/${templateName}`)
 }
 
 export function getInteractionEndpointFields(interactionName: string) {
-	return api.get<Record<string, string[]>>(`/pipeline/interaction/name/${interactionName}`)
+	return api.get<EndpointFields>(`/pipeline/interaction/name/${interactionName}`)
 }

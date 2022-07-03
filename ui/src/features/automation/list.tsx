@@ -6,6 +6,7 @@ import {
 	API_URL,
 	Automation,
 	AutomationKind,
+	EndpointFields,
 	getInteractionEndpointFields,
 	getTemplateEndpointFields,
 	QueryKey,
@@ -156,12 +157,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		{ enabled: !!automationName }
 	)
 	const fields = fieldsQuery.data?.data
-	const body = _.fromPairs(
-		_.toPairs(fields).map(([key, value]) => [
-			key,
-			_.fromPairs(_.toPairs(value).map(([key, value]) => [value, key])),
-		])
-	)
+	const body = _.fromPairs(mapFieldsToPairs(fields))
 
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
@@ -183,10 +179,7 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 		() => getInteractionEndpointFields(automationName),
 		{ enabled: !!automationName }
 	)
-	const pairs = _.toPairs(query.data?.data).map(([taskName, fields]) => [
-		taskName,
-		_.fromPairs(fields.map((field) => [field, field])),
-	])
+	const pairs = mapFieldsToPairs(query.data?.data)
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
 	if (query.isLoading) return <Loader />
@@ -199,4 +192,11 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 			code={body}
 		/>
 	)
+}
+
+const mapFieldsToPairs = (fields?: EndpointFields) => {
+	return _.toPairs(fields).map(([nodeName, fields]) => [
+		nodeName,
+		_.fromPairs(fields.map((field) => [field, field])),
+	])
 }

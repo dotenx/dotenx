@@ -79,7 +79,6 @@ export function TriggerForm({
 							label={triggerDefinition.display_name || triggerDefinition.key}
 							name={`credentials.${triggerDefinition.key}`}
 							control={control}
-							required
 							errors={errors}
 						/>
 						<Description>{triggerDefinition.description}</Description>
