@@ -21,6 +21,8 @@ export enum Modals {
 	TemplateEndpoint = 'template-endpoint',
 	UserManagementEndpoint = 'user-management-endpoint',
 	InteractionBody = 'interaction-body',
+	QueryBuilder = 'query-builder',
+	TableFilter = 'table-filter',
 }
 
 export function useModal() {

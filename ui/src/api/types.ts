@@ -324,7 +324,7 @@ export interface Column {
 }
 
 export type GetColumnsResponse = {
-	columns: string[]
+	columns: { name: string; type: 'integer' | 'character varying' }[]
 }
 
 export type AutomationKind = 'automation' | 'template' | 'interaction'
@@ -332,3 +332,17 @@ export type AutomationKind = 'automation' | 'template' | 'interaction'
 export type StartAutomationRequest =
 	| Record<string, never>
 	| { interactionRunTime: Record<string, string> }
+
+export interface RecordsFilters {
+	columns: string[]
+	filters?: {
+		conjunction: 'and' | 'or'
+		filterSet: {
+			value: string
+			key: string
+			operator: string
+		}[]
+	}
+}
+
+export type GetTableRecordsRequest = RecordsFilters
