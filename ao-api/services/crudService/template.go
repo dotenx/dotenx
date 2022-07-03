@@ -119,6 +119,9 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	return base.Name, cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
 }
 
+// function to iterate over template tasks and triggers fields and if their value were empty,
+// we will pass them to front to get them when we want create from template
+
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
 	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
@@ -133,8 +136,7 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
 			strVal := fmt.Sprintf("%v", value)
-			if strVal == "" {
-				//detailes[taskName+":"+key] = keyValue
+			if strVal == "" { // if value is empty means that we must get it when we want to create from template
 				fields = append(fields, key)
 			}
 		}
@@ -142,13 +144,11 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 			detailes[taskName] = fields
 		}
 	}
-
 	for triggerName, trigger := range temp.Manifest.Triggers {
 		fields := make([]string, 0)
 		for key, value := range trigger.Credentials {
 			strVal := fmt.Sprintf("%v", value)
 			if strVal == "" {
-				//detailes[triggerName+":"+key] = keyValue
 				fields = append(fields, key)
 			}
 		}
@@ -158,6 +158,8 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 	}
 	return
 }
+
+// this function checks if interface with given key in given map is parsable to map[string]inerface{}
 
 func checkAndPars(body map[string]interface{}, key string) (bool, map[string]interface{}) {
 	if taskFields, ok := body[key]; ok {
