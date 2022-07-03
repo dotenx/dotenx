@@ -1,7 +1,6 @@
 package crudService
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -210,36 +209,6 @@ func (cm *crudManager) checkIfIntegrationExists(accountId, integration string) (
 		}
 	}
 	return false, errors.New("no integration was found")
-}
-
-type insertDto struct {
-	Source string `json:"source"`
-	Key    string `json:"key"`
-}
-
-func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes []string, err error) {
-	detailes = make([]string, 0)
-	temp, _, _, _, isInteraction, err := cm.GetPipelineByName(accountId, name)
-	if err != nil {
-		return
-	}
-	if !isInteraction {
-		return nil, errors.New("it is not a interaction")
-	}
-	for _, task := range temp.Manifest.Tasks {
-		body := task.Body.(models.TaskBodyMap)
-		for key, value := range body {
-			var insertDt insertDto
-			b, _ := json.Marshal(value)
-			err := json.Unmarshal(b, &insertDt)
-			if err == nil && insertDt.Key != "" && insertDt.Source != "" {
-				if insertDt.Source == "interactionRunTime" {
-					detailes = append(detailes, key)
-				}
-			}
-		}
-	}
-	return
 }
 
 type insertDto struct {
