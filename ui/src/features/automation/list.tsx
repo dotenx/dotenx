@@ -6,14 +6,14 @@ import {
 	API_URL,
 	Automation,
 	AutomationKind,
+	EndpointFields,
 	getInteractionEndpointFields,
 	getTemplateEndpointFields,
 	QueryKey,
 } from '../../api'
-import { Endpoint, EndpointWithBody } from '../database'
+import { EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
 import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
-import { JsonCode } from './json-code'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -155,18 +155,18 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		() => getTemplateEndpointFields(automationName),
 		{ enabled: !!automationName }
 	)
-	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
+	const fields = fieldsQuery.data?.data
+	const body = _.fromPairs(mapFieldsToPairs(fields))
+
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
-		<div className="px-4 pt-6 pb-10 space-y-6">
-			<Endpoint
-				label="Add an automation"
-				url={`${API_URL}/pipeline/template/name/${automationName}`}
-				kind="POST"
-			/>
-			<JsonCode code={JSON.stringify(fields, null, 2)} />
-		</div>
+		<EndpointWithBody
+			label="Add an automation"
+			url={`${API_URL}/pipeline/template/name/${automationName}`}
+			kind="POST"
+			code={body}
+		/>
 	)
 }
 
@@ -176,7 +176,7 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 		() => getInteractionEndpointFields(automationName),
 		{ enabled: !!automationName }
 	)
-	const pairs = query.data?.data.map((value) => [value, value])
+	const pairs = mapFieldsToPairs(query.data?.data)
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
 	if (query.isLoading) return <Loader />
@@ -189,4 +189,11 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 			code={body}
 		/>
 	)
+}
+
+const mapFieldsToPairs = (fields?: EndpointFields) => {
+	return _.toPairs(fields).map(([nodeName, fields]) => [
+		nodeName,
+		_.fromPairs(fields.map((field) => [field, field])),
+	])
 }

@@ -14,11 +14,11 @@ const chainedConditionOptions = [
 const operatorOptions = {
 	integer: [
 		{ label: '=', value: '=' },
-		{ label: '!=', value: '!=' },
+		{ label: '≠', value: '!=' },
 		{ label: '>', value: '>' },
 		{ label: '<', value: '<' },
-		{ label: '>=', value: '>=' },
-		{ label: '<=', value: '<=' },
+		{ label: '≥', value: '>=' },
+		{ label: '≤', value: '<=' },
 	],
 	'character varying': [
 		{ label: 'is', value: '=' },

@@ -82,8 +82,19 @@ func (manager *IntegrationManager) DeleteIntegration(accountId string, integrati
 }
 
 func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
-	return manager.Store.GetAllintegrations(context.Background(), accountId)
+	selected := make([]models.Integration, 0)
+	integrations, err := manager.Store.GetAllintegrations(context.Background(), accountId)
+	if err != nil {
+		return nil, err
+	}
+	for _, integ := range integrations {
+		if integ.TpAccountId == "" {
+			selected = append(selected, integ)
+		}
+	}
+	return selected, nil
 }
+
 func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error) {
 	integrations := make([]models.Integration, 0)
 	var err error

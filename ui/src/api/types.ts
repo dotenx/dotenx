@@ -346,3 +346,5 @@ export interface RecordsFilters {
 }
 
 export type GetTableRecordsRequest = RecordsFilters
+
+export type EndpointFields = Record<string, string[]>

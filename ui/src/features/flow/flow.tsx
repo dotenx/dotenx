@@ -22,7 +22,7 @@ const edgeTypes = {
 }
 
 export function Flow({ isEditable = true, kind }: { isEditable?: boolean; kind: AutomationKind }) {
-	const withIntegration = kind === 'automation'
+	const withIntegration = kind !== 'interaction'
 	const {
 		reactFlowWrapper,
 		elements,
