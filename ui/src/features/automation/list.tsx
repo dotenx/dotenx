@@ -155,7 +155,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		() => getTemplateEndpointFields(automationName),
 		{ enabled: !!automationName }
 	)
-	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
+	const fields = fieldsQuery.data?.data
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
@@ -178,7 +178,7 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 	)
 	const pairs = _.toPairs(query.data?.data).map(([taskName, fields]) => [
 		taskName,
-		fields.map((field) => [field, field]),
+		_.fromPairs(fields.map((field) => [field, field])),
 	])
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
