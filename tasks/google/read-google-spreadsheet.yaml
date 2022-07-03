@@ -1,0 +1,15 @@
+service: google
+type: Read google spreadsheet
+image: mehrdadesh/read-google-spreadsheet
+integrations: [google]
+fields:
+    - key: spreadsheetId
+      type: text
+      description: your google spreadsheet ID
+    - key: _ranges
+      type: text
+      description: ranges to read seperated with comma in format "sheet1!A1:B2,sheet2!A1:B2"
+author: mehrdadesh
+icon: https://cdn-icons-png.flaticon.com/512/281/281761.png
+node_color: FBFB11
+description: Read a google spreadsheet
