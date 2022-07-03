@@ -23,14 +23,12 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant activate a template"})
 			return
 		}
-
 		err = mc.Service.ActivatePipeline(accountId, pipeline.Id)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-
 	}
 }
 
@@ -54,6 +52,5 @@ func (mc *CRUDController) DeActivatePipeline() gin.HandlerFunc {
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-
 	}
 }
