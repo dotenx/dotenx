@@ -14,6 +14,7 @@ import (
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
+	"github.com/dotenx/dotenx/ao-api/controllers/profile"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
@@ -144,6 +145,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
+	profileController := profile.ProfileController{}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -185,6 +187,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	admin := r.Group("/internal")
 	project := r.Group("/project")
 	database := r.Group("/database")
+	profile := r.Group("/profile")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -278,6 +281,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
 	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
+
+	profile.GET("", profileController.GetProfile())
 
 	go TriggerServic.StartChecking(IntegrationStore)
 	go TriggerServic.StartScheduller()

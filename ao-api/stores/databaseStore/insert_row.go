@@ -22,7 +22,7 @@ var insertRow = `
 INSERT INTO %s (%s) VALUES (%s)
 `
 
-func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]string) error {
+func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error {
 	fmt.Println("here")
 
 	// Find the account_id and project_name for the project with the given tag to find the database name

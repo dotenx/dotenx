@@ -75,6 +75,31 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		if err != nil {
 			return errors.New("error in deleting old version: " + err.Error())
 		}
+		for _, task := range pipeline.Manifest.Tasks {
+			if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+				integration, err := cm.IntegrationService.GetIntegrationByName(base.AccountId, task.Integration)
+				if err != nil {
+					return err
+				}
+				if integration.Provider == "" {
+					if isInteraction || isTemplate {
+						return errors.New("your integrations must have provider")
+					}
+				}
+			}
+			if isInteraction {
+				body := task.Body.(models.TaskBodyMap)
+				for key, value := range body {
+					if fmt.Sprintf("%v", value) == "" {
+						val := insertDto{
+							Source: "interactionRunTime",
+							Key:    key,
+						}
+						body[key] = val
+					}
+				}
+			}
+		}
 		err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
 		if err != nil {
 			return errors.New("error in creating new version: " + err.Error())
@@ -242,15 +267,22 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 			}
 		}
 		task.Body = body
-		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
-			task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
-			value, ok := fields[task.Integration]
-			if ok {
-				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
-				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+		if task.Integration != "" {
+			if strings.Contains(task.Integration, "$$$.") {
+				task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
+				value, ok := fields[task.Integration]
+				if ok {
+					exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+					if err != nil || !exists {
+						return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+					}
+					task.Integration = fmt.Sprintf("%v", value)
 				}
-				task.Integration = fmt.Sprintf("%v", value)
+			} else {
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, task.Integration)
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + task.Integration + " does not exists or you cant use it")
+				}
 			}
 		}
 		tasks[task.Name] = models.Task{
@@ -276,18 +308,26 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 				}
 			}
 		}
-		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
-			trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
-			value, ok := fields[trigger.Integration]
-			if ok {
-				log.Println("tsssssssss")
-				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
-				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+		if trigger.Integration != "" {
+			if strings.Contains(trigger.Integration, "$$$.") {
+				trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
+				value, ok := fields[trigger.Integration]
+				if ok {
+					log.Println("tsssssssss")
+					exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
+					if err != nil || !exists {
+						return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+					}
+					trigger.Integration = fmt.Sprintf("%v", value)
+					log.Println(trigger.Integration)
 				}
-				trigger.Integration = fmt.Sprintf("%v", value)
-				log.Println(trigger.Integration)
+			} else {
+				exists, err := cm.checkIfIntegrationExists(base.AccountId, trigger.Integration)
+				if err != nil || !exists {
+					return "", errors.New("your inputed integration as " + trigger.Integration + " does not exists or you cant use it")
+				}
 			}
+
 		}
 		triggers[trigger.Name] = models.EventTrigger{
 			Name:        trigger.Name,

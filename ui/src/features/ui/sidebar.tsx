@@ -30,13 +30,8 @@ export const Sidebar = memo(() => {
 
 	const builderLinks = [
 		{
-			to: `/builder/projects/${projectName}/user-management`,
-			label: 'User management',
-			icon: <FaUsers />,
-		},
-		{
 			to: `/builder/projects/${projectName}/templates`,
-			label: 'Templates',
+			label: 'Automation',
 			icon: <BsWindowSidebar />,
 		},
 		{
@@ -48,6 +43,11 @@ export const Sidebar = memo(() => {
 			to: `/builder/projects/${projectName}/tables`,
 			label: 'Tables',
 			icon: <BsTable />,
+		},
+		{
+			to: `/builder/projects/${projectName}/user-management`,
+			label: 'User management',
+			icon: <FaUsers />,
 		},
 		{
 			to: `/builder/projects/${projectName}/providers`,
