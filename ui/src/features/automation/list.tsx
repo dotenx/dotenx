@@ -156,6 +156,13 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		{ enabled: !!automationName }
 	)
 	const fields = fieldsQuery.data?.data
+	const body = _.fromPairs(
+		_.toPairs(fields).map(([key, value]) => [
+			key,
+			_.fromPairs(_.toPairs(value).map(([key, value]) => [value, key])),
+		])
+	)
+
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
@@ -165,7 +172,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 				url={`${API_URL}/pipeline/template/name/${automationName}`}
 				kind="POST"
 			/>
-			<JsonCode code={JSON.stringify(fields, null, 2)} />
+			<JsonCode code={body} />
 		</div>
 	)
 }

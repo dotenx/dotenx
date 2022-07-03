@@ -243,7 +243,9 @@ export function getUserManagementData(projectTag: string) {
 }
 
 export function getTemplateEndpointFields(templateName: string) {
-	return api.get<Record<string, string>>(`/pipeline/template/name/${templateName}`)
+	return api.get<Record<string, Record<string, string>>>(
+		`/pipeline/template/name/${templateName}`
+	)
 }
 
 export function getInteractionEndpointFields(interactionName: string) {
