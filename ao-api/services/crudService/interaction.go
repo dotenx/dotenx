@@ -29,7 +29,9 @@ func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (de
 				}
 			}
 		}
-		detailes[taskName] = fields
+		if len(fields) > 0 {
+			detailes[taskName] = fields
+		}
 	}
 	return
 }
