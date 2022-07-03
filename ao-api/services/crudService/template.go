@@ -3,7 +3,7 @@ package crudService
 import (
 	"errors"
 	"fmt"
-	"log"
+	"reflect"
 	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -12,31 +12,42 @@ import (
 
 func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}) (name string, err error) {
 	tasks := make(map[string]models.Task)
-	for _, task := range pipeline.Manifest.Tasks {
+	for taskName, task := range pipeline.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
 			val := fmt.Sprintf("%v", v)
 			if strings.Contains(val, "$$$.") {
-				val = strings.Replace(val, "$$$.", "", 1)
-				value, ok := fields[val]
-				if ok {
-					body[k] = value
+				if ok, taskFields := checkAndPars(fields, taskName); ok {
+					val = strings.Replace(val, "$$$.", "", 1)
+					value, ok := taskFields[val]
+					if ok {
+						body[k] = value
+					} else {
+						return "", errors.New("there is no field named " + k + " in " + taskName + " body")
+					}
+				} else {
+					return "", errors.New("there is no body for task named " + taskName)
 				}
 			}
 		}
 		task.Body = body
 		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
 			task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
-			value, ok := fields[task.Integration]
-			if ok {
+			if ok, taskFields := checkAndPars(fields, taskName); ok {
+				value, ok := taskFields[task.Integration]
+				if !ok {
+					return "", errors.New("there is no integration in " + taskName + " body")
+				}
 				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
 				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists or does not have a provider")
 				}
 				task.Integration = fmt.Sprintf("%v", value)
+			} else {
+				return "", errors.New("there is no body for task named " + taskName)
 			}
 		}
-		tasks[task.Name] = models.Task{
+		tasks[taskName] = models.Task{
 			Name:         task.Name,
 			Description:  task.Description,
 			ExecuteAfter: task.ExecuteAfter,
@@ -48,28 +59,37 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	}
 	pipeline.Manifest.Tasks = tasks
 	triggers := make(map[string]models.EventTrigger)
-	for _, trigger := range pipeline.Manifest.Triggers {
+	for triggerName, trigger := range pipeline.Manifest.Triggers {
 		for k, v := range trigger.Credentials {
 			val := fmt.Sprintf("%v", v)
 			if strings.Contains(val, "$$$.") {
-				val = strings.Replace(val, "$$$.", "", 1)
-				value, ok := fields[val]
-				if ok {
-					trigger.Credentials[k] = value
+				if ok, triggerFields := checkAndPars(fields, triggerName); ok {
+					val = strings.Replace(val, "$$$.", "", 1)
+					value, ok := triggerFields[val]
+					if ok {
+						trigger.Credentials[k] = value
+					} else {
+						return "", errors.New("there is no field named " + k + " in " + triggerName + " body")
+					}
+				} else {
+					return "", errors.New("there is no body for trigger named " + triggerName)
 				}
 			}
 		}
 		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
 			trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
-			value, ok := fields[trigger.Integration]
-			if ok {
-				log.Println("tsssssssss")
+			if ok, triggerFields := checkAndPars(fields, triggerName); ok {
+				value, ok := triggerFields[trigger.Integration]
+				if !ok {
+					return "", errors.New("there is no integration in " + triggerName + " body")
+				}
 				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
 				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists")
+					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists or does not have a provider")
 				}
 				trigger.Integration = fmt.Sprintf("%v", value)
-				log.Println(trigger.Integration)
+			} else {
+				return "", errors.New("there is no body for task named " + triggerName)
 			}
 		}
 		triggers[trigger.Name] = models.EventTrigger{
@@ -110,43 +130,62 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	return base.Name, cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
 }
 
-func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]string, err error) {
-	detailes = make(map[string]string)
+func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
+	detailes = make(map[string]interface{})
 	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}
 	if !isTemplate {
-		return nil, errors.New("it is now a template")
+		return nil, errors.New("it is not a template")
 	}
 	for taskName, task := range temp.Manifest.Tasks {
+		fields := make(map[string]string)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
 			strVal := fmt.Sprintf("%v", value)
 			if strings.Contains(strVal, "$$$.") {
 				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
-				detailes[taskName+":"+key] = keyValue
+				//detailes[taskName+":"+key] = keyValue
+				fields[key] = keyValue
 			}
 		}
 		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
 			strIntegration := strings.Replace(task.Integration, "$$$.", "", 1)
-			detailes[taskName+":integration"] = strIntegration
-
+			//detailes[taskName+":integration"] = strIntegration
+			fields["integration"] = strIntegration
+			//detailes[taskName] = strIntegration
 		}
+		detailes[taskName] = fields
 	}
 
 	for triggerName, trigger := range temp.Manifest.Triggers {
+		fields := make(map[string]string)
 		for key, value := range trigger.Credentials {
 			strVal := fmt.Sprintf("%v", value)
 			if strings.Contains(strVal, "$$$.") {
 				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
-				detailes[triggerName+":"+key] = keyValue
+				//detailes[triggerName+":"+key] = keyValue
+				fields[key] = keyValue
 			}
 		}
 		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
 			strIntegration := strings.Replace(trigger.Integration, "$$$.", "", 1)
-			detailes[triggerName+":integration"] = strIntegration
+			//detailes[triggerName+":integration"] = strIntegration
+			fields["integration"] = strIntegration
 		}
+		detailes[triggerName] = fields
 	}
 	return
+}
+
+func checkAndPars(body map[string]interface{}, key string) (bool, map[string]interface{}) {
+	if taskFields, ok := body[key]; ok {
+		var testType map[string]interface{}
+		if !reflect.TypeOf(taskFields).ConvertibleTo(reflect.TypeOf(testType)) {
+			return false, nil
+		}
+		return true, taskFields.(map[string]interface{})
+	}
+	return false, nil
 }
