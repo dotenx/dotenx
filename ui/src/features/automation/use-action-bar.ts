@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai'
+import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -46,7 +47,7 @@ export function useActionBar(kind: AutomationKind) {
 					},
 				})
 			} else {
-				if (query.data?.data.length !== 0) modal.open(Modals.InteractionBody)
+				if (_.entries(query.data?.data).length !== 0) modal.open(Modals.InteractionBody)
 				else
 					runMutation.mutate(selectedAutomationData.name, {
 						onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data),
