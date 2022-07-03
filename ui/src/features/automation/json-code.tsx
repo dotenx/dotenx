@@ -9,7 +9,7 @@ export function JsonCode({ code }: { code: string | Record<string, unknown> }) {
 	const [isCopied, setCopied] = useCopyClipboard(displayCode, { successDuration: 3000 })
 
 	return (
-		<main className="relative overflow-hidden rounded">
+		<div className="relative overflow-hidden rounded">
 			<button
 				className="absolute p-2 text-white transition rounded right-2 top-2 hover:bg-gray-50/25"
 				type="button"
@@ -20,7 +20,7 @@ export function JsonCode({ code }: { code: string | Record<string, unknown> }) {
 			</button>
 			<Highlight {...defaultProps} code={displayCode} language="json">
 				{({ className, style, tokens, getLineProps, getTokenProps }) => (
-					<pre className={clsx('p-2', className)} style={style}>
+					<pre className={clsx('p-2 whitespace-pre-wrap', className)} style={style}>
 						{tokens.map((line, i) => (
 							<div {...getLineProps({ line, key: i })}>
 								{line.map((token, key) => (
@@ -31,6 +31,6 @@ export function JsonCode({ code }: { code: string | Record<string, unknown> }) {
 					</pre>
 				)}
 			</Highlight>
-		</main>
+		</div>
 	)
 }

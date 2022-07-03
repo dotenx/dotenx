@@ -30,7 +30,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			} else if err.Error() == "no value for this field in initial data or return values" {
-				c.JSON(http.StatusBadRequest, "some of your task fields are dependent on your trigger")
+				c.JSON(http.StatusBadRequest, "some of your task fields are dependent on your trigger or needed to pass in at run time if you are running an ineraction")
 				return
 			}
 			log.Println(err.Error())
