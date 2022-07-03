@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 )
@@ -18,9 +17,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 				return err
 			}
 			if integration.Provider == "" {
-				if isInteraction || isTemplate {
-					return errors.New("your integrations must have provider")
-				}
+				return errors.New("your integrations must have provider")
 			}
 		}
 		if isInteraction {
@@ -82,15 +79,13 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 			return errors.New("error in deleting old version: " + err.Error())
 		}
 		for _, task := range pipeline.Manifest.Tasks {
-			if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
+			if task.Integration != "" && (isInteraction || isTemplate) {
 				integration, err := cm.IntegrationService.GetIntegrationByName(base.AccountId, task.Integration)
 				if err != nil {
 					return err
 				}
 				if integration.Provider == "" {
-					if isInteraction || isTemplate {
-						return errors.New("your integrations must have provider")
-					}
+					return errors.New("your integrations must have provider")
 				}
 			}
 			if isInteraction {
@@ -103,6 +98,17 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 						}
 						body[key] = val
 					}
+				}
+			}
+		}
+		for _, trigger := range pipeline.Manifest.Triggers {
+			if trigger.Integration != "" && isTemplate {
+				integration, err := cm.IntegrationService.GetIntegrationByName(base.AccountId, trigger.Integration)
+				if err != nil {
+					return err
+				}
+				if integration.Provider == "" {
+					return errors.New("your integrations must have provider")
 				}
 			}
 		}

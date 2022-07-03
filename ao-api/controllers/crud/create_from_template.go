@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,8 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
 			accId, _ := c.Get("tpAccountId")
 			tpAccountId = fmt.Sprintf("%v", accId)
+		} else if config.Configs.App.RunLocally {
+			tpAccountId = "123456"
 		}
 		if tpAccountId == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})

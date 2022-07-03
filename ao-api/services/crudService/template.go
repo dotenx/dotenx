@@ -3,8 +3,8 @@ package crudService
 import (
 	"errors"
 	"fmt"
+	"log"
 	"reflect"
-	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -16,10 +16,10 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
 			val := fmt.Sprintf("%v", v)
-			if strings.Contains(val, "$$$.") {
+			log.Println("valueeeeeeeeeee:" + val)
+			if val == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
-					val = strings.Replace(val, "$$$.", "", 1)
-					value, ok := taskFields[val]
+					value, ok := taskFields[k]
 					if ok {
 						body[k] = value
 					} else {
@@ -57,10 +57,9 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	for triggerName, trigger := range pipeline.Manifest.Triggers {
 		for k, v := range trigger.Credentials {
 			val := fmt.Sprintf("%v", v)
-			if strings.Contains(val, "$$$.") {
+			if val == "" {
 				if ok, triggerFields := checkAndPars(fields, triggerName); ok {
-					val = strings.Replace(val, "$$$.", "", 1)
-					value, ok := triggerFields[val]
+					value, ok := triggerFields[k]
 					if ok {
 						trigger.Credentials[k] = value
 					} else {
@@ -130,39 +129,26 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 		return nil, errors.New("it is not a template")
 	}
 	for taskName, task := range temp.Manifest.Tasks {
-		fields := make(map[string]string)
+		fields := make([]string, 0)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
 			strVal := fmt.Sprintf("%v", value)
-			if strings.Contains(strVal, "$$$.") {
-				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+			if strVal == "" {
 				//detailes[taskName+":"+key] = keyValue
-				fields[key] = keyValue
+				fields = append(fields, key)
 			}
-		}
-		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
-			strIntegration := strings.Replace(task.Integration, "$$$.", "", 1)
-			//detailes[taskName+":integration"] = strIntegration
-			fields["integration"] = strIntegration
-			//detailes[taskName] = strIntegration
 		}
 		detailes[taskName] = fields
 	}
 
 	for triggerName, trigger := range temp.Manifest.Triggers {
-		fields := make(map[string]string)
+		fields := make([]string, 0)
 		for key, value := range trigger.Credentials {
 			strVal := fmt.Sprintf("%v", value)
-			if strings.Contains(strVal, "$$$.") {
-				keyValue := strings.ReplaceAll(strVal, "$$$.", "")
+			if strVal == "" {
 				//detailes[triggerName+":"+key] = keyValue
-				fields[key] = keyValue
+				fields = append(fields, key)
 			}
-		}
-		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
-			strIntegration := strings.Replace(trigger.Integration, "$$$.", "", 1)
-			//detailes[triggerName+":integration"] = strIntegration
-			fields["integration"] = strIntegration
 		}
 		detailes[triggerName] = fields
 	}
