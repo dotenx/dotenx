@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
@@ -25,7 +26,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 			for key, value := range body {
 				if fmt.Sprintf("%v", value) == "" {
 					val := insertDto{
-						Source: "interactionRunTime",
+						Source: config.Configs.App.InteractionBodyKey,
 						Key:    key,
 					}
 					body[key] = val
@@ -93,7 +94,7 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 				for key, value := range body {
 					if fmt.Sprintf("%v", value) == "" {
 						val := insertDto{
-							Source: "interactionRunTime",
+							Source: config.Configs.App.InteractionBodyKey,
 							Key:    key,
 						}
 						body[key] = val
