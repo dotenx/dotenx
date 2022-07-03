@@ -1,5 +1,5 @@
 {
-  "name": "create-google-spreadsheet",
+  "name": "read-google-spreadsheet",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
