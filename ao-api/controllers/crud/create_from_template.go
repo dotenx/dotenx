@@ -1,6 +1,7 @@
 package crud
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -17,6 +18,15 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		var tpAccountId string
+		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
+			accId, _ := c.Get("tpAccountId")
+			tpAccountId = fmt.Sprintf("%v", accId)
+		}
+		if tpAccountId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
 			return
 		}
 		p, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
@@ -44,7 +54,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			Manifest: p.Manifest,
 		}
 
-		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields)
+		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {

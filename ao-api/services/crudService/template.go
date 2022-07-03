@@ -10,7 +10,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}) (name string, err error) {
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string) (name string, err error) {
 	tasks := make(map[string]models.Task)
 	for taskName, task := range pipeline.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
@@ -31,20 +31,15 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 			}
 		}
 		task.Body = body
-		if task.Integration != "" && strings.Contains(task.Integration, "$$$.") {
-			task.Integration = strings.Replace(task.Integration, "$$$.", "", 1)
-			if ok, taskFields := checkAndPars(fields, taskName); ok {
-				value, ok := taskFields[task.Integration]
-				if !ok {
-					return "", errors.New("there is no integration in " + taskName + " body")
+		if task.Integration == "" {
+			task.MetaData = models.AvaliableTasks[task.Type]
+			if len(task.MetaData.Integrations) > 0 {
+				// TODO handle multiple integraton type tasks and triggers
+				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(base.AccountId, tpAccountId, task.MetaData.Integrations[0])
+				if err != nil {
+					return "", err
 				}
-				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
-				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists or does not have a provider")
-				}
-				task.Integration = fmt.Sprintf("%v", value)
-			} else {
-				return "", errors.New("there is no body for task named " + taskName)
+				task.Integration = integ.Name
 			}
 		}
 		tasks[taskName] = models.Task{
@@ -76,20 +71,15 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 				}
 			}
 		}
-		if trigger.Integration != "" && strings.Contains(trigger.Integration, "$$$.") {
-			trigger.Integration = strings.Replace(trigger.Integration, "$$$.", "", 1)
-			if ok, triggerFields := checkAndPars(fields, triggerName); ok {
-				value, ok := triggerFields[trigger.Integration]
-				if !ok {
-					return "", errors.New("there is no integration in " + triggerName + " body")
+		if trigger.Integration == "" {
+			trigger.MetaData = models.AvaliableTriggers[trigger.Type]
+			if len(trigger.MetaData.IntegrationTypes) > 0 {
+				// TODO handle multiple integraton type tasks and triggers
+				integ, err := cm.IntegrationService.GetIntegrationForThirdPartyAccount(base.AccountId, tpAccountId, trigger.MetaData.IntegrationTypes[0])
+				if err != nil {
+					return "", err
 				}
-				exists, err := cm.checkIfIntegrationExists(base.AccountId, fmt.Sprintf("%v", value))
-				if err != nil || !exists {
-					return "", errors.New("your inputed integration as " + fmt.Sprintf("%v", value) + " does not exists or does not have a provider")
-				}
-				trigger.Integration = fmt.Sprintf("%v", value)
-			} else {
-				return "", errors.New("there is no body for task named " + triggerName)
+				trigger.Integration = integ.Name
 			}
 		}
 		triggers[trigger.Name] = models.EventTrigger{
