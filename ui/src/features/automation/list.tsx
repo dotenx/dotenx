@@ -176,7 +176,10 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 		() => getInteractionEndpointFields(automationName),
 		{ enabled: !!automationName }
 	)
-	const pairs = query.data?.data.map((value) => [value, value])
+	const pairs = _.toPairs(query.data?.data).map(([taskName, fields]) => [
+		taskName,
+		fields.map((field) => [field, field]),
+	])
 	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
 	if (query.isLoading) return <Loader />
