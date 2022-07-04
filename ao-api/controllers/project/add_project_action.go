@@ -14,12 +14,16 @@ func (pc *ProjectController) AddProject() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 
 		if err := c.ShouldBindJSON(&dto); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "name of project should contain just small letters, numbers and underscores",
+			})
 			return
 		}
 
 		if err := pc.Service.AddProject(accountId, dto); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		c.JSON(200, gin.H{"message": "Project created successfully"})
