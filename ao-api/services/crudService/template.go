@@ -16,7 +16,6 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
 			val := fmt.Sprintf("%v", v)
-			log.Println("valueeeeeeeeeee:" + val)
 			if val == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]
@@ -98,7 +97,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return
 	}
-	_, e, _, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	newP, e, _, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err != nil {
 		return
 	}
@@ -116,7 +115,12 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 			Credentials: tr.Credentials,
 		})
 	}
-	return base.Name, cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
+	err = cm.TriggerService.AddTriggers(base.AccountId, triggers2, e)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return base.Name, cm.ActivatePipeline(base.AccountId, newP.Id)
 }
 
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
