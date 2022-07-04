@@ -24,7 +24,7 @@ type PipelineStore interface {
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
-	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, isTemplate bool, is_interaction bool, err error)
+	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error)
 	// Check if the endpoint is valid return the pipeline id
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)

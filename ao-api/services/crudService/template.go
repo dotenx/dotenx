@@ -21,34 +21,34 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return
 	}
-	newP, e, _, _, _, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	newPipeline, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
 	if err != nil {
 		return
 	}
-	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, e, base.Name)
+	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, newPipeline.Endpoint, base.Name)
 	if err != nil {
 		return "", err
 	}
-	err = cm.TriggerService.AddTriggers(base.AccountId, filledTriggers, e)
+	err = cm.TriggerService.AddTriggers(base.AccountId, filledTriggers, newPipeline.Endpoint)
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
-	return base.Name, cm.ActivatePipeline(base.AccountId, newP.Id)
+	return base.Name, cm.ActivatePipeline(base.AccountId, newPipeline.PipelineDetailes.Id)
 }
 
 // function to iterate over template tasks and triggers fields and if their value were empty,
 // we will pass them to front to get them when we want create from template
 func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
-	temp, _, _, isTemplate, _, err := cm.GetPipelineByName(accountId, name)
+	temp, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}
-	if !isTemplate {
+	if !temp.IsTemplate {
 		return nil, errors.New("it is not a template")
 	}
-	for taskName, task := range temp.Manifest.Tasks {
+	for taskName, task := range temp.PipelineDetailes.Manifest.Tasks {
 		fields := make([]string, 0)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
@@ -61,7 +61,7 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 			detailes[taskName] = fields
 		}
 	}
-	for triggerName, trigger := range temp.Manifest.Triggers {
+	for triggerName, trigger := range temp.PipelineDetailes.Manifest.Triggers {
 		fields := make([]string, 0)
 		for key, value := range trigger.Credentials {
 			strVal := fmt.Sprintf("%v", value)

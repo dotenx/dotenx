@@ -12,14 +12,14 @@ import (
 // we will pass them to fron to get them at run time
 func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
-	temp, _, _, _, isInteraction, err := cm.GetPipelineByName(accountId, name)
+	interaction, err := cm.GetPipelineByName(accountId, name)
 	if err != nil {
 		return
 	}
-	if !isInteraction {
+	if !interaction.IsInteraction {
 		return nil, errors.New("it is not a interaction")
 	}
-	for taskName, task := range temp.Manifest.Tasks {
+	for taskName, task := range interaction.PipelineDetailes.Manifest.Tasks {
 		body := task.Body.(models.TaskBodyMap)
 		fields := make([]string, 0)
 		for key, value := range body {
