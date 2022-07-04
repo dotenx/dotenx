@@ -105,7 +105,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 					<EndpointWithBody
 						label="Get user profile"
 						url={`${API_URL}/profile`}
-						kind="POST"
+						kind="GET"
 						code={profileExample}
 						isResponse
 					/>
