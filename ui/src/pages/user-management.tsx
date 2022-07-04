@@ -2,9 +2,9 @@ import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProject, getUserManagementData, QueryKey } from '../api'
-import { Endpoint } from '../features/database'
+import { EndpointWithBody } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, JsonCode, Modal, Table } from '../features/ui'
+import { Button, Modal, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -75,6 +75,11 @@ const loginExample = {
 	password: 'abcdefg1234',
 }
 
+const profileExample = {
+	account_id: '123456',
+	tp_account_id: '321eaabe-9b36-4c99-a57e-1e77e31f48b5',
+}
+
 function ActionBar({ projectTag }: { projectTag: string }) {
 	const modal = useModal()
 
@@ -83,22 +88,26 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 			<Button variant="outlined" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
 				Endpoint
 			</Button>
-			<Modal kind={Modals.UserManagementEndpoint} title="Endpoint" fluid size="lg">
-				<div className="px-4 pt-6 pb-10 space-y-4">
-					<Endpoint
+			<Modal kind={Modals.UserManagementEndpoint} title="Endpoint" size="lg">
+				<div className="space-y-8">
+					<EndpointWithBody
 						label="Sign up a user"
 						url={`${API_URL}/user/management/project/${projectTag}/register`}
 						kind="POST"
+						code={registerExample}
 					/>
-					<JsonCode code={JSON.stringify(registerExample, null, 2)} />
-				</div>
-				<div className="px-4 pt-6 pb-10 space-y-4">
-					<Endpoint
+					<EndpointWithBody
 						label="Sign in"
 						url={`${API_URL}/user/management/project/${projectTag}/login`}
 						kind="POST"
+						code={loginExample}
 					/>
-					<JsonCode code={JSON.stringify(loginExample, null, 2)} />
+					<EndpointWithBody
+						label="Get user profile"
+						url={`${API_URL}/profile`}
+						kind="POST"
+						code={profileExample}
+					/>
 				</div>
 			</Modal>
 		</>
