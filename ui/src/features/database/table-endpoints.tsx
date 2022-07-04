@@ -2,8 +2,7 @@ import clsx from 'clsx'
 import { IoCopyOutline } from 'react-icons/io5'
 import useClipboard from 'react-use-clipboard'
 import { API_URL } from '../../api'
-import { JsonCode } from '../automation/json-code'
-import { Button } from '../ui'
+import { Button, JsonCode } from '../ui'
 
 interface TableEndpointsProps {
 	projectTag: string

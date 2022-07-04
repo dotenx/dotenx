@@ -11,11 +11,16 @@ import {
 	GetTableRecordsRequest,
 	QueryKey,
 } from '../api'
-import { JsonCode } from '../features/automation/json-code'
-import { ColumnForm, Endpoint, TableDeletion, TableEndpoints } from '../features/database'
-import QueryBuilder, { QueryBuilderValues } from '../features/database/query-builder'
+import {
+	ColumnForm,
+	Endpoint,
+	QueryBuilder,
+	QueryBuilderValues,
+	TableDeletion,
+	TableEndpoints,
+} from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Modal, Table } from '../features/ui'
+import { Button, ContentWrapper, JsonCode, Modal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()

@@ -2,10 +2,9 @@ import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProject, getUserManagementData, QueryKey } from '../api'
-import { JsonCode } from '../features/automation/json-code'
 import { Endpoint } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, Modal, Table } from '../features/ui'
+import { Button, JsonCode, Modal, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
