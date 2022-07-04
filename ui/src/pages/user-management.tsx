@@ -107,6 +107,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						url={`${API_URL}/profile`}
 						kind="POST"
 						code={profileExample}
+						isResponse
 					/>
 				</div>
 			</Modal>
