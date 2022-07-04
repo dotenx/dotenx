@@ -1,8 +1,10 @@
 import clsx from 'clsx'
+import _ from 'lodash'
 import { IoCopyOutline } from 'react-icons/io5'
+import { useQuery } from 'react-query'
 import useClipboard from 'react-use-clipboard'
-import { API_URL } from '../../api'
-import { Button, JsonCode } from '../ui'
+import { API_URL, getColumns, QueryKey } from '../../api'
+import { Button, JsonCode, Loader } from '../ui'
 
 interface TableEndpointsProps {
 	projectTag: string
@@ -10,25 +12,31 @@ interface TableEndpointsProps {
 }
 
 export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
+	const columns = query.data?.data.columns ?? []
+	const body = _.fromPairs(columns.map((column) => [column.name, column.type]))
+
+	if (query.isLoading) return <Loader />
+
 	return (
 		<div className="space-y-8">
 			<EndpointWithBody
 				label="Add a record"
 				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
 				kind="POST"
-				code={{ column_01: 'value_01', column_02: 'value_02', column_03: 'value_03' }}
+				code={body}
 			/>
 			<EndpointWithBody
 				label="Get records"
 				url={`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${tableName}`}
 				kind="POST"
-				code={{ columns: [] }}
+				code={{ columns: columns.map((column) => column.name) }}
 			/>
 			<EndpointWithBody
 				label="Update a record by id"
 				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
 				kind="POST"
-				code={{ column_01: 'value_01', column_02: 'value_02', column_03: 'value_03' }}
+				code={body}
 			/>
 			<Endpoint
 				label="Delete a record by id"
