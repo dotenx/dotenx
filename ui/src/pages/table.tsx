@@ -20,7 +20,7 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, JsonCode, Modal, Table } from '../features/ui'
+import { Button, ContentWrapper, Drawer, JsonCode, Modal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -62,9 +62,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			<Modal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</Modal>
-			<Modal kind={Modals.TableEndpoints} title="Endpoints" size="xl">
+			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
-			</Modal>
+			</Drawer>
 			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
 				<QueryTable
 					projectName={projectName}
