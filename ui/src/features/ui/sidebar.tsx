@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { memo, ReactNode } from 'react'
 import {
 	BsBricks,
@@ -30,14 +29,9 @@ export const Sidebar = memo(() => {
 
 	const builderLinks = [
 		{
-			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automation',
-			icon: <BsWindowSidebar />,
-		},
-		{
-			to: `/builder/projects/${projectName}/interactions`,
-			label: 'Interactions',
-			icon: <BsBricks />,
+			to: `/builder/projects/${projectName}/user-management`,
+			label: 'User management',
+			icon: <FaUsers />,
 		},
 		{
 			to: `/builder/projects/${projectName}/tables`,
@@ -45,9 +39,14 @@ export const Sidebar = memo(() => {
 			icon: <BsTable />,
 		},
 		{
-			to: `/builder/projects/${projectName}/user-management`,
-			label: 'User management',
-			icon: <FaUsers />,
+			to: `/builder/projects/${projectName}/interactions`,
+			label: 'Interactions',
+			icon: <BsBricks />,
+		},
+		{
+			to: `/builder/projects/${projectName}/templates`,
+			label: 'Automation',
+			icon: <BsWindowSidebar />,
 		},
 		{
 			to: `/builder/projects/${projectName}/providers`,
@@ -57,7 +56,7 @@ export const Sidebar = memo(() => {
 	]
 
 	return (
-		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-60 overflow-hidden">
+		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-72 overflow-hidden">
 			<div className="flex items-center gap-6 px-4 text-xl font-medium">
 				<img className="w-10 rounded" src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
@@ -110,12 +109,7 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
-					<span
-						className={clsx(
-							'transition opacity-0 whitespace-nowrap group-hover:opacity-100',
-							item.label.length > 10 && 'text-sm'
-						)}
-					>
+					<span className="transition opacity-0 whitespace-nowrap group-hover:opacity-100">
 						{item.label}
 					</span>
 				</NavItem>
