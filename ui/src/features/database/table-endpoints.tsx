@@ -50,7 +50,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 interface EndpointWithBodyProps {
 	label: string
 	url: string
-	kind: 'POST'
+	kind: 'GET' | 'POST' | 'DELETE'
 	code: Record<string, unknown>
 	isResponse?: boolean
 }
@@ -99,7 +99,7 @@ export function Endpoint({ label, url, kind }: EndpointProps) {
 				>
 					{kind}
 				</div>
-				<span>{url}</span>
+				<span className="text-sm">{url}</span>
 				<button
 					className="absolute p-2 transition rounded right-1 top-[50%] -translate-y-[50%] hover:bg-gray-900/5"
 					type="button"
