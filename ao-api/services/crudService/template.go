@@ -16,6 +16,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
 			val := fmt.Sprintf("%v", v)
+			//log.Println("valueeeeeeeeeee:" + val)
 			if val == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]

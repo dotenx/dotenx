@@ -13,7 +13,7 @@ import {
 } from '../../api'
 import { EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
+import { Button, ContentWrapper, DeleteButton, Loader, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -26,8 +26,8 @@ interface AutomationListProps {
 
 export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {
 	return (
-		<div className="grow">
-			<div className="px-32 py-16">
+		<>
+			<ContentWrapper>
 				<Table
 					title={title}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
@@ -59,7 +59,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					]}
 					data={automations}
 				/>
-			</div>
+			</ContentWrapper>
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
 				{(data: { automationName: string }) => (
 					<>
@@ -72,7 +72,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					</>
 				)}
 			</Modal>
-		</div>
+		</>
 	)
 }
 
