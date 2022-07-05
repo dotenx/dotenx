@@ -1,5 +1,6 @@
+import _ from 'lodash'
 import { useState } from 'react'
-import { IoAdd, IoFilter, IoList, IoSearch, IoTrash } from 'react-icons/io5'
+import { IoAdd, IoFilter, IoList, IoPencil, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { CellProps } from 'react-table'
@@ -16,6 +17,7 @@ import {
 } from '../api'
 import {
 	ColumnForm,
+	EditRecordForm,
 	Endpoint,
 	QueryBuilder,
 	QueryBuilderValues,
@@ -60,12 +62,12 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<RecordActions
 					projectTag={projectTag}
 					tableName={tableName}
-					rowId={props.row.original.id}
+					data={props.row.original}
 				/>
 			),
 		},
 	]
-	const tableRecords = [...records]
+	const formColumns = columns.filter((column) => column !== 'id')
 
 	return (
 		<>
@@ -73,7 +75,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<Table
 					title={`Table ${tableName}`}
 					columns={tableHeaders}
-					data={tableRecords}
+					data={records}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 					emptyText="There's no record yet"
@@ -83,11 +85,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</Modal>
 			<Modal kind={Modals.NewRecord} title="New Record">
-				<RecordForm
-					columns={columns.filter((column) => column !== 'id')}
-					projectTag={projectTag}
-					tableName={tableName}
-				/>
+				<RecordForm columns={formColumns} projectTag={projectTag} tableName={tableName} />
 			</Modal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
@@ -110,6 +108,17 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						modal.close()
 					}}
 				/>
+			</Modal>
+			<Modal kind={Modals.EditRecord} title="Edit Record">
+				{({ id, data }: { id: string; data: TableRecord }) => (
+					<EditRecordForm
+						projectTag={projectTag}
+						tableName={tableName}
+						rowId={id}
+						defaultValues={data}
+						columns={formColumns}
+					/>
+				)}
 			</Modal>
 		</>
 	)
@@ -183,7 +192,10 @@ interface ColumnProps {
 function Column({ projectName, tableName, name }: ColumnProps) {
 	const client = useQueryClient()
 	const deleteMutation = useMutation(() => deleteColumn(projectName, tableName, name), {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetColumns),
+		onSuccess: () => {
+			client.invalidateQueries(QueryKey.GetColumns)
+			client.invalidateQueries(QueryKey.GetTableRecords)
+		},
 	})
 	const showDelete = name !== 'id'
 
@@ -224,19 +236,30 @@ function RecordFilter({
 function RecordActions({
 	projectTag,
 	tableName,
-	rowId,
+	data,
 }: {
 	projectTag: string
 	tableName: string
-	rowId: string
+	data: TableRecord
 }) {
+	const rowId = data.id
 	const client = useQueryClient()
 	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId), {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTableRecords),
 	})
+	const modal = useModal()
 
 	return (
-		<div className="flex justify-end">
+		<div className="flex justify-end gap-1">
+			<Button
+				variant="icon"
+				type="button"
+				onClick={() =>
+					modal.open(Modals.EditRecord, { id: rowId, data: _.omit(data, 'id') })
+				}
+			>
+				<IoPencil />
+			</Button>
 			<Button
 				variant="icon"
 				loading={mutation.isLoading}
