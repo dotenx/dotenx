@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { memo, ReactNode } from 'react'
 import {
 	BsBricks,
@@ -10,12 +9,12 @@ import {
 	BsWindowSidebar,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
-import { IoExit } from 'react-icons/io5'
+import { IoArrowForward, IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
-import { ADMIN_URL, IS_LOCAL, PRIVATE_VERSION, VERSION } from '../../constants'
+import { ADMIN_URL, IS_LOCAL, PRIVATE_VERSION, PUBLIC_VERSION } from '../../constants'
 import { NavItem } from './nav-item'
 
 const studioLinks = [
@@ -30,14 +29,9 @@ export const Sidebar = memo(() => {
 
 	const builderLinks = [
 		{
-			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automation',
-			icon: <BsWindowSidebar />,
-		},
-		{
-			to: `/builder/projects/${projectName}/interactions`,
-			label: 'Interactions',
-			icon: <BsBricks />,
+			to: `/builder/projects/${projectName}/user-management`,
+			label: 'User management',
+			icon: <FaUsers />,
 		},
 		{
 			to: `/builder/projects/${projectName}/tables`,
@@ -45,9 +39,14 @@ export const Sidebar = memo(() => {
 			icon: <BsTable />,
 		},
 		{
-			to: `/builder/projects/${projectName}/user-management`,
-			label: 'User management',
-			icon: <FaUsers />,
+			to: `/builder/projects/${projectName}/interactions`,
+			label: 'Interactions',
+			icon: <BsBricks />,
+		},
+		{
+			to: `/builder/projects/${projectName}/templates`,
+			label: 'Automation',
+			icon: <BsWindowSidebar />,
 		},
 		{
 			to: `/builder/projects/${projectName}/providers`,
@@ -57,7 +56,7 @@ export const Sidebar = memo(() => {
 	]
 
 	return (
-		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-60 overflow-hidden">
+		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-64 overflow-hidden h-screen fixed z-10">
 			<div className="flex items-center gap-6 px-4 text-xl font-medium">
 				<img className="w-10 rounded" src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
@@ -66,15 +65,20 @@ export const Sidebar = memo(() => {
 				</div>
 			</div>
 			{projectName && (
-				<div className="px-5 mt-10 text-slate-700 ">
+				<div className="px-5 mt-10 text-slate-700" title="Back to Projects">
 					<a
-						className="block px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
+						className="px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50 flex items-center justify-between"
 						href="https://admin.dotenx.com/projects"
 					>
-						<span className="text-center capitalize">{projectName[0]}</span>
-						<span className="transition opacity-0 group-hover:opacity-100">
-							{projectName.substring(1)}
-						</span>
+						<div>
+							<span className="text-center capitalize">{projectName[0]}</span>
+							<span className="transition opacity-0 group-hover:opacity-100">
+								{projectName.substring(1)}
+							</span>
+						</div>
+						<div className="transition opacity-0 group-hover:opacity-100">
+							<IoArrowForward />
+						</div>
 					</a>
 				</div>
 			)}
@@ -84,7 +88,7 @@ export const Sidebar = memo(() => {
 				{!IS_LOCAL && <Logout />}
 			</div>
 			<div className="pt-4 text-[10px] text-center">
-				<span title="GitHub Version">{VERSION}</span>
+				<span title="GitHub Version">v{PUBLIC_VERSION}</span>
 				{PRIVATE_VERSION && (
 					<>
 						<span> - </span>
@@ -110,12 +114,7 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
-					<span
-						className={clsx(
-							'transition opacity-0 whitespace-nowrap group-hover:opacity-100',
-							item.label.length > 10 && 'text-sm'
-						)}
-					>
+					<span className="transition opacity-0 whitespace-nowrap group-hover:opacity-100">
 						{item.label}
 					</span>
 				</NavItem>
