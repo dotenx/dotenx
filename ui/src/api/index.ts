@@ -35,6 +35,7 @@ import {
 	GetUserManagementDataResponse,
 	Provider,
 	StartAutomationRequest,
+	UpdateRecordRequest,
 } from './types'
 export * from './types'
 
@@ -263,5 +264,17 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
 	return api.post<void>(
 		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
+	)
+}
+
+export function updateRecord(
+	projectTag: string,
+	tableName: string,
+	rowId: string,
+	payload: UpdateRecordRequest
+) {
+	return api.post<void>(
+		`/database/query/update/project/${projectTag}/table/${tableName}/row/${rowId}`,
+		payload
 	)
 }
