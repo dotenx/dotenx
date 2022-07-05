@@ -19,7 +19,7 @@ SET    %s
 WHERE  id = %s;
 `
 
-func (ds *databaseStore) UpdateRow(ctx context.Context, projectTag string, tableName string, id int, row map[string]string) error {
+func (ds *databaseStore) UpdateRow(ctx context.Context, projectTag string, tableName string, id int, row map[string]interface{}) error {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {

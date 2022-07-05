@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -29,9 +30,12 @@ func (dc *DatabaseController) UpdateRow() gin.HandlerFunc {
 			return
 		}
 
-		var dto map[string]string
+		var dto map[string]interface{}
 		if err := c.ShouldBindJSON(&dto); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			log.Println("err:", err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		fmt.Println(dto)
@@ -43,7 +47,10 @@ func (dc *DatabaseController) UpdateRow() gin.HandlerFunc {
 		}
 
 		if err := dc.Service.UpdateRow(projectTag, tableName, id, dto); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+			log.Println("err:", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 
