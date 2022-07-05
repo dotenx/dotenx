@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {
 	AddColumnRequest,
+	AddRecordRequest,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateProjectRequest,
@@ -23,6 +24,7 @@ import {
 	GetProjectsResponse,
 	GetProviderResponse,
 	GetProvidersResponse,
+	GetRecordsResponse,
 	GetTableRecordsRequest,
 	GetTablesResponse,
 	GetTaskFieldsResponse,
@@ -33,6 +35,7 @@ import {
 	GetUserManagementDataResponse,
 	Provider,
 	StartAutomationRequest,
+	UpdateRecordRequest,
 } from './types'
 export * from './types'
 
@@ -226,7 +229,7 @@ export function getTableRecords(
 	tableName: string,
 	payload: GetTableRecordsRequest
 ) {
-	return api.post<Record<string, string>[] | null>(
+	return api.post<GetRecordsResponse>(
 		`/database/query/select/project/${projectTag}/table/${tableName}`,
 		payload
 	)
@@ -249,4 +252,29 @@ export function getTemplateEndpointFields(templateName: string) {
 
 export function getInteractionEndpointFields(interactionName: string) {
 	return api.get<EndpointFields>(`/pipeline/interaction/name/${interactionName}`)
+}
+
+export function addRecord(projectTag: string, tableName: string, payload: AddRecordRequest) {
+	return api.post<void>(
+		`/database/query/insert/project/${projectTag}/table/${tableName}`,
+		payload
+	)
+}
+
+export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
+	return api.post<void>(
+		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
+	)
+}
+
+export function updateRecord(
+	projectTag: string,
+	tableName: string,
+	rowId: string,
+	payload: UpdateRecordRequest
+) {
+	return api.post<void>(
+		`/database/query/update/project/${projectTag}/table/${tableName}/row/${rowId}`,
+		payload
+	)
 }

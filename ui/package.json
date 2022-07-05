@@ -6,6 +6,8 @@
 		"@codemirror/stream-parser": "^0.19.9",
 		"@hookform/error-message": "^2.0.0",
 		"@hookform/resolvers": "^2.8.8",
+		"@mantine/core": "^4.2.12",
+		"@mantine/hooks": "^4.2.12",
 		"@types/use-persisted-state": "^0.3.1",
 		"@uiball/loaders": "^1.2.6",
 		"@uiw/react-codemirror": "4.3.3",
