@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { IoAdd, IoFilter, IoList, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
+import { CellProps } from 'react-table'
 import {
 	API_URL,
 	deleteColumn,
+	deleteRecord,
 	getColumns,
 	getProject,
 	getTableRecords,
 	GetTableRecordsRequest,
 	QueryKey,
+	TableRecord,
 } from '../api'
 import {
 	ColumnForm,
@@ -41,21 +44,36 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data ?? [{}]
+	const records = recordsQuery.data?.data ?? []
 	const columns = columnsQuery.data?.data.columns.map((column) => column.name) ?? []
 	const headers =
 		columns.map((column) => ({
 			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
 			accessor: column,
 		})) ?? []
+	const tableHeaders = [
+		...headers,
+		{
+			Header: 'Actions',
+			accessor: '___actions___',
+			Cell: (props: CellProps<TableRecord>) => (
+				<RecordActions
+					projectTag={projectTag}
+					tableName={tableName}
+					rowId={props.row.original.id}
+				/>
+			),
+		},
+	]
+	const tableRecords = [...records]
 
 	return (
 		<>
 			<ContentWrapper>
 				<Table
 					title={`Table ${tableName}`}
-					columns={headers}
-					data={records}
+					columns={tableHeaders}
+					data={tableRecords}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 					emptyText="There's no record yet"
@@ -200,5 +218,33 @@ function RecordFilter({
 				</Button>
 			)}
 		</QueryBuilder>
+	)
+}
+
+function RecordActions({
+	projectTag,
+	tableName,
+	rowId,
+}: {
+	projectTag: string
+	tableName: string
+	rowId: string
+}) {
+	const client = useQueryClient()
+	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId), {
+		onSuccess: () => client.invalidateQueries(QueryKey.GetTableRecords),
+	})
+
+	return (
+		<div className="flex justify-end">
+			<Button
+				variant="icon"
+				loading={mutation.isLoading}
+				type="button"
+				onClick={() => mutation.mutate()}
+			>
+				<IoTrash />
+			</Button>
+		</div>
 	)
 }

@@ -350,3 +350,7 @@ export type GetTableRecordsRequest = RecordsFilters
 export type EndpointFields = Record<string, string[]>
 
 export type AddRecordRequest = Record<string, string>
+
+export type TableRecord = Record<string, string>
+
+export type GetRecordsResponse = TableRecord[] | null
