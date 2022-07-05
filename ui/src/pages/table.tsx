@@ -16,6 +16,7 @@ import {
 	Endpoint,
 	QueryBuilder,
 	QueryBuilderValues,
+	RecordForm,
 	TableDeletion,
 	TableEndpoints,
 } from '../features/database'
@@ -41,10 +42,11 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		{ enabled: !!projectTag }
 	)
 	const records = recordsQuery.data?.data ?? [{}]
+	const columns = columnsQuery.data?.data.columns.map((column) => column.name) ?? []
 	const headers =
-		columnsQuery.data?.data.columns.map((column) => ({
-			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
-			accessor: column.name,
+		columns.map((column) => ({
+			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
+			accessor: column,
 		})) ?? []
 
 	return (
@@ -61,6 +63,13 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			</ContentWrapper>
 			<Modal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
+			</Modal>
+			<Modal kind={Modals.NewRecord} title="New Record">
+				<RecordForm
+					columns={columns.filter((column) => column !== 'id')}
+					projectTag={projectTag}
+					tableName={tableName}
+				/>
 			</Modal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
@@ -134,6 +143,10 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 			>
 				<IoList />
 				Endpoints
+			</Button>
+			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewRecord)}>
+				<IoAdd />
+				New Record
 			</Button>
 			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewColumn)}>
 				<IoAdd />

@@ -23,6 +23,7 @@ export enum Modals {
 	InteractionBody = 'interaction-body',
 	QueryBuilder = 'query-builder',
 	TableFilter = 'table-filter',
+	NewRecord = 'new-record',
 }
 
 export function useModal() {
