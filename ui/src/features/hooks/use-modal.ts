@@ -24,6 +24,7 @@ export enum Modals {
 	QueryBuilder = 'query-builder',
 	TableFilter = 'table-filter',
 	NewRecord = 'new-record',
+	EditRecord = 'edit-record',
 }
 
 export function useModal() {
