@@ -12,16 +12,14 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline
+	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'
 import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
 import { RunInteractionForm } from '../interaction'
-import { Button, Modal } from '../ui'
-import { IconButton } from '../ui/icon-button'
-import { JsonCode } from './json-code'
+import { Button, IconButton, JsonCode, Modal } from '../ui'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 import { useActivateAutomation } from './use-activate'

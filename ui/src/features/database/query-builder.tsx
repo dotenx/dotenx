@@ -49,7 +49,7 @@ interface QueryBuilderProps {
 	defaultValues?: QueryBuilderValues
 }
 
-export default function QueryBuilder({
+export function QueryBuilder({
 	projectName,
 	tableName,
 	children,
