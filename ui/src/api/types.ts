@@ -348,3 +348,5 @@ export interface RecordsFilters {
 export type GetTableRecordsRequest = RecordsFilters
 
 export type EndpointFields = Record<string, string[]>
+
+export type AddRecordRequest = Record<string, string>

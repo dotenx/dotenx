@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {
 	AddColumnRequest,
+	AddRecordRequest,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateProjectRequest,
@@ -249,4 +250,11 @@ export function getTemplateEndpointFields(templateName: string) {
 
 export function getInteractionEndpointFields(interactionName: string) {
 	return api.get<EndpointFields>(`/pipeline/interaction/name/${interactionName}`)
+}
+
+export function addRecord(projectTag: string, tableName: string, payload: AddRecordRequest) {
+	return api.post<void>(
+		`/database/query/insert/project/${projectTag}/table/${tableName}`,
+		payload
+	)
 }
