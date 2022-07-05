@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -36,5 +35,5 @@ func init() {
 		}
 		AvaliableIntegrations[yamlFile.Type] = yamlFile
 	}
-	fmt.Println(AvaliableIntegrations)
+	//fmt.Println(AvaliableIntegrations)
 }

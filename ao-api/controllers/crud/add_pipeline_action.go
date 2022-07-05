@@ -19,9 +19,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
-		//fmt.Printf("%v\n", pipelineDto)
-		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{

@@ -29,9 +29,9 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("############")
-	fmt.Println(providers)
-	fmt.Println("############")
+	// 	fmt.Println("############")
+	// 	fmt.Println(providers)
+	// 	fmt.Println("############")
 }
 
 // GetProviders returns a slice of providers formed from the corresponding config section

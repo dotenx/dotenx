@@ -18,12 +18,32 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+func getValues(objects []string) (result string) {
+	for i, str := range objects {
+		result += str
+		if len(objects)-i > 1 {
+			result += ", "
+		}
+	}
+	return
+}
+
+var mockPipelines = []string{
+	"('automation1', 'test_account_id', true, false, false)",
+	"('template1', 'test_account_id', false, true, false)",
+	"('interaction1', 'test_account_id', false, false, true)",
+}
+
+var testSeeds = []string{
+	`INSERT INTO pipelines (name, account_id, is_active, is_template, is_interaction)
+     VALUES ` + getValues(mockPipelines) + `;`,
+}
+
 func Bootstrap() error {
 	err := godotenv.Load()
 	if err != nil {
 		return err
 	}
-
 	err = config.Load()
 	if err != nil {
 		return err
@@ -36,6 +56,10 @@ func SetUpRouter() *gin.Engine {
 	router := gin.Default()
 	return router
 }
+
+// TODO change dbname and do it on a test db and then truncate all tables
+// OR
+// TODO do it on the main db but delete all inserted records after all to keep main db unchanged
 
 func InitializeDB() (*dbPkg.DB, error) {
 	host := "localhost"
@@ -51,6 +75,12 @@ func InitializeDB() (*dbPkg.DB, error) {
 		host, port, user, password, dbName, extras)
 	log.Println(connStr)
 	db, err := dbPkg.Connect(driver, connStr)
+	if err != nil {
+		return nil, err
+	}
+	for _, seed := range testSeeds {
+		db.Connection.Exec(seed)
+	}
 	return db, err
 }
 
