@@ -15,7 +15,7 @@ type PgColumn struct {
 }
 
 var listColumns = `
-SELECT column_name, data_type
+SELECT column_name, domain_name
 FROM   information_schema.columns
 WHERE  table_schema = 'public'
 AND    table_name = $1
@@ -42,9 +42,14 @@ func (ds *databaseStore) ListTableColumns(ctx context.Context, accountId string,
 	defer rows.Close()
 	for rows.Next() {
 		var cur PgColumn
+		// TODO: id column hasn't domain_name (domain_name is null because this column not created by user)
+		// so we should handle sql null error for this column
 		rows.Scan(&cur.Name, &cur.Type)
 		if err != nil {
 			return columns, err
+		}
+		if cur.Name == "id" {
+			cur.Type = "num"
 		}
 		columns = append(columns, cur)
 	}
