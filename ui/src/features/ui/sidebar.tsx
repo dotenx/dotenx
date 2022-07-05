@@ -9,7 +9,7 @@ import {
 	BsWindowSidebar,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
-import { IoExit } from 'react-icons/io5'
+import { IoArrowForward, IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
@@ -65,15 +65,20 @@ export const Sidebar = memo(() => {
 				</div>
 			</div>
 			{projectName && (
-				<div className="px-5 mt-10 text-slate-700 ">
+				<div className="px-5 mt-10 text-slate-700" title="Back to Projects">
 					<a
-						className="block px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
+						className="px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50 flex items-center justify-between"
 						href="https://admin.dotenx.com/projects"
 					>
-						<span className="text-center capitalize">{projectName[0]}</span>
-						<span className="transition opacity-0 group-hover:opacity-100">
-							{projectName.substring(1)}
-						</span>
+						<div>
+							<span className="text-center capitalize">{projectName[0]}</span>
+							<span className="transition opacity-0 group-hover:opacity-100">
+								{projectName.substring(1)}
+							</span>
+						</div>
+						<div className="transition opacity-0 group-hover:opacity-100">
+							<IoArrowForward />
+						</div>
 					</a>
 				</div>
 			)}
