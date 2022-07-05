@@ -1,5 +1,7 @@
 package project
 
+// todo: uncomment codes when fix problem of testing services
+
 // import (
 // 	"bytes"
 // 	"encoding/json"
