@@ -27,6 +27,14 @@ type PipelineDto struct {
 	Manifest Manifest
 }
 
+type PipelineSummery struct {
+	PipelineDetailes PipelineVersion
+	Endpoint         string
+	IsActive         bool
+	IsTemplate       bool
+	IsInteraction    bool
+}
+
 type Manifest struct {
 	Tasks    map[string]Task         `db:"tasks" json:"tasks" yaml:"tasks"`
 	Triggers map[string]EventTrigger `db:"triggers" json:"triggers" yaml:"triggers"`

@@ -21,7 +21,7 @@ type CrudService interface {
 	GetInteractionDetailes(accountId string, name string) (detailes map[string]interface{}, err error)
 	UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error
 	GetPipelines(accountId string) ([]models.Pipeline, error)
-	GetPipelineByName(accountId string, name string) (models.PipelineVersion, string, bool, bool, bool, error)
+	GetPipelineByName(accountId string, name string) (models.PipelineSummery, error)
 	DeletePipeline(accountId, name string, deleteRecord bool) (err error)
 	ActivatePipeline(accountId, pipelineId string) (err error)
 	DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error)

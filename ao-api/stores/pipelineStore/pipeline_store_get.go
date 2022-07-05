@@ -11,14 +11,14 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, isTemplate bool, isInteraction bool, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
-	pipeline.Manifest.Tasks = make(map[string]models.Task)
+	pipeline.PipelineDetailes.Manifest.Tasks = make(map[string]models.Task)
 
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.Id, &endpoint, &isActive, &isTemplate, &isInteraction)
+		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -29,7 +29,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 		}
 		tasks := []models.Task{}
 		var rows *sql.Rows
-		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.Id)
+		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.PipelineDetailes.Id)
 		if err != nil {
 			log.Println("error", err.Error())
 			return
@@ -65,7 +65,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			for _, precondition := range preconditions {
 				task.ExecuteAfter[taskIdToName[precondition.PreconditionId]] = append(task.ExecuteAfter[taskIdToName[precondition.PreconditionId]], precondition.Status)
 			}
-			pipeline.Manifest.Tasks[task.Name] = models.Task{
+			pipeline.PipelineDetailes.Manifest.Tasks[task.Name] = models.Task{
 				ExecuteAfter: task.ExecuteAfter,
 				Type:         task.Type,
 				Body:         task.Body,
@@ -75,7 +75,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			}
 		}
 	}
-	return pipeline, endpoint, isActive, isTemplate, isInteraction, nil
+	return pipeline, nil
 }
 
 var select_pipeline = `
