@@ -15,7 +15,7 @@ type DatabaseService interface {
 	ListTableColumns(accountId string, projectName string, tableName string) ([]databaseStore.PgColumn, error)
 
 	InsertRow(projectTag string, tableName string, row map[string]interface{}) error
-	UpdateRow(projectTag string, tableName string, id int, row map[string]string) error
+	UpdateRow(projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(projectTag string, tableName string, id int) error
 	SelectRows(projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error)
 }

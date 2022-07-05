@@ -19,7 +19,7 @@ type DatabaseStore interface {
 	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]PgColumn, error)
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error
-	UpdateRow(ctx context.Context, projectTag string, tableName string, id int, row map[string]string) error
+	UpdateRow(ctx context.Context, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(ctx context.Context, projectTag string, tableName string, id int) error
 	SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, size int) ([]map[string]interface{}, error)
 }
