@@ -53,7 +53,6 @@ import (
 
 func init() {
 	gin.ForceConsoleColor()
-	initializeLogrus()
 }
 
 type App struct {
@@ -61,6 +60,7 @@ type App struct {
 }
 
 func NewApp() *App {
+	initializeLogrus()
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
@@ -327,6 +327,28 @@ func initializeLogrus() {
 
 	logrus.SetReportCaller(true)
 
-	// Only log the warning severity or above.
-	logrus.SetLevel(logrus.DebugLevel)
+	// We set log level based on an environment variable.
+	switch config.Configs.App.LogLevel {
+	case "trace":
+		logrus.SetLevel(logrus.TraceLevel)
+		logrus.Info("Logrus log level is trace")
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Info("Logrus log level is debug")
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+		logrus.Info("Logrus log level is warn")
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+		logrus.Info("Logrus log level is error")
+	case "fatal":
+		logrus.SetLevel(logrus.FatalLevel)
+		logrus.Info("Logrus log level is fatal")
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	}
 }
