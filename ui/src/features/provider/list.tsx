@@ -1,9 +1,10 @@
-import { IoAdd, IoArrowForward } from 'react-icons/io5'
+import { ActionIcon, Anchor, Button } from '@mantine/core'
+import { IoAdd, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
 import { deleteProvider, getProviders, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Table } from '../ui'
+import { Table } from '../ui'
 
 export function ProviderList() {
 	const client = useQueryClient()
@@ -24,13 +25,9 @@ export function ProviderList() {
 					Header: 'Name',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<Link
-							className="inline-flex items-center gap-1 hover:underline underline-offset-2"
-							to={value}
-						>
+						<Anchor component={Link} to={value}>
 							{value}
-							<IoArrowForward className="text-xs" />
-						</Link>
+						</Anchor>
 					),
 				},
 				{ Header: 'Type', accessor: 'type' },
@@ -39,10 +36,14 @@ export function ProviderList() {
 					id: 'action',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<DeleteButton
+						<ActionIcon
 							loading={deleteMutation.isLoading}
 							onClick={() => deleteMutation.mutate(value)}
-						/>
+							className="ml-auto"
+							color="rose"
+						>
+							<IoTrash />
+						</ActionIcon>
 					),
 				},
 			]}
@@ -55,8 +56,10 @@ function ActionBar() {
 	const modal = useModal()
 
 	return (
-		<Button className="max-w-min" onClick={() => modal.open(Modals.NewProvider)}>
-			<IoAdd className="text-2xl" />
+		<Button
+			leftIcon={<IoAdd className="text-xl" />}
+			onClick={() => modal.open(Modals.NewProvider)}
+		>
 			New Provider
 		</Button>
 	)

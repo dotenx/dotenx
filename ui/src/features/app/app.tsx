@@ -41,6 +41,7 @@ export function App() {
 						fontFamilyMonospace: "'Roboto Mono', monospace",
 						headings: { fontFamily: 'Montserrat, sans-serif' },
 					}}
+					emotionOptions={{ key: 'mantine', prepend: false }}
 				>
 					<Routes />
 					<ToastContainer />
