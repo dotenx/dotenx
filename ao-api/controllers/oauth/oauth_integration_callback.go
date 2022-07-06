@@ -1,7 +1,6 @@
 package oauthController
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -10,6 +9,7 @@ import (
 	"github.com/dotenx/goth"
 	"github.com/dotenx/goth/gothic"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // OAuthIntegrationCallback handles the oauth callback and return user access token.
@@ -48,10 +48,10 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	if utils.ShouldRedirectWithError(c, err, UI) {
 		return
 	}
-	log.Println("user:", user)
-	log.Println("user.AccessToken:", user.AccessToken)
-	log.Println("user.AccessTokenSecret:", user.AccessTokenSecret)
-	log.Println("user.RefreshToken:", user.RefreshToken)
+	logrus.Trace("user:", user)
+	logrus.Trace("user.AccessToken:", user.AccessToken)
+	logrus.Trace("user.AccessTokenSecret:", user.AccessTokenSecret)
+	logrus.Trace("user.RefreshToken:", user.RefreshToken)
 	if user.RefreshToken != "" {
 		c.Redirect(http.StatusTemporaryRedirect, UI+"?access_token="+user.AccessToken+"&refresh_token="+user.RefreshToken)
 	} else if user.AccessTokenSecret != "" {

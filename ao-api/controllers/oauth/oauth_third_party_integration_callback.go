@@ -3,7 +3,6 @@ package oauthController
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // OAuthThirdPartyIntegrationCallback handles the oauth callback and return name of integration
@@ -64,10 +64,10 @@ func (controller *OauthController) OAuthThirdPartyIntegrationCallback(c *gin.Con
 	if utils.ShouldRedirectWithError(c, err, UI) {
 		return
 	}
-	log.Println("user:", user)
-	log.Println("user.AccessToken:", user.AccessToken)
-	log.Println("user.AccessTokenSecret:", user.AccessTokenSecret)
-	log.Println("user.RefreshToken:", user.RefreshToken)
+	logrus.Trace("user:", user)
+	logrus.Trace("user.AccessToken:", user.AccessToken)
+	logrus.Trace("user.AccessTokenSecret:", user.AccessTokenSecret)
+	logrus.Trace("user.RefreshToken:", user.RefreshToken)
 	if user.RefreshToken != "" {
 		integration.HasRefreshToken = true
 		integration.Secrets["ACCESS_TOKEN"] = user.AccessToken
