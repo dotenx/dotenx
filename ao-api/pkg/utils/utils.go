@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"crypto/aes"
@@ -208,6 +209,25 @@ func ContainsString(s []string, e string) bool {
 		if a == e {
 			return true
 		}
+	}
+	return false
+}
+
+func CheckErrorExist(ctx *gin.Context, err error, statusCode int) bool {
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(statusCode, gin.H{
+			"message": err.Error(),
+		})
+		return true
+	}
+	return false
+}
+
+func ShouldRedirectWithError(ctx *gin.Context, err error, url string) bool {
+	if err != nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, url+"?error="+err.Error())
+		return true
 	}
 	return false
 }
