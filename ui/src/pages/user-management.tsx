@@ -4,7 +4,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProject, getUserManagementData, QueryKey } from '../api'
 import { EndpointWithBody } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Modal, Table } from '../features/ui'
+import { Button, ContentWrapper, Drawer, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -85,7 +85,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 			<Button variant="outlined" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
 				Endpoint
 			</Button>
-			<Modal kind={Modals.UserManagementEndpoint} title="Endpoint" size="lg">
+			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
 					<EndpointWithBody
 						label="Sign up a user"
@@ -107,7 +107,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						isResponse
 					/>
 				</div>
-			</Modal>
+			</Drawer>
 		</>
 	)
 }

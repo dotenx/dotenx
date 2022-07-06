@@ -45,7 +45,7 @@ export function Table<D extends object = Record<string, string>>({
 
 	return (
 		<div className="flex flex-col gap-10">
-			<div className="flex items-center justify-between">
+			<div className="flex justify-between">
 				<h3 className="text-2xl font-bold">{title}</h3>
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>

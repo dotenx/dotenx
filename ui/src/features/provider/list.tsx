@@ -1,4 +1,4 @@
-import { IoAdd } from 'react-icons/io5'
+import { IoAdd, IoArrowForward } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
 import { deleteProvider, getProviders, QueryKey } from '../../api'
@@ -24,8 +24,12 @@ export function ProviderList() {
 					Header: 'Name',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<Link className="hover:underline underline-offset-2" to={value}>
+						<Link
+							className="inline-flex items-center gap-1 hover:underline underline-offset-2"
+							to={value}
+						>
 							{value}
+							<IoArrowForward className="text-xs" />
 						</Link>
 					),
 				},

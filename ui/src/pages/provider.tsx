@@ -1,19 +1,27 @@
+import { ActionIcon } from '@mantine/core'
 import { ReactNode } from 'react'
+import { IoArrowBack } from 'react-icons/io5'
 import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getProvider, QueryKey } from '../api'
-import { Loader } from '../features/ui'
+import { ContentWrapper, Loader } from '../features/ui'
 
 export default function ProviderPage() {
 	const { providerName } = useParams()
 	const query = useQuery(QueryKey.GetProvider, () => getProvider(providerName ?? ''))
 	const provider = query.data?.data.provider
+	const { projectName } = useParams()
 
 	if (query.isLoading || !provider) return <Loader />
 
 	return (
-		<main className="px-32 py-16 grow">
-			<h3 className="text-2xl font-bold">Provider {provider.name}</h3>
+		<ContentWrapper>
+			<div className="flex items-center gap-4">
+				<ActionIcon component={Link} to={`/builder/projects/${projectName}/providers`}>
+					<IoArrowBack />
+				</ActionIcon>
+				<h3 className="text-2xl font-bold">Provider {provider.name}</h3>
+			</div>
 			<div className="grid grid-cols-2 mt-16">
 				<div className="space-y-10 ">
 					<Detail label="Type" value={provider.type} />
@@ -39,7 +47,7 @@ export default function ProviderPage() {
 				</div>
 				<Detail label="Scopes" value={<Scopes data={provider.scopes} />} />
 			</div>
-		</main>
+		</ContentWrapper>
 	)
 }
 

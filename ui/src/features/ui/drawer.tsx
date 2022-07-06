@@ -10,7 +10,6 @@ export function Drawer({ kind, children, ...rest }: DrawerProps) {
 
 	return (
 		<RawDrawer
-			title="Endpoints"
 			size="1000px"
 			position="right"
 			classNames={{

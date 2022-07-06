@@ -1,6 +1,6 @@
 import { Modals } from '../features/hooks'
 import { ProviderForm, ProviderList } from '../features/provider'
-import { ContentWrapper, Modal } from '../features/ui'
+import { ContentWrapper, NewModal } from '../features/ui'
 
 export default function ProvidersPage() {
 	return (
@@ -8,9 +8,9 @@ export default function ProvidersPage() {
 			<ContentWrapper>
 				<ProviderList />
 			</ContentWrapper>
-			<Modal kind={Modals.NewProvider} title="New Provider">
+			<NewModal kind={Modals.NewProvider} title="Add a new provider">
 				<ProviderForm />
-			</Modal>
+			</NewModal>
 		</>
 	)
 }
