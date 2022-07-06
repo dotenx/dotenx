@@ -49,11 +49,6 @@ export const Sidebar = memo(() => {
 			icon: <BsWindowSidebar />,
 		},
 		{
-			to: `/builder/projects/${projectName}/user-management`,
-			label: 'User management',
-			icon: <FaUsers />,
-		},
-		{
 			to: `/builder/projects/${projectName}/providers`,
 			label: 'Providers',
 			icon: <BsFillXDiamondFill />,
