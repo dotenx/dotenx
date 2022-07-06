@@ -2,7 +2,7 @@ package app
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -48,6 +48,7 @@ import (
 	sessRedis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -59,6 +60,7 @@ type App struct {
 }
 
 func NewApp() *App {
+	initializeLogrus()
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
@@ -67,7 +69,7 @@ func NewApp() *App {
 	queue := queueService.NewBullQueue()
 	r := routing(db, queue, redisClient)
 	if r == nil {
-		log.Fatalln("r is nil")
+		logrus.Fatal("r is nil")
 	}
 	return &App{
 		route: r,
@@ -79,7 +81,7 @@ func (a *App) Start(restPort string) error {
 	go func() {
 		err := a.route.Run(restPort)
 		if err != nil {
-			log.Println(err)
+			logrus.Error(err)
 			errChan <- err
 			return
 		}
@@ -301,7 +303,7 @@ func initializeDB() (*db.DB, error) {
 	connStr := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s %s",
 		host, port, user, password, dbName, extras)
-	log.Println(connStr)
+	logrus.Info(connStr)
 	db, err := db.Connect(driver, connStr)
 	return db, err
 }
@@ -313,4 +315,40 @@ func initializeRedis() (redisClient *redis.Client, err error) {
 	}
 	redisClient, err = db.RedisConnect(opt)
 	return
+}
+
+func initializeLogrus() {
+	// Log as JSON instead of the default ASCII formatter.
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	logrus.SetOutput(os.Stdout)
+
+	logrus.SetReportCaller(true)
+
+	// We set log level based on an environment variable.
+	switch config.Configs.App.LogLevel {
+	case "trace":
+		logrus.SetLevel(logrus.TraceLevel)
+		logrus.Info("Logrus log level is trace")
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Info("Logrus log level is debug")
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+		logrus.Info("Logrus log level is warn")
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+		logrus.Info("Logrus log level is error")
+	case "fatal":
+		logrus.SetLevel(logrus.FatalLevel)
+		logrus.Info("Logrus log level is fatal")
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	}
 }
