@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import { z } from 'zod'
 import { addColumn, AddColumnRequest, QueryKey } from '../../api'
+import { columnTypeOptions } from '../../constants'
 import { useModal } from '../hooks'
 import { Button, Field, Form, NewSelect } from '../ui'
 
@@ -56,19 +57,3 @@ export function ColumnForm({ projectName, tableName }: { projectName: string; ta
 		</Form>
 	)
 }
-
-const columnTypeOptions = [
-	{ label: 'Yes/No', value: 'yes_no' },
-	{ label: 'Image address', value: 'image_address' },
-	{ label: 'File address', value: 'file_address' },
-	{ label: 'Rating', value: 'rating' },
-	{ label: 'URL', value: 'url' },
-	{ label: 'Email', value: 'email' },
-	{ label: 'Time', value: 'just_time' },
-	{ label: 'Date', value: 'just_date' },
-	{ label: 'Date time', value: 'date_time' },
-	{ label: 'Number', value: 'num' },
-	{ label: 'Short text', value: 'short_text' },
-	{ label: 'Long text', value: 'long_text' },
-	{ label: 'Link to table', value: 'link_field' },
-]
