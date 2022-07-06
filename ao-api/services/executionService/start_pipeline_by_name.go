@@ -27,14 +27,14 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
-	_, _, isActive, isTemplate, isInteraction, err := manager.Store.GetByName(noContext, accountId, name)
-	if isTemplate {
+	pipeline, err := manager.Store.GetByName(noContext, accountId, name)
+	if pipeline.IsTemplate {
 		return -1, errors.New("automation is a template so you can't execute it")
 	}
 	if err != nil {
 		return -1, err
 	}
-	if !isActive {
+	if !pipeline.IsActive {
 		return -1, errors.New("automation is not active")
 	}
 
@@ -51,7 +51,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		StartedAt:         time.Now(),
 		InitialData:       input,
 	}
-	if isInteraction {
+	if pipeline.IsInteraction {
 		log.Println("tpAccountId:", tpAccountId)
 		execution.ThirdPartyAccountId = tpAccountId
 	}
@@ -94,7 +94,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	// 	log.Println(err.Error())
 	// 	return -1, http.StatusInternalServerError
 	// }
-	if !isInteraction {
+	if !pipeline.IsInteraction {
 		return gin.H{"id": executionId}, err
 	}
 	return manager.getResponse(executionId)

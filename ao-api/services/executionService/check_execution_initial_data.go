@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
@@ -16,7 +17,7 @@ func (manage *executionManager) CheckExecutionInitialData(executionId int, accou
 	if !ok {
 		return nil, errors.New("no initial data for this task")
 	}
-	if source == "interactionRunTime" {
+	if source == config.Configs.App.InteractionBodyKey {
 		interactionRunTimeBody := taskData.(map[string]interface{})
 		interactionTaskBody, ok := interactionRunTimeBody[taskName]
 		if !ok {
