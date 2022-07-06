@@ -7,7 +7,14 @@ import { useModal } from '../hooks'
 import { Button, Field, Form } from '../ui'
 
 const schema = z.object({
-	tableName: z.string().min(1),
+	tableName: z
+		.string()
+		.min(2)
+		.max(20)
+		.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
+			message:
+				'Name should start with a letter and contain only letters, numbers, and underscores',
+		}),
 })
 
 type Schema = z.infer<typeof schema>
