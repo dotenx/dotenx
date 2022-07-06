@@ -102,6 +102,7 @@
 		"@types/dagre": "^0.7.47",
 		"@types/js-cookie": "^3.0.2",
 		"@types/lodash": "^4.14.179",
+		"@types/node": "^18.0.1",
 		"@types/react": "^17.0.40",
 		"@types/react-dom": "^17.0.13",
 		"@types/react-modal": "^3.13.1",

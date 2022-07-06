@@ -1,33 +1,11 @@
 import { ReactNode } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Control, useFieldArray, useForm } from 'react-hook-form'
 import { IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { z } from 'zod'
 import { getColumns, QueryKey } from '../../api'
-import { Field, NewSelect } from '../ui'
-
-const chainedConditionOptions = [
-	{ label: 'and', value: 'and' },
-	{ label: 'or', value: 'or' },
-]
-
-const operatorOptions = {
-	integer: [
-		{ label: '=', value: '=' },
-		{ label: '≠', value: '!=' },
-		{ label: '>', value: '>' },
-		{ label: '<', value: '<' },
-		{ label: '≥', value: '>=' },
-		{ label: '≤', value: '<=' },
-	],
-	'character varying': [
-		{ label: 'is', value: '=' },
-		{ label: 'is not', value: '!=' },
-		{ label: 'contains', value: 'contains' },
-		{ label: 'does not contain', value: 'doesNotContain' },
-	],
-	none: [],
-}
+import { chainedConditionOptions, columnTypeKinds, operatorOptions } from '../../constants'
+import { Field, NewSelect, Option } from '../ui'
 
 const schema = z.object({
 	conjunction: z.enum(['and', 'or']),
@@ -74,57 +52,88 @@ export function QueryBuilder({
 				{fieldArray.fields.length === 0 && <EmptyMessage />}
 				<div className="mt-6 space-y-4">
 					{fieldArray.fields.map((field, index) => (
-						<div key={field.id} className="grid items-center grid-cols-12 gap-2 px-4">
-							<div className="col-span-">
-								{index === 0 && <p className="pl-2">Where</p>}
-								{index === 1 && (
-									<NewSelect
-										name={`conjunction`}
-										options={chainedConditionOptions}
-										control={form.control}
-									/>
-								)}
-								{index > 1 && <p className="pl-2">{conjunction}</p>}
-							</div>
-							<div className="col-span-3">
-								<NewSelect
-									name={`filterSet.${index}.key`}
-									placeholder="column"
-									options={columnOptions}
-									loading={query.isLoading}
-									control={form.control}
-								/>
-							</div>
-							<div className="col-span-3">
-								<NewSelect
-									name={`filterSet.${index}.operator`}
-									placeholder="operator"
-									options={
-										operatorOptions[
-											columns.find(
-												(column) => column.name === filterSet[index].key
-											)?.type ?? 'none'
-										]
-									}
-									control={form.control}
-								/>
-							</div>
-							<div className="flex items-center col-span-5 gap-2">
-								<div className="grow">
-									<Field
-										name={`filterSet.${index}.value`}
-										placeholder="value"
-										control={form.control}
-									/>
-								</div>
-								<DeleteButton onClick={() => fieldArray.remove(index)} />
-							</div>
-						</div>
+						<ConditionRow
+							key={field.id}
+							columnOptions={columnOptions}
+							columnType={
+								columns.find((column) => column.name === filterSet[index].key)
+									?.type ?? 'none'
+							}
+							conjunction={conjunction}
+							control={form.control}
+							index={index}
+							loading={query.isLoading}
+							onDelete={() => fieldArray.remove(index)}
+						/>
 					))}
 				</div>
 				<AddButton onClick={addCondition} />
 			</div>
 			{children(form.watch())}
+		</div>
+	)
+}
+
+function ConditionRow({
+	index,
+	control,
+	columnOptions,
+	loading,
+	onDelete,
+	conjunction,
+	columnType,
+}: {
+	index: number
+	control: Control<QueryBuilderValues>
+	columnOptions: Option[]
+	loading: boolean
+	onDelete: () => void
+	conjunction: string
+	columnType: string
+}) {
+	const colKind = columnTypeKinds.find((kind) => kind.types.includes(columnType))?.kind ?? 'none'
+	const colOperatorOptions = operatorOptions[colKind]
+
+	return (
+		<div className="grid items-center grid-cols-12 gap-2 px-4">
+			<div className="col-span-">
+				{index === 0 && <p className="pl-2">Where</p>}
+				{index === 1 && (
+					<NewSelect
+						name={`conjunction`}
+						options={chainedConditionOptions}
+						control={control}
+					/>
+				)}
+				{index > 1 && <p className="pl-2">{conjunction}</p>}
+			</div>
+			<div className="col-span-3">
+				<NewSelect
+					name={`filterSet.${index}.key`}
+					placeholder="column"
+					options={columnOptions}
+					loading={loading}
+					control={control}
+				/>
+			</div>
+			<div className="col-span-3">
+				<NewSelect
+					name={`filterSet.${index}.operator`}
+					placeholder="operator"
+					options={colOperatorOptions}
+					control={control}
+				/>
+			</div>
+			<div className="flex items-center col-span-5 gap-2">
+				<div className="grow">
+					<Field
+						name={`filterSet.${index}.value`}
+						placeholder="value"
+						control={control}
+					/>
+				</div>
+				<DeleteButton onClick={onDelete} />
+			</div>
 		</div>
 	)
 }

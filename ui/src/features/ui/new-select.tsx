@@ -9,7 +9,7 @@ import { Loader } from './loader'
 
 interface Option {
 	label: string
-	value: string
+	value: unknown
 }
 
 export interface NewSelectProps {
