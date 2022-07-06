@@ -8,7 +8,14 @@ import { useModal } from '../hooks'
 import { Button, CreatableSelect, Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
-	name: z.string().min(1),
+	name: z
+		.string()
+		.min(2)
+		.max(20)
+		.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
+			message:
+				'Name should start with a letter and contain only letters, numbers, and underscores',
+		}),
 	type: z.string().min(1),
 	key: z.string().min(1),
 	secret: z.string().min(1),
