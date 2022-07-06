@@ -32,13 +32,13 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
 			return
 		}
-		p, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
+		p, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		if !isTemplate {
+		if !p.IsTemplate {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "you just can create automation from a template"})
 			return
 		}
@@ -54,7 +54,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest: p.Manifest,
+			Manifest: p.PipelineDetailes.Manifest,
 		}
 
 		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId)

@@ -31,14 +31,14 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
-	_, _, isActive, isTemplate, isInteraction, err := manager.Store.GetByName(noContext, accountId, name)
-	if isTemplate {
+	pipeline, err := manager.Store.GetByName(noContext, accountId, name)
+	if pipeline.IsTemplate {
 		return -1, errors.New("automation is a template so you can't execute it")
 	}
 	if err != nil {
 		return -1, err
 	}
-	if !isActive {
+	if !pipeline.IsActive {
 		return -1, errors.New("automation is not active")
 	}
 	hasAccess, err := manager.CheckAccess(accountId, pipelineId)
@@ -68,7 +68,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if err != nil {
 		return -1, err
 	}
-	if !isInteraction {
+	if !pipeline.IsInteraction {
 		return gin.H{"id": executionId}, err
 	}
 	return manager.getResponse(executionId)

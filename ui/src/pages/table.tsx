@@ -120,25 +120,6 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					/>
 				)}
 			</Modal>
-			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
-				<QueryTable
-					projectName={projectName}
-					projectTag={projectTag}
-					tableName={tableName}
-				/>
-			</Modal>
-			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
-				<RecordFilter
-					projectName={projectName}
-					tableName={tableName}
-					defaultValues={filters.filters}
-					onSubmit={(values) => {
-						setFilters({ columns: [], filters: values })
-						recordsQuery.refetch()
-						modal.close()
-					}}
-				/>
-			</Modal>
 		</>
 	)
 }
