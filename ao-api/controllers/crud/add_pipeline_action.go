@@ -2,7 +2,6 @@ package crud
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -21,9 +20,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			return
 		}
 		accountId, _ := utils.GetAccountId(c)
-		fmt.Println("################")
-		fmt.Println(accountId)
-		fmt.Println("##################")
+
 		base := models.Pipeline{
 			AccountId:     accountId,
 			Name:          pipelineDto.Name,
