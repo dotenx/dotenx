@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -29,10 +30,7 @@ func TestAddPipeline(t *testing.T) {
 			rr := httptest.NewRecorder()
 			r.ServeHTTP(rr, req)
 			assert.Equal(t, samp.StatusCode, rr.Code)
-			if err != nil {
-				t.Errorf("this is the error: %v\n", err)
-			}
-			if rr.Code == 200 {
+			if rr.Code == 200 /*|| (rr.Code == 400 && pipeName == "template_success")*/ {
 				responseMap := make(map[string]interface{})
 				err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
 				if err != nil {
@@ -42,9 +40,17 @@ func TestAddPipeline(t *testing.T) {
 				assert.Equal(t, samp.Name, responseMap["name"])
 				created, err := crudController.Service.GetPipelineByName("integration_test_account_id", samp.Name)
 				assert.Nil(t, err)
-				assert.Equal(t, created.IsTemplate, samp.Istemplate)
+				assert.Equal(t, samp.Istemplate, created.IsTemplate)
 				assert.NotNil(t, created.PipelineDetailes.Manifest.Tasks[samp.TaskName])
-				assert.Equal(t, created.PipelineDetailes.Manifest.Triggers[samp.TriggerName].Credentials[samp.TriggerField], samp.TriggerFieldValue)
+
+				if pipeName == "interaction_ok" {
+					body := fmt.Sprintf("%v", created.PipelineDetailes.Manifest.Tasks[samp.TaskName].Body)
+					if !strings.Contains(body, "interactionRunTime") {
+						t.Errorf("expected %v, got %v", samp.TaskFieldValue, body)
+					}
+				} else {
+					assert.Equal(t, samp.TriggerFieldValue, created.PipelineDetailes.Manifest.Triggers[samp.TriggerName].Credentials[samp.TriggerField])
+				}
 			}
 		})
 	}

@@ -31,6 +31,7 @@ func TestMain(m *testing.M) {
 		log.Println(err)
 		os.Exit(1)
 	}
+	fmt.Println(utils.Bootstrap())
 	pipelineStore := pipelineStore.New(dbConnection)
 	IntegrationStore := integrationStore.New(dbConnection)
 	TriggerStore := triggerStore.New(dbConnection)

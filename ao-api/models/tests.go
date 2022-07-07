@@ -7,6 +7,8 @@ var IntegrationTestSamples = map[string]struct {
 	ErrMessage        string
 	Istemplate        bool
 	TaskName          string
+	TaskField         string
+	TaskFieldValue    string
 	TriggerName       string
 	TriggerField      string
 	TriggerFieldValue string
@@ -34,6 +36,15 @@ var IntegrationTestSamples = map[string]struct {
 		TriggerName:       "trigger1",
 		TriggerField:      "channel_id",
 		TriggerFieldValue: "general3Id",
+	},
+	"interaction_ok": {
+		InputJSONOrYaml: test4,
+		StatusCode:      200,
+		Name:            "integration_test_interaction2",
+		Istemplate:      false,
+		TaskName:        "task2",
+		TaskField:       "image",
+		TaskFieldValue:  "{\"source\":\"interactionRunTime\",\"key\":\"text\"}",
 	},
 }
 
@@ -85,8 +96,7 @@ var test1 = `{
                 "credentials": {
                     "channel_id": "integration_test_channel_id",
                     "passed_seconds": "300"
-                },
-                "iconUrl": "https://cdn-icons-png.flaticon.com/512/2111/2111615.png"
+                }
             }
         }
     }
@@ -145,3 +155,37 @@ is_active: false
 is_template: false
 is_interaction: false
 `
+
+var test4 = `{
+    "name": "integration_test_interaction2",
+    "is_interaction":true,
+    "manifest": {
+        "tasks": {
+            "slackTask": {
+                "type": "Send slack message",
+                "body": {
+                    "outputs": null,
+                    "target_id": "",
+                    "text": ""
+                },
+                "integration": "",
+                "executeAfter": {}
+            },
+            "task2": {
+                "type": "Run image",
+                "body": {
+                    "outputs": null,
+                    "image": "",
+                    "script":""
+                },
+                "integration": "",
+                "executeAfter": {
+                    "slackTask": [
+                        "failed",
+                        "completed"
+                    ]
+                }
+            }
+        }
+    }
+}`

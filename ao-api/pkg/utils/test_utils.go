@@ -39,7 +39,7 @@ var clearSeeds = []string{
 }
 
 func Bootstrap() error {
-	err := godotenv.Load()
+	err := godotenv.Load("../../../.env")
 	if err != nil {
 		return err
 	}
