@@ -95,7 +95,7 @@ var test1 = `{
                 "integration": "",
                 "credentials": {
                     "channel_id": "integration_test_channel_id",
-                    "passed_seconds": "300"
+                    "passed_seconds": ""
                 }
             }
         }

@@ -31,11 +31,14 @@ func getValues(objects []string) (result string) {
 var testSeeds = []string{
 	`INSERT INTO pipelines (name, account_id, is_active, is_template, is_interaction)
      VALUES ` + getValues(getPipelinesInsertStatement(mockPipelines)) + `;`,
+	`INSERT INTO integrations (account_id, type, name, secrets, hasrefreshtoken, provider, tp_account_id)
+     VALUES ('integration_test_account_id', 'slack-bot', 'slack_bot', '', false, 'armin_integration_test', '123456');`,
 }
 
 var clearSeeds = []string{
 	`DELETE FROM pipelines WHERE account_id = 'integration_test_account_id';`,
 	`DELETE FROM event_triggers WHERE account_id = 'integration_test_account_id';`,
+	`DELETE FROM integrations WHERE account_id = 'integration_test_account_id';`,
 }
 
 func Bootstrap() error {

@@ -30,7 +30,7 @@ func TestAddPipeline(t *testing.T) {
 			rr := httptest.NewRecorder()
 			r.ServeHTTP(rr, req)
 			assert.Equal(t, samp.StatusCode, rr.Code)
-			if rr.Code == 200 /*|| (rr.Code == 400 && pipeName == "template_success")*/ {
+			if rr.Code == 200 || (rr.Code == 400 && pipeName == "template_success") || rr.Code == 500 {
 				responseMap := make(map[string]interface{})
 				err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
 				if err != nil {
