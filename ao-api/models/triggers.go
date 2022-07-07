@@ -3,7 +3,9 @@ package models
 import (
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -53,7 +55,11 @@ func (tr EventTrigger) IsValid() bool {
 
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
-	filepath.WalkDir("triggers", walkTriggers)
+	addr := "triggers"
+	if strings.HasSuffix(os.Args[0], ".test") {
+		addr = "../../../triggers"
+	}
+	filepath.WalkDir(addr, walkTriggers)
 }
 
 func readTriggerFile(address string) {

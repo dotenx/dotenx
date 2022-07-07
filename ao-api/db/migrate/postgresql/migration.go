@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -161,13 +163,20 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 	for _, migration := range migrations {
-		fmt.Print(migration.name)
+		if !strings.HasSuffix(os.Args[0], ".test") {
+			fmt.Print(migration.name)
+		}
 		if _, ok := completed[migration.name]; ok {
-			log.Println(" skipped")
+			if !strings.HasSuffix(os.Args[0], ".test") {
+				log.Println(" skipped")
+			}
+
 			continue
 		}
+		if !strings.HasSuffix(os.Args[0], ".test") {
+			log.Println(" executing")
+		}
 
-		log.Println(" executing")
 		if _, err := db.Exec(migration.stmt); err != nil {
 			return err
 		}

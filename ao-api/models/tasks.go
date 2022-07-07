@@ -6,7 +6,9 @@ import (
 	"errors"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -77,10 +79,15 @@ type TaskResultDto struct {
 
 func init() {
 	AvaliableTasks = make(map[string]TaskDefinition)
-	filepath.WalkDir("tasks", walkTasks)
+	addr := "tasks"
+	if strings.HasSuffix(os.Args[0], ".test") {
+		addr = "../../../tasks"
+	}
+	filepath.WalkDir(addr, walkTasks)
 }
 
 func readTaskFile(addr string) {
+	//fmt.Println(addr)
 	var yamlFile TaskDefinition
 	yamlData, err := ioutil.ReadFile(addr)
 	if err != nil {

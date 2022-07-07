@@ -13,12 +13,14 @@ var AvaliableIntegrations map[string]IntegrationDefinition
 func init() {
 	AvaliableIntegrations = make(map[string]IntegrationDefinition)
 	address := "integrations"
-
 	// if os.Args[0] has ".test" as suffix meaning that we are in test mode
 	if strings.HasSuffix(os.Args[0], ".test") {
 		address = "../../../integrations"
 	}
+	setIntegrations(address)
+}
 
+func setIntegrations(address string) {
 	files, err := ioutil.ReadDir(address)
 	if err != nil {
 		panic(err)
@@ -35,5 +37,4 @@ func init() {
 		}
 		AvaliableIntegrations[yamlFile.Type] = yamlFile
 	}
-	//fmt.Println(AvaliableIntegrations)
 }

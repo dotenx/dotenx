@@ -3,6 +3,7 @@ package postgresql
 import (
 	"database/sql"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -14,7 +15,9 @@ var seeds = []string{
 
 func Seed(db *sql.DB) error {
 	for _, seed := range seeds {
-		log.Println(seed)
+		if !strings.HasSuffix(os.Args[0], ".test") {
+			log.Println(seed)
+		}
 		if _, err := db.Exec(seed); err != nil {
 			return err
 		}

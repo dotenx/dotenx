@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"strings"
 	"time"
 
 	"crypto/aes"
@@ -24,7 +26,9 @@ func FailOnError(err error, msg string) {
 }
 
 func GetAccountId(c *gin.Context) (string, error) {
-	if config.Configs.App.RunLocally {
+	if strings.HasSuffix(os.Args[0], ".test") {
+		return "integration_test_account_id", nil
+	} else if config.Configs.App.RunLocally {
 		return config.Configs.App.AccountId, nil
 	} else {
 		accountId, exist := c.Get("accountId")
