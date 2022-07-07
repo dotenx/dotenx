@@ -1,22 +1,10 @@
-package crud
+package models
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-)
-
-var integrationTestSamples = map[string]struct {
-	inputJSONOrYaml   string
-	statusCode        int
-	name              string
-	errMessage        string
+var IntegrationTestSamples = map[string]struct {
+	InputJSONOrYaml   string
+	StatusCode        int
+	Name              string
+	ErrMessage        string
 	Istemplate        bool
 	TaskName          string
 	TriggerName       string
@@ -24,9 +12,9 @@ var integrationTestSamples = map[string]struct {
 	TriggerFieldValue string
 }{
 	"template_success": {
-		inputJSONOrYaml:   test1,
-		statusCode:        200,
-		name:              "integration_test_template2",
+		InputJSONOrYaml:   test1,
+		StatusCode:        200,
+		Name:              "integration_test_template2",
 		Istemplate:        true,
 		TaskName:          "task1",
 		TriggerName:       "trigger1",
@@ -34,56 +22,19 @@ var integrationTestSamples = map[string]struct {
 		TriggerFieldValue: "integration_test_channel_id",
 	},
 	"template_failed": {
-		inputJSONOrYaml: test2,
-		statusCode:      400,
+		InputJSONOrYaml: test2,
+		StatusCode:      400,
 	},
 	"automation_yaml_ok": {
-		inputJSONOrYaml:   test3,
-		statusCode:        200,
-		name:              "integration_test_automation2",
+		InputJSONOrYaml:   test3,
+		StatusCode:        200,
+		Name:              "integration_test_automation2",
 		Istemplate:        false,
 		TaskName:          "slackTest",
 		TriggerName:       "trigger1",
 		TriggerField:      "channel_id",
 		TriggerFieldValue: "general3Id",
 	},
-}
-
-func TestAddPipeline(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	r := gin.Default()
-	r.POST("/pipeline", crudController.AddPipeline())
-	for pipeName, samp := range integrationTestSamples {
-		t.Run("testing "+pipeName, func(t *testing.T) {
-			req, err := http.NewRequest(http.MethodPost, "/pipeline", bytes.NewBufferString(samp.inputJSONOrYaml))
-			if err != nil {
-				t.Errorf("this is the error: %v\n", err)
-			}
-			if pipeName == "automation_yaml_ok" {
-				req.Header.Set("accept", "application/x-yaml")
-			}
-			rr := httptest.NewRecorder()
-			r.ServeHTTP(rr, req)
-			assert.Equal(t, samp.statusCode, rr.Code)
-			if err != nil {
-				t.Errorf("this is the error: %v\n", err)
-			}
-			if rr.Code == 200 {
-				responseMap := make(map[string]interface{})
-				err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
-				if err != nil {
-					t.Errorf("Cannot convert to json: %v", err)
-				}
-				fmt.Println("this is the response data: ", responseMap)
-				assert.Equal(t, samp.name, responseMap["name"])
-				created, err := crudController.Service.GetPipelineByName("integration_test_account_id", samp.name)
-				assert.Nil(t, err)
-				assert.Equal(t, created.IsTemplate, samp.Istemplate)
-				assert.NotNil(t, created.PipelineDetailes.Manifest.Tasks[samp.TaskName])
-				assert.Equal(t, created.PipelineDetailes.Manifest.Triggers[samp.TriggerName].Credentials[samp.TriggerField], samp.TriggerFieldValue)
-			}
-		})
-	}
 }
 
 var test1 = `{

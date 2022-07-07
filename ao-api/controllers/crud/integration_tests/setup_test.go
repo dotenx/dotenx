@@ -1,4 +1,4 @@
-package crud
+package integration_tests
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
@@ -20,7 +21,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 )
 
-var crudController *CRUDController
+var crudController *crud.CRUDController
 
 func TestMain(m *testing.M) {
 	// do before test actions such as initializing db
@@ -42,7 +43,7 @@ func TestMain(m *testing.M) {
 	ts := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	cm := crudService.NewCrudService(pipelineStore, ts, IntegrationService)
 
-	crudController = &CRUDController{Service: cm, TriggerServic: ts}
+	crudController = &crud.CRUDController{Service: cm, TriggerServic: ts}
 	if err != nil {
 		panic(err)
 	}

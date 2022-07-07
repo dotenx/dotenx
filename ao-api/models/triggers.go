@@ -57,7 +57,7 @@ func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
 	addr := "triggers"
 	if strings.HasSuffix(os.Args[0], ".test") {
-		addr = "../../../triggers"
+		addr = "../../../../triggers"
 	}
 	filepath.WalkDir(addr, walkTriggers)
 }

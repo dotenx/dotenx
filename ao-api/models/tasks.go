@@ -81,7 +81,7 @@ func init() {
 	AvaliableTasks = make(map[string]TaskDefinition)
 	addr := "tasks"
 	if strings.HasSuffix(os.Args[0], ".test") {
-		addr = "../../../tasks"
+		addr = "../../../../tasks"
 	}
 	filepath.WalkDir(addr, walkTasks)
 }

@@ -15,7 +15,7 @@ func init() {
 	address := "integrations"
 	// if os.Args[0] has ".test" as suffix meaning that we are in test mode
 	if strings.HasSuffix(os.Args[0], ".test") {
-		address = "../../../integrations"
+		address = "../../../../integrations"
 	}
 	setIntegrations(address)
 }
