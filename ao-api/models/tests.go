@@ -1,18 +1,5 @@
 package models
 
-import (
-	"fmt"
-
-	faker "github.com/bxcodec/faker/v3"
-)
-
-func inti() {
-	fake := &Pipeline{}
-	faker.FakeData(fake)
-	fmt.Println(fake)
-
-}
-
 var IntegrationTestSamples = map[string]struct {
 	InputJSONOrYaml   string
 	StatusCode        int
