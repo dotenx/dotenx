@@ -4,10 +4,11 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (manage *executionManager) CheckExecutionInitialData(executionId int, accountId, source string) (input map[string]interface{}, err error) {
+func (manage *executionManager) CheckExecutionInitialData(executionId int, accountId, source, taskName string) (input map[string]interface{}, err error) {
 	initialData, err := manage.Store.GetInitialData(noContext, executionId)
 	if err != nil {
 		return
@@ -15,6 +16,14 @@ func (manage *executionManager) CheckExecutionInitialData(executionId int, accou
 	taskData, ok := initialData[source]
 	if !ok {
 		return nil, errors.New("no initial data for this task")
+	}
+	if source == config.Configs.App.InteractionBodyKey {
+		interactionRunTimeBody := taskData.(map[string]interface{})
+		interactionTaskBody, ok := interactionRunTimeBody[taskName]
+		if !ok {
+			return nil, errors.New("no initial data for this task")
+		}
+		taskData = interactionTaskBody
 	}
 	var testType map[string]interface{}
 	if !reflect.TypeOf(taskData).ConvertibleTo(reflect.TypeOf(testType)) {

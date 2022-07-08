@@ -2,7 +2,7 @@ package app
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -14,6 +14,7 @@ import (
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
+	"github.com/dotenx/dotenx/ao-api/controllers/profile"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
@@ -47,6 +48,7 @@ import (
 	sessRedis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -58,6 +60,7 @@ type App struct {
 }
 
 func NewApp() *App {
+	initializeLogrus()
 	// Initialize databae
 	db, err := initializeDB()
 	utils.FailOnError(err, "Database initialization failed, exiting the app with error!")
@@ -66,7 +69,7 @@ func NewApp() *App {
 	queue := queueService.NewBullQueue()
 	r := routing(db, queue, redisClient)
 	if r == nil {
-		log.Fatalln("r is nil")
+		logrus.Fatal("r is nil")
 	}
 	return &App{
 		route: r,
@@ -78,7 +81,7 @@ func (a *App) Start(restPort string) error {
 	go func() {
 		err := a.route.Run(restPort)
 		if err != nil {
-			log.Println(err)
+			logrus.Error(err)
 			errChan <- err
 			return
 		}
@@ -144,6 +147,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
+	profileController := profile.ProfileController{}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -161,11 +165,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
-	// oauth user providers routes (without any authentication)
+	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
+	// 'user' used for DoTenX users and 'tp' used for third-party users
+	// oauth user providers routes
 	r.GET("/oauth/user/provider/auth/provider/:provider_name/account_id/:account_id",
+		middlewares.OauthMiddleware(),
+		middlewares.TokenTypeMiddleware([]string{"tp"}),
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
-		OauthController.OAuthThirdPartyIntegrationCallback)
+		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
@@ -181,6 +189,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	admin := r.Group("/internal")
 	project := r.Group("/project")
 	database := r.Group("/database")
+	profile := r.Group("/profile")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -196,6 +205,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.POST("", crudController.AddPipeline())
 	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())
+	pipeline.GET("/interaction/name/:name", crudController.GetInteractionDetailes())
 	pipeline.PUT("", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
 	pipeline.DELETE("/name/:name", crudController.DeletePipeline())
@@ -250,7 +260,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		oauth.PUT("/user/provider", OauthController.UpdateUserProvider())
 		oauth.GET("/user/provider/list", OauthController.GetAllUserProviders())
 
-		oauth.GET("/callbacks/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuthCallback)
 		oauth.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), OauthController.OAuth)
 		oauth.GET("/integration/callbacks/:provider", OauthController.OAuthIntegrationCallback)
 	}
@@ -274,6 +283,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 
+	profile.GET("", profileController.GetProfile())
+
 	go TriggerServic.StartChecking(IntegrationStore)
 	go TriggerServic.StartScheduller()
 	return r
@@ -291,7 +302,7 @@ func initializeDB() (*db.DB, error) {
 	connStr := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s %s",
 		host, port, user, password, dbName, extras)
-	log.Println(connStr)
+	logrus.Info(connStr)
 	db, err := db.Connect(driver, connStr)
 	return db, err
 }
@@ -303,4 +314,40 @@ func initializeRedis() (redisClient *redis.Client, err error) {
 	}
 	redisClient, err = db.RedisConnect(opt)
 	return
+}
+
+func initializeLogrus() {
+	// Log as JSON instead of the default ASCII formatter.
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	logrus.SetOutput(os.Stdout)
+
+	logrus.SetReportCaller(true)
+
+	// We set log level based on an environment variable.
+	switch config.Configs.App.LogLevel {
+	case "trace":
+		logrus.SetLevel(logrus.TraceLevel)
+		logrus.Info("Logrus log level is trace")
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Info("Logrus log level is debug")
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+		logrus.Info("Logrus log level is warn")
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+		logrus.Info("Logrus log level is error")
+	case "fatal":
+		logrus.SetLevel(logrus.FatalLevel)
+		logrus.Info("Logrus log level is fatal")
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+		logrus.Info("Logrus log level is info")
+	}
 }

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { DragEvent, ReactNode } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
@@ -13,15 +12,14 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline,
+	IoTrashOutline
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'
 import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
-import { Button, Modal } from '../ui'
-import { IconButton } from '../ui/icon-button'
-import { JsonCode } from './json-code'
+import { RunInteractionForm } from '../interaction'
+import { Button, IconButton, JsonCode, Modal } from '../ui'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 import { useActivateAutomation } from './use-activate'
@@ -43,7 +41,6 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 		newAutomation,
 		handleDeleteAutomation,
 		isRunning,
-		runResponse,
 	} = useActionBar(kind)
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)
@@ -190,7 +187,10 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					</IconButton>
 				</div>
 			</div>
-			<Modal title={`New ${_.capitalize(kind)}`} kind={Modals.SaveAutomation}>
+			<Modal
+				title={`New ${kind === 'interaction' ? 'Interaction' : 'Automation'}`}
+				kind={Modals.SaveAutomation}
+			>
 				<SaveForm kind={kind} />
 			</Modal>
 			<Modal title="Delete Automation" kind={Modals.DeleteAutomation} fluid>
@@ -217,8 +217,11 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					<AutomationYaml name={automationName} />
 				</Modal>
 			)}
+			<Modal kind={Modals.InteractionBody} title="Request Body" size="md" fluid>
+				<RunInteractionForm interactionName={automationName ?? ''} />
+			</Modal>
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
-				<JsonCode code={JSON.stringify(runResponse ?? {}, null, 2)} />
+				{(data: Record<string, unknown>) => <JsonCode code={data} />}
 			</Modal>
 		</>
 	)

@@ -20,6 +20,11 @@ export enum Modals {
 	InteractionResponse = 'table-endpoints',
 	TemplateEndpoint = 'template-endpoint',
 	UserManagementEndpoint = 'user-management-endpoint',
+	InteractionBody = 'interaction-body',
+	QueryBuilder = 'query-builder',
+	TableFilter = 'table-filter',
+	NewRecord = 'new-record',
+	EditRecord = 'edit-record',
 }
 
 export function useModal() {

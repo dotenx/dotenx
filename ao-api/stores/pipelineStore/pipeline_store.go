@@ -24,7 +24,7 @@ type PipelineStore interface {
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
-	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineVersion, endpoint string, isActive bool, isTemplate bool, is_interaction bool, err error)
+	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error)
 	// Check if the endpoint is valid return the pipeline id
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)
@@ -51,6 +51,7 @@ type PipelineStore interface {
 	SetExecutionTime(executionId, seconds int) error
 	// Add execution
 	CreateExecution(context context.Context, execution models.Execution) (id int, err error)
+	GetThirdPartyAccountId(context context.Context, executionId int) (string, error)
 	// Get initial job of an execution
 	GetInitialTask(context context.Context, executionId int) (taskId int, err error)
 	// GetInitialData retrieves the initial data of an execution

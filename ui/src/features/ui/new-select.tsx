@@ -9,7 +9,7 @@ import { Loader } from './loader'
 
 interface Option {
 	label: string
-	value: string
+	value: unknown
 }
 
 export interface NewSelectProps {
@@ -35,9 +35,11 @@ export function NewSelect({
 }: NewSelectProps) {
 	return (
 		<div className="flex flex-col gap-1" {...rest}>
-			<label htmlFor={name} className="text-sm font-bold">
-				{label}
-			</label>
+			{label && (
+				<label htmlFor={name} className="text-sm font-bold">
+					{label}
+				</label>
+			)}
 			<SelectController
 				name={name}
 				control={control}
@@ -108,7 +110,7 @@ function RawSelect({
 			>
 				{!value && <span className="text-slate-500">{placeholder}</span>}
 				{value && <span>{value.label}</span>}
-				<IoChevronDown className="text-slate-400" />
+				<IoChevronDown className="ml-2 text-slate-400" />
 			</button>
 			<div className="absolute inset-x-0 z-10">
 				<Fade isOpen={isOpen}>

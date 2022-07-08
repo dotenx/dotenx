@@ -1,10 +1,12 @@
 package crud
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -19,13 +21,24 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		p, _, _, isTemplate, _, err := mc.Service.GetPipelineByName(accountId, name)
+		var tpAccountId string
+		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
+			accId, _ := c.Get("tpAccountId")
+			tpAccountId = fmt.Sprintf("%v", accId)
+		} else if config.Configs.App.RunLocally {
+			tpAccountId = "123456"
+		}
+		if tpAccountId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
+			return
+		}
+		p, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		if !isTemplate {
+		if !p.IsTemplate {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "you just can create automation from a template"})
 			return
 		}
@@ -41,10 +54,10 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		}
 
 		pipeline := models.PipelineVersion{
-			Manifest: p.Manifest,
+			Manifest: p.PipelineDetailes.Manifest,
 		}
 
-		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields)
+		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {
@@ -69,6 +82,25 @@ func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 			return
 		}
 		temp, err := mc.Service.GetTemplateDetailes(accountId, name)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, temp)
+	}
+}
+
+func (mc *CRUDController) GetInteractionDetailes() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		name := c.Param("name")
+		accountId, err := utils.GetAccountId(c)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		temp, err := mc.Service.GetInteractionDetailes(accountId, name)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

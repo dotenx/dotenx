@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import { IoClose } from 'react-icons/io5'
@@ -47,7 +48,10 @@ function Content({ title, children, size, fluid }: ContentProps) {
 	const modal = useModal()
 
 	return (
-		<div className="fixed inset-0 bg-slate-50/75 selection:bg-rose-400" onClick={modal.close}>
+		<div
+			className="fixed inset-0 bg-slate-50/75 text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700"
+			onClick={modal.close}
+		>
 			<motion.div
 				className="mx-auto overflow-hidden bg-white rounded-lg shadow-2xl outline-none text-slate-700"
 				initial={false}
@@ -69,7 +73,10 @@ function Content({ title, children, size, fluid }: ContentProps) {
 					</button>
 				</div>
 				<motion.div
-					className="p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300"
+					className={clsx(
+						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
+						fluid && 'max-h-[75vh]'
+					)}
 					initial={false}
 					animate={{ height: fluid ? 'auto' : getModalHeight(size) }}
 				>

@@ -49,23 +49,31 @@ func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		types := c.QueryArray("type")
+		forTemplate := c.Query("for_template")
 		fmt.Println(types)
 		accountId, _ := utils.GetAccountId(c)
+		var integrations []models.Integration
+		var err error
 		if len(types) == 0 {
-			integrations, err := controller.Service.GetAllIntegrations(accountId)
-			if err == nil {
-				c.JSON(http.StatusOK, integrations)
-				return
-			}
-			c.JSON(http.StatusBadRequest, err.Error())
+			integrations, err = controller.Service.GetAllIntegrations(accountId)
 		} else {
-			integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
-			if err == nil {
-				c.JSON(http.StatusOK, integrations)
-				return
-			}
-			c.JSON(http.StatusBadRequest, err.Error())
+			integrations, err = controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
 		}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		if forTemplate != "true" {
+			c.JSON(http.StatusOK, integrations)
+			return
+		}
+		selected := make([]models.Integration, 0)
+		for _, integ := range integrations {
+			if integ.Provider != "" {
+				selected = append(selected, integ)
+			}
+		}
+		c.JSON(http.StatusOK, selected)
 	}
 }
 

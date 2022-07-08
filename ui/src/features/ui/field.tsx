@@ -4,7 +4,7 @@ import { Control, Controller, FieldErrors } from 'react-hook-form'
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 	label?: string
-	errors: FieldErrors
+	errors?: FieldErrors
 	name: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>
@@ -36,7 +36,7 @@ export function Field({ label, errors, control, ...rest }: FieldProps) {
 				)}
 			/>
 
-			{rest.name && <FieldError errors={errors} name={rest.name} />}
+			{rest.name && errors && <FieldError errors={errors} name={rest.name} />}
 		</div>
 	)
 }
