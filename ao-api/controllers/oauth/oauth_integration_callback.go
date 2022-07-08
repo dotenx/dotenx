@@ -18,7 +18,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	q := c.Request.URL.Query()
 	providerStr := c.Param("provider")
 
-	specialProviders := []string{"slack", "instagram"}
+	specialProviders := []string{"slack", "instagram", "typeform"}
 	if utils.ContainsString(specialProviders, providerStr) {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
@@ -29,6 +29,8 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 			accessToken, err = getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/slack")
 		case "instagram":
 			accessToken, err = getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/instagram")
+		case "typeform":
+			accessToken, err = getTypeformAccessToken(providers["typeform"].Key, providers["typeform"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/typeform")
 		}
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return
