@@ -18,7 +18,6 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
-			fmt.Println("11111111111111111111111111111111111111")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -30,25 +29,21 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			tpAccountId = "123456"
 		}
 		if tpAccountId == "" {
-			fmt.Println("22222222222222222222222222222222222222222")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
 			return
 		}
 		p, err := mc.Service.GetPipelineByName(accountId, name)
 		if err != nil {
 			log.Println(err)
-			fmt.Println("2.5555555555555555555555")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		if !p.IsTemplate {
-			fmt.Println("33333333333333333333333333333333")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "you just can create automation from a template"})
 			return
 		}
 		var fields map[string]interface{}
 		if err := c.ShouldBindJSON(&fields); err != nil {
-			fmt.Println("444444444444444444444444444444444444")
 			fmt.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
