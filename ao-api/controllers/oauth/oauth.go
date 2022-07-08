@@ -16,7 +16,7 @@ func (controller *OauthController) OAuth(c *gin.Context) {
 	providerStr := c.Param("provider")
 	q.Add("provider", providerStr)
 
-	specialProviders := []string{"slack", "instagram"}
+	specialProviders := []string{"slack", "instagram", "typeform"}
 	if utils.ContainsString(specialProviders, providerStr) {
 		providers := oauth.GetProvidersMap()
 		c.Redirect(http.StatusTemporaryRedirect, providers[providerStr].DirectUrl)
