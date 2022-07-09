@@ -45,7 +45,14 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data ?? []
+	const records =
+		recordsQuery.data?.data?.map((record) =>
+			_.fromPairs(
+				_.toPairs(record).map(([key, value]) =>
+					typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
+				)
+			)
+		) ?? []
 	const columns = columnsQuery.data?.data.columns.map((column) => column.name) ?? []
 	const headers =
 		columns.map((column) => ({
