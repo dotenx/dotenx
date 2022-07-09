@@ -2,9 +2,11 @@ package userManagementService
 
 import (
 	"context"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 )
@@ -46,6 +48,13 @@ func (ums *userManagementService) GetUserInfo(tpEmail, projectTag string) (user 
 
 func (ums *userManagementService) SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error) {
 	noContext := context.Background()
+	// the password must be hashed and then store in database
+	hashedPassword, err := utils.HashPassword(userInfo.Password)
+	if err != nil {
+		return err
+	}
+	userInfo.Password = hashedPassword
+	userInfo.CreatedAt = time.Now().String()
 
 	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
 	if err != nil {
@@ -78,6 +87,12 @@ func (ums *userManagementService) UpdateUserInfo(userInfo models.ThirdUser, proj
 
 func (ums *userManagementService) UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error) {
 	noContext := context.Background()
+	// the password must be hashed and then store in database
+	hashedPassword, err := utils.HashPassword(userInfo.Password)
+	if err != nil {
+		return err
+	}
+	userInfo.Password = hashedPassword
 
 	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
 	if err != nil {
