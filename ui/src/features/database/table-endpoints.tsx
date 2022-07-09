@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import _ from 'lodash'
+import { ReactNode } from 'react'
 import { IoCheckmark, IoCopy } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import useClipboard from 'react-use-clipboard'
@@ -53,18 +54,27 @@ interface EndpointWithBodyProps {
 	kind: 'GET' | 'POST' | 'DELETE'
 	code: Record<string, unknown>
 	isResponse?: boolean
+	description?: ReactNode
 }
 
-export function EndpointWithBody({ label, url, kind, code, isResponse }: EndpointWithBodyProps) {
+export function EndpointWithBody({
+	label,
+	url,
+	kind,
+	code,
+	isResponse,
+	description,
+}: EndpointWithBodyProps) {
 	return (
-		<div className="space-y-2">
+		<div>
 			<Endpoint label={label} url={url} kind={kind} />
-			<div className="rounded bg-gray-50">
+			<div className="mt-2 rounded bg-gray-50">
 				<p className="px-2 py-1.5 text-xs font-bold">
 					{isResponse ? 'Response' : 'Request'}
 				</p>
 				<JsonCode code={code} />
 			</div>
+			<div className="mt-1 text-xs text-slate-500">{description}</div>
 		</div>
 	)
 }
