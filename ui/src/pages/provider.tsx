@@ -1,9 +1,11 @@
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, Code } from '@mantine/core'
+import { useClipboard } from '@mantine/hooks'
+import clsx from 'clsx'
 import { ReactNode } from 'react'
-import { IoArrowBack } from 'react-icons/io5'
+import { IoArrowBack, IoCopy } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link, useParams } from 'react-router-dom'
-import { getProvider, QueryKey } from '../api'
+import { API_URL, getProfile, getProject, getProvider, QueryKey } from '../api'
 import { ContentWrapper, Loader } from '../features/ui'
 
 export default function ProviderPage() {
@@ -11,8 +13,15 @@ export default function ProviderPage() {
 	const query = useQuery(QueryKey.GetProvider, () => getProvider(providerName ?? ''))
 	const provider = query.data?.data.provider
 	const { projectName } = useParams()
+	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
+		enabled: !!projectName,
+	})
+	const projectTag = projectQuery.data?.data?.tag
+	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const accountId = profileQuery.data?.data.account_id
 
-	if (query.isLoading || !provider) return <Loader />
+	if (query.isLoading || projectQuery.isLoading || profileQuery.isLoading || !provider)
+		return <Loader />
 
 	return (
 		<ContentWrapper>
@@ -22,8 +31,20 @@ export default function ProviderPage() {
 				</ActionIcon>
 				<h3 className="text-2xl font-bold">Provider {provider.name}</h3>
 			</div>
-			<div className="grid grid-cols-2 mt-16">
-				<div className="space-y-10 ">
+			<div className="space-y-10">
+				<Detail
+					label="For user management (register/login)"
+					value={`${API_URL}/user/management/project/${projectTag}/provider/${providerName}/authorize`}
+					kind="url"
+				/>
+				<Detail
+					label="For creating integration"
+					value={`${API_URL}/oauth/user/provider/auth/provider/${providerName}/account_id/${accountId}`}
+					kind="url"
+				/>
+			</div>
+			<div className="grid grid-cols-2 gap-20 mt-16">
+				<div className="space-y-10">
 					<Detail label="Type" value={provider.type} />
 					<Detail
 						label="Front-end URL"
@@ -51,11 +72,30 @@ export default function ProviderPage() {
 	)
 }
 
-function Detail({ label, value }: { label: string; value: string | ReactNode }) {
+function Detail({
+	label,
+	value,
+	kind = 'text',
+}: {
+	label: string
+	value: string | ReactNode
+	kind?: 'text' | 'url'
+}) {
+	const clipboard = useClipboard({ timeout: 500 })
+
 	return (
 		<div className="space-y-1">
 			<p className="text-xs font-medium text-slate-500">{label}</p>
-			<p>{value || 'No value'}</p>
+			{kind === 'text' && <p className="break-words">{value || 'No value'}</p>}
+
+			{kind === 'url' && (
+				<div className="flex items-center gap-2">
+					<Code>{value}</Code>
+					<ActionIcon type="button" onClick={() => clipboard.copy(value)}>
+						<IoCopy className={clsx('text-xs', clipboard.copied && 'text-green-700')} />
+					</ActionIcon>
+				</div>
+			)}
 		</div>
 	)
 }

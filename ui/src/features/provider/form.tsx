@@ -133,21 +133,23 @@ function CallbackUrls({
 				Callback urls (these urls are used when creating an OAuth application):
 			</p>
 			<Url
+				title="For user management"
 				url={`${API_URL}/user/management/project/${projectTag}/provider/${providerName}/callback`}
 			/>
 			<Url
+				title="For creating integration"
 				url={`${API_URL}/oauth/user/provider/integration/callbacks/provider/${providerName}/account_id/${accountId}`}
 			/>
 		</div>
 	)
 }
 
-function Url({ url }: { url: string }) {
+export function Url({ title, url }: { title: string; url: string }) {
 	const clipboard = useClipboard({ timeout: 500 })
 
 	return (
 		<p className="flex flex-col gap-1">
-			<div className="font-medium">For creating integration:</div>
+			<div className="font-medium">{title}:</div>
 			<div className="flex items-center justify-between gap-1">
 				<Code>{url}</Code>
 				<ActionIcon type="button" onClick={() => clipboard.copy(url)}>
