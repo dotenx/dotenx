@@ -172,10 +172,10 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					>
 						<IoCodeSlash />
 					</IconButton>
-					{kind === 'automation' && (
+					{kind !== 'template' && (
 						<IconButton tooltip="History" disabled={!automationName}>
 							{automationName && (
-								<Link to={`/automations/${automationName}/executions`}>
+								<Link to="executions">
 									<IoCalendarOutline />
 								</Link>
 							)}
