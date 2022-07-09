@@ -60,7 +60,7 @@ function EndpointMethod({ label, url, method: kind }: EndpointProps) {
 				>
 					{kind}
 				</div>
-				<span className="text-sm">{url}</span>
+				<span className="text-xs">{url}</span>
 				<button
 					className="absolute p-2 transition rounded right-1 top-[50%] -translate-y-[50%] hover:bg-gray-900/5"
 					type="button"

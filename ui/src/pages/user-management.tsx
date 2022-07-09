@@ -114,6 +114,11 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 							</p>
 						}
 					/>
+					<Endpoint
+						label="Authenticate with provider"
+						url={`${API_URL}/user/management/project/${projectTag}/provider/:provider_name/authorize`}
+						method="GET"
+					/>
 				</div>
 			</Drawer>
 		</>
