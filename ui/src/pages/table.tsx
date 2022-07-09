@@ -18,7 +18,6 @@ import {
 import {
 	ColumnForm,
 	EditRecordForm,
-	Endpoint,
 	QueryBuilder,
 	QueryBuilderValues,
 	RecordForm,
@@ -26,7 +25,7 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Drawer, JsonCode, Modal, Table } from '../features/ui'
+import { Button, ContentWrapper, Drawer, Endpoint, JsonCode, Modal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()

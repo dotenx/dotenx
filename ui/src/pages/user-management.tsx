@@ -3,9 +3,8 @@ import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
-import { EndpointWithBody } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Drawer, Loader, Table } from '../features/ui'
+import { Button, ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -91,19 +90,19 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 			</Button>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
-					<EndpointWithBody
+					<Endpoint
 						label="Sign up a user"
 						url={`${API_URL}/user/management/project/${projectTag}/register`}
 						kind="POST"
 						code={registerExample}
 					/>
-					<EndpointWithBody
+					<Endpoint
 						label="Sign in"
 						url={`${API_URL}/user/management/project/${projectTag}/login`}
 						kind="POST"
 						code={loginExample}
 					/>
-					<EndpointWithBody
+					<Endpoint
 						label="Get user profile"
 						url={`${API_URL}/profile`}
 						kind="GET"

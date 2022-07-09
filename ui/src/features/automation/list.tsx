@@ -12,9 +12,8 @@ import {
 	getTemplateEndpointFields,
 	QueryKey,
 } from '../../api'
-import { EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
-import { ContentWrapper, Loader, Modal, Table } from '../ui'
+import { ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -164,7 +163,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
-		<EndpointWithBody
+		<Endpoint
 			label="Add an automation"
 			url={`${API_URL}/pipeline/template/name/${automationName}`}
 			kind="POST"
@@ -185,7 +184,7 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 	if (query.isLoading) return <Loader />
 
 	return (
-		<EndpointWithBody
+		<Endpoint
 			label="Run interaction"
 			url={`${API_URL}/execution/name/${automationName}/start`}
 			kind="POST"
