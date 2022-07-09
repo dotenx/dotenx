@@ -18,9 +18,11 @@ export function Endpoint({ label, url, method, code, isResponse, description }: 
 		<div>
 			<EndpointMethod label={label} url={url} method={method} />
 			<div className="mt-2 rounded bg-gray-50">
-				<p className="px-2 py-1.5 text-xs font-bold">
-					{isResponse ? 'Response' : 'Request'}
-				</p>
+				{code && (
+					<p className="px-2 py-1.5 text-xs font-bold">
+						{isResponse ? 'Response' : 'Request'}
+					</p>
+				)}
 				{code && <JsonCode code={code} />}
 			</div>
 			<div className="mt-1 text-xs text-slate-500">{description}</div>

@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { useQuery } from 'react-query'
 import { API_URL, getColumns, QueryKey } from '../../api'
+import { columnTypeKinds } from '../../constants'
 import { Endpoint, Loader } from '../ui'
 
 interface TableEndpointsProps {
@@ -11,7 +12,13 @@ interface TableEndpointsProps {
 export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
 	const columns = query.data?.data.columns ?? []
-	const body = _.fromPairs(columns.map((column) => [column.name, column.type]))
+	const body = _.fromPairs(
+		columns.map((column) => {
+			const colKind =
+				columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
+			return [column.name, colKind === 'number' ? 0 : colKind === 'boolean' ? false : '']
+		})
+	)
 
 	if (query.isLoading) return <Loader />
 
