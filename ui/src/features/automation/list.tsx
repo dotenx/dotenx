@@ -166,7 +166,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		<Endpoint
 			label="Add an automation"
 			url={`${API_URL}/pipeline/template/name/${automationName}`}
-			kind="POST"
+			method="POST"
 			code={body}
 		/>
 	)
@@ -187,7 +187,7 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 		<Endpoint
 			label="Run interaction"
 			url={`${API_URL}/execution/name/${automationName}/start`}
-			kind="POST"
+			method="POST"
 			code={body}
 		/>
 	)

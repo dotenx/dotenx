@@ -7,16 +7,16 @@ import { JsonCode } from '../ui'
 interface EndpointProps {
 	label: string
 	url: string
-	kind: 'GET' | 'POST' | 'DELETE'
+	method: 'GET' | 'POST' | 'DELETE'
 	code?: Record<string, unknown>
 	isResponse?: boolean
 	description?: ReactNode
 }
 
-export function Endpoint({ label, url, kind, code, isResponse, description }: EndpointProps) {
+export function Endpoint({ label, url, method, code, isResponse, description }: EndpointProps) {
 	return (
 		<div>
-			<EndpointMethod label={label} url={url} kind={kind} />
+			<EndpointMethod label={label} url={url} method={method} />
 			<div className="mt-2 rounded bg-gray-50">
 				<p className="px-2 py-1.5 text-xs font-bold">
 					{isResponse ? 'Response' : 'Request'}
@@ -31,10 +31,10 @@ export function Endpoint({ label, url, kind, code, isResponse, description }: En
 interface EndpointProps {
 	label: string
 	url: string
-	kind: 'GET' | 'POST' | 'DELETE'
+	method: 'GET' | 'POST' | 'DELETE'
 }
 
-function EndpointMethod({ label, url, kind }: EndpointProps) {
+function EndpointMethod({ label, url, method: kind }: EndpointProps) {
 	const [isCopied, setCopied] = useClipboard(url, { successDuration: 3000 })
 
 	return (

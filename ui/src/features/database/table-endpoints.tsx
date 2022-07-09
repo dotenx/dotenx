@@ -20,25 +20,25 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 			<Endpoint
 				label="Add a record"
 				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
-				kind="POST"
+				method="POST"
 				code={body}
 			/>
 			<Endpoint
 				label="Get records"
 				url={`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${tableName}`}
-				kind="POST"
+				method="POST"
 				code={{ columns: columns.map((column) => column.name) }}
 			/>
 			<Endpoint
 				label="Update a record by id"
 				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
-				kind="POST"
+				method="POST"
 				code={body}
 			/>
 			<Endpoint
 				label="Delete a record by id"
 				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}/row/:id`}
-				kind="POST"
+				method="POST"
 			/>
 		</div>
 	)

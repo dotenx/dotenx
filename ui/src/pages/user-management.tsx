@@ -93,19 +93,19 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 					<Endpoint
 						label="Sign up a user"
 						url={`${API_URL}/user/management/project/${projectTag}/register`}
-						kind="POST"
+						method="POST"
 						code={registerExample}
 					/>
 					<Endpoint
 						label="Sign in"
 						url={`${API_URL}/user/management/project/${projectTag}/login`}
-						kind="POST"
+						method="POST"
 						code={loginExample}
 					/>
 					<Endpoint
 						label="Get user profile"
 						url={`${API_URL}/profile`}
-						kind="GET"
+						method="GET"
 						code={profileExample}
 						isResponse
 						description={

@@ -137,7 +137,7 @@ function QueryTable({
 			{(values) => (
 				<div className="space-y-6">
 					<Endpoint
-						kind="POST"
+						method="POST"
 						label="Get records"
 						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
 					/>
