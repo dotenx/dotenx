@@ -13,11 +13,13 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
 	const columns = query.data?.data.columns ?? []
 	const body = _.fromPairs(
-		columns.map((column) => {
-			const colKind =
-				columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
-			return [column.name, colKind === 'number' ? 0 : colKind === 'boolean' ? false : '']
-		})
+		columns
+			.filter((column) => column.name !== 'id')
+			.map((column) => {
+				const colKind =
+					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
+				return [column.name, colKind === 'number' ? 0 : colKind === 'boolean' ? false : '']
+			})
 	)
 
 	if (query.isLoading) return <Loader />
