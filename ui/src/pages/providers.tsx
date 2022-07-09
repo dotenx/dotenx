@@ -8,7 +8,7 @@ export default function ProvidersPage() {
 			<ContentWrapper>
 				<ProviderList />
 			</ContentWrapper>
-			<NewModal kind={Modals.NewProvider} title="Add a new provider">
+			<NewModal size="xl" kind={Modals.NewProvider} title="Add a new provider">
 				<ProviderForm />
 			</NewModal>
 		</>

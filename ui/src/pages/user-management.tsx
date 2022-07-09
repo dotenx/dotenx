@@ -29,7 +29,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 		<ContentWrapper>
 			<Table
 				loading={projectDetailsLoading || usersDataLoading}
-				title="User management"
+				title="User Management"
 				emptyText="Your users list will display here."
 				columns={[
 					{
