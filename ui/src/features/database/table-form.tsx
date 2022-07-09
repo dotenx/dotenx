@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@mantine/core'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import { z } from 'zod'
 import { createTable, CreateTableRequest, QueryKey } from '../../api'
 import { useModal } from '../hooks'
-import { Button, Field, Form } from '../ui'
+import { Field, Form } from '../ui'
 
 const schema = z.object({
 	tableName: z

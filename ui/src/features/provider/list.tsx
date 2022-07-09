@@ -40,7 +40,6 @@ export function ProviderList() {
 							loading={deleteMutation.isLoading}
 							onClick={() => deleteMutation.mutate(value)}
 							className="ml-auto"
-							color="rose"
 						>
 							<IoTrash />
 						</ActionIcon>

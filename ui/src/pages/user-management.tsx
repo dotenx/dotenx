@@ -1,10 +1,10 @@
-import { Code } from '@mantine/core'
+import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
+import { ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -85,9 +85,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 
 	return (
 		<>
-			<Button variant="outlined" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
-				Endpoint
-			</Button>
+			<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
 					<Endpoint

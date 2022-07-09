@@ -1,3 +1,4 @@
+import { ActionIcon, Button } from '@mantine/core'
 import { DragEvent, ReactNode } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
@@ -19,7 +20,7 @@ import { AutomationKind } from '../../api'
 import { NodeType } from '../flow/types'
 import { Modals, useModal } from '../hooks'
 import { RunInteractionForm } from '../interaction'
-import { Button, IconButton, JsonCode, Modal } from '../ui'
+import { IconButton, JsonCode, Modal, NewModal } from '../ui'
 import { SaveForm } from './save-form'
 import { useActionBar } from './use-action-bar'
 import { useActivateAutomation } from './use-activate'
@@ -102,12 +103,12 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 	return (
 		<>
 			<div className="fixed z-10 right-11 top-8">
-				<button
-					className="text-3xl transition rounded-full hover:text-slate-500 text-slate-700 outline-rose-500"
+				<ActionIcon
+					className="text-2xl rounded-full"
 					onClick={() => modal.open(Modals.HotKeys)}
 				>
 					<IoHelpCircle />
-				</button>
+				</ActionIcon>
 			</div>
 			<div className="fixed right-10 top-[35%] -translate-y-[35%] z-10 flex flex-col gap-4 items-center">
 				<div
@@ -187,16 +188,16 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					</IconButton>
 				</div>
 			</div>
-			<Modal
+			<NewModal
 				title={`New ${kind === 'interaction' ? 'Interaction' : 'Automation'}`}
 				kind={Modals.SaveAutomation}
 			>
 				<SaveForm kind={kind} />
-			</Modal>
-			<Modal title="Delete Automation" kind={Modals.DeleteAutomation} fluid>
+			</NewModal>
+			<NewModal title="Delete Automation" kind={Modals.DeleteAutomation}>
 				<ConfirmDelete onSubmit={handleDeleteAutomation} />
-			</Modal>
-			<Modal title="Help" kind={Modals.HotKeys}>
+			</NewModal>
+			<NewModal title="Help" kind={Modals.HotKeys} size="xl">
 				<div className="space-y-1 text-sm">
 					<div className="pb-2">
 						To delete a node <Key>Left Click</Key> on it and press <Key>Backspace</Key>
@@ -211,15 +212,15 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 					<HelpItem label="Arrange Nodes" hotkey="Alt + A" />
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
 				</div>
-			</Modal>
+			</NewModal>
 			{automationName && (
-				<Modal size="xl" title="Automation YAML" kind={Modals.AutomationYaml}>
+				<NewModal size="xl" title="Automation YAML" kind={Modals.AutomationYaml}>
 					<AutomationYaml name={automationName} />
-				</Modal>
+				</NewModal>
 			)}
-			<Modal kind={Modals.InteractionBody} title="Request Body" size="md" fluid>
+			<NewModal kind={Modals.InteractionBody} title="Request Body">
 				<RunInteractionForm interactionName={automationName ?? ''} />
-			</Modal>
+			</NewModal>
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
 				{(data: Record<string, unknown>) => <JsonCode code={data} />}
 			</Modal>
@@ -246,7 +247,7 @@ function Key({ children }: { children: ReactNode }) {
 
 function ConfirmDelete({ onSubmit }: { onSubmit: () => void }) {
 	return (
-		<div className="space-y-10">
+		<div className="flex flex-col space-y-10">
 			<p>Are you sure you want to delete this automation?</p>
 			<Button onClick={onSubmit}>Delete</Button>
 		</div>

@@ -62,7 +62,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					data={automations}
 				/>
 			</ContentWrapper>
-			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
+			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
 				{(data: { automationName: string }) => (
 					<>
 						{kind === 'template' && (
@@ -123,13 +123,13 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 				<Button
 					onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
 					variant="subtle"
+					color="gray"
 					size="xs"
 				>
 					Endpoint
 				</Button>
 			)}
 			<ActionIcon
-				color="rose"
 				loading={deleteMutation.isLoading}
 				onClick={() => deleteMutation.mutate(automationName)}
 			>

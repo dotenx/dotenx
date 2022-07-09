@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ActionIcon, Button, Code } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
 import { useForm } from 'react-hook-form'
-import { IoCopy } from 'react-icons/io5'
+import { IoCheckmark, IoCopy } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
@@ -145,7 +145,7 @@ function CallbackUrls({
 }
 
 export function Url({ title, url }: { title: string; url: string }) {
-	const clipboard = useClipboard({ timeout: 500 })
+	const clipboard = useClipboard({ timeout: 3000 })
 
 	return (
 		<p className="flex flex-col gap-1">
@@ -153,7 +153,7 @@ export function Url({ title, url }: { title: string; url: string }) {
 			<div className="flex items-center justify-between gap-1">
 				<Code>{url}</Code>
 				<ActionIcon type="button" onClick={() => clipboard.copy(url)}>
-					<IoCopy />
+					{clipboard.copied ? <IoCheckmark /> : <IoCopy />}
 				</ActionIcon>
 			</div>
 		</p>

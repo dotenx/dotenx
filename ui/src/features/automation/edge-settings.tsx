@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@mantine/core'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { Button, Form, Select } from '../ui'
+import { Form, Select } from '../ui'
 
 const triggers = ['failed', 'completed'] as const
 export type EdgeCondition = typeof triggers[number]

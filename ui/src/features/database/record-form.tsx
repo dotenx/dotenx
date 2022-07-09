@@ -1,4 +1,4 @@
-import { Checkbox } from '@mantine/core'
+import { Button, Checkbox } from '@mantine/core'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import {
@@ -10,7 +10,7 @@ import {
 	UpdateRecordRequest,
 } from '../../api'
 import { useModal } from '../hooks'
-import { Button, Field, Form } from '../ui'
+import { Field, Form } from '../ui'
 
 export function RecordForm({
 	columns,

@@ -1,3 +1,4 @@
+import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
 import { IoAdd, IoFilter, IoList, IoPencil, IoSearch, IoTrash } from 'react-icons/io5'
@@ -25,7 +26,7 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Drawer, Endpoint, JsonCode, Modal, Table } from '../features/ui'
+import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -87,23 +88,23 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					emptyText="There's no record yet"
 				/>
 			</ContentWrapper>
-			<Modal kind={Modals.NewColumn} title="New Column">
+			<NewModal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
-			</Modal>
-			<Modal kind={Modals.NewRecord} title="New Record">
+			</NewModal>
+			<NewModal kind={Modals.NewRecord} title="New Record">
 				<RecordForm columns={formColumns} projectTag={projectTag} tableName={tableName} />
-			</Modal>
+			</NewModal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Drawer>
-			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
+			<NewModal kind={Modals.QueryBuilder} title="Query Builder" size="1100px">
 				<QueryTable
 					projectName={projectName}
 					projectTag={projectTag}
 					tableName={tableName}
 				/>
-			</Modal>
-			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
+			</NewModal>
+			<NewModal kind={Modals.TableFilter} title="Filter Records" size="1100px">
 				<RecordFilter
 					projectName={projectName}
 					tableName={tableName}
@@ -114,7 +115,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						modal.close()
 					}}
 				/>
-			</Modal>
+			</NewModal>
 			<Modal kind={Modals.EditRecord} title="Edit Record">
 				{({ id, data }: { id: string; data: TableRecord }) => (
 					<EditRecordForm
@@ -142,14 +143,12 @@ function QueryTable({
 	return (
 		<QueryBuilder projectName={projectName} tableName={tableName}>
 			{(values) => (
-				<div className="space-y-6">
-					<Endpoint
-						method="POST"
-						label="Get records"
-						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
-					/>
-					<JsonCode code={{ columns: [], filters: values }} />
-				</div>
+				<Endpoint
+					method="POST"
+					label="Get records"
+					url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+					code={{ columns: [], filters: values }}
+				/>
 			)}
 		</QueryBuilder>
 	)
@@ -161,28 +160,44 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	return (
 		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.TableFilter)}>
-				<IoFilter />
+			<Button
+				size="xs"
+				leftIcon={<IoFilter />}
+				type="button"
+				onClick={() => modal.open(Modals.TableFilter)}
+			>
 				Filter
 			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
-				<IoSearch />
+			<Button
+				size="xs"
+				leftIcon={<IoSearch />}
+				type="button"
+				onClick={() => modal.open(Modals.QueryBuilder)}
+			>
 				Query Builder
 			</Button>
 			<Button
-				className="w-32"
+				size="xs"
+				leftIcon={<IoList />}
 				type="button"
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
-				<IoList />
 				Endpoints
 			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewRecord)}>
-				<IoAdd />
+			<Button
+				size="xs"
+				leftIcon={<IoAdd />}
+				type="button"
+				onClick={() => modal.open(Modals.NewRecord)}
+			>
 				New Record
 			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewColumn)}>
-				<IoAdd />
+			<Button
+				size="xs"
+				leftIcon={<IoAdd />}
+				type="button"
+				onClick={() => modal.open(Modals.NewColumn)}
+			>
 				New Column
 			</Button>
 		</div>
@@ -209,9 +224,9 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 		<div className="flex items-center gap-2">
 			{name}
 			{showDelete && (
-				<button type="button" onClick={() => deleteMutation.mutate()}>
+				<ActionIcon type="button" onClick={() => deleteMutation.mutate()}>
 					<IoTrash />
-				</button>
+				</ActionIcon>
 			)}
 		</div>
 	)
@@ -257,23 +272,21 @@ function RecordActions({
 
 	return (
 		<div className="flex justify-end gap-1">
-			<Button
-				variant="icon"
+			<ActionIcon
 				type="button"
 				onClick={() =>
 					modal.open(Modals.EditRecord, { id: rowId, data: _.omit(data, 'id') })
 				}
 			>
 				<IoPencil />
-			</Button>
-			<Button
-				variant="icon"
+			</ActionIcon>
+			<ActionIcon
 				loading={mutation.isLoading}
 				type="button"
 				onClick={() => mutation.mutate()}
 			>
 				<IoTrash />
-			</Button>
+			</ActionIcon>
 		</div>
 	)
 }

@@ -45,7 +45,7 @@ export const Sidebar = memo(() => {
 		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automation',
+			label: 'Automations',
 			icon: <BsWindowSidebar />,
 		},
 		{

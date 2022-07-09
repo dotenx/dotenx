@@ -1,10 +1,10 @@
+import { Button } from '@mantine/core'
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { Control, Controller, FieldErrors, useForm } from 'react-hook-form'
 import { IoClose } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { getFormatterFunctions, QueryKey } from '../../api'
-import { Button } from './button'
 import { Description } from './description'
 import { FieldError } from './field'
 import {
@@ -192,7 +192,7 @@ function FormatterFnForm({ onSubmit, onCancel, groups }: FormatterFnFormProps) {
 				</div>
 			</div>
 			<div className="flex gap-4">
-				<Button variant="outlined" type="button" onClick={onCancel}>
+				<Button variant="outline" type="button" onClick={onCancel}>
 					Cancel
 				</Button>
 				<Button type="button" onClick={form.handleSubmit(onSubmit)}>

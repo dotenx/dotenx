@@ -1,8 +1,7 @@
-import { ActionIcon, Code } from '@mantine/core'
+import { ActionIcon, Anchor, Code } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
-import clsx from 'clsx'
 import { ReactNode } from 'react'
-import { IoArrowBack, IoCopy } from 'react-icons/io5'
+import { IoArrowBack, IoCheckmark, IoCopy, IoLink } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getProvider, QueryKey } from '../api'
@@ -81,7 +80,7 @@ function Detail({
 	value: string | ReactNode
 	kind?: 'text' | 'url'
 }) {
-	const clipboard = useClipboard({ timeout: 500 })
+	const clipboard = useClipboard({ timeout: 3000 })
 
 	return (
 		<div className="space-y-1">
@@ -91,8 +90,12 @@ function Detail({
 			{kind === 'url' && (
 				<div className="flex items-center gap-2">
 					<Code>{value}</Code>
-					<ActionIcon type="button" onClick={() => clipboard.copy(value)}>
-						<IoCopy className={clsx('text-xs', clipboard.copied && 'text-green-700')} />
+					<ActionIcon
+						className="text-xs"
+						type="button"
+						onClick={() => clipboard.copy(value)}
+					>
+						{clipboard.copied ? <IoCheckmark /> : <IoCopy />}
 					</ActionIcon>
 				</div>
 			)}
@@ -118,8 +121,14 @@ function ExternalLink({ children, href }: { children: ReactNode; href: string })
 	if (!href) return <p>No value</p>
 
 	return (
-		<a className="underline hover:text-slate-900" href={href} target="_blank" rel="noreferrer">
+		<Anchor
+			className="inline-flex items-center gap-1"
+			href={href}
+			target="_blank"
+			rel="noreferrer"
+		>
 			{children}
-		</a>
+			<IoLink />
+		</Anchor>
 	)
 }

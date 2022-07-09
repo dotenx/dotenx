@@ -1,6 +1,7 @@
+import { Button } from '@mantine/core'
 import * as z from 'zod'
 import { AutomationKind } from '../../api'
-import { Button, Field, Form } from '../ui'
+import { Field, Form } from '../ui'
 import { useSaveForm } from './use-save'
 
 export const saveFormSchema = z.object({

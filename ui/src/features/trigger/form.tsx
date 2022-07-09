@@ -1,5 +1,6 @@
+import { Button } from '@mantine/core'
 import { SelectIntegration } from '../integration'
-import { Button, Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
+import { Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
 
 interface TriggerFormProps {
