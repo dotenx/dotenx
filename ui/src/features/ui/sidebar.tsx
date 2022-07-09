@@ -88,11 +88,11 @@ export const Sidebar = memo(() => {
 				{!IS_LOCAL && <Logout />}
 			</div>
 			<div className="pt-4 text-[10px] text-center">
-				<span title="GitHub Version">v{PUBLIC_VERSION}</span>
+				<span title="Public Version">v{PUBLIC_VERSION}</span>
 				{PRIVATE_VERSION && (
 					<>
 						<span> - </span>
-						<span title="GitLab Version">{PRIVATE_VERSION}</span>
+						<span title="Internal Version">{PRIVATE_VERSION}</span>
 					</>
 				)}
 			</div>
