@@ -53,11 +53,11 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				)
 			)
 		) ?? []
-	const columns = columnsQuery.data?.data.columns.map((column) => column.name) ?? []
+	const columns = columnsQuery.data?.data.columns ?? []
 	const headers =
 		columns.map((column) => ({
-			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
-			accessor: column,
+			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
+			accessor: column.name,
 		})) ?? []
 	const tableHeaders = [
 		...headers,
@@ -73,7 +73,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			),
 		},
 	]
-	const formColumns = columns.filter((column) => column !== 'id')
+	const formColumns = columns.filter((column) => column.name !== 'id')
 
 	return (
 		<>

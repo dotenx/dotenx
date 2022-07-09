@@ -1,3 +1,4 @@
+import { Checkbox } from '@mantine/core'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
 import {
@@ -16,7 +17,7 @@ export function RecordForm({
 	projectTag,
 	tableName,
 }: {
-	columns: string[]
+	columns: { name: string; type: string }[]
 	projectTag: string
 	tableName: string
 }) {
@@ -37,9 +38,18 @@ export function RecordForm({
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
-				{columns.map((column) => (
-					<Field key={column} label={column} name={column} control={form.control} />
-				))}
+				{columns.map((column) =>
+					column.type !== 'yes_no' ? (
+						<Field
+							key={column.name}
+							label={column.name}
+							name={column.name}
+							control={form.control}
+						/>
+					) : (
+						<Checkbox label={column.name} {...form.register(column.name)} />
+					)
+				)}
 			</div>
 			<Button type="submit" loading={mutation.isLoading}>
 				Add Record
@@ -55,7 +65,7 @@ export function EditRecordForm({
 	rowId,
 	defaultValues,
 }: {
-	columns: string[]
+	columns: { name: string; type: string }[]
 	projectTag: string
 	tableName: string
 	rowId: string
@@ -78,9 +88,18 @@ export function EditRecordForm({
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
-				{columns.map((column) => (
-					<Field key={column} label={column} name={column} control={form.control} />
-				))}
+				{columns.map((column) =>
+					column.type !== 'yes_no' ? (
+						<Field
+							key={column.name}
+							label={column.name}
+							name={column.name}
+							control={form.control}
+						/>
+					) : (
+						<Checkbox label={column.name} {...form.register(column.name)} />
+					)
+				)}
 			</div>
 			<Button type="submit" loading={mutation.isLoading}>
 				Update Record
