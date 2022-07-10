@@ -1,10 +1,22 @@
 package databaseService
 
-import "context"
+import (
+	"context"
+
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+)
 
 func (ds *databaseService) DeleteRow(tpAccountId string, projectTag string, tableName string, id int) error {
 	noContext := context.Background()
+	useRowLevelSecurity := false
+	if tpAccountId != "" {
+		userInfo, err := ds.UserManagementService.GetUserInfoById(tpAccountId, projectTag)
+		if err != nil {
+			return err
+		}
+		useRowLevelSecurity = !utils.CheckPermission("delete", userInfo.Role)
+	}
 
 	// Add table column to database
-	return ds.Store.DeleteRow(noContext, projectTag, tableName, id)
+	return ds.Store.DeleteRow(noContext, useRowLevelSecurity, projectTag, tableName, id)
 }

@@ -3,6 +3,7 @@ package databaseService
 import (
 	"context"
 
+	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 )
 
@@ -20,12 +21,13 @@ type DatabaseService interface {
 	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error)
 }
 
-func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {
-	return &databaseService{Store: store}
+func NewDatabaseService(store databaseStore.DatabaseStore, userMgService userManagementService.UserManagementService) DatabaseService {
+	return &databaseService{Store: store, UserManagementService: userMgService}
 }
 
 type databaseService struct {
-	Store databaseStore.DatabaseStore
+	Store                 databaseStore.DatabaseStore
+	UserManagementService userManagementService.UserManagementService
 	// ProjectStore projectStore.ProjectStore
 }
 

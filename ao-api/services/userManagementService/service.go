@@ -17,6 +17,7 @@ func NewUserManagementService(store userManagementStore.UserManagementStore, pro
 
 type UserManagementService interface {
 	GetUserInfo(tpEmail, projectTag string) (user *models.ThirdUser, err error)
+	GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error)
 	SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdateUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error)
@@ -44,6 +45,22 @@ func (ums *userManagementService) GetUserInfo(tpEmail, projectTag string) (user 
 	defer closeFunc(db.Connection)
 
 	return ums.Store.GetUserInfo(db, tpEmail)
+}
+
+func (ums *userManagementService) GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return &models.ThirdUser{}, err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return &models.ThirdUser{}, err
+	}
+	defer closeFunc(db.Connection)
+
+	return ums.Store.GetUserInfoById(db, tpAccountId)
 }
 
 func (ums *userManagementService) SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error) {
