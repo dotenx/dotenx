@@ -2,7 +2,7 @@ package databaseService
 
 import "context"
 
-func (ds *databaseService) UpdateRow(projectTag string, tableName string, id int, row map[string]interface{}) error {
+func (ds *databaseService) UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error {
 	noContext := context.Background()
 
 	// Insert a row to table

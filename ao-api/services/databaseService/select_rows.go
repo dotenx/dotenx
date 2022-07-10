@@ -6,7 +6,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 )
 
-func (ds *databaseService) SelectRows(projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error) {
+func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error) {
 	noContext := context.Background()
 
 	offset := (page - 1) * size

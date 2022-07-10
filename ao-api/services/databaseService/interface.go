@@ -14,10 +14,10 @@ type DatabaseService interface {
 	GetTablesList(accountId string, projectName string) ([]string, error)
 	ListTableColumns(accountId string, projectName string, tableName string) ([]databaseStore.PgColumn, error)
 
-	InsertRow(projectTag string, tableName string, row map[string]interface{}) error
-	UpdateRow(projectTag string, tableName string, id int, row map[string]interface{}) error
-	DeleteRow(projectTag string, tableName string, id int) error
-	SelectRows(projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error)
+	InsertRow(tpAccountId string, projectTag string, tableName string, row map[string]interface{}) error
+	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error
+	DeleteRow(tpAccountId string, projectTag string, tableName string, id int) error
+	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore) DatabaseService {

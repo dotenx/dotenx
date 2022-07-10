@@ -8,6 +8,7 @@ import (
 type UserManagementStore interface {
 	CreateUserInfoTable(db *dbPkg.DB) (err error)
 	GetUserInfo(db *dbPkg.DB, tpEmail string) (user *models.ThirdUser, err error)
+	GetUserInfoById(db *dbPkg.DB, tpAccountId string) (user *models.ThirdUser, err error)
 	SetUserInfo(db *dbPkg.DB, userInfo models.ThirdUser) (err error)
 	UpdateUserInfo(db *dbPkg.DB, userInfo models.ThirdUser) (err error)
 	UpdatePassword(db *dbPkg.DB, userInfo models.ThirdUser) (err error)

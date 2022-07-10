@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,7 +27,9 @@ func (dc *DatabaseController) DeleteRow() gin.HandlerFunc {
 			return
 		}
 
-		if err := dc.Service.DeleteRow(projectTag, tableName, id); err != nil {
+		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
+
+		if err := dc.Service.DeleteRow(tpAccountId, projectTag, tableName, id); err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}

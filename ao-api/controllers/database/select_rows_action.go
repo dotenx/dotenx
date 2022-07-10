@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/gin-gonic/gin"
 )
@@ -38,8 +39,8 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-
-		rows, err := dc.Service.SelectRows(projectTag, tableName, dto.Columns, dto.Filters, page, size)
+		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
+		rows, err := dc.Service.SelectRows(tpAccountId, projectTag, tableName, dto.Columns, dto.Filters, page, size)
 		if err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

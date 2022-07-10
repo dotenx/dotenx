@@ -14,6 +14,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -242,4 +243,29 @@ func ShouldRedirectWithError(ctx *gin.Context, err error, url string) bool {
 		return true
 	}
 	return false
+}
+
+func CheckPermission(action, role string) bool {
+	acts, ok := models.DbRoles[role]
+	if !ok {
+		return false
+	}
+	for _, act := range acts {
+		if act == action {
+			return true
+		}
+	}
+	return false
+}
+
+func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
+	if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
+		accId, _ := c.Get("tpAccountId")
+		tpAccountId = fmt.Sprintf("%v", accId)
+	} else if config.Configs.App.RunLocally {
+		tpAccountId = "123456"
+	} else {
+		return "", errors.New("no tpAccountId have been set")
+	}
+	return tpAccountId, nil
 }
