@@ -45,7 +45,7 @@ WHERE  %s
 LIMIT %s OFFSET %s;
 `
 
-func (ds *databaseStore) SelectRows(ctx context.Context, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, limit int) ([]map[string]interface{}, error) {
+func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity bool, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, limit int) ([]map[string]interface{}, error) {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {

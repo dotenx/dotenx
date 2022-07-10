@@ -15,7 +15,7 @@ var deleteRow = `
 DELETE FROM %s WHERE id = $1
 `
 
-func (ds *databaseStore) DeleteRow(ctx context.Context, projectTag string, tableName string, id int) error {
+func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool, projectTag string, tableName string, id int) error {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
