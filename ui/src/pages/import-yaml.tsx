@@ -1,11 +1,11 @@
 import { yaml } from '@codemirror/legacy-modes/mode/yaml'
 import { StreamLanguage } from '@codemirror/stream-parser'
+import { Button } from '@mantine/core'
 import CodeMirror from '@uiw/react-codemirror'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { createAutomationYaml } from '../api'
-import { Button } from '../features/ui'
 
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
@@ -31,7 +31,7 @@ export default function ImportYamlPage() {
 						extensions={[StreamLanguage.define(yaml)]}
 						onChange={(value) => setCode(value)}
 					/>
-					<Button loading={isLoading} type="submit" className="self-end w-48">
+					<Button loading={isLoading} type="submit">
 						Import and Save
 					</Button>
 				</form>

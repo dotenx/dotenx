@@ -27,6 +27,7 @@ export enum QueryKey {
 	GetColumns = 'get-columns',
 	GetTemplateEndpointFields = 'get-template-endpoint-fields',
 	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
+	GetProfile = 'get-profile',
 }
 
 export enum TaskExecutionStatus {
@@ -356,3 +357,7 @@ export type GetRecordsResponse = TableRecord[] | null
 export type AddRecordRequest = TableRecord
 
 export type UpdateRecordRequest = TableRecord
+
+export type GetProfileResponse = {
+	account_id: string
+}

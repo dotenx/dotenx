@@ -42,6 +42,7 @@ export const operatorOptions = {
 		{ label: 'contains', value: 'contains' },
 		{ label: 'does not contain', value: 'doesNotContain' },
 	],
+	boolean: [],
 	none: [],
 }
 
@@ -53,5 +54,9 @@ export const columnTypeKinds = [
 	{
 		kind: 'number' as const,
 		types: ['rating', 'num', 'link_field'],
+	},
+	{
+		kind: 'boolean' as const,
+		types: ['yes_no'],
 	},
 ]

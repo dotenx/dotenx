@@ -1,9 +1,10 @@
+import { Button } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { CellProps } from 'react-table'
 import { deleteTrigger, getTriggers, QueryKey, TriggerData } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Table } from '../ui'
+import { DeleteButton, Table } from '../ui'
 
 function useTriggerList() {
 	const client = useQueryClient()
@@ -69,8 +70,10 @@ function NewTrigger() {
 	const modal = useModal()
 
 	return (
-		<Button className="max-w-min" onClick={() => modal.open(Modals.NewTrigger)}>
-			<IoAdd className="text-2xl" />
+		<Button
+			leftIcon={<IoAdd className="text-xl" />}
+			onClick={() => modal.open(Modals.NewTrigger)}
+		>
 			New trigger
 		</Button>
 	)

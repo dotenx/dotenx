@@ -1,7 +1,7 @@
+import { Button } from '@mantine/core'
 import CodeEditor from '@uiw/react-textarea-code-editor'
 import { useEffect, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
-import { Button } from '../ui'
 
 interface CodeFieldProps {
 	defaultValue?: string

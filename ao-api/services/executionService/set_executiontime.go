@@ -13,6 +13,9 @@ import (
 )
 
 func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
+	// fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+	// fmt.Println("setting execution time")
+	// fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	err := manager.Store.SetExecutionTime(executionId, seconds)
 	if err != nil {
 		return err

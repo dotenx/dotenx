@@ -10,7 +10,6 @@ export function Drawer({ kind, children, ...rest }: DrawerProps) {
 
 	return (
 		<RawDrawer
-			title="Endpoints"
 			size="1000px"
 			position="right"
 			classNames={{
@@ -21,7 +20,9 @@ export function Drawer({ kind, children, ...rest }: DrawerProps) {
 			opened={modal.isOpen && modal.kind === kind}
 			onClose={modal.close}
 		>
-			<ScrollArea className="h-full px-6 pb-6">{children}</ScrollArea>
+			<ScrollArea className="h-full px-6">
+				<div className="pb-32">{children}</div>
+			</ScrollArea>
 		</RawDrawer>
 	)
 }

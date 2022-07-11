@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-key */
+import { TextInput, Title } from '@mantine/core'
 import Fuse from 'fuse.js'
 import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
@@ -45,8 +46,8 @@ export function Table<D extends object = Record<string, string>>({
 
 	return (
 		<div className="flex flex-col gap-10">
-			<div className="flex items-center justify-between">
-				<h3 className="text-2xl font-bold">{title}</h3>
+			<div className="flex justify-between">
+				<Title order={2}>{title}</Title>
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>
 			{loading && <Loader />}
@@ -59,16 +60,13 @@ export function Table<D extends object = Record<string, string>>({
 			)}
 			{data.length !== 0 && (
 				<div className="flex flex-col gap-6">
-					<div className="border max-w-xl rounded-md px-4 py-2 flex items-center gap-6 focus-within:outline outline-2 outline-offset-[-1px] outline-rose-500">
-						<IoSearch className="text-xl" />
-						<input
-							className="w-full h-full outline-none"
-							type="text"
-							placeholder="Search..."
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</div>
+					<TextInput
+						icon={<IoSearch className="text-xl" />}
+						value={search}
+						placeholder="Search..."
+						onChange={(e) => setSearch(e.target.value)}
+						className="max-w-xs"
+					/>
 					<div className="overflow-hidden border rounded-md">
 						<table className="w-full" {...getTableProps()}>
 							<thead className="bg-gray-200">
