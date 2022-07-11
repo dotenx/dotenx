@@ -16,6 +16,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func FailOnError(err error, msg string) {
@@ -201,6 +202,17 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 		return "", err
 	}
 
+	return
+}
+
+// HashPassword function hashes a plain text password with bcrypt package and return result
+func HashPassword(password string) (hashedPassword string, err error) {
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.New("unable to hash password")
+	}
+
+	hashedPassword = string(hashedPasswordBytes)
 	return
 }
 
