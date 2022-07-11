@@ -28,6 +28,14 @@ const routes = [
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{
+		path: '/builder/projects/:projectName/interactions/:name/executions/:id',
+		element: <ExecutionPage kind="interaction" />,
+	},
+	{
+		path: '/builder/projects/:projectName/interactions/:name/executions',
+		element: <HistoryPage kind="interaction" />,
+	},
 	{ path: '/builder/projects/:projectName/interactions/new', element: <InteractionPage /> },
 	{ path: '/builder/projects/:projectName/interactions/:name', element: <InteractionPage /> },
 	{ path: '/builder/projects/:projectName/interactions', element: <InteractionsPage /> },

@@ -20,6 +20,7 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProfileResponse,
 	GetProjectResponse,
 	GetProjectsResponse,
 	GetProviderResponse,
@@ -277,4 +278,8 @@ export function updateRecord(
 		`/database/query/update/project/${projectTag}/table/${tableName}/row/${rowId}`,
 		payload
 	)
+}
+
+export function getProfile() {
+	return api.get<GetProfileResponse>('/profile')
 }

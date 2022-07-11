@@ -4,6 +4,7 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				body: ['Montserrat', 'sans-serif'],
+				mono: ["'Roboto Mono'", 'monospace']
 			},
 			animation: {
 				path: 'dash 5s linear infinite',

@@ -9,7 +9,7 @@ import {
 	BsWindowSidebar,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
-import { IoArrowForward, IoExit } from 'react-icons/io5'
+import { IoArrowBack, IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
@@ -45,7 +45,7 @@ export const Sidebar = memo(() => {
 		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automation',
+			label: 'Automations',
 			icon: <BsWindowSidebar />,
 		},
 		{
@@ -57,7 +57,7 @@ export const Sidebar = memo(() => {
 
 	return (
 		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-64 overflow-hidden h-screen fixed z-10">
-			<div className="flex items-center gap-6 px-4 text-xl font-medium">
+			<div className="flex items-center gap-6 px-[21px] text-xl font-medium">
 				<img className="w-10 rounded" src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
 					<h1>DoTenX</h1>
@@ -67,17 +67,17 @@ export const Sidebar = memo(() => {
 			{projectName && (
 				<div className="px-5 mt-10 text-slate-700" title="Back to Projects">
 					<a
-						className="px-3.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50 flex items-center justify-between"
+						className="flex items-center gap-2 px-2.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
+						<div className="w-0 transition-all scale-0 opacity-0 group-hover:opacity-100 group-hover:w-6 group-hover:scale-100">
+							<IoArrowBack />
+						</div>
 						<div>
 							<span className="text-center capitalize">{projectName[0]}</span>
 							<span className="transition opacity-0 group-hover:opacity-100">
 								{projectName.substring(1)}
 							</span>
-						</div>
-						<div className="transition opacity-0 group-hover:opacity-100">
-							<IoArrowForward />
 						</div>
 					</a>
 				</div>
@@ -88,11 +88,11 @@ export const Sidebar = memo(() => {
 				{!IS_LOCAL && <Logout />}
 			</div>
 			<div className="pt-4 text-[10px] text-center">
-				<span title="GitHub Version">v{PUBLIC_VERSION}</span>
+				<span title="Public Version">v{PUBLIC_VERSION}</span>
 				{PRIVATE_VERSION && (
 					<>
 						<span> - </span>
-						<span title="GitLab Version">{PRIVATE_VERSION}</span>
+						<span title="Internal Version">{PRIVATE_VERSION}</span>
 					</>
 				)}
 			</div>

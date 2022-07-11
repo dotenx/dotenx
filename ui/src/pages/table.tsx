@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
+import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
 import { IoAdd, IoFilter, IoList, IoPencil, IoSearch, IoTrash } from 'react-icons/io5'
@@ -18,7 +20,6 @@ import {
 import {
 	ColumnForm,
 	EditRecordForm,
-	Endpoint,
 	QueryBuilder,
 	QueryBuilderValues,
 	RecordForm,
@@ -26,7 +27,7 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { Button, ContentWrapper, Drawer, JsonCode, Modal, Table } from '../features/ui'
+import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -46,28 +47,36 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data ?? []
-	const columns = columnsQuery.data?.data.columns.map((column) => column.name) ?? []
+	const records = recordsQuery.data?.data?.map((record) =>
+		_.fromPairs(
+			_.toPairs(record).map(([key, value]) =>
+				typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
+			)
+		)
+	) ?? [{}]
+	const columns = columnsQuery.data?.data.columns ?? []
 	const headers =
 		columns.map((column) => ({
-			Header: <Column projectName={projectName} tableName={tableName} name={column} />,
-			accessor: column,
+			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
+			accessor: column.name,
 		})) ?? []
-	const tableHeaders = [
-		...headers,
-		{
-			Header: 'Actions',
-			accessor: '___actions___',
-			Cell: (props: CellProps<TableRecord>) => (
-				<RecordActions
-					projectTag={projectTag}
-					tableName={tableName}
-					data={props.row.original}
-				/>
-			),
-		},
-	]
-	const formColumns = columns.filter((column) => column !== 'id')
+	const tableHeaders = !records[0]?.id
+		? headers
+		: [
+				...headers,
+				{
+					Header: 'Actions',
+					accessor: '___actions___',
+					Cell: (props: CellProps<TableRecord>) => (
+						<RecordActions
+							projectTag={projectTag}
+							tableName={tableName}
+							data={props.row.original}
+						/>
+					),
+				},
+		  ]
+	const formColumns = columns.filter((column) => column.name !== 'id')
 
 	return (
 		<>
@@ -81,23 +90,23 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					emptyText="There's no record yet"
 				/>
 			</ContentWrapper>
-			<Modal kind={Modals.NewColumn} title="New Column">
+			<NewModal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
-			</Modal>
-			<Modal kind={Modals.NewRecord} title="New Record">
+			</NewModal>
+			<NewModal kind={Modals.NewRecord} title="New Record">
 				<RecordForm columns={formColumns} projectTag={projectTag} tableName={tableName} />
-			</Modal>
+			</NewModal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
 				<TableEndpoints projectTag={projectTag} tableName={tableName} />
 			</Drawer>
-			<Modal kind={Modals.QueryBuilder} title="Query Builder" size="lg">
+			<NewModal kind={Modals.QueryBuilder} title="Query Builder" size="1100px">
 				<QueryTable
 					projectName={projectName}
 					projectTag={projectTag}
 					tableName={tableName}
 				/>
-			</Modal>
-			<Modal kind={Modals.TableFilter} title="Filter Records" size="lg">
+			</NewModal>
+			<NewModal kind={Modals.TableFilter} title="Filter Records" size="1100px">
 				<RecordFilter
 					projectName={projectName}
 					tableName={tableName}
@@ -108,7 +117,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						modal.close()
 					}}
 				/>
-			</Modal>
+			</NewModal>
 			<Modal kind={Modals.EditRecord} title="Edit Record">
 				{({ id, data }: { id: string; data: TableRecord }) => (
 					<EditRecordForm
@@ -136,14 +145,12 @@ function QueryTable({
 	return (
 		<QueryBuilder projectName={projectName} tableName={tableName}>
 			{(values) => (
-				<div className="space-y-6">
-					<Endpoint
-						kind="POST"
-						label="Get records"
-						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
-					/>
-					<JsonCode code={{ columns: [], filters: values }} />
-				</div>
+				<Endpoint
+					method="POST"
+					label="Get records"
+					url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+					code={{ columns: [], filters: values }}
+				/>
 			)}
 		</QueryBuilder>
 	)
@@ -164,19 +171,43 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 				Query Builder
 			</Button>
 			<Button
-				className="w-32"
+				size="xs"
+				leftIcon={<IoFilter />}
+				type="button"
+				onClick={() => modal.open(Modals.TableFilter)}
+			>
+				Filter
+			</Button>
+			<Button
+				size="xs"
+				leftIcon={<IoSearch />}
+				type="button"
+				onClick={() => modal.open(Modals.QueryBuilder)}
+			>
+				Query Builder
+			</Button>
+			<Button
+				size="xs"
+				leftIcon={<IoList />}
 				type="button"
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
-				<IoList />
 				Endpoints
 			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewRecord)}>
-				<IoAdd />
+			<Button
+				size="xs"
+				leftIcon={<IoAdd />}
+				type="button"
+				onClick={() => modal.open(Modals.NewRecord)}
+			>
 				New Record
 			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.NewColumn)}>
-				<IoAdd />
+			<Button
+				size="xs"
+				leftIcon={<IoAdd />}
+				type="button"
+				onClick={() => modal.open(Modals.NewColumn)}
+			>
 				New Column
 			</Button>
 		</div>
@@ -203,9 +234,9 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 		<div className="flex items-center gap-2">
 			{name}
 			{showDelete && (
-				<button type="button" onClick={() => deleteMutation.mutate()}>
+				<ActionIcon type="button" onClick={() => deleteMutation.mutate()}>
 					<IoTrash />
-				</button>
+				</ActionIcon>
 			)}
 		</div>
 	)
@@ -251,23 +282,21 @@ function RecordActions({
 
 	return (
 		<div className="flex justify-end gap-1">
-			<Button
-				variant="icon"
+			<ActionIcon
 				type="button"
 				onClick={() =>
 					modal.open(Modals.EditRecord, { id: rowId, data: _.omit(data, 'id') })
 				}
 			>
 				<IoPencil />
-			</Button>
-			<Button
-				variant="icon"
+			</ActionIcon>
+			<ActionIcon
 				loading={mutation.isLoading}
 				type="button"
 				onClick={() => mutation.mutate()}
 			>
 				<IoTrash />
-			</Button>
+			</ActionIcon>
 		</div>
 	)
 }

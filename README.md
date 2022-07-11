@@ -11,6 +11,8 @@
 
 ---
 
+Wanna support? Each ⭐ you add to the project, makes us very happy 😻.
+
 Try DoTenX on cloud (no credit cards needed - unlimited access):
 
 https://dotenx.com
@@ -19,6 +21,10 @@ https://dotenx.com
 Discord:
 
 https://discord.gg/kpCmHtKYHd
+
+Docs:
+
+https://docs.dotenx.com
 
 
 Blog:
