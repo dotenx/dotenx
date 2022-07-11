@@ -1,10 +1,10 @@
+import { ActionIcon, ActionIconProps } from '@mantine/core'
 import { IoTrash } from 'react-icons/io5'
-import { Button, ButtonProps } from './button'
 
-export function DeleteButton(props: ButtonProps) {
+export function DeleteButton(props: ActionIconProps<'button'>) {
 	return (
-		<Button {...props} className="ml-auto" type="button" variant="icon">
+		<ActionIcon {...props} className="ml-auto" type="button">
 			<IoTrash />
-		</Button>
+		</ActionIcon>
 	)
 }

@@ -1,6 +1,7 @@
+import { ActionIcon, Button } from '@mantine/core'
 import { ReactNode } from 'react'
 import { Control, useFieldArray, useForm } from 'react-hook-form'
-import { IoTrash } from 'react-icons/io5'
+import { IoAdd, IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { z } from 'zod'
 import { getColumns, QueryKey } from '../../api'
@@ -152,24 +153,16 @@ function EmptyMessage() {
 
 function DeleteButton({ onClick }: { onClick: () => void }) {
 	return (
-		<button
-			className="p-2 transition rounded hover:bg-gray-50 place-self-start"
-			type="button"
-			onClick={onClick}
-		>
+		<ActionIcon type="button" onClick={onClick}>
 			<IoTrash />
-		</button>
+		</ActionIcon>
 	)
 }
 
 function AddButton({ onClick }: { onClick: () => void }) {
 	return (
-		<button
-			className="mt-6 font-semibold transition hover:text-slate-900 text-slate-600"
-			type="button"
-			onClick={onClick}
-		>
-			+ Add condition
-		</button>
+		<Button leftIcon={<IoAdd />} className="mt-6" type="button" onClick={onClick}>
+			Add condition
+		</Button>
 	)
 }

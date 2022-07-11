@@ -1,5 +1,6 @@
+import { ActionIcon, Anchor, Button } from '@mantine/core'
 import _ from 'lodash'
-import { IoAdd, IoCodeDownload } from 'react-icons/io5'
+import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import {
@@ -11,9 +12,8 @@ import {
 	getTemplateEndpointFields,
 	QueryKey,
 } from '../../api'
-import { EndpointWithBody } from '../database'
 import { Modals, useModal } from '../hooks'
-import { Button, ContentWrapper, DeleteButton, Loader, Modal, Table } from '../ui'
+import { ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -33,34 +33,36 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
 					loading={loading}
 					actionBar={<NewAutomation kind={kind} />}
-					columns={[
-						{
-							Header: 'Name',
-							accessor: 'name',
-							Cell: ({ value }: { value: string }) => (
-								<AutomationLink automationName={value} />
-							),
-						},
-						{
-							Header: 'Status',
-							accessor: 'is_active',
-							Cell: ({ value }: { value: boolean }) => (
-								<ActivationStatus isActive={value} />
-							),
-						},
-						{
-							Header: 'Action',
-							id: 'action',
-							accessor: 'name',
-							Cell: ({ value }: { value: string }) => (
-								<AutomationActions automationName={value} kind={kind} />
-							),
-						},
-					]}
+					columns={(
+						[
+							{
+								Header: 'Name',
+								accessor: 'name',
+								Cell: ({ value }: { value: string }) => (
+									<AutomationLink automationName={value} />
+								),
+							},
+							{
+								Header: 'Status',
+								accessor: 'is_active',
+								Cell: ({ value }: { value: boolean }) => (
+									<ActivationStatus isActive={value} />
+								),
+							},
+							{
+								Header: 'Action',
+								id: 'action',
+								accessor: 'name',
+								Cell: ({ value }: { value: string }) => (
+									<AutomationActions automationName={value} kind={kind} />
+								),
+							},
+						] as const
+					).filter((col) => (kind !== 'automation' ? col.Header !== 'Status' : true))}
 					data={automations}
 				/>
 			</ContentWrapper>
-			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
+			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
 				{(data: { automationName: string }) => (
 					<>
 						{kind === 'template' && (
@@ -83,15 +85,15 @@ function NewAutomation({ kind }: { kind: AutomationKind }) {
 	return (
 		<div className="flex gap-4">
 			{kind === 'automation' && (
-				<Link to="yaml/import">
-					<Button className="max-w-min">
-						<IoCodeDownload className="text-2xl" />
-						Import YAML
-					</Button>
-				</Link>
+				<Button
+					component={Link}
+					to="yaml/import"
+					leftIcon={<IoCodeDownload className="text-xl" />}
+				>
+					Import YAML
+				</Button>
 			)}
-			<Button className="max-w-min" onClick={newAutomation}>
-				<IoAdd className="text-2xl" />
+			<Button onClick={newAutomation} leftIcon={<IoAdd className="text-xl" />}>
 				New {_.capitalize(newButtonText)}
 			</Button>
 		</div>
@@ -100,9 +102,9 @@ function NewAutomation({ kind }: { kind: AutomationKind }) {
 
 function AutomationLink({ automationName }: { automationName: string }) {
 	return (
-		<Link className="hover:underline underline-offset-2" to={automationName}>
+		<Anchor component={Link} to={automationName}>
 			{automationName}
-		</Link>
+		</Anchor>
 	)
 }
 
@@ -116,24 +118,24 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 	const modal = useModal()
 
 	return (
-		<>
-			<div className="flex items-center justify-end gap-4">
-				<div className="flex gap-4">
-					{kind !== 'automation' && (
-						<Button
-							variant="outlined"
-							onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
-						>
-							Endpoint
-						</Button>
-					)}
-					<DeleteButton
-						loading={deleteMutation.isLoading}
-						onClick={() => deleteMutation.mutate(automationName)}
-					/>
-				</div>
-			</div>
-		</>
+		<div className="flex items-center justify-end gap-4">
+			{kind !== 'automation' && (
+				<Button
+					onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
+					variant="subtle"
+					color="gray"
+					size="xs"
+				>
+					Endpoint
+				</Button>
+			)}
+			<ActionIcon
+				loading={deleteMutation.isLoading}
+				onClick={() => deleteMutation.mutate(automationName)}
+			>
+				<IoTrash />
+			</ActionIcon>
+		</div>
 	)
 }
 
@@ -161,10 +163,10 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
-		<EndpointWithBody
+		<Endpoint
 			label="Add an automation"
 			url={`${API_URL}/pipeline/template/name/${automationName}`}
-			kind="POST"
+			method="POST"
 			code={body}
 		/>
 	)
@@ -182,10 +184,10 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 	if (query.isLoading) return <Loader />
 
 	return (
-		<EndpointWithBody
+		<Endpoint
 			label="Run interaction"
 			url={`${API_URL}/execution/name/${automationName}/start`}
-			kind="POST"
+			method="POST"
 			code={body}
 		/>
 	)

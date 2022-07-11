@@ -1,3 +1,4 @@
+import { Button } from '@mantine/core'
 import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
@@ -8,7 +9,7 @@ import {
 	StartAutomationRequest,
 } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, Field, Form, Loader } from '../ui'
+import { Field, Form, Loader } from '../ui'
 
 export function RunInteractionForm({ interactionName }: { interactionName: string }) {
 	const modal = useModal()
