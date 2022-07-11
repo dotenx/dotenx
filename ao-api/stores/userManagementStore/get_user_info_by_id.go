@@ -31,6 +31,6 @@ func (store *userManagementStore) GetUserInfoById(db *dbPkg.DB, tpAccountId stri
 }
 
 var selectUserByAccountId = `
-SELECT email, fullname, account_id, password, created_at FROM user_info
+SELECT email, fullname, account_id, password, created_at, role FROM user_info
 WHERE account_id = $1
 `

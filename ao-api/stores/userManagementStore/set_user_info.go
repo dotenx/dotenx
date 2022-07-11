@@ -48,6 +48,6 @@ func (store *userManagementStore) SetUserInfo(db *dbPkg.DB, userInfo models.Thir
 }
 
 var insertUserInfoStmt = `
-INSERT INTO user_info (email, password, fullname, account_id, created_at)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO user_info (email, password, fullname, account_id, created_at, role)
+VALUES ($1, $2, $3, $4, $5, $6)
 `

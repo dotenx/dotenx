@@ -29,12 +29,13 @@ func TestGetUserInfo(t *testing.T) {
 		FullName:  "unit test name",
 		AccountId: "unit-test-id-123456",
 		CreatedAt: time.Now().String(),
+		Role:      "role",
 	}
 
 	// todo: use test db instead of mock db
 
-	selectQuery := "SELECT email, fullname, account_id, password, created_at FROM user_info WHERE email = $1"
-	rows := sqlmock.NewRows([]string{"email", "fullname", "account_id", "password", "created_at"})
+	selectQuery := "SELECT email, fullname, account_id, password, created_at, role FROM user_info WHERE email = $1"
+	rows := sqlmock.NewRows([]string{"email", "fullname", "account_id", "password", "created_at", "role"})
 	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).WithArgs(userInfo.Email).WillReturnRows(rows)
 
 	_, err = UserManagementStore.GetUserInfo(db, userInfo.Email)

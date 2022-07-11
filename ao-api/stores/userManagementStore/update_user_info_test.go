@@ -29,6 +29,7 @@ func TestUpdateUserInfo(t *testing.T) {
 		FullName:  "unit test name",
 		AccountId: "unit-test-id-123456",
 		CreatedAt: time.Now().String(),
+		Role:      "role",
 	}
 
 	// todo: use test db instead of mock db
@@ -41,7 +42,7 @@ func TestUpdateUserInfo(t *testing.T) {
 	// mock.ExpectExec(regexp.QuoteMeta(insertRowQuery)).WithArgs(userInfo.Email, userInfo.Password, userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt).WillReturnResult(sqlmock.NewResult(0, 1))
 	// UserManagementStore.SetUserInfo(db, userInfo)
 
-	sqlmock.NewRows([]string{"email", "password", "fullname", "account_id", "created_at"}).
+	sqlmock.NewRows([]string{"email", "password", "fullname", "account_id", "created_at", "role"}).
 		AddRow(userInfo.Email, userInfo.Password, userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt)
 
 	// for update user info

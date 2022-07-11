@@ -26,7 +26,8 @@ func TestCreateUserInfoTable(t *testing.T) {
 		password                VARCHAR(128),
 		fullname                VARCHAR(64),
 		email                   VARCHAR(64),
-		created_at              VARCHAR(64)
+		created_at              VARCHAR(64),
+		role                    VARCHAR(64)
 		)`
 	mock.ExpectExec(regexp.QuoteMeta(createTableQuery)).WithArgs().WillReturnResult(sqlmock.NewResult(0, 1))
 

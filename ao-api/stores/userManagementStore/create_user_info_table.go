@@ -27,6 +27,7 @@ account_id              VARCHAR(64) PRIMARY KEY,
 password                VARCHAR(128),
 fullname                VARCHAR(64),
 email                   VARCHAR(64),
-created_at              VARCHAR(64)
+created_at              VARCHAR(64),
+role 				    VARCHAR(64)
 )
 `

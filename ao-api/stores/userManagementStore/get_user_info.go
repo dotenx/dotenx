@@ -31,6 +31,6 @@ func (store *userManagementStore) GetUserInfo(db *dbPkg.DB, tpEmail string) (use
 }
 
 var selectUserByIdentityCodeStmt = `
-SELECT email, fullname, account_id, password, created_at FROM user_info
+SELECT email, fullname, account_id, password, created_at, role FROM user_info
 WHERE email = $1
 `
