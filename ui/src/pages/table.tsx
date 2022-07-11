@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
@@ -46,34 +47,35 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records =
-		recordsQuery.data?.data?.map((record) =>
-			_.fromPairs(
-				_.toPairs(record).map(([key, value]) =>
-					typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
-				)
+	const records = recordsQuery.data?.data?.map((record) =>
+		_.fromPairs(
+			_.toPairs(record).map(([key, value]) =>
+				typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
 			)
-		) ?? []
+		)
+	) ?? [{}]
 	const columns = columnsQuery.data?.data.columns ?? []
 	const headers =
 		columns.map((column) => ({
 			Header: <Column projectName={projectName} tableName={tableName} name={column.name} />,
 			accessor: column.name,
 		})) ?? []
-	const tableHeaders = [
-		...headers,
-		{
-			Header: 'Actions',
-			accessor: '___actions___',
-			Cell: (props: CellProps<TableRecord>) => (
-				<RecordActions
-					projectTag={projectTag}
-					tableName={tableName}
-					data={props.row.original}
-				/>
-			),
-		},
-	]
+	const tableHeaders = !records[0]?.id
+		? headers
+		: [
+				...headers,
+				{
+					Header: 'Actions',
+					accessor: '___actions___',
+					Cell: (props: CellProps<TableRecord>) => (
+						<RecordActions
+							projectTag={projectTag}
+							tableName={tableName}
+							data={props.row.original}
+						/>
+					),
+				},
+		  ]
 	const formColumns = columns.filter((column) => column.name !== 'id')
 
 	return (
