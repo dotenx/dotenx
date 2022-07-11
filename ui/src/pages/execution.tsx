@@ -4,21 +4,21 @@ import { useEffect } from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
 import { useQuery } from 'react-query'
 import { Link, useParams } from 'react-router-dom'
-import { getAutomation, getExecution, QueryKey } from '../api'
+import { AutomationKind, getAutomation, getExecution, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 import { Loader } from '../features/ui'
 
-export default function ExecutionPage() {
+export default function ExecutionPage({ kind = 'automation' }: { kind?: AutomationKind }) {
 	return (
 		<ReactFlowProvider>
-			<Content />
+			<Content kind={kind} />
 		</ReactFlowProvider>
 	)
 }
 
-function Content() {
+function Content({ kind }: { kind: AutomationKind }) {
 	const { name: automationName, id: executionId } = useParams()
 	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
 	const automationQuery = useQuery(
@@ -31,6 +31,7 @@ function Content() {
 	)
 	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
+	const { projectName } = useParams()
 
 	useEffect(() => {
 		if (automationName && automation)
@@ -51,7 +52,12 @@ function Content() {
 
 	return (
 		<>
-			<ExecutionDetails automationName={automationName} executionId={executionId} />
+			<ExecutionDetails
+				kind={kind}
+				automationName={automationName}
+				executionId={executionId}
+				projectName={projectName}
+			/>
 			<div className="grow">
 				<Flow isEditable={false} kind="automation" />
 			</div>
@@ -62,9 +68,13 @@ function Content() {
 function ExecutionDetails({
 	automationName,
 	executionId,
+	kind,
+	projectName,
 }: {
 	automationName: string
 	executionId: string
+	kind: AutomationKind
+	projectName?: string
 }) {
 	const query = useQuery([QueryKey.GetExecution, executionId], () => getExecution(executionId))
 	const execution = query.data?.data
@@ -75,7 +85,14 @@ function ExecutionDetails({
 			{loading && <Loader className="p-4" />}
 			{!loading && (
 				<>
-					<Link className="text-lg font-bold" to={`/automations/${automationName}`}>
+					<Link
+						className="text-lg font-bold"
+						to={
+							kind === 'automation'
+								? `/automations/${automationName}`
+								: `/builder/projects/${projectName}/interactions/${automationName}`
+						}
+					>
 						{automationName}
 					</Link>
 					<div>

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 )
@@ -25,6 +26,31 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			log.Println(err.Error())
 			return
 		}
+	}
+	if len(taskIds) == 0 {
+		numberOftasks, err := manager.GetNumberOfTasksByExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		summeries, err := manager.GetTasksWithStatusForExecution(executionId)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		if manager.IsExecutionDone(numberOftasks, summeries) {
+			exec, err := manager.GetExecutionDetails(executionId)
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+			err = manager.SetExecutionTime(executionId, int(time.Now().Unix())-int(exec.StartedAt.Unix()))
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+		}
+		return nil
 	}
 	tpAccountId, err := manager.Store.GetThirdPartyAccountId(noContext, executionId)
 	if err != nil {
@@ -98,10 +124,12 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 			if err != nil {
 				body, err = manager.CheckReturnValues(execId, accountId, insertDt.Source)
 				if err != nil {
+					log.Println(err)
 					return nil, errors.New("no value for this field in initial data or return values")
 				}
 			}
 			if _, ok := body[insertDt.Key]; !ok {
+				log.Println(err)
 				return nil, errors.New("no value for this field in initial data or return values")
 			}
 			taskBody[key] = body[insertDt.Key]

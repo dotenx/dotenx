@@ -1,7 +1,8 @@
+import { Button } from '@mantine/core'
 import { Control, FieldErrors } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { getIntegrationsByKinds, QueryKey } from '../../api'
-import { Button, NewSelect } from '../ui'
+import { NewSelect } from '../ui'
 
 interface SelectIntegrationProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,11 +42,7 @@ export function SelectIntegration({
 				/>
 			</div>
 			{onAddIntegration && (
-				<Button
-					type="button"
-					className="w-auto px-1 py-1 text-sm"
-					onClick={onAddIntegration}
-				>
+				<Button type="button" onClick={onAddIntegration}>
 					New
 				</Button>
 			)}

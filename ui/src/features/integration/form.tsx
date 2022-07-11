@@ -1,6 +1,7 @@
+import { Button } from '@mantine/core'
 import { useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
-import { Button, Field, Form, Loader, NewSelect, Toggle } from '../ui'
+import { Field, Form, Loader, NewSelect, Toggle } from '../ui'
 import { useNewIntegration } from './use-create-form'
 
 interface IntegrationFormProps {
@@ -65,8 +66,8 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 					<Button
 						type="button"
 						disabled={oauth.isSuccess}
-						className="self-end disabled:!border-green-100 w-24 text-sm disabled:!text-green-600 disabled:!bg-green-100"
 						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
+						color={oauth.isSuccess ? 'green' : 'rose'}
 					>
 						{oauth.isSuccess ? 'Connected' : 'Connect'}
 					</Button>

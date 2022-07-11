@@ -1,14 +1,32 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ActionIcon, Button, Code } from '@mantine/core'
+import { useClipboard } from '@mantine/hooks'
 import { useForm } from 'react-hook-form'
+import { IoCheckmark, IoCopy } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { createProvider, getIntegrationKinds, QueryKey } from '../../api'
+import {
+	API_URL,
+	createProvider,
+	getIntegrationKinds,
+	getProfile,
+	getProject,
+	QueryKey,
+} from '../../api'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
-import { Button, CreatableSelect, Field, Form, NewSelect } from '../ui'
+import { CreatableSelect, Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
-	name: z.string().min(1),
+	name: z
+		.string()
+		.min(2)
+		.max(20)
+		.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
+			message:
+				'Name should start with a letter and contain only letters, numbers, and underscores',
+		}),
 	type: z.string().min(1),
 	key: z.string().min(1),
 	secret: z.string().min(1),
@@ -37,6 +55,8 @@ export function ProviderForm() {
 		.filter((integration) => !!integration.oauth_provider)
 		.map((integration) => integration.type)
 		.map(toOption)
+	const { projectName = '' } = useParams()
+	const providerName = form.watch('name')
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -57,6 +77,7 @@ export function ProviderForm() {
 					label="Type"
 					placeholder="Provider kind"
 				/>
+				<CallbackUrls projectName={projectName} providerName={providerName} />
 				<Field
 					control={form.control}
 					errors={form.formState.errors}
@@ -86,8 +107,55 @@ export function ProviderForm() {
 				/>
 			</div>
 			<Button loading={mutation.isLoading} type="submit">
-				Add
+				Add Provider
 			</Button>
 		</Form>
+	)
+}
+
+function CallbackUrls({
+	projectName,
+	providerName,
+}: {
+	projectName: string
+	providerName: string
+}) {
+	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
+		enabled: !!projectName,
+	})
+	const projectTag = projectQuery.data?.data?.tag
+	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const accountId = profileQuery.data?.data.account_id
+
+	return (
+		<div className="space-y-3 text-xs">
+			<p className="font-medium">
+				Callback urls (these urls are used when creating an OAuth application):
+			</p>
+			<Url
+				title="For user management"
+				url={`${API_URL}/user/management/project/${projectTag}/provider/${providerName}/callback`}
+			/>
+			<Url
+				title="For creating integration"
+				url={`${API_URL}/oauth/user/provider/integration/callbacks/provider/${providerName}/account_id/${accountId}`}
+			/>
+		</div>
+	)
+}
+
+export function Url({ title, url }: { title: string; url: string }) {
+	const clipboard = useClipboard({ timeout: 3000 })
+
+	return (
+		<p className="flex flex-col gap-1">
+			<div className="font-medium">{title}:</div>
+			<div className="flex items-center justify-between gap-1">
+				<Code>{url}</Code>
+				<ActionIcon type="button" onClick={() => clipboard.copy(url)}>
+					{clipboard.copied ? <IoCheckmark /> : <IoCopy />}
+				</ActionIcon>
+			</div>
+		</p>
 	)
 }

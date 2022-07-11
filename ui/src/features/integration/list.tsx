@@ -1,8 +1,9 @@
+import { Button } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Table } from '../ui'
+import { DeleteButton, Table } from '../ui'
 
 export function IntegrationList() {
 	const client = useQueryClient()
@@ -42,8 +43,10 @@ function ActionBar() {
 	const modal = useModal()
 
 	return (
-		<Button className="max-w-min" onClick={() => modal.open(Modals.NewIntegration)}>
-			<IoAdd className="text-2xl" />
+		<Button
+			leftIcon={<IoAdd className="text-xl" />}
+			onClick={() => modal.open(Modals.NewIntegration)}
+		>
 			New integration
 		</Button>
 	)

@@ -2,10 +2,10 @@ import { format } from 'date-fns'
 import { useQuery } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { CellProps } from 'react-table'
-import { Execution, getAutomationExecutions, QueryKey } from '../api'
-import { Table } from '../features/ui'
+import { AutomationKind, Execution, getAutomationExecutions, QueryKey } from '../api'
+import { ContentWrapper, Table } from '../features/ui'
 
-export default function HistoryPage() {
+export default function HistoryPage({ kind = 'automation' }: { kind?: AutomationKind }) {
 	const { name: automationName } = useParams()
 	const query = useQuery(
 		[QueryKey.GetExecutions, automationName],
@@ -19,7 +19,7 @@ export default function HistoryPage() {
 	if (!automationName) return <Navigate to="/" />
 
 	return (
-		<div className="px-32 py-16 grow">
+		<ContentWrapper>
 			<Table
 				title="Execution History"
 				loading={query.isLoading}
@@ -29,7 +29,7 @@ export default function HistoryPage() {
 						Cell: (props: CellProps<Execution>) => (
 							<Link
 								className="rounded hover:bg-slate-50"
-								to={`/automations/${automationName}/executions/${props.row.original.Id}`}
+								to={`${props.row.original.Id}`}
 							>
 								<span>
 									{format(new Date(props.row.original.StartedAt), 'yyyy/MM/dd')}
@@ -43,8 +43,8 @@ export default function HistoryPage() {
 					{ Header: 'ID', accessor: 'Id' },
 				]}
 				data={executions}
-				emptyText="This automation has no execution history yet."
+				emptyText={`This ${kind} has no execution history yet.`}
 			/>
-		</div>
+		</ContentWrapper>
 	)
 }

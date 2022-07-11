@@ -1,3 +1,4 @@
+import { Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
@@ -7,7 +8,6 @@ import { FieldType } from '../../api'
 import { taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
 import {
-	Button,
 	Description,
 	Field,
 	Form,
