@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-lambda-ric": "2.0.0",
+    "aws-sdk": "^2.1170.0",
     "axios": "^0.27.2"
   }
 }

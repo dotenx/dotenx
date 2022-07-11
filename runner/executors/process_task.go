@@ -1,13 +1,16 @@
 package executors
 
 import (
+	"bytes"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/models"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
@@ -19,6 +22,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		processedTask.Details.Image = task.Body["image"].(string)
 		processedTask.Script = strings.Split(task.Body["script"].(string), " ")
 	} else {
+		// TODO: Check why this is a slice instead of a string
 		envs := make([]string, 0)
 		for _, field := range task.MetaData.Fields {
 			if value, ok := task.Body[field.Key]; ok {
@@ -26,19 +30,31 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 				if field.Type == "code" {
 					str := value.(string)
 					fileName := task.Workspace + "_" + field.Key
-					f, err := os.Create(config.Configs.App.FileSharing + "/" + fileName)
+
+					// upload file to s3 (see dropbox upload file)
+					sess, err := session.NewSession(&aws.Config{
+						Region: aws.String("us-east-1")}, // todo: use a variable for this
+					)
+					bucketName := "dotenx" // Todo: use a variable for this
+
+					// Setup the S3 Upload Manager. Also see the SDK doc for the Upload Manager
+					// for more information on configuring part size, and concurrency.
+					//
+					// http://docs.aws.amazon.com/sdk-for-go/api/service/s3/s3manager/#NewUploader
+					uploader := s3manager.NewUploader(sess)
+					_, err = uploader.Upload(&s3manager.UploadInput{
+						Bucket: aws.String(bucketName),
+						Key:    aws.String(fileName),
+						Body:   bytes.NewReader([]byte(str)),
+					})
+
 					if err != nil {
-						log.Println(err)
-						return &models.Task{}
+						fmt.Println(err)
+						return
 					}
-					defer f.Close()
-					d2 := []byte(str)
-					_, err = f.Write(d2)
-					if err != nil {
-						log.Println(err)
-						return &models.Task{}
-					}
-					envVar = field.Key + "=/tmp/" + fileName
+					fmt.Println("File saved successfully")
+
+					envVar = field.Key + "=" + fileName
 				} else {
 					envVar = field.Key + "=" + fmt.Sprintf("%v", value)
 				}

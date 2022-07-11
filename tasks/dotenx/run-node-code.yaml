@@ -1,6 +1,6 @@
 service: dotenx
 type: Run node code
-image: awrmin/run-node-code:lambda
+image: code/node:lambda
 fields:
     - key: code
       type: code

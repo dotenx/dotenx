@@ -36,8 +36,8 @@ build api: &build
   except:
     - schedules
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ao-api/**/*"
 
@@ -59,8 +59,8 @@ build scheduler:
   before_script:
     - ls
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "job_scheduler/**/*"
 
@@ -80,8 +80,8 @@ build runner:
     DOCKER_FILE_PATH: runner/Dockerfile
     FOLDER: runner
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "runner/**/*"
 
@@ -106,8 +106,8 @@ build ui:
     paths:
       - ${environment}_build.tar.gz
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ui/**/*"
 
@@ -139,8 +139,8 @@ deploy api: &deploy
     - echo "Updating the service..."
     - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ao-api/**/*" 
 
@@ -161,8 +161,8 @@ deploy scheduler:
     CLUSTER_NAME: dotenx
     SERVICE_NAME: scheduler
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "job_scheduler/**/*" 
 
@@ -183,8 +183,8 @@ deploy runner:
     CLUSTER_NAME: dotenx
     SERVICE_NAME: runner
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "runner/**/*" 
 
@@ -213,7 +213,7 @@ deploy ui:
   except:
     - schedules
   only:
-    refs:
-      - master
+    # refs:
+    #   - master
     changes:
       - "ui/**/*" 

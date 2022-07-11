@@ -1,65 +1,112 @@
 // read environment variable file_path into filePath
+const { mkdir, rmdir, writeFile } = require('fs/promises');
 const fs = require('fs');
-const spawn = require('child_process').spawn;
+const spawn = require('child_process').spawnSync;
 const axios = require('axios');
+const AWS = require('aws-sdk');
 
-const filePath = process.env.code;
-const dependenciesPath = process.env.dependency;
-const resultEndpoint = process.env.RESULT_ENDPOINT;
-const Aauthorization = process.env.AUTHORIZATION;
+exports.handler = async function (event) {
+
+  // todo: convert this to lambda function
+
+  console.log(`event: ${JSON.stringify(event)}`);
+
+  const filePath = event.code;
+  const dependenciesPath = event.dependency;
+  const resultEndpoint = event.RESULT_ENDPOINT;
+  const Aauthorization = event.AUTHORIZATION;
+  const s3 = new AWS.S3();
 
 
-// Read function arguments from environment variables based on VARIABLE
-const variables = (process.env.VARIABLES || '').split(',').map(v => process.env[v.trim()])
 
-console.log(`Function Arguments: ${variables}`)
-console.log(`Function file path: ${filePath}`);
-console.log(`dependencies file path: ${dependenciesPath}`);
 
-// File package.json will be created or overwritten by default.
-fs.copyFile(dependenciesPath, './workGround/package.json', (err) => {
-  if (err) throw err;
+  // Read function arguments from environment variables based on VARIABLE
+  const variables = (event.VARIABLES || '').split(',').map(v => event[v.trim()])
 
-  console.log(`${dependenciesPath} was copied to package.json\n`);
-  console.log('Executing npm install ...');
+  console.log(`Function Arguments: ${variables}`)
+  console.log(`Function file path: ${filePath}`);
+  console.log(`dependencies file path: ${dependenciesPath}`);
 
-  // Execute npm install
-  const child = spawn('npm', ['install'], { cwd: './workGround' });
 
-  child.stdout.setEncoding('utf8');
-  child.stdout.on('data', async function (data) {
-    console.log(data);
-  });
+  try {
+    const dir = '/tmp/workspace'
 
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', async function (data) {
-    console.log(data.toString());
-  });
+    if (!fs.existsSync(dir)) {
+      await mkdir(dir, { recursive: true });
+    } else {
+      await rmdir(dir);
+    }
 
-  child.on('close', code => {
-    console.log(`executing npm install finished with exit code ${code}`);
-    
-    // File entry.js will be created or overwritten by default.
-    fs.copyFile(filePath, './workGround/entry.js', (err) => {
-      if (err) throw err;
-      console.log(`${filePath} was copied to entry.js`);
-      const f = require('./workGround/entry.js');
-      const result  = f(...variables) || {};
-      console.log(result)
+    // await mkdir('/tmp/workspace');
+    if (!fs.existsSync('/tmp/workspace/package.json')) {
+
+      const dependenciesParams = {
+        Bucket: 'dotenx',
+        Key: dependenciesPath
+      };
+      const data = await s3.getObject(dependenciesParams).promise();
+
+      console.log('Downloading file from s3 finished');
+      console.log('Writing file to workspace/package.js ...');
+
+      // File package.json will be created or overwritten by default.
+      await writeFile('/tmp/workspace/package.json', data.Body.toString())
+
+      console.log(`${dependenciesPath} was stored as package.json\n`);
+      console.log('Executing npm install ...');
+
+      // Execute npm install
       try {
-          axios.post(resultEndpoint, {
-          status: "completed",
-          return_value: result
-        },{
-          headers:{
-            "authorization": Aauthorization
-          }
-        });
-        console.log("result set successfully")
+        const bl = await spawn('npm', ['install'], { cwd: '/tmp/workspace' });
+        console.log(bl.toString());
+        console.log(`executing npm install finished`);
+        
       } catch (error) {
-        console.error(error.message);
+        throw new Error(bl.stderr.toString())
+      }
+      
+    }
+
+    if (!fs.existsSync('/tmp/workspace/entry.js')) {
+
+      const params = {
+        Bucket: 'dotenx',
+        Key: filePath
+      };
+
+      const codeData = await s3.getObject(params).promise()
+      console.log(`codeData.Body.toString(): ${codeData.Body.toString()}`);
+
+      console.log('Downloading code file from s3 finished');
+      console.log('Writing file to /tmp/workspace/entry.js ...');
+
+      // Write file to workspace/index.js
+      await writeFile('/tmp/workspace/entry.js', codeData.Body.toString())
+
+      // File entry.js will be created or overwritten by default.
+    }
+
+    console.log(`${filePath} was copied to entry.js`);
+    const f = require('/tmp/workspace/entry.js');
+    const result = f(...variables) || {};
+    await axios.post(resultEndpoint, {
+      status: "completed",
+      return_value: result
+    }, {
+      headers: {
+        "authorization": Aauthorization,
+        "Content-Type": "application/json"
       }
     });
-  });
-});
+    console.log("result set successfully")
+    return {
+      successfull: true
+    }
+
+  } catch (error) {
+    console.log(`error: ${error.message}`);
+    process.exit(1);
+  }
+
+}
 
