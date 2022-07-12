@@ -259,11 +259,10 @@ func CheckPermission(action, role string) bool {
 }
 
 func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
-	if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
+	tokenType, _ := c.Get("tokenType")
+	if tokenType == "tp" {
 		accId, _ := c.Get("tpAccountId")
 		tpAccountId = fmt.Sprintf("%v", accId)
-	} else if config.Configs.App.RunLocally {
-		tpAccountId = "123456"
 	} else {
 		return "", errors.New("no tpAccountId have been set")
 	}

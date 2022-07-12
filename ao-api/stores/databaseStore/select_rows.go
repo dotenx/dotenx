@@ -35,17 +35,18 @@ AND    column_name = $2
 var selectRows = `
 SELECT %s 
 FROM   %s 
+%s
 LIMIT $1 OFFSET $2;
 `
 
 var conditionalSelectRows = `
 SELECT %s 
 FROM   %s 
-WHERE  %s
+WHERE  (%s) %s
 LIMIT %s OFFSET %s;
 `
 
-func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity bool, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, limit int) ([]map[string]interface{}, error) {
+func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, limit int) ([]map[string]interface{}, error) {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
@@ -161,13 +162,21 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 
 	cl := strings.TrimSuffix(strings.Join(columns, ","), ",")
 
+	checkSecurityStmt := ""
 	var result *sql.Rows
 	if len(filters.FilterSet) == 0 {
-		stmt := fmt.Sprintf(selectRows, cl, tableNameStmt)
+		if useRowLevelSecurity && tpAccountId != "" {
+			checkSecurityStmt = fmt.Sprintf("WHERE creator_id = '%s'", tpAccountId)
+		}
+		stmt := fmt.Sprintf(selectRows, cl, tableNameStmt, checkSecurityStmt)
 		log.Println("stmt:", stmt)
 		result, err = db.Connection.Query(stmt, limit, offset)
 	} else {
-		stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
+		if useRowLevelSecurity && tpAccountId != "" {
+			// Todo: add all joined table to checkSecurityStmt
+			checkSecurityStmt = fmt.Sprintf(" AND %s.creator_id = '%s'", tableName, tpAccountId)
+		}
+		stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, checkSecurityStmt, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
 		log.Println("stmt:", stmt)
 		values = append(values, limit)
 		values = append(values, offset)

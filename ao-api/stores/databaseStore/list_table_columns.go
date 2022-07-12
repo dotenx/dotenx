@@ -51,6 +51,9 @@ func (ds *databaseStore) ListTableColumns(ctx context.Context, accountId string,
 		if cur.Name == "id" {
 			cur.Type = "num"
 		}
+		if cur.Name == "creator_id" {
+			cur.Type = "short_text"
+		}
 		columns = append(columns, cur)
 	}
 	return columns, nil

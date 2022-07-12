@@ -18,5 +18,5 @@ func (ds *databaseService) UpdateRow(tpAccountId string, projectTag string, tabl
 	}
 
 	// Insert a row to table
-	return ds.Store.UpdateRow(noContext, useRowLevelSecurity, projectTag, tableName, id, row)
+	return ds.Store.UpdateRow(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, id, row)
 }

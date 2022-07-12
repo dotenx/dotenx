@@ -33,6 +33,10 @@ func (dc *DatabaseController) InsertRow() gin.HandlerFunc {
 			})
 			return
 		}
+		tokenType, _ := c.Get("tokenType")
+		if tokenType == "tp" {
+			dto["creator_id"], _ = utils.GetThirdPartyAccountId(c)
+		}
 		fmt.Println(dto)
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 		if err := dc.Service.InsertRow(tpAccountId, projectTag, tableName, dto); err != nil {

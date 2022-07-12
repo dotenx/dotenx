@@ -25,5 +25,5 @@ func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tab
 		useRowLevelSecurity = !utils.CheckPermission("select", userInfo.Role)
 	}
 
-	return ds.Store.SelectRows(noContext, useRowLevelSecurity, projectTag, tableName, cols, filters, offset, size)
+	return ds.Store.SelectRows(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, cols, filters, offset, size)
 }

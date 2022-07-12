@@ -16,10 +16,10 @@ import (
 var updateRow = `
 UPDATE %s
 SET    %s
-WHERE  id = %s;
+WHERE  id = %s %s;
 `
 
-func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool, projectTag string, tableName string, id int, row map[string]interface{}) error {
+func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, row map[string]interface{}) error {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
@@ -53,7 +53,11 @@ func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool
 		values = append(values, value)
 	}
 	columns := strings.TrimSuffix(cb.String(), ",")
-	stmt := fmt.Sprintf(updateRow, tableName, columns, "$"+strconv.Itoa(count))
+	checkSecurityStmt := ""
+	if useRowLevelSecurity && tpAccountId != "" {
+		checkSecurityStmt = fmt.Sprintf(" AND creator_id = '%s'", tpAccountId)
+	}
+	stmt := fmt.Sprintf(updateRow, tableName, columns, "$"+strconv.Itoa(count), checkSecurityStmt)
 	log.Println("stmt:", stmt)
 
 	values = append(values, id)

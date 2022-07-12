@@ -1,6 +1,7 @@
 package database
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -42,6 +43,7 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 		rows, err := dc.Service.SelectRows(tpAccountId, projectTag, tableName, dto.Columns, dto.Filters, page, size)
 		if err != nil {
+			log.Println("err:", err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}

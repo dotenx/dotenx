@@ -18,5 +18,5 @@ func (ds *databaseService) DeleteRow(tpAccountId string, projectTag string, tabl
 	}
 
 	// Add table column to database
-	return ds.Store.DeleteRow(noContext, useRowLevelSecurity, projectTag, tableName, id)
+	return ds.Store.DeleteRow(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, id)
 }

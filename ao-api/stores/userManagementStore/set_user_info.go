@@ -40,7 +40,7 @@ func (store *userManagementStore) SetUserInfo(db *dbPkg.DB, userInfo models.Thir
 	log.Println("user exist!")
 
 	_, err = db.Connection.Exec(stmt, userInfo.Email, userInfo.Password,
-		userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt)
+		userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt, userInfo.Role)
 	if err != nil {
 		return err
 	}

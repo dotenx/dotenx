@@ -177,6 +177,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
+	} else {
+		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
 	// Routes
