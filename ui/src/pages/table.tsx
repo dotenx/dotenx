@@ -162,14 +162,6 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 	return (
 		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.TableFilter)}>
-				<IoFilter />
-				Filter
-			</Button>
-			<Button className="w-32" type="button" onClick={() => modal.open(Modals.QueryBuilder)}>
-				<IoSearch />
-				Query Builder
-			</Button>
 			<Button
 				size="xs"
 				leftIcon={<IoFilter />}

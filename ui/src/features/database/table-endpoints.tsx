@@ -26,7 +26,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 
 	return (
 		<div className="space-y-8">
-			<EndpointWithBody
+			<Endpoint
 				label="Add a record"
 				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
 				method="POST"
@@ -38,7 +38,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 				method="POST"
 				code={{ columns: columns.map((column) => column.name) }}
 			/>
-			<EndpointWithBody
+			<Endpoint
 				label="Update a record by id"
 				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
 				method="POST"
