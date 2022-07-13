@@ -164,6 +164,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.POST("/user/management/project/:tag/login", userManagementController.Login())
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
+	// user group management router (with authentication)
+	r.POST("/user/management/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.CreateUserGroup())
+	r.PUT("/user/management/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.UpdateUserGroup())
+	r.GET("/user/management/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.GetUserGroups())
+	r.DELETE("/user/management/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.DeleteUserGroup())
+	r.POST("/user/management/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetUserGroup())
 
 	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
 	// 'user' used for DoTenX users and 'tp' used for third-party users
@@ -284,6 +290,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
 	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
+	// database userGroups
+	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
 	profile.GET("", profileController.GetProfile())
 
