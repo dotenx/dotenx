@@ -259,12 +259,8 @@ func CheckPermission(action, tableName string, userGroup *models.UserGroup) bool
 	default:
 		return false
 	}
-	for _, table := range list {
-		if table == tableName {
-			return true
-		}
-	}
-	return false
+	_, ok := list[tableName]
+	return ok
 }
 
 func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
