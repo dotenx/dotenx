@@ -28,6 +28,7 @@ password                VARCHAR(128),
 fullname                VARCHAR(64),
 email                   VARCHAR(64),
 created_at              VARCHAR(64),
-user_group 				VARCHAR(128)
+user_group 				VARCHAR(128), 
+FOREIGN KEY (user_group) REFERENCES user_group(name) ON DELETE CASCADE,
 )
 `
