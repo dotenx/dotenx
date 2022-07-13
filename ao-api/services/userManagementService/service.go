@@ -24,7 +24,13 @@ type UserManagementService interface {
 	UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error)
 	DeleteUserInfo(tpAccountId, projectTag string) (err error)
 
+	// user group functions
+	GetUserGroups(projectTag string) (userGroups []models.UserGroup, err error)
+
 	GetUserGroupForUser(tpEmail, projectTag string) (user *models.UserGroup, err error)
+	CreateUserGroup(userGroup models.UserGroup, projectTag string) (err error)
+	DeleteUserGroup(userGroupName, projectTag string) (err error)
+	UpdateUserGroupList(userGroupName, projectTag string, userGroup models.UserGroup) (err error)
 }
 
 type userManagementService struct {
@@ -48,26 +54,6 @@ func (ums *userManagementService) GetUserInfo(tpEmail, projectTag string) (user 
 	defer closeFunc(db.Connection)
 
 	return ums.Store.GetUserInfo(db, tpEmail)
-}
-
-func (ums *userManagementService) GetUserGroupForUser(tpEmail, projectTag string) (user *models.UserGroup, err error) {
-	noContext := context.Background()
-
-	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
-	if err != nil {
-		return &models.UserGroup{}, err
-	}
-	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
-	if err != nil {
-		return &models.UserGroup{}, err
-	}
-	defer closeFunc(db.Connection)
-
-	userInfo, err := ums.Store.GetUserInfo(db, tpEmail)
-	if err != nil {
-		return &models.UserGroup{}, err
-	}
-	return ums.Store.GetUserGroup(db, userInfo.UserGroup)
 }
 
 func (ums *userManagementService) GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error) {
