@@ -18,11 +18,11 @@ func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tab
 	}
 	useRowLevelSecurity := false
 	if tpAccountId != "" {
-		userInfo, err := ds.UserManagementService.GetUserInfoById(tpAccountId, projectTag)
+		userGroup, err := ds.UserManagementService.GetUserGroupForUser(tpAccountId, projectTag)
 		if err != nil {
 			return nil, err
 		}
-		useRowLevelSecurity = !utils.CheckPermission("select", userInfo.UserGroup)
+		useRowLevelSecurity = !utils.CheckPermission("select", tableName, userGroup)
 	}
 
 	return ds.Store.SelectRows(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, cols, filters, offset, size)

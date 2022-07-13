@@ -10,13 +10,12 @@ func (ds *databaseService) DeleteRow(tpAccountId string, projectTag string, tabl
 	noContext := context.Background()
 	useRowLevelSecurity := false
 	if tpAccountId != "" {
-		userInfo, err := ds.UserManagementService.GetUserInfoById(tpAccountId, projectTag)
+		userGroup, err := ds.UserManagementService.GetUserGroupForUser(tpAccountId, projectTag)
 		if err != nil {
 			return err
 		}
-		useRowLevelSecurity = !utils.CheckPermission("delete", userInfo.UserGroup)
+		useRowLevelSecurity = !utils.CheckPermission("delete", tableName, userGroup)
 	}
-
 	// Add table column to database
 	return ds.Store.DeleteRow(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, id)
 }

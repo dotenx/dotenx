@@ -10,11 +10,11 @@ func (ds *databaseService) UpdateRow(tpAccountId string, projectTag string, tabl
 	noContext := context.Background()
 	useRowLevelSecurity := false
 	if tpAccountId != "" {
-		userInfo, err := ds.UserManagementService.GetUserInfoById(tpAccountId, projectTag)
+		userGroup, err := ds.UserManagementService.GetUserGroupForUser(tpAccountId, projectTag)
 		if err != nil {
 			return err
 		}
-		useRowLevelSecurity = !utils.CheckPermission("update", userInfo.UserGroup)
+		useRowLevelSecurity = !utils.CheckPermission("update", tableName, userGroup)
 	}
 
 	// Insert a row to table

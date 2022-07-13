@@ -245,13 +245,22 @@ func ShouldRedirectWithError(ctx *gin.Context, err error, url string) bool {
 	return false
 }
 
-func CheckPermission(action, role string) bool {
-	acts, ok := models.DbRoles[role]
-	if !ok {
+func CheckPermission(action, tableName string, userGroup *models.UserGroup) bool {
+	list := map[string]string{}
+	switch action {
+	case "select":
+		list = userGroup.Select
+	case "insert":
+		list = userGroup.Insert
+	case "update":
+		list = userGroup.Update
+	case "delete":
+		list = userGroup.Delete
+	default:
 		return false
 	}
-	for _, act := range acts {
-		if act == action {
+	for _, table := range list {
+		if table == tableName {
 			return true
 		}
 	}
