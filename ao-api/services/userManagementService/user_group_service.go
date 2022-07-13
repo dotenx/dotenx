@@ -74,3 +74,18 @@ func (ums *userManagementService) UpdateUserGroupList(userInfo models.UserGroup,
 
 	return ums.Store.UpdateUserGroupList(db, userInfo)
 }
+
+func (ums *userManagementService) GetUserGroups(projectTag string) ([]*models.UserGroup, error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return nil, err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer closeFunc(db.Connection)
+	return ums.Store.GetAllUserGroups(db)
+}

@@ -19,6 +19,7 @@ type UserManagementStore interface {
 
 	CreateUserGroupTable(db *dbPkg.DB) (err error)
 	GetUserGroup(db *dbPkg.DB, name string) (userGroup *models.UserGroup, err error)
+	GetAllUserGroups(db *dbPkg.DB) (userGroups []*models.UserGroup, err error)
 	DeleteUserGroup(db *dbPkg.DB, name string) (err error)
 	UpdateUserGroupList(db *dbPkg.DB, userGroup models.UserGroup) (err error)
 	CreateUserGroup(db *dbPkg.DB, userGroup models.UserGroup) (err error)

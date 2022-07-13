@@ -25,12 +25,11 @@ type UserManagementService interface {
 	DeleteUserInfo(tpAccountId, projectTag string) (err error)
 
 	// user group functions
-	GetUserGroups(projectTag string) (userGroups []models.UserGroup, err error)
-
+	GetUserGroups(projectTag string) (userGroups []*models.UserGroup, err error)
 	GetUserGroupForUser(tpEmail, projectTag string) (user *models.UserGroup, err error)
 	CreateUserGroup(userGroup models.UserGroup, projectTag string) (err error)
 	DeleteUserGroup(userGroupName, projectTag string) (err error)
-	UpdateUserGroupList(userGroupName, projectTag string, userGroup models.UserGroup) (err error)
+	UpdateUserGroupList(userGroup models.UserGroup, projectTag string) (err error)
 }
 
 type userManagementService struct {
