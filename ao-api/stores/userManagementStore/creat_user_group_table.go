@@ -27,6 +27,6 @@ name                       VARCHAR(128) PRIMARY KEY,
 insert_list                JSONB,
 delete_list                JSONB,
 update_list                JSONB,
-select_list                JSONB,
+select_list                JSONB
 )
 `

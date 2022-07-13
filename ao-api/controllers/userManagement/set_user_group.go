@@ -9,8 +9,8 @@ import (
 )
 
 type setReq struct {
-	tpEmail     string `json:"email"`
-	tpAccountId string `json:"account_id"`
+	TpEmail     string `json:"email"`
+	TpAccountId string `json:"account_id"`
 }
 
 func (umc *UserManagementController) SetUserGroup() gin.HandlerFunc {
@@ -18,16 +18,19 @@ func (umc *UserManagementController) SetUserGroup() gin.HandlerFunc {
 		var body setReq
 		projectTag := ctx.Param("tag")
 		ugName := ctx.Param("name")
-		if ctx.ShouldBindJSON(&body) != nil || (body.tpEmail == "" && body.tpAccountId == "") || projectTag == "" || ugName == "" {
+		if ctx.ShouldBindJSON(&body) != nil || (body.TpEmail == "" && body.TpAccountId == "") || projectTag == "" || ugName == "" {
+			log.Println("body:", body)
+			log.Println("projectTag:", projectTag)
+			log.Println("ugName:", ugName)
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
 		var user *models.ThirdUser
 		var err error
-		if body.tpEmail != "" {
-			user, err = umc.Service.GetUserInfo(body.tpEmail, projectTag)
-		} else if body.tpAccountId != "" {
-			user, err = umc.Service.GetUserInfoById(body.tpAccountId, projectTag)
+		if body.TpEmail != "" {
+			user, err = umc.Service.GetUserInfo(body.TpEmail, projectTag)
+		} else if body.TpAccountId != "" {
+			user, err = umc.Service.GetUserInfoById(body.TpAccountId, projectTag)
 		}
 		if err != nil {
 			if err.Error() == "user not found" {

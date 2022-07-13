@@ -26,7 +26,7 @@ type UserManagementService interface {
 
 	// user group functions
 	GetUserGroups(projectTag string) (userGroups []*models.UserGroup, err error)
-	GetUserGroupForUser(tpEmail, projectTag string) (user *models.UserGroup, err error)
+	GetUserGroupForUser(tpAccountId, projectTag string) (user *models.UserGroup, err error)
 	CreateUserGroup(userGroup models.UserGroup, projectTag string) (err error)
 	DeleteUserGroup(userGroupName, projectTag string) (err error)
 	UpdateUserGroupList(userGroup models.UserGroup, projectTag string) (err error)
