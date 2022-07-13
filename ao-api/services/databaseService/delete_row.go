@@ -14,7 +14,7 @@ func (ds *databaseService) DeleteRow(tpAccountId string, projectTag string, tabl
 		if err != nil {
 			return err
 		}
-		useRowLevelSecurity = !utils.CheckPermission("delete", userInfo.Role)
+		useRowLevelSecurity = !utils.CheckPermission("delete", userInfo.UserGroup)
 	}
 
 	// Add table column to database

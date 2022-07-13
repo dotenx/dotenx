@@ -6,5 +6,5 @@ type ThirdUser struct {
 	FullName  string `json:"fullname,omitempty" db:"fullname"`
 	AccountId string `json:"accountId" db:"account_id"`
 	CreatedAt string `json:"createdAt" db:"created_at"`
-	Role      string `json:"role" db:"role"`
+	UserGroup string `json:"userGroup" db:"user_group"`
 }

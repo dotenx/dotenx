@@ -29,7 +29,7 @@ func TestUpdateUserInfo(t *testing.T) {
 		FullName:  "unit test name",
 		AccountId: "unit-test-id-123456",
 		CreatedAt: time.Now().String(),
-		Role:      "role",
+		UserGroup: "role",
 	}
 
 	// todo: use test db instead of mock db

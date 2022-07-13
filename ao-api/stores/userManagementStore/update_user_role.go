@@ -8,7 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (store *userManagementStore) UpdateUserRole(db *dbPkg.DB, userInfo models.ThirdUser) (err error) {
+func (store *userManagementStore) UpdateUserGroup(db *dbPkg.DB, userInfo models.ThirdUser) (err error) {
 	// we must check that this user was registered in past
 	var cnt int
 	var stmt string
@@ -18,7 +18,7 @@ func (store *userManagementStore) UpdateUserRole(db *dbPkg.DB, userInfo models.T
 		if err != nil {
 			return err
 		}
-		stmt = updateUserInfoRole
+		stmt = updateUserInfoGroup
 	default:
 		return fmt.Errorf("driver not supported")
 	}
@@ -26,15 +26,15 @@ func (store *userManagementStore) UpdateUserRole(db *dbPkg.DB, userInfo models.T
 		return errors.New("user not found")
 	}
 
-	_, err = db.Connection.Exec(stmt, userInfo.Role, userInfo.AccountId)
+	_, err = db.Connection.Exec(stmt, userInfo.UserGroup, userInfo.AccountId)
 	if err != nil {
 		return err
 	}
 	return
 }
 
-var updateUserInfoRole = `
+var updateUserInfoGroup = `
 UPDATE user_info
-SET role = $1
+SET user_group = $1
 WHERE account_id = $2
 `

@@ -20,7 +20,7 @@ type UserManagementService interface {
 	GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error)
 	SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdateUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
-	UpdateUserRole(userInfo models.ThirdUser, projectTag string) (err error)
+	UpdateUserGroup(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error)
 	DeleteUserInfo(tpAccountId, projectTag string) (err error)
 }
@@ -103,7 +103,7 @@ func (ums *userManagementService) UpdateUserInfo(userInfo models.ThirdUser, proj
 	return ums.Store.UpdateUserInfo(db, userInfo)
 }
 
-func (ums *userManagementService) UpdateUserRole(userInfo models.ThirdUser, projectTag string) (err error) {
+func (ums *userManagementService) UpdateUserGroup(userInfo models.ThirdUser, projectTag string) (err error) {
 	noContext := context.Background()
 
 	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
@@ -116,7 +116,7 @@ func (ums *userManagementService) UpdateUserRole(userInfo models.ThirdUser, proj
 	}
 	defer closeFunc(db.Connection)
 
-	return ums.Store.UpdateUserRole(db, userInfo)
+	return ums.Store.UpdateUserGroup(db, userInfo)
 }
 
 func (ums *userManagementService) UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error) {

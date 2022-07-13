@@ -14,7 +14,7 @@ func (ds *databaseService) UpdateRow(tpAccountId string, projectTag string, tabl
 		if err != nil {
 			return err
 		}
-		useRowLevelSecurity = !utils.CheckPermission("update", userInfo.Role)
+		useRowLevelSecurity = !utils.CheckPermission("update", userInfo.UserGroup)
 	}
 
 	// Insert a row to table

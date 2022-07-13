@@ -29,7 +29,7 @@ func TestSetUserInfo(t *testing.T) {
 		FullName:  "unit test name",
 		AccountId: "unit-test-id-123456",
 		CreatedAt: time.Now().String(),
-		Role:      "role",
+		UserGroup: "role",
 	}
 
 	// todo: use test db instead of mock db
@@ -57,8 +57,8 @@ func TestSetUserInfo(t *testing.T) {
 	selectQuery := "SELECT count(*) FROM user_info WHERE email = $1"
 	rows := sqlmock.NewRows([]string{""})
 	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).WithArgs(userInfo1.Email).WillReturnRows(rows)
-	insertRowQuery := "INSERT INTO user_info (email, password, fullname, account_id, created_at) VALUES ($1, $2, $3, $4, $5, $6)"
-	mock.ExpectExec(regexp.QuoteMeta(insertRowQuery)).WithArgs(userInfo1.Email, userInfo1.Password, userInfo1.FullName, userInfo1.AccountId, userInfo1.CreatedAt, userInfo1.Role).WillReturnResult(sqlmock.NewResult(0, 1))
+	insertRowQuery := "INSERT INTO user_info (email, password, fullname, account_id, created_at, user_group) VALUES ($1, $2, $3, $4, $5, $6)"
+	mock.ExpectExec(regexp.QuoteMeta(insertRowQuery)).WithArgs(userInfo1.Email, userInfo1.Password, userInfo1.FullName, userInfo1.AccountId, userInfo1.CreatedAt, userInfo1.UserGroup).WillReturnResult(sqlmock.NewResult(0, 1))
 	err = UserManagementStore.SetUserInfo(db, userInfo1)
 	t.Log(err)
 	assert.Error(t, sql.ErrNoRows)

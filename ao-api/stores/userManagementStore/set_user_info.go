@@ -40,7 +40,7 @@ func (store *userManagementStore) SetUserInfo(db *dbPkg.DB, userInfo models.Thir
 	log.Println("user exist!")
 
 	_, err = db.Connection.Exec(stmt, userInfo.Email, userInfo.Password,
-		userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt, userInfo.Role)
+		userInfo.FullName, userInfo.AccountId, userInfo.CreatedAt, userInfo.UserGroup)
 	if err != nil {
 		return err
 	}
@@ -48,6 +48,6 @@ func (store *userManagementStore) SetUserInfo(db *dbPkg.DB, userInfo models.Thir
 }
 
 var insertUserInfoStmt = `
-INSERT INTO user_info (email, password, fullname, account_id, created_at, role)
+INSERT INTO user_info (email, password, fullname, account_id, created_at, user_group)
 VALUES ($1, $2, $3, $4, $5, $6)
 `
