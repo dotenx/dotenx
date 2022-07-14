@@ -13,6 +13,8 @@
 
 Wanna support? Each ⭐ you add to the project, makes us very happy 😻.
 
+![Twitter Follow](https://img.shields.io/twitter/follow/Do10X?style=social) ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/dotenx/dotenx?include_prereleases) ![GitHub release (release name instead of tag name)](https://img.shields.io/github/v/release/dotenx/dotenx?include_prereleases) ![GitHub contributors](https://img.shields.io/github/contributors/dotenx/dotenx)
+
 Try DoTenX on cloud (no credit cards needed - unlimited access):
 
 https://dotenx.com
@@ -31,10 +33,22 @@ Blog:
 
 https://blog.dotenx.com
 
+YouTube:
+
+https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
+
 
 Current stage: pre-alpha
 
 ---
+
+
+
+https://user-images.githubusercontent.com/15846333/178857021-39ec2b1e-2808-4c1b-bdd9-1597a31b0f17.mov
+
+
+
+
 
 ![Screen Shot 2022-06-30 at 1 07 10 pm](https://user-images.githubusercontent.com/15846333/176584298-edcfed4c-f5f8-47a2-a794-6291cb7b42f6.png)
 
