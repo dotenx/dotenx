@@ -259,6 +259,9 @@ func CheckPermission(action, tableName string, userGroup *models.UserGroup) bool
 	default:
 		return false
 	}
+	if _, ok := list["*"]; ok {
+		return true
+	}
 	_, ok := list[tableName]
 	return ok
 }
