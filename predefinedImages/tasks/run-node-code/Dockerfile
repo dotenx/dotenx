@@ -41,6 +41,7 @@ ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest
 RUN chmod +x /usr/bin/aws-lambda-rie
 RUN chmod +x entry.sh
 
+
 # ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
 ENTRYPOINT ["./entry.sh"]
 CMD ["index.handler"]

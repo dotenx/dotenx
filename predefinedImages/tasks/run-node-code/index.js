@@ -1,5 +1,5 @@
 // read environment variable file_path into filePath
-const { mkdir, rmdir, writeFile } = require('fs/promises');
+const { mkdir, writeFile } = require('fs/promises');
 const fs = require('fs');
 const spawn = require('child_process').spawnSync;
 const axios = require('axios');
@@ -29,16 +29,13 @@ exports.handler = async function (event) {
 
 
   try {
-    const dir = '/tmp/workspace'
+    const dir = '/tmp/workspace' // This was previously '/tmp/workspace'
 
     if (!fs.existsSync(dir)) {
       await mkdir(dir, { recursive: true });
-    } else {
-      await rmdir(dir);
     }
 
-    // await mkdir('/tmp/workspace');
-    if (!fs.existsSync('/tmp/workspace/package.json')) {
+    if (!fs.existsSync(`${dir}/package.json`)) {
 
       const dependenciesParams = {
         Bucket: 'dotenx',
@@ -50,14 +47,14 @@ exports.handler = async function (event) {
       console.log('Writing file to workspace/package.js ...');
 
       // File package.json will be created or overwritten by default.
-      await writeFile('/tmp/workspace/package.json', data.Body.toString())
+      await writeFile(`${dir}/package.json`, data.Body.toString())
 
       console.log(`${dependenciesPath} was stored as package.json\n`);
       console.log('Executing npm install ...');
 
       // Execute npm install
       try {
-        const bl = await spawn('npm', ['install'], { cwd: '/tmp/workspace' });
+        const bl = await spawn('npm', ['install'], { cwd: '${dir}' });
         console.log(bl.toString());
         console.log(`executing npm install finished`);
         
@@ -67,7 +64,7 @@ exports.handler = async function (event) {
       
     }
 
-    if (!fs.existsSync('/tmp/workspace/entry.js')) {
+    if (!fs.existsSync(`${dir}/entry.js`)) {
 
       const params = {
         Bucket: 'dotenx',
@@ -78,16 +75,16 @@ exports.handler = async function (event) {
       console.log(`codeData.Body.toString(): ${codeData.Body.toString()}`);
 
       console.log('Downloading code file from s3 finished');
-      console.log('Writing file to /tmp/workspace/entry.js ...');
+      console.log('Writing file to ${dir}/entry.js ...');
 
       // Write file to workspace/index.js
-      await writeFile('/tmp/workspace/entry.js', codeData.Body.toString())
+      await writeFile(`${dir}/entry.js`, codeData.Body.toString())
 
       // File entry.js will be created or overwritten by default.
     }
 
     console.log(`${filePath} was copied to entry.js`);
-    const f = require('/tmp/workspace/entry.js');
+    const f = require(`${dir}/entry.js`);
     const result = f(...variables) || {};
     await axios.post(resultEndpoint, {
       status: "completed",
