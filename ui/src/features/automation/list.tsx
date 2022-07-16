@@ -1,12 +1,19 @@
+import { ActionIcon, Anchor, Button } from '@mantine/core'
 import _ from 'lodash'
-import { IoAdd, IoCodeDownload } from 'react-icons/io5'
+import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
-import { API_URL, Automation, AutomationKind, getTemplateEndpointFields, QueryKey } from '../../api'
-import { Endpoint } from '../database'
+import {
+	API_URL,
+	Automation,
+	AutomationKind,
+	EndpointFields,
+	getInteractionEndpointFields,
+	getTemplateEndpointFields,
+	QueryKey,
+} from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Button, DeleteButton, Loader, Modal, Table } from '../ui'
-import { JsonCode } from './json-code'
+import { ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -19,60 +26,75 @@ interface AutomationListProps {
 
 export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {
 	return (
-		<div className="grow">
-			<div className="px-32 py-16">
+		<>
+			<ContentWrapper>
 				<Table
 					title={title}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
 					loading={loading}
-					actionBar={<NewAutomation kind={_.capitalize(kind)} />}
-					columns={[
-						{
-							Header: 'Name',
-							accessor: 'name',
-							Cell: ({ value }: { value: string }) => (
-								<AutomationLink automationName={value} />
-							),
-						},
-						{
-							Header: 'Status',
-							accessor: 'is_active',
-							Cell: ({ value }: { value: boolean }) => (
-								<ActivationStatus isActive={value} />
-							),
-						},
-						{
-							Header: 'Action',
-							id: 'action',
-							accessor: 'name',
-							Cell: ({ value }: { value: string }) => (
-								<AutomationActions automationName={value} kind={kind} />
-							),
-						},
-					]}
+					actionBar={<NewAutomation kind={kind} />}
+					columns={(
+						[
+							{
+								Header: 'Name',
+								accessor: 'name',
+								Cell: ({ value }: { value: string }) => (
+									<AutomationLink automationName={value} />
+								),
+							},
+							{
+								Header: 'Status',
+								accessor: 'is_active',
+								Cell: ({ value }: { value: boolean }) => (
+									<ActivationStatus isActive={value} />
+								),
+							},
+							{
+								Header: 'Action',
+								id: 'action',
+								accessor: 'name',
+								Cell: ({ value }: { value: string }) => (
+									<AutomationActions automationName={value} kind={kind} />
+								),
+							},
+						] as const
+					).filter((col) => (kind !== 'automation' ? col.Header !== 'Status' : true))}
 					data={automations}
 				/>
-			</div>
-		</div>
+			</ContentWrapper>
+			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
+				{(data: { automationName: string }) => (
+					<>
+						{kind === 'template' && (
+							<TemplateEndpoint automationName={data.automationName} />
+						)}
+						{kind === 'interaction' && (
+							<InteractionEndpoint automationName={data.automationName} />
+						)}
+					</>
+				)}
+			</Modal>
+		</>
 	)
 }
 
-function NewAutomation({ kind }: { kind: string }) {
+function NewAutomation({ kind }: { kind: AutomationKind }) {
 	const newAutomation = useNewAutomation('new')
+	const newButtonText = kind === 'template' ? 'Automation' : kind
 
 	return (
 		<div className="flex gap-4">
 			{kind === 'automation' && (
-				<Link to="yaml/import">
-					<Button className="max-w-min">
-						<IoCodeDownload className="text-2xl" />
-						Import YAML
-					</Button>
-				</Link>
+				<Button
+					component={Link}
+					to="yaml/import"
+					leftIcon={<IoCodeDownload className="text-xl" />}
+				>
+					Import YAML
+				</Button>
 			)}
-			<Button className="max-w-min" onClick={newAutomation}>
-				<IoAdd className="text-2xl" />
-				New {kind}
+			<Button onClick={newAutomation} leftIcon={<IoAdd className="text-xl" />}>
+				New {_.capitalize(newButtonText)}
 			</Button>
 		</div>
 	)
@@ -80,9 +102,9 @@ function NewAutomation({ kind }: { kind: string }) {
 
 function AutomationLink({ automationName }: { automationName: string }) {
 	return (
-		<Link className="hover:underline underline-offset-2" to={automationName}>
+		<Anchor component={Link} to={automationName}>
 			{automationName}
-		</Link>
+		</Anchor>
 	)
 }
 
@@ -96,28 +118,24 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 	const modal = useModal()
 
 	return (
-		<>
-			<div className="flex items-center justify-end gap-4">
-				<div className="flex gap-4">
-					{kind !== 'automation' && (
-						<Button
-							variant="outlined"
-							onClick={() => modal.open(Modals.TemplateEndpoint)}
-						>
-							Endpoint
-						</Button>
-					)}
-					<DeleteButton
-						loading={deleteMutation.isLoading}
-						onClick={() => deleteMutation.mutate(automationName)}
-					/>
-				</div>
-			</div>
-			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" fluid size="lg">
-				{kind === 'template' && <TemplateEndpoint automationName={automationName} />}
-				{kind === 'interaction' && <InteractionEndpoint automationName={automationName} />}
-			</Modal>
-		</>
+		<div className="flex items-center justify-end gap-4">
+			{kind !== 'automation' && (
+				<Button
+					onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
+					variant="subtle"
+					color="gray"
+					size="xs"
+				>
+					Endpoint
+				</Button>
+			)}
+			<ActionIcon
+				loading={deleteMutation.isLoading}
+				onClick={() => deleteMutation.mutate(automationName)}
+			>
+				<IoTrash />
+			</ActionIcon>
+		</div>
 	)
 }
 
@@ -134,32 +152,50 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 }
 
 function TemplateEndpoint({ automationName }: { automationName: string }) {
-	const fieldsQuery = useQuery(QueryKey.GetTemplateEndpointFields, () =>
-		getTemplateEndpointFields(automationName)
+	const fieldsQuery = useQuery(
+		[QueryKey.GetTemplateEndpointFields, automationName],
+		() => getTemplateEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
-	const fields = _.fromPairs(_.toPairs(fieldsQuery.data?.data).map(([, value]) => [value, value]))
+	const fields = fieldsQuery.data?.data
+	const body = _.fromPairs(mapFieldsToPairs(fields))
+
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
 	return (
-		<div className="px-4 pt-6 pb-10 space-y-6">
-			<Endpoint
-				label="Add an automation"
-				url={`${API_URL}/pipeline/template/name/${automationName}`}
-				kind="POST"
-			/>
-			<JsonCode code={JSON.stringify(fields, null, 2)} />
-		</div>
+		<Endpoint
+			label="Add an automation"
+			url={`${API_URL}/pipeline/template/name/${automationName}`}
+			method="POST"
+			code={body}
+		/>
 	)
 }
 
 function InteractionEndpoint({ automationName }: { automationName: string }) {
-	return (
-		<div className="px-4 pt-6 pb-10">
-			<Endpoint
-				label="Run interaction"
-				url={`${API_URL}/execution/name/${automationName}/start`}
-				kind="POST"
-			/>
-		</div>
+	const query = useQuery(
+		[QueryKey.GetInteractionEndpointFields, automationName],
+		() => getInteractionEndpointFields(automationName),
+		{ enabled: !!automationName }
 	)
+	const pairs = mapFieldsToPairs(query.data?.data)
+	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
+
+	if (query.isLoading) return <Loader />
+
+	return (
+		<Endpoint
+			label="Run interaction"
+			url={`${API_URL}/execution/name/${automationName}/start`}
+			method="POST"
+			code={body}
+		/>
+	)
+}
+
+const mapFieldsToPairs = (fields?: EndpointFields) => {
+	return _.toPairs(fields).map(([nodeName, fields]) => [
+		nodeName,
+		_.fromPairs(fields.map((field) => [field, field])),
+	])
 }

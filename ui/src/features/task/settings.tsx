@@ -1,3 +1,4 @@
+import { Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
@@ -7,7 +8,6 @@ import { FieldType } from '../../api'
 import { taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
 import {
-	Button,
 	Description,
 	Field,
 	Form,
@@ -17,7 +17,7 @@ import {
 	InputOrSelectKind,
 	Loader,
 } from '../ui'
-import { ComplexFieldProps } from '../ui/complex-field'
+import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -183,7 +183,7 @@ const getFieldComponent = (
 			return (
 				<div key={props.key}>
 					{/* TODO: PLEASE USE ComplexField WHEN BACKEND FORMATTER IS READY */}
-					<InputOrSelect {...props} />
+					<ComplexField {...props} />
 					<Description>{props.description}</Description>
 				</div>
 			)

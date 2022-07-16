@@ -1,8 +1,8 @@
+import { Button } from '@mantine/core'
 import { IoTrash } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { deleteTable } from '../../api'
-import { Button } from '../ui'
 
 interface TableDeletionProps {
 	projectName: string
@@ -17,13 +17,13 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 
 	return (
 		<Button
-			className="w-40"
+			leftIcon={<IoTrash />}
+			variant="outline"
 			type="button"
-			variant="outlined"
+			size="xs"
 			onClick={() => deleteMutation.mutate()}
 			loading={deleteMutation.isLoading}
 		>
-			<IoTrash className="text-lg" />
 			Delete Table
 		</Button>
 	)

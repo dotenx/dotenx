@@ -20,6 +20,7 @@ type IntegrationStore interface {
 	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
 	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
 	GetIntegrationByName(ctx context.Context, accountId, name string) (models.Integration, error)
+	GetIntegrationForThirdPartyUser(ctx context.Context, accountId, tpAccountId, integrationType string) (models.Integration, error)
 }
 
 type integrationStore struct {
@@ -31,8 +32,8 @@ func New(db *db.DB) IntegrationStore {
 }
 
 var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken, provider)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 func (store *integrationStore) AddIntegration(ctx context.Context, accountId string, integration models.Integration) error {
@@ -44,7 +45,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 		return fmt.Errorf("driver not supported")
 	}
 	marshalled, _ := json.Marshal(integration.Secrets)
-	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken, integration.Provider)
+	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken, integration.Provider, integration.TpAccountId)
 	if err != nil {
 		return err
 	}
@@ -55,7 +56,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 }
 
 var getIntegrationsByType = `
-select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
 where account_id = $1 and type = $2;
 `
 
@@ -76,7 +77,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
 			if err != nil {
 				return res, err
 			}
@@ -91,7 +92,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 }
 
 var getIntegrations = `
-select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
 where account_id = $1;
 `
 
@@ -112,7 +113,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
 			if err != nil {
 				return res, err
 			}
@@ -127,7 +128,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 }
 
 var getIntegrationsByName = `
-select account_id, type, name, secrets, hasRefreshToken, provider from integrations 
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
 where account_id = $1 and name = $2;
 `
 
@@ -147,7 +148,7 @@ func (store *integrationStore) GetIntegrationByName(ctx context.Context, account
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
 			if err != nil {
 				return models.Integration{}, err
 			}
@@ -239,3 +240,42 @@ var checkTriggers = `
 SELECT count(*) FROM event_triggers
 WHERE integration = $1 and account_id = $2;
 `
+
+var getIntegrationForThirdPartyUser = `
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
+where account_id = $1 and tp_account_id = $2 and type = $3
+LIMIT 1;`
+
+func (store *integrationStore) GetIntegrationForThirdPartyUser(ctx context.Context, accountId, tpAccountId, integrationType string) (models.Integration, error) {
+	switch store.db.Driver {
+	case db.Postgres:
+		conn := store.db.Connection
+		rows, err := conn.Queryx(getIntegrationForThirdPartyUser, accountId, tpAccountId, integrationType)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				err = errors.New("not found")
+			}
+			return models.Integration{}, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var cur models.Integration
+			var secrets []byte
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			err = json.Unmarshal(secrets, &cur.Secrets)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			if err != nil {
+				return models.Integration{}, err
+			} else {
+				return cur, nil
+			}
+		}
+	}
+	return models.Integration{}, nil
+}

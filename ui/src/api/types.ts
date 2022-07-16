@@ -26,6 +26,8 @@ export enum QueryKey {
 	GetTableRecords = 'get-table-records',
 	GetColumns = 'get-columns',
 	GetTemplateEndpointFields = 'get-template-endpoint-fields',
+	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
+	GetProfile = 'get-profile',
 }
 
 export enum TaskExecutionStatus {
@@ -278,7 +280,7 @@ export interface FuncCall {
 	args: Arg[]
 }
 
-export type Arg = FromSource | string
+export type Arg = FromSource | { value: string }
 
 interface FromSource {
 	key: string
@@ -323,7 +325,39 @@ export interface Column {
 }
 
 export type GetColumnsResponse = {
-	columns: string[]
+	columns: { name: string; type: string }[]
 }
 
 export type AutomationKind = 'automation' | 'template' | 'interaction'
+
+export type StartAutomationRequest =
+	| Record<string, never>
+	| { interactionRunTime: Record<string, string> }
+
+export interface RecordsFilters {
+	columns: string[]
+	filters?: {
+		conjunction: 'and' | 'or'
+		filterSet: {
+			value: string
+			key: string
+			operator: string
+		}[]
+	}
+}
+
+export type GetTableRecordsRequest = RecordsFilters
+
+export type EndpointFields = Record<string, string[]>
+
+export type TableRecord = Record<string, string>
+
+export type GetRecordsResponse = TableRecord[] | null
+
+export type AddRecordRequest = TableRecord
+
+export type UpdateRecordRequest = TableRecord
+
+export type GetProfileResponse = {
+	account_id: string
+}

@@ -169,8 +169,8 @@ function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
 }
 
 const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
-	return typeof arg === 'string'
-		? { type: InputOrSelectKind.Text, data: arg }
+	return 'value' in arg
+		? { type: InputOrSelectKind.Text, data: arg.value }
 		: { type: InputOrSelectKind.Option, data: arg.key, groupName: arg.source, iconUrl: '' }
 }
 

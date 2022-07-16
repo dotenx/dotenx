@@ -1,11 +1,13 @@
 import axios from 'axios'
 import {
 	AddColumnRequest,
+	AddRecordRequest,
 	CreateAutomationRequest,
 	CreateIntegrationRequest,
 	CreateProjectRequest,
 	CreateTableRequest,
 	CreateTriggerRequest,
+	EndpointFields,
 	Execution,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
@@ -18,10 +20,13 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetProfileResponse,
 	GetProjectResponse,
 	GetProjectsResponse,
 	GetProviderResponse,
 	GetProvidersResponse,
+	GetRecordsResponse,
+	GetTableRecordsRequest,
 	GetTablesResponse,
 	GetTaskFieldsResponse,
 	GetTaskKindsResponse,
@@ -30,6 +35,8 @@ import {
 	GetTriggersResponse,
 	GetUserManagementDataResponse,
 	Provider,
+	StartAutomationRequest,
+	UpdateRecordRequest,
 } from './types'
 export * from './types'
 
@@ -66,10 +73,10 @@ export function getAutomationYaml(name: string) {
 	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
 }
 
-export function startAutomation(automationName: string) {
+export function startAutomation(automationName: string, payload: StartAutomationRequest = {}) {
 	return api.post<{ id: number } | Record<string, unknown>>(
 		`/execution/name/${automationName}/start`,
-		{}
+		payload
 	)
 }
 
@@ -218,10 +225,14 @@ export function deleteColumn(projectName: string, tableName: string, columnName:
 	)
 }
 
-export function getTableRecords(projectTag: string, tableName: string) {
-	return api.post<Record<string, string>[] | null>(
+export function getTableRecords(
+	projectTag: string,
+	tableName: string,
+	payload: GetTableRecordsRequest
+) {
+	return api.post<GetRecordsResponse>(
 		`/database/query/select/project/${projectTag}/table/${tableName}`,
-		{ columns: [] }
+		payload
 	)
 }
 
@@ -237,5 +248,38 @@ export function getUserManagementData(projectTag: string) {
 }
 
 export function getTemplateEndpointFields(templateName: string) {
-	return api.get<Record<string, string>>(`pipeline/template/name/${templateName}`)
+	return api.get<EndpointFields>(`/pipeline/template/name/${templateName}`)
+}
+
+export function getInteractionEndpointFields(interactionName: string) {
+	return api.get<EndpointFields>(`/pipeline/interaction/name/${interactionName}`)
+}
+
+export function addRecord(projectTag: string, tableName: string, payload: AddRecordRequest) {
+	return api.post<void>(
+		`/database/query/insert/project/${projectTag}/table/${tableName}`,
+		payload
+	)
+}
+
+export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
+	return api.post<void>(
+		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
+	)
+}
+
+export function updateRecord(
+	projectTag: string,
+	tableName: string,
+	rowId: string,
+	payload: UpdateRecordRequest
+) {
+	return api.post<void>(
+		`/database/query/update/project/${projectTag}/table/${tableName}/row/${rowId}`,
+		payload
+	)
+}
+
+export function getProfile() {
+	return api.get<GetProfileResponse>('/profile')
 }

@@ -20,6 +20,7 @@ import (
 type IntegrationService interface {
 	GetIntegrationFields(name string) (models.IntegrationDefinition, error)
 	GetIntegrationByName(accountId, name string) (models.Integration, error)
+	GetIntegrationForThirdPartyAccount(accountId, tpAccountId, intgType string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
 	GetIntegrationTypes() ([]models.IntegrationDefinition, error)
 	GetAllIntegrations(accountId string) ([]models.Integration, error)
@@ -81,8 +82,19 @@ func (manager *IntegrationManager) DeleteIntegration(accountId string, integrati
 }
 
 func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
-	return manager.Store.GetAllintegrations(context.Background(), accountId)
+	selected := make([]models.Integration, 0)
+	integrations, err := manager.Store.GetAllintegrations(context.Background(), accountId)
+	if err != nil {
+		return nil, err
+	}
+	for _, integ := range integrations {
+		if integ.TpAccountId == "" {
+			selected = append(selected, integ)
+		}
+	}
+	return selected, nil
 }
+
 func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error) {
 	integrations := make([]models.Integration, 0)
 	var err error
@@ -159,4 +171,66 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 
 func (manager *IntegrationManager) SetRedisPair(key, value string, ttl time.Duration) (err error) {
 	return manager.RedisStore.SetRedisPair(key, value, ttl)
+}
+
+func (manager *IntegrationManager) GetIntegrationForThirdPartyAccount(accountId, tpAccountId, integType string) (models.Integration, error) {
+
+	integration, err := manager.Store.GetIntegrationForThirdPartyUser(context.Background(), accountId, tpAccountId, integType)
+	if err != nil {
+		return models.Integration{}, err
+	}
+	if !integration.HasRefreshToken {
+		for key, value := range integration.Secrets {
+			decrypted, err := utils.Decrypt(value, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			integration.Secrets[key] = decrypted
+		}
+		return integration, err
+	} else {
+		var gothProvider *goth.Provider
+		if integration.Provider == "" {
+			providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+			gothProvider, err = oauth.GetProviderByName(providerName)
+			if err != nil {
+				return models.Integration{}, err
+			}
+		} else {
+			userProvider, err := manager.OauthStore.GetUserProviderByName(context.Background(), accountId, integration.Provider)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedKey, err := utils.Decrypt(userProvider.Key, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			decryptedSecret, err := utils.Decrypt(userProvider.Secret, config.Configs.Secrets.Encryption)
+			if err != nil {
+				return models.Integration{}, err
+			}
+			userProvider.Key = decryptedKey
+			userProvider.Secret = decryptedSecret
+			redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", integration.Provider, accountId)
+			gothProvider, err = provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
+			if err != nil {
+				return models.Integration{}, err
+			}
+		}
+
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, integration.Name, accountId, manager.RedisStore)
+		if err != nil {
+			return models.Integration{}, err
+		}
+		return models.Integration{
+			Name:      integration.Name,
+			AccountId: accountId,
+			Type:      integration.Type,
+			Secrets: map[string]string{
+				"ACCESS_TOKEN":  accessToken,
+				"REFRESH_TOKEN": refreshToken,
+			},
+			HasRefreshToken: integration.HasRefreshToken,
+		}, nil
+	}
 }

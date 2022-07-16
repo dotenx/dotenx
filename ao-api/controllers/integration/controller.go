@@ -49,23 +49,31 @@ func (controller *IntegrationController) DeleteIntegration() gin.HandlerFunc {
 func (controller *IntegrationController) GetAllIntegrations() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		types := c.QueryArray("type")
+		forTemplate := c.Query("for_template")
 		fmt.Println(types)
 		accountId, _ := utils.GetAccountId(c)
+		var integrations []models.Integration
+		var err error
 		if len(types) == 0 {
-			integrations, err := controller.Service.GetAllIntegrations(accountId)
-			if err == nil {
-				c.JSON(http.StatusOK, integrations)
-				return
-			}
-			c.JSON(http.StatusBadRequest, err.Error())
+			integrations, err = controller.Service.GetAllIntegrations(accountId)
 		} else {
-			integrations, err := controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
-			if err == nil {
-				c.JSON(http.StatusOK, integrations)
-				return
-			}
-			c.JSON(http.StatusBadRequest, err.Error())
+			integrations, err = controller.Service.GetAllIntegrationsForAccountByType(accountId, types)
 		}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		if forTemplate != "true" {
+			c.JSON(http.StatusOK, integrations)
+			return
+		}
+		selected := make([]models.Integration, 0)
+		for _, integ := range integrations {
+			if integ.Provider != "" {
+				selected = append(selected, integ)
+			}
+		}
+		c.JSON(http.StatusOK, selected)
 	}
 }
 
@@ -77,6 +85,9 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
+		// This endpoint is called in studio mode so we should set provider empty
+		// to know that this integration use our provider not user's provider
+		integration.Provider = ""
 
 		accessToken := integration.Secrets["ACCESS_TOKEN"]
 		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]
@@ -92,7 +103,10 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 				}
 				integration.Secrets["CONSUMER_KEY"] = provider.Key
 				integration.Secrets["CONSUMER_SECRET"] = provider.Secret
-			} else {
+			}
+			// TODO: we should check that this part of code can cause a security issue or not (Hojjat-1)
+			// Please don't delete comments
+			/*else {
 				userProvider, err := controller.OauthService.GetUserProviderByName(accountId, integration.Provider)
 				if err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{
@@ -102,7 +116,7 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 				}
 				integration.Secrets["CONSUMER_KEY"] = userProvider.Key
 				integration.Secrets["CONSUMER_SECRET"] = userProvider.Secret
-			}
+			}*/
 		}
 		if ok && refreshToken != "" {
 			integration.HasRefreshToken = true

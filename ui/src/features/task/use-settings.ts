@@ -2,6 +2,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
+import { useEffect } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
@@ -48,6 +49,7 @@ export function useTaskSettings({
 		watch,
 		getValues,
 		setValue,
+		unregister,
 	} = useForm<TaskSettingsSchema>({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
@@ -121,6 +123,10 @@ export function useTaskSettings({
 			color: selectedTaskType?.node_color,
 		})
 	})
+
+	useEffect(() => {
+		if (taskType) unregister(['integration', 'others', 'vars', 'outputs'])
+	}, [taskType, unregister])
 
 	return {
 		onSubmit,

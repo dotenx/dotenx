@@ -1,5 +1,6 @@
+import { Button } from '@mantine/core'
 import { SelectIntegration } from '../integration'
-import { Button, Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
+import { Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
 
 interface TriggerFormProps {
@@ -79,7 +80,6 @@ export function TriggerForm({
 							label={triggerDefinition.display_name || triggerDefinition.key}
 							name={`credentials.${triggerDefinition.key}`}
 							control={control}
-							required
 							errors={errors}
 						/>
 						<Description>{triggerDefinition.description}</Description>

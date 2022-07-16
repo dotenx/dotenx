@@ -2,7 +2,6 @@ package crud
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -15,39 +14,14 @@ import (
 
 func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var pipelineDto PipelineDto
-		accept := c.GetHeader("accept")
-		if accept == "application/x-yaml" {
-			var result map[string]interface{}
-			if err := c.ShouldBindYAML(&result); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			for key, val := range result {
-				if key == "manifest" {
-					var mani models.Manifest
-					var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
-					bytes, err1 := json2.Marshal(&val)
-					err2 := json.Unmarshal(bytes, &mani)
-					if err1 != nil {
-						c.JSON(http.StatusBadRequest, gin.H{"error": err1.Error()})
-						return
-					} else if err2 != nil {
-						c.JSON(http.StatusBadRequest, gin.H{"error": err2.Error()})
-						return
-					}
-					pipelineDto.Manifest = mani
-				}
-				if key == "name" {
-					pipelineDto.Name = val.(string)
-				}
-			}
-		} else {
-			if err := c.ShouldBindJSON(&pipelineDto); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
+		pipelineDto, err := parsPipelineDto(c)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
 		}
+		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
+		//fmt.Printf("%v\n", pipelineDto)
+		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
@@ -61,7 +35,7 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			Manifest: pipelineDto.Manifest,
 		}
 
-		err := mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction)
+		err = mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
@@ -89,9 +63,9 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		fmt.Println("################")
-		fmt.Println(pipelineDto)
-		fmt.Println("##################")
+		//fmt.Println("################")
+		//fmt.Println(pipelineDto)
+		//fmt.Println("##################")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
@@ -115,4 +89,42 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 		}
 		c.Status(http.StatusOK)
 	}
+}
+
+func parsPipelineDto(c *gin.Context) (pipelineDto PipelineDto, err error) {
+	accept := c.GetHeader("accept")
+	if accept == "application/x-yaml" {
+		var result map[string]interface{}
+		if err = c.ShouldBindYAML(&result); err != nil {
+			return
+		}
+		for key, val := range result {
+			if key == "manifest" {
+				var mani models.Manifest
+				var json2 = jsoniter.ConfigCompatibleWithStandardLibrary
+				bytes, err1 := json2.Marshal(&val)
+				err2 := json.Unmarshal(bytes, &mani)
+				if err1 != nil {
+					return
+				} else if err2 != nil {
+					return
+				}
+				pipelineDto.Manifest = mani
+			}
+			if key == "name" {
+				pipelineDto.Name = val.(string)
+			}
+			if key == "is_interaction" {
+				pipelineDto.IsInteraction = val.(bool)
+			}
+			if key == "is_template" {
+				pipelineDto.IsTemplate = val.(bool)
+			}
+		}
+	} else {
+		if err = c.ShouldBindJSON(&pipelineDto); err != nil {
+			return
+		}
+	}
+	return
 }

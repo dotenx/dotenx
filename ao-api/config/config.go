@@ -13,14 +13,16 @@ type (
 	}
 
 	App struct {
-		Port            string `envconfig:"AOA_APP_PORT" default:"3004"`
-		CheckTrigger    string `envconfig:"AOA_APP_CHECK_TRIGGER"`
-		AccountId       string `envconfig:"AOA_APP_ACCOUNT_ID"`
-		Environment     string `envconfig:"AOA_APP_ENV"`
-		FileSharing     string `envconfig:"AOA_FILE_DIR"`
-		SessionDuration string `envconfig:"AOA_SESSION_DURATION"`
-		AllowedOrigins  string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
-		RunLocally      bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
+		Port               string `envconfig:"AOA_APP_PORT" default:"3004"`
+		CheckTrigger       string `envconfig:"AOA_APP_CHECK_TRIGGER"`
+		AccountId          string `envconfig:"AOA_APP_ACCOUNT_ID"`
+		Environment        string `envconfig:"AOA_APP_ENV"`
+		FileSharing        string `envconfig:"AOA_FILE_DIR"`
+		SessionDuration    string `envconfig:"AOA_SESSION_DURATION"`
+		AllowedOrigins     string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		RunLocally         bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
+		InteractionBodyKey string `envconfig:"AOA_INTERACTION_BODY_KEY"`
+		LogLevel           string `envconfig:"AOA_APP_LOG_LEVEL"`
 	}
 
 	Queue struct {

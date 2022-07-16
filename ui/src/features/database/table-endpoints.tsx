@@ -1,7 +1,8 @@
-import clsx from 'clsx'
-import { IoCopyOutline } from 'react-icons/io5'
-import useClipboard from 'react-use-clipboard'
-import { Button } from '../ui'
+import _ from 'lodash'
+import { useQuery } from 'react-query'
+import { API_URL, getColumns, QueryKey } from '../../api'
+import { columnTypeKinds } from '../../constants'
+import { Endpoint, Loader } from '../ui'
 
 interface TableEndpointsProps {
 	projectTag: string
@@ -9,76 +10,45 @@ interface TableEndpointsProps {
 }
 
 export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
+	const columns = query.data?.data.columns ?? []
+	const body = _.fromPairs(
+		columns
+			.filter((column) => column.name !== 'id')
+			.map((column) => {
+				const colKind =
+					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
+				return [column.name, colKind === 'number' ? 0 : colKind === 'boolean' ? false : '']
+			})
+	)
+
+	if (query.isLoading) return <Loader />
+
 	return (
 		<div className="space-y-8">
 			<Endpoint
 				label="Add a record"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}`}
-				kind="POST"
+				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
+				method="POST"
+				code={body}
 			/>
 			<Endpoint
-				label="Get a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
-				kind="GET"
+				label="Get records"
+				url={`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${tableName}`}
+				method="POST"
+				code={{ columns: columns.map((column) => column.name) }}
 			/>
 			<Endpoint
 				label="Update a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
-				kind="POST"
+				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
+				method="POST"
+				code={body}
 			/>
 			<Endpoint
 				label="Delete a record by id"
-				url={`https://api.dotenx.com/database/project/tag/${projectTag}/table/${tableName}/:id`}
-				kind="DELETE"
+				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}/row/:id`}
+				method="POST"
 			/>
-		</div>
-	)
-}
-
-interface EndpointProps {
-	label: string
-	url: string
-	kind: 'GET' | 'POST' | 'DELETE'
-}
-
-export function Endpoint({ label, url, kind }: EndpointProps) {
-	const [isCopied, setCopied] = useClipboard(url, { successDuration: 3000 })
-
-	return (
-		<div>
-			<div className="flex items-center justify-between">
-				<h6 className="text-lg font-medium">{label}</h6>
-				<Button
-					variant="icon"
-					className={clsx(
-						isCopied &&
-							'bg-green-100 hover:!bg-green-100 !text-green-700 border !border-green-400'
-					)}
-					onClick={setCopied}
-				>
-					<IoCopyOutline />
-				</Button>
-			</div>
-			<div
-				className={clsx(
-					'flex items-center gap-2 p-1 mt-1 font-mono rounded border-2',
-					kind === 'GET' && 'bg-blue-50 border-blue-400',
-					kind === 'POST' && 'bg-green-50 border-green-400',
-					kind === 'DELETE' && 'bg-red-50 border-red-400'
-				)}
-			>
-				<div
-					className={clsx(
-						'flex justify-center w-20 p-2 rounded text-white text-sm font-bold',
-						kind === 'GET' && 'bg-blue-600',
-						kind === 'POST' && 'bg-green-600',
-						kind === 'DELETE' && 'bg-red-600'
-					)}
-				>
-					{kind}
-				</div>
-				<span>{url}</span>
-			</div>
 		</div>
 	)
 }

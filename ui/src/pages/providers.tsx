@@ -1,16 +1,16 @@
 import { Modals } from '../features/hooks'
 import { ProviderForm, ProviderList } from '../features/provider'
-import { Modal } from '../features/ui'
+import { ContentWrapper, NewModal } from '../features/ui'
 
 export default function ProvidersPage() {
 	return (
 		<>
-			<main className="px-32 py-16 grow">
+			<ContentWrapper>
 				<ProviderList />
-			</main>
-			<Modal kind={Modals.NewProvider} title="New Provider">
+			</ContentWrapper>
+			<NewModal size="xl" kind={Modals.NewProvider} title="Add a new provider">
 				<ProviderForm />
-			</Modal>
+			</NewModal>
 		</>
 	)
 }

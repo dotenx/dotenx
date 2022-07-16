@@ -2,9 +2,11 @@ package databaseService
 
 import (
 	"context"
+
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 )
 
-func (ds *databaseService) SelectRows(projectTag string, tableName string, columns []string, page int, size int) ([]map[string]interface{}, error) {
+func (ds *databaseService) SelectRows(projectTag string, tableName string, columns []string, filters databaseStore.ConditionGroup, page int, size int) ([]map[string]interface{}, error) {
 	noContext := context.Background()
 
 	offset := (page - 1) * size
@@ -14,5 +16,5 @@ func (ds *databaseService) SelectRows(projectTag string, tableName string, colum
 		cols = []string{"*"}
 	}
 
-	return ds.Store.SelectRows(noContext, projectTag, tableName, cols, offset, size)
+	return ds.Store.SelectRows(noContext, projectTag, tableName, cols, filters, offset, size)
 }

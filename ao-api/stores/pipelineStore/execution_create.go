@@ -15,7 +15,7 @@ func (ps *pipelineStore) CreateExecution(context context.Context, execution mode
 	case db.Postgres:
 		var id int
 		conn := ps.db.Connection
-		err := conn.QueryRow(createExecution, execution.PipelineVersionId, execution.StartedAt, execution.InitialData).Scan(&id)
+		err := conn.QueryRow(createExecution, execution.PipelineVersionId, execution.StartedAt, execution.InitialData, execution.ThirdPartyAccountId).Scan(&id)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -30,6 +30,30 @@ func (ps *pipelineStore) CreateExecution(context context.Context, execution mode
 }
 
 var createExecution = `
-INSERT INTO executions (pipeline_id, started_at, initial_data)
-VALUES ($1, $2, $3) RETURNING id
+INSERT INTO executions (pipeline_id, started_at, initial_data, tp_account_id)
+VALUES ($1, $2, $3, $4) RETURNING id
+`
+
+func (ps *pipelineStore) GetThirdPartyAccountId(context context.Context, executionId int) (string, error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		var id string
+		conn := ps.db.Connection
+		err := conn.Get(&id, gettpAccountId, executionId)
+		if err != nil {
+			log.Println(err.Error())
+			if err == sql.ErrNoRows {
+				return "", errors.New("task id not found")
+			}
+			return "", err
+		}
+		return id, nil
+	}
+	return "", nil
+
+}
+
+var gettpAccountId = `
+select tp_account_id from executions
+where id = $1;
 `
