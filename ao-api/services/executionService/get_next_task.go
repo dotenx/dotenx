@@ -12,6 +12,13 @@ import (
 // start first task (initial task) if you call this method wih task id <= 0,
 // otherwise start the tasks which will be triggerd if given task id go to given status
 func (manager *executionManager) GetNextTask(taskId, executionId int, status, accountId string) (err error) {
+	executionDetailes, err := manager.Store.GetExecutionDetailes(noContext, executionId)
+	if err != nil {
+		return
+	}
+	if executionDetailes.IsExecutionDone {
+		return nil
+	}
 	taskIds := make([]int, 0)
 	if taskId <= 0 {
 		taskId, err = manager.Store.GetInitialTask(noContext, executionId)
@@ -27,7 +34,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return
 		}
 	}
-	if len(taskIds) == 0 {
+	/*if len(taskIds) == 0 {
 		numberOftasks, err := manager.GetNumberOfTasksByExecution(executionId)
 		if err != nil {
 			log.Println(err)
@@ -51,7 +58,7 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			}
 		}
 		return nil
-	}
+	}*/
 	tpAccountId, err := manager.Store.GetThirdPartyAccountId(noContext, executionId)
 	if err != nil {
 		log.Println(err.Error())
@@ -61,6 +68,18 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		task, err := manager.Store.GetTaskByExecution(noContext, executionId, taskId)
 		if err != nil {
 			return err
+		}
+		if task.Type == "interaction_response_task" {
+			err = manager.Store.SetExecutionDone(noContext, executionId)
+			if err != nil {
+				return err
+			}
+			err = manager.SetExecutionTime(executionId, int(time.Now().Unix())-int(executionDetailes.StartedAt.Unix()))
+			if err != nil {
+				return err
+			}
+			// TODO get needed outputs and then notify start interaction goroutine that interaction is done with task body and status
+			return nil
 		}
 		jobDTO := models.NewJob(task, executionId, accountId)
 		workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId)
