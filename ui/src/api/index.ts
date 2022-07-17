@@ -7,6 +7,7 @@ import {
 	CreateProjectRequest,
 	CreateTableRequest,
 	CreateTriggerRequest,
+	CreateUserGroupRequest,
 	EndpointFields,
 	Execution,
 	GetAutomationExecutionsResponse,
@@ -33,6 +34,7 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
 	Provider,
 	StartAutomationRequest,
@@ -282,4 +284,18 @@ export function updateRecord(
 
 export function getProfile() {
 	return api.get<GetProfileResponse>('/profile')
+}
+
+export function createUserGroup(projectTag: string, payload: CreateUserGroupRequest) {
+	return api.post<void>(`/user/group/management/project/${projectTag}/userGroup`, payload)
+}
+
+export function getUserGroups(projectTag: string) {
+	return api.get<GetUserGroupsResponse>(`/user/group/management/project/${projectTag}/userGroup`)
+}
+
+export function deleteUserGroup(projectTag: string, userGroupName: string) {
+	return api.delete(
+		`/user/group/management/project/${projectTag}/userGroup/name/${userGroupName}`
+	)
 }
