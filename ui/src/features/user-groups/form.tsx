@@ -3,7 +3,14 @@ import { useForm, zodResolver } from '@mantine/form'
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { z } from 'zod'
-import { createUserGroup, CreateUserGroupRequest, getTables, QueryKey } from '../../api'
+import {
+	createUserGroup,
+	CreateUserGroupRequest,
+	getTables,
+	QueryKey,
+	updateUserGroup,
+	UpdateUserGroupRequest,
+} from '../../api'
 import { useModal } from '../hooks'
 import { Form } from '../ui'
 
@@ -20,15 +27,26 @@ export function UserGroupsForm({
 	projectName,
 	projectTag,
 	defaultValues = { name: '', select: [], update: [], delete: [] },
+	kind,
 }: {
 	projectName: string
 	projectTag: string
 	defaultValues?: { name: string; select: string[]; update: string[]; delete: string[] }
+	kind: 'create' | 'update'
 }) {
 	const client = useQueryClient()
 	const modal = useModal()
-	const mutation = useMutation(
+	const createMutation = useMutation(
 		(payload: CreateUserGroupRequest) => createUserGroup(projectTag, payload),
+		{
+			onSuccess: () => {
+				client.invalidateQueries(QueryKey.GetUserGroups)
+				modal.close()
+			},
+		}
+	)
+	const updateMutation = useMutation(
+		(payload: UpdateUserGroupRequest) => updateUserGroup(projectTag, payload),
 		{
 			onSuccess: () => {
 				client.invalidateQueries(QueryKey.GetUserGroups)
@@ -42,19 +60,31 @@ export function UserGroupsForm({
 		schema: zodResolver(schema),
 		initialValues: defaultValues,
 	})
-	const onSubmit = form.onSubmit((values) =>
-		mutation.mutate({
-			name: values.name,
-			select: _.fromPairs(values.select.map((tableName) => [tableName, tableName])),
-			update: _.fromPairs(values.update.map((tableName) => [tableName, tableName])),
-			delete: _.fromPairs(values.delete.map((tableName) => [tableName, tableName])),
-		})
-	)
+	const onSubmit = form.onSubmit((values) => {
+		if (kind === 'create')
+			createMutation.mutate({
+				name: values.name,
+				select: _.fromPairs(values.select.map((tableName) => [tableName, tableName])),
+				update: _.fromPairs(values.update.map((tableName) => [tableName, tableName])),
+				delete: _.fromPairs(values.delete.map((tableName) => [tableName, tableName])),
+			})
+		else
+			updateMutation.mutate({
+				name: values.name,
+				select: _.fromPairs(values.select.map((tableName) => [tableName, tableName])),
+				update: _.fromPairs(values.update.map((tableName) => [tableName, tableName])),
+				delete: _.fromPairs(values.delete.map((tableName) => [tableName, tableName])),
+			})
+	})
 
 	return (
 		<Form onSubmit={onSubmit}>
 			<div className="space-y-5">
-				<TextInput label="Name" {...form.getInputProps('name')} />
+				<TextInput
+					label="Name"
+					disabled={kind === 'update'}
+					{...form.getInputProps('name')}
+				/>
 				<MultiSelect
 					searchable
 					clearable
@@ -77,8 +107,8 @@ export function UserGroupsForm({
 					{...form.getInputProps('delete')}
 				/>
 			</div>
-			<Button type="submit" loading={mutation.isLoading}>
-				Add User Group
+			<Button type="submit" loading={createMutation.isLoading || updateMutation.isLoading}>
+				{kind === 'update' ? 'Edit User Group' : 'Add User Group'}
 			</Button>
 		</Form>
 	)
