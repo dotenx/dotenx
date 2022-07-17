@@ -299,6 +299,7 @@ export type GetUserManagementDataResponse = {
 	created_at: string
 	email: string
 	fullname: string
+	user_group: string
 }[]
 
 export type GetProjectResponse = Project & { tag: string }

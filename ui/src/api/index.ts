@@ -246,7 +246,7 @@ export function getColumns(projectName: string, tableName: string) {
 export function getUserManagementData(projectTag: string) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
-		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
+		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] }
 	)
 }
 

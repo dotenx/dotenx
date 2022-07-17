@@ -50,6 +50,10 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						),
 					},
 					{
+						Header: 'Group',
+						accessor: 'user_group',
+					},
+					{
 						Header: 'User ID',
 						accessor: 'account_id',
 					},
@@ -121,6 +125,21 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						label="Authenticate with provider"
 						url={`${API_URL}/user/management/project/${projectTag}/provider/:provider_name/authorize`}
 						method="GET"
+					/>
+					<Endpoint
+						label="Set user group"
+						url={`${API_URL}/user/group/management/project/${projectTag}/userGroup/name/:group_name`}
+						method="POST"
+						code={{
+							email: 'email',
+							account_id: 'account_id',
+						}}
+						description={
+							<p>
+								Only either <Code>email</Code> or <Code>account_id</Code> is
+								required.
+							</p>
+						}
 					/>
 				</div>
 			</Drawer>
