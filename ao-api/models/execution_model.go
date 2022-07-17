@@ -41,3 +41,9 @@ type Execution struct {
 	ThirdPartyAccountId string    `db:"tp_account_id"`
 	IsExecutionDone     bool      `db:"is_execution_done"`
 }
+
+type InteractionResponse struct {
+	StatusCode int                               `json:"status_code,omitempty"`
+	Body       map[string]map[string]interface{} `json:"body,omitempty"`
+	Error      string                            `json:"error,omitempty"`
+}

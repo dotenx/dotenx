@@ -36,18 +36,20 @@ type ExecutionService interface {
 }
 
 type executionManager struct {
-	Store              pipelineStore.PipelineStore
-	QueueService       queueService.QueueService
-	IntegrationService integrationService.IntegrationService
-	UtopiopsService    utopiopsService.UtopiopsService
+	Store                        pipelineStore.PipelineStore
+	QueueService                 queueService.QueueService
+	IntegrationService           integrationService.IntegrationService
+	UtopiopsService              utopiopsService.UtopiopsService
+	InteractionsResponseChannels map[int]chan models.InteractionResponse
 }
 
 func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService, utoService utopiopsService.UtopiopsService) ExecutionService {
 	return &executionManager{
-		Store:              store,
-		QueueService:       queue,
-		IntegrationService: intgService,
-		UtopiopsService:    utoService,
+		Store:                        store,
+		QueueService:                 queue,
+		IntegrationService:           intgService,
+		UtopiopsService:              utoService,
+		InteractionsResponseChannels: make(map[int](chan models.InteractionResponse)),
 	}
 }
 

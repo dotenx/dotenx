@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -70,16 +71,17 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			return err
 		}
 		if task.Type == "interaction_response_task" {
+			chann := manager.InteractionsResponseChannels[executionId]
+			if chann == nil {
+				return errors.New("no channel for this execution")
+			}
+			manager.InteractionsResponseChannels[executionId] <- manager.getInteractionResponse(executionId, accountId, task)
 			err = manager.Store.SetExecutionDone(noContext, executionId)
 			if err != nil {
 				return err
 			}
 			err = manager.SetExecutionTime(executionId, int(time.Now().Unix())-int(executionDetailes.StartedAt.Unix()))
-			if err != nil {
-				return err
-			}
-			// TODO get needed outputs and then notify start interaction goroutine that interaction is done with task body and status
-			return nil
+			return err
 		}
 		jobDTO := models.NewJob(task, executionId, accountId)
 		workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId)
@@ -155,4 +157,33 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 		}
 	}
 	return taskBody, nil
+}
+
+func (manager *executionManager) getInteractionResponse(executionId int, accountId string, task models.TaskDetails) (response models.InteractionResponse) {
+	response = models.InteractionResponse{}
+	StatusCode := task.Body["status_code"].(string)
+	stausCodeInt, err := strconv.Atoi(StatusCode)
+	if err != nil {
+		response.Error = err.Error()
+		return
+	}
+	responseBody := make(map[string]map[string]interface{})
+	response.StatusCode = stausCodeInt
+	for taskName, fields := range task.Body {
+		returnValues, err := manager.CheckReturnValues(executionId, accountId, taskName)
+		if err != nil {
+			response.Error = err.Error()
+			return
+		}
+		fieldsArr := fields.([]string)
+		for _, field := range fieldsArr {
+			if _, ok := returnValues[field]; !ok {
+				response.Error = "no value for field" + field + "in return values"
+				return
+			}
+			responseBody[taskName][field] = returnValues[field]
+		}
+	}
+	response.Body = responseBody
+	return
 }

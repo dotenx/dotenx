@@ -53,11 +53,13 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		StartedAt:         time.Now(),
 		InitialData:       input,
 	}
-
 	executionId, err := manager.Store.CreateExecution(noContext, execution)
 	if err != nil {
 		log.Println(err.Error())
 		return -1, err
+	}
+	if pipeline.IsInteraction {
+		manager.InteractionsResponseChannels[executionId] = make(chan models.InteractionResponse, 1)
 	}
 
 	err = manager.QueueService.AddUser(accountId)
@@ -71,5 +73,9 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	if !pipeline.IsInteraction {
 		return gin.H{"id": executionId}, err
 	}
-	return manager.getResponse(executionId)
+	//return manager.getResponse(executionId)
+	response := <-manager.InteractionsResponseChannels[executionId]
+	close(manager.InteractionsResponseChannels[executionId])
+	manager.InteractionsResponseChannels[executionId] = nil
+	return response, nil
 }
