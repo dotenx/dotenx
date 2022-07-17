@@ -2,7 +2,6 @@ package executionService
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -75,9 +74,9 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return gin.H{"id": executionId}, err
 	}
 	//return manager.getResponse(executionId)
-	log.Println(manager.InteractionsResponseChannels)
+	//log.Println(manager.InteractionsResponseChannels)
 	response := <-manager.InteractionsResponseChannels[executionId]
-	fmt.Println("TSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+	//fmt.Println("TSSSSSSSSSSSSSSSSSSSSSSSSSSS")
 	close(manager.InteractionsResponseChannels[executionId])
 	delete(manager.InteractionsResponseChannels, executionId)
 	return response, nil

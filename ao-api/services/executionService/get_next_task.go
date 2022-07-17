@@ -175,7 +175,6 @@ func (manager *executionManager) getInteractionResponse(executionId int, account
 	for taskName, fields := range body {
 		returnValues, err := manager.CheckReturnValues(executionId, accountId, taskName)
 		if err != nil {
-			log.Println("GGGGGGGGGGGGG")
 			response.Error = err.Error()
 			return
 		}

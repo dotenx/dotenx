@@ -13,8 +13,6 @@ func (ps *pipelineStore) GetTaskByPipelineId(context context.Context, pipelineId
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-		log.Println(taskName)
-		log.Println(pipelineId)
 		err = conn.QueryRow(getTaskByPipelineId, taskName, pipelineId).Scan(&id)
 		if err != nil {
 			log.Println(err.Error())
