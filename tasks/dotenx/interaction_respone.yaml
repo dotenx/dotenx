@@ -1,0 +1,11 @@
+service: dotenx
+type: interaction_response
+fields:
+    - key: statusCode
+      type: int
+    - key: body
+      type: JSON
+author: Armingodiz
+icon: https://cdn-icons-png.flaticon.com/512/1674/1674969.png
+node_color: 2ECC71
+description: to specify interaction response in different scenarios

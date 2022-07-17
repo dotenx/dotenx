@@ -31,7 +31,7 @@ func (manager *JobManager) StartReceiving(jobChan chan models.Job) {
 			job.Token = token.String()
 			jobChan <- job
 		} else {
-			time.Sleep(time.Duration(5 * time.Second))
+			time.Sleep(time.Duration(10 * time.Millisecond))
 		}
 	}
 }

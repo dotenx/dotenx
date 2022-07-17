@@ -3,6 +3,7 @@ package executionService
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -70,7 +71,8 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		if err != nil {
 			return err
 		}
-		if task.Type == "interaction_response_task" {
+		if task.Type == "interaction_response" {
+			log.Println(manager.InteractionsResponseChannels)
 			chann := manager.InteractionsResponseChannels[executionId]
 			if chann == nil {
 				return errors.New("no channel for this execution")
@@ -161,7 +163,7 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 
 func (manager *executionManager) getInteractionResponse(executionId int, accountId string, task models.TaskDetails) (response models.InteractionResponse) {
 	response = models.InteractionResponse{}
-	StatusCode := task.Body["status_code"].(string)
+	StatusCode := task.Body["statusCode"].(string)
 	stausCodeInt, err := strconv.Atoi(StatusCode)
 	if err != nil {
 		response.Error = err.Error()
@@ -169,19 +171,25 @@ func (manager *executionManager) getInteractionResponse(executionId int, account
 	}
 	responseBody := make(map[string]map[string]interface{})
 	response.StatusCode = stausCodeInt
-	for taskName, fields := range task.Body {
+	body := task.Body["body"].(map[string]interface{})
+	for taskName, fields := range body {
 		returnValues, err := manager.CheckReturnValues(executionId, accountId, taskName)
 		if err != nil {
+			log.Println("GGGGGGGGGGGGG")
 			response.Error = err.Error()
 			return
 		}
-		fieldsArr := fields.([]string)
+		fieldsArr := fields.([]interface{})
 		for _, field := range fieldsArr {
-			if _, ok := returnValues[field]; !ok {
-				response.Error = "no value for field" + field + "in return values"
+			fieldStr := fmt.Sprintf("%v", field)
+			if _, ok := returnValues[fieldStr]; !ok {
+				response.Error = "no value for field" + fieldStr + "in return values"
 				return
 			}
-			responseBody[taskName][field] = returnValues[field]
+			if responseBody[taskName] == nil {
+				responseBody[taskName] = make(map[string]interface{})
+			}
+			responseBody[taskName][fieldStr] = returnValues[fieldStr]
 		}
 	}
 	response.Body = responseBody
