@@ -39,6 +39,7 @@ import {
 	Provider,
 	StartAutomationRequest,
 	UpdateRecordRequest,
+	UpdateUserGroupRequest,
 } from './types'
 export * from './types'
 
@@ -288,6 +289,10 @@ export function getProfile() {
 
 export function createUserGroup(projectTag: string, payload: CreateUserGroupRequest) {
 	return api.post<void>(`/user/group/management/project/${projectTag}/userGroup`, payload)
+}
+
+export function updateUserGroup(projectTag: string, payload: UpdateUserGroupRequest) {
+	return api.put<void>(`/user/group/management/project/${projectTag}/userGroup`, payload)
 }
 
 export function getUserGroups(projectTag: string) {

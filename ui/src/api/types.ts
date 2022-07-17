@@ -373,3 +373,5 @@ export type CreateUserGroupRequest = {
 export type GetUserGroupsResponse = Record<string, UserGroup>
 
 export type UserGroup = Record<string, string[]>
+
+export type UpdateUserGroupRequest = CreateUserGroupRequest
