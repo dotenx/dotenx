@@ -39,4 +39,5 @@ type Execution struct {
 	StartedAt           time.Time `db:"started_at"`
 	InitialData         InputData `db:"initial_data"`
 	ThirdPartyAccountId string    `db:"tp_account_id"`
+	IsExecutionDone     bool      `db:"is_execution_done"`
 }

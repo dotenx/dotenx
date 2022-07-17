@@ -26,7 +26,7 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 		defer rows.Close()
 		for rows.Next() {
 			var cur models.Execution
-			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData)
+			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData, &cur.IsExecutionDone)
 			if err != nil {
 				return nil, err
 			}
@@ -37,7 +37,7 @@ func (ps *pipelineStore) GetAllExecutions(context context.Context, pipelineId in
 }
 
 var getAllExecution = `
-select id, pipeline_id, started_at, initial_data
+select id, pipeline_id, started_at, initial_data, is_execution_done
 from executions
 where pipeline_id = $1;
 `
@@ -57,7 +57,7 @@ func (ps *pipelineStore) GetExecutionDetailes(context context.Context, execId in
 		defer rows.Close()
 		for rows.Next() {
 			var cur models.Execution
-			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData)
+			rows.Scan(&cur.Id, &cur.PipelineVersionId, &cur.StartedAt, &cur.InitialData, &cur.IsExecutionDone)
 			if err != nil {
 				return models.Execution{}, err
 			}
@@ -68,7 +68,7 @@ func (ps *pipelineStore) GetExecutionDetailes(context context.Context, execId in
 }
 
 var getExecutionDetailes = `
-select id, pipeline_id, started_at, initial_data
+select id, pipeline_id, started_at, initial_data, is_execution_done
 from executions
 where id = $1;
 `

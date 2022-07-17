@@ -64,6 +64,7 @@ type PipelineStore interface {
 	DeActivatePipeline(context context.Context, accountId, pipelineId string) error
 
 	GetAccountIdByExecutionId(context context.Context, executionId int) (string, error)
+	SetExecutionDone(context context.Context, executionId int) error
 }
 
 type pipelineStore struct {
