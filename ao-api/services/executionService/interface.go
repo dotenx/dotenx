@@ -2,6 +2,7 @@ package executionService
 
 import (
 	"context"
+	"sync"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
@@ -35,12 +36,17 @@ type ExecutionService interface {
 	IsExecutionDone(totalTasks int, currentTasks []models.TaskStatusSummery) bool
 }
 
+type ResponseChannel struct {
+	MuLock  sync.Mutex
+	Channel chan models.InteractionResponse
+}
+
 type executionManager struct {
 	Store                        pipelineStore.PipelineStore
 	QueueService                 queueService.QueueService
 	IntegrationService           integrationService.IntegrationService
 	UtopiopsService              utopiopsService.UtopiopsService
-	InteractionsResponseChannels map[int]chan models.InteractionResponse
+	InteractionsResponseChannels map[int]*ResponseChannel
 }
 
 func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.QueueService, intgService integrationService.IntegrationService, utoService utopiopsService.UtopiopsService) ExecutionService {
@@ -49,7 +55,7 @@ func NewExecutionService(store pipelineStore.PipelineStore, queue queueService.Q
 		QueueService:                 queue,
 		IntegrationService:           intgService,
 		UtopiopsService:              utoService,
-		InteractionsResponseChannels: make(map[int](chan models.InteractionResponse)),
+		InteractionsResponseChannels: make(map[int]*ResponseChannel),
 	}
 }
 

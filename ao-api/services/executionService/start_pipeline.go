@@ -59,7 +59,10 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return -1, err
 	}
 	if pipeline.IsInteraction {
-		manager.InteractionsResponseChannels[executionId] = make(chan models.InteractionResponse, 1)
+		manager.InteractionsResponseChannels[executionId] = &ResponseChannel{
+			Channel: make(chan models.InteractionResponse, 1),
+		}
+
 	}
 
 	err = manager.QueueService.AddUser(accountId)
@@ -75,9 +78,9 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 	}
 	//return manager.getResponse(executionId)
 	//log.Println(manager.InteractionsResponseChannels)
-	response := <-manager.InteractionsResponseChannels[executionId]
+	response := <-manager.InteractionsResponseChannels[executionId].Channel
 	//fmt.Println("TSSSSSSSSSSSSSSSSSSSSSSSSSSS")
-	close(manager.InteractionsResponseChannels[executionId])
+	close(manager.InteractionsResponseChannels[executionId].Channel)
 	delete(manager.InteractionsResponseChannels, executionId)
 	return response, nil
 }

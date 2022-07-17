@@ -77,7 +77,10 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			if chann == nil {
 				return errors.New("no channel for this execution")
 			}
-			manager.InteractionsResponseChannels[executionId] <- manager.getInteractionResponse(executionId, accountId, task)
+			res := manager.getInteractionResponse(executionId, accountId, task)
+			chann.MuLock.Lock()
+			chann.Channel <- res
+			chann.MuLock.Unlock()
 			err = manager.Store.SetExecutionDone(noContext, executionId)
 			if err != nil {
 				return err

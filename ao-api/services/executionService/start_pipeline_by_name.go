@@ -63,7 +63,9 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	}
 
 	if pipeline.IsInteraction {
-		manager.InteractionsResponseChannels[executionId] = make(chan models.InteractionResponse, 1)
+		manager.InteractionsResponseChannels[executionId] = &ResponseChannel{
+			Channel: make(chan models.InteractionResponse, 1),
+		}
 	}
 
 	// _ = redis.Execution{
@@ -102,8 +104,8 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		return gin.H{"id": executionId}, err
 	}
 	//return manager.getResponse(executionId)
-	response := <-manager.InteractionsResponseChannels[executionId]
-	close(manager.InteractionsResponseChannels[executionId])
+	response := <-manager.InteractionsResponseChannels[executionId].Channel
+	close(manager.InteractionsResponseChannels[executionId].Channel)
 	delete(manager.InteractionsResponseChannels, executionId)
 	return response, nil
 	//return manager.getResponse(executionId)
