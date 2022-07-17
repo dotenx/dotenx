@@ -148,6 +148,18 @@ var migrations = []struct {
 		name: "update-nill-tpAccountId-field",
 		stmt: updateNillTpAccountId,
 	},
+	{
+		name: "add_is_execution_done-field",
+		stmt: addIsExecDone,
+	},
+	{
+		name: "update_is_execution_done-field",
+		stmt: updateIsExecutionDone,
+	},
+	{
+		name: "update_nil_is_execution_done-field",
+		stmt: updateNilIsExecutionDone,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -309,6 +321,18 @@ SET DEFAULT 'no third party user';`
 var updateNillTpAccountId = `
 UPDATE executions
 SET tp_account_id= 'no third party user';`
+
+var addIsExecDone = `ALTER TABLE executions
+ADD COLUMN IF NOT EXISTS is_execution_done BOOLEAN;`
+
+var updateIsExecutionDone = `
+ALTER TABLE executions
+ALTER COLUMN is_execution_done
+SET DEFAULT FALSE;`
+
+var updateNilIsExecutionDone = `
+UPDATE executions
+SET is_execution_done = FALSE;`
 
 var addExectuionTime = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
