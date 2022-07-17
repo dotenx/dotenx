@@ -1,7 +1,7 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
 import { useQuery } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
@@ -85,7 +85,12 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 
 	return (
 		<>
-			<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
+			<div className="flex gap-2">
+				<Button component={Link} to="user-groups">
+					User Groups
+				</Button>
+				<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
+			</div>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
 					<Endpoint
