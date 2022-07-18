@@ -1,11 +1,18 @@
 package crudService
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/miniTasks"
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
@@ -169,6 +176,65 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 					}
 					body[key] = val
 				}
+			}
+		}
+		if task.Type == "Run node code" || task.Type == "Run mini tasks" {
+			var code, dependency string
+			if task.Type == "Run mini tasks" {
+				importStore := miniTasks.NewImportStore()
+				body := make(map[string]interface{})
+				bodyVal, _ := task.Body.Value()
+				_ = json.Unmarshal(bodyVal.([]byte), &body)
+				parsed := body["tasks"].(map[string]interface{})
+				gcode, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
+				if err != nil {
+					return nil, err
+				}
+				code = fmt.Sprintf("module.exports = () => {\n%s\n}", gcode)
+				dependency = "{}"
+			} else {
+				body := make(map[string]interface{})
+				bodyVal, _ := task.Body.Value()
+				_ = json.Unmarshal(bodyVal.([]byte), &body)
+				code = body["code"].(string)
+				dependency = body["dependency"].(string)
+			}
+			log.Println("code:", code)
+			log.Println("dependency:", dependency)
+			codeMd5Hashed := md5.Sum([]byte(code))
+			dependencyMd5Hashed := md5.Sum([]byte(dependency))
+			codeFileName := fmt.Sprintf("%x", codeMd5Hashed) + "_code"
+			dependencyFileName := fmt.Sprintf("%x", dependencyMd5Hashed) + "_dependency"
+
+			// upload file to s3
+			sess, err := session.NewSession(&aws.Config{
+				Region: aws.String("us-east-1")}, // todo: use a variable for this
+			)
+			if err != nil {
+				return nil, err
+			}
+			bucketName := "dotenx" // Todo: use a variable for this
+
+			// Setup the S3 Upload Manager. Also see the SDK doc for the Upload Manager
+			// for more information on configuring part size, and concurrency.
+			//
+			// http://docs.aws.amazon.com/sdk-for-go/api/service/s3/s3manager/#NewUploader
+			uploader := s3manager.NewUploader(sess)
+			_, err = uploader.Upload(&s3manager.UploadInput{
+				Bucket: aws.String(bucketName),
+				Key:    aws.String(codeFileName),
+				Body:   bytes.NewReader([]byte(code)),
+			})
+			if err != nil {
+				return nil, err
+			}
+			_, err = uploader.Upload(&s3manager.UploadInput{
+				Bucket: aws.String(bucketName),
+				Key:    aws.String(dependencyFileName),
+				Body:   bytes.NewReader([]byte(dependency)),
+			})
+			if err != nil {
+				return nil, err
 			}
 		}
 	}
