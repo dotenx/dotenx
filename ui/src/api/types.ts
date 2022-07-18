@@ -28,6 +28,7 @@ export enum QueryKey {
 	GetTemplateEndpointFields = 'get-template-endpoint-fields',
 	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
 	GetProfile = 'get-profile',
+	GetUserGroups = 'get-user-groups',
 }
 
 export enum TaskExecutionStatus {
@@ -298,6 +299,7 @@ export type GetUserManagementDataResponse = {
 	created_at: string
 	email: string
 	fullname: string
+	user_group: string
 }[]
 
 export type GetProjectResponse = Project & { tag: string }
@@ -361,3 +363,16 @@ export type UpdateRecordRequest = TableRecord
 export type GetProfileResponse = {
 	account_id: string
 }
+
+export type CreateUserGroupRequest = {
+	name: string
+	select: Record<string, string>
+	update: Record<string, string>
+	delete: Record<string, string>
+}
+
+export type GetUserGroupsResponse = Record<string, UserGroup>
+
+export type UserGroup = Record<string, string[]>
+
+export type UpdateUserGroupRequest = CreateUserGroupRequest

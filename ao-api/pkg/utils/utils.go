@@ -14,8 +14,10 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func FailOnError(err error, msg string) {
@@ -204,6 +206,17 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	return
 }
 
+// HashPassword function hashes a plain text password with bcrypt package and return result
+func HashPassword(password string) (hashedPassword string, err error) {
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.New("unable to hash password")
+	}
+
+	hashedPassword = string(hashedPasswordBytes)
+	return
+}
+
 func ContainsString(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {
@@ -230,4 +243,36 @@ func ShouldRedirectWithError(ctx *gin.Context, err error, url string) bool {
 		return true
 	}
 	return false
+}
+
+func CheckPermission(action, tableName string, userGroup *models.UserGroup) bool {
+	list := map[string]string{}
+	switch action {
+	case "select":
+		list = userGroup.Select
+	case "insert":
+		list = userGroup.Insert
+	case "update":
+		list = userGroup.Update
+	case "delete":
+		list = userGroup.Delete
+	default:
+		return false
+	}
+	if _, ok := list["*"]; ok {
+		return true
+	}
+	_, ok := list[tableName]
+	return ok
+}
+
+func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
+	tokenType, _ := c.Get("tokenType")
+	if tokenType == "tp" {
+		accId, _ := c.Get("tpAccountId")
+		tpAccountId = fmt.Sprintf("%v", accId)
+	} else {
+		return "", errors.New("no tpAccountId have been set")
+	}
+	return tpAccountId, nil
 }
