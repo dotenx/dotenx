@@ -120,7 +120,13 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBodyValue = string | FromSource | string[] | FormatterBody | null
+export type TaskBodyValue =
+	| string
+	| FromSource
+	| string[]
+	| FormatterBody
+	| null
+	| { prop: string; steps: BuilderStep[] }
 
 export type TaskBody = Record<string, TaskBodyValue>
 
@@ -360,4 +366,48 @@ export type UpdateRecordRequest = TableRecord
 
 export type GetProfileResponse = {
 	account_id: string
+}
+
+interface Assignment {
+	name: string
+	value: string
+}
+
+interface Conditional {
+	branches: { condition: string; body: BuilderStep[] }[]
+	elseBranch: BuilderStep[]
+}
+
+interface Repeat {
+	count: string
+	iterator: string
+	body: BuilderStep[]
+}
+
+interface Foreach {
+	collection: string
+	iterator: string
+	body: BuilderStep[]
+}
+
+interface FunctionCall {
+	name: string
+	arguments: string[]
+}
+
+interface OutputParams {
+	value: string
+}
+
+export type BuilderStep =
+	| { type: 'assignment'; params: Assignment }
+	| { type: 'if'; params: Conditional }
+	| { type: 'repeat'; params: Repeat }
+	| { type: 'foreach'; params: Foreach }
+	| { type: 'function_call'; params: FunctionCall }
+	| { type: 'output'; params: OutputParams }
+
+export type TaskBuilder = {
+	prop: string
+	steps: BuilderStep[]
 }

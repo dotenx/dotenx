@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
 	AutomationKind,
+	BuilderStep,
 	createAutomation,
 	Manifest,
 	QueryKey,
@@ -15,6 +16,7 @@ import {
 	Trigger,
 	Triggers,
 } from '../../api'
+import { BuilderSteps } from '../../internal/task-builder'
 import { flowAtom } from '../atoms'
 import { EdgeData, TaskNodeData } from '../flow'
 import { NodeType } from '../flow/types'
@@ -92,7 +94,7 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 				} else {
 					body[key] = taskOtherValue.data
 				}
-			} else {
+			} else if ('fn' in taskOtherValue) {
 				body[key] = {
 					formatter: {
 						format_str: '$1',
@@ -108,6 +110,8 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 						},
 					},
 				}
+			} else {
+				body[key] = { prop: 'value', steps: normalizeBuilderSteps(taskOtherValue) }
 			}
 		}
 		node.data.vars?.forEach((variable) => {
@@ -153,4 +157,60 @@ function mapElementsToTriggers(elements: Elements<TaskNodeData | EdgeData>) {
 	const automationTriggers: Triggers = {}
 	triggers.forEach((trigger) => (automationTriggers[trigger.name] = trigger))
 	return automationTriggers
+}
+
+function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
+	return steps.map((step) => {
+		switch (step.type) {
+			case 'assignment':
+				return {
+					type: step.type,
+					params: { name: step.params.name.data, value: step.params.value.data },
+				}
+			case 'function_call':
+				return {
+					type: step.type,
+					params: {
+						name: step.params.fnName,
+						arguments: step.params.arguments.map((arg) => arg.data),
+					},
+				}
+			case 'foreach':
+				return {
+					type: step.type,
+					params: {
+						collection: step.params.collection.data,
+						iterator: step.params.iterator.data,
+						body: normalizeBuilderSteps(step.params.body),
+					},
+				}
+			case 'if':
+				return {
+					type: step.type,
+					params: {
+						branches: step.params.branches.map((branch) => ({
+							condition: branch.condition.data,
+							body: normalizeBuilderSteps(branch.body),
+						})),
+						elseBranch: normalizeBuilderSteps(step.params.elseBranch),
+					},
+				}
+			case 'repeat':
+				return {
+					type: step.type,
+					params: {
+						count: step.params.count.data,
+						iterator: step.params.iterator.data,
+						body: normalizeBuilderSteps(step.params.body),
+					},
+				}
+			case 'output':
+				return {
+					type: step.type,
+					params: {
+						value: step.params.value.data,
+					},
+				}
+		}
+	})
 }
