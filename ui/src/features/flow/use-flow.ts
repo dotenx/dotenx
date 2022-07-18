@@ -13,7 +13,8 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { Arg, AutomationData, TaskBodyValue, Triggers } from '../../api'
+import { Arg, AutomationData, BuilderStep, TaskBodyValue, Triggers } from '../../api'
+import { BuilderSteps } from '../../internal/task-builder'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
@@ -147,7 +148,7 @@ function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
 	let complexFieldValue = {
 		type: InputOrSelectKind.Text,
 		data: '',
-	} as ComplexFieldValue | { value: string }[]
+	} as ComplexFieldValue | { value: string }[] | BuilderSteps
 	if (typeof fieldValue === 'string') {
 		complexFieldValue = { type: InputOrSelectKind.Text, data: fieldValue }
 	} else if (_.isArray(fieldValue)) {
@@ -159,13 +160,15 @@ function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
 			groupName: fieldValue.source,
 			iconUrl: '',
 		}
-	} else {
+	} else if ('formatter' in fieldValue) {
 		const fn = fieldValue.formatter.func_calls[1]
 		const args = fn?.args?.map(argToInputOrSelect)
 		complexFieldValue = { fn: fn?.func_name, args }
+	} else {
+		complexFieldValue = mapToUiTaskBuilder(fieldValue.steps)
 	}
 
-	return [fieldName, complexFieldValue] as [string, ComplexFieldValue]
+	return [fieldName, complexFieldValue] as [string, ComplexFieldValue | BuilderSteps]
 }
 
 const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
@@ -185,4 +188,66 @@ function mapTriggersToElements(triggers: Triggers | undefined) {
 	}))
 
 	return triggerNodes
+}
+
+function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
+	return steps.map((step) => {
+		switch (step.type) {
+			case 'assignment':
+				return {
+					type: step.type,
+					params: {
+						name: { type: InputOrSelectKind.Text, data: step.params.name },
+						value: { type: InputOrSelectKind.Text, data: step.params.value },
+					},
+				}
+			case 'function_call':
+				return {
+					type: step.type,
+					params: {
+						fnName: step.params.name,
+						arguments: step.params.arguments.map((arg) => ({
+							type: InputOrSelectKind.Text,
+							data: arg,
+						})),
+					},
+				}
+			case 'foreach':
+				return {
+					type: step.type,
+					params: {
+						collection: { type: InputOrSelectKind.Text, data: step.params.collection },
+						iterator: { type: InputOrSelectKind.Text, data: step.params.iterator },
+						body: mapToUiTaskBuilder(step.params.body),
+					},
+				}
+			case 'if':
+				return {
+					type: step.type,
+					params: {
+						branches: step.params.branches.map((branch) => ({
+							condition: { type: InputOrSelectKind.Text, data: branch.condition },
+							body: mapToUiTaskBuilder(branch.body),
+						})),
+						elseBranch: mapToUiTaskBuilder(step.params.elseBranch),
+					},
+				}
+			case 'repeat':
+				return {
+					type: step.type,
+					params: {
+						count: { type: InputOrSelectKind.Text, data: step.params.count },
+						iterator: { type: InputOrSelectKind.Text, data: step.params.iterator },
+						body: mapToUiTaskBuilder(step.params.body),
+					},
+				}
+			case 'output':
+				return {
+					type: step.type,
+					params: {
+						value: { type: InputOrSelectKind.Text, data: step.params.value },
+					},
+				}
+		}
+	})
 }

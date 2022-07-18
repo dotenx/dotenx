@@ -93,8 +93,13 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		if err != nil {
 			return err
 		}
-
 		jobDTO.Body = body
+
+		// convert 'Run mini tasks' to 'Run node code'
+		if task.Type == "Run mini tasks" {
+			jobDTO.PrepRunMiniTasks()
+		}
+
 		if task.Type == "Run node code" {
 			jobDTO.SetRunCodeFields()
 		}

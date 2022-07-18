@@ -1,0 +1,10 @@
+service: dotenx
+type: Run mini tasks
+image: code/node:lambda
+fields:
+    - key: tasks
+      type: text
+author: mohsen
+icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
+node_color: 2ECC71
+description: runs your mini tasks

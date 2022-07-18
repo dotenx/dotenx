@@ -114,7 +114,7 @@ function RawSelect({
 			</button>
 			<div className="absolute inset-x-0 z-10">
 				<Fade isOpen={isOpen}>
-					<div className="p-1 bg-white border rounded-lg shadow-md border-slate-300">
+					<div className="p-1 overflow-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300">
 						{loading && <Loader className="py-4" />}
 						{!loading && options.length === 0 && (
 							<div className="p-1.5 text-xs font-thin text-center">No options</div>

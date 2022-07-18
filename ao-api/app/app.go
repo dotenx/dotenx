@@ -13,6 +13,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
+	"github.com/dotenx/dotenx/ao-api/controllers/predefinedMiniTask"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
@@ -140,6 +141,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
+	predefinedMiniTaskController := predefinedMiniTask.PredefinedMiniTaskController{}
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService, OauthService: OauthService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
@@ -182,6 +184,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// Routes
 	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
+	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
 	execution := r.Group("/execution")
 	integration := r.Group("/integration")
@@ -199,6 +202,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)
 	tasks.GET("/:task_name/fields", predefinedController.GetFields)
+
+	// mini-tasks router
+	miniTasks.GET("", predefinedMiniTaskController.GetMiniTasks)
 
 	// pipeline router
 	// TODO: fix the type of the pipeline

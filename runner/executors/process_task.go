@@ -3,7 +3,9 @@ package executors
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"strings"
+	"time"
 
 	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/models"
@@ -22,7 +24,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 		processedTask.Details.Image = task.Body["image"].(string)
 		processedTask.Script = strings.Split(task.Body["script"].(string), " ")
 	} else {
-		// TODO: Check why this is a slice instead of a string
+		// Todo: Check why this is a slice instead of a string
 		envs := make([]string, 0)
 		for _, field := range task.MetaData.Fields {
 			if value, ok := task.Body[field.Key]; ok {
@@ -31,6 +33,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 					str := value.(string)
 					fileName := task.Workspace + "_" + field.Key
 
+					log.Println("File saving started:", time.Now())
 					// upload file to s3 (see dropbox upload file)
 					sess, err := session.NewSession(&aws.Config{
 						Region: aws.String("us-east-1")}, // todo: use a variable for this
@@ -52,6 +55,7 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 						fmt.Println(err)
 						return
 					}
+					log.Println("File saving ended:", time.Now())
 					fmt.Println("File saved successfully")
 
 					envVar = field.Key + "=" + fileName
