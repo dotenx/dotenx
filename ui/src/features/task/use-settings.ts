@@ -28,7 +28,7 @@ const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
 	integration: z.string().optional(),
-	others: z.record(complexValue).optional(),
+	others: z.record(complexValue.or(z.array(z.any()))).optional(),
 	vars: z.array(z.object({ key: z.string(), value: inputOrSelectValue })).optional(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })

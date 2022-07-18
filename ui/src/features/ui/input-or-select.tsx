@@ -12,7 +12,7 @@ export interface InputOrSelectProps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>
 	groups: GroupData[]
-	errors: FieldErrors
+	errors?: FieldErrors
 	placeholder?: string
 }
 
@@ -41,7 +41,7 @@ export function InputOrSelect({
 					/>
 				)}
 			/>
-			<FieldError errors={errors} name={name} />
+			{errors && <FieldError errors={errors} name={name} />}
 		</div>
 	)
 }
@@ -101,7 +101,7 @@ export function InputOrSelectRaw({
 						{label}
 					</label>
 				)}
-				{value.type === 'option' && (
+				{value.type === InputOrSelectKind.Option && (
 					<InputValueBox
 						value={value}
 						onClose={() =>

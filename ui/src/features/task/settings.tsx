@@ -1,11 +1,13 @@
-import { Button } from '@mantine/core'
+import { ActionIcon, Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
+import { isArray } from 'lodash'
 import { useEffect } from 'react'
 import { Control, FieldErrors, useFieldArray } from 'react-hook-form'
-import { IoAdd, IoClose } from 'react-icons/io5'
+import { IoAdd, IoArrowBack, IoClose } from 'react-icons/io5'
 import { FieldType } from '../../api'
-import { taskCodeState } from '../flow'
+import { TaskBuilder } from '../../internal/task-builder'
+import { taskBuilderState, taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
 import {
 	Description,
@@ -38,12 +40,18 @@ export function TaskSettingsWithIntegration({
 }: TaskSettingsWithIntegrationProps) {
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
-	const hasSecondPanel = isAddingIntegration || taskCode.isOpen
+	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
+	const hasSecondPanel = isAddingIntegration || taskCode.isOpen || taskBuilder.opened
 	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
+	const taskBuilderValues = taskForm.watch('others.tasks')
 
 	useEffect(() => {
-		if (taskForm.taskType) setIsAddingIntegration(false)
-	}, [setIsAddingIntegration, taskForm.taskType])
+		if (taskForm.taskType) {
+			setIsAddingIntegration(false)
+			setTaskCode({ isOpen: false })
+			setTaskBuilder({ opened: false })
+		}
+	}, [setIsAddingIntegration, setTaskBuilder, setTaskCode, taskForm.taskType])
 
 	return (
 		<div className={clsx('grid h-full', hasSecondPanel && 'grid-cols-2')}>
@@ -87,6 +95,26 @@ export function TaskSettingsWithIntegration({
 					}
 				/>
 			)}
+			{taskBuilder.opened && (
+				<div className="space-y-2">
+					<ActionIcon
+						type="button"
+						size="sm"
+						onClick={() => setTaskBuilder({ opened: false })}
+						title="Close task builder"
+					>
+						<IoArrowBack />
+					</ActionIcon>
+					<TaskBuilder
+						defaultValues={isArray(taskBuilderValues) ? taskBuilderValues : undefined}
+						onSubmit={(values) => {
+							taskForm.setValue(`others.tasks`, values.steps)
+							setTaskBuilder({ opened: false })
+						}}
+						otherTasksOutputs={taskForm.outputGroups}
+					/>
+				</div>
+			)}
 		</div>
 	)
 }
@@ -115,8 +143,10 @@ function TaskSettings({
 		tasksOptions,
 		taskTypesLoading,
 		taskFieldsLoading,
+		taskType,
 	} = taskForm
-	const setTaskCodeState = useSetAtom(taskCodeState)
+	const setTaskCode = useSetAtom(taskCodeState)
+	const setTaskBuilder = useSetAtom(taskBuilderState)
 	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
 
 	return (
@@ -137,21 +167,26 @@ function TaskSettings({
 				{taskFieldsLoading && <Loader className="py-4" />}
 				{taskFields.map((taskField) => {
 					const label = taskField.display_name || taskField.key
-					return getFieldComponent(taskField.type, {
-						key: `others.${taskField.key}`,
-						control: control,
-						errors: errors,
-						label: label,
-						name: `others.${taskField.key}`,
-						groups: outputGroups,
-						description: taskField.description,
-						onClick: () =>
-							setTaskCodeState({
-								isOpen: true,
-								key: taskField.key,
-								label: `Add ${label}`,
-							}),
-					})
+					return getFieldComponent(
+						taskField.type,
+						{
+							key: `others.${taskField.key}`,
+							control: control,
+							errors: errors,
+							label: label,
+							name: `others.${taskField.key}`,
+							groups: outputGroups,
+							description: taskField.description,
+							onClick: () =>
+								setTaskCode({
+									isOpen: true,
+									key: taskField.key,
+									label: `Add ${label}`,
+								}),
+							openBuilder: () => setTaskBuilder({ opened: true }),
+						},
+						taskType
+					)
 				})}
 				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
@@ -176,8 +211,20 @@ function TaskSettings({
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: ComplexFieldProps & { key: string; onClick: () => void; description: string }
+	props: ComplexFieldProps & {
+		key: string
+		onClick: () => void
+		description: string
+	} & { openBuilder: () => void },
+	type: string
 ) => {
+	if (type === 'Run mini tasks')
+		return (
+			<Button key={props.key} type="button" onClick={props.openBuilder}>
+				Build A Task
+			</Button>
+		)
+
 	switch (kind) {
 		case FieldType.Text:
 			return (
