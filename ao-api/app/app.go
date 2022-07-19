@@ -303,8 +303,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	profile.GET("", profileController.GetProfile())
 
-	profile.GET("", profileController.GetProfile())
-
 	go TriggerServic.StartChecking(IntegrationStore)
 	go TriggerServic.StartScheduller()
 	return r
