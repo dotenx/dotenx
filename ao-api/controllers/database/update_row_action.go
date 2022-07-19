@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -45,8 +46,9 @@ func (dc *DatabaseController) UpdateRow() gin.HandlerFunc {
 			})
 			return
 		}
+		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 
-		if err := dc.Service.UpdateRow(projectTag, tableName, id, dto); err != nil {
+		if err := dc.Service.UpdateRow(tpAccountId, projectTag, tableName, id, dto); err != nil {
 			log.Println("err:", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": err.Error(),

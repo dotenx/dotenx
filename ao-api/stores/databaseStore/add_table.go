@@ -10,7 +10,8 @@ import (
 
 var addTable = `
 CREATE TABLE IF NOT EXISTS %s (
-	id SERIAL PRIMARY KEY
+	id SERIAL PRIMARY KEY,
+	creator_id VARCHAR(64)
 )
 `
 

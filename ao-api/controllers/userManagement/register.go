@@ -26,6 +26,7 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var userInfo models.ThirdUser
 		userInfo.AccountId = uuid.New().String()
+		userInfo.UserGroup = "users"
 		projectTag := ctx.Param("tag")
 		if err := ctx.ShouldBindJSON(&userInfo); err != nil || userInfo.Email == "" || userInfo.Password == "" || projectTag == "" {
 			log.Println(err)

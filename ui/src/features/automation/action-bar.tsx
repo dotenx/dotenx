@@ -13,7 +13,7 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline
+	IoTrashOutline,
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'

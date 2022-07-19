@@ -1,6 +1,7 @@
 package userManagement
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -43,6 +44,7 @@ func (umc *UserManagementController) Login() gin.HandlerFunc {
 				})
 				return
 			}
+			log.Println("err:", err)
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}

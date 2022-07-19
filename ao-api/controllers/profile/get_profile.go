@@ -14,7 +14,7 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 		resp["account_id"] = accountId
 		if tokenType, exist := c.Get("tokenType"); exist {
 			if tokenType == "tp" {
-				tpAccountId, _ := c.Get("tpAccountId")
+				tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 				resp["tp_account_id"] = tpAccountId
 			}
 		}

@@ -30,6 +30,9 @@ func (ps *projectService) AddProject(accountId string, project models.Project) e
 	pingErr := db.Connection.Ping()
 	log.Println("pingErr:", pingErr)
 	defer closeFunc(db.Connection)
+	if err := ps.TpUserStore.CreateUserGroupTable(db); err != nil {
+		return err
+	}
 	if err := ps.TpUserStore.CreateUserInfoTable(db); err != nil {
 		return err
 	}

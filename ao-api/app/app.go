@@ -133,10 +133,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic, IntegrationService)
-	DatabaseService := databaseService.NewDatabaseService(DatabaseStore)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
+	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
 
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
@@ -179,6 +179,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware())
+	} else {
+		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
 	// Routes
@@ -193,6 +195,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project := r.Group("/project")
 	database := r.Group("/database")
 	profile := r.Group("/profile")
+	userGroupManagement := r.Group("/user/group/management")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -288,6 +291,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
 	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
+	// database userGroups
+	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
+
+	// user group management router (with authentication)
+	userGroupManagement.POST("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.CreateUserGroup())
+	userGroupManagement.PUT("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.UpdateUserGroup())
+	userGroupManagement.GET("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.GetUserGroups())
+	userGroupManagement.DELETE("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.DeleteUserGroup())
+	userGroupManagement.POST("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetUserGroup())
 
 	profile.GET("", profileController.GetProfile())
 
