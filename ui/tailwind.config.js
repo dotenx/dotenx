@@ -4,7 +4,7 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				body: ['Montserrat', 'sans-serif'],
-				mono: ["'Roboto Mono'", 'monospace']
+				mono: ["'Roboto Mono'", 'monospace'],
 			},
 			animation: {
 				path: 'dash 5s linear infinite',
@@ -19,5 +19,5 @@ module.exports = {
 		},
 	},
 	plugins: [require('tailwind-scrollbar')],
-	darkMode: "class"
+	darkMode: 'class',
 }

@@ -22,6 +22,10 @@ var insertRow = `
 INSERT INTO %s (%s) VALUES (%s)
 `
 
+// var insertCreatorId = `
+// INSERT INTO %s (creator_id) VALUES ($1)
+// `
+
 func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error {
 	fmt.Println("here")
 
@@ -48,6 +52,12 @@ func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, table
 		log.Println("Error getting database connection:", err)
 		return err
 	}
+
+	// _, err = db.Connection.Exec(fmt.Sprintf(insertCreatorId, tableName), row["creator_id"])
+	// if err != nil {
+	// 	log.Println("Error inserting to creator_id column:", err)
+	// 	return err
+	// }
 
 	var cb strings.Builder
 	var pb strings.Builder

@@ -31,8 +31,8 @@ func (controller *OauthController) ThirdPartyOAuth(c *gin.Context) {
 	}
 	goth.UseProviders(*gothProvider)
 
-	tpAccountId, exist := c.Get("tpAccountId")
-	if !exist {
+	tpAccountId, err := utils.GetThirdPartyAccountId(c)
+	if err != nil {
 		err = errors.New("can't authorize you (we missed your token)")
 		utils.CheckErrorExist(c, err, http.StatusUnauthorized)
 		return

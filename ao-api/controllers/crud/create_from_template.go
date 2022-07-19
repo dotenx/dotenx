@@ -23,10 +23,10 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 		}
 		var tpAccountId string
 		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
-			accId, _ := c.Get("tpAccountId")
+			accId, _ := utils.GetThirdPartyAccountId(c)
 			tpAccountId = fmt.Sprintf("%v", accId)
 		} else if config.Configs.App.RunLocally {
-			tpAccountId = "123456"
+			tpAccountId = "tp-123456"
 		}
 		if tpAccountId == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
