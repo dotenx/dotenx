@@ -12,10 +12,10 @@ import (
 
 // We first convert this to a parameterized query and then execute it with the values
 var deleteRow = `
-DELETE FROM %s WHERE id = $1
+DELETE FROM %s WHERE id = $1 %s;
 `
 
-func (ds *databaseStore) DeleteRow(ctx context.Context, projectTag string, tableName string, id int) error {
+func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int) error {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
@@ -41,7 +41,12 @@ func (ds *databaseStore) DeleteRow(ctx context.Context, projectTag string, table
 		return err
 	}
 
-	stmt := fmt.Sprintf(deleteRow, tableName)
+	checkSecurityStmt := ""
+	if useRowLevelSecurity && tpAccountId != "" {
+		checkSecurityStmt = fmt.Sprintf(" AND creator_id = '%s'", tpAccountId)
+	}
+
+	stmt := fmt.Sprintf(deleteRow, tableName, checkSecurityStmt)
 	fmt.Println("stmt:", stmt)
 
 	_, err = db.Connection.Exec(stmt, id)

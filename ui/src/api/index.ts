@@ -7,6 +7,7 @@ import {
 	CreateProjectRequest,
 	CreateTableRequest,
 	CreateTriggerRequest,
+	CreateUserGroupRequest,
 	EndpointFields,
 	Execution,
 	GetAutomationExecutionsResponse,
@@ -33,10 +34,12 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
 	Provider,
 	StartAutomationRequest,
 	UpdateRecordRequest,
+	UpdateUserGroupRequest,
 } from './types'
 export * from './types'
 
@@ -243,7 +246,7 @@ export function getColumns(projectName: string, tableName: string) {
 export function getUserManagementData(projectTag: string) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
-		{ columns: ['account_id', 'created_at', 'email', 'fullname'] }
+		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] }
 	)
 }
 
@@ -282,4 +285,22 @@ export function updateRecord(
 
 export function getProfile() {
 	return api.get<GetProfileResponse>('/profile')
+}
+
+export function createUserGroup(projectTag: string, payload: CreateUserGroupRequest) {
+	return api.post<void>(`/user/group/management/project/${projectTag}/userGroup`, payload)
+}
+
+export function updateUserGroup(projectTag: string, payload: UpdateUserGroupRequest) {
+	return api.put<void>(`/user/group/management/project/${projectTag}/userGroup`, payload)
+}
+
+export function getUserGroups(projectTag: string) {
+	return api.get<GetUserGroupsResponse>(`/user/group/management/project/${projectTag}/userGroup`)
+}
+
+export function deleteUserGroup(projectTag: string, userGroupName: string) {
+	return api.delete(
+		`/user/group/management/project/${projectTag}/userGroup/name/${userGroupName}`
+	)
 }
