@@ -395,6 +395,7 @@ interface Foreach {
 interface FunctionCall {
 	name: string
 	arguments: string[]
+	output?: string
 }
 
 interface OutputParams {
