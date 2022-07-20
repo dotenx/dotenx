@@ -1,6 +1,5 @@
 import { ActionIcon, Button, Divider } from '@mantine/core'
 import { useDisclosure, useToggle } from '@mantine/hooks'
-import _ from 'lodash'
 import { FormProvider, useFieldArray, useForm, useFormContext } from 'react-hook-form'
 import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from 'react-icons/io5'
 import { useQuery } from 'react-query'
@@ -47,6 +46,20 @@ interface OutputParams {
 	value: InputOrSelectValue
 }
 
+interface VarDeclaration {
+	name: InputOrSelectValue
+}
+
+const stepTypes = [
+	'assignment',
+	'if',
+	'repeat',
+	'foreach',
+	'function_call',
+	'output',
+	'var_declaration',
+] as const
+
 export type Step =
 	| { type: 'assignment'; params: Assignment }
 	| { type: 'if'; params: Conditional }
@@ -54,6 +67,7 @@ export type Step =
 	| { type: 'foreach'; params: Foreach }
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
+	| { type: 'var_declaration'; params: VarDeclaration }
 
 export type TaskBuilderValues = {
 	prop: string
@@ -62,12 +76,15 @@ export type TaskBuilderValues = {
 
 export type BuilderSteps = Step[]
 
-const stepTypes = ['assignment', 'if', 'repeat', 'foreach', 'function_call', 'output'] as const
-
-const stepTypeOptions = stepTypes.map((type) => ({
-	label: _.capitalize(type.split('_').join(' ')),
-	value: type,
-}))
+const stepTypeOptions = [
+	{ label: 'Assignment', value: 'assignment' },
+	{ label: 'If', value: 'if' },
+	{ label: 'Repeat', value: 'repeat' },
+	{ label: 'Foreach', value: 'foreach' },
+	{ label: 'Function Call', value: 'function_call' },
+	{ label: 'Output', value: 'output' },
+	{ label: 'Variable Declaration', value: 'var_declaration' },
+]
 
 const getStepTypeLabel = (type: typeof stepTypes[number]) =>
 	stepTypeOptions.find((option) => option.value === type)?.label ?? ''
@@ -106,9 +123,9 @@ export function TaskBuilder({
 			<Button type="button" variant="light" className="self-end" onClick={() => toggleView()}>
 				{view === 'detailed' ? 'Summary' : 'Detailed'}
 			</Button>
-			<div hidden={view === 'summary'}>
-				<FormProvider {...form}>
-					<Form onSubmit={handleSubmit}>
+			<FormProvider {...form}>
+				<Form onSubmit={handleSubmit}>
+					<div hidden={view === 'summary'}>
 						{/* TODO: pass `otherTasksOutputs` when backend can handle it */}
 						<Steps
 							name="steps"
@@ -116,11 +133,11 @@ export function TaskBuilder({
 							otherTasksOutputs={[] ?? otherTasksOutputs}
 							prefixNumber=""
 						/>
-						<Button type="submit">Save Task</Button>
-					</Form>
-				</FormProvider>
-			</div>
-			{view === 'summary' && <StepsSummary steps={values.steps} prefixNumber="" />}
+					</div>
+					{view === 'summary' && <StepsSummary steps={values.steps} prefixNumber="" />}
+					<Button type="submit">Save Task</Button>
+				</Form>
+			</FormProvider>
 		</div>
 	)
 }
@@ -156,7 +173,7 @@ function Steps({
 						type="button"
 						title="Add step"
 						size="xs"
-						onClick={() => stepsFieldArray.insert(index, defaultStep)}
+						onClick={() => stepsFieldArray.insert(index + 1, defaultStep)}
 					>
 						<IoAdd />
 					</ActionIcon>
@@ -245,6 +262,9 @@ function Step({
 				)}
 				{step?.type === 'output' && (
 					<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
+				{step?.type === 'var_declaration' && (
+					<VarDeclarationFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
 			</div>
 		</div>
@@ -510,11 +530,31 @@ function OutputFields({
 	)
 }
 
+function VarDeclarationFields({
+	name,
+	otherTasksOutputs,
+}: {
+	name: string
+	otherTasksOutputs: GroupData[]
+}) {
+	const { control } = useFormContext()
+
+	return (
+		<InputOrSelect
+			label="Name"
+			name={`${name}.name`}
+			control={control}
+			groups={otherTasksOutputs}
+		/>
+	)
+}
+
 function TopActionBar({
 	label,
 	opened,
 	toggle,
 	onRemove,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	number,
 }: {
 	label: string
@@ -526,7 +566,7 @@ function TopActionBar({
 	return (
 		<div className="flex justify-between">
 			<div className="px-1">
-				<span className="text-xs font-black">{number} </span>
+				{/* <span className="text-xs font-black">{number} </span> */}
 				{!opened && <span className="text-sm">{label}</span>}
 			</div>
 			<div className="flex gap-0.5 justify-end">
