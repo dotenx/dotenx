@@ -1,5 +1,5 @@
-import { ActionIcon, Button, Divider, Text } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { ActionIcon, Button, Divider } from '@mantine/core'
+import { useDisclosure, useToggle } from '@mantine/hooks'
 import _ from 'lodash'
 import { FormProvider, useFieldArray, useForm, useFormContext } from 'react-hook-form'
 import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from 'react-icons/io5'
@@ -14,6 +14,7 @@ import {
 	NewSelect,
 } from '../features/ui'
 import { getTaskBuilderFunctions, InternalQueryKey } from './internal-api'
+import { StepsSummary } from './steps-summary'
 
 interface Assignment {
 	name: InputOrSelectValue
@@ -46,7 +47,7 @@ interface OutputParams {
 	value: InputOrSelectValue
 }
 
-type Step =
+export type Step =
 	| { type: 'assignment'; params: Assignment }
 	| { type: 'if'; params: Conditional }
 	| { type: 'repeat'; params: Repeat }
@@ -95,15 +96,32 @@ export function TaskBuilder({
 	const values = form.watch()
 	const steps = values.steps
 	const handleSubmit = form.handleSubmit((values) => onSubmit(values))
+	const [view, toggleView] = useToggle<'detailed' | 'summary'>('detailed', [
+		'detailed',
+		'summary',
+	])
 
 	return (
-		<FormProvider {...form}>
-			<Form onSubmit={handleSubmit}>
-				{/* TODO: pass `otherTasksOutputs` when backend can handle it */}
-				<Steps name="steps" steps={steps} otherTasksOutputs={[] ?? otherTasksOutputs} />
-				<Button type="submit">Save Task</Button>
-			</Form>
-		</FormProvider>
+		<div className="flex flex-col gap-4">
+			<Button type="button" variant="light" className="self-end" onClick={() => toggleView()}>
+				{view === 'detailed' ? 'Summary' : 'Detailed'}
+			</Button>
+			<div hidden={view === 'summary'}>
+				<FormProvider {...form}>
+					<Form onSubmit={handleSubmit}>
+						{/* TODO: pass `otherTasksOutputs` when backend can handle it */}
+						<Steps
+							name="steps"
+							steps={steps}
+							otherTasksOutputs={[] ?? otherTasksOutputs}
+							prefixNumber=""
+						/>
+						<Button type="submit">Save Task</Button>
+					</Form>
+				</FormProvider>
+			</div>
+			{view === 'summary' && <StepsSummary steps={values.steps} prefixNumber="" />}
+		</div>
 	)
 }
 
@@ -111,34 +129,52 @@ function Steps({
 	name,
 	steps,
 	otherTasksOutputs,
+	prefixNumber,
 }: {
 	name: string
 	steps: Step[]
 	otherTasksOutputs: GroupData[]
+	prefixNumber: string
 }) {
 	const { control } = useFormContext()
 	const stepsFieldArray = useFieldArray({ name, control })
-	const addStep = () => stepsFieldArray.append(defaultStep)
 
 	return (
 		<div>
 			{stepsFieldArray.fields.map((item, index) => (
-				<Step
-					key={item.id}
-					onRemove={() => stepsFieldArray.remove(index)}
-					step={steps[index]}
-					name={`${name}.${index}`}
-					otherTasksOutputs={otherTasksOutputs}
-				/>
+				<div key={item.id}>
+					<Step
+						number={`${prefixNumber}${index + 1}.`}
+						onRemove={() => stepsFieldArray.remove(index)}
+						step={steps[index]}
+						name={`${name}.${index}`}
+						otherTasksOutputs={otherTasksOutputs}
+					/>
+					<div className="w-0.5 h-3 mx-auto bg-gray-200" />
+					<ActionIcon
+						className="self-center mx-auto"
+						type="button"
+						title="Add step"
+						size="xs"
+						onClick={() => stepsFieldArray.insert(index, defaultStep)}
+					>
+						<IoAdd />
+					</ActionIcon>
+					{index !== stepsFieldArray.fields.length - 1 && (
+						<div className="w-0.5 h-3 mx-auto bg-gray-200" />
+					)}
+				</div>
 			))}
-			<ActionIcon
-				className="self-center mx-auto"
-				type="button"
-				title="Add step"
-				onClick={addStep}
-			>
-				<IoAdd />
-			</ActionIcon>
+			{stepsFieldArray.fields.length === 0 && (
+				<ActionIcon
+					className="self-center mx-auto"
+					type="button"
+					title="Add step"
+					onClick={() => stepsFieldArray.append(defaultStep)}
+				>
+					<IoAdd />
+				</ActionIcon>
+			)}
 		</div>
 	)
 }
@@ -148,69 +184,69 @@ function Step({
 	step,
 	onRemove,
 	otherTasksOutputs,
+	number,
 }: {
 	name: string
 	step: Step
 	onRemove: () => void
 	otherTasksOutputs: GroupData[]
+	number: string
 }) {
 	const { control } = useFormContext()
 	const paramsName = `${name}.params`
 	const [opened, handlers] = useDisclosure(true)
 
 	return (
-		<div>
-			<div className="border rounded">
-				<TopActionBar
-					label={getStepTypeLabel(step?.type)}
-					opened={opened}
-					toggle={handlers.toggle}
-					onRemove={onRemove}
+		<div className="border rounded">
+			<TopActionBar
+				number={number}
+				label={getStepTypeLabel(step?.type)}
+				opened={opened}
+				toggle={handlers.toggle}
+				onRemove={onRemove}
+			/>
+			<div className="px-6 pb-6 space-y-4" hidden={!opened}>
+				<NewSelect
+					label="Type"
+					name={`${name}.type`}
+					options={stepTypeOptions}
+					control={control}
 				/>
-				<div className="px-6 pb-6 space-y-4" hidden={!opened}>
-					<NewSelect
-						label="Type"
-						name={`${name}.type`}
-						options={stepTypeOptions}
-						control={control}
+				{step?.type === 'assignment' && (
+					<AssignmentFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
+				{step?.type === 'if' && (
+					<ConditionalFields
+						name={paramsName}
+						branches={step.params.branches?.map((branch) => branch.body)}
+						elseBranch={step.params.elseBranch}
+						otherTasksOutputs={otherTasksOutputs}
+						prefixNumber={number}
 					/>
-					{step?.type === 'assignment' && (
-						<AssignmentFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
-					)}
-					{step?.type === 'if' && (
-						<ConditionalFields
-							name={paramsName}
-							branches={step.params.branches?.map((branch) => branch.body)}
-							elseBranch={step.params.elseBranch}
-							otherTasksOutputs={otherTasksOutputs}
-						/>
-					)}
-					{step?.type === 'repeat' && (
-						<RepeatFields
-							name={paramsName}
-							body={step.params.body}
-							otherTasksOutputs={otherTasksOutputs}
-						/>
-					)}
-					{step?.type === 'foreach' && (
-						<ForeachFields
-							name={paramsName}
-							body={step.params.body}
-							otherTasksOutputs={otherTasksOutputs}
-						/>
-					)}
-					{step?.type === 'function_call' && (
-						<FunctionCallFields
-							name={paramsName}
-							otherTasksOutputs={otherTasksOutputs}
-						/>
-					)}
-					{step?.type === 'output' && (
-						<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
-					)}
-				</div>
+				)}
+				{step?.type === 'repeat' && (
+					<RepeatFields
+						name={paramsName}
+						body={step.params.body}
+						otherTasksOutputs={otherTasksOutputs}
+						prefixNumber={number}
+					/>
+				)}
+				{step?.type === 'foreach' && (
+					<ForeachFields
+						name={paramsName}
+						body={step.params.body}
+						otherTasksOutputs={otherTasksOutputs}
+						prefixNumber={number}
+					/>
+				)}
+				{step?.type === 'function_call' && (
+					<FunctionCallFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
+				{step?.type === 'output' && (
+					<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
 			</div>
-			<div className="w-1 h-6 mx-auto bg-gray-200" />
 		</div>
 	)
 }
@@ -247,11 +283,13 @@ function ConditionalFields({
 	branches,
 	elseBranch,
 	otherTasksOutputs,
+	prefixNumber,
 }: {
 	name: string
 	branches: Step[][]
 	elseBranch: Step[]
 	otherTasksOutputs: GroupData[]
+	prefixNumber: string
 }) {
 	const { control } = useFormContext()
 	const branchesFieldArray = useFieldArray({ name: `${name}.branches`, control })
@@ -270,6 +308,7 @@ function ConditionalFields({
 					body={branches[branchIndex]}
 					onRemove={() => branchesFieldArray.remove(branchIndex)}
 					otherTasksOutputs={otherTasksOutputs}
+					prefixNumber={prefixNumber}
 				/>
 			))}
 			<Button type="button" size="xs" onClick={addBranch}>
@@ -280,6 +319,7 @@ function ConditionalFields({
 				name={`${name}.elseBranch`}
 				steps={elseBranch}
 				otherTasksOutputs={otherTasksOutputs}
+				prefixNumber={prefixNumber}
 			/>
 		</div>
 	)
@@ -290,11 +330,13 @@ function Branch({
 	body,
 	onRemove,
 	otherTasksOutputs,
+	prefixNumber,
 }: {
 	name: string
 	body: Step[]
 	onRemove: () => void
 	otherTasksOutputs: GroupData[]
+	prefixNumber: string
 }) {
 	const { control } = useFormContext()
 
@@ -317,7 +359,12 @@ function Branch({
 					control={control}
 					groups={otherTasksOutputs}
 				/>
-				<Steps name={`${name}.body`} steps={body} otherTasksOutputs={otherTasksOutputs} />
+				<Steps
+					name={`${name}.body`}
+					steps={body}
+					otherTasksOutputs={otherTasksOutputs}
+					prefixNumber={prefixNumber}
+				/>
 			</div>
 		</div>
 	)
@@ -327,10 +374,12 @@ function RepeatFields({
 	name,
 	body,
 	otherTasksOutputs,
+	prefixNumber,
 }: {
 	name: string
 	body: Step[]
 	otherTasksOutputs: GroupData[]
+	prefixNumber: string
 }) {
 	const { control } = useFormContext()
 
@@ -348,7 +397,12 @@ function RepeatFields({
 				control={control}
 				groups={otherTasksOutputs}
 			/>
-			<Steps name={`${name}.body`} steps={body} otherTasksOutputs={otherTasksOutputs} />
+			<Steps
+				name={`${name}.body`}
+				steps={body}
+				otherTasksOutputs={otherTasksOutputs}
+				prefixNumber={prefixNumber}
+			/>
 		</div>
 	)
 }
@@ -357,10 +411,12 @@ function ForeachFields({
 	name,
 	body,
 	otherTasksOutputs,
+	prefixNumber,
 }: {
 	name: string
 	body: Step[]
 	otherTasksOutputs: GroupData[]
+	prefixNumber: string
 }) {
 	const { control } = useFormContext()
 
@@ -378,7 +434,12 @@ function ForeachFields({
 				control={control}
 				groups={otherTasksOutputs}
 			/>
-			<Steps name={`${name}.body`} steps={body} otherTasksOutputs={otherTasksOutputs} />
+			<Steps
+				name={`${name}.body`}
+				steps={body}
+				otherTasksOutputs={otherTasksOutputs}
+				prefixNumber={prefixNumber}
+			/>
 		</div>
 	)
 }
@@ -454,15 +515,20 @@ function TopActionBar({
 	opened,
 	toggle,
 	onRemove,
+	number,
 }: {
 	label: string
 	opened: boolean
 	toggle: () => void
 	onRemove: () => void
+	number: string
 }) {
 	return (
 		<div className="flex justify-between">
-			<div>{!opened && <Text size="sm">{label}</Text>}</div>
+			<div className="px-1">
+				<span className="text-xs font-black">{number} </span>
+				{!opened && <span className="text-sm">{label}</span>}
+			</div>
 			<div className="flex gap-0.5 justify-end">
 				<ActionIcon
 					color="gray"
