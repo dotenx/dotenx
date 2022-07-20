@@ -401,6 +401,10 @@ interface OutputParams {
 	value: string
 }
 
+interface VarDeclaration {
+	name: string
+}
+
 export type BuilderStep =
 	| { type: 'assignment'; params: Assignment }
 	| { type: 'if'; params: Conditional }
@@ -408,6 +412,7 @@ export type BuilderStep =
 	| { type: 'foreach'; params: Foreach }
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
+	| { type: 'var_declaration'; params: VarDeclaration }
 
 export type TaskBuilder = {
 	prop: string

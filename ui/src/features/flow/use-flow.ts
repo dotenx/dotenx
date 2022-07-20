@@ -248,6 +248,13 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 						value: { type: InputOrSelectKind.Text, data: step.params.value },
 					},
 				}
+			case 'var_declaration':
+				return {
+					type: step.type,
+					params: {
+						name: { type: InputOrSelectKind.Text, data: step.params.name },
+					},
+				}
 		}
 	})
 }

@@ -3,12 +3,18 @@ import { Step } from './task-builder'
 
 export function StepsSummary({ steps, prefixNumber }: { steps: Step[]; prefixNumber: string }) {
 	return (
-		<div className="mx-1 my-0.5 px-1 py-0.5 text-sm font-medium">
+		<div className="mx-1 my-0.5 px-1 py-0.5 text-sm font-medium bg-slate-900 text-slate-50 rounded">
 			{steps.map((step, index) => {
 				const number = `${prefixNumber}${index + 1}.`
 				return (
 					<div key={index} className="p-0.5 flex gap-1">
-						<span>{number}</span>
+						{/* <span>{number}</span> */}
+						{step.type === 'var_declaration' && (
+							<div>
+								<span className="italic">declare</span>{' '}
+								<Code>{step.params.name.data}</Code>
+							</div>
+						)}
 						{step.type === 'assignment' && (
 							<div>
 								<span className="italic">assign</span>{' '}
