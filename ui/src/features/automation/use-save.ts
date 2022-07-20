@@ -173,6 +173,7 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 					params: {
 						name: step.params.fnName,
 						arguments: step.params.arguments.map((arg) => arg.data),
+						output: step.params.output.data || undefined,
 					},
 				}
 			case 'foreach':
