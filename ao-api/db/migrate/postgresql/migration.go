@@ -29,6 +29,10 @@ var migrations = []struct {
 		stmt: createTableTasks,
 	},
 	{
+		name: "add-aws-lambda-field-to-tasks",
+		stmt: addAwsLambdaFieldToTasks,
+	},
+	{
 		name: "create-table-task-preconditions",
 		stmt: createTableTaskPreconditions,
 	},
@@ -265,6 +269,11 @@ body											JSONB,
 timeout                                         INT NOT NULL default 30,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 )
+`
+
+var addAwsLambdaFieldToTasks = `
+ALTER TABLE tasks
+ADD COLUMN IF NOT EXISTS aws_lambda varchar(64);
 `
 
 var createTableTaskPreconditions = `

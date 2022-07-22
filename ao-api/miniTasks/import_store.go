@@ -35,7 +35,7 @@ func (i *ImportStore) AddImport(toImport string) {
 
 // a template to render all the imports
 
-const importTemplate = `{{range .Imports}}var {{.}}=require("/function/{{.}}")
+const importTemplate = `{{range .Imports}}var {{.}}=require("./functions/{{.}}")
 {{end}}`
 
 func (i *ImportStore) ToCode() (string, error) {

@@ -46,6 +46,8 @@ func convertStepToCode(step map[string]interface{}, importStore *ImportStore) (s
 		return convertRepeat(step, importStore)
 	case "output":
 		return convertOutput(step)
+	case "var_declaration":
+		return convertVarDeclaration(step)
 	default:
 		return "", fmt.Errorf("Unknown step type: %s", step["type"])
 	}

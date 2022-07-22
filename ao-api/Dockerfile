@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine AS go-build
+FROM golang:1.17-alpine AS go-build
 
 ENV GO111MODULE=on
 
@@ -17,12 +17,19 @@ COPY ./integrations ./integrations
 COPY ./ao-api .
 
 
-
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ao-api .
 
 FROM alpine:3.9.5 as dns
+
 RUN apk --no-cache add ca-certificates
+
+RUN apk update \
+    && apk add zip
+
+RUN apk add --update nodejs npm \
+  && npm --version
+
 WORKDIR /root/
 COPY --from=go-build /go/src/github.com/dotenx/dotenx/ao-api .
 ENTRYPOINT ["./ao-api"]

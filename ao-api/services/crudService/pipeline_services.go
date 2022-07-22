@@ -1,19 +1,23 @@
 package crudService
 
 import (
-	"bytes"
-	"crypto/md5"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/miniTasks"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	cp "github.com/otiai10/copy"
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
@@ -155,8 +159,9 @@ func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger,
 
 // checks tasks integration for templates and also change empty task field values to get value from run time data for interactions
 func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId string, isTemplate, isInteraction bool) (map[string]models.Task, error) {
-	//preparedTasks := make(map[string]models.Task)
-	for _, task := range tasks {
+	preparedTasks := make(map[string]models.Task)
+	for tName, task := range tasks {
+		pTask := task
 		if task.Integration != "" && (isInteraction || isTemplate) {
 			integration, err := cm.IntegrationService.GetIntegrationByName(accountId, task.Integration)
 			if err != nil {
@@ -201,42 +206,118 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 			}
 			log.Println("code:", code)
 			log.Println("dependency:", dependency)
-			codeMd5Hashed := md5.Sum([]byte(code))
-			dependencyMd5Hashed := md5.Sum([]byte(dependency))
-			codeFileName := fmt.Sprintf("%x", codeMd5Hashed) + "_code"
-			dependencyFileName := fmt.Sprintf("%x", dependencyMd5Hashed) + "_dependency"
+			functionName, err := createLambdaFunction(code, dependency)
+			if err != nil {
+				return nil, err
+			}
+			pTask.AwsLambda = functionName
+		}
+		preparedTasks[tName] = pTask
+	}
+	return preparedTasks, nil
+}
 
-			// upload file to s3
-			sess, err := session.NewSession(&aws.Config{
-				Region: aws.String("us-east-1")}, // todo: use a variable for this
-			)
-			if err != nil {
-				return nil, err
-			}
-			bucketName := "dotenx" // Todo: use a variable for this
+func createLambdaFunction(code, dependency string) (functionName string, err error) {
+	path, err := os.MkdirTemp("", "*")
+	if err != nil {
+		log.Println(err.Error())
+		return "", err
+	}
+	log.Println("Path is", path)
+	defer os.RemoveAll(path)
+	err = os.WriteFile(path+"/entry.js", []byte(code), 0777)
+	if err != nil {
+		return
+	}
+	err = os.WriteFile(path+"/package.json", []byte(dependency), 0777)
+	if err != nil {
+		return
+	}
+	// exec.Command("cd", path)
+	npmCmd := exec.Command("npm", "install")
+	npmCmd.Dir = path
+	npmOutput, err := npmCmd.Output()
+	if err != nil {
+		return
+	}
+	log.Println(string(npmOutput))
 
-			// Setup the S3 Upload Manager. Also see the SDK doc for the Upload Manager
-			// for more information on configuring part size, and concurrency.
-			//
-			// http://docs.aws.amazon.com/sdk-for-go/api/service/s3/s3manager/#NewUploader
-			uploader := s3manager.NewUploader(sess)
-			_, err = uploader.Upload(&s3manager.UploadInput{
-				Bucket: aws.String(bucketName),
-				Key:    aws.String(codeFileName),
-				Body:   bytes.NewReader([]byte(code)),
-			})
-			if err != nil {
-				return nil, err
-			}
-			_, err = uploader.Upload(&s3manager.UploadInput{
-				Bucket: aws.String(bucketName),
-				Key:    aws.String(dependencyFileName),
-				Body:   bytes.NewReader([]byte(dependency)),
-			})
-			if err != nil {
-				return nil, err
-			}
+	err = cp.Copy("pkg/utils/functions", path+"/functions", cp.Options{AddPermission: os.FileMode(int(0777))})
+	if err != nil {
+		return
+	}
+
+	indexJs := `
+	exports.handler = async function (event) {
+		
+		console.log("event:", JSON.stringify(event));
+		
+		const filePath = event.code;
+		const dependenciesPath = event.dependency;
+		const resultEndpoint = event.RESULT_ENDPOINT;
+		const Aauthorization = event.AUTHORIZATION;
+		// Read function arguments from environment variables based on VARIABLE
+		const variables = (event.VARIABLES || '').split(',').map(v => event[v.trim()])
+	  
+		console.log("Function Arguments:", variables);
+
+		const f = require('entry.js');
+		const result = await f(...variables) || {};
+		
+		console.log("result set successfully")
+		return {
+		successfull: true,
+		status: "completed",
+		return_value: result
 		}
 	}
-	return tasks, nil
+	`
+	err = os.WriteFile(path+"/index.js", []byte(indexJs), 0777)
+	if err != nil {
+		return
+	}
+
+	chmodCmd := exec.Command("chmod", "-R", "777", ".")
+	chmodCmd.Dir = path
+	err = chmodCmd.Run()
+	if err != nil {
+		return
+	}
+
+	zipCmd := exec.Command("zip", "-r", "function.zip", ".")
+	zipCmd.Dir = path
+	_, err = zipCmd.Output()
+	if err != nil {
+		return
+	}
+
+	awsRegion := config.Configs.Secrets.AwsRegion
+	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
+	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config: aws.Config{
+			Region:      &awsRegion,
+			Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
+		},
+	}))
+
+	contents, err := ioutil.ReadFile(path + "/function.zip")
+	createCode := &lambda.FunctionCode{
+		//      S3Bucket:        bucket,
+		//      S3Key:           zipFile,
+		//      S3ObjectVersion: aws.String("1"),
+		ZipFile: contents,
+	}
+
+	functionName = "run-node-code-" + utils.RandStringRunes(8, utils.FullRunes)
+	createArgs := &lambda.CreateFunctionInput{
+		Code:         createCode,
+		FunctionName: &functionName,
+		Handler:      aws.String("index.handler"),
+		Role:         aws.String("arn:aws:iam::994147050565:role/lambda-ex"),
+		Runtime:      aws.String("nodejs16.x"),
+	}
+	svc := lambda.New(sess)
+	_, err = svc.CreateFunction(createArgs)
+	return functionName, err
 }

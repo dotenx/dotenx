@@ -16,7 +16,7 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 	case db.Postgres:
 		conn := ps.db.Connection
 		var body interface{}
-		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.Integration, &body, &task.Timeout, &task.AccountId)
+		err = conn.QueryRow(getTaskByExecution, executionId, taskId).Scan(&task.Id, &task.Name, &task.Type, &task.AwsLambda, &task.Integration, &body, &task.Timeout, &task.AccountId)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -33,7 +33,7 @@ func (ps *pipelineStore) GetTaskByExecution(context context.Context, executionId
 }
 
 var getTaskByExecution = `
-select t.id, t.name, t.task_type, t.integration, t.body, t.timeout, pv.account_id
+select t.id, t.name, t.task_type, t.aws_lambda, t.integration, t.body, t.timeout, pv.account_id
 from executions e
 join pipelines pv on e.pipeline_id = pv.id
 join tasks t on t.pipeline_id = pv.id

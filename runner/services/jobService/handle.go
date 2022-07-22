@@ -33,6 +33,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 	taskDetails := models.TaskDetails{
 		Name:           job.Data["name"].(string),
 		Type:           job.Data["type"].(string),
+		AwsLambda:      job.Data["aws_lambda"].(string),
 		Body:           job.Data["body"].(map[string]interface{}),
 		Image:          job.Data["image"].(string),
 		MetaData:       meta,
