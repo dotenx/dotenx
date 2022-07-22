@@ -17,7 +17,7 @@ type Repeat struct {
 	} `json:"params"`
 }
 
-const repeatTemplate = `for({{.Iterator}} = 0; {{.Iterator}} < {{.Count}}; {{.Iterator}}++) {
+const repeatTemplate = `for(var {{.Iterator}} = 0; {{.Iterator}} < {{.Count}}; {{.Iterator}}++) {
 {{.RenderedBody}}
 }`
 

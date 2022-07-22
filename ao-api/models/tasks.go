@@ -54,6 +54,7 @@ type TaskDetails struct {
 	Id          int
 	Timeout     int            `db:"timeout" json:"timeout"`
 	Type        string         `db:"task_type"`
+	AwsLambda   string         `db:"aws_lambda"`
 	Body        TaskBodyMap    `db:"body" json:"body"`
 	AccountId   string         `db:"account_id" json:"account_id"`
 	Integration string         `db:"integration" json:"integration"`
