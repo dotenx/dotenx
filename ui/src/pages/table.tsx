@@ -220,7 +220,7 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 			client.invalidateQueries(QueryKey.GetTableRecords)
 		},
 	})
-	const showDelete = name !== 'id'
+	const showDelete = name !== 'id' && name !== 'creator_id'
 
 	return (
 		<div className="flex items-center gap-2">
