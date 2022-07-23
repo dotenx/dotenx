@@ -14,7 +14,6 @@ func (umc *UserManagementController) GetUserGroups() gin.HandlerFunc {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-
 		groups, err := umc.Service.GetUserGroups(projectTag)
 		if err != nil {
 			log.Println(err.Error())

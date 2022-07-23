@@ -33,6 +33,7 @@ func (ps *projectService) AddProject(accountId string, project models.Project) e
 	if err := ps.TpUserStore.CreateUserGroupTable(db); err != nil {
 		return err
 	}
+	// TODO: set default user group for project
 	if err := ps.TpUserStore.CreateUserInfoTable(db); err != nil {
 		return err
 	}
