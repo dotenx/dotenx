@@ -282,8 +282,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
-	database.POST("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
-	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
+	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
+	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 	// database userGroups
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
