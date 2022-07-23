@@ -114,7 +114,7 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
-					<span className="text-sm transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
 						{item.label}
 					</span>
 				</NavItem>
