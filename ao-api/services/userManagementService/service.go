@@ -30,6 +30,8 @@ type UserManagementService interface {
 	CreateUserGroup(userGroup models.UserGroup, projectTag string) (err error)
 	DeleteUserGroup(userGroupName, projectTag string) (err error)
 	UpdateUserGroupList(userGroup models.UserGroup, projectTag string) (err error)
+	SetDefaultUserGroup(userGroupName, projectTag string) (err error)
+	GetDefaultUserGroup(projectTag string) (userGroup *models.UserGroup, err error)
 }
 
 type userManagementService struct {

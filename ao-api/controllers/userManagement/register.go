@@ -26,8 +26,6 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var userInfo models.ThirdUser
 		userInfo.AccountId = uuid.New().String()
-		// TODO : set user group based on project default user group
-		//userInfo.UserGroup = "users"
 		projectTag := ctx.Param("tag")
 		if err := ctx.ShouldBindJSON(&userInfo); err != nil || userInfo.Email == "" || userInfo.Password == "" || projectTag == "" {
 			log.Println(err)
@@ -35,7 +33,15 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 			return
 		}
 
-		err := umc.Service.SetUserInfo(userInfo, projectTag)
+		defaultUserGroup, err := umc.Service.GetDefaultUserGroup(projectTag)
+		if err != nil {
+			log.Println(err)
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		userInfo.UserGroup = defaultUserGroup.Name
+
+		err = umc.Service.SetUserInfo(userInfo, projectTag)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
