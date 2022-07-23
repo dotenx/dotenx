@@ -16,7 +16,7 @@ export function TableList({ projectName }: { projectName: string }) {
 			<h3 className="text-xl font-medium">Tables</h3>
 			<div className="flex flex-wrap gap-8 mt-4">
 				{tables
-					.filter((table) => table !== 'user_info')
+					.filter((table) => table !== 'user_info' && table !== 'user_group')
 					.map((table) => (
 						<TableItem key={table} name={table} />
 					))}
