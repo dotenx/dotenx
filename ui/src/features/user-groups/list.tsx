@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Popover } from '@mantine/core'
+import { ActionIcon, Badge, Button, Popover } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import _ from 'lodash'
 import { useState } from 'react'
@@ -95,7 +95,7 @@ function UserGroupItem({
 				>
 					{name}
 				</button>
-				{!defaultUserGroups.includes(name) && (
+				{!defaultUserGroups.includes(name) ? (
 					<div className="flex gap-1">
 						<ActionIcon
 							type="button"
@@ -136,6 +136,10 @@ function UserGroupItem({
 							</div>
 						</Popover>
 					</div>
+				) : (
+					<Badge size="xs" color="gray">
+						Default
+					</Badge>
 				)}
 			</div>
 			<p className="overflow-hidden text-xs text-slate-500 text-ellipsis">
