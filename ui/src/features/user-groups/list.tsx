@@ -29,50 +29,61 @@ export function UserGroups({
 	return (
 		<div className="grid grid-cols-4 gap-10">
 			{userGroups.map(([name, details]) => (
-				<div key={name} className="flex justify-between p-6 border rounded-md">
-					<p>{name}</p>
-					<div className="space-y-1">
-						<ActionIcon
-							type="button"
-							className="text-sm"
-							onClick={() => deleteUserGroupMutation.mutate(name)}
-							size="xs"
-							disabled={defaultUserGroups.includes(name)}
-							title="Delete user group"
-						>
-							<IoClose />
-						</ActionIcon>
-						<ActionIcon
-							type="button"
-							className="text-sm"
-							onClick={() => {
-								const defaultValues: UserGroupValues = {
-									name: name,
-									select: [],
-									update: [],
-									delete: [],
-								}
-								if (defaultValues) {
-									_.toPairs(details).forEach(([table, permissions]) => {
-										permissions.forEach((permission) => {
-											const permissionField =
-												defaultValues[
-													permission as 'select' | 'update' | 'delete'
-												]
-											if (permissionField) permissionField.push(table)
-										})
-									})
-								}
-								onEdit(defaultValues)
-								modals.open(Modals.CreateUserGroup)
-							}}
-							size="xs"
-							disabled={defaultUserGroups.includes(name)}
-							title="Edit user group"
-						>
-							<IoPencil />
-						</ActionIcon>
+				<div key={name} className="px-4 py-3 space-y-2 border rounded-md">
+					<div className="flex justify-between">
+						<p className="">{name}</p>
+						{!defaultUserGroups.includes(name) && (
+							<div className="flex gap-1">
+								<ActionIcon
+									type="button"
+									className="text-sm"
+									onClick={() => {
+										const defaultValues: UserGroupValues = {
+											name: name,
+											description: '',
+											select: [],
+											update: [],
+											delete: [],
+										}
+										if (defaultValues) {
+											_.toPairs(details).forEach(([table, permissions]) => {
+												permissions.forEach((permission) => {
+													const permissionField =
+														defaultValues[
+															permission as
+																| 'select'
+																| 'update'
+																| 'delete'
+														]
+													if (permissionField) permissionField.push(table)
+												})
+											})
+										}
+										onEdit(defaultValues)
+										modals.open(Modals.CreateUserGroup)
+									}}
+									size="xs"
+									title="Edit user group"
+								>
+									<IoPencil />
+								</ActionIcon>
+								<ActionIcon
+									type="button"
+									className="text-sm"
+									onClick={() => deleteUserGroupMutation.mutate(name)}
+									size="xs"
+									title="Delete user group"
+								>
+									<IoClose />
+								</ActionIcon>
+							</div>
+						)}
 					</div>
+					<p className="overflow-hidden text-xs text-slate-500 text-ellipsis">
+						Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, veritatis?
+						Numquam sit, impedit asperiores sunt cum voluptatem distinctio a
+						consequuntur autem et? Dolor optio, ex at ea repellendus numquam quae?
+					</p>
 				</div>
 			))}
 		</div>

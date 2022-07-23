@@ -366,6 +366,7 @@ export type GetProfileResponse = {
 
 export type CreateUserGroupRequest = {
 	name: string
+	description: string
 	select: Record<string, string>
 	update: Record<string, string>
 	delete: Record<string, string>
