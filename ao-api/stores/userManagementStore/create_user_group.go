@@ -21,7 +21,7 @@ func (store *userManagementStore) CreateUserGroup(db *dbPkg.DB, userGroup models
 	del, _ := json.Marshal(userGroup.Delete)
 	upd, _ := json.Marshal(userGroup.Update)
 	sel, _ := json.Marshal(userGroup.Select)
-	_, err = db.Connection.Exec(stmt, userGroup.Name, ins, del, upd, sel)
+	_, err = db.Connection.Exec(stmt, userGroup.Name, ins, del, upd, sel, userGroup.Description, userGroup.IsDefault)
 	if err != nil {
 		return err
 	}
@@ -29,6 +29,6 @@ func (store *userManagementStore) CreateUserGroup(db *dbPkg.DB, userGroup models
 }
 
 var insertToUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 `

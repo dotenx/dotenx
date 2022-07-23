@@ -26,7 +26,7 @@ func (store *userManagementStore) GetAllUserGroups(db *dbPkg.DB) ([]*models.User
 		for rows.Next() {
 			var cur models.UserGroup
 			var ins, del, upd, sel []byte
-			rows.Scan(&cur.Name, &ins, &del, &upd, &sel)
+			rows.Scan(&cur.Name, &ins, &del, &upd, &sel, &cur.Description, &cur.IsDefault)
 			json.Unmarshal(ins, &cur.Insert)
 			json.Unmarshal(sel, &cur.Select)
 			json.Unmarshal(del, &cur.Delete)
@@ -41,4 +41,4 @@ func (store *userManagementStore) GetAllUserGroups(db *dbPkg.DB) ([]*models.User
 }
 
 var getAllUserGroups = `
-select name, insert_list, delete_list, update_list, select_list from user_group;`
+select name, insert_list, delete_list, update_list, select_list, description, is_default from user_group;`

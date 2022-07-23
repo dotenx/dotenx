@@ -22,7 +22,7 @@ func (store *userManagementStore) UpdateUserGroupList(db *dbPkg.DB, userGroup mo
 	upd, _ := json.Marshal(userGroup.Update)
 	sel, _ := json.Marshal(userGroup.Select)
 
-	_, err = db.Connection.Exec(stmt, userGroup.Name, ins, del, upd, sel)
+	_, err = db.Connection.Exec(stmt, userGroup.Name, ins, del, upd, sel, userGroup.Description, userGroup.IsDefault)
 	if err != nil {
 		return err
 	}
@@ -31,6 +31,6 @@ func (store *userManagementStore) UpdateUserGroupList(db *dbPkg.DB, userGroup mo
 
 var updateUserGroupList = `
 UPDATE user_group
-SET insert_list = $2, delete_list = $3, update_list = $4, select_list = $5
+SET insert_list = $2, delete_list = $3, update_list = $4, select_list = $5, description = $6, is_default = $7
 WHERE name = $1
 `

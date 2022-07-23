@@ -22,7 +22,7 @@ func (store *userManagementStore) GetUserGroup(db *dbPkg.DB, name string) (user 
 		return &res, fmt.Errorf("no yser group with this name")
 	}
 	var ins, sel, upd, del []byte
-	row.Scan(&ins, &sel, &upd, &del)
+	row.Scan(&ins, &sel, &upd, &del, &res.Description, &res.IsDefault)
 	json.Unmarshal(ins, &res.Insert)
 	json.Unmarshal(sel, &res.Select)
 	json.Unmarshal(upd, &res.Update)
@@ -31,4 +31,4 @@ func (store *userManagementStore) GetUserGroup(db *dbPkg.DB, name string) (user 
 }
 
 var selectUserGroup = `
-SELECT insert_list, select_list, update_list, delete_list from user_group where name = $1`
+SELECT insert_list, select_list, update_list, delete_list, description, is_default from user_group where name = $1`
