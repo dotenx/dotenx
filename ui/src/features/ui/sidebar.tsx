@@ -18,7 +18,7 @@ import { ADMIN_URL, IS_LOCAL, PRIVATE_VERSION, PUBLIC_VERSION } from '../../cons
 import { NavItem } from './nav-item'
 
 const studioLinks = [
-	{ to: '/automations', label: 'Automations', icon: <BsFillDiagram3Fill /> },
+	{ to: '/automations', label: 'Automation', icon: <BsFillDiagram3Fill /> },
 	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
 	{ to: '/triggers', label: 'Triggers', icon: <BsFillCalendar3WeekFill /> },
 ]
@@ -45,7 +45,7 @@ export const Sidebar = memo(() => {
 		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automations',
+			label: 'Automation Templates',
 			icon: <BsWindowSidebar />,
 		},
 		{
@@ -114,7 +114,7 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
-					<span className="transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+					<span className="text-sm transition opacity-0 whitespace-nowrap group-hover:opacity-100">
 						{item.label}
 					</span>
 				</NavItem>
