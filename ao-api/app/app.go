@@ -294,6 +294,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement.GET("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.GetUserGroups())
 	userGroupManagement.DELETE("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.DeleteUserGroup())
 	userGroupManagement.POST("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetUserGroup())
+	userGroupManagement.POST("/project/:tag/userGroup/default", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetDefaultUserGroup())
 
 	profile.GET("", profileController.GetProfile())
 
