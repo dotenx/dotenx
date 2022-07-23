@@ -34,7 +34,7 @@ export function UserGroups({
 
 	return (
 		<>
-			<div className="grid grid-cols-4 gap-10">
+			<div className="grid grid-cols-1 gap-10 lg:grid-cols-3 xl:grid-cols-4">
 				{userGroups.map(([name, details]) => (
 					<UserGroupItem
 						key={name}

@@ -89,7 +89,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 
 	return (
 		<>
-			<div className="flex gap-2">
+			<div className="flex flex-wrap gap-2">
 				<Button component={Link} to="user-groups">
 					User Groups
 				</Button>
