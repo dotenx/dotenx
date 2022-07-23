@@ -30,7 +30,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			<Table
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
-				emptyText="Your users list will display here."
+				emptyText="Your users will be displayed here"
 				columns={[
 					{
 						Header: 'Name',
@@ -131,15 +131,8 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						url={`${API_URL}/user/group/management/project/${projectTag}/userGroup/name/:group_name`}
 						method="POST"
 						code={{
-							email: 'email',
 							account_id: 'account_id',
 						}}
-						description={
-							<p>
-								Only either <Code>email</Code> or <Code>account_id</Code> is
-								required.
-							</p>
-						}
 					/>
 				</div>
 			</Drawer>
