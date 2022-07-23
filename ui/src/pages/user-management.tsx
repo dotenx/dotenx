@@ -1,5 +1,6 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
+import { IoRefresh } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
@@ -90,6 +91,9 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 	return (
 		<>
 			<div className="flex flex-wrap gap-2">
+				<Button leftIcon={<IoRefresh />} variant="outline">
+					Refresh
+				</Button>
 				<Button component={Link} to="user-groups">
 					User Groups
 				</Button>

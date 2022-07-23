@@ -2,7 +2,7 @@
 import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
-import { IoAdd, IoFilter, IoList, IoPencil, IoSearch, IoTrash } from 'react-icons/io5'
+import { IoAdd, IoFilter, IoList, IoPencil, IoRefresh, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { CellProps } from 'react-table'
@@ -15,7 +15,7 @@ import {
 	getTableRecords,
 	GetTableRecordsRequest,
 	QueryKey,
-	TableRecord,
+	TableRecord
 } from '../api'
 import {
 	ColumnForm,
@@ -24,7 +24,7 @@ import {
 	QueryBuilderValues,
 	RecordForm,
 	TableDeletion,
-	TableEndpoints,
+	TableEndpoints
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
@@ -158,10 +158,19 @@ function QueryTable({
 
 function ActionBar({ projectName, tableName }: { projectName: string; tableName: string }) {
 	const modal = useModal()
+	const queryClient = useQueryClient()
 
 	return (
 		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
+			<Button
+				leftIcon={<IoRefresh />}
+				size="xs"
+				type="button"
+				onClick={() => queryClient.invalidateQueries(QueryKey.GetTableRecords)}
+			>
+				Refresh
+			</Button>
 			<Button
 				size="xs"
 				leftIcon={<IoFilter />}
