@@ -14,7 +14,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 	const columns = query.data?.data.columns ?? []
 	const body = _.fromPairs(
 		columns
-			.filter((column) => column.name !== 'id')
+			.filter((column) => column.name !== 'id' && column.name !== 'creator_id')
 			.map((column) => {
 				const colKind =
 					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
@@ -39,15 +39,15 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 				code={{ columns: columns.map((column) => column.name) }}
 			/>
 			<Endpoint
-				label="Update a record by id"
+				label="Update a record by ID"
 				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
-				method="POST"
+				method="PUT"
 				code={body}
 			/>
 			<Endpoint
-				label="Delete a record by id"
+				label="Delete a record by ID"
 				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}/row/:id`}
-				method="POST"
+				method="DELETE"
 			/>
 		</div>
 	)
