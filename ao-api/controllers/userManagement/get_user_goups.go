@@ -20,35 +20,47 @@ func (umc *UserManagementController) GetUserGroups() gin.HandlerFunc {
 			log.Println(err.Error())
 			ctx.Status(http.StatusInternalServerError)
 		}
-		userGroups := make(map[string]map[string][]string)
+		userGroups := make(map[string]userGroup)
 		for _, group := range groups {
-			ug := make(map[string][]string)
+			ug := userGroup{
+				Name:        group.Name,
+				Description: group.Description,
+				IsDefault:   group.IsDefault,
+				Privilages:  make(map[string][]string),
+			}
 			for _, tableName := range group.Insert {
-				if ug[tableName] == nil {
-					ug[tableName] = []string{}
+				if ug.Privilages[tableName] == nil {
+					ug.Privilages[tableName] = []string{}
 				}
-				ug[tableName] = append(ug[tableName], "insert")
+				ug.Privilages[tableName] = append(ug.Privilages[tableName], "insert")
 			}
 			for _, tableName := range group.Delete {
-				if ug[tableName] == nil {
-					ug[tableName] = []string{}
+				if ug.Privilages[tableName] == nil {
+					ug.Privilages[tableName] = []string{}
 				}
-				ug[tableName] = append(ug[tableName], "delete")
+				ug.Privilages[tableName] = append(ug.Privilages[tableName], "delete")
 			}
 			for _, tableName := range group.Update {
-				if ug[tableName] == nil {
-					ug[tableName] = []string{}
+				if ug.Privilages[tableName] == nil {
+					ug.Privilages[tableName] = []string{}
 				}
-				ug[tableName] = append(ug[tableName], "update")
+				ug.Privilages[tableName] = append(ug.Privilages[tableName], "update")
 			}
 			for _, tableName := range group.Select {
-				if ug[tableName] == nil {
-					ug[tableName] = []string{}
+				if ug.Privilages[tableName] == nil {
+					ug.Privilages[tableName] = []string{}
 				}
-				ug[tableName] = append(ug[tableName], "select")
+				ug.Privilages[tableName] = append(ug.Privilages[tableName], "select")
 			}
 			userGroups[group.Name] = ug
 		}
 		ctx.JSON(http.StatusOK, userGroups)
 	}
+}
+
+type userGroup struct {
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	IsDefault   bool                `json:"is_default"`
+	Privilages  map[string][]string `json:"privilages"`
 }
