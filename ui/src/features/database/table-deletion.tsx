@@ -37,7 +37,7 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 			position="bottom"
 		>
 			<div className="flex flex-col gap-6">
-				<p className="text-sm">Are you sure you want to delete this user table?</p>
+				<p className="text-sm">Are you sure you want to delete this table?</p>
 				<Button type="button" onClick={() => deleteMutation.mutate()}>
 					Confirm Delete
 				</Button>
