@@ -30,7 +30,7 @@ export function UserGroups({
 		{ onSuccess: () => client.invalidateQueries(QueryKey.GetUserGroups) }
 	)
 	const userGroups = _.toPairs(userGroupsQuery.data?.data)
-	const [userGroupDetails, setUserGroupDetails] = useState<UserGroupValues>()
+	const [selectedUserGroup, setSelectedUserGroup] = useState<string>()
 
 	return (
 		<>
@@ -42,12 +42,14 @@ export function UserGroups({
 						details={details}
 						onEdit={onEdit}
 						onDelete={() => deleteUserGroupMutation.mutate(name)}
-						onShowDetails={(details) => setUserGroupDetails(details)}
+						onSelect={(name) => setSelectedUserGroup(name)}
 					/>
 				))}
 			</div>
-			<NewModal kind={Modals.UserGroupDetails} title={userGroupDetails?.name} size="xl">
-				{userGroupDetails && <UserGroupDetails details={userGroupDetails} />}
+			<NewModal kind={Modals.UserGroupDetails} title={selectedUserGroup} size="xl">
+				{selectedUserGroup && (
+					<UserGroupDetails projectTag={projectTag} name={selectedUserGroup} />
+				)}
 			</NewModal>
 		</>
 	)
@@ -58,23 +60,23 @@ function UserGroupItem({
 	details,
 	onEdit,
 	onDelete,
-	onShowDetails,
+	onSelect,
 }: {
 	name: string
 	details: UserGroup
 	onEdit: (data: UserGroupValues) => void
 	onDelete: () => void
-	onShowDetails: (details: UserGroupValues) => void
+	onSelect: (name: string) => void
 }) {
 	const modal = useModal()
 	const defaultValues: UserGroupValues = {
 		name: name,
-		description: '',
+		description: details.description,
 		select: [],
 		update: [],
 		delete: [],
 	}
-	_.toPairs(details).forEach(([table, permissions]) => {
+	_.toPairs(details.privilages).forEach(([table, permissions]) => {
 		permissions.forEach((permission) => {
 			const permissionField = defaultValues[permission as 'select' | 'update' | 'delete']
 			if (permissionField) permissionField.push(table)
@@ -85,17 +87,24 @@ function UserGroupItem({
 	return (
 		<div className="px-4 py-3 space-y-2 border rounded-md">
 			<div className="flex items-center justify-between">
-				<button
-					className="font-medium hover:bg-gray-50"
-					type="button"
-					onClick={() => {
-						onShowDetails(defaultValues)
-						modal.open(Modals.UserGroupDetails)
-					}}
-				>
-					{name}
-				</button>
-				{!defaultUserGroups.includes(name) ? (
+				<div className="flex items-center gap-2">
+					<button
+						className="font-medium hover:bg-gray-50"
+						type="button"
+						onClick={() => {
+							onSelect(details.name)
+							modal.open(Modals.UserGroupDetails)
+						}}
+					>
+						{name}
+					</button>
+					{details.is_default && (
+						<Badge size="xs" color="gray">
+							Default
+						</Badge>
+					)}
+				</div>
+				{!defaultUserGroups.includes(name) && (
 					<div className="flex gap-1">
 						<ActionIcon
 							type="button"
@@ -136,16 +145,10 @@ function UserGroupItem({
 							</div>
 						</Popover>
 					</div>
-				) : (
-					<Badge size="xs" color="gray">
-						Default
-					</Badge>
 				)}
 			</div>
 			<p className="overflow-hidden text-xs text-slate-500 text-ellipsis">
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, veritatis? Numquam
-				sit, impedit asperiores sunt cum voluptatem distinctio a consequuntur autem et?
-				Dolor optio, ex at ea repellendus numquam quae?
+				{details.description}
 			</p>
 		</div>
 	)
