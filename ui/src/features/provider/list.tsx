@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
 import { deleteProvider, getProviders, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Table } from '../ui'
+import { Confirm, Table } from '../ui'
 
 export function ProviderList() {
 	const client = useQueryClient()
@@ -36,13 +36,19 @@ export function ProviderList() {
 					id: 'action',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<ActionIcon
-							loading={deleteMutation.isLoading}
-							onClick={() => deleteMutation.mutate(value)}
-							className="ml-auto"
-						>
-							<IoTrash />
-						</ActionIcon>
+						<Confirm
+							target={(open) => (
+								<ActionIcon
+									loading={deleteMutation.isLoading}
+									onClick={open}
+									className="ml-auto"
+								>
+									<IoTrash />
+								</ActionIcon>
+							)}
+							onConfirm={() => deleteMutation.mutate(value)}
+							confirmText="Are you sure you want to delete this provider?"
+						/>
 					),
 				},
 			]}

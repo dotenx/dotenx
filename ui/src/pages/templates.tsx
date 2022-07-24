@@ -10,7 +10,7 @@ export default function TemplatesPage() {
 		<AutomationList
 			automations={templates}
 			loading={automationsQuery.isLoading}
-			title="Automations"
+			title="Automation Templates"
 			kind="template"
 		/>
 	)
