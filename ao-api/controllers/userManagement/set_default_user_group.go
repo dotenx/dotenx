@@ -22,7 +22,7 @@ func (umc *UserManagementController) SetDefaultUserGroup() gin.HandlerFunc {
 			return
 		}
 
-		err := umc.Service.SetDefaultUserGroup(projectTag, body.Name)
+		err := umc.Service.SetDefaultUserGroup(body.Name, projectTag)
 		if err != nil {
 			log.Println(err.Error())
 			ctx.Status(http.StatusInternalServerError)
