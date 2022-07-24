@@ -7,6 +7,21 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
+func (ums *userManagementService) GetUserGroup(userGroupName, projectTag string) (userGroup *models.UserGroup, err error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return nil, err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer closeFunc(db.Connection)
+	return ums.Store.GetUserGroup(db, userGroupName)
+}
+
 func (ums *userManagementService) GetUserGroupForUser(tpAccountId, projectTag string) (user *models.UserGroup, err error) {
 	noContext := context.Background()
 

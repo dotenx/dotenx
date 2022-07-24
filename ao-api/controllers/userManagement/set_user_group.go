@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +25,31 @@ func (umc *UserManagementController) SetUserGroup() gin.HandlerFunc {
 			c.Status(http.StatusBadRequest)
 			return
 		}
+		tokenType, exist := c.Get("tokenType")
+		if !exist {
+			err := errors.New("missing type field of token")
+			c.AbortWithError(http.StatusForbidden, err)
+			return
+		}
+		// check if the request is from third party user and if it is, check if the tp user has privilage to update user_info table
+		if tokenType == "tp" {
+			tpAccountId := c.MustGet("tpAccountId").(string)
+			user, err := umc.Service.GetUserInfoById(tpAccountId, projectTag)
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			ug, err := umc.Service.GetUserGroup(user.UserGroup, projectTag)
+			if err != nil {
+				log.Println(err)
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			if !utils.CheckPermission("update", "user_info", ug) {
+				c.Status(http.StatusForbidden)
+			}
+		}
 		user, err := umc.Service.GetUserInfoById(body.TpAccountId, projectTag)
 
 		if err != nil {
@@ -37,22 +63,12 @@ func (umc *UserManagementController) SetUserGroup() gin.HandlerFunc {
 			return
 		}
 		user.UserGroup = ugName
-		tokenType, exist := c.Get("tokenType")
-		if !exist {
-			err := errors.New("missing type field of token")
-			c.AbortWithError(http.StatusForbidden, err)
+		err = umc.Service.UpdateUserGroup(*user, projectTag)
+		if err != nil {
+			log.Println(err.Error())
+			c.Status(http.StatusInternalServerError)
 			return
 		}
-		if tokenType != "tp" {
-			err = umc.Service.UpdateUserGroup(*user, projectTag)
-			if err != nil {
-				log.Println(err.Error())
-				c.Status(http.StatusInternalServerError)
-				return
-			}
-			c.Status(http.StatusOK)
-			return
-		}
-		// TODO run query to update user info table
+		c.Status(http.StatusOK)
 	}
 }
