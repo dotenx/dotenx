@@ -9,6 +9,7 @@ import (
 
 func (s *userManagementStore) GetDefaultUserGroup(db *dbPkg.DB) (userGroup *models.UserGroup, err error) {
 	var stmt string
+	userGroup = &models.UserGroup{}
 	switch db.Driver {
 	case dbPkg.Postgres:
 		stmt = getDefaultUserGroup

@@ -13,7 +13,7 @@ func (ps *projectService) GetProject(accountId string, projectName string) (mode
 	if err != nil {
 		return models.Project{}, err
 	}
-	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	db, closeFunc, err := dbutil.GetDbInstance(accountId, project.Name)
 	if err != nil {
 		return models.Project{}, err
 	}
