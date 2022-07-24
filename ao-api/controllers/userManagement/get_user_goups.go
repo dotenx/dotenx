@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +15,14 @@ func (umc *UserManagementController) GetUserGroups() gin.HandlerFunc {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		groups, err := umc.Service.GetUserGroups(projectTag)
+		user_group_name := ctx.Query("name")
+		groups := make([]*models.UserGroup, 0)
+		var err error
+		if user_group_name != "" {
+			group, err := umc.Service.GetUserGroupByName(user_group_name, projectTag)
+		} else {
+			groups, err = umc.Service.GetUserGroups(projectTag)
+		}
 		if err != nil {
 			log.Println(err.Error())
 			ctx.Status(http.StatusInternalServerError)
