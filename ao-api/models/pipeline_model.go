@@ -58,6 +58,7 @@ type Task struct {
 	Name         string              `db:"name" json:"-" yaml:"-"`
 	ExecuteAfter map[string][]string `db:"execute_after" json:"executeAfter" yaml:"executeAfter,omitempty"`
 	Type         string              `db:"task_type" json:"type" yaml:"type"`
+	AwsLambda    string              `db:"aws_lambda" json:"awsLambda"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
 	Integration  string              `db:"integration" json:"integration" yaml:"integration"`

@@ -1,7 +1,10 @@
 import { ActionIcon, Button, Divider } from '@mantine/core'
-import { useDisclosure, useToggle } from '@mantine/hooks'
-import _ from 'lodash'
-import { FormProvider, useFieldArray, useForm, useFormContext } from 'react-hook-form'
+import { useToggle } from '@mantine/hooks'
+import clsx from 'clsx'
+import { nanoid } from 'nanoid'
+import { useEffect, useRef } from 'react'
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
+import { FormProvider, useFieldArray, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import {
@@ -41,19 +44,36 @@ interface Foreach {
 interface FunctionCall {
 	fnName: string
 	arguments: InputOrSelectValue[]
+	output: InputOrSelectValue
 }
 
 interface OutputParams {
 	value: InputOrSelectValue
 }
 
-export type Step =
+interface VarDeclaration {
+	name: InputOrSelectValue
+}
+
+const stepTypes = [
+	'assignment',
+	'if',
+	'repeat',
+	'foreach',
+	'function_call',
+	'output',
+	'var_declaration',
+] as const
+
+export type Step = { id: string; opened: boolean } & (
 	| { type: 'assignment'; params: Assignment }
 	| { type: 'if'; params: Conditional }
 	| { type: 'repeat'; params: Repeat }
 	| { type: 'foreach'; params: Foreach }
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
+	| { type: 'var_declaration'; params: VarDeclaration }
+)
 
 export type TaskBuilderValues = {
 	prop: string
@@ -62,27 +82,38 @@ export type TaskBuilderValues = {
 
 export type BuilderSteps = Step[]
 
-const stepTypes = ['assignment', 'if', 'repeat', 'foreach', 'function_call', 'output'] as const
-
-const stepTypeOptions = stepTypes.map((type) => ({
-	label: _.capitalize(type.split('_').join(' ')),
-	value: type,
-}))
+const stepTypeOptions = [
+	{ label: 'Assignment', value: 'assignment' },
+	{ label: 'If', value: 'if' },
+	{ label: 'Repeat', value: 'repeat' },
+	{ label: 'Foreach', value: 'foreach' },
+	{ label: 'Function Call', value: 'function_call' },
+	{ label: 'Output', value: 'output' },
+	{ label: 'Variable Declaration', value: 'var_declaration' },
+]
 
 const getStepTypeLabel = (type: typeof stepTypes[number]) =>
 	stepTypeOptions.find((option) => option.value === type)?.label ?? ''
 
-const defaultStep: Step = {
+const defaultStep = {
 	type: 'assignment',
 	params: {
 		name: { type: InputOrSelectKind.Text, data: '' },
 		value: { type: InputOrSelectKind.Text, data: '' },
 	},
+	opened: true,
+} as const
+
+function reorder<T>(list: T[], startIndex: number, endIndex: number) {
+	const result = Array.from(list)
+	const [removed] = result.splice(startIndex, 1)
+	result.splice(endIndex, 0, removed)
+	return result
 }
 
 export function TaskBuilder({
 	onSubmit,
-	defaultValues = [defaultStep],
+	defaultValues = [{ ...defaultStep, id: nanoid() }],
 	otherTasksOutputs,
 }: {
 	onSubmit: (values: TaskBuilderValues) => void
@@ -91,10 +122,9 @@ export function TaskBuilder({
 }) {
 	const form = useForm<TaskBuilderValues>({
 		defaultValues: { prop: 'value', steps: defaultValues },
-		shouldUnregister: true,
+		shouldUnregister: false,
 	})
-	const values = form.watch()
-	const steps = values.steps
+	const steps = form.watch().steps
 	const handleSubmit = form.handleSubmit((values) => onSubmit(values))
 	const [view, toggleView] = useToggle<'detailed' | 'summary'>('detailed', [
 		'detailed',
@@ -106,9 +136,9 @@ export function TaskBuilder({
 			<Button type="button" variant="light" className="self-end" onClick={() => toggleView()}>
 				{view === 'detailed' ? 'Summary' : 'Detailed'}
 			</Button>
-			<div hidden={view === 'summary'}>
-				<FormProvider {...form}>
-					<Form onSubmit={handleSubmit}>
+			<FormProvider {...form}>
+				<Form onSubmit={handleSubmit}>
+					<div hidden={view === 'summary'}>
 						{/* TODO: pass `otherTasksOutputs` when backend can handle it */}
 						<Steps
 							name="steps"
@@ -116,11 +146,11 @@ export function TaskBuilder({
 							otherTasksOutputs={[] ?? otherTasksOutputs}
 							prefixNumber=""
 						/>
-						<Button type="submit">Save Task</Button>
-					</Form>
-				</FormProvider>
-			</div>
-			{view === 'summary' && <StepsSummary steps={values.steps} prefixNumber="" />}
+					</div>
+					{view === 'summary' && <StepsSummary steps={steps} prefixNumber="" />}
+					<Button type="submit">Save Task</Button>
+				</Form>
+			</FormProvider>
 		</div>
 	)
 }
@@ -136,46 +166,105 @@ function Steps({
 	otherTasksOutputs: GroupData[]
 	prefixNumber: string
 }) {
-	const { control } = useFormContext()
+	const { control, setValue } = useFormContext()
 	const stepsFieldArray = useFieldArray({ name, control })
 
+	const onDragEnd = (result: DropResult) => {
+		// dropped outside the list
+		if (!result.destination) return
+		const items = reorder(steps, result.source.index, result.destination.index)
+		setValue(name, items)
+	}
+
 	return (
-		<div>
-			{stepsFieldArray.fields.map((item, index) => (
-				<div key={item.id}>
-					<Step
-						number={`${prefixNumber}${index + 1}.`}
-						onRemove={() => stepsFieldArray.remove(index)}
-						step={steps[index]}
-						name={`${name}.${index}`}
-						otherTasksOutputs={otherTasksOutputs}
-					/>
-					<div className="w-0.5 h-3 mx-auto bg-gray-200" />
-					<ActionIcon
-						className="self-center mx-auto"
-						type="button"
-						title="Add step"
-						size="xs"
-						onClick={() => stepsFieldArray.insert(index, defaultStep)}
-					>
-						<IoAdd />
-					</ActionIcon>
-					{index !== stepsFieldArray.fields.length - 1 && (
-						<div className="w-0.5 h-3 mx-auto bg-gray-200" />
-					)}
-				</div>
-			))}
-			{stepsFieldArray.fields.length === 0 && (
-				<ActionIcon
-					className="self-center mx-auto"
-					type="button"
-					title="Add step"
-					onClick={() => stepsFieldArray.append(defaultStep)}
-				>
-					<IoAdd />
-				</ActionIcon>
-			)}
-		</div>
+		<DragDropContext onDragEnd={onDragEnd}>
+			<Droppable droppableId="droppable">
+				{(droppableProvided) => (
+					<div ref={droppableProvided.innerRef}>
+						{stepsFieldArray.fields.map((item, index) => (
+							<Draggable key={item.id} draggableId={item.id} index={index}>
+								{(draggableProvided) => (
+									<div
+										ref={draggableProvided.innerRef}
+										{...draggableProvided.draggableProps}
+										{...draggableProvided.dragHandleProps}
+									>
+										<TempStep
+											number={`${prefixNumber}${index + 1}.`}
+											onRemove={() => stepsFieldArray.remove(index)}
+											name={`${name}.${index}`}
+											otherTasksOutputs={otherTasksOutputs}
+										/>
+										<div className="w-0.5 h-3 mx-auto bg-gray-200" />
+										<ActionIcon
+											className="self-center mx-auto"
+											type="button"
+											title="Add step"
+											size="xs"
+											onClick={() =>
+												stepsFieldArray.insert(index + 1, {
+													...defaultStep,
+													id: nanoid(),
+												})
+											}
+										>
+											<IoAdd />
+										</ActionIcon>
+										<div
+											className={clsx(
+												'w-0.5 h-3 mx-auto bg-gray-200',
+												index === stepsFieldArray.fields.length - 1 &&
+													'opacity-0'
+											)}
+										/>
+									</div>
+								)}
+							</Draggable>
+						))}
+						{stepsFieldArray.fields.length === 0 && (
+							<ActionIcon
+								className="self-center mx-auto"
+								type="button"
+								title="Add step"
+								onClick={() =>
+									stepsFieldArray.append({
+										...defaultStep,
+										id: nanoid(),
+									})
+								}
+							>
+								<IoAdd />
+							</ActionIcon>
+						)}
+						{droppableProvided.placeholder}
+					</div>
+				)}
+			</Droppable>
+		</DragDropContext>
+	)
+}
+
+function TempStep({
+	number,
+	onRemove,
+	name,
+	otherTasksOutputs,
+}: {
+	number: string
+	onRemove: () => void
+	name: string
+	otherTasksOutputs: GroupData[]
+}) {
+	const step = useWatch({ name })
+
+	return (
+		<Step
+			number={number}
+			onRemove={onRemove}
+			step={step}
+			name={name}
+			otherTasksOutputs={otherTasksOutputs}
+		/>
 	)
 }
 
@@ -187,25 +276,33 @@ function Step({
 	number,
 }: {
 	name: string
-	step: Step
+	step: Partial<Step>
 	onRemove: () => void
 	otherTasksOutputs: GroupData[]
 	number: string
 }) {
-	const { control } = useFormContext()
+	const { control, unregister, setValue } = useFormContext()
 	const paramsName = `${name}.params`
-	const [opened, handlers] = useDisclosure(true)
+	const initialRender = useRef(true)
+
+	useEffect(() => {
+		if (step?.type && !initialRender.current) unregister(paramsName)
+	}, [paramsName, step?.type, unregister])
+
+	useEffect(() => {
+		initialRender.current = false
+	}, [])
 
 	return (
-		<div className="border rounded">
+		<div className="bg-white border rounded">
 			<TopActionBar
 				number={number}
-				label={getStepTypeLabel(step?.type)}
-				opened={opened}
-				toggle={handlers.toggle}
+				label={getStepTypeLabel(step?.type ?? 'assignment')}
+				opened={step?.opened ?? false}
+				toggle={() => setValue(`${name}.opened`, step?.opened ? false : true)}
 				onRemove={onRemove}
 			/>
-			<div className="px-6 pb-6 space-y-4" hidden={!opened}>
+			<div className="px-6 pb-6 space-y-4" hidden={!step?.opened}>
 				<NewSelect
 					label="Type"
 					name={`${name}.type`}
@@ -218,8 +315,8 @@ function Step({
 				{step?.type === 'if' && (
 					<ConditionalFields
 						name={paramsName}
-						branches={step.params.branches?.map((branch) => branch.body)}
-						elseBranch={step.params.elseBranch}
+						branches={step.params?.branches?.map((branch) => branch?.body) ?? []}
+						elseBranch={step.params?.elseBranch ?? []}
 						otherTasksOutputs={otherTasksOutputs}
 						prefixNumber={number}
 					/>
@@ -227,7 +324,7 @@ function Step({
 				{step?.type === 'repeat' && (
 					<RepeatFields
 						name={paramsName}
-						body={step.params.body}
+						body={step.params?.body ?? []}
 						otherTasksOutputs={otherTasksOutputs}
 						prefixNumber={number}
 					/>
@@ -235,7 +332,7 @@ function Step({
 				{step?.type === 'foreach' && (
 					<ForeachFields
 						name={paramsName}
-						body={step.params.body}
+						body={step.params?.body ?? []}
 						otherTasksOutputs={otherTasksOutputs}
 						prefixNumber={number}
 					/>
@@ -245,6 +342,9 @@ function Step({
 				)}
 				{step?.type === 'output' && (
 					<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
+				{step?.type === 'var_declaration' && (
+					<VarDeclarationFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
 			</div>
 		</div>
@@ -485,6 +585,12 @@ function FunctionCallFields({
 							<Description>{input.description}</Description>
 						</div>
 					))}
+					<InputOrSelect
+						label="Assign result to new variable (optional)"
+						name={`${name}.output`}
+						control={control}
+						groups={otherTasksOutputs}
+					/>
 				</>
 			)}
 		</div>
@@ -510,11 +616,31 @@ function OutputFields({
 	)
 }
 
+function VarDeclarationFields({
+	name,
+	otherTasksOutputs,
+}: {
+	name: string
+	otherTasksOutputs: GroupData[]
+}) {
+	const { control } = useFormContext()
+
+	return (
+		<InputOrSelect
+			label="Name"
+			name={`${name}.name`}
+			control={control}
+			groups={otherTasksOutputs}
+		/>
+	)
+}
+
 function TopActionBar({
 	label,
 	opened,
 	toggle,
 	onRemove,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	number,
 }: {
 	label: string
@@ -526,7 +652,7 @@ function TopActionBar({
 	return (
 		<div className="flex justify-between">
 			<div className="px-1">
-				<span className="text-xs font-black">{number} </span>
+				{/* <span className="text-xs font-black">{number} </span> */}
 				{!opened && <span className="text-sm">{label}</span>}
 			</div>
 			<div className="flex gap-0.5 justify-end">

@@ -14,6 +14,7 @@ type Job struct {
 	Timeout        int                    `json:"timeout"`
 	Name           string                 `json:"name"`
 	Type           string                 `json:"type"`
+	AwsLambda      string                 `json:"aws_lambda"`
 	Image          string                 `json:"image"`
 	AccountId      string                 `json:"account_id"`
 	Body           map[string]interface{} `json:"body"`
@@ -29,6 +30,7 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 		ExecutionId:    executionId,
 		TaskId:         task.Id,
 		Type:           task.Type,
+		AwsLambda:      task.AwsLambda,
 		Timeout:        task.Timeout,
 		Image:          image,
 		Body:           task.Body,

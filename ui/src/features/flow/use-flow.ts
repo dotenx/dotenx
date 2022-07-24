@@ -195,6 +195,8 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 		switch (step.type) {
 			case 'assignment':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						name: { type: InputOrSelectKind.Text, data: step.params.name },
@@ -203,6 +205,8 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 				}
 			case 'function_call':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						fnName: step.params.name,
@@ -210,10 +214,13 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 							type: InputOrSelectKind.Text,
 							data: arg,
 						})),
+						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
 					},
 				}
 			case 'foreach':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						collection: { type: InputOrSelectKind.Text, data: step.params.collection },
@@ -223,6 +230,8 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 				}
 			case 'if':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						branches: step.params.branches.map((branch) => ({
@@ -234,6 +243,8 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 				}
 			case 'repeat':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						count: { type: InputOrSelectKind.Text, data: step.params.count },
@@ -243,9 +254,20 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 				}
 			case 'output':
 				return {
+					id: nanoid(),
+					opened: true,
 					type: step.type,
 					params: {
 						value: { type: InputOrSelectKind.Text, data: step.params.value },
+					},
+				}
+			case 'var_declaration':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						name: { type: InputOrSelectKind.Text, data: step.params.name },
 					},
 				}
 		}

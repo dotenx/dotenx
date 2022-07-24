@@ -17,7 +17,7 @@ type Foreach struct {
 	} `json:"params"`
 }
 
-const foreachTemplate = `for ({{.Iterator}} of {{.Collection}}) {
+const foreachTemplate = `for (var {{.Iterator}} of {{.Collection}}) {
 {{.RenderedBody}}
 }`
 

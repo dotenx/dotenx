@@ -1,6 +1,7 @@
 package awsLambda
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -15,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dotenx/dotenx/runner/config"
 	"github.com/dotenx/dotenx/runner/models"
+	"github.com/dotenx/dotenx/runner/shared"
 )
 
 func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskExecutionResult) {
@@ -51,6 +53,9 @@ func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskE
 	}
 	functionName := strings.ReplaceAll(task.Details.Image, ":", "-")
 	functionName = strings.ReplaceAll(functionName, "/", "-")
+	if task.Details.AwsLambda != "" {
+		functionName = task.Details.AwsLambda
+	}
 	logType := "Tail"
 	log.Println("functionName:", functionName)
 	log.Println("payload:", string(payload))
@@ -81,7 +86,9 @@ func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskE
 	}
 
 	type Response struct {
-		Successfull bool `json:"successfull"`
+		Successfull bool        `json:"successfull"`
+		Status      string      `json:"status"`
+		ReturnValue interface{} `json:"return_value"`
 	}
 	var resp = Response{}
 	err = json.Unmarshal(lambdaResult.Payload, &resp)
@@ -92,6 +99,42 @@ func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskE
 	if !resp.Successfull {
 		result.Error = errors.New("error after invoking lambda function. task was not successfull.")
 		return
+	}
+	if task.Details.Type == "Run node code" {
+		authHeader := config.Configs.Secrets.RunnerToken
+		resultEndpoint := task.Details.ResultEndpoint
+		headers := []shared.Header{
+			{
+				Key:   "authorization",
+				Value: authHeader,
+			},
+			{
+				Key:   "Content-Type",
+				Value: "application/json",
+			},
+		}
+		var body = struct {
+			Status      string      `json:"status"`
+			ReturnValue interface{} `json:"return_value"`
+			Log         string      `json:"log"`
+		}{
+			Status:      resp.Status,
+			ReturnValue: resp.ReturnValue,
+			Log:         result.Log,
+		}
+		bodyBytes, _ := json.Marshal(body)
+
+		httpHelper := shared.NewHttpHelper(shared.NewHttpClient())
+		_, err, statusCode := httpHelper.HttpRequest(http.MethodPost, resultEndpoint, bytes.NewBuffer(bodyBytes), headers, 0)
+		if err != nil || statusCode != http.StatusOK {
+			log.Println("statusCode:", statusCode)
+			log.Println("err:", err)
+			result.Error = err
+			if err == nil {
+				result.Error = errors.New("failed to save results")
+			}
+			return
+		}
 	}
 	result.Status = models.StatusCompleted
 	log.Println("log: " + result.Log)

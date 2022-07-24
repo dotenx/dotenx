@@ -395,10 +395,15 @@ interface Foreach {
 interface FunctionCall {
 	name: string
 	arguments: string[]
+	output?: string
 }
 
 interface OutputParams {
 	value: string
+}
+
+interface VarDeclaration {
+	name: string
 }
 
 export type BuilderStep =
@@ -408,6 +413,7 @@ export type BuilderStep =
 	| { type: 'foreach'; params: Foreach }
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
+	| { type: 'var_declaration'; params: VarDeclaration }
 
 export type TaskBuilder = {
 	prop: string
