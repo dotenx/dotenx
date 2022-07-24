@@ -15,11 +15,9 @@ func (umc *UserManagementController) SetDefaultUserGroup() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var body setDefaultReq
 		projectTag := ctx.Param("tag")
-		ugName := ctx.Param("name")
-		if ctx.ShouldBindJSON(&body) != nil || body.Name == "" || projectTag == "" || ugName == "" {
+		if ctx.ShouldBindJSON(&body) != nil || body.Name == "" || projectTag == "" {
 			log.Println("body:", body)
 			log.Println("projectTag:", projectTag)
-			log.Println("ugName:", ugName)
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
