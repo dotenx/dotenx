@@ -43,36 +43,38 @@ name                       VARCHAR(128) PRIMARY KEY,
 insert_list                JSONB,
 delete_list                JSONB,
 update_list                JSONB,
-select_list                JSONB
+select_list                JSONB,
+description                VARCHAR(1024),
+is_default				 BOOLEAN
 )
 `
 var inserUsersUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
-VALUES ('users', null, null, null, null)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
+VALUES ('users', null, null, null, null, 'users user group does not grant any privilage on any table', true)
 `
 
 var insertWritersUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('writers',null, ' {
         "*": "*"
     }', ' {
         "*": "*"
     }', ' {
         "*": "*"
-    }')
+    }', 'writers user group grants all privilages on all tables', false)
 `
 
 var insertReadersUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('readers', null, null, null, ' {
         "*": "*"
-    }')
+    }', 'readers user group grants select on all tables', false)
 `
 var insertEditorsUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('editors', null, null, ' {
         "*": "*"
     }', ' {
         "*": "*"
-    }')
+    }', 'editors user group grants select and update on all tables', false)
 `

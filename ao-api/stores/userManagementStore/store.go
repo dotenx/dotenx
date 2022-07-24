@@ -23,6 +23,8 @@ type UserManagementStore interface {
 	DeleteUserGroup(db *dbPkg.DB, name string) (err error)
 	UpdateUserGroupList(db *dbPkg.DB, userGroup models.UserGroup) (err error)
 	CreateUserGroup(db *dbPkg.DB, userGroup models.UserGroup) (err error)
+	SetDefaultUserGroup(db *dbPkg.DB, userGroup models.UserGroup) (err error)
+	GetDefaultUserGroup(db *dbPkg.DB) (userGroup *models.UserGroup, err error)
 }
 
 type userManagementStore struct {
