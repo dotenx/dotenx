@@ -19,13 +19,18 @@ func (umc *UserManagementController) GetUserGroups() gin.HandlerFunc {
 		groups := make([]*models.UserGroup, 0)
 		var err error
 		if user_group_name != "" {
-			group, err := umc.Service.GetUserGroupByName(user_group_name, projectTag)
+			group, err := umc.Service.GetUserGroup(user_group_name, projectTag)
+			if err != nil {
+				log.Println(err.Error())
+				ctx.Status(http.StatusInternalServerError)
+			}
+			groups = append(groups, group)
 		} else {
 			groups, err = umc.Service.GetUserGroups(projectTag)
-		}
-		if err != nil {
-			log.Println(err.Error())
-			ctx.Status(http.StatusInternalServerError)
+			if err != nil {
+				log.Println(err.Error())
+				ctx.Status(http.StatusInternalServerError)
+			}
 		}
 		userGroups := make(map[string]userGroup)
 		for _, group := range groups {
