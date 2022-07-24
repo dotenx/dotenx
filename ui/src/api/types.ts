@@ -371,6 +371,7 @@ export type CreateUserGroupRequest = {
 	select: Record<string, string>
 	update: Record<string, string>
 	delete: Record<string, string>
+	insert: Record<string, string>
 }
 
 export type GetUserGroupsResponse = Record<string, UserGroup>

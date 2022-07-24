@@ -75,6 +75,7 @@ function UserGroupItem({
 		select: [],
 		update: [],
 		delete: [],
+		insert: [],
 	}
 	_.toPairs(details.privilages).forEach(([table, permissions]) => {
 		permissions.forEach((permission) => {

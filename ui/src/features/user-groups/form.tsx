@@ -20,6 +20,7 @@ const schema = z.object({
 	select: z.array(z.string().min(1)),
 	update: z.array(z.string().min(1)),
 	delete: z.array(z.string().min(1)),
+	insert: z.array(z.string().min(1)),
 })
 
 export type UserGroupValues = z.infer<typeof schema>
@@ -27,7 +28,7 @@ export type UserGroupValues = z.infer<typeof schema>
 export function UserGroupsForm({
 	projectName,
 	projectTag,
-	defaultValues = { name: '', description: '', select: [], update: [], delete: [] },
+	defaultValues = { name: '', description: '', select: [], update: [], delete: [], insert: [] },
 	kind,
 }: {
 	projectName: string
@@ -69,6 +70,7 @@ export function UserGroupsForm({
 				select: _.fromPairs(values.select.map((tableName) => [tableName, tableName])),
 				update: _.fromPairs(values.update.map((tableName) => [tableName, tableName])),
 				delete: _.fromPairs(values.delete.map((tableName) => [tableName, tableName])),
+				insert: _.fromPairs(values.insert.map((tableName) => [tableName, tableName])),
 			})
 		else
 			updateMutation.mutate({
@@ -77,6 +79,7 @@ export function UserGroupsForm({
 				select: _.fromPairs(values.select.map((tableName) => [tableName, tableName])),
 				update: _.fromPairs(values.update.map((tableName) => [tableName, tableName])),
 				delete: _.fromPairs(values.delete.map((tableName) => [tableName, tableName])),
+				insert: _.fromPairs(values.insert.map((tableName) => [tableName, tableName])),
 			})
 	})
 
@@ -109,6 +112,13 @@ export function UserGroupsForm({
 					label="Delete"
 					data={tables}
 					{...form.getInputProps('delete')}
+				/>
+				<MultiSelect
+					searchable
+					clearable
+					label="Insert"
+					data={tables}
+					{...form.getInputProps('insert')}
 				/>
 			</div>
 			<Button type="submit" loading={createMutation.isLoading || updateMutation.isLoading}>
