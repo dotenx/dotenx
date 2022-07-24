@@ -48,6 +48,7 @@ func (umc *UserManagementController) SetUserGroup() gin.HandlerFunc {
 			}
 			if !utils.CheckPermission("update", "user_info", ug) {
 				c.Status(http.StatusForbidden)
+				return
 			}
 		}
 		user, err := umc.Service.GetUserInfoById(body.TpAccountId, projectTag)
