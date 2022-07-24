@@ -50,7 +50,7 @@ is_default				 BOOLEAN
 `
 var inserUsersUserGroup = `
 INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
-VALUES ('users', null, null, null, null, 'users user group does'nt grant any privilage on any table', true)
+VALUES ('users', null, null, null, null, 'users user group does not grant any privilage on any table', true)
 `
 
 var insertWritersUserGroup = `
