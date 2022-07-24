@@ -50,11 +50,11 @@ is_default				 BOOLEAN
 `
 var inserUsersUserGroup = `
 INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
-VALUES ('users', null, null, null, null, 'users user group does'nt grant any privilage on any table', true)
+VALUES ('users', null, null, null, null, 'users user group does not grant any privilage on any table', true)
 `
 
 var insertWritersUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('writers',null, ' {
         "*": "*"
     }', ' {
@@ -65,13 +65,13 @@ VALUES ('writers',null, ' {
 `
 
 var insertReadersUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('readers', null, null, null, ' {
         "*": "*"
     }', 'readers user group grants select on all tables', false)
 `
 var insertEditorsUserGroup = `
-INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list)
+INSERT INTO user_group (name, insert_list, delete_list, update_list, select_list, description, is_default)
 VALUES ('editors', null, null, ' {
         "*": "*"
     }', ' {

@@ -1,6 +1,7 @@
 package project
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -14,6 +15,7 @@ func (pc *ProjectController) GetProject() gin.HandlerFunc {
 
 		project, err := pc.Service.GetProject(accountId, name)
 		if err != nil {
+			log.Println(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
