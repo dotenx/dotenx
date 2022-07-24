@@ -29,6 +29,7 @@ export enum QueryKey {
 	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
 	GetProfile = 'get-profile',
 	GetUserGroups = 'get-user-groups',
+	GetUserGroup = 'get-user-group',
 }
 
 export enum TaskExecutionStatus {
@@ -374,6 +375,15 @@ export type CreateUserGroupRequest = {
 
 export type GetUserGroupsResponse = Record<string, UserGroup>
 
-export type UserGroup = Record<string, string[]>
+export type UserGroup = {
+	name: string
+	description: string
+	is_default: boolean
+	privilages: Record<string, string[]>
+}
 
 export type UpdateUserGroupRequest = CreateUserGroupRequest
+
+export type SetDefaultUserGroupRequest = { name: string }
+
+export type GetUserGroupResponse = Record<string, UserGroup>

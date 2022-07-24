@@ -34,9 +34,11 @@ import {
 	GetTriggerDefinitionResponse,
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
+	GetUserGroupResponse,
 	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
 	Provider,
+	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
@@ -302,5 +304,15 @@ export function getUserGroups(projectTag: string) {
 export function deleteUserGroup(projectTag: string, userGroupName: string) {
 	return api.delete(
 		`/user/group/management/project/${projectTag}/userGroup/name/${userGroupName}`
+	)
+}
+
+export function setDefaultUserGroup(projectTag: string, payload: SetDefaultUserGroupRequest) {
+	return api.post(`/user/group/management/project/${projectTag}/userGroup/default`, payload)
+}
+
+export function getUserGroup(projectTag: string, userGroupName: string) {
+	return api.get<GetUserGroupResponse>(
+		`/user/group/management/project/${projectTag}/userGroup?name=${userGroupName}`
 	)
 }
