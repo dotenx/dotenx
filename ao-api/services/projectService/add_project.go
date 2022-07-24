@@ -38,6 +38,10 @@ func (ps *projectService) AddProject(accountId string, project models.Project) e
 		return err
 	}
 
+	if project.DefaultUserGroup == "" {
+		project.DefaultUserGroup = "users"
+	}
+
 	// todo: add rollback if database creation fails
 	return ps.TpUserStore.SetDefaultUserGroup(db, models.UserGroup{Name: project.DefaultUserGroup})
 }
