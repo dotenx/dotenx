@@ -380,7 +380,7 @@ export type UserGroup = {
 	name: string
 	description: string
 	is_default: boolean
-	privilages: Record<string, string[]>
+	privilages: Record<string, ('select' | 'update' | 'delete' | 'insert')[]>
 }
 
 export type UpdateUserGroupRequest = CreateUserGroupRequest
