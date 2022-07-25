@@ -2,6 +2,7 @@ package projectService
 
 import (
 	"context"
+	"log"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -21,7 +22,10 @@ func (ps *projectService) GetProjectByTag(tag string) (models.Project, error) {
 	defer closeFunc(db.Connection)
 	user_group, err := ps.TpUserStore.GetDefaultUserGroup(db)
 	if err != nil {
-		return models.Project{}, err
+		log.Println(err)
+		project.DefaultUserGroup = "users"
+	} else {
+		project.DefaultUserGroup = user_group.Name
 	}
 	project.DefaultUserGroup = user_group.Name
 	return project, nil

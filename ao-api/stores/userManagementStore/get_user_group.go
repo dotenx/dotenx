@@ -27,6 +27,7 @@ func (store *userManagementStore) GetUserGroup(db *dbPkg.DB, name string) (user 
 	json.Unmarshal(sel, &res.Select)
 	json.Unmarshal(upd, &res.Update)
 	json.Unmarshal(del, &res.Delete)
+	res.Name = name
 	return &res, nil
 }
 

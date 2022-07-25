@@ -36,10 +36,10 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 		defaultUserGroup, err := umc.Service.GetDefaultUserGroup(projectTag)
 		if err != nil {
 			log.Println(err)
-			ctx.Status(http.StatusInternalServerError)
-			return
+			userInfo.UserGroup = "users"
+		} else {
+			userInfo.UserGroup = defaultUserGroup.Name
 		}
-		userInfo.UserGroup = defaultUserGroup.Name
 
 		err = umc.Service.SetUserInfo(userInfo, projectTag)
 		if err != nil {

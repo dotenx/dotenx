@@ -97,6 +97,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	r := gin.Default()
 	RegisterCustomValidators()
+	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
 	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
 	storeDomain := ""
 	if config.Configs.App.RunLocally {
@@ -169,14 +170,14 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// oauth user providers routes
 	r.GET("/oauth/user/provider/auth/provider/:provider_name/account_id/:account_id",
-		middlewares.OauthMiddleware(),
+		middlewares.OauthMiddleware(httpHelper),
 		middlewares.TokenTypeMiddleware([]string{"tp"}),
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
 		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
 
 	if !config.Configs.App.RunLocally {
-		r.Use(middlewares.OauthMiddleware())
+		r.Use(middlewares.OauthMiddleware(httpHelper))
 	} else {
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
