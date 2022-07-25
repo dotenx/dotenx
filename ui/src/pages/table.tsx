@@ -15,7 +15,7 @@ import {
 	getTableRecords,
 	GetTableRecordsRequest,
 	QueryKey,
-	TableRecord
+	TableRecord,
 } from '../api'
 import {
 	ColumnForm,
@@ -24,7 +24,7 @@ import {
 	QueryBuilderValues,
 	RecordForm,
 	TableDeletion,
-	TableEndpoints
+	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
