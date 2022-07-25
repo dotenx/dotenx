@@ -1,6 +1,7 @@
 package project
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -21,6 +22,7 @@ func (pc *ProjectController) AddProject() gin.HandlerFunc {
 		}
 
 		if err := pc.Service.AddProject(accountId, dto); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": err.Error(),
 			})

@@ -1,6 +1,7 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
-import { useQuery } from 'react-query'
+import { IoRefresh } from 'react-icons/io5'
+import { useQuery, useQueryClient } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
@@ -31,7 +32,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			<Table
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
-				emptyText="Your users list will display here."
+				emptyText="Your users will be displayed here"
 				columns={[
 					{
 						Header: 'Name',
@@ -85,12 +86,20 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 		account_id: accountId,
 		tp_account_id: '********-****-****-****-************',
 	}
+	const queryClient = useQueryClient()
 
 	if (profileQuery.isLoading) return <Loader />
 
 	return (
 		<>
-			<div className="flex gap-2">
+			<div className="flex flex-wrap gap-2">
+				<Button
+					leftIcon={<IoRefresh />}
+					type="button"
+					onClick={() => queryClient.invalidateQueries(QueryKey.GetUserManagementData)}
+				>
+					Refresh
+				</Button>
 				<Button component={Link} to="user-groups">
 					User Groups
 				</Button>
@@ -133,15 +142,8 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						url={`${API_URL}/user/group/management/project/${projectTag}/userGroup/name/:group_name`}
 						method="POST"
 						code={{
-							email: 'email',
 							account_id: 'account_id',
 						}}
-						description={
-							<p>
-								Only either <Code>email</Code> or <Code>account_id</Code> is
-								required.
-							</p>
-						}
 					/>
 				</div>
 			</Drawer>
