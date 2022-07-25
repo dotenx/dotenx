@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ADMIN_API_URL } from '../constants'
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -7,12 +8,34 @@ const api = axios.create({
 	withCredentials: true,
 })
 
+const adminApi = axios.create({
+	baseURL: ADMIN_API_URL,
+	withCredentials: true,
+})
+
 export enum InternalQueryKey {
 	GetTaskBuilderFunctions = 'get-task-builder-functions',
+	GetAccessToken = 'get-access-token',
 }
 
 export function getTaskBuilderFunctions() {
 	return api.get<TaskBuilderFunctionsResponse>('/mini/task')
+}
+
+export function setAccessToken() {
+	return adminApi.post<void>('/auth/access/token/create')
+}
+
+export function getAccessToken() {
+	return adminApi.get<{ accessToken: string }>('/auth/access/token')
+}
+
+export function updateAccessToken() {
+	return adminApi.put<void>('/auth/access/token/update')
+}
+
+export function deleteAccessToken() {
+	return adminApi.delete<void>('/auth/access/token/delete')
 }
 
 export interface TaskBuilderFunctionsResponse {
