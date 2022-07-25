@@ -46,11 +46,16 @@ func (dc *DatabaseController) UpdateRow() gin.HandlerFunc {
 			})
 			return
 		}
-		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
+		tokenType, _ := c.Get("tokenType")
+		if tokenType == "tp" {
+			dto["creator_id"], _ = utils.GetThirdPartyAccountId(c)
+		}
+		fmt.Println(dto)
 
+		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 		if err := dc.Service.UpdateRow(tpAccountId, projectTag, tableName, id, dto); err != nil {
 			log.Println("err:", err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			return

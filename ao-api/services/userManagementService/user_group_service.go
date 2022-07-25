@@ -7,6 +7,21 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
+func (ums *userManagementService) GetUserGroup(userGroupName, projectTag string) (userGroup *models.UserGroup, err error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return nil, err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer closeFunc(db.Connection)
+	return ums.Store.GetUserGroup(db, userGroupName)
+}
+
 func (ums *userManagementService) GetUserGroupForUser(tpAccountId, projectTag string) (user *models.UserGroup, err error) {
 	noContext := context.Background()
 
@@ -88,4 +103,34 @@ func (ums *userManagementService) GetUserGroups(projectTag string) ([]*models.Us
 	}
 	defer closeFunc(db.Connection)
 	return ums.Store.GetAllUserGroups(db)
+}
+
+func (ums *userManagementService) GetDefaultUserGroup(projectTag string) (userGroup *models.UserGroup, err error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return nil, err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer closeFunc(db.Connection)
+	return ums.Store.GetDefaultUserGroup(db)
+}
+
+func (ums *userManagementService) SetDefaultUserGroup(userGroupName, projectTag string) (err error) {
+	noContext := context.Background()
+
+	project, err := ums.ProjStore.GetProjectByTag(noContext, projectTag)
+	if err != nil {
+		return err
+	}
+	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if err != nil {
+		return err
+	}
+	defer closeFunc(db.Connection)
+	return ums.Store.SetDefaultUserGroup(db, models.UserGroup{Name: userGroupName})
 }

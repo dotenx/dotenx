@@ -13,7 +13,7 @@ import {
 	QueryKey,
 } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
+import { Confirm, ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -80,7 +80,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 
 function NewAutomation({ kind }: { kind: AutomationKind }) {
 	const newAutomation = useNewAutomation('new')
-	const newButtonText = kind === 'template' ? 'Automation' : kind
+	const newButtonText = kind === 'template' ? 'Automation Template' : kind
 
 	return (
 		<div className="flex gap-4">
@@ -116,6 +116,7 @@ interface AutomationActionsProps {
 function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 	const deleteMutation = useDeleteAutomation()
 	const modal = useModal()
+	const textKind = kind === 'template' ? 'automation template' : kind
 
 	return (
 		<div className="flex items-center justify-end gap-4">
@@ -129,12 +130,15 @@ function AutomationActions({ automationName, kind }: AutomationActionsProps) {
 					Endpoint
 				</Button>
 			)}
-			<ActionIcon
-				loading={deleteMutation.isLoading}
-				onClick={() => deleteMutation.mutate(automationName)}
-			>
-				<IoTrash />
-			</ActionIcon>
+			<Confirm
+				confirmText={`Are you sure you want to delete this ${textKind}?`}
+				onConfirm={() => deleteMutation.mutate(automationName)}
+				target={(open) => (
+					<ActionIcon loading={deleteMutation.isLoading} onClick={open}>
+						<IoTrash />
+					</ActionIcon>
+				)}
+			/>
 		</div>
 	)
 }
