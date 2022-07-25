@@ -98,6 +98,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	r := gin.Default()
 	RegisterCustomValidators()
+	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
 	store, _ := sessRedis.NewStore(20, "tcp", config.Configs.Redis.Host+":"+fmt.Sprint(config.Configs.Redis.Port), "", []byte(config.Configs.Secrets.SessionAuthSecret), []byte(config.Configs.Secrets.SessionEncryptSecret))
 	storeDomain := ""
 	if config.Configs.App.RunLocally {
@@ -171,14 +172,14 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// oauth user providers routes
 	r.GET("/oauth/user/provider/auth/provider/:provider_name/account_id/:account_id",
-		middlewares.OauthMiddleware(),
+		middlewares.OauthMiddleware(httpHelper),
 		middlewares.TokenTypeMiddleware([]string{"tp"}),
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
 		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
 
 	if !config.Configs.App.RunLocally {
-		r.Use(middlewares.OauthMiddleware())
+		r.Use(middlewares.OauthMiddleware(httpHelper))
 	} else {
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
@@ -288,8 +289,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
-	database.POST("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
-	database.POST("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
+	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
+	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 	// database userGroups
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
@@ -299,7 +300,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement.PUT("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.UpdateUserGroup())
 	userGroupManagement.GET("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.GetUserGroups())
 	userGroupManagement.DELETE("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.DeleteUserGroup())
-	userGroupManagement.POST("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetUserGroup())
+	userGroupManagement.POST("/project/:tag/userGroup/name/:name", userManagementController.SetUserGroup())
+	userGroupManagement.POST("/project/:tag/userGroup/default", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetDefaultUserGroup())
 
 	profile.GET("", profileController.GetProfile())
 

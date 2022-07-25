@@ -27,6 +27,7 @@ export enum Modals {
 	EditRecord = 'edit-record',
 	CreateUserGroup = 'create-user-group',
 	AccessToken = 'access-token',
+	UserGroupDetails = 'user-group-details',
 }
 
 export function useModal() {

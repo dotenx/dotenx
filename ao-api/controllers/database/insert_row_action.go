@@ -41,7 +41,7 @@ func (dc *DatabaseController) InsertRow() gin.HandlerFunc {
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 		if err := dc.Service.InsertRow(tpAccountId, projectTag, tableName, dto); err != nil {
 			log.Println("err:", err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			return

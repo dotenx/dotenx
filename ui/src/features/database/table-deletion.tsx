@@ -1,4 +1,5 @@
-import { Button } from '@mantine/core'
+import { Button, Popover } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { IoTrash } from 'react-icons/io5'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -14,17 +15,33 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 	const deleteMutation = useMutation(() => deleteTable(projectName, tableName), {
 		onSuccess: () => navigate(`/builder/projects/${projectName}/tables`),
 	})
+	const [opened, handlers] = useDisclosure(false)
 
 	return (
-		<Button
-			leftIcon={<IoTrash />}
-			variant="outline"
-			type="button"
-			size="xs"
-			onClick={() => deleteMutation.mutate()}
-			loading={deleteMutation.isLoading}
+		<Popover
+			opened={opened}
+			onClose={handlers.close}
+			target={
+				<Button
+					leftIcon={<IoTrash />}
+					variant="outline"
+					type="button"
+					size="xs"
+					onClick={handlers.open}
+					loading={deleteMutation.isLoading}
+				>
+					Delete Table
+				</Button>
+			}
+			withArrow
+			position="bottom"
 		>
-			Delete Table
-		</Button>
+			<div className="flex flex-col gap-6">
+				<p className="text-sm">Are you sure you want to delete this table?</p>
+				<Button type="button" onClick={() => deleteMutation.mutate()}>
+					Confirm Delete
+				</Button>
+			</div>
+		</Popover>
 	)
 }
