@@ -83,7 +83,6 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 							label={field.name}
 							name={`secrets.${field.key}`}
 							control={control}
-							required
 							errors={errors}
 						/>
 					))}

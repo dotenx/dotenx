@@ -1,17 +1,18 @@
 import { KeyboardEventHandler, useState } from 'react'
-import { Control, Controller } from 'react-hook-form'
+import { Controller, FieldPath, FieldValues, UseControllerProps } from 'react-hook-form'
 import { OnChangeValue } from 'react-select'
 import ReactCreatableSelect from 'react-select/creatable'
 
-interface CreatableProps {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
-	name: string
+interface CreatableProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+	extends UseControllerProps<TFieldValues, TName> {
 	placeholder: string
 	label: string
 }
 
-export function CreatableSelect({ control, name, placeholder, label }: CreatableProps) {
+export function CreatableSelect<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ control, name, placeholder, label }: CreatableProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-1">
 			<label htmlFor={name} className="text-sm font-bold">
@@ -20,7 +21,6 @@ export function CreatableSelect({ control, name, placeholder, label }: Creatable
 			<Controller
 				control={control}
 				name={name}
-				defaultValue={[]}
 				render={({ field: { onChange, value } }) => {
 					return (
 						<CreatableRaw onChange={onChange} value={value} placeholder={placeholder} />

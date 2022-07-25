@@ -2,7 +2,7 @@ import { Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
 import { useEffect } from 'react'
-import { Control, FieldErrors, useFieldArray } from 'react-hook-form'
+import { Control, FieldErrors, FieldPath, useFieldArray } from 'react-hook-form'
 import { IoAdd, IoClose } from 'react-icons/io5'
 import { FieldType } from '../../api'
 import { taskCodeState } from '../flow'
@@ -122,7 +122,7 @@ function TaskSettings({
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
-				<Field label="Name" type="text" name="name" control={control} errors={errors} />
+				<Field label="Name" name="name" control={control} errors={errors} />
 				<div>
 					<GroupSelect
 						options={tasksOptions}
@@ -157,6 +157,7 @@ function TaskSettings({
 					<SelectIntegration
 						control={control}
 						errors={errors}
+						name="integration"
 						integrationTypes={integrationTypes}
 						onAddIntegration={() => setIsAddingIntegration(true)}
 					/>
@@ -176,13 +177,16 @@ function TaskSettings({
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: ComplexFieldProps & { key: string; onClick: () => void; description: string }
+	props: ComplexFieldProps<TaskSettingsSchema, FieldPath<TaskSettingsSchema>> & {
+		key: string
+		onClick: () => void
+		description: string
+	}
 ) => {
 	switch (kind) {
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					{/* TODO: PLEASE USE ComplexField WHEN BACKEND FORMATTER IS READY */}
 					<ComplexField {...props} />
 					<Description>{props.description}</Description>
 				</div>
@@ -199,9 +203,8 @@ const getFieldComponent = (
 }
 
 interface VariablesProps {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
-	errors: FieldErrors
+	control: Control<TaskSettingsSchema>
+	errors: FieldErrors<TaskSettingsSchema>
 	outputGroups: GroupData[]
 }
 
@@ -250,9 +253,8 @@ function Variables({ control, errors, outputGroups }: VariablesProps) {
 }
 
 interface OutputsProps {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
-	errors: FieldErrors
+	control: Control<TaskSettingsSchema>
+	errors: FieldErrors<TaskSettingsSchema>
 }
 function Outputs({ control, errors }: OutputsProps) {
 	const { fields, append, remove } = useFieldArray({ control, name: 'outputs' })

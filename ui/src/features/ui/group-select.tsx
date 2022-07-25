@@ -1,7 +1,13 @@
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+} from 'react-hook-form'
 import { IoChevronDown, IoSearch } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
@@ -14,24 +20,18 @@ export interface GroupSelectOption {
 	iconUrl?: string
 }
 
-interface GroupSelectProps {
-	name: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
+interface GroupSelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+	extends UseControllerProps<TFieldValues, TName> {
 	options: GroupOption[]
-	errors?: FieldErrors
+	errors?: FieldErrors<TFieldValues>
 	placeholder: string
 	loading?: boolean
 }
 
-export function GroupSelect({
-	control,
-	name,
-	options,
-	errors,
-	placeholder,
-	loading,
-}: GroupSelectProps) {
+export function GroupSelect<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ control, name, options, errors, placeholder, loading }: GroupSelectProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-1">
 			<span className="text-sm font-bold cursor-default">Type</span>
@@ -47,13 +47,10 @@ export function GroupSelect({
 	)
 }
 
-export function ControlledGroupSelect({
-	control,
-	name,
-	options,
-	placeholder,
-	loading,
-}: GroupSelectProps) {
+export function ControlledGroupSelect<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ control, name, options, placeholder, loading }: GroupSelectProps<TFieldValues, TName>) {
 	return (
 		<Controller
 			control={control}

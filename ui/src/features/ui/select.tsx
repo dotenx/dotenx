@@ -1,4 +1,10 @@
-import { Control, Controller, FieldErrors } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+} from 'react-hook-form'
 import ReactSelect, { MultiValue } from 'react-select'
 import { FieldError } from './field'
 
@@ -7,19 +13,17 @@ export interface Option {
 	value: unknown
 }
 
-interface SelectProps {
+interface SelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+	extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	errors?: FieldErrors
-	name: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
+	errors?: FieldErrors<TFieldValues>
 	options?: Option[]
 	isMulti?: boolean
 	placeholder?: string
 	isLoading?: boolean
 }
 
-export function Select({
+export function Select<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	label,
 	errors,
 	name,
@@ -29,7 +33,7 @@ export function Select({
 	placeholder,
 	isLoading,
 	...rest
-}: SelectProps) {
+}: SelectProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-0.5" {...rest}>
 			<label htmlFor={name} className="text-sm">
@@ -48,28 +52,18 @@ export function Select({
 	)
 }
 
-interface SelectControllerProps {
-	name: string
-	control: Control
-	options: Option[]
-	isMulti: boolean
-	placeholder?: string
-	isLoading?: boolean
-}
-
-function SelectController({
+function SelectController<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	control,
 	name,
 	options,
 	isMulti,
 	placeholder,
 	isLoading,
-}: SelectControllerProps) {
+}: SelectProps<TFieldValues, TName>) {
 	return (
 		<Controller
 			control={control}
 			name={name}
-			defaultValue={isMulti ? [] : ''} // This is a bit tricky, maybe needs to change for different value types in future
 			render={({ field: { onChange, value } }) => {
 				return (
 					<ReactSelect
@@ -82,8 +76,8 @@ function SelectController({
 						}
 						value={
 							isMulti
-								? getSelectedOptions(options, value)
-								: options.find((option) => option.value === value)
+								? getSelectedOptions(options ?? [], value)
+								: options?.find((option) => option.value === value)
 						}
 						options={options}
 						id={name}
