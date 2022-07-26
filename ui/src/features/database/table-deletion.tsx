@@ -18,10 +18,8 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 	const [opened, handlers] = useDisclosure(false)
 
 	return (
-		<Popover
-			opened={opened}
-			onClose={handlers.close}
-			target={
+		<Popover opened={opened} onClose={handlers.close} withArrow position="bottom">
+			<Popover.Target>
 				<Button
 					leftIcon={<IoTrash />}
 					variant="outline"
@@ -32,16 +30,15 @@ export function TableDeletion({ projectName, tableName }: TableDeletionProps) {
 				>
 					Delete Table
 				</Button>
-			}
-			withArrow
-			position="bottom"
-		>
-			<div className="flex flex-col gap-6">
-				<p className="text-sm">Are you sure you want to delete this table?</p>
-				<Button type="button" onClick={() => deleteMutation.mutate()}>
-					Confirm Delete
-				</Button>
-			</div>
+			</Popover.Target>
+			<Popover.Dropdown>
+				<div className="flex flex-col gap-6">
+					<p className="text-sm">Are you sure you want to delete this table?</p>
+					<Button type="button" onClick={() => deleteMutation.mutate()}>
+						Confirm Delete
+					</Button>
+				</div>
+			</Popover.Dropdown>
 		</Popover>
 	)
 }

@@ -210,6 +210,7 @@ export interface GetTaskFieldsResponse {
 export enum FieldType {
 	Text = 'text',
 	Code = 'code',
+	Object = 'object',
 }
 
 export interface GetExecutionResultResponse {
