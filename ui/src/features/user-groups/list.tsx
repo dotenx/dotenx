@@ -122,7 +122,10 @@ function UserGroupItem({
 						<Popover
 							opened={deleteConfirmationOpened}
 							onClose={deleteConfirmationHandlers.close}
-							target={
+							withArrow
+							position="bottom"
+						>
+							<Popover.Target>
 								<ActionIcon
 									type="button"
 									className="text-sm"
@@ -132,18 +135,17 @@ function UserGroupItem({
 								>
 									<IoClose />
 								</ActionIcon>
-							}
-							withArrow
-							position="bottom"
-						>
-							<div className="flex flex-col gap-6">
-								<p className="text-sm">
-									Are you sure you want to delete this user group?
-								</p>
-								<Button type="button" onClick={onDelete}>
-									Confirm Delete
-								</Button>
-							</div>
+							</Popover.Target>
+							<Popover.Dropdown>
+								<div className="flex flex-col gap-6">
+									<p className="text-sm">
+										Are you sure you want to delete this user group?
+									</p>
+									<Button type="button" onClick={onDelete}>
+										Confirm Delete
+									</Button>
+								</div>
+							</Popover.Dropdown>
 						</Popover>
 					</div>
 				)}

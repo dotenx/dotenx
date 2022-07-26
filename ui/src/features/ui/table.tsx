@@ -68,13 +68,18 @@ export function Table<D extends object = Record<string, string>>({
 						className="max-w-xs"
 					/>
 					<div className="overflow-hidden border rounded-md">
-						<MantineTable {...getTableProps()}>
-							<thead>
+						<MantineTable
+							striped
+							verticalSpacing="xl"
+							horizontalSpacing="xl"
+							{...getTableProps()}
+						>
+							<thead className="bg-gray-200">
 								{headerGroups.map((headerGroup) => (
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="text-left last:text-right last:flex last:justify-end first:!justify-start"
+												className="text-left last:text-right last:flex last:justify-end first:!justify-start !py-2"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}

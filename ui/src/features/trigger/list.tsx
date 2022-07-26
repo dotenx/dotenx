@@ -1,10 +1,10 @@
-import { Button } from '@mantine/core'
-import { IoAdd } from 'react-icons/io5'
+import { ActionIcon, Button } from '@mantine/core'
+import { IoAdd, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { CellProps } from 'react-table'
 import { deleteTrigger, getTriggers, QueryKey, TriggerData } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { DeleteButton, Table } from '../ui'
+import { Table } from '../ui'
 
 function useTriggerList() {
 	const client = useQueryClient()
@@ -48,7 +48,7 @@ export function TriggerList() {
 					id: 'action',
 					Cell: (props: CellProps<TriggerData>) => {
 						return (
-							<DeleteButton
+							<ActionIcon
 								loading={deleteMutation.isLoading}
 								onClick={() =>
 									deleteMutation.mutate({
@@ -56,7 +56,11 @@ export function TriggerList() {
 										automationName: props.row.original.pipeline_name,
 									})
 								}
-							/>
+								className="ml-auto"
+								type="button"
+							>
+								<IoTrash />
+							</ActionIcon>
 						)
 					},
 				},

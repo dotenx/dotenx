@@ -126,10 +126,7 @@ export function TaskBuilder({
 	})
 	const steps = form.watch().steps
 	const handleSubmit = form.handleSubmit((values) => onSubmit(values))
-	const [view, toggleView] = useToggle<'detailed' | 'summary'>('detailed', [
-		'detailed',
-		'summary',
-	])
+	const [view, toggleView] = useToggle<'detailed' | 'summary'>(['detailed', 'summary'])
 
 	return (
 		<div className="flex flex-col gap-4">

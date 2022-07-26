@@ -1,39 +1,40 @@
 import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+} from 'react-hook-form'
 import { IoChevronDown, IoClose } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
 import { FieldError } from './field'
 
-export interface InputOrSelectProps {
-	name: string
+export interface InputOrSelectProps<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+> extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
 	groups: GroupData[]
-	errors?: FieldErrors
+	errors?: FieldErrors<TFieldValues>
 	placeholder?: string
 }
 
-export function InputOrSelect({
-	control,
-	label,
-	name,
-	groups,
-	errors,
-	placeholder,
-}: InputOrSelectProps) {
+export function InputOrSelect<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ control, label, name, groups, errors, placeholder }: InputOrSelectProps<TFieldValues, TName>) {
 	return (
 		<div className="w-full">
 			<Controller
 				control={control}
 				name={name}
-				defaultValue={{ type: 'text', data: '' }}
 				render={({ field: { onChange, value } }) => (
 					<InputOrSelectRaw
 						onChange={onChange}
-						value={value}
+						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
 						label={label}
 						name={name}
 						groups={groups}
@@ -57,7 +58,7 @@ export interface GroupData {
 	iconUrl?: string
 }
 
-interface InputValue {
+export interface InputValue {
 	type: InputOrSelectKind.Text
 	data: string
 }

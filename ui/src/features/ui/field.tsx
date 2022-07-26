@@ -1,16 +1,25 @@
 import { ErrorMessage } from '@hookform/error-message'
-import { InputHTMLAttributes } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+} from 'react-hook-form'
 
-interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
+interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+	extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	errors?: FieldErrors
-	name: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
+	errors?: FieldErrors<TFieldValues>
+	placeholder?: string
 }
 
-export function Field({ label, errors, control, ...rest }: FieldProps) {
+export function Field<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
+	label,
+	errors,
+	control,
+	...rest
+}: FieldProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-1">
 			{label && (
@@ -21,13 +30,12 @@ export function Field({ label, errors, control, ...rest }: FieldProps) {
 			<Controller
 				control={control}
 				name={rest.name}
-				defaultValue="" // This is a bit tricky, maybe needs to change for different value types in future
 				render={({ field: { onChange, value, name, ref } }) => (
 					<input
 						className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
 						id={rest.name}
 						onChange={onChange}
-						value={value}
+						value={value ?? ''}
 						ref={ref}
 						autoComplete="off"
 						{...rest}
