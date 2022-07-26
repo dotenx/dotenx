@@ -1,6 +1,6 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
-import { IoRefresh } from 'react-icons/io5'
+import { IoReload } from 'react-icons/io5'
 import { useQuery, useQueryClient } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
@@ -94,7 +94,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 		<>
 			<div className="flex flex-wrap gap-2">
 				<Button
-					leftIcon={<IoRefresh />}
+					leftIcon={<IoReload />}
 					type="button"
 					onClick={() => queryClient.invalidateQueries(QueryKey.GetUserManagementData)}
 				>

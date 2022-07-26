@@ -16,6 +16,7 @@ const schema = z.object({
 	type: z.string().min(1),
 	pipeline_name: z.string().min(1),
 	integration: z.string().optional(),
+	credentials: z.record(z.string()),
 })
 
 type Schema = z.infer<typeof schema>

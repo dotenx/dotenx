@@ -1,6 +1,12 @@
 import clsx from 'clsx'
 import { useRef, useState } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+} from 'react-hook-form'
 import { IoChevronDown } from 'react-icons/io5'
 import { useOutsideClick } from '../hooks'
 import { Fade } from './animation/fade'
@@ -12,18 +18,18 @@ interface Option {
 	value: unknown
 }
 
-export interface NewSelectProps {
+export interface NewSelectProps<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+> extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	errors?: FieldErrors
-	name: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
+	errors?: FieldErrors<TFieldValues>
 	options?: Option[]
 	placeholder?: string
 	loading?: boolean
 }
 
-export function NewSelect({
+export function NewSelect<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	label,
 	errors,
 	name,
@@ -32,7 +38,7 @@ export function NewSelect({
 	placeholder,
 	loading,
 	...rest
-}: NewSelectProps) {
+}: NewSelectProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-1" {...rest}>
 			{label && (
@@ -52,26 +58,28 @@ export function NewSelect({
 	)
 }
 
-interface SelectControllerProps {
-	name: string
-	control: Control
-	options: Option[]
-	placeholder?: string
-	loading?: boolean
-}
-
-function SelectController({ control, name, options, placeholder, loading }: SelectControllerProps) {
+function SelectController<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
+	control,
+	name,
+	options,
+	placeholder,
+	loading,
+}: NewSelectProps<TFieldValues, TName>) {
 	return (
 		<Controller
 			control={control}
 			name={name}
-			defaultValue=""
 			render={({ field: { onChange, value } }) => {
 				return (
 					<RawSelect
 						onChange={(newValue) => onChange((newValue as Option)?.value)}
-						value={options.find((option) => option.value === value)}
-						options={options}
+						value={
+							options?.find((option) => option.value === value) ?? {
+								label: '',
+								value: '',
+							}
+						}
+						options={options ?? []}
 						placeholder={placeholder}
 						loading={loading}
 					/>
