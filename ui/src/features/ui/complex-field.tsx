@@ -1,7 +1,14 @@
 import { Button } from '@mantine/core'
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
-import { Control, Controller, FieldErrors, useForm } from 'react-hook-form'
+import {
+	Controller,
+	FieldErrors,
+	FieldPath,
+	FieldValues,
+	UseControllerProps,
+	useForm,
+} from 'react-hook-form'
 import { IoClose } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { getFormatterFunctions, QueryKey } from '../../api'
@@ -25,33 +32,29 @@ interface FormattedValue {
 	args: InputOrSelectValue[]
 }
 
-export interface ComplexFieldProps {
-	name: string
+export interface ComplexFieldProps<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+> extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
 	groups: GroupData[]
-	errors: FieldErrors
+	errors: FieldErrors<TFieldValues>
 	placeholder?: string
 }
-export function ComplexField({
-	control,
-	errors,
-	groups,
-	name,
-	label,
-	placeholder,
-}: ComplexFieldProps) {
+
+export function ComplexField<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ control, errors, groups, name, label, placeholder }: ComplexFieldProps<TFieldValues, TName>) {
 	return (
 		<div className="w-full">
 			<Controller
 				control={control}
 				name={name}
-				defaultValue={{ type: 'text', data: '' }}
 				render={({ field: { onChange, value } }) => (
 					<ComplexFieldRaw
 						onChange={onChange}
-						value={value}
+						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
 						label={label}
 						name={name}
 						groups={groups}

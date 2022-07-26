@@ -1,23 +1,28 @@
 import { Button } from '@mantine/core'
-import { Control, FieldErrors } from 'react-hook-form'
+import { FieldErrors, FieldPath, FieldValues, UseControllerProps } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { getIntegrationsByKinds, QueryKey } from '../../api'
 import { NewSelect } from '../ui'
 
-interface SelectIntegrationProps {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	control: Control<any>
-	errors: FieldErrors
+interface SelectIntegrationProps<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+> extends UseControllerProps<TFieldValues, TName> {
+	errors: FieldErrors<TFieldValues>
 	integrationTypes: string[]
 	onAddIntegration?: () => void
 }
 
-export function SelectIntegration({
+export function SelectIntegration<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({
 	control,
 	errors,
 	integrationTypes,
 	onAddIntegration,
-}: SelectIntegrationProps) {
+	name,
+}: SelectIntegrationProps<TFieldValues, TName>) {
 	const integrationQuery = useQuery(
 		[QueryKey.GetIntegrationsByType, integrationTypes],
 		() => getIntegrationsByKinds(integrationTypes),
@@ -30,7 +35,7 @@ export function SelectIntegration({
 			<div className="grow shrink-0">
 				<NewSelect
 					label="Integration"
-					name="integration"
+					name={name}
 					control={control}
 					errors={errors}
 					options={availableIntegrations.map((integration) => ({
