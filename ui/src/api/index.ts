@@ -41,7 +41,7 @@ import {
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
 	UpdateRecordRequest,
-	UpdateUserGroupRequest,
+	UpdateUserGroupRequest
 } from './types'
 export * from './types'
 
@@ -268,7 +268,7 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 }
 
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
-	return api.post<void>(
+	return api.delete<void>(
 		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
 	)
 }
@@ -279,7 +279,7 @@ export function updateRecord(
 	rowId: string,
 	payload: UpdateRecordRequest
 ) {
-	return api.post<void>(
+	return api.put<void>(
 		`/database/query/update/project/${projectTag}/table/${tableName}/row/${rowId}`,
 		payload
 	)

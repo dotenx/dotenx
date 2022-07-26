@@ -15,7 +15,7 @@ import {
 	getTableRecords,
 	GetTableRecordsRequest,
 	QueryKey,
-	TableRecord,
+	TableRecord
 } from '../api'
 import {
 	ColumnForm,
@@ -24,7 +24,7 @@ import {
 	QueryBuilderValues,
 	RecordForm,
 	TableDeletion,
-	TableEndpoints,
+	TableEndpoints
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
@@ -76,7 +76,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					),
 				},
 		  ]
-	const formColumns = columns.filter((column) => column.name !== 'id')
+	const formColumns = columns.filter(
+		(column) => column.name !== 'id' && column.name !== 'creator_id'
+	)
 
 	return (
 		<>
