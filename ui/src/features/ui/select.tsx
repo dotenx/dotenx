@@ -52,6 +52,8 @@ export function Select<TFieldValues extends FieldValues, TName extends FieldPath
 	)
 }
 
+const defaultValue = { label: '', value: '' }
+
 function SelectController<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	control,
 	name,
@@ -76,8 +78,8 @@ function SelectController<TFieldValues extends FieldValues, TName extends FieldP
 						}
 						value={
 							isMulti
-								? getSelectedOptions(options ?? [], value)
-								: options?.find((option) => option.value === value)
+								? getSelectedOptions(options ?? [], value ?? [])
+								: options?.find((option) => option.value === value) ?? defaultValue
 						}
 						options={options}
 						id={name}

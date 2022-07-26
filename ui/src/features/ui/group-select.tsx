@@ -59,10 +59,15 @@ export function ControlledGroupSelect<
 				return (
 					<GroupSelectInner
 						onChange={(newValue) => onChange(newValue.value)}
-						value={options
-							.map((group) => group.options)
-							.flat()
-							.find((option) => option.value === value)}
+						value={
+							options
+								.map((group) => group.options)
+								.flat()
+								.find((option) => option.value === value) ?? {
+								label: '',
+								value: '',
+							}
+						}
 						options={options}
 						invalid={invalid}
 						placeholder={placeholder}

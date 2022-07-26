@@ -34,7 +34,7 @@ export function InputOrSelect<
 				render={({ field: { onChange, value } }) => (
 					<InputOrSelectRaw
 						onChange={onChange}
-						value={value}
+						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
 						label={label}
 						name={name}
 						groups={groups}

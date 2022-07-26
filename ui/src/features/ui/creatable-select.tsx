@@ -23,7 +23,11 @@ export function CreatableSelect<
 				name={name}
 				render={({ field: { onChange, value } }) => {
 					return (
-						<CreatableRaw onChange={onChange} value={value} placeholder={placeholder} />
+						<CreatableRaw
+							onChange={onChange}
+							value={value ?? []}
+							placeholder={placeholder}
+						/>
 					)
 				}}
 			/>

@@ -54,7 +54,7 @@ export function ComplexField<
 				render={({ field: { onChange, value } }) => (
 					<ComplexFieldRaw
 						onChange={onChange}
-						value={value}
+						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
 						label={label}
 						name={name}
 						groups={groups}
