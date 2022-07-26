@@ -1,4 +1,5 @@
 import { atom, useAtom } from 'jotai'
+import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
 import { AutomationKind } from '../../api'
@@ -6,7 +7,7 @@ import { EdgeSettings } from '../automation'
 import { Modals, useModal } from '../hooks'
 import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from '../task'
 import { TriggerSettingsModal } from '../trigger/settings'
-import { Modal } from '../ui'
+import { InputOrSelectKind, Modal } from '../ui'
 import { EdgeData, EdgeEntity, PipeEdge } from './edge'
 import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
 import { TriggerNode } from './trigger-node'
@@ -103,7 +104,15 @@ function TaskSettingsModal({ updateNode, withIntegration }: NodeSettingsModalPro
 				<TaskSettingsWithIntegration
 					defaultValues={data}
 					onSave={(values) => {
-						updateNode(id, values)
+						updateNode(id, {
+							...values,
+							others: _.fromPairs(
+								_.toPairs(values.others).map(([key, value]) => [
+									key,
+									value ?? { type: InputOrSelectKind.Text, data: '' },
+								])
+							),
+						})
 						modal.close()
 					}}
 					isAddingIntegration={isAddingIntegration}

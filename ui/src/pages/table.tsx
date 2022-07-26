@@ -76,7 +76,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					),
 				},
 		  ]
-	const formColumns = columns.filter((column) => column.name !== 'id')
+	const formColumns = columns.filter(
+		(column) => column.name !== 'id' && column.name !== 'creator_id'
+	)
 
 	return (
 		<>

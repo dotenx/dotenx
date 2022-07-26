@@ -28,7 +28,7 @@ const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
 	integration: z.string().optional(),
-	others: z.record(complexValue).optional(),
+	others: z.record(complexValue.optional()).optional(),
 	vars: z.array(z.object({ key: z.string(), value: inputOrSelectValue })).optional(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
@@ -54,6 +54,7 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
+
 	const taskType = watch('type')
 	const taskName = watch('name')
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
