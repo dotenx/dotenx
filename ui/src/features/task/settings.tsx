@@ -18,7 +18,7 @@ import {
 	InputOrSelect,
 	InputOrSelectKind,
 	Loader,
-	Textarea,
+	Textarea
 } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
