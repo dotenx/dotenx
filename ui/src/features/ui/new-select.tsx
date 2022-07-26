@@ -116,7 +116,7 @@ function RawSelect({
 				)}
 				onClick={() => setIsOpen((isOpen) => !isOpen)}
 			>
-				{!value && <span className="text-slate-500">{placeholder}</span>}
+				{(!value || !value.value) && <span className="text-slate-500">{placeholder}s</span>}
 				{value && <span>{value.label}</span>}
 				<IoChevronDown className="ml-2 text-slate-400" />
 			</button>
