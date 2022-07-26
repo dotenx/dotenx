@@ -16,6 +16,7 @@ import {
 	InputOrSelect,
 	InputOrSelectKind,
 	Loader,
+	Textarea,
 } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
@@ -177,7 +178,10 @@ function TaskSettings({
 
 const getFieldComponent = (
 	kind: FieldType,
-	props: ComplexFieldProps<TaskSettingsSchema, FieldPath<TaskSettingsSchema>> & {
+	{
+		onClick,
+		...props
+	}: ComplexFieldProps<TaskSettingsSchema, FieldPath<TaskSettingsSchema>> & {
 		key: string
 		onClick: () => void
 		description: string
@@ -193,9 +197,16 @@ const getFieldComponent = (
 			)
 		case FieldType.Code:
 			return (
-				<Button key={props.key} type="button" onClick={props.onClick}>
+				<Button key={props.key} type="button" onClick={onClick}>
 					Add {props.label}
 				</Button>
+			)
+		case FieldType.Object:
+			return (
+				<div key={props.key}>
+					<Textarea {...props} />
+					<Description>{props.description}</Description>
+				</div>
 			)
 		default:
 			return null

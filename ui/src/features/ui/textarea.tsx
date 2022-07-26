@@ -6,12 +6,12 @@ import {
 	UseControllerProps,
 } from 'react-hook-form'
 import { FieldError } from './field'
+import { InputOrSelectKind, InputValue } from './input-or-select'
 
 interface TextareaProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
 	errors?: FieldErrors<TFieldValues>
 	label?: string
-	placeholder?: string
 }
 
 export function Textarea<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
@@ -30,17 +30,8 @@ export function Textarea<TFieldValues extends FieldValues, TName extends FieldPa
 			<Controller
 				control={control}
 				name={rest.name}
-				render={({ field: { onChange, value, name, ref } }) => (
-					<textarea
-						className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
-						id={rest.name}
-						onChange={onChange}
-						value={value ?? ''}
-						ref={ref}
-						autoComplete="off"
-						{...rest}
-						name={name}
-					/>
+				render={({ field: { onChange, value, name } }) => (
+					<RawTextarea name={name} onChange={onChange} value={value} />
 				)}
 			/>
 
@@ -50,3 +41,24 @@ export function Textarea<TFieldValues extends FieldValues, TName extends FieldPa
 }
 
 Textarea.displayName = 'Textarea'
+
+function RawTextarea({
+	name,
+	value,
+	onChange,
+}: {
+	name: string
+	value: InputValue
+	onChange: (value: InputValue) => void
+}) {
+	return (
+		<textarea
+			className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
+			id={name}
+			onChange={(e) => onChange({ type: InputOrSelectKind.Text, data: e.target.value })}
+			value={value?.data ?? ''}
+			autoComplete="off"
+			name={name}
+		/>
+	)
+}

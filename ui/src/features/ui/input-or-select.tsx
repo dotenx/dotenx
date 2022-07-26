@@ -58,7 +58,7 @@ export interface GroupData {
 	iconUrl?: string
 }
 
-interface InputValue {
+export interface InputValue {
 	type: InputOrSelectKind.Text
 	data: string
 }

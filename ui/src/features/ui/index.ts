@@ -22,5 +22,5 @@ export * from './new-select'
 export * from './select'
 export * from './sidebar'
 export * from './table'
+export * from './textarea'
 export * from './toggle'
-
