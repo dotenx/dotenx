@@ -1,4 +1,4 @@
-import { MantineProvider } from '@mantine/core'
+import { createEmotionCache, MantineProvider } from '@mantine/core'
 import { useEffect } from 'react'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -11,6 +11,8 @@ import { Routes } from './routes'
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
 })
+
+const emotionCache = createEmotionCache({ key: 'mantine' })
 
 export function App() {
 	useEffect(() => {
@@ -41,7 +43,7 @@ export function App() {
 						fontFamilyMonospace: "'Roboto Mono', monospace",
 						headings: { fontFamily: 'Montserrat, sans-serif' },
 					}}
-					emotionOptions={{ key: 'mantine', prepend: false }}
+					emotionCache={emotionCache}
 				>
 					<Routes />
 					<ToastContainer />

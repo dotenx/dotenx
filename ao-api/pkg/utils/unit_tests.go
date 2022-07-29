@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/dotenx/dotenx/ao-api/config"
 	dbPkg "github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/db/migrate/postgresql"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -59,10 +61,24 @@ func InitializeMockDB() (*dbPkg.DB, sqlmock.Sqlmock, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	// if err := applyMigrations(db, "postgres"); err != nil {
+	// 	return nil, nil, err
+	// }
 	return &dbPkg.DB{
 		Connection: sqlx.NewDb(db, "postgres"),
 		Driver:     dbPkg.Postgres,
 	}, mock, nil
+}
+
+// helper function to setup the database by performing automated
+// database migration steps.
+func applyMigrations(db *sql.DB, driver string) error {
+	switch driver {
+	case "postgres":
+		return postgresql.Migrate(db)
+	default:
+		return postgresql.Migrate(db)
+	}
 }
 
 func InitializeIntegrationConsts(address string) {

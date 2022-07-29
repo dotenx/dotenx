@@ -68,6 +68,7 @@ export function TriggerForm({
 				{triggerDefinitionQuery.isLoading && <Loader />}
 				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
+						name="integration"
 						control={control}
 						errors={errors}
 						integrationTypes={integrationTypes}

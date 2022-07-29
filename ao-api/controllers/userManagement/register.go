@@ -33,7 +33,15 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 			return
 		}
 
-		err := umc.Service.SetUserInfo(userInfo, projectTag)
+		defaultUserGroup, err := umc.Service.GetDefaultUserGroup(projectTag)
+		if err != nil {
+			log.Println(err)
+			userInfo.UserGroup = "users"
+		} else {
+			userInfo.UserGroup = defaultUserGroup.Name
+		}
+
+		err = umc.Service.SetUserInfo(userInfo, projectTag)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),

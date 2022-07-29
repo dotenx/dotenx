@@ -30,10 +30,18 @@ func (ps *projectService) AddProject(accountId string, project models.Project) e
 	pingErr := db.Connection.Ping()
 	log.Println("pingErr:", pingErr)
 	defer closeFunc(db.Connection)
+	if err := ps.TpUserStore.CreateUserGroupTable(db); err != nil {
+		return err
+	}
+
 	if err := ps.TpUserStore.CreateUserInfoTable(db); err != nil {
 		return err
 	}
 
+	if project.DefaultUserGroup == "" {
+		project.DefaultUserGroup = "users"
+	}
+
 	// todo: add rollback if database creation fails
-	return nil
+	return ps.TpUserStore.SetDefaultUserGroup(db, models.UserGroup{Name: project.DefaultUserGroup})
 }

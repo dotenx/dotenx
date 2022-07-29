@@ -2,7 +2,7 @@
 import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
-import { IoAdd, IoFilter, IoList, IoPencil, IoSearch, IoTrash } from 'react-icons/io5'
+import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
 import { CellProps } from 'react-table'
@@ -76,7 +76,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					),
 				},
 		  ]
-	const formColumns = columns.filter((column) => column.name !== 'id')
+	const formColumns = columns.filter(
+		(column) => column.name !== 'id' && column.name !== 'creator_id'
+	)
 
 	return (
 		<>
@@ -158,10 +160,19 @@ function QueryTable({
 
 function ActionBar({ projectName, tableName }: { projectName: string; tableName: string }) {
 	const modal = useModal()
+	const queryClient = useQueryClient()
 
 	return (
 		<div className="flex gap-2 text-xs">
 			<TableDeletion projectName={projectName} tableName={tableName} />
+			<Button
+				leftIcon={<IoReload />}
+				size="xs"
+				type="button"
+				onClick={() => queryClient.invalidateQueries(QueryKey.GetTableRecords)}
+			>
+				Refresh
+			</Button>
 			<Button
 				size="xs"
 				leftIcon={<IoFilter />}
@@ -220,7 +231,7 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 			client.invalidateQueries(QueryKey.GetTableRecords)
 		},
 	})
-	const showDelete = name !== 'id'
+	const showDelete = name !== 'id' && name !== 'creator_id'
 
 	return (
 		<div className="flex items-center gap-2">

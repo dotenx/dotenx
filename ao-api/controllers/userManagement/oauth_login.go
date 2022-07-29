@@ -49,6 +49,7 @@ func (umc *UserManagementController) OAuthLogin() gin.HandlerFunc {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())
 				return
 			}
+			//user.Role = "user"
 			err = umc.Service.SetUserInfo(user, projectTag)
 			if err != nil && err.Error() != "user already registered" {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())

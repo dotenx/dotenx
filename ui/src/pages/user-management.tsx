@@ -1,7 +1,8 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
-import { useQuery } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
+import { IoReload } from 'react-icons/io5'
+import { useQuery, useQueryClient } from 'react-query'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
@@ -30,7 +31,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			<Table
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
-				emptyText="Your users list will display here."
+				emptyText="Your users will be displayed here"
 				columns={[
 					{
 						Header: 'Name',
@@ -48,6 +49,10 @@ function UMTableContent({ projectName }: { projectName: string }) {
 								<span>{format(new Date(value.split('+')[0]), 'yyyy/MM/dd')}</span>
 							</div>
 						),
+					},
+					{
+						Header: 'Group',
+						accessor: 'user_group',
 					},
 					{
 						Header: 'User ID',
@@ -80,12 +85,25 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 		account_id: accountId,
 		tp_account_id: '********-****-****-****-************',
 	}
+	const queryClient = useQueryClient()
 
 	if (profileQuery.isLoading) return <Loader />
 
 	return (
 		<>
-			<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
+			<div className="flex flex-wrap gap-2">
+				<Button
+					leftIcon={<IoReload />}
+					type="button"
+					onClick={() => queryClient.invalidateQueries(QueryKey.GetUserManagementData)}
+				>
+					Refresh
+				</Button>
+				<Button component={Link} to="user-groups">
+					User Groups
+				</Button>
+				<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
+			</div>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
 					<Endpoint
@@ -116,6 +134,14 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						label="Authenticate with provider"
 						url={`${API_URL}/user/management/project/${projectTag}/provider/:provider_name/authorize`}
 						method="GET"
+					/>
+					<Endpoint
+						label="Set user group"
+						url={`${API_URL}/user/group/management/project/${projectTag}/userGroup/name/:group_name`}
+						method="POST"
+						code={{
+							account_id: 'account_id',
+						}}
 					/>
 				</div>
 			</Drawer>

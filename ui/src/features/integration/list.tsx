@@ -1,9 +1,9 @@
-import { Button } from '@mantine/core'
-import { IoAdd } from 'react-icons/io5'
+import { ActionIcon, Button } from '@mantine/core'
+import { IoAdd, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { DeleteButton, Table } from '../ui'
+import { Table } from '../ui'
 
 export function IntegrationList() {
 	const client = useQueryClient()
@@ -27,10 +27,14 @@ export function IntegrationList() {
 					id: 'action',
 					accessor: 'name',
 					Cell: ({ value }: { value: string }) => (
-						<DeleteButton
+						<ActionIcon
 							onClick={() => deleteMutation.mutate(value)}
 							loading={deleteMutation.isLoading}
-						/>
+							className="ml-auto"
+							type="button"
+						>
+							<IoTrash />
+						</ActionIcon>
 					),
 				},
 			]}

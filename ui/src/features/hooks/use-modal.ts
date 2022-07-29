@@ -25,6 +25,8 @@ export enum Modals {
 	TableFilter = 'table-filter',
 	NewRecord = 'new-record',
 	EditRecord = 'edit-record',
+	CreateUserGroup = 'create-user-group',
+	UserGroupDetails = 'user-group-details',
 }
 
 export function useModal() {

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { TextInput, Title } from '@mantine/core'
+import { Table as MantineTable, TextInput, Title } from '@mantine/core'
 import Fuse from 'fuse.js'
 import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
@@ -55,7 +55,7 @@ export function Table<D extends object = Record<string, string>>({
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
 					<span className="text-lg">{emptyText}</span>
 					{actionBar}
-					<EmptySvg className="fixed -right-20 -bottom-80 -z-10" />
+					<EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" />
 				</div>
 			)}
 			{data.length !== 0 && (
@@ -68,13 +68,18 @@ export function Table<D extends object = Record<string, string>>({
 						className="max-w-xs"
 					/>
 					<div className="overflow-hidden border rounded-md">
-						<table className="w-full" {...getTableProps()}>
+						<MantineTable
+							striped
+							verticalSpacing="xl"
+							horizontalSpacing="xl"
+							{...getTableProps()}
+						>
 							<thead className="bg-gray-200">
 								{headerGroups.map((headerGroup) => (
-									<tr className="" {...headerGroup.getHeaderGroupProps()}>
+									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="px-6 py-2 text-left last:text-right last:flex last:justify-end first:!justify-start"
+												className="text-left last:text-right last:flex last:justify-end first:!justify-start !py-2"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}
@@ -87,11 +92,11 @@ export function Table<D extends object = Record<string, string>>({
 								{rows.map((row) => {
 									prepareRow(row)
 									return (
-										<tr className="even:bg-gray-50" {...row.getRowProps()}>
+										<tr {...row.getRowProps()}>
 											{row.cells.map((cell) => {
 												return (
 													<td
-														className="px-6 py-6 text-slate-500 last:text-right first:!text-left"
+														className="last:text-right first:!text-left"
 														{...cell.getCellProps()}
 													>
 														{cell.render('Cell')}
@@ -102,7 +107,7 @@ export function Table<D extends object = Record<string, string>>({
 									)
 								})}
 							</tbody>
-						</table>
+						</MantineTable>
 						{searched.length === 0 && (
 							<div className="p-10 text-xs font-black text-center text-slate-600">
 								No items found

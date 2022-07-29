@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,11 +33,15 @@ func (dc *DatabaseController) InsertRow() gin.HandlerFunc {
 			})
 			return
 		}
+		tokenType, _ := c.Get("tokenType")
+		if tokenType == "tp" {
+			dto["creator_id"], _ = utils.GetThirdPartyAccountId(c)
+		}
 		fmt.Println(dto)
-
-		if err := dc.Service.InsertRow(projectTag, tableName, dto); err != nil {
+		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
+		if err := dc.Service.InsertRow(tpAccountId, projectTag, tableName, dto); err != nil {
 			log.Println("err:", err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			return

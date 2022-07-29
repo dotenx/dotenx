@@ -1,7 +1,5 @@
-import { yaml } from '@codemirror/legacy-modes/mode/yaml'
-import { StreamLanguage } from '@codemirror/stream-parser'
 import { Button } from '@mantine/core'
-import CodeMirror from '@uiw/react-codemirror'
+import CodeEditor from '@uiw/react-textarea-code-editor'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -25,11 +23,12 @@ export default function ImportYamlPage() {
 						mutate(code)
 					}}
 				>
-					<CodeMirror
-						minHeight="60vh	"
-						height="100%"
-						extensions={[StreamLanguage.define(yaml)]}
-						onChange={(value) => setCode(value)}
+					<CodeEditor
+						value={code}
+						language="yaml"
+						onChange={(event) => setCode(event.target.value)}
+						style={{ fontFamily: 'monospace', flexGrow: 1, overflowY: 'auto' }}
+						className="rounded-md"
 					/>
 					<Button loading={isLoading} type="submit">
 						Import and Save

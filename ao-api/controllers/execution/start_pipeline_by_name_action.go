@@ -14,7 +14,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		var tpAccountId string
 		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
-			accId, _ := c.Get("tpAccountId")
+			accId, _ := utils.GetThirdPartyAccountId(c)
 			tpAccountId = fmt.Sprintf("%v", accId)
 		}
 		name := c.Param("name")
