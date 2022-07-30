@@ -15,7 +15,7 @@ var AvaliableIntegrations map[string]IntegrationDefinition
 func init() {
 	AvaliableIntegrations = make(map[string]IntegrationDefinition)
 	var address string
-	if config.Configs.App.RunLocally {
+	if config.Configs.App.RunLocally && os.Getenv("RUNNING_IN_DOCKER") != "true" { // This is only for the case we run ao-api without docker and locally
 		address = "../integrations"
 	} else {
 		address = "integrations"
