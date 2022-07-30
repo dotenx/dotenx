@@ -18,7 +18,7 @@ import {
 	InputOrSelect,
 	InputOrSelectKind,
 	Loader,
-	Textarea
+	Textarea,
 } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
@@ -149,6 +149,7 @@ function TaskSettings({
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
 	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
+	const showOutputs = isCodeTask || taskType === 'Get table records'
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -201,7 +202,7 @@ function TaskSettings({
 				{isCodeTask && (
 					<Variables control={control} errors={errors} outputGroups={outputGroups} />
 				)}
-				{isCodeTask && <Outputs control={control} errors={errors} />}
+				{showOutputs && <Outputs control={control} errors={errors} />}
 			</div>
 
 			<Button type="submit" disabled={disableSubmit}>
