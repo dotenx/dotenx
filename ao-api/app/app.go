@@ -13,6 +13,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
+	"github.com/dotenx/dotenx/ao-api/controllers/objectstore"
 	"github.com/dotenx/dotenx/ao-api/controllers/predefinedMiniTask"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
@@ -28,6 +29,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
+	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
@@ -38,6 +40,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
+	"github.com/dotenx/dotenx/ao-api/stores/objectstoreStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
@@ -126,6 +129,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ProjectStore := projectStore.New(db)
 	DatabaseStore := databaseStore.New(db)
 	UserManagementStore := userManagementStore.New()
+	objectstoreStore := objectstoreStore.New(db)
 
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
@@ -138,6 +142,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
+	objectstoreService := objectstoreService.NewObjectstoreService(objectstoreStore)
 
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
@@ -151,6 +156,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
 	profileController := profile.ProfileController{}
+	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
@@ -178,6 +184,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
 		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
 
+	public := r.Group("/public")
+
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware(httpHelper))
 	} else {
@@ -197,6 +205,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database := r.Group("/database")
 	profile := r.Group("/profile")
 	userGroupManagement := r.Group("/user/group/management")
+	objectstore := r.Group("/objectstore")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -302,6 +311,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement.DELETE("/project/:tag/userGroup/name/:name", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.DeleteUserGroup())
 	userGroupManagement.POST("/project/:tag/userGroup/name/:name", userManagementController.SetUserGroup())
 	userGroupManagement.POST("/project/:tag/userGroup/default", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetDefaultUserGroup())
+
+	// objectstore router
+	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.Upload())
+	objectstore.GET("/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.ListFiles())
+	objectstore.GET("/project/:project_tag/file/:file_name", objectstoreController.GetFile())
+	public.GET("/project/:project_tag/file/:file_name", objectstoreController.GetPublicFile())
 
 	profile.GET("", profileController.GetProfile())
 

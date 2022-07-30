@@ -129,11 +129,22 @@ deploy api: &deploy
     TASK_DEFINITION_NAME: dotenx-api
     CLUSTER_NAME: dotenx
     SERVICE_NAME: api
+    ENV_FILE: .env.production
+    FOLDER: ao-api
   script:
     - echo ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
     - echo $TASK_DEFINITION
-    - NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
+    - | 
+      if [ -n $FOLDER ]; then
+      cd $FOLDER
+      joined=[`cat ${ENV_FILE} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
+      echo $joined
+      NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" --argjson ENV_VARS $joined '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0].environment = $ENV_VARS | .taskDefinition.containerDefinitions[0]')
+      else
+      NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
+      fi
+    - echo $NEW_CONTAINER_DEFINTIION
     - echo "Registering new container definition..."
     - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --family "${TASK_DEFINITION_NAME}" --container-definitions "${NEW_CONTAINER_DEFINTIION}"
     - echo "Updating the service..."
@@ -142,6 +153,7 @@ deploy api: &deploy
     # refs:
     #   - master
     changes:
+      - ".gitlab-ci.yml"
       - "ao-api/**/*" 
 
 deploy scheduler:
