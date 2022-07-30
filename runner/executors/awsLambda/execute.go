@@ -40,12 +40,13 @@ func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskE
 	}))
 	svc := lambda.New(sess)
 
-	lambdaPayload := make(map[string]string)
+	lambdaPayload := make(map[string]interface{})
 	for _, env := range task.EnvironmentVariables {
 		key := strings.Split(env, "=")[0]
 		value := strings.Split(env, "=")[1]
 		lambdaPayload[key] = value
 	}
+	lambdaPayload["body"] = task.Details.Body
 	payload, err := json.Marshal(lambdaPayload)
 	if err != nil {
 		result.Error = errors.New("error in json.Marshal: " + err.Error())

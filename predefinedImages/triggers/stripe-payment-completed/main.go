@@ -59,26 +59,37 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
-	for _, p := range payments {
-		body := map[string]interface{}{
-			"workspace": workspace,
-			triggerName: p,
-			"accountId": accId,
+	innerOut := make(map[string]map[string]interface{})
+	for index, p := range payments {
+		innerOut[strconv.Itoa(index)] = map[string]interface{}{
+			"id":             p.ID,
+			"amount":         p.Amount,
+			"currency":       p.Currency,
+			"created":        p.Created,
+			"customer_id":    p.CustomerId,
+			"customer_email": p.CustomerEmail,
+			"description":    p.Description,
+			"status":         p.Status,
 		}
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			return resp, err
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println(status)
-			fmt.Println(err)
-			return resp, err
-		}
-		fmt.Println(string(out))
 	}
+	body := map[string]interface{}{
+		"workspace": workspace,
+		triggerName: innerOut,
+		"accountId": accId,
+	}
+	json_data, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	payload := bytes.NewBuffer(json_data)
+	out, err, statusCode := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+	if err != nil {
+		fmt.Println(statusCode)
+		fmt.Println(err)
+		return resp, err
+	}
+	fmt.Println(string(out))
 	fmt.Println("trigger successfully ended")
 	return resp, nil
 }

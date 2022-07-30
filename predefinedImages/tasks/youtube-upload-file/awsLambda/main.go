@@ -16,15 +16,19 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+// type Event struct {
+// 	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
+// 	FileName     string `json:"fileName"`
+// 	Title        string `json:"title"`
+// 	Description  string `json:"description"`
+// 	Category     string `json:"category"`
+// 	Keywords     string `json:"keywords"`
+// 	Privacy      string `json:"privacy"`
+// }
+
 type Event struct {
-	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
-	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
-	FileName     string `json:"fileName"`
-	Title        string `json:"title"`
-	Description  string `json:"description"`
-	Category     string `json:"category"`
-	Keywords     string `json:"keywords"`
-	Privacy      string `json:"privacy"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -32,25 +36,31 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	accessToken := event.AccessToken
-	refreshToken := event.RefreshToken
-	fileName := event.FileName
-	title := event.Title
-	description := event.Description
-	category := event.Category
-	keywords := event.Keywords
-	privacy := event.Privacy
-	// privacy can be one of this: [unlisted, public, private]
-
-	err := uploadVideo(fileName, title, description, category, keywords, privacy, accessToken, refreshToken)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	fmt.Println("video uploaded successfully")
 	resp.Successfull = true
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+		refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
+		fileName := singleInput["fileName"].(string)
+		title := singleInput["title"].(string)
+		description := singleInput["description"].(string)
+		category := singleInput["category"].(string)
+		keywords := singleInput["keywords"].(string)
+		privacy := singleInput["privacy"].(string)
+		// privacy can be one of this: [unlisted, public, private]
+
+		err := uploadVideo(fileName, title, description, category, keywords, privacy, accessToken, refreshToken)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+	}
+	if resp.Successfull {
+		fmt.Println("All video(s) uploaded successfully")
+	}
 	return resp, nil
 }
 

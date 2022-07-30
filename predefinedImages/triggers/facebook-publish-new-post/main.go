@@ -51,43 +51,40 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
+	targetPosts := make([]Post, 0)
+	innerBody := make(map[string]interface{})
+
 	if len(posts) > 0 {
-		lastPostUnix, err := time.Parse("2006-01-02T15:04:05-0700", posts[0].CreatedTime)
-		if err != nil {
-			fmt.Println(err)
-			return resp, err
-		}
-		if lastPostUnix.Unix() > selectedUnix {
-			body := make(map[string]interface{})
-			body["accountId"] = accId
-			innerBody := make(map[string]interface{})
-			innerBody["created_time"] = lastPostUnix.String()
-			innerBody["message"] = posts[0].Message
-			innerBody["id"] = posts[0].Id
-			body[triggerName] = innerBody
-			json_data, err := json.Marshal(body)
+		for _, post := range posts {
+			createdTime, err := time.Parse("2006-01-02T15:04:05-0700", post.CreatedTime)
 			if err != nil {
 				fmt.Println(err)
-				return resp, err
+				continue
 			}
-			payload := bytes.NewBuffer(json_data)
-			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-			if err != nil {
-				fmt.Println("response:", string(out))
-				fmt.Println("error:", err)
-				fmt.Println("status code:", status)
-				return resp, err
+			if createdTime.Unix() > selectedUnix {
+				targetPosts = append(targetPosts, post)
+				// return resp, nil
 			}
-			fmt.Println("trigger successfully started")
-			return resp, nil
-		} else {
-			fmt.Println("no new post in page in last", passedSeconds, "seconds")
-			return resp, nil
 		}
 	} else {
 		fmt.Println("no post in page")
 		return resp, nil
 	}
+	if len(targetPosts) == 0 {
+		fmt.Println("no new post in page in last", passedSeconds, "seconds")
+		return resp, nil
+	}
+	for i, post := range targetPosts {
+		createdTime, _ := time.Parse("2006-01-02T15:04:05-0700", post.CreatedTime)
+		output := make(map[string]interface{})
+		output["created_time"] = createdTime.String()
+		output["message"] = post.Message
+		output["id"] = post.Id
+		innerBody[fmt.Sprint(i)] = output
+	}
+	fmt.Println("innerBody:", innerBody)
+	startAutomation(pipelineEndpoint, triggerName, accId, innerBody)
+	return resp, nil
 }
 
 type Post struct {
@@ -98,6 +95,31 @@ type Post struct {
 
 func main() {
 	lambda.Start(HandleLambdaEvent)
+}
+
+func startAutomation(pipelineEndpoint, triggerName, accountId string, innerBody map[string]interface{}) (statusCode int, err error) {
+	body := make(map[string]interface{})
+	body["accountId"] = accountId
+	body[triggerName] = innerBody
+	json_data, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	fmt.Println("final body:", string(json_data))
+	payload := bytes.NewBuffer(json_data)
+	out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+	if err != nil || status != http.StatusOK {
+		fmt.Println("response:", string(out))
+		fmt.Println("error:", err)
+		fmt.Println("status code:", status)
+		if err == nil {
+			err = errors.New("can't get correct response from dotenx api")
+		}
+		return 0, err
+	}
+	fmt.Println("trigger successfully started")
+	return status, nil
 }
 
 func getPostsList(pageId, accessToken string) (posts []Post, err error) {

@@ -14,10 +14,14 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+// type Event struct {
+// 	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	PageId      string `json:"page_id"`
+// 	Text        string `json:"text"`
+// }
+
 type Event struct {
-	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
-	PageId      string `json:"page_id"`
-	Text        string `json:"text"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -25,24 +29,30 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	accessToken := event.AccessToken
-	text := event.Text
-	pageId := event.PageId
-	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	_, err = publishPost(text, pageId, pageAccessToken)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	fmt.Println("post successfully published")
 	resp.Successfull = true
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+		text := singleInput["text"].(string)
+		pageId := singleInput["page_id"].(string)
+		pageAccessToken, err := getPageAccessToken(accessToken, pageId)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+		_, err = publishPost(text, pageId, pageAccessToken)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+	}
+	if resp.Successfull {
+		fmt.Println("All post(s) successfully published")
+	}
 	return resp, nil
 }
 

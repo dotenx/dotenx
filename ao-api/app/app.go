@@ -98,6 +98,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// if err != nil {
 	// 	panic(err.Error())
 	// }
+	//
 
 	r := gin.Default()
 	RegisterCustomValidators()

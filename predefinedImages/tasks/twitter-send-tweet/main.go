@@ -8,12 +8,16 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
+// type Event struct {
+// 	ConsumerKey       string `json:"INTEGRATION_CONSUMER_KEY"`
+// 	ConsumerSecret    string `json:"INTEGRATION_CONSUMER_SECRET"`
+// 	AccessToken       string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	AccessTokenSecret string `json:"INTEGRATION_ACCESS_TOKEN_SECRET"`
+// 	Text              string `json:"text"`
+// }
+
 type Event struct {
-	ConsumerKey       string `json:"INTEGRATION_CONSUMER_KEY"`
-	ConsumerSecret    string `json:"INTEGRATION_CONSUMER_SECRET"`
-	AccessToken       string `json:"INTEGRATION_ACCESS_TOKEN"`
-	AccessTokenSecret string `json:"INTEGRATION_ACCESS_TOKEN_SECRET"`
-	Text              string `json:"text"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -21,19 +25,26 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	consumerKey := event.ConsumerKey
-	consumerSecret := event.ConsumerSecret
-	accessToken := event.AccessToken
-	accessTokenSecret := event.AccessTokenSecret
-	text := event.Text
-	err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
-	if err != nil {
-		resp.Successfull = false
-		return resp, err
-	}
-	fmt.Println("tweet successfully published")
 	resp.Successfull = true
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		consumerKey := singleInput["INTEGRATION_CONSUMER_KEY"].(string)
+		consumerSecret := singleInput["INTEGRATION_CONSUMER_SECRET"].(string)
+		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+		accessTokenSecret := singleInput["INTEGRATION_ACCESS_TOKEN_SECRET"].(string)
+		text := singleInput["text"].(string)
+		err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+	}
+	if resp.Successfull {
+		fmt.Println("All tweet(s) successfully published")
+	}
 	return resp, nil
 }
 

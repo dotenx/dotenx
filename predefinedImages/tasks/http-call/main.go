@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,53 +14,64 @@ import (
 )
 
 type Event struct {
-	Method         string `json:"method"`
-	Url            string `json:"url"`
-	Body           string `json:"body"`
-	ResultEndpoint string `json:"RESULT_ENDPOINT"`
-	Authorization  string `json:"AUTHORIZATION"`
+	Body map[string]interface{} `json:"body"`
 }
+
+// type Event struct {
+// 	Method         string `json:"method"`
+// 	Url            string `json:"url"`
+// 	Body           string `json:"body"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
 
 type Response struct {
 	Successfull bool `json:"successfull"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	method := event.Method
-	url := event.Url
-	body := event.Body
-	resultEndpoint := event.ResultEndpoint
-	authorization := event.Authorization
-	var out []byte
-	var err error
-	var statusCode int
-	if body == "" {
-		out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
-	} else {
-		json_data, err := json.Marshal(body)
+	resultData := make(map[string]map[string]interface{})
+	var resultEndpoint, authorization string
+	for index, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		method := singleInput["method"].(string)
+		url := singleInput["url"].(string)
+		body := singleInput["body"].(string)
+		resultEndpoint = singleInput["RESULT_ENDPOINT"].(string)
+		authorization = singleInput["AUTHORIZATION"].(string)
+		var out []byte
+		var err error
+		var statusCode int
+		if body == "" {
+			out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
+		} else {
+			json_data, err := json.Marshal(body)
+			if err != nil {
+				resp.Successfull = false
+				return resp, err
+			}
+			payload := bytes.NewBuffer(json_data)
+			out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
+		}
+
 		if err != nil {
+			// We just log the error and don't handle handle it, send the result to the ao-api as Failed
+			fmt.Printf("Error: %s", err.Error())
 			resp.Successfull = false
 			return resp, err
 		}
-		payload := bytes.NewBuffer(json_data)
 
-		out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
+		if statusCode == http.StatusOK {
+			var res map[string]interface{}
+			json.Unmarshal(out, &res)
+			resultData[index] = res
+		}
 	}
-
-	if err != nil {
-		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
-		fmt.Printf("Error: %s", err.Error())
-		resp.Successfull = false
-		return resp, err
-	}
-
-	var resultData map[string]interface{}
-	if statusCode == http.StatusOK {
-		json.Unmarshal(out, &resultData)
-		fmt.Print(resultData)
+	if resp.Successfull {
+		fmt.Println("All/some requests sent successfully")
 		fmt.Println("calling endpoint")
-		//resultData["fileName"] = "name of your created file as output"
 		data := map[string]interface{}{
 			"status":       "started",
 			"return_value": resultData,
@@ -92,12 +102,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			return resp, err
 		}
 		fmt.Println(string(out))
-	} else {
-		resp.Successfull = false
-		return resp, errors.New("request failed with status code " + fmt.Sprint(statusCode))
 	}
-	fmt.Println("send request was successfull")
-	resp.Successfull = true
 	return resp, nil
 }
 

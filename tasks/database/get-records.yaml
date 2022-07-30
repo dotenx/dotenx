@@ -1,0 +1,25 @@
+service: database
+type: Get table records
+image: hojjat12/database-get-records:lambda2
+fields:
+    - key: dtx_access_token
+      type: text
+      display_name: DoTenX access token
+      description: Your DoTenX personal access token
+    - key: project_tag
+      type: text
+      display_name: Project tag 
+      description: Your DoTenX project tag
+    - key: table_name
+      type: text
+      display_name: Table name 
+      description: Your DoTenX table name
+    - key: body
+      type: object
+      display_name: Column names and filters
+      description: A json field consist of column names that you want get values and an optional field that declare filters for our system (you can use 'filters' section in our query builder that presents in all tables)
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/138/138932.png
+node_color: 4ABAFF
+description: Get records of your DoTenX table
+

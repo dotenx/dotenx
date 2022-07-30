@@ -69,47 +69,61 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
+	innerBody := make(map[string]interface{})
 	if len(resps) > 0 {
-		myAnswer := make(map[string]string)
-		for _, ans := range resps[0].Answers {
-			fieldId := ans["field"].(map[string]interface{})["id"].(string)
-			fieldTitle := def[fieldId]
-			ansType := ans["type"].(string)
-			ansStr := fmt.Sprint(ans[ansType])
-			myAnswer[fieldTitle] = ansStr
+		for i, resp := range resps {
+			myAnswer := make(map[string]string)
+			for _, ans := range resp.Answers {
+				fieldId := ans["field"].(map[string]interface{})["id"].(string)
+				fieldTitle := def[fieldId]
+				ansType := ans["type"].(string)
+				ansStr := fmt.Sprint(ans[ansType])
+				myAnswer[fieldTitle] = ansStr
+			}
+			answers, _ := json.Marshal(myAnswer)
+			output := make(map[string]interface{})
+			output["submitted_at"] = resp.SubmittedAt
+			output["response_id"] = resp.ResponseId
+			output["answers"] = string(answers)
+			innerBody[fmt.Sprint(i)] = output
 		}
-		answers, _ := json.Marshal(myAnswer)
-		body := make(map[string]interface{})
-		body["accountId"] = accId
-		innerBody := make(map[string]interface{})
-		innerBody["submitted_at"] = resps[0].SubmittedAt
-		innerBody["response_id"] = resps[0].ResponseId
-		innerBody["answers"] = string(answers)
-		body[triggerName] = innerBody
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			return resp, err
-		}
-		payload := bytes.NewBuffer(json_data)
-		fmt.Println(payload)
-		out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println("response:", string(out))
-			fmt.Println("error:", err)
-			fmt.Println("status code:", status)
-			return resp, err
-		}
-		fmt.Println("trigger successfully started")
-		return resp, nil
 	} else {
 		fmt.Println("no new response in form")
 		return resp, nil
 	}
+
+	fmt.Println("innerBody:", innerBody)
+	startAutomation(pipelineEndpoint, triggerName, accId, innerBody)
+	return resp, nil
 }
 
 func main() {
 	lambda.Start(HandleLambdaEvent)
+}
+
+func startAutomation(pipelineEndpoint, triggerName, accountId string, innerBody map[string]interface{}) (statusCode int, err error) {
+	body := make(map[string]interface{})
+	body["accountId"] = accountId
+	body[triggerName] = innerBody
+	json_data, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	fmt.Println("final body:", string(json_data))
+	payload := bytes.NewBuffer(json_data)
+	out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+	if err != nil || status != http.StatusOK {
+		fmt.Println("response:", string(out))
+		fmt.Println("error:", err)
+		fmt.Println("status code:", status)
+		if err == nil {
+			err = errors.New("can't get correct response from dotenx api")
+		}
+		return 0, err
+	}
+	fmt.Println("trigger successfully started")
+	return status, nil
 }
 
 func getFormDefinition(formId, accessToken string) (definition map[string]string, err error) {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -53,42 +54,66 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
+	targetTweets := make([]twitter.Tweet, 0)
+	innerBody := make(map[string]interface{})
+
 	if len(tweets) > 0 {
-		createdTime, _ := tweets[0].CreatedAtTime()
-		if createdTime.Unix() > selectedUnix {
-			body := make(map[string]interface{})
-			body["accountId"] = accId
-			innerBody := make(map[string]interface{})
-			innerBody["created_at"] = createdTime.String()
-			innerBody["text"] = tweets[0].Text
-			body[triggerName] = innerBody
-			json_data, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println(err)
-				return resp, err
-			}
-			payload := bytes.NewBuffer(json_data)
-			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-			if err != nil {
-				fmt.Println("response:", string(out))
-				fmt.Println("error:", err)
-				fmt.Println("status code:", status)
-				return resp, err
-			}
-			fmt.Println("trigger successfully started")
-			return resp, nil
-		} else {
-			fmt.Println("no new tweet found in last", passedSeconds, "seconds")
-			return resp, nil
+		for _, tweet := range tweets {
+			createdTime, _ := tweet.CreatedAtTime()
+			if createdTime.Unix() > selectedUnix {
+				targetTweets = append(targetTweets, tweet)
+				// return resp, nil
+			} // else {
+			// 	fmt.Println("no new tweet found in last", passedSeconds, "seconds")
+			// 	return resp, nil
+			// }
 		}
 	} else {
 		fmt.Println("no new tweet found")
 		return resp, nil
 	}
+	if len(targetTweets) == 0 {
+		fmt.Println("no new tweet found")
+		return resp, nil
+	}
+	for i, tweet := range targetTweets {
+		output := make(map[string]interface{})
+		output["created_at"] = tweet.CreatedAt
+		output["text"] = tweet.Text
+		innerBody[fmt.Sprint(i)] = output
+	}
+	fmt.Println("innerBody:", innerBody)
+	startAutomation(pipelineEndpoint, triggerName, accId, innerBody)
+	return resp, nil
 }
 
 func main() {
 	lambda.Start(HandleLambdaEvent)
+}
+
+func startAutomation(pipelineEndpoint, triggerName, accountId string, innerBody map[string]interface{}) (statusCode int, err error) {
+	body := make(map[string]interface{})
+	body["accountId"] = accountId
+	body[triggerName] = innerBody
+	json_data, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	fmt.Println("final body:", string(json_data))
+	payload := bytes.NewBuffer(json_data)
+	out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+	if err != nil || status != http.StatusOK {
+		fmt.Println("response:", string(out))
+		fmt.Println("error:", err)
+		fmt.Println("status code:", status)
+		if err == nil {
+			err = errors.New("can't get correct response from dotenx api")
+		}
+		return 0, err
+	}
+	fmt.Println("trigger successfully started")
+	return status, nil
 }
 
 // get tweets timeline based on this repo: https://github.com/dghubble/go-twitter

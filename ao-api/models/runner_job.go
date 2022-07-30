@@ -9,18 +9,18 @@ import (
 )
 
 type Job struct {
-	ExecutionId    int                    `json:"executionId"`
-	TaskId         int                    `json:"taskId"`
-	Timeout        int                    `json:"timeout"`
-	Name           string                 `json:"name"`
-	Type           string                 `json:"type"`
-	AwsLambda      string                 `json:"aws_lambda"`
-	Image          string                 `json:"image"`
-	AccountId      string                 `json:"account_id"`
-	Body           map[string]interface{} `json:"body"`
-	MetaData       TaskDefinition         `json:"task_meta_data"`
-	ResultEndpoint string                 `json:"result_endpoint"`
-	WorkSpace      string                 `json:"workspace"`
+	ExecutionId    int                               `json:"executionId"`
+	TaskId         int                               `json:"taskId"`
+	Timeout        int                               `json:"timeout"`
+	Name           string                            `json:"name"`
+	Type           string                            `json:"type"`
+	AwsLambda      string                            `json:"aws_lambda"`
+	Image          string                            `json:"image"`
+	AccountId      string                            `json:"account_id"`
+	Body           map[string]map[string]interface{} `json:"body"`
+	MetaData       TaskDefinition                    `json:"task_meta_data"`
+	ResultEndpoint string                            `json:"result_endpoint"`
+	WorkSpace      string                            `json:"workspace"`
 }
 
 // creates a new job dto for runner based on given task for certain execution
@@ -33,7 +33,7 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 		AwsLambda:      task.AwsLambda,
 		Timeout:        task.Timeout,
 		Image:          image,
-		Body:           task.Body,
+		Body:           nil,
 		Name:           task.Name,
 		AccountId:      accountId,
 		MetaData:       AvaliableTasks[task.Type],
@@ -45,24 +45,31 @@ func NewJob(task TaskDetails, executionId int, accountId string) *Job {
 func (job *Job) SetIntegration(integration Integration) {
 	for key, value := range integration.Secrets {
 		k := "INTEGRATION_" + key
-		job.Body[k] = value
+		for inputNumber, _ := range job.Body {
+			job.Body[inputNumber][k] = value
+		}
 		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: k, Type: "text"})
 	}
 }
 
 func (job *Job) SetRunCodeFields() {
 	variables := ""
-	for key, _ := range job.Body {
-		if key != "code" && key != "dependency" {
-			if variables != "" {
-				variables += ","
+	for inputNumber, _ := range job.Body {
+		for key, _ := range job.Body[inputNumber] {
+			if key != "code" && key != "dependency" {
+				if variables != "" {
+					variables += ","
+				}
+				variables += key
+				// TODO check here if field is already exist in task meta data
+				job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: key, Type: "text"})
 			}
-			variables += key
-			job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: key, Type: "text"})
 		}
+		// TODO check here if field is already exist in task meta data
+		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "VARIABLES", Type: "text"})
+		job.Body[inputNumber]["VARIABLES"] = variables
 	}
-	job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "VARIABLES", Type: "text"})
-	job.Body["VARIABLES"] = variables
+
 }
 
 func (job *Job) PrepRunMiniTasks() {
@@ -75,23 +82,24 @@ func (job *Job) PrepRunMiniTasks() {
 	// return manifest, nil
 	job.Type = "Run node code"
 	job.MetaData = AvaliableTasks["Run node code"]
-	logrus.Info(job.Body)
-	logrus.Info(job.Body["tasks"])
+	for inputNumber, _ := range job.Body {
+		logrus.Info(job.Body)
+		logrus.Info(job.Body["tasks"])
+		importStore := miniTasks.NewImportStore()
+		parsed := job.Body[inputNumber]["tasks"].(map[string]interface{})
+		code, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
 
-	importStore := miniTasks.NewImportStore()
-	parsed := job.Body["tasks"].(map[string]interface{})
-	code, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-	if err != nil {
-		fmt.Println(err)
+		fmt.Println(`********************************************************************************`)
+		fmt.Println(code)
+		fmt.Println(`********************************************************************************`)
+		job.Body[inputNumber]["code"] = fmt.Sprintf("module.exports = () => {\n%s\n}", code)
+		job.Body[inputNumber]["VARIABLES"] = "outputs"
+		job.Body[inputNumber]["outputs"] = make([]string, 0)
+		job.Body[inputNumber]["dependency"] = "{}"
+		delete(job.Body, "tasks")
 	}
-
-	fmt.Println(`********************************************************************************`)
-	fmt.Println(code)
-	fmt.Println(`********************************************************************************`)
-	job.Body["code"] = fmt.Sprintf("module.exports = () => {\n%s\n}", code)
-	job.Body["VARIABLES"] = "outputs"
-	job.Body["outputs"] = make([]string, 0)
-	job.Body["dependency"] = "{}"
-	delete(job.Body, "tasks")
 }
