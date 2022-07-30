@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -9,11 +8,15 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+// type Event struct {
+// 	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	Sender      string `json:"sender"`
+// 	Target      string `json:"target"`
+// 	Text        string `json:"text"`
+// }
+
 type Event struct {
-	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
-	Sender      string `json:"sender"`
-	Target      string `json:"target"`
-	Text        string `json:"text"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -21,24 +24,50 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	sender := event.Sender
-	target := event.Target
-	text := event.Text
-	apiKey := event.AccessToken
-	if apiKey == "" {
-		fmt.Println("no api key")
-		resp.Successfull = false
-		return resp, errors.New("there isn't any api key")
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		sender := singleInput["sender"].(string)
+		target := singleInput["target"].(string)
+		text := singleInput["text"].(string)
+		apiKey := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+		if apiKey == "" {
+			fmt.Println("no api key")
+			// resp.Successfull = false
+			// return resp, errors.New("there isn't any api key")
+			continue
+		}
+		err := SendGridEmail(apiKey, sender, target, text)
+		if err != nil {
+			fmt.Println(err.Error())
+			// resp.Successfull = false
+			// return resp, err
+			fmt.Printf("sending email to '%s' wasn't successful\n", target)
+			continue
+		} else {
+			fmt.Printf("sending email to '%s' was successful\n", target)
+			resp.Successfull = true
+		}
 	}
-	err := SendGridEmail(apiKey, sender, target, text)
-	if err != nil {
-		fmt.Println(err.Error())
-		resp.Successfull = false
-		return resp, err
+	// sender := event.Sender
+	// target := event.Target
+	// text := event.Text
+	// apiKey := event.AccessToken
+	// if apiKey == "" {
+	// 	fmt.Println("no api key")
+	// 	resp.Successfull = false
+	// 	return resp, errors.New("there isn't any api key")
+	// }
+	// err := SendGridEmail(apiKey, sender, target, text)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// 	resp.Successfull = false
+	// 	return resp, err
+	// }
+	if resp.Successfull {
+		fmt.Println("All/some email(s) send successfully")
 	}
-	fmt.Println("email send successfully")
-	resp.Successfull = true
 	return resp, nil
 }
 

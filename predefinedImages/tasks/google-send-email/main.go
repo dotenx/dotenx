@@ -10,13 +10,17 @@ import (
 	gmail "google.golang.org/api/gmail/v1"
 )
 
+// type Event struct {
+// 	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
+// 	From         string `json:"from"`
+// 	To           string `json:"to"`
+// 	Subject      string `json:"subject"`
+// 	Message      string `json:"message"`
+// }
+
 type Event struct {
-	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
-	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
-	From         string `json:"from"`
-	To           string `json:"to"`
-	Subject      string `json:"subject"`
-	Message      string `json:"message"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -24,21 +28,27 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
-	accessToken := event.AccessToken
-	refreshToken := event.RefreshToken
-	from := event.From
-	to := event.To
-	subject := event.Subject
-	message := event.Message
-	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	fmt.Println("message send successfully")
 	resp.Successfull = true
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+		refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
+		from := singleInput["from"].(string)
+		to := singleInput["to"].(string)
+		subject := singleInput["subject"].(string)
+		message := singleInput["message"].(string)
+		err := sendEmail(from, to, subject, message, accessToken, refreshToken)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+	}
+	if resp.Successfull {
+		fmt.Println("All email(s) sended successfully")
+	}
 	return resp, nil
 }
 

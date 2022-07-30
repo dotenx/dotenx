@@ -1,6 +1,6 @@
 service: youtube
 type: Upload file
-image: hojjat12/youtube-upload-file:lambda
+image: hojjat12/youtube-upload-file:lambda2
 integrations: [google]
 fields:
     - key: fileName

@@ -1,7 +1,7 @@
 service: facebook
 type: Facebook new post
 integrations: [facebook]
-image: hojjat12/facebook-publish-new-post:lambda
+image: hojjat12/facebook-publish-new-post:lambda2
 credentials:
     - key: page_id
       type: text

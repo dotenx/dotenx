@@ -68,10 +68,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			fmt.Println("calling endpoint")
 			body := make(map[string]interface{})
 			body["accountId"] = accId
+			innerInnerBody := make(map[string]interface{})
 			innerBody := make(map[string]interface{})
 			body["workspace"] = workspace
-			innerBody["text"] = res.Messages[0].Msg.Text
-			innerBody["timestamp"] = res.Messages[0].Timestamp
+			innerInnerBody["text"] = res.Messages[0].Msg.Text
+			innerInnerBody["timestamp"] = res.Messages[0].Timestamp
+			innerBody["out1"] = innerInnerBody
 			body[triggerName] = innerBody
 			json_data, err := json.Marshal(body)
 			if err != nil {

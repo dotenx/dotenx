@@ -1,6 +1,6 @@
 service: dotenx
 type: Http request
-image: awrmin/utopiopshttpcall:lambda
+image: awrmin/utopiopshttpcall:lambda2
 fields:
     - key: method
       type: text
