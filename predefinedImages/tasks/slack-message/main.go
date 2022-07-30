@@ -20,7 +20,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	for _, val := range event.Body {
 		singleInput := val.(map[string]interface{})
-		target := singleInput["target"].(string)
+		target := singleInput["target_id"].(string)
 		text := singleInput["text"].(string)
 		access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 		if access_token == "" {
