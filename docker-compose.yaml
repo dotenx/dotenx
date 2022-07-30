@@ -16,26 +16,26 @@ services:
             - AO_API_URL=http://ao-api:3004
         command: npm run dev
 
-    ui:
-        build:
-            context: ./ui
-            dockerfile: Dockerfile
-        ports:
-            - "3010:80"
-        networks:
-            - default
-        volumes:
-            - ./ui:/usr/src/app
-            - ./ui/nginx.conf:/etc/nginx/nginx.conf
-            - /usr/src/app/node_modules
-
-    # redis:
-    #     image: redis
-    #     hostname: redis
+    # ui:
+    #     build:
+    #         context: ./ui
+    #         dockerfile: Dockerfile
     #     ports:
-    #         - "6380:6379"
+    #         - "3010:80"
+    #     networks:
+    #         - default
     #     volumes:
-    #         - "redis_data:/data"
+    #         - ./ui:/usr/src/app
+    #         - ./ui/nginx.conf:/etc/nginx/nginx.conf
+    #         - /usr/src/app/node_modules
+
+    redis:
+        image: redis
+        hostname: redis
+        ports:
+            - "6380:6379"
+        volumes:
+            - "redis_data:/data"
 
     psql:
         image: postgres:12
@@ -51,11 +51,15 @@ services:
     ao-api:
         build:
             context: .
-            dockerfile: ao-api/Dockerfile
+            dockerfile: ./ao-api/Dockerfile
+        env_file:
+            - ./ao-api/.env
+        environment:
+            - RUNNING_IN_DOCKER=true
         depends_on:
             - psql
             - scheduler_server
-            # - redis
+            - redis
         hostname: ao-api
         working_dir: /root/
         volumes:
