@@ -27,17 +27,14 @@ func FailOnError(err error, msg string) {
 }
 
 func GetAccountId(c *gin.Context) (string, error) {
-	if config.Configs.App.RunLocally {
-		return config.Configs.App.AccountId, nil
-	} else {
-		accountId, exist := c.Get("accountId")
-		if !exist {
-			return "", errors.New("account id not exists")
-		}
-		return accountId.(string), nil
+	accountId, exist := c.Get("accountId")
+	if !exist {
+		return "", errors.New("account id not exists")
 	}
+	return accountId.(string), nil
 }
 
+// TODO: ADD COMMENT!
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
 
 func Encode(b []byte) string {
@@ -147,8 +144,8 @@ func getClaims(tokenString string) (jwt.MapClaims, error) {
 func GeneratToken() (string, error) {
 	tokenString, err := GenerateJwtToken()
 	if err != nil {
+		log.Println("Unexpected error occurred!")
 		return "", err
-		log.Fatal("Unexpected error occurred!")
 	}
 	token := fmt.Sprintf("Bearer %s", tokenString)
 	fmt.Printf("token:\n%s\n", token)
@@ -173,6 +170,7 @@ func GenerateJwtToken() (accToken string, err error) {
 	return
 }
 
+// TODO: ADD COMMENT! Why are there magic strings in the code?
 var FullRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var LowercaseRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyz")
 
