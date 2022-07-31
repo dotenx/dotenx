@@ -18,11 +18,13 @@ func (controller *ObjectstoreController) GetPublicFile() gin.HandlerFunc {
 		fileName := c.Param("file_name")
 		projectTag := c.Param("project_tag")
 
-		cfg := &aws.Config{}
+		cfg := &aws.Config{
+			Region: aws.String(config.Configs.Upload.S3Region),
+		}
 		if config.Configs.App.RunLocally {
 			creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
 
-			cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+			cfg = aws.NewConfig().WithCredentials(creds)
 		}
 		svc := s3.New(session.New(), cfg)
 
