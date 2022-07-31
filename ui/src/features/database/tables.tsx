@@ -1,3 +1,4 @@
+import { Title } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
@@ -13,7 +14,7 @@ export function TableList({ projectName }: { projectName: string }) {
 
 	return (
 		<div>
-			<h3 className="text-xl font-medium">Tables</h3>
+			<Title order={2}>Tables</Title>
 			<div className="flex flex-wrap gap-8 mt-4">
 				{tables
 					.filter((table) => table !== 'user_info' && table !== 'user_group')
