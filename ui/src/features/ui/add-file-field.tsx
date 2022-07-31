@@ -7,32 +7,35 @@ import {
 	UseControllerProps,
 } from 'react-hook-form'
 
+import { BsFillFolderSymlinkFill } from 'react-icons/bs'
 interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
-	label?: string
+	label: string
 	errors?: FieldErrors<TFieldValues>
 	placeholder?: string
 }
 
-export function Field<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
-	label,
-	errors,
-	control,
-	...rest
-}: FieldProps<TFieldValues, TName>) {
+export function AddFileField<
+	TFieldValues extends FieldValues,
+	TName extends FieldPath<TFieldValues>
+>({ label, errors, control, ...rest }: FieldProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-1">
-			{label && (
-				<label htmlFor={rest.name} className="text-sm font-medium">
-					{label}
-				</label>
-			)}
+			<span className="text-sm font-medium">{label}</span>
+			<label
+				htmlFor={rest.name}
+				className="flex items-center text-white w-1/4 justify-center  font-bold px-2 bg-rose-500 transition-colors hover:bg-rose-600 cursor-pointer py-1  rounded-lg   form-input "
+			>
+				<span className="mr-2">browse</span>
+				<BsFillFolderSymlinkFill />
+			</label>
 			<Controller
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value, name, ref } }) => (
 					<input
-						className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
+						type="file"
+						className="hidden"
 						id={rest.name}
 						onChange={onChange}
 						value={value ?? ''}
@@ -43,20 +46,19 @@ export function Field<TFieldValues extends FieldValues, TName extends FieldPath<
 					/>
 				)}
 			/>
-
-			{rest.name && errors && <FieldError errors={errors} name={rest.name} />}
+			{rest.name && errors && <AddFieldError errors={errors} name={rest.name} />}
 		</div>
 	)
 }
 
-Field.displayName = 'Field'
+AddFileField.displayName = 'AddFileField'
 
 interface FieldErrorProps {
 	errors?: FieldErrors
 	name: string
 }
 
-export function FieldError({ name, errors }: FieldErrorProps) {
+export function AddFieldError({ name, errors }: FieldErrorProps) {
 	return (
 		<ErrorMessage
 			name={name}
