@@ -12,6 +12,7 @@ import (
 )
 
 func StartApp() {
+	// hi from armin
 	err := bootstrap()
 	shared.FailOnError(err, "Failed to bootstrap")
 	httpHelper := shared.NewHttpHelper(shared.NewHttpClient())

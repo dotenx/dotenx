@@ -16,6 +16,7 @@ import {
 	GetAutomationTriggersResponse,
 	GetColumnsResponse,
 	GetExecutionResultResponse,
+	GetFilesDataResponse,
 	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
@@ -211,6 +212,13 @@ export function getTables(projectName: string) {
 export function createTable(projectName: string, payload: CreateTableRequest) {
 	return api.post<void>('/database/table', { projectName, ...payload })
 }
+export function uploadFile(projectTag: string, formData: FormData) {
+	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		}
+	})
+}
 
 export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
 	return api.post<void>('/database/table/column', { projectName, tableName, ...payload })
@@ -249,6 +257,11 @@ export function getUserManagementData(projectTag: string) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
 		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] }
+	)
+}
+export function getFiles(projectTag: string) {
+	return api.get<GetFilesDataResponse | null>(
+		`/objectstore/project/${projectTag}`,
 	)
 }
 

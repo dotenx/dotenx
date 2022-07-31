@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"gopkg.in/yaml.v2"
 )
 
@@ -13,7 +14,12 @@ var AvaliableIntegrations map[string]IntegrationDefinition
 
 func init() {
 	AvaliableIntegrations = make(map[string]IntegrationDefinition)
-	address := "integrations"
+	var address string
+	if config.Configs.App.RunLocally && os.Getenv("RUNNING_IN_DOCKER") != "true" { // This is only for the case we run ao-api without docker and locally
+		address = "../integrations"
+	} else {
+		address = "integrations"
+	}
 
 	// if os.Args[0] has ".test" as suffix meaning that we are in test mode
 	if strings.HasSuffix(os.Args[0], ".test") {

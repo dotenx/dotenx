@@ -7,6 +7,7 @@ import {
 	BsHddNetworkFill,
 	BsTable,
 	BsWindowSidebar,
+	BsFileEarmarkPdf,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'
@@ -53,6 +54,11 @@ export const Sidebar = memo(() => {
 			label: 'Providers',
 			icon: <BsFillXDiamondFill />,
 		},
+		{
+			to: `/builder/projects/${projectName}/files`,
+			label: 'Files',
+			icon: <BsFileEarmarkPdf />,
+		},
 	]
 
 	return (
@@ -70,12 +76,12 @@ export const Sidebar = memo(() => {
 						className="flex items-center gap-2 px-2.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
-						<div className="w-0 transition-all scale-0 opacity-0 group-hover:opacity-100 group-hover:w-6 group-hover:scale-100">
+						<div className="w-0 transition-all scale-0 hidden group-hover:inline group-hover:w-6 group-hover:scale-100">
 							<IoArrowBack />
 						</div>
 						<div>
-							<span className="text-center capitalize">{projectName[0]}</span>
-							<span className="transition opacity-0 group-hover:opacity-100">
+							<span className="text-center capitalize ">{projectName[0]}</span>
+							<span className="transition hidden group-hover:inline truncate ">
 								{projectName.substring(1)}
 							</span>
 						</div>

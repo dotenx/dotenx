@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -36,7 +37,7 @@ func LocalTokenTypeMiddleware() gin.HandlerFunc {
 			return
 		} else {
 			c.Set("tokenType", "external")
-			c.Set("accountId", "123456")
+			c.Set("accountId", config.Configs.App.AccountId)
 			c.Next()
 			return
 		}

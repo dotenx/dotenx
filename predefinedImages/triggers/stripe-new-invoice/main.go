@@ -55,26 +55,41 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
-	for _, i := range invoices {
-		body := map[string]interface{}{
-			"workspace": workspace,
-			triggerName: i,
-			"accountId": accId,
+	innerOut := make(map[string]map[string]interface{})
+	for index, i := range invoices {
+		innerOut[strconv.Itoa(index)] = map[string]interface{}{
+			"id":               i.Id,
+			"description":      i.Description,
+			"link":             i.Link,
+			"pdf_link":         i.PdfLink,
+			"paid":             i.Paid,
+			"amount_due":       i.AmountDue,
+			"amount_paid":      i.AmountPaid,
+			"amount_remaining": i.AmountRemaining,
+			"currency":         i.Currency,
+			"created":          i.Created,
+			"customer_id":      i.CustomerId,
+			"customer_email":   i.CustomerEmail,
 		}
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			return resp, err
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println(status)
-			fmt.Println(err)
-			return resp, err
-		}
-		fmt.Println(string(out))
 	}
+	body := map[string]interface{}{
+		"workspace": workspace,
+		triggerName: innerOut,
+		"accountId": accId,
+	}
+	json_data, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println(err)
+		return resp, err
+	}
+	payload := bytes.NewBuffer(json_data)
+	out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+	if err != nil {
+		fmt.Println(status)
+		fmt.Println(err)
+		return resp, err
+	}
+	fmt.Println(string(out))
 	fmt.Println("trigger successfully ended")
 	return resp, nil
 }

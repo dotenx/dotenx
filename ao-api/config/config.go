@@ -1,6 +1,11 @@
 package config
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	"fmt"
+
+	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
+)
 
 type (
 	Config struct {
@@ -10,6 +15,7 @@ type (
 		Endpoints Endpoints
 		Queue     Queue
 		Redis     Redis
+		Upload    Upload
 	}
 
 	App struct {
@@ -67,11 +73,21 @@ type (
 		AwsRegion            string `envconfig:"AOA_AWS_REGION"`
 		CodeChallenge        string `envconfig:"AOA_CODE_CHALLENGE"`
 	}
+
+	Upload struct {
+		S3Bucket string `envconfig:"AOA_UPLOAD_S3_BUCKET"`
+		S3Region string `envconfig:"AOA_UPLOAD_S3_REGION"`
+		QuotaKB  string `envconfig:"AOA_UPLOAD_QUOTA_KB"`
+	}
 )
 
 var Configs Config
 
-func Load() error {
+// TODO: DO SOMETHING ABOUT THIS. IF this is not run before any other code, it will panic.
+func init() {
 	err := envconfig.Process("", &Configs)
-	return err
+	fmt.Println(Configs)
+	if err != nil {
+		logrus.Fatal(err.Error())
+	}
 }

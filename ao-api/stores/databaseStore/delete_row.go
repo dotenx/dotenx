@@ -23,6 +23,7 @@ func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool
 		ProjectName string `db:"name"`
 	}
 
+	// TODO: Add a method GetDbInstanceByTag to dbutil to avoid this query
 	err := ds.db.Connection.QueryRowx(findProjectDatabase, projectTag).StructScan(&res)
 	if err != nil {
 		if err == sql.ErrNoRows {

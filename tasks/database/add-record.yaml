@@ -1,0 +1,25 @@
+service: database
+type: Add a table record
+image: hojjat12/database-add-record:lambda2
+fields:
+    - key: dtx_access_token
+      type: text
+      display_name: DoTenX access token
+      description: Your DoTenX personal access token
+    - key: project_tag
+      type: text
+      display_name: Project tag 
+      description: Your DoTenX project tag
+    - key: table_name
+      type: text
+      display_name: Table name 
+      description: Your DoTenX table name
+    - key: column_values
+      type: object
+      display_name: Column values
+      description: A json format field that keys are column names and values are record values
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/138/138932.png
+node_color: 4ABAFF
+description: Add a record to your DoTenX table
+

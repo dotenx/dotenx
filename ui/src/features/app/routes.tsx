@@ -5,6 +5,7 @@ import { ADMIN_URL, IS_LOCAL } from '../../constants'
 import AutomationPage from '../../pages/automation'
 import AutomationsPage from '../../pages/automations'
 import ExecutionPage from '../../pages/execution'
+import Files from '../../pages/files'
 import HistoryPage from '../../pages/history'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
@@ -48,6 +49,7 @@ const routes = [
 		element: <UserGroupsPage />,
 	},
 	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
+	{ path: '/builder/projects/:projectName/files', element: <Files /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },

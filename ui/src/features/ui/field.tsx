@@ -23,7 +23,7 @@ export function Field<TFieldValues extends FieldValues, TName extends FieldPath<
 	return (
 		<div className="flex flex-col gap-1">
 			{label && (
-				<label htmlFor={rest.name} className="text-sm font-bold">
+				<label htmlFor={rest.name} className="text-sm font-medium">
 					{label}
 				</label>
 			)}

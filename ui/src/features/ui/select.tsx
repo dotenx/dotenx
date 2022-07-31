@@ -36,7 +36,7 @@ export function Select<TFieldValues extends FieldValues, TName extends FieldPath
 }: SelectProps<TFieldValues, TName>) {
 	return (
 		<div className="flex flex-col gap-0.5" {...rest}>
-			<label htmlFor={name} className="text-sm">
+			<label htmlFor={name} className="text-sm font-medium">
 				{label}
 			</label>
 			<SelectController

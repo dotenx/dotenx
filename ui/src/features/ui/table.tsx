@@ -53,8 +53,8 @@ export function Table<D extends object = Record<string, string>>({
 			{loading && <Loader />}
 			{!loading && data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
-					<span className="text-lg">{emptyText}</span>
 					{actionBar}
+					<span className="text-lg">{emptyText}</span>
 					<EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" />
 				</div>
 			)}

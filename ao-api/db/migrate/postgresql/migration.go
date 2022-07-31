@@ -2,7 +2,6 @@ package postgresql
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -152,6 +151,14 @@ var migrations = []struct {
 		name: "update-nill-tpAccountId-field",
 		stmt: updateNillTpAccountId,
 	},
+	{
+		name: "create-table-objectstore",
+		stmt: createTableObjectstore,
+	},
+	{
+		name: "add-column-access-to-object-store-table",
+		stmt: addColumnAccessToObjectStoreTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -165,7 +172,7 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 	for _, migration := range migrations {
-		fmt.Print(migration.name)
+		log.Print(migration.name)
 		if _, ok := completed[migration.name]; ok {
 			log.Println(" skipped")
 			continue
@@ -241,11 +248,11 @@ var createTablePipelines = `
 CREATE TABLE IF NOT EXISTS pipelines (
 id 												SERIAL PRIMARY KEY,
 name											VARCHAR(128),
-account_id         			                 	VARCHAR(64),
-endpoint 							     		uuid DEFAULT uuid_generate_v4(),
-is_active                                       BOOLEAN,
-is_template                                     BOOLEAN,
-is_interaction                                  BOOLEAN,
+account_id         			  VARCHAR(64),
+endpoint 							    uuid DEFAULT uuid_generate_v4(),
+is_active                 BOOLEAN,
+is_template               BOOLEAN,
+is_interaction            BOOLEAN,
 UNIQUE (name, account_id)
 )
 `
@@ -260,13 +267,13 @@ var createTableTasks = `
 CREATE TABLE IF NOT EXISTS tasks (
 id												SERIAL PRIMARY KEY,
 name											VARCHAR(64),
-task_type									    VARCHAR(64),
-integration					        			VARCHAR(128),
-account_id         			                 	VARCHAR(64),
-description					        			VARCHAR(128),
-pipeline_id			                         	INT NOT NULL,
+task_type									VARCHAR(64),
+integration					      VARCHAR(128),
+account_id         			  VARCHAR(64),
+description					      VARCHAR(128),
+pipeline_id			          INT NOT NULL,
 body											JSONB,
-timeout                                         INT NOT NULL default 30,
+timeout                   INT NOT NULL default 30,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 )
 `
@@ -279,7 +286,7 @@ ADD COLUMN IF NOT EXISTS aws_lambda varchar(64);
 var createTableTaskPreconditions = `
 CREATE TABLE IF NOT EXISTS task_preconditions (
 task_id										INT NOT NULL,
-precondition_id					         	INT NOT NULL,
+precondition_id					  INT NOT NULL,
 status										VARCHAR(16) NOT NULL,
 FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE ,
 FOREIGN KEY (precondition_id) REFERENCES tasks(id) ON DELETE CASCADE ,
@@ -298,9 +305,9 @@ CREATE INDEX IF NOT EXISTS task_preconditions_tasks ON task_preconditions (task_
 var createTableExecutions = `
 CREATE TABLE IF NOT EXISTS executions (
 id												SERIAL PRIMARY KEY,
-pipeline_id				                        INT NOT NULL,
-started_at								        TIMESTAMP WITH TIME ZONE,
-initial_data							        JSONB,
+pipeline_id				        INT NOT NULL,
+started_at								TIMESTAMP WITH TIME ZONE,
+initial_data							JSONB,
 FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE 
 )
 `
@@ -325,7 +332,7 @@ ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
 //var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
-execution_id							    INT NOT NULL,
+execution_id							INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
 FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
@@ -335,11 +342,11 @@ FOREIGN KEY (status) REFERENCES task_status(name)
 `
 var createTableExecutionsResult = `
 CREATE TABLE IF NOT EXISTS executions_result (
-execution_id							    INT NOT NULL,
+execution_id							INT NOT NULL,
 task_id										INT NOT NULL,
 status										VARCHAR(16),
-return_value                                JSONB,
-log                                         VARCHAR(10485760),
+return_value              JSONB,
+log                       VARCHAR(10485760),
 FOREIGN KEY (execution_id) REFERENCES executions(id) ON DELETE CASCADE ,
 FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
 FOREIGN KEY (status) REFERENCES task_status(name)
@@ -442,6 +449,7 @@ var addProviderFieldToIntegrations = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS provider varchar(64);
 `
+
 var createTableProjects = `
 CREATE TABLE IF NOT EXISTS projects (
 id                           SERIAL PRIMARY KEY,
@@ -453,7 +461,25 @@ UNIQUE (account_id, name)
 )
 `
 
+// TODO: ^ Add a migration for making the tag column unique
+
 var addTpAccountIdFieldToIntegrations = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS tp_account_id varchar(64);
+`
+
+var createTableObjectstore = `
+CREATE TABLE IF NOT EXISTS object_store (
+key       									varchar(256) NOT NULL,
+account_id  								varchar(64) NOT NULL,
+tpaccount_id								varchar(64),
+project_tag									varchar(32) NOT NULL,
+size        								INT NOT NULL,
+UNIQUE (account_id, tpaccount_id, project_tag, key)
+)
+`
+
+var addColumnAccessToObjectStoreTable = `
+ALTER TABLE object_store
+ADD COLUMN IF NOT EXISTS access varchar(64);
 `

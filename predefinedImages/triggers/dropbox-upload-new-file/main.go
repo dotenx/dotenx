@@ -79,7 +79,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		innerBody["modified_time"] = latestFileUnix.String()
 		innerBody["file"] = fmt.Sprintf("%s_%s", workspace, latestFile.Name)
 		body["workspace"] = workspace
-		body[triggerName] = innerBody
+		body[triggerName] = map[string]interface{}{
+			"0": innerBody,
+		}
 		json_data, err := json.Marshal(body)
 		if err != nil {
 			fmt.Println(err)

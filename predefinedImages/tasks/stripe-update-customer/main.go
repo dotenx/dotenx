@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -16,13 +15,19 @@ import (
 	"github.com/stripe/stripe-go/v72/client"
 )
 
+// type Event struct {
+// 	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+// 	CusName        string `json:"CUS_NAME"`
+// 	CusPhone       string `json:"CUS_PHONE"`
+// 	CusEmail       string `json:"CUS_EMAIL"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
+
 type Event struct {
-	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
-	CusName        string `json:"CUS_NAME"`
-	CusPhone       string `json:"CUS_PHONE"`
-	CusEmail       string `json:"CUS_EMAIL"`
-	ResultEndpoint string `json:"RESULT_ENDPOINT"`
-	Authorization  string `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -30,22 +35,34 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	name := os.Getenv("CUS_NAME")
-	phone := os.Getenv("CUS_PHONE")
-	email := os.Getenv("CUS_EMAIL")
-	id := os.Getenv("CUS_ID")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
-	sc := &client.API{}
-	sc.Init(secretKey, nil)
-	id, err := updateCustomer(sc, id, name, phone, email)
-	if err != nil {
-		fmt.Println(err)
-		return Response{Successfull: false}, err
-	}
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	outputCnt := 0
 	outputs := make(map[string]interface{})
-	outputs["customer_id"] = id
+	resultEndpoint := event.ResultEndpoint
+	authorization := event.Authorization
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+		name := singleInput["CUS_NAME"].(string)
+		phone := singleInput["CUS_PHONE"].(string)
+		email := singleInput["CUS_EMAIL"].(string)
+		id := singleInput["CUS_ID"].(string)
+		sc := &client.API{}
+		sc.Init(secretKey, nil)
+		id, err := updateCustomer(sc, id, name, phone, email)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+		outputs[fmt.Sprint(outputCnt)] = map[string]interface{}{
+			"customer_id": id,
+		}
+		outputCnt++
+	}
+
 	data := map[string]interface{}{
 		"status":       "started",
 		"return_value": outputs,
@@ -54,7 +71,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
-		return Response{Successfull: false}, err
+		resp.Successfull = false
+		return resp, err
 	}
 	headers := []Header{
 		{
@@ -68,12 +86,18 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	}
 	payload := bytes.NewBuffer(json_data)
 	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println(status)
+	if err != nil || status != http.StatusOK {
+		fmt.Println("err:", err)
+		fmt.Println("status code:", status)
+		resp.Successfull = false
+		return resp, err
 	}
 	fmt.Println(string(out))
-	return Response{Successfull: true}, nil
+
+	if resp.Successfull {
+		fmt.Println("All customer(s) updated successfully")
+	}
+	return resp, nil
 }
 
 func main() {

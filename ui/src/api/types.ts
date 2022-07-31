@@ -21,6 +21,7 @@ export enum QueryKey {
 	GetFormatterFunctions = 'get-formatter-functions',
 	GetProjects = 'get-projects',
 	GetProject = 'get-project',
+	GetFiles = 'get-files',
 	GetTables = 'get-tables',
 	GetTable = 'get-table',
 	GetTableRecords = 'get-table-records',
@@ -309,6 +310,7 @@ export type GetUserManagementDataResponse = {
 	fullname: string
 	user_group: string
 }[]
+export type GetFilesDataResponse = any
 
 export type GetProjectResponse = Project & { tag: string }
 

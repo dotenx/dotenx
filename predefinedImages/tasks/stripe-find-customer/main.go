@@ -15,12 +15,18 @@ import (
 	"github.com/stripe/stripe-go/v72/client"
 )
 
+// type Event struct {
+// 	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+// 	CUS_ID         string `json:"CUS_ID"`
+// 	CusEmail       string `json:"CUS_EMAIL"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
+
 type Event struct {
-	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
-	CUS_ID         string `json:"CUS_ID"`
-	CusEmail       string `json:"CUS_EMAIL"`
-	ResultEndpoint string `json:"RESULT_ENDPOINT"`
-	Authorization  string `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -28,21 +34,32 @@ type Response struct {
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
-	secretKey := event.SecretKey
-	email := event.CusEmail
-	id := event.CUS_ID
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	outputCnt := 0
+	outputs := make(map[string]interface{})
 	resultEndpoint := event.ResultEndpoint
 	authorization := event.Authorization
-	sc := &client.API{}
-	sc.Init(secretKey, nil)
-	cus, err := findCustomer(sc, id, email)
-	if err != nil {
-		fmt.Println(err)
-		return Response{Successfull: false}, err
+	for _, val := range event.Body {
+		singleInput := val.(map[string]interface{})
+		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+		email := singleInput["CUS_EMAIL"].(string)
+		id := singleInput["CUS_ID"].(string)
+		sc := &client.API{}
+		sc.Init(secretKey, nil)
+		cus, err := findCustomer(sc, id, email)
+		if err != nil {
+			fmt.Println(err)
+			resp.Successfull = false
+			continue
+		}
+		outputs[fmt.Sprint(outputCnt)] = cus
+		outputCnt++
 	}
 	data := map[string]interface{}{
 		"status":       "started",
-		"return_value": cus,
+		"return_value": outputs,
 		"log":          "",
 	}
 	headers := []Header{
@@ -58,16 +75,23 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
-		return Response{Successfull: false}, err
+		resp.Successfull = false
+		return resp, err
 	}
 	payload := bytes.NewBuffer(json_data)
 	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println(status)
+	if err != nil || status != http.StatusOK {
+		fmt.Println("err:", err)
+		fmt.Println("status code:", status)
+		resp.Successfull = false
+		return resp, err
 	}
 	fmt.Println(string(out))
-	return Response{Successfull: true}, nil
+
+	if resp.Successfull {
+		fmt.Println("All customer(s) founded successfully")
+	}
+	return resp, nil
 }
 
 func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, error) {

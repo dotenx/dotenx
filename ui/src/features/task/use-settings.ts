@@ -114,8 +114,11 @@ export function useTaskSettings({
 	const noneCodeOutputGroups = getTaskFieldsResults
 		.map((result) => result.data)
 		.filter((r) => !!r) as GroupData[]
-	const codeOutputGroups = nodes.filter((node) => node.type?.includes('code'))
+	const codeOutputGroups = nodes.filter(
+		(node) => node.type?.includes('code') || node.type?.includes('Get table records')
+	)
 	const outputGroups = [...noneCodeOutputGroups, ...codeOutputGroups]
+
 
 	const onSubmit = handleSubmit(() => {
 		onSave({
