@@ -58,7 +58,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 				Value: dtxAccessToken,
 			},
 		}
-		jsonData, err := json.Marshal(body)
+		var jsonMap map[string]interface{}
+		json.Unmarshal([]byte(body), &jsonMap)
+		jsonData, err := json.Marshal(jsonMap)
 		if err != nil {
 			fmt.Println(err)
 			resp.Successfull = false

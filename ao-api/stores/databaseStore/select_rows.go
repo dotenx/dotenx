@@ -122,7 +122,7 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 				return nil, err
 			}
 			log.Println("columnType:", columnType)
-			if columnType == "character varying" {
+			if columnType == "character varying" || columnType == "text" {
 				switch cond.Operator {
 				case "=", "!=":
 					whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, signCnt)
