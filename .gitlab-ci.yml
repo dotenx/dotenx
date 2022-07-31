@@ -138,7 +138,7 @@ deploy api: &deploy
     - | 
       if [ -n $FOLDER ]; then
       cd $FOLDER
-      joined=[`cat ${ENV_FILE} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
+      joined=[`cat .env.${environment} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
       echo $joined
       NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" --argjson ENV_VARS $joined '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0].environment = $ENV_VARS | .taskDefinition.containerDefinitions[0]')
       else
@@ -172,6 +172,7 @@ deploy scheduler:
     TASK_DEFINITION_NAME: scheduler
     CLUSTER_NAME: dotenx
     SERVICE_NAME: scheduler
+    FOLDER: job_scheduler/server
   only:
     # refs:
     #   - master
