@@ -159,6 +159,10 @@ var migrations = []struct {
 		name: "add-column-access-to-object-store-table",
 		stmt: addColumnAccessToObjectStoreTable,
 	},
+	{
+		name: "add-column-url-to-object-store-table",
+		stmt: addColumnUrlToObjectStoreTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -482,4 +486,9 @@ UNIQUE (account_id, tpaccount_id, project_tag, key)
 var addColumnAccessToObjectStoreTable = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS access varchar(64);
+`
+
+var addColumnUrlToObjectStoreTable = `
+ALTER TABLE object_store
+ADD COLUMN IF NOT EXISTS url varchar;
 `

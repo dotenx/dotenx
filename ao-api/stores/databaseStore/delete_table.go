@@ -20,7 +20,7 @@ func (ds *databaseStore) DeleteTable(ctx context.Context, accountId string, proj
 		log.Println("Error getting database connection:", err)
 		return err
 	}
-	_, err = db.Connection.Exec(fmt.Sprintf(addTable, tableName))
+	_, err = db.Connection.Exec(fmt.Sprintf(deleteTable, tableName))
 	if err != nil {
 		log.Println("Error dropping table:", err)
 		return err

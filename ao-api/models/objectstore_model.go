@@ -7,4 +7,5 @@ type Objectstore struct {
 	ProjectTag  string `db:"project_tag" json:"project_tag"`
 	Size        int    `db:"size" json:"size"`
 	Access      string `db:"access" json:"access"`
+	Url         string `db:"url" json:"url"`
 }
