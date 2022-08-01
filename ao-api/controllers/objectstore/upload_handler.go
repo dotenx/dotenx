@@ -106,6 +106,16 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			return
 		}
 
+		// Prepare the url of the file based on its access
+		var sbUrl strings.Builder
+		sbUrl.WriteString(config.Configs.Endpoints.AoApi + "/")
+		if access == "public" {
+			sbUrl.WriteString("public")
+		} else {
+			sbUrl.WriteString("objectstore")
+		}
+		sbUrl.WriteString("/project/" + projectTag + "/file/" + fileName)
+		url := sbUrl.String()
 		toAdd := models.Objectstore{
 			Key:         fileName,
 			AccountId:   accountId,
@@ -113,6 +123,7 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			ProjectTag:  projectTag,
 			Size:        int(size),
 			Access:      access,
+			Url:         url,
 		}
 
 		err = controller.Service.AddObject(toAdd)
@@ -138,7 +149,7 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"file_name": fileName})
+		c.JSON(http.StatusOK, gin.H{"fileName": fileName, "url": url})
 	}
 }
 
@@ -150,7 +161,7 @@ func UploadFileToS3(file multipart.File, fileName string, size int64) error {
 	if config.Configs.App.RunLocally {
 		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
 
-		cfg = aws.NewConfig().WithCredentials(creds)
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
 	}
 	svc := s3.New(session.New(), cfg)
 

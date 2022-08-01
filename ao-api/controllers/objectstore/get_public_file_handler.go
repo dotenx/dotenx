@@ -24,7 +24,7 @@ func (controller *ObjectstoreController) GetPublicFile() gin.HandlerFunc {
 		if config.Configs.App.RunLocally {
 			creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
 
-			cfg = aws.NewConfig().WithCredentials(creds)
+			cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
 		}
 		svc := s3.New(session.New(), cfg)
 
