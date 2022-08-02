@@ -108,7 +108,7 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				value: fieldValue as InputOrSelectValue,
 			}))
 		const body = _.fromPairs(bodyEntries)
-		const isCodeTask = value.type.includes('code')
+		const hasOutputs = _.keys(value.body).includes('outputs')
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -119,9 +119,9 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
-				others: isCodeTask ? { code: body.code, dependency: body.dependency } : body,
+				others: hasOutputs ? _.omit(body, 'outputs') : body,
 				// TODO: THIS IS HARDCODED :(
-				vars: isCodeTask ? vars : undefined,
+				vars: hasOutputs ? vars : undefined,
 				outputs: _.isArray(value.body.outputs)
 					? value.body.outputs.map((value) => ({ value }))
 					: undefined,
