@@ -25,8 +25,11 @@ type PipelineStore interface {
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
 	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error)
+	// Retrieve a pipeline based on endpoint
+	GetPipelineByEndpoint(context context.Context, endpoint string) (pipeline models.PipelineSummery, err error)
 	// Check if the endpoint is valid return the pipeline id
-	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (pipelineId int, err error)
+	// TODO: should not use accountId, endpoint is enough
+	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (int, error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)
 
 	// tasks

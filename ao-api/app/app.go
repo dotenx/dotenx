@@ -162,9 +162,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
 	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
 
-	// unknown endpoint
-	r.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
-
 	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
 
@@ -221,6 +218,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// pipeline router
 	// TODO: fix the type of the pipeline
+	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 	pipeline.POST("", crudController.AddPipeline())
 	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())
