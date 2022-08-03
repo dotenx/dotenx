@@ -163,6 +163,10 @@ var migrations = []struct {
 		name: "add-column-url-to-object-store-table",
 		stmt: addColumnUrlToObjectStoreTable,
 	},
+	{
+		name: "add-column-is-public-to-pipelines-table",
+		stmt: addColumnIsPublicToPipelinesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -491,4 +495,9 @@ ADD COLUMN IF NOT EXISTS access varchar(64);
 var addColumnUrlToObjectStoreTable = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS url varchar;
+`
+
+var addColumnIsPublicToPipelinesTable = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
 `

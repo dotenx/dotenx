@@ -14,6 +14,7 @@ type Pipeline struct {
 	IsActive      bool   `db:"is_active" json:"is_active"`
 	IsTemplate    bool   `db:"is_template" json:"is_template"`
 	IsInteraction bool   `db:"is_interaction" json:"is_interaction"`
+	IsPublic      bool   `db:"is_public" json:"is_public"`
 }
 
 type PipelineVersion struct {
@@ -28,11 +29,13 @@ type PipelineDto struct {
 }
 
 type PipelineSummery struct {
+	AccountId        string `db:"account_id" json:"-" yaml:"-"`
 	PipelineDetailes PipelineVersion
 	Endpoint         string
 	IsActive         bool
 	IsTemplate       bool
 	IsInteraction    bool
+	IsPublic         bool
 }
 
 type Manifest struct {
