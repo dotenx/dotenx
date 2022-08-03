@@ -14,6 +14,7 @@ type ExecutionService interface {
 	// execution
 	GetInitialData(executionId int) (models.InputData, int)
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (interface{}, error)
+	StartPipelineByEndpoint(input map[string]interface{}, endpoint string) (interface{}, error)
 	StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId string) (interface{}, error)
 	GetExecution(string) (interface{}, error)
 	GetExecutionDetails(executionId int) (models.Execution, error)
