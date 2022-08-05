@@ -216,6 +216,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// mini-tasks router
 	miniTasks.GET("", predefinedMiniTaskController.GetMiniTasks)
 
+	// In order to reduce the risks we're taking the following measures:
+
 	// pipeline router
 	// TODO: fix the type of the pipeline
 	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
@@ -230,6 +232,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.GET("/name/:name", crudController.GetPipeline())
 	pipeline.GET("/name/:name/activate", crudController.ActivatePipeline())
 	pipeline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
+	// Set the access (public or private) for the interaction
+	pipeline.PATCH("/name/:name/access", crudController.SetInteractionAccess())
 
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
