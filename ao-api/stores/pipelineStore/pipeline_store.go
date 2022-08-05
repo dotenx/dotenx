@@ -34,6 +34,8 @@ type PipelineStore interface {
 
 	// Set the access of an interaction to public or private (true or false)
 	SetInteractionAccess(pipelineId string, isPublic bool) (err error)
+	// Set the user groups allowed to access an interaction
+	SetUserGroups(pipelineId string, userGroups []string) (err error)
 
 	// tasks
 	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
