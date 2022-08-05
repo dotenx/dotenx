@@ -37,12 +37,14 @@ YouTube:
 
 https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
 
+Previous stages:
+- pre-alpha
 
-Current stage: pre-alpha
+
+Current stage: closed-alpha
 
 ---
 
-https://docs.dotenx.com
 
 
 https://user-images.githubusercontent.com/15846333/178857021-39ec2b1e-2808-4c1b-bdd9-1597a31b0f17.mov
