@@ -22,6 +22,12 @@
         "direct_url": "https://api.instagram.com/oauth/authorize?client_id=313920727611695&redirect_uri=https://ao-api.dotenx.com/oauth/integration/callbacks/instagram&response_type=code&scope=user_profile,user_media"
     },
     {
+        "name": "ebay",
+        "secret": "PRD-13e2103b7281-0cd3-49dc-be8f-4ebb",
+        "key": "HojjatHa-DoTenXte-PRD-613e2103b-c769f098",
+        "direct_url": "https://auth.ebay.com/oauth2/authorize?client_id=HojjatHa-DoTenXte-PRD-613e2103b-c769f098&response_type=code&redirect_uri=Hojjat_Hajizade-HojjatHa-DoTenX-jcgqerc&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly"
+    },
+    {
         "name": "dropbox",
         "secret": "phhpxepagdkb3l2",
         "key": "8mwek47s34krny7"

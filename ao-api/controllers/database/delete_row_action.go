@@ -1,6 +1,7 @@
 package database
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -30,7 +31,10 @@ func (dc *DatabaseController) DeleteRow() gin.HandlerFunc {
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 
 		if err := dc.Service.DeleteRow(tpAccountId, projectTag, tableName, id); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+			log.Println("err:", err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 

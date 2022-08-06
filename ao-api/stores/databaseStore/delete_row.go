@@ -50,11 +50,16 @@ func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool
 	stmt := fmt.Sprintf(deleteRow, tableName, checkSecurityStmt)
 	fmt.Println("stmt:", stmt)
 
-	_, err = db.Connection.Exec(stmt, id)
+	result, err := db.Connection.Exec(stmt, id)
 	if err != nil {
 		log.Println("Error adding table column:", err)
 		return err
 	}
-	log.Println("Table column added:", tableName)
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		err = errors.New("you haven't access to delete this row")
+		return err
+	}
+	log.Println("Row deleted, row id is", id)
 	return nil
 }
