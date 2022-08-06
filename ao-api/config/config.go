@@ -72,6 +72,7 @@ type (
 		AwsSecretAccessKey   string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
 		AwsRegion            string `envconfig:"AOA_AWS_REGION"`
 		CodeChallenge        string `envconfig:"AOA_CODE_CHALLENGE"`
+		EbayNotifToken       string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
 	}
 
 	Upload struct {

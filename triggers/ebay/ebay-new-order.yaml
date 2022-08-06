@@ -1,0 +1,13 @@
+service: ebay
+type: Ebay new order
+integrations: [ebay]
+image: hojjat12/ebay-new-order:lambda
+credentials:
+    - key: passed_seconds
+      type: text
+      description: passed seconds from creation time of order
+# outputs:
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/888/888848.png
+node_color: 58B843
+description: Checks if there is a new order(sent before given number of seconds), tiggers a specefic pipeline
