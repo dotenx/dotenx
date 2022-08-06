@@ -29,6 +29,7 @@ type CrudService interface {
 	CheckAccess(accId string, excutionId int) (bool, error)
 	NotifyPlanmanageForActivation(accId, action string, pipelineId string, deleteRecord bool) error
 	SetInteractionAccess(pipelineId string, isPublic bool) (err error)
+	SetUserGroups(pipelineId string, userGroups []string) (err error)
 }
 
 type crudManager struct {

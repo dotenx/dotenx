@@ -167,6 +167,10 @@ var migrations = []struct {
 		name: "add-column-is-public-to-pipelines-table",
 		stmt: addColumnIsPublicToPipelinesTable,
 	},
+	{
+		name: "add-column-user-groups-to-pipelines-table",
+		stmt: addColumnUserGroupsToPipelinesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -500,4 +504,9 @@ ADD COLUMN IF NOT EXISTS url varchar;
 var addColumnIsPublicToPipelinesTable = `
 ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
+`
+
+var addColumnUserGroupsToPipelinesTable = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS user_groups VARCHAR [] NOT NULL DEFAULT '{}';
 `

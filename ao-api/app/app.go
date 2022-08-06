@@ -234,6 +234,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
 	// Set the access (public or private) for the interaction
 	pipeline.PATCH("/name/:name/access", crudController.SetInteractionAccess())
+	// Set the authorized user groups for the pipeline (only applicable for interactions and templates). By default any authenticated user is authorized to access the pipeline.
+	pipeline.PATCH("/name/:name/usergroup", crudController.SetUserGroups())
 
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
