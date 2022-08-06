@@ -1,5 +1,6 @@
 import { ActionIcon, Anchor, Button, Checkbox } from '@mantine/core'
 import _ from 'lodash'
+import { useState } from 'react'
 import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
@@ -28,6 +29,7 @@ interface AutomationListProps {
 export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {
 	const modal = useModal()
 	const client = useQueryClient()
+	const [rowData, setRowData] = useState({ value: false, name: '' })
 	const { mutate } = useMutation(setAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
 	})
@@ -59,49 +61,17 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 								Header: 'Public',
 								accessor: 'is_public',
 								Cell: ({ value, row }: { value: boolean; row: any }) => (
-									<>
-										<Checkbox
-											readOnly
-											checked={value}
-											onClick={() => modal.open(Modals.ConfirmCheckbox)}
-										/>
-										<NewModal
-											kind={Modals.ConfirmCheckbox}
-											title="Change interaction access"
-											size="xl"
-										>
-											<h2>
-												Are you sure you want to change{' '}
-												<span className="text-sky-900">
-													{row.values.name}
-												</span>{' '}
-												interaction access to {value ? 'private' : 'public'}
-												?
-											</h2>
-											<div className="flex items-center justify-end">
-												<Button
-													className="mr-2"
-													onClick={() => modal.close()}
-													variant="subtle"
-													color="gray"
-													size="xs"
-												>
-													cancel
-												</Button>
-												<Button
-													onClick={() =>
-														mutate({
-															name: row.values.name,
-															isPublic: value,
-														})
-													}
-													size="xs"
-												>
-													confirm
-												</Button>
-											</div>
-										</NewModal>
-									</>
+									<Checkbox
+										readOnly
+										checked={value}
+										onClick={() => {
+											setRowData({
+												value: value,
+												name: row.original.name,
+											}),
+												modal.open(Modals.ConfirmCheckbox)
+										}}
+									/>
 								),
 							},
 							{
@@ -129,6 +99,35 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					</>
 				)}
 			</Modal>
+			<NewModal kind={Modals.ConfirmCheckbox} title="Change interaction access" size="xl">
+				<h2>
+					Are you sure you want to change{' '}
+					<span className="text-sky-900">{rowData.name}</span> interaction access to{' '}
+					{rowData.value ? 'private' : 'public'}?
+				</h2>
+				<div className="flex items-center justify-end">
+					<Button
+						className="mr-2"
+						onClick={() => modal.close()}
+						variant="subtle"
+						color="gray"
+						size="xs"
+					>
+						cancel
+					</Button>
+					<Button
+						onClick={() =>
+							mutate({
+								name: rowData.name,
+								isPublic: rowData.value,
+							})
+						}
+						size="xs"
+					>
+						confirm
+					</Button>
+				</div>
+			</NewModal>
 		</>
 	)
 }
