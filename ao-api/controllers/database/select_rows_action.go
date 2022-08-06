@@ -37,14 +37,19 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 
 		var dto selectDto
 		if err := c.ShouldBindJSON(&dto); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			log.Println("err:", err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
 		rows, err := dc.Service.SelectRows(tpAccountId, projectTag, tableName, dto.Columns, dto.Filters, page, size)
 		if err != nil {
 			log.Println("err:", err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		c.JSON(200, rows)

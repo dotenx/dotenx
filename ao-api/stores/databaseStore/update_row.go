@@ -62,9 +62,14 @@ func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool
 
 	values = append(values, id)
 	log.Println("values:", values)
-	_, err = db.Connection.Exec(stmt, values...)
+	result, err := db.Connection.Exec(stmt, values...)
 	if err != nil {
 		log.Println("Error updating table row:", err)
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		err = errors.New("you haven't access to update this row")
 		return err
 	}
 	log.Println("Table row updated:", tableName)
