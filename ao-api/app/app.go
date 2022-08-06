@@ -180,6 +180,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
 		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
+	r.GET("/oauth/webhook/:provider", OauthController.OAuthVerifyWebhook)
+	r.POST("/oauth/webhook/:provider", OauthController.OAuthWebhook)
 
 	public := r.Group("/public")
 

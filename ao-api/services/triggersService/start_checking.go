@@ -74,6 +74,8 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore) er
 func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
 	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
+		log.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", trigger.Name, trigger.Integration)
+		log.Println("error:", err.Error())
 		return
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image

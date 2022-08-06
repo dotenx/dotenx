@@ -87,6 +87,13 @@ func init() {
 		provider := dropbox.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
+	// ............................Added by Hojjat............................
+	// just a trick to fill ebay provider
+	ProviderNameInitializationMap["ebay"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
+		provider := google.New(key, secret, cbUrl, scopes...)
+		return provider
+	}
+	// ............................Added by Hojjat............................
 	ProviderNameInitializationMap["eveonline"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
 		provider := eveonline.New(key, secret, cbUrl, scopes...)
 		return provider
