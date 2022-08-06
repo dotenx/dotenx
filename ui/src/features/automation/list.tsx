@@ -1,7 +1,7 @@
-import { ActionIcon, Anchor, Button } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Checkbox } from '@mantine/core'
 import _ from 'lodash'
 import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
 import {
 	API_URL,
@@ -11,9 +11,10 @@ import {
 	getInteractionEndpointFields,
 	getTemplateEndpointFields,
 	QueryKey,
+	setAccess,
 } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Confirm, ContentWrapper, Endpoint, Loader, Modal, Table } from '../ui'
+import { Confirm, ContentWrapper, Endpoint, Loader, Modal, NewModal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -25,6 +26,11 @@ interface AutomationListProps {
 }
 
 export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {
+	const modal = useModal()
+	const client = useQueryClient()
+	const { mutate } = useMutation(setAccess, {
+		onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
+	})
 	return (
 		<>
 			<ContentWrapper>
@@ -47,6 +53,55 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 								accessor: 'is_active',
 								Cell: ({ value }: { value: boolean }) => (
 									<ActivationStatus isActive={value} />
+								),
+							},
+							{
+								Header: 'Public',
+								accessor: 'is_public',
+								Cell: ({ value, row }: { value: boolean; row: any }) => (
+									<>
+										<Checkbox
+											readOnly
+											checked={value}
+											onClick={() => modal.open(Modals.ConfirmCheckbox)}
+										/>
+										<NewModal
+											kind={Modals.ConfirmCheckbox}
+											title="Change interaction access"
+											size="xl"
+										>
+											<h2>
+												Are you sure you want to change{' '}
+												<span className="text-sky-900">
+													{row.values.name}
+												</span>{' '}
+												interaction access to {value ? 'private' : 'public'}
+												?
+											</h2>
+											<div className="flex items-center justify-end">
+												<Button
+													className="mr-2"
+													onClick={() => modal.close()}
+													variant="subtle"
+													color="gray"
+													size="xs"
+												>
+													cancel
+												</Button>
+												<Button
+													onClick={() =>
+														mutate({
+															name: row.values.name,
+															isPublic: value,
+														})
+													}
+													size="xs"
+												>
+													confirm
+												</Button>
+											</div>
+										</NewModal>
+									</>
 								),
 							},
 							{
