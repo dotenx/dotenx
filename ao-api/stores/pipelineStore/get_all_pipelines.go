@@ -5,6 +5,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/lib/pq"
 )
 
 func (ps *pipelineStore) GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error) {
@@ -19,12 +20,32 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 		}
 		defer rows.Close()
 		for rows.Next() {
-			var cur models.Pipeline
+			var cur struct {
+				Id            int            `db:"id"`
+				Name          string         `db:"name"`
+				Endpoint      string         `db:"endpoint"`
+				AccountId     string         `db:"account_id"`
+				IsActive      bool           `db:"is_active"`
+				IsTemplate    bool           `db:"is_template"`
+				IsInteraction bool           `db:"is_interaction"`
+				IsPublic      bool           `db:"is_public"`
+				UserGroups    pq.StringArray `db:"user_groups"`
+			}
 			rows.StructScan(&cur)
 			if err != nil {
 				return nil, err
 			}
-			res = append(res, cur)
+			res = append(res, models.Pipeline{
+				Id:            cur.Id,
+				Name:          cur.Name,
+				Endpoint:      cur.Endpoint,
+				AccountId:     cur.AccountId,
+				IsActive:      cur.IsActive,
+				IsTemplate:    cur.IsTemplate,
+				IsInteraction: cur.IsInteraction,
+				IsPublic:      cur.IsPublic,
+				UserGroups:    ([]string)(cur.UserGroups),
+			})
 		}
 	}
 	return res, nil
