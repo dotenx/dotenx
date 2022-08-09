@@ -62,5 +62,5 @@ type addTableColumnDTO struct {
 	ProjectName string `json:"projectName"`
 	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
 	ColumnName  string `json:"columnName" binding:"regexp=^(__)?[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
-	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_field text_array yes_no_array num_array json float_num float_num_array"`
+	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_field text_array yes_no_array num_array dtx_json float_num float_num_array"`
 }
