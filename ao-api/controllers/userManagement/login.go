@@ -62,7 +62,7 @@ func (umc *UserManagementController) Login() gin.HandlerFunc {
 			})
 			return
 		}
-		accessToken, err := utils.GenerateTpJwtToken(project.AccountId, user.AccountId)
+		accessToken, err := utils.GenerateTpJwtToken(project.AccountId, user.AccountId, user.UserGroup)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),

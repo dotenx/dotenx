@@ -37,6 +37,7 @@ type PipelineSummery struct {
 	IsTemplate       bool
 	IsInteraction    bool
 	IsPublic         bool
+	UserGroups       []string
 }
 
 type Manifest struct {
