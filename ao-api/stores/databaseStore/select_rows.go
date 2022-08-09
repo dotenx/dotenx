@@ -3,6 +3,7 @@ package databaseStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/lib/pq"
 )
 
 type condition struct {
@@ -202,8 +204,36 @@ func SelectScan(rows *sql.Rows) ([]map[string]interface{}, error) {
 	numColumns := len(columns)
 
 	values := make([]interface{}, numColumns)
+	rvalues := make([]interface{}, numColumns)
+	// for i := range values {
+	// 	values[i] = new(interface{})
+	// }
 	for i := range values {
-		values[i] = new(interface{})
+		columnTypes, _ := rows.ColumnTypes()
+		columnType := columnTypes[i]
+		switch columnType.DatabaseTypeName() {
+		case "_TEXT":
+			rvalues[i] = new([]string)
+			values[i] = pq.Array(rvalues[i].(*[]string))
+
+		case "_BOOL":
+			rvalues[i] = new([]bool)
+			values[i] = pq.Array(rvalues[i].(*[]bool))
+
+		case "_INT4":
+			rvalues[i] = new([]int64)
+			values[i] = pq.Array(rvalues[i].(*[]int64))
+
+		case "_FLOAT8":
+			rvalues[i] = new([]float64)
+			values[i] = pq.Array(rvalues[i].(*[]float64))
+
+		case "JSON":
+			values[i] = new([]byte)
+
+		default:
+			values[i] = new(interface{})
+		}
 	}
 
 	var results []map[string]interface{}
@@ -214,7 +244,21 @@ func SelectScan(rows *sql.Rows) ([]map[string]interface{}, error) {
 
 		dest := make(map[string]interface{}, numColumns)
 		for i, column := range columns {
-			dest[column] = *(values[i].(*interface{}))
+			if _, ok := rvalues[i].(*[]string); ok {
+				dest[column] = *(rvalues[i].(*[]string))
+			} else if _, ok := rvalues[i].(*[]bool); ok {
+				dest[column] = *(rvalues[i].(*[]bool))
+			} else if _, ok := rvalues[i].(*[]int64); ok {
+				dest[column] = *(rvalues[i].(*[]int64))
+			} else if _, ok := rvalues[i].(*[]float64); ok {
+				dest[column] = *(rvalues[i].(*[]float64))
+			} else if _, ok := values[i].(*[]byte); ok {
+				var value jsonInterface
+				json.Unmarshal(*(values[i].(*[]byte)), &value)
+				dest[column] = value
+			} else {
+				dest[column] = *(values[i].(*interface{}))
+			}
 		}
 		results = append(results, dest)
 	}
