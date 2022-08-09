@@ -38,7 +38,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		dtxAccessToken := singleInput["dtx_access_token"].(string)
 		projectTag := singleInput["project_tag"].(string)
 		tableName := singleInput["table_name"].(string)
-		columnValues := fmt.Sprint(singleInput["column_values"])
+		columnValues := fmt.Sprint(singleInput["DYNMAIC_VARIABLES"])
 		url := fmt.Sprintf("https://api.dotenx.com/database/query/insert/project/%s/table/%s", projectTag, tableName)
 		headers := []Header{
 			{
@@ -51,7 +51,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			},
 		}
 		var jsonMap map[string]interface{}
-		json.Unmarshal([]byte(columnValues), &jsonMap)
+		myMap, ok := singleInput["DYNMAIC_VARIABLES"].(map[string]interface{})
+		if ok {
+			jsonMap = myMap
+		} else {
+			json.Unmarshal([]byte(columnValues), &jsonMap)
+		}
 		jsonData, err := json.Marshal(jsonMap)
 		if err != nil {
 			fmt.Println(err)

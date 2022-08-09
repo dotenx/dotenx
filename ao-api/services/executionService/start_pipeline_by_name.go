@@ -34,7 +34,6 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	if !pipeline.IsActive {
 		return -1, errors.New("automation is not active")
 	}
-
 	hasAccess, err := manager.CheckAccess(accountId, pipelineId)
 	if err != nil {
 		logrus.Error(err.Error())

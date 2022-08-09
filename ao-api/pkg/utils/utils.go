@@ -6,11 +6,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"encoding/json"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -296,4 +299,97 @@ func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
 		return "", errors.New("no tpAccountId have been set")
 	}
 	return tpAccountId, nil
+}
+
+func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{}, error) {
+	values := make([]interface{}, 0)
+	if index >= len(keys) {
+		return nil, errors.New("index out of range")
+	}
+	key := keys[index]
+	keyIndex := -2
+	pureIndex := ""
+	if strings.Contains(key, "[") && strings.Contains(key, "]") {
+		indexes := strings.Split(key, "[")
+		pureIndex = indexes[0]
+		tempIndex := strings.ReplaceAll(indexes[1], "]", "")
+		if tempIndex == "*" {
+			keyIndex = -1
+		} else if intIndex, err := strconv.Atoi(tempIndex); err == nil {
+			keyIndex = intIndex
+		} else {
+			return nil, errors.New("index is not defined correctly")
+		}
+	} else {
+		pureIndex = key
+	}
+	var data map[string]interface{}
+	err := json.Unmarshal(jsonBytes, &data)
+	if err != nil {
+		log.Println("tsssssssssss")
+		return nil, err
+	}
+	newValue, ok := data[pureIndex]
+	if !ok {
+		return nil, errors.New("key not found")
+	}
+	if index+1 >= len(keys) {
+		if keyIndex == -2 { // no index
+			values = append(values, newValue)
+			return values, nil
+		} else if keyIndex == -1 { // all index
+			// TODO handle panic scenario
+			for _, v := range newValue.([]interface{}) {
+				values = append(values, v)
+			}
+			return values, nil
+		} else { // specific index
+			// TODO handle panic scenario
+			newValues := newValue.([]interface{})
+			if keyIndex >= len(newValues) {
+				return nil, errors.New("index out of range")
+			}
+			values = append(values, newValues[keyIndex])
+			return values, nil
+		}
+
+	} else {
+		if keyIndex == -2 { // no index
+			newJsonBytes, err := json.Marshal(newValue)
+			if err != nil {
+				return nil, err
+			}
+			return GetFromNestedJson(newJsonBytes, keys, index+1)
+		} else if keyIndex == -1 { // all index
+			// TODO handle panic scenario
+			for _, v := range newValue.([]interface{}) {
+				newJsonBytes, err := json.Marshal(v)
+				if err != nil {
+					return nil, err
+				}
+				returnedValues, err := GetFromNestedJson(newJsonBytes, keys, index+1)
+				if err != nil {
+					return nil, err
+				}
+				values = append(values, returnedValues...)
+			}
+			return values, nil
+		} else { // specific index
+			// TODO handle panic scenario
+			newValues := newValue.([]interface{})
+			if keyIndex >= len(newValues) {
+				return nil, errors.New("index out of range")
+			}
+			newJsonBytes, err := json.Marshal(newValues[keyIndex])
+			if err != nil {
+				return nil, err
+			}
+			returnedValues, err := GetFromNestedJson(newJsonBytes, keys, index+1)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, returnedValues...)
+			return values, nil
+		}
+	}
 }

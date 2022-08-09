@@ -2,6 +2,7 @@ service: jira
 type: Create jira ticket
 image: awrmin/create-jira-ticket:lambda2
 integrations: [jira]
+has_dynamic_variables: true
 fields:
     - key: project_key
       type: text
@@ -10,7 +11,7 @@ fields:
     - key: description
       type: text
     - key: summery
-      type: text
+      type: json
     - key: jira_url
       type: text
 author: Armingodiz
