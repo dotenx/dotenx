@@ -87,7 +87,7 @@ export function startAutomation(automationName: string, payload: StartAutomation
 }
 export function setAccess({ name, isPublic }: { name: string, isPublic: boolean }) {
 	return api.patch(
-		`/pipeline/${name}/get_news_records/access`,
+		`/pipeline/name/${name}/access`,
 		{
 			isPublic: !isPublic
 		}

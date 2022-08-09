@@ -78,8 +78,13 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 								Header: 'Action',
 								id: 'action',
 								accessor: 'name',
-								Cell: ({ value }: { value: string }) => (
-									<AutomationActions automationName={value} kind={kind} />
+								Cell: ({ value, row }: { value: string; row: any }) => (
+									<AutomationActions
+										automationName={value}
+										endpoint={row.original.endpoint}
+										isPublic={row.original.is_public}
+										kind={kind}
+									/>
 								),
 							},
 						] as const
@@ -88,13 +93,17 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 				/>
 			</ContentWrapper>
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
-				{(data: { automationName: string }) => (
+				{(data: { automationName: string; endpoint: string; isPublic: boolean }) => (
 					<>
 						{kind === 'template' && (
 							<TemplateEndpoint automationName={data.automationName} />
 						)}
 						{kind === 'interaction' && (
-							<InteractionEndpoint automationName={data.automationName} />
+							<InteractionEndpoint
+								automationName={data.automationName}
+								endpoint={data.endpoint}
+								isPublic={data.isPublic}
+							/>
 						)}
 					</>
 				)}
@@ -116,12 +125,13 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 						cancel
 					</Button>
 					<Button
-						onClick={() =>
+						onClick={() => {
 							mutate({
 								name: rowData.name,
 								isPublic: rowData.value,
-							})
-						}
+							}),
+								modal.close()
+						}}
 						size="xs"
 					>
 						confirm
@@ -163,20 +173,23 @@ function AutomationLink({ automationName }: { automationName: string }) {
 }
 
 interface AutomationActionsProps {
+	endpoint: string
+	isPublic: boolean
 	automationName: string
 	kind: AutomationKind
 }
 
-function AutomationActions({ automationName, kind }: AutomationActionsProps) {
+function AutomationActions({ automationName, kind, endpoint, isPublic }: AutomationActionsProps) {
 	const deleteMutation = useDeleteAutomation()
 	const modal = useModal()
 	const textKind = kind === 'template' ? 'automation template' : kind
-
 	return (
 		<div className="flex items-center justify-end gap-4">
 			{kind !== 'automation' && (
 				<Button
-					onClick={() => modal.open(Modals.TemplateEndpoint, { automationName })}
+					onClick={() =>
+						modal.open(Modals.TemplateEndpoint, { automationName, endpoint, isPublic })
+					}
 					variant="subtle"
 					color="gray"
 					size="xs"
@@ -230,7 +243,15 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 	)
 }
 
-function InteractionEndpoint({ automationName }: { automationName: string }) {
+function InteractionEndpoint({
+	automationName,
+	isPublic,
+	endpoint,
+}: {
+	automationName: string
+	isPublic: boolean
+	endpoint: string
+}) {
 	const query = useQuery(
 		[QueryKey.GetInteractionEndpointFields, automationName],
 		() => getInteractionEndpointFields(automationName),
@@ -242,12 +263,23 @@ function InteractionEndpoint({ automationName }: { automationName: string }) {
 	if (query.isLoading) return <Loader />
 
 	return (
-		<Endpoint
-			label="Run interaction"
-			url={`${API_URL}/execution/name/${automationName}/start`}
-			method="POST"
-			code={body}
-		/>
+		<div className="grid grid-cols-1 space-y-4">
+			<Endpoint
+				label="Run interaction"
+				url={`${API_URL}/execution/name/${automationName}/start`}
+				method="POST"
+				code={body}
+			/>
+
+			{isPublic && (
+				<Endpoint
+					label="Run interaction (public access)"
+					url={`${API_URL}/public/execution/ep/${endpoint}/start`}
+					method="POST"
+					code={body}
+				/>
+			)}
+		</div>
 	)
 }
 
