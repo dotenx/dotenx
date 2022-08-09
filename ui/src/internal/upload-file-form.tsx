@@ -81,7 +81,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 						<span className="font-medium">file name: </span>
 						<span className="truncate">{file?.name}</span>
 						<br /> <span className="font-medium">file size: </span>
-						{Math.floor(file?.size / 1000) + 'kb'}
+						{(file?.size / 1000).toFixed(1) + 'kb'}
 					</div>
 				)}
 			</div>
