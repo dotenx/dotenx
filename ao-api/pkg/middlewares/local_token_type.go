@@ -30,8 +30,14 @@ func LocalTokenTypeMiddleware() gin.HandlerFunc {
 				c.AbortWithError(http.StatusUnauthorized, err)
 				return
 			}
+			userGroup, err := utils.GetUserGroup(tokenString)
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
 			c.Set("accountId", accountId)
 			c.Set("tpAccountId", tpAccountId)
+			c.Set("userGroup", userGroup)
 			c.Set("tokenType", "tp")
 			c.Next()
 			return

@@ -7,6 +7,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*	Note: based on this implementation always the latest activated version will be executed. If you want to
@@ -15,24 +16,20 @@ import (
 	Current approach doesn't match the cases like the build pipelines in repositories where you have particular pipeline per git push
 	and at any time you are able to re-run it.
 */
-func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId string) (interface{}, error) {
+func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup string) (interface{}, error) {
 
 	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name)
 	if err != nil {
-		log.Println(err.Error())
-		if err.Error() == "pipeline not found" {
-			//return -1, http.StatusBadRequest
-			return -1, err
-		}
-		//return -1, http.StatusInternalServerError
+		logrus.Error(err.Error())
 		return -1, err
 	}
 	pipeline, err := manager.Store.GetByName(noContext, accountId, name)
+	if err != nil {
+		logrus.Error(err.Error())
+		return -1, err
+	}
 	if pipeline.IsTemplate {
 		return -1, errors.New("automation is a template so you can't execute it")
-	}
-	if err != nil {
-		return -1, err
 	}
 	if !pipeline.IsActive {
 		return -1, errors.New("automation is not active")
@@ -40,6 +37,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 
 	hasAccess, err := manager.CheckAccess(accountId, pipelineId)
 	if err != nil {
+		logrus.Error(err.Error())
 		return -1, err
 	}
 	if !hasAccess {
@@ -52,8 +50,21 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		InitialData:       input,
 	}
 	if pipeline.IsInteraction {
-		log.Println("tpAccountId:", tpAccountId)
 		execution.ThirdPartyAccountId = tpAccountId
+		hasPermission := false
+		if len(pipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
+			for _, ug := range pipeline.UserGroups {
+				if ug == userGroup {
+					hasPermission = true
+					break
+				}
+			}
+		} else { // Having set no user groups for the pipeline means all the user groups have access to the pipeline
+			hasPermission = true
+		}
+		if !hasPermission {
+			return -1, errors.New("you don't have permission to execute this interaction")
+		}
 	}
 
 	executionId, err := manager.Store.CreateExecution(noContext, execution)
