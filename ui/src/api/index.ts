@@ -85,6 +85,14 @@ export function startAutomation(automationName: string, payload: StartAutomation
 		payload
 	)
 }
+export function setAccess({ name, isPublic }: { name: string, isPublic: boolean }) {
+	return api.patch(
+		`/pipeline/name/${name}/access`,
+		{
+			isPublic: !isPublic
+		}
+	)
+}
 
 export function deleteAutomation(name: string) {
 	return api.delete<void>(`/pipeline/name/${name}`)
