@@ -228,7 +228,7 @@ func SelectScan(rows *sql.Rows) ([]map[string]interface{}, error) {
 			rvalues[i] = new([]float64)
 			values[i] = pq.Array(rvalues[i].(*[]float64))
 
-		case "JSON":
+		case "JSON", "JSONB":
 			values[i] = new([]byte)
 
 		default:
