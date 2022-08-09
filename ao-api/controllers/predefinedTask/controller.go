@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/formatter"
 	predifinedService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,11 @@ type PredefinedTaskController struct {
 
 func New(service predifinedService.PredifinedTaskService) *PredefinedTaskController {
 	return &PredefinedTaskController{service: service}
+}
+
+func (r *PredefinedTaskController) GetFuncs(ctx *gin.Context) {
+	funcs := formatter.GetFuncs()
+	ctx.JSON(http.StatusOK, funcs)
 }
 
 func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
