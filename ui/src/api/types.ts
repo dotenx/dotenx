@@ -102,6 +102,7 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_public?: boolean
 	is_template?: boolean
 	is_interaction?: boolean
 }

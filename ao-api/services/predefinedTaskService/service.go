@@ -15,7 +15,7 @@ type taskDetail struct {
 
 type PredifinedTaskService interface {
 	GetTasks() (map[string][]taskDetail, error)
-	GetTaskFields(taskName string) ([]models.TaskField, []string, []models.TaskField, error)
+	GetTaskFields(taskName string) ([]models.TaskField, []string, []models.TaskField, bool, error)
 }
 
 type predifinedTaskService struct {
@@ -40,11 +40,11 @@ func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
 	return types, nil
 }
 
-func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, []string, []models.TaskField, error) {
+func (r *predifinedTaskService) GetTaskFields(taskType string) ([]models.TaskField, []string, []models.TaskField, bool, error) {
 	for t := range models.AvaliableTasks {
 		if t == taskType {
-			return models.AvaliableTasks[t].Fields, models.AvaliableTasks[t].Integrations, models.AvaliableTasks[t].Outputs, nil
+			return models.AvaliableTasks[t].Fields, models.AvaliableTasks[t].Integrations, models.AvaliableTasks[t].Outputs, models.AvaliableTasks[t].HasDynamicVariables, nil
 		}
 	}
-	return nil, nil, nil, errors.New("invalid task type")
+	return nil, nil, nil, false, errors.New("invalid task type")
 }
