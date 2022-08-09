@@ -52,6 +52,41 @@ func (job *Job) SetIntegration(integration Integration) {
 	}
 }
 
+// AddDynamicValuesToMetaData adds dynamic value keys to task meta data
+func (job *Job) AddDynamicValuesToMetaData() {
+	dynamicValueKeys := make([]string, 0)
+	for inputNumber, _ := range job.Body {
+		for key, _ := range job.Body[inputNumber] {
+			if !job.isInFields(key) {
+				dynamicValueKeys = append(dynamicValueKeys, key)
+			}
+		}
+		break
+	}
+	if len(dynamicValueKeys) > 0 {
+		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "DYNMAIC_VARIABLE_KEYS", Type: "array"})
+		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "DYNMAIC_VARIABLES", Type: "json"})
+		for inputNumber, _ := range job.Body {
+			dynamicValues := make(map[string]interface{})
+			job.Body[inputNumber]["DYNMAIC_VARIABLE_KEYS"] = dynamicValueKeys
+			for _, key := range dynamicValueKeys {
+				dynamicValues[key] = job.Body[inputNumber][key]
+			}
+			job.Body[inputNumber]["DYNMAIC_VARIABLES"] = dynamicValues
+		}
+	}
+}
+
+func (job *Job) isInFields(key string) bool {
+	for _, field := range job.MetaData.Fields {
+		if field.Key == key {
+			return true
+		}
+	}
+	return false
+}
+
+// TODO change this and use AddDynamicValuesToMetaData logic to handle it
 func (job *Job) SetRunCodeFields() {
 	variables := ""
 	for inputNumber, _ := range job.Body {
@@ -69,7 +104,6 @@ func (job *Job) SetRunCodeFields() {
 		job.MetaData.Fields = append(job.MetaData.Fields, TaskField{Key: "VARIABLES", Type: "text"})
 		job.Body[inputNumber]["VARIABLES"] = variables
 	}
-
 }
 
 func (job *Job) PrepRunMiniTasks() {

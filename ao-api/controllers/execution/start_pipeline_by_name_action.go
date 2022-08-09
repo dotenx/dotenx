@@ -24,7 +24,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		// Get the `input data` from the request body
 		var input map[string]interface{}
 		if err := c.ShouldBindJSON(&input); err != nil {
-			c.Status(http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
 

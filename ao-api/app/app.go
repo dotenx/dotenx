@@ -200,6 +200,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	integration := r.Group("/integration")
 	trigger := r.Group("/trigger")
 	admin := r.Group("/internal")
+	funcs := r.Group("/funcs")
 	project := r.Group("/project")
 	database := r.Group("/database")
 	profile := r.Group("/profile")
@@ -214,6 +215,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)
 	tasks.GET("/:task_name/fields", predefinedController.GetFields)
+
+	// formatter funcs router
+	funcs.GET("", predefinedController.GetFuncs)
 
 	// mini-tasks router
 	miniTasks.GET("", predefinedMiniTaskController.GetMiniTasks)
