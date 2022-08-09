@@ -20,6 +20,6 @@ CREATE DOMAIN link_field      AS int;
 CREATE DOMAIN text_array      AS TEXT[];
 CREATE DOMAIN yes_no_array    AS BOOLEAN[];
 CREATE DOMAIN num_array       AS int[];
-CREATE DOMAIN json            AS JSONB;
+CREATE DOMAIN dtx_json        AS JSONB;
 CREATE DOMAIN float_num       AS DOUBLE PRECISION;
 CREATE DOMAIN float_num_array AS DOUBLE PRECISION[];
