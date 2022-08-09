@@ -3,6 +3,7 @@ package databaseStore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	"github.com/lib/pq"
 )
 
 // We first convert this to a parameterized query and then execute it with the values
@@ -50,7 +52,22 @@ func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool
 	for key, value := range row {
 		cb.WriteString(key + " = $" + strconv.Itoa(count) + ",")
 		count++
-		values = append(values, value)
+		if _, ok := value.(map[string]interface{}); ok {
+			jsBytes, err := json.Marshal(value)
+			if err != nil {
+				return err
+			}
+			var js jsonInterface
+			err = json.Unmarshal(jsBytes, &js)
+			if err != nil {
+				return err
+			}
+			values = append(values, js)
+		} else if _, ok := value.([]interface{}); ok {
+			values = append(values, pq.Array(value))
+		} else {
+			values = append(values, value)
+		}
 	}
 	columns := strings.TrimSuffix(cb.String(), ",")
 	checkSecurityStmt := ""
