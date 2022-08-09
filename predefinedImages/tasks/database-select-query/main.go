@@ -1,3 +1,4 @@
+// image: hojjat12/database-get-records:lambda3
 package main
 
 import (
@@ -59,7 +60,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			},
 		}
 		var jsonMap map[string]interface{}
-		json.Unmarshal([]byte(body), &jsonMap)
+		myMap, ok := singleInput["body"].(map[string]interface{})
+		if ok {
+			jsonMap = myMap
+		} else {
+			json.Unmarshal([]byte(body), &jsonMap)
+		}
 		jsonData, err := json.Marshal(jsonMap)
 		if err != nil {
 			fmt.Println(err)

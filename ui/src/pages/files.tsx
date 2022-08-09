@@ -33,7 +33,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	const tableData = filesData?.data ?? []
 
 	return (
-		<ContentWrapper className="lg:pr-0">
+		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 			<Table
 				loading={projectDetailsLoading || filesDataLoading}
 				title="Files"
@@ -54,7 +54,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						Header: 'Owner',
 						accessor: 'tpaccount_id',
 						Cell: ({ value }: { value: string }) => (
-							<span>{value ? value : 'yourself'}</span>
+							<span className="text-sm">{value ? value : 'yourself'}</span>
 						),
 					},
 					{
@@ -76,7 +76,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 									clipboard.copy(value), setClicked(value)
 								}}
 							>
-								<span className="mr-2 truncate">{value}</span>
+								<span className="mr-2 truncate max-w-sm">{value}</span>
 								{clipboard.copied && clicked === value ? (
 									<IoCheckmark />
 								) : (

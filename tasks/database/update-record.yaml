@@ -1,6 +1,6 @@
 service: database
 type: Update a table record
-image: hojjat12/database-update-record:lambda2
+image: hojjat12/database-update-record:lambda3
 fields:
     - key: dtx_access_token
       type: text
