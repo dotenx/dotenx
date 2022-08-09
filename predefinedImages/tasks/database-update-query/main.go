@@ -1,4 +1,4 @@
-// iamge: hojjat12/database-update-record:lambda
+// iamge: hojjat12/database-update-record:lambda3
 package main
 
 import (
@@ -53,7 +53,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			},
 		}
 		var jsonMap map[string]interface{}
-		json.Unmarshal([]byte(columnValues), &jsonMap)
+		myMap, ok := singleInput["column_values"].(map[string]interface{})
+		if ok {
+			jsonMap = myMap
+		} else {
+			json.Unmarshal([]byte(columnValues), &jsonMap)
+		}
 		jsonData, err := json.Marshal(jsonMap)
 		if err != nil {
 			fmt.Println(err)

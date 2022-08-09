@@ -1,9 +1,9 @@
 #! /bin/bash
 
 export region="us-east-1"
-export function_name="hojjat12-starshipit-create-order-lambda"
-export repository_name="hojjat12/starshipit-create-order"
-export image_name="hojjat12/starshipit-create-order:lambda"
+export function_name="hojjat12-database-update-record-lambda3"
+export repository_name="hojjat12/database-update-record"
+export image_name="hojjat12/database-update-record:lambda3"
 
 ##### only once
 # aws iam create-role --role-name lambda-ex --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
