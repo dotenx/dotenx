@@ -180,6 +180,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		sessions.Sessions("dotenx_session", store), OauthController.ThirdPartyOAuth)
 	r.GET("/oauth/user/provider/integration/callbacks/provider/:provider_name/account_id/:account_id",
 		sessions.Sessions("dotenx_session", store), OauthController.OAuthThirdPartyIntegrationCallback)
+	r.GET("/oauth/webhook/:provider", OauthController.OAuthVerifyWebhook)
+	r.POST("/oauth/webhook/:provider", OauthController.OAuthWebhook)
 
 	public := r.Group("/public")
 
@@ -216,6 +218,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// mini-tasks router
 	miniTasks.GET("", predefinedMiniTaskController.GetMiniTasks)
 
+	// In order to reduce the risks we're taking the following measures:
+
 	// pipeline router
 	// TODO: fix the type of the pipeline
 	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
@@ -230,6 +234,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.GET("/name/:name", crudController.GetPipeline())
 	pipeline.GET("/name/:name/activate", crudController.ActivatePipeline())
 	pipeline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
+	// Set the access (public or private) for the interaction
+	pipeline.PATCH("/name/:name/access", crudController.SetInteractionAccess())
+	// Set the authorized user groups for the pipeline (only applicable for interactions and templates). By default any authenticated user is authorized to access the pipeline.
+	pipeline.PATCH("/name/:name/usergroup", crudController.SetUserGroups())
 
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())

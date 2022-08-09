@@ -9,6 +9,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/lib/pq"
 )
 
 func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error) {
@@ -18,7 +19,8 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction)
+		var ug pq.StringArray
+		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -27,6 +29,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
+		pipeline.UserGroups = ([]string)(ug)
 		tasks := []models.Task{}
 		var rows *sql.Rows
 		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.PipelineDetailes.Id)
@@ -79,7 +82,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 }
 
 var select_pipeline = `
-SELECT id , endpoint, is_active, is_template, is_interaction
+SELECT id , endpoint, is_active, is_template, is_interaction, user_groups
 FROM pipelines p
 WHERE account_id = $1 AND name = $2
 `

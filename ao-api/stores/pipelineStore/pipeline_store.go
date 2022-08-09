@@ -32,6 +32,11 @@ type PipelineStore interface {
 	GetPipelineIdByEndpoint(context context.Context, accountId string, endpoint string) (int, error)
 	GetPipelineNameById(context context.Context, accountId string, pipelineId int) (pipelineName string, err error)
 
+	// Set the access of an interaction to public or private (true or false)
+	SetInteractionAccess(pipelineId string, isPublic bool) (err error)
+	// Set the user groups allowed to access an interaction
+	SetUserGroups(pipelineId string, userGroups []string) (err error)
+
 	// tasks
 	GetNumberOfTasksForPipeline(context context.Context, pipelineId int) (count int, err error)
 	GetTaskByPipelineId(context context.Context, pipelineVersionId int, taskName string) (id int, err error)

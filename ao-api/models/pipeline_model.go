@@ -7,14 +7,15 @@ import (
 )
 
 type Pipeline struct {
-	Id            int    `db:"id" json:"-"`
-	Name          string `db:"name" json:"name"`
-	Endpoint      string `db:"endpoint" json:"endpoint"`
-	AccountId     string `db:"account_id" json:"-"`
-	IsActive      bool   `db:"is_active" json:"is_active"`
-	IsTemplate    bool   `db:"is_template" json:"is_template"`
-	IsInteraction bool   `db:"is_interaction" json:"is_interaction"`
-	IsPublic      bool   `db:"is_public" json:"is_public"`
+	Id            int      `db:"id" json:"-"`
+	Name          string   `db:"name" json:"name"`
+	Endpoint      string   `db:"endpoint" json:"endpoint"`
+	AccountId     string   `db:"account_id" json:"-"`
+	IsActive      bool     `db:"is_active" json:"is_active"`
+	IsTemplate    bool     `db:"is_template" json:"is_template"`
+	IsInteraction bool     `db:"is_interaction" json:"is_interaction"`
+	IsPublic      bool     `db:"is_public" json:"is_public"`
+	UserGroups    []string `db:"user_groups" json:"user_groups"`
 }
 
 type PipelineVersion struct {
@@ -36,6 +37,7 @@ type PipelineSummery struct {
 	IsTemplate       bool
 	IsInteraction    bool
 	IsPublic         bool
+	UserGroups       []string
 }
 
 type Manifest struct {

@@ -17,6 +17,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -33,6 +34,9 @@ func GetAccountId(c *gin.Context) (string, error) {
 	}
 	return accountId.(string), nil
 }
+
+// SpecialProviders are not supported by goth package (https://github.com/markbates/goth)
+var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay"}
 
 // TODO: ADD COMMENT!
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
@@ -120,6 +124,19 @@ func GetTpAccountIdField(tokenString string) (string, error) {
 	return "", errors.New("claim not found")
 }
 
+func GetUserGroup(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+	if ug, ok := claims["user_group"]; ok {
+		if userGroup, ok2 := ug.(string); ok2 {
+			return userGroup, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
 func getClaims(tokenString string) (jwt.MapClaims, error) {
 	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
 
@@ -184,7 +201,8 @@ func RandStringRunes(n int, letterRunes []rune) string {
 }
 
 // GenerateJwtToken function generates a jwt token based on HS256 algorithm
-func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err error) {
+func GenerateTpJwtToken(accountId, tpAccountId, userGroup string) (accToken string, err error) {
+	logrus.Debug("GenerateTpJwtToken ", accountId, tpAccountId, userGroup)
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -192,6 +210,11 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	claims["iss"] = "dotenx-ao-api"
 	claims["account_id"] = accountId
 	claims["tp_account_id"] = tpAccountId
+	if len(userGroup) > 0 {
+		claims["user_group"] = userGroup
+	} else {
+		claims["user_group"] = ""
+	}
 	claims["token_type"] = "tp"
 	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
 

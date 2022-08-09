@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -29,11 +30,6 @@ func (controller *OauthController) OAuthThirdPartyIntegrationCallback(c *gin.Con
 	}
 	UI := userProvider.FrontEndUrl
 	redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", providerName, accountId)
-	gothProvider, err := provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
-	if utils.ShouldRedirectWithError(c, err, UI) {
-		return
-	}
-	goth.UseProviders(*gothProvider)
 
 	session := sessions.Default(c)
 	tpAccountId, ok := session.Get("tpAccountId").(string)
@@ -57,12 +53,39 @@ func (controller *OauthController) OAuthThirdPartyIntegrationCallback(c *gin.Con
 	}
 	integration.Secrets = make(map[string]string)
 
-	q := c.Request.URL.Query()
-	q.Add("provider", userProvider.Type)
-	c.Request.URL.RawQuery = q.Encode()
-	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
-	if utils.ShouldRedirectWithError(c, err, UI) {
-		return
+	user := goth.User{}
+	if utils.ContainsString(utils.SpecialProviders, userProvider.Type) {
+		code := c.Query("code")
+		var accessToken, refreshToken string
+		var err error
+		switch userProvider.Type {
+		case "slack":
+			accessToken, err = getSlackAccessToken(userProvider.Key, userProvider.Secret, code, redirectUrl)
+		case "instagram":
+			accessToken, err = getInstagramAccessToken(userProvider.Key, userProvider.Secret, code, redirectUrl)
+		case "typeform":
+			accessToken, err = getTypeformAccessToken(userProvider.Key, userProvider.Secret, code, redirectUrl)
+		case "ebay":
+			accessToken, refreshToken, err = getEbayTokens(userProvider.Key, userProvider.Secret, code, redirectUrl)
+		}
+		if utils.ShouldRedirectWithError(c, err, UI) {
+			return
+		}
+		user.AccessToken = accessToken
+		user.RefreshToken = refreshToken
+	} else {
+		gothProvider, err := provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
+		if utils.ShouldRedirectWithError(c, err, UI) {
+			return
+		}
+		goth.UseProviders(*gothProvider)
+		q := c.Request.URL.Query()
+		q.Add("provider", userProvider.Type)
+		c.Request.URL.RawQuery = q.Encode()
+		user, err = gothic.CompleteUserAuth(c.Writer, c.Request)
+		if utils.ShouldRedirectWithError(c, err, UI) {
+			return
+		}
 	}
 	logrus.Trace("user:", user)
 	logrus.Trace("user.AccessToken:", user.AccessToken)
@@ -86,7 +109,7 @@ func (controller *OauthController) OAuthThirdPartyIntegrationCallback(c *gin.Con
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return
 		}
-		c.Redirect(http.StatusTemporaryRedirect, UI+"?integration_name="+integration.Name+"&access_token="+user.AccessToken+"&refresh_token="+user.RefreshToken)
+		c.Redirect(http.StatusTemporaryRedirect, UI+"?integration_name="+integration.Name+"&access_token="+url.QueryEscape(user.AccessToken)+"&refresh_token="+url.QueryEscape(user.RefreshToken))
 		return
 	} else if user.AccessTokenSecret != "" {
 		integration.Secrets["CONSUMER_KEY"] = userProvider.Key

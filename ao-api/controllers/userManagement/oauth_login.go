@@ -55,7 +55,7 @@ func (umc *UserManagementController) OAuthLogin() gin.HandlerFunc {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())
 				return
 			}
-			jwtToken, err = utils.GenerateTpJwtToken(project.AccountId, user.AccountId)
+			jwtToken, err = utils.GenerateTpJwtToken(project.AccountId, user.AccountId, user.UserGroup)
 			if err != nil {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())
 				return
