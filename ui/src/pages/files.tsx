@@ -1,5 +1,6 @@
 import { Button } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
+import { useState } from 'react'
 import { IoCheckmark, IoCopy, IoReload } from 'react-icons/io5'
 import { useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
@@ -16,7 +17,7 @@ export default function Files() {
 
 function FilesTableContent({ projectName }: { projectName: string }) {
 	const clipboard = useClipboard({ timeout: 3000 })
-
+	const [clicked, setClicked] = useState('')
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
 		() => getProject(projectName)
@@ -32,7 +33,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	const tableData = filesData?.data ?? []
 
 	return (
-		<ContentWrapper>
+		<ContentWrapper className="lg:pr-0">
 			<Table
 				loading={projectDetailsLoading || filesDataLoading}
 				title="Files"
@@ -41,6 +42,9 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					{
 						Header: 'Name',
 						accessor: 'key',
+						Cell: ({ value }: { value: string }) => (
+							<span className="text-xs truncate">{value}</span>
+						),
 					},
 					{
 						Header: 'Permission',
@@ -56,7 +60,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					{
 						Header: 'Size',
 						accessor: 'size',
-						Cell: ({ value }: { value: string }) => <span>{value} kb</span>,
+						Cell: ({ value }: { value: number }) => (
+							<span className="whitespace-nowrap">
+								{(value / 1000).toFixed(1)} kb
+							</span>
+						),
 					},
 					{
 						Header: 'URL',
@@ -64,10 +72,16 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						Cell: ({ value }: { value: string }) => (
 							<div
 								className="text-xs flex items-center justify-end cursor-pointer hover:text-cyan-800"
-								onClick={() => clipboard.copy(value)}
+								onClick={() => {
+									clipboard.copy(value), setClicked(value)
+								}}
 							>
-								<span className="mr-2 truncate">{value} </span>
-								{clipboard.copied ? <IoCheckmark /> : <IoCopy />}
+								<span className="mr-2 truncate">{value}</span>
+								{clipboard.copied && clicked === value ? (
+									<IoCheckmark />
+								) : (
+									<IoCopy />
+								)}
 							</div>
 						),
 					},
