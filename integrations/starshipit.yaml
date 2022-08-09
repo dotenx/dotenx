@@ -1,0 +1,4 @@
+type: starshipit
+secrets: 
+  - name: starshipit access token (https://app.starshipit.com/Members/Settings/Api2.aspx)
+    key: ACCESS_TOKEN
