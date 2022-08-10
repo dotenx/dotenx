@@ -184,6 +184,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.POST("/oauth/webhook/:provider", OauthController.OAuthWebhook)
 
 	public := r.Group("/public")
+	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware(httpHelper))
@@ -226,7 +227,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// pipeline router
 	// TODO: fix the type of the pipeline
-	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 	pipeline.POST("", crudController.AddPipeline())
 	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())

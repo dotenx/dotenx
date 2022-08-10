@@ -79,7 +79,7 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 		return
 	}
 	img := models.AvaliableTriggers[trigger.Type].Image
-	pipelineUrl := fmt.Sprintf("%s/execution/ep/%s/start", config.Configs.Endpoints.AoApiLocal, trigger.Endpoint)
+	pipelineUrl := fmt.Sprintf("%s/public/execution/ep/%s/start", config.Configs.Endpoints.AoApiLocal, trigger.Endpoint)
 	envs := []string{
 		"PIPELINE_ENDPOINT=" + pipelineUrl,
 		"TRIGGER_NAME=" + trigger.Name,
