@@ -103,6 +103,7 @@ export interface Automation {
 	endpoint: string
 	is_active: boolean
 	is_public?: boolean
+	user_groups?: string[]
 	is_template?: boolean
 	is_interaction?: boolean
 }
