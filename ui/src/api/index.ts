@@ -85,6 +85,11 @@ export function startAutomation(automationName: string, payload: StartAutomation
 		payload
 	)
 }
+export function setInteractionUserGroup({ name, payload }: { name: string, payload: any }) {
+	return api.patch(
+		`/pipeline/name/${name}/usergroup`, payload
+	)
+}
 export function setAccess({ name, isPublic }: { name: string, isPublic: boolean }) {
 	return api.patch(
 		`/pipeline/name/${name}/access`,

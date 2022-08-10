@@ -1,21 +1,25 @@
-import { ActionIcon, Anchor, Button, Checkbox } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Checkbox, MultiSelect } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import _ from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
 	API_URL,
 	Automation,
 	AutomationKind,
 	EndpointFields,
 	getInteractionEndpointFields,
+	getProject,
 	getTemplateEndpointFields,
+	getUserGroups,
 	QueryKey,
 	setAccess,
+	setInteractionUserGroup,
 } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Confirm, ContentWrapper, Endpoint, Loader, Modal, NewModal, Table } from '../ui'
+import { Confirm, ContentWrapper, Endpoint, Form, Loader, Modal, NewModal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -33,6 +37,33 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 	const { mutate } = useMutation(setAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
 	})
+	const { mutate: mutateInteractionUserGroup, isLoading: isUserGroupLoading } = useMutation(
+		setInteractionUserGroup,
+		{
+			onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
+		}
+	)
+
+	const { projectName = '' } = useParams()
+	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
+	const projectTag = projectQuery.data?.data.tag ?? ''
+
+	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: '', value: '' }])
+	useQuery([QueryKey.GetUserGroups, projectTag], () => getUserGroups(projectTag), {
+		onSuccess: (data) => {
+			const userGroups = Object.values(data.data)
+			const userGroupsOptions = userGroups?.map((g) => ({ label: g.name, value: g.name }))
+			setUserGroupsOptions(userGroupsOptions)
+		},
+		enabled: !!projectTag,
+	})
+
+	const [defaultUserGroups, setDefaultUserGroups] = useState([])
+	const { onSubmit, ...form } = useForm()
+	useEffect(() => {
+		form.setValues({ userGroups: defaultUserGroups })
+	}, [defaultUserGroups])
+
 	return (
 		<>
 			<ContentWrapper>
@@ -75,6 +106,28 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 								),
 							},
 							{
+								Header: 'User groups',
+								accessor: 'user_groups',
+								Cell: ({ value, row }: { value: string[]; row: any }) => (
+									<div
+										className={`text-slate-700 ${
+											row.original.is_public
+												? 'pointer-events-none pl-6'
+												: 'cursor-pointer hover:opacity-80 text-xs font-medium '
+										}`}
+										onClick={() => {
+											setDefaultUserGroups(row.original.user_groups)
+											modal.open(Modals.InteractionUserGroup, {
+												name: row.original.name,
+												userGroup: value,
+											})
+										}}
+									>
+										{row.original.is_public ? '_' : 'Show / Edit'}
+									</div>
+								),
+							},
+							{
 								Header: 'Action',
 								id: 'action',
 								accessor: 'name',
@@ -88,7 +141,13 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 								),
 							},
 						] as const
-					).filter((col) => (kind !== 'automation' ? col.Header !== 'Status' : true))}
+					).filter(
+						(col) =>
+							(kind !== 'automation' ? col.Header !== 'Status' : true) &&
+							(kind !== 'interaction'
+								? !['Public', 'User groups'].includes(col.Header)
+								: true)
+					)}
 					data={automations}
 				/>
 			</ContentWrapper>
@@ -138,6 +197,39 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 					</Button>
 				</div>
 			</NewModal>
+
+			<Modal fluid kind={Modals.InteractionUserGroup} title="User groups" size="md">
+				{(data: { name: string; userGroup: string[] }) => (
+					<div className="flex flex-col">
+						<p className="my-6">Select which user groups can access this interaction</p>
+						<Form
+							className="h-full"
+							onSubmit={onSubmit((values) =>
+								mutateInteractionUserGroup(
+									{
+										name: data.name,
+										payload: values,
+									},
+									{ onSuccess: () => modal.close() }
+								)
+							)}
+						>
+							<div className="flex flex-col gap-5 grow pb-10 ">
+								<MultiSelect
+									searchable
+									clearable
+									label="Select"
+									data={userGroupsOptions}
+									{...form.getInputProps('userGroups')}
+								/>
+							</div>
+							<Button loading={isUserGroupLoading} className="w-full" type="submit">
+								Save
+							</Button>
+						</Form>
+					</div>
+				)}
+			</Modal>
 		</>
 	)
 }
