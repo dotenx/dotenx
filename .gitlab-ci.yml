@@ -195,10 +195,13 @@ deploy runner:
     TASK_DEFINITION_NAME: dotenx-runner
     CLUSTER_NAME: dotenx
     SERVICE_NAME: runner
+    ENV_FILE: .env.production
+    FOLDER: runner
   only:
     # refs:
     #   - master
     changes:
+      - ".gitlab-ci.yml"
       - "runner/**/*" 
 
   
