@@ -1,8 +1,7 @@
-// image: hojjat12/ebay-new-order:lambda
+// image: hojjat12/ebay-new-order:lambda2
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -27,6 +26,8 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -47,7 +48,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	}
 	startTime := time.Now().Add(-time.Second * time.Duration(seconds)).Format("2006-01-02T15:04:05.000Z")
 	timeFilterString := fmt.Sprintf("[%s..]", startTime)
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 
 	orders, err := getOrdersList(accessToken, timeFilterString)
 	if err != nil {
@@ -62,11 +63,17 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		}
 	} else {
 		fmt.Println("no new order exist (ebay)")
+		resp.Triggered = false
 		return resp, nil
 	}
 
 	fmt.Println("innerBody:", innerBody)
-	startAutomation(pipelineEndpoint, triggerName, accId, workspace, innerBody)
+	returnValue := make(map[string]interface{})
+	returnValue["accountId"] = accId
+	returnValue["workspace"] = workspace
+	returnValue[triggerName] = innerBody
+	resp.ReturnValue = returnValue
+	resp.Triggered = true
 	return resp, nil
 }
 
@@ -74,31 +81,31 @@ func main() {
 	lambda.Start(HandleLambdaEvent)
 }
 
-func startAutomation(pipelineEndpoint, triggerName, accountId, workspace string, innerBody map[string]interface{}) (statusCode int, err error) {
-	body := make(map[string]interface{})
-	body["accountId"] = accountId
-	body["workspace"] = workspace
-	body[triggerName] = innerBody
-	json_data, err := json.Marshal(body)
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-	fmt.Println("final body:", string(json_data))
-	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-	if err != nil || status != http.StatusOK {
-		fmt.Println("response:", string(out))
-		fmt.Println("error:", err)
-		fmt.Println("status code:", status)
-		if err == nil {
-			err = errors.New("can't get correct response from dotenx api")
-		}
-		return 0, err
-	}
-	fmt.Println("trigger successfully started")
-	return status, nil
-}
+// func startAutomation(pipelineEndpoint, triggerName, accountId, workspace string, innerBody map[string]interface{}) (statusCode int, err error) {
+// 	body := make(map[string]interface{})
+// 	body["accountId"] = accountId
+// 	body["workspace"] = workspace
+// 	body[triggerName] = innerBody
+// 	json_data, err := json.Marshal(body)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return 0, err
+// 	}
+// 	fmt.Println("final body:", string(json_data))
+// 	payload := bytes.NewBuffer(json_data)
+// 	out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+// 	if err != nil || status != http.StatusOK {
+// 		fmt.Println("response:", string(out))
+// 		fmt.Println("error:", err)
+// 		fmt.Println("status code:", status)
+// 		if err == nil {
+// 			err = errors.New("can't get correct response from dotenx api")
+// 		}
+// 		return 0, err
+// 	}
+// 	fmt.Println("trigger successfully started")
+// 	return status, nil
+// }
 
 func getOrdersList(accessToken, filter string) (orders []interface{}, err error) {
 	url := "https://api.ebay.com/sell/fulfillment/v1/order?limit=100&filter=creationdate:" + filter

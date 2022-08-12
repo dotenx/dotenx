@@ -1,9 +1,8 @@
+// image: awrmin/slack-new-message:lambda3
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -29,6 +28,8 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -49,7 +50,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 
 	api := slack.New(access_token)
 	res, err := api.GetConversationHistory(&slack.GetConversationHistoryParameters{ChannelID: channelId})
@@ -75,27 +76,18 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			innerInnerBody["timestamp"] = res.Messages[0].Timestamp
 			innerBody["out1"] = innerInnerBody
 			body[triggerName] = innerBody
-			json_data, err := json.Marshal(body)
-			if err != nil {
-				log.Println(err)
-				return resp, err
-			}
-			payload := bytes.NewBuffer(json_data)
-			out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-			if err != nil {
-				fmt.Println(err)
-				fmt.Println(status)
-				return resp, err
-			}
-			fmt.Println(string(out))
-			fmt.Println("trigger successfully started")
+			resp.ReturnValue = body
+			resp.Triggered = true
+			fmt.Println("trigger activated successfully")
 			return resp, nil
 		} else {
 			fmt.Println("no new message in channel")
+			resp.Triggered = false
 			return resp, nil
 		}
 	} else {
 		fmt.Println("no message in channel")
+		resp.Triggered = false
 		return resp, nil
 	}
 }
