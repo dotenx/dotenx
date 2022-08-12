@@ -1,10 +1,9 @@
+// image: awrmin/google-new-email:lambda3
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -30,11 +29,13 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 	accId := event.AccountId
 	triggerName := event.TriggerName
 	if triggerName == "" {
@@ -75,29 +76,20 @@ func HandleLambdaEvent(event Event) (Response, error) {
 					innerBody[strings.ToLower(header.Name)] = header.Value
 				}
 			}
-			outerBody["out1"] = innerBody
+			outerBody["0"] = innerBody
 			body[triggerName] = outerBody
-			json_data, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println(err)
-				return resp, err
-			}
-			payload := bytes.NewBuffer(json_data)
-			out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-			if err != nil {
-				fmt.Println("response:", string(out))
-				fmt.Println("error:", err)
-				fmt.Println("status code:", status)
-				return resp, err
-			}
-			fmt.Println("trigger successfully started")
+			resp.Triggered = true
+			resp.ReturnValue = body
+			fmt.Println("trigger activated successfully")
 			return resp, nil
 		} else {
 			fmt.Println("no new message in inbox")
+			resp.Triggered = false
 			return resp, nil
 		}
 	} else {
 		fmt.Println("no message in inbox")
+		resp.Triggered = false
 		return resp, nil
 	}
 }

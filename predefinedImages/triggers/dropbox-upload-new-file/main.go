@@ -1,3 +1,4 @@
+// image: hojjat12/dropbox-upload-new-file:lambda3
 package main
 
 import (
@@ -36,11 +37,13 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 	triggerName := event.TriggerName
 	accId := event.AccountId
 	if triggerName == "" {
@@ -82,28 +85,18 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		body[triggerName] = map[string]interface{}{
 			"0": innerBody,
 		}
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			fmt.Println(err)
-			return resp, err
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-		if err != nil {
-			fmt.Println("response:", string(out))
-			fmt.Println("error:", err)
-			fmt.Println("status code:", status)
-			return resp, err
-		}
 		err = saveFile(accessToken, latestFile.PathDisplay, workspace)
 		if err != nil {
 			fmt.Println(err)
 			return resp, err
 		}
-		fmt.Println("trigger successfully started")
+		resp.ReturnValue = body
+		resp.Triggered = true
+		fmt.Println("trigger activated successfully")
 		return resp, nil
 	} else {
 		fmt.Println("no new file in path")
+		resp.Triggered = false
 		return resp, nil
 	}
 }

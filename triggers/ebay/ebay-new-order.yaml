@@ -1,7 +1,7 @@
 service: ebay
 type: Ebay new order
 integrations: [ebay]
-image: hojjat12/ebay-new-order:lambda
+image: hojjat12/ebay-new-order:lambda2
 credentials:
     - key: passed_seconds
       type: text
