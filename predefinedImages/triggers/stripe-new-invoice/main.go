@@ -1,9 +1,8 @@
+// image: awrmin/stripe-new-invoice:lambda3
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -27,6 +26,8 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -40,7 +41,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 	workspace := event.Workspace
 	triggerName := event.TriggerName
 
@@ -72,24 +73,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			"customer_email":   i.CustomerEmail,
 		}
 	}
-	body := map[string]interface{}{
+	returnValue := map[string]interface{}{
 		"workspace": workspace,
 		triggerName: innerOut,
 		"accountId": accId,
 	}
-	json_data, err := json.Marshal(body)
-	if err != nil {
-		fmt.Println(err)
-		return resp, err
-	}
-	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-	if err != nil {
-		fmt.Println(status)
-		fmt.Println(err)
-		return resp, err
-	}
-	fmt.Println(string(out))
+	resp.ReturnValue = returnValue
+	resp.Triggered = true
 	fmt.Println("trigger successfully ended")
 	return resp, nil
 }

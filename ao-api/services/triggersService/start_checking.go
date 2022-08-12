@@ -25,6 +25,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 )
@@ -64,14 +65,14 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore) er
 			continue
 		}
 		if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
-			go dc.handleTrigger(manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
+			go dc.handleTrigger(manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
+func (dc dockerCleint) handleTrigger(execService executionService.ExecutionService, service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
 	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
 		log.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", trigger.Name, trigger.Integration)
@@ -94,7 +95,7 @@ func (dc dockerCleint) handleTrigger(service integrationService.IntegrationServi
 	if config.Configs.App.RunLocally {
 		dc.checkTrigger(trigger.Name, img, envs)
 	} else {
-		dc.invokeAwsLambda(trigger.Name, img, envs)
+		dc.invokeAwsLambda(execService, trigger, img, envs)
 	}
 }
 
@@ -168,7 +169,7 @@ func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 	return logs, err
 }
 
-func (dc dockerCleint) invokeAwsLambda(triggerName, img string, envs []string) {
+func (dc dockerCleint) invokeAwsLambda(execService executionService.ExecutionService, trigger models.EventTrigger, img string, envs []string) {
 	awsRegion := config.Configs.Secrets.AwsRegion
 	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
 	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
@@ -194,7 +195,7 @@ func (dc dockerCleint) invokeAwsLambda(triggerName, img string, envs []string) {
 	functionName := strings.ReplaceAll(img, ":", "-")
 	functionName = strings.ReplaceAll(functionName, "/", "-")
 	logType := "Tail"
-	log.Println("triggerName:", triggerName)
+	log.Println("triggerName:", trigger.Name)
 	log.Println("functionName:", functionName)
 	log.Println("payload:", string(payload))
 	input := &lambda.InvokeInput{
@@ -221,5 +222,25 @@ func (dc dockerCleint) invokeAwsLambda(triggerName, img string, envs []string) {
 	if *lambdaResult.StatusCode != http.StatusOK {
 		log.Println("error after invoking lambda function. status code: " + strconv.Itoa(int(*lambdaResult.StatusCode)))
 		return
+	}
+
+	type Response struct {
+		Triggered   bool                   `json:"triggered"`
+		ReturnValue map[string]interface{} `json:"return_value"`
+	}
+	var lambdaResp = Response{}
+	err = json.Unmarshal(lambdaResult.Payload, &lambdaResp)
+	if err != nil {
+		log.Println("error while unmarshalling function response: " + err.Error())
+		return
+	}
+
+	if lambdaResp.Triggered {
+		res, err := execService.StartPipelineByName(lambdaResp.ReturnValue, trigger.AccountId, trigger.Pipeline, "", "")
+		if err != nil {
+			log.Println("error while starting pipeline: " + err.Error())
+			return
+		}
+		log.Printf("pipeline started successfully: %v\n", res)
 	}
 }

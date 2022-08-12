@@ -1,7 +1,7 @@
+// image: hojjat12/facebook-publish-new-post:lambda3
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -25,11 +25,13 @@ type Event struct {
 }
 
 type Response struct {
+	Triggered   bool                   `json:"triggered"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
-	pipelineEndpoint := event.PipelineEndpoint
+	// pipelineEndpoint := event.PipelineEndpoint
 	triggerName := event.TriggerName
 	accId := event.AccountId
 	if triggerName == "" {
@@ -68,10 +70,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		}
 	} else {
 		fmt.Println("no post in page")
+		resp.Triggered = false
 		return resp, nil
 	}
 	if len(targetPosts) == 0 {
 		fmt.Println("no new post in page in last", passedSeconds, "seconds")
+		resp.Triggered = false
 		return resp, nil
 	}
 	for i, post := range targetPosts {
@@ -83,7 +87,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		innerBody[fmt.Sprint(i)] = output
 	}
 	fmt.Println("innerBody:", innerBody)
-	startAutomation(pipelineEndpoint, triggerName, accId, innerBody)
+	returnValue := make(map[string]interface{})
+	returnValue["accountId"] = accId
+	returnValue[triggerName] = innerBody
+	resp.ReturnValue = returnValue
+	resp.Triggered = true
 	return resp, nil
 }
 
@@ -97,30 +105,30 @@ func main() {
 	lambda.Start(HandleLambdaEvent)
 }
 
-func startAutomation(pipelineEndpoint, triggerName, accountId string, innerBody map[string]interface{}) (statusCode int, err error) {
-	body := make(map[string]interface{})
-	body["accountId"] = accountId
-	body[triggerName] = innerBody
-	json_data, err := json.Marshal(body)
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-	fmt.Println("final body:", string(json_data))
-	payload := bytes.NewBuffer(json_data)
-	out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
-	if err != nil || status != http.StatusOK {
-		fmt.Println("response:", string(out))
-		fmt.Println("error:", err)
-		fmt.Println("status code:", status)
-		if err == nil {
-			err = errors.New("can't get correct response from dotenx api")
-		}
-		return 0, err
-	}
-	fmt.Println("trigger successfully started")
-	return status, nil
-}
+// func startAutomation(pipelineEndpoint, triggerName, accountId string, innerBody map[string]interface{}) (statusCode int, err error) {
+// 	body := make(map[string]interface{})
+// 	body["accountId"] = accountId
+// 	body[triggerName] = innerBody
+// 	json_data, err := json.Marshal(body)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return 0, err
+// 	}
+// 	fmt.Println("final body:", string(json_data))
+// 	payload := bytes.NewBuffer(json_data)
+// 	out, err, status, _ := httpRequest(http.MethodPost, pipelineEndpoint, payload, nil, 0)
+// 	if err != nil || status != http.StatusOK {
+// 		fmt.Println("response:", string(out))
+// 		fmt.Println("error:", err)
+// 		fmt.Println("status code:", status)
+// 		if err == nil {
+// 			err = errors.New("can't get correct response from dotenx api")
+// 		}
+// 		return 0, err
+// 	}
+// 	fmt.Println("trigger successfully started")
+// 	return status, nil
+// }
 
 func getPostsList(pageId, accessToken string) (posts []Post, err error) {
 	url := "https://graph.facebook.com/" + pageId + "/feed?access_token=" + accessToken
