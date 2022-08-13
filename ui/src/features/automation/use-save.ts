@@ -6,12 +6,14 @@ import { useMutation, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
+	Arg,
 	AutomationKind,
 	BuilderStep,
 	createAutomation,
 	Manifest,
 	QueryKey,
 	TaskBody,
+	TaskFieldValue,
 	Tasks,
 	Trigger,
 	Triggers,
@@ -22,6 +24,7 @@ import { EdgeData, TaskNodeData } from '../flow'
 import { NodeType } from '../flow/types'
 import { useModal } from '../hooks'
 import { InputOrSelectKind } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
 import { saveFormSchema, SaveFormSchema } from './save-form'
 
 export function useSaveForm(kind: AutomationKind) {
@@ -82,42 +85,22 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 	nodes.forEach((node) => {
 		if (!node.data?.name) return console.error('Node data does not exists')
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
-		const others = node.data.others
-		const body: TaskBody = {
-			outputs: node.data.outputs?.map((output) => output.value) ?? null,
-		}
-		for (const key in others) {
-			const taskOtherValue = others[key]
-			if ('data' in taskOtherValue) {
-				if (taskOtherValue.type === 'option') {
-					body[key] = { source: taskOtherValue.groupName, key: taskOtherValue.data }
-				} else {
-					body[key] = taskOtherValue.data
-				}
-			} else if ('fn' in taskOtherValue) {
-				body[key] = {
-					formatter: {
-						format_str: '$1',
-						func_calls: {
-							'1': {
-								func_name: taskOtherValue.fn,
-								args: taskOtherValue.args.map((arg) =>
-									arg.type === InputOrSelectKind.Text
-										? { value: arg.data }
-										: { source: arg.groupName, key: arg.data }
-								),
-							},
-						},
-					},
-				}
-			} else {
-				body[key] = { prop: 'value', steps: normalizeBuilderSteps(taskOtherValue) }
+		const taskFields = node.data.others
+		const body: TaskBody = {}
+
+		if (node.data.outputs) {
+			body.outputs = {
+				type: 'customOutputs',
+				outputs: node.data.outputs.map((output) => output.value),
 			}
+		}
+
+		for (const fieldName in taskFields) {
+			const fieldValue = taskFields[fieldName]
+			body[fieldName] = toBackendData(fieldValue)
 		}
 		node.data.vars?.forEach((variable) => {
-			if ('data' in variable.value) {
-				body[variable.key] = variable.value.data
-			}
+			body[variable.key] = toBackendData(variable.value)
 		})
 		tasks[node.data.name] = {
 			type: node.data.type,
@@ -130,6 +113,53 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 	const triggers = mapElementsToTriggers(elements)
 
 	return { tasks, triggers }
+}
+
+function toBackendData(fieldValue: ComplexFieldValue | BuilderSteps): TaskFieldValue {
+	if ('kind' in fieldValue) {
+		switch (fieldValue.kind) {
+			case 'nested':
+				return { type: 'nested', nestedKey: fieldValue.data }
+
+			case 'json':
+				return { type: 'json', value: safeParseJson(fieldValue.data) }
+
+			case 'json-array':
+				return {
+					type: 'json_array',
+					value: safeParseJson(fieldValue.data),
+				}
+		}
+	} else if ('data' in fieldValue) {
+		if (fieldValue.type === 'option') {
+			return {
+				type: 'refrenced',
+				source: fieldValue.groupName,
+				key: fieldValue.data,
+			}
+		} else {
+			return { type: 'directValue', value: fieldValue.data }
+		}
+	} else if ('fn' in fieldValue) {
+		const args = fieldValue.args.map<Arg>((arg) =>
+			arg.type === InputOrSelectKind.Text
+				? { type: 'directValue', value: arg.data }
+				: { type: 'refrenced', source: arg.groupName, key: arg.data }
+		)
+		return {
+			type: 'formatted',
+			formatter: {
+				format_str: '$1',
+				func_calls: { '1': { function: fieldValue.fn, args } },
+			},
+		}
+	} else {
+		return {
+			type: 'taskBuilder',
+			prop: 'value',
+			steps: normalizeBuilderSteps(fieldValue),
+		}
+	}
 }
 
 function mapEdgesToExecuteAfter(
@@ -217,4 +247,12 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 				}
 		}
 	})
+}
+
+function safeParseJson(json: string) {
+	try {
+		return JSON.parse(json)
+	} catch (e) {
+		return {}
+	}
 }

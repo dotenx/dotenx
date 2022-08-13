@@ -14,11 +14,9 @@ import {
 	Field,
 	Form,
 	GroupData,
-	GroupSelect,
-	InputOrSelect,
-	InputOrSelectKind,
+	GroupSelect, InputOrSelectKind,
 	Loader,
-	Textarea,
+	Textarea
 } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { CodeField } from './code-field'
@@ -145,6 +143,7 @@ function TaskSettings({
 		taskTypesLoading,
 		taskFieldsLoading,
 		taskType,
+		hasDynamicVariables,
 	} = taskForm
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
@@ -199,7 +198,7 @@ function TaskSettings({
 						onAddIntegration={() => setIsAddingIntegration(true)}
 					/>
 				)}
-				{isCodeTask && (
+				{hasDynamicVariables && (
 					<Variables control={control} errors={errors} outputGroups={outputGroups} />
 				)}
 				{showOutputs && <Outputs control={control} errors={errors} />}
@@ -278,7 +277,7 @@ function Variables({ control, errors, outputGroups }: VariablesProps) {
 						key={`vars.${index}.key`}
 						placeholder="Key"
 					/>
-					<InputOrSelect
+					<ComplexField
 						control={control}
 						errors={errors}
 						groups={outputGroups}

@@ -18,7 +18,16 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 			.map((column) => {
 				const colKind =
 					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
-				return [column.name, colKind === 'number' ? 0 : colKind === 'boolean' ? false : '']
+				return [
+					column.name,
+					colKind === 'number'
+						? 0
+						: colKind === 'boolean'
+						? false
+						: column.type.includes('array')
+						? []
+						: '',
+				]
 			})
 	)
 

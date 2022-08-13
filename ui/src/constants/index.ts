@@ -20,6 +20,12 @@ export const columnTypeOptions = [
 	{ label: 'Short text', value: 'short_text' },
 	{ label: 'Long text', value: 'long_text' },
 	{ label: 'Link to table', value: 'link_field' },
+	{ label: 'Text list', value: 'text_array' },
+	{ label: 'Yes/No list', value: 'yes_no_array' },
+	{ label: 'Number list', value: 'num_array' },
+	{ label: 'Decimal number', value: 'float_num' },
+	{ label: 'Decimal number list', value: 'float_num_array' },
+	{ label: 'JSON', value: 'dtx_json' },
 ]
 
 export const chainedConditionOptions = [

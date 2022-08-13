@@ -31,7 +31,8 @@ const schema = z.object({
 	key: z.string().min(1),
 	secret: z.string().min(1),
 	front_end_url: z.string().url(),
-	scopes: z.array(z.string().min(1)),
+	scopes: z.array(z.string().min(1)).optional(),
+	direct_url: z.string().url().optional(),
 })
 
 type Schema = z.infer<typeof schema>
@@ -47,7 +48,14 @@ export function ProviderForm() {
 		},
 	})
 	const form = useForm<Schema>({
-		defaultValues: { name: '', type: '', key: '', secret: '', scopes: [], front_end_url: '' },
+		defaultValues: {
+			name: '',
+			type: '',
+			key: '',
+			secret: '',
+			scopes: [],
+			front_end_url: '',
+		},
 		resolver: zodResolver(schema),
 	})
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
@@ -99,11 +107,17 @@ export function ProviderForm() {
 					label="Front-end URL"
 					placeholder="Front-end URL to redirect page"
 				/>
+				<Field
+					control={form.control}
+					errors={form.formState.errors}
+					name="direct_url"
+					label="Direct URL (optional)"
+				/>
 				<CreatableSelect
 					control={form.control}
 					name="scopes"
 					placeholder="Type something and press enter..."
-					label="Scopes"
+					label="Scopes (optional)"
 				/>
 			</div>
 			<Button loading={mutation.isLoading} type="submit">
