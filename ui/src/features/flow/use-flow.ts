@@ -13,7 +13,7 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { Arg, AutomationData, BuilderStep, TaskBodyValue, Triggers } from '../../api'
+import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
@@ -109,6 +109,7 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 			}))
 		const body = _.fromPairs(bodyEntries)
 		const hasOutputs = _.keys(value.body).includes('outputs')
+
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -122,9 +123,10 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				others: hasOutputs ? _.omit(body, 'outputs') : body,
 				// TODO: THIS IS HARDCODED :(
 				vars: hasOutputs ? vars : undefined,
-				outputs: _.isArray(value.body.outputs)
-					? value.body.outputs.map((value) => ({ value }))
-					: undefined,
+				outputs:
+					value.body.outputs?.type === 'customOutputs'
+						? value.body.outputs.outputs.map((value) => ({ value }))
+						: undefined,
 			},
 		}
 	})
@@ -143,32 +145,54 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
+function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	if (!fieldValue) return ['', '']
-	let complexFieldValue = {
+
+	let normalized: ComplexFieldValue | BuilderSteps | { value: string }[] = {
 		type: InputOrSelectKind.Text,
 		data: '',
-	} as ComplexFieldValue | { value: string }[] | BuilderSteps
-	if (typeof fieldValue === 'string') {
-		complexFieldValue = { type: InputOrSelectKind.Text, data: fieldValue }
-	} else if (_.isArray(fieldValue)) {
-		complexFieldValue = fieldValue.map((value) => ({ value }))
-	} else if ('key' in fieldValue) {
-		complexFieldValue = {
-			type: InputOrSelectKind.Option,
-			data: fieldValue.key,
-			groupName: fieldValue.source,
-			iconUrl: '',
-		}
-	} else if ('formatter' in fieldValue) {
-		const fn = fieldValue.formatter.func_calls[1]
-		const args = fn?.args?.map(argToInputOrSelect)
-		complexFieldValue = { fn: fn?.func_name, args }
-	} else {
-		complexFieldValue = mapToUiTaskBuilder(fieldValue.steps)
 	}
 
-	return [fieldName, complexFieldValue] as [string, ComplexFieldValue | BuilderSteps]
+	switch (fieldValue.type) {
+		case 'directValue':
+			normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
+			break
+		case 'refrenced':
+			normalized = {
+				type: InputOrSelectKind.Option,
+				data: fieldValue.key,
+				groupName: fieldValue.source,
+				iconUrl: '',
+			}
+			break
+		case 'nested':
+			normalized = { kind: 'nested', data: fieldValue.nestedKey }
+			break
+		case 'json':
+			normalized = { kind: 'json', data: JSON.stringify(fieldValue.value, null, 2) }
+			break
+		case 'json_array':
+			normalized = { kind: 'json-array', data: JSON.stringify(fieldValue.value, null, 2) }
+			break
+		case 'formatted':
+			{
+				const fn = fieldValue.formatter.func_calls[1]
+				const args = fn?.args?.map(argToInputOrSelect)
+				normalized = { fn: fn?.function, args }
+			}
+			break
+		case 'taskBuilder':
+			normalized = mapToUiTaskBuilder(fieldValue.steps)
+			break
+		case 'customOutputs':
+			normalized = fieldValue.outputs.map((output) => ({ value: output }))
+			break
+	}
+
+	return [fieldName, normalized] as [
+		string,
+		ComplexFieldValue | BuilderSteps | { value: string }[]
+	]
 }
 
 const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {

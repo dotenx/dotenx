@@ -7,7 +7,7 @@ import {
 	UseControllerProps,
 } from 'react-hook-form'
 
-interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+export interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
 	label?: string
 	errors?: FieldErrors<TFieldValues>

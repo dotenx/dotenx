@@ -7,7 +7,6 @@ import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
 import { TaskExecutionStatus } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
 import { Modals, useModal } from '../hooks'
-import { InputOrSelectValue } from '../ui'
 import { ComplexFieldValue } from '../ui/complex-field'
 import { ContextMenu } from './context-menu'
 import { useDeleteNode } from './use-delete-node'
@@ -21,10 +20,12 @@ export interface TaskNodeData {
 	executionId?: string
 	iconUrl?: string
 	color?: string
-	others?: Record<string, ComplexFieldValue | BuilderSteps>
-	vars?: { key: string; value: InputOrSelectValue }[]
+	others?: TaskOthers
+	vars?: { key: string; value: ComplexFieldValue }[]
 	outputs?: { value: string }[]
 }
+
+export type TaskOthers = Record<string, ComplexFieldValue | BuilderSteps>
 
 export interface TaskEntity {
 	id: string
