@@ -3,8 +3,10 @@ package executionService
 import (
 	"errors"
 	"log"
+	"reflect"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -49,6 +51,11 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		InitialData:       input,
 	}
 	if pipeline.IsInteraction {
+		initialData, err := transferInitialDataToWrightFormat(input)
+		if err != nil {
+			return -1, err
+		}
+		execution.InitialData = initialData
 		execution.ThirdPartyAccountId = tpAccountId
 		hasPermission := false
 		if len(pipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
@@ -108,4 +115,37 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		return gin.H{"id": executionId}, err
 	}
 	return manager.getResponse(executionId)
+}
+
+// transferInitialDataToWrightFormat transforms the initial data from the format that the user provides to the format that the wright service expects
+/*
+user format:
+	{
+		"interactionRunTime":{
+			"key1" : "value1",
+			...
+		}
+	}
+the format we want:
+	{
+		"interactionRunTime":{
+			"input0" :{
+				"key1" : "value1",
+				...
+			}
+		}
+	}
+*/
+func transferInitialDataToWrightFormat(input map[string]interface{}) (map[string]interface{}, error) {
+	interactionDataInterface, ok := input[config.Configs.App.InteractionBodyKey]
+	if ok && reflect.TypeOf(interactionDataInterface).Kind() == reflect.Map {
+		interactionDataMap := interactionDataInterface.(map[string]interface{})
+		newInteractionData := make(map[string]interface{})
+		newInteractionData["inp0"] = interactionDataMap
+		initialData := make(map[string]interface{})
+		initialData[config.Configs.App.InteractionBodyKey] = newInteractionData
+		return initialData, nil
+	} else {
+		return nil, errors.New("input data is not a map")
+	}
 }
