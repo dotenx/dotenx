@@ -18,6 +18,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	cp "github.com/otiai10/copy"
+	"github.com/sirupsen/logrus"
 )
 
 func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
@@ -175,9 +176,10 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 			body := task.Body.(models.TaskBodyMap)
 			for key, value := range body {
 				if fmt.Sprintf("%v", value) == "" {
-					val := insertDto{
+					val := models.TaskFieldDetailes{
 						Source: config.Configs.App.InteractionBodyKey,
 						Key:    key,
+						Type:   models.RefrencedFieldType,
 					}
 					body[key] = val
 				}
@@ -187,10 +189,14 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 			var code, dependency string
 			if task.Type == "Run mini tasks" {
 				importStore := miniTasks.NewImportStore()
-				body := make(map[string]interface{})
+				body := make(map[string]models.TaskFieldDetailes)
 				bodyVal, _ := task.Body.Value()
-				_ = json.Unmarshal(bodyVal.([]byte), &body)
-				parsed := body["tasks"].(map[string]interface{})
+				err := json.Unmarshal(bodyVal.([]byte), &body)
+				if err != nil {
+					logrus.Error(err)
+					return nil, err
+				}
+				parsed := body["tasks"].Value.(map[string]interface{})
 				gcode, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
 				if err != nil {
 					return nil, err
@@ -198,11 +204,15 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				code = fmt.Sprintf("module.exports = () => {\n%s\n}", gcode)
 				dependency = "{}"
 			} else {
-				body := make(map[string]interface{})
+				body := make(map[string]models.TaskFieldDetailes)
 				bodyVal, _ := task.Body.Value()
-				_ = json.Unmarshal(bodyVal.([]byte), &body)
-				code = body["code"].(string)
-				dependency = body["dependency"].(string)
+				err := json.Unmarshal(bodyVal.([]byte), &body)
+				if err != nil {
+					logrus.Error(err)
+					return nil, err
+				}
+				code = body["code"].Value.(string)
+				dependency = body["dependency"].Value.(string)
 			}
 			log.Println("code:", code)
 			log.Println("dependency:", dependency)
