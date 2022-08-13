@@ -125,15 +125,26 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBodyValue =
-	| string
-	| FromSource
-	| string[]
-	| FormatterBody
-	| null
-	| { prop: string; steps: BuilderStep[] }
+export type TaskFieldValue =
+	| TfDirectValue
+	| TfRefrenced
+	| TfNested
+	| TfJson
+	| TfFormatted
+	| TfTaskBuilder
+	| TfCustomOutputs
+	| TfJsonArray
 
-export type TaskBody = Record<string, TaskBodyValue>
+type TfDirectValue = { type: 'directValue'; value: string }
+type TfRefrenced = { type: 'refrenced'; source: string; key: string }
+type TfNested = { type: 'nested'; nestedKey: string }
+type TfJson = { type: 'json'; value: AnyJson }
+type TfJsonArray = { type: 'json_array'; value: AnyJson }
+type TfFormatted = { type: 'formatted'; formatter: Formatter }
+type TfTaskBuilder = { type: 'taskBuilder'; prop: string; steps: BuilderStep[] }
+type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
+
+export type TaskBody = Record<string, TaskFieldValue>
 
 export interface Metadata {
 	icon: string
@@ -208,6 +219,7 @@ export interface GetTaskFieldsResponse {
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+	has_dynamic_variables: boolean
 }
 
 export enum FieldType {
@@ -254,8 +266,9 @@ export interface Provider {
 	type: string
 	key: string
 	secret: string
-	scopes: string[]
+	scopes?: string[]
 	front_end_url: string
+	direct_url?: string
 }
 
 export interface ProviderDetail {
@@ -288,16 +301,11 @@ export interface Formatter {
 }
 
 export interface FuncCall {
-	func_name: string
+	function: string
 	args: Arg[]
 }
 
-export type Arg = FromSource | { value: string }
-
-interface FromSource {
-	key: string
-	source: string
-}
+export type Arg = TfDirectValue | TfRefrenced
 
 export type GetProviderResponse = { provider: ProviderDetail }
 
@@ -312,6 +320,7 @@ export type GetUserManagementDataResponse = {
 	fullname: string
 	user_group: string
 }[]
+
 export type GetFilesDataResponse = any
 
 export type GetProjectResponse = Project & { tag: string }
@@ -364,7 +373,10 @@ export type GetTableRecordsRequest = RecordsFilters
 
 export type EndpointFields = Record<string, string[]>
 
-export type TableRecord = Record<string, string>
+export type TableRecord = Record<
+	string,
+	string | string[] | boolean | boolean[] | number | number[]
+>
 
 export type GetRecordsResponse = TableRecord[] | null
 
@@ -425,6 +437,7 @@ export type TaskBuilder = {
 	prop: string
 	steps: BuilderStep[]
 }
+
 export type CreateUserGroupRequest = {
 	name: string
 	description: string
@@ -448,3 +461,11 @@ export type UpdateUserGroupRequest = CreateUserGroupRequest
 export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
+
+type AnyJson = boolean | number | string | null | JsonArray | JsonMap
+
+interface JsonMap {
+	[key: string]: AnyJson
+}
+
+type JsonArray = Array<AnyJson>

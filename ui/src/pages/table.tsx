@@ -15,7 +15,7 @@ import {
 	getTableRecords,
 	GetTableRecordsRequest,
 	QueryKey,
-	TableRecord
+	TableRecord,
 } from '../api'
 import {
 	ColumnForm,
@@ -24,7 +24,7 @@ import {
 	QueryBuilderValues,
 	RecordForm,
 	TableDeletion,
-	TableEndpoints
+	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
@@ -50,7 +50,13 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const records = recordsQuery.data?.data?.map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
-				typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
+				typeof value === 'boolean'
+					? [key, value ? 'Yes' : 'No']
+					: _.isArray(value)
+					? [key, value.join(', ')]
+					: typeof value === 'object'
+					? [key, JSON.stringify(value)]
+					: [key, value]
 			)
 		)
 	) ?? [{}]
@@ -126,7 +132,22 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						projectTag={projectTag}
 						tableName={tableName}
 						rowId={id}
-						defaultValues={data}
+						defaultValues={_.fromPairs(
+							_.toPairs(
+								_.omit(
+									recordsQuery.data?.data?.find((record) => record.id === id) ??
+										data,
+									['id', 'creator_id']
+								)
+							).map(([key, value]) => [
+								key,
+								!_.isArray(value) && _.isObject(value)
+									? JSON.stringify(value, null, 2)
+									: _.isArray(value)
+									? value.map(_.toString)
+									: value,
+							])
+						)}
 						columns={formColumns}
 					/>
 				)}
@@ -278,7 +299,7 @@ function RecordActions({
 }) {
 	const rowId = data.id
 	const client = useQueryClient()
-	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId), {
+	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId as string), {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTableRecords),
 	})
 	const modal = useModal()

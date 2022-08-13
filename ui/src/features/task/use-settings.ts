@@ -2,16 +2,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
 import { z } from 'zod'
 import { getTaskFields, getTaskKinds, getTriggerDefinition, QueryKey, TriggerData } from '../../api'
 import { flowAtom } from '../atoms'
-import { TaskNodeData } from '../flow'
+import { TaskNodeData, TaskOthers } from '../flow'
 import { NodeType } from '../flow/types'
 import { GroupData } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
 import { InputOrSelectKind } from '../ui/input-or-select'
 
 const textValue = { type: z.literal(InputOrSelectKind.Text), data: z.string() }
@@ -22,14 +23,18 @@ const selectValue = z.object({
 })
 const inputOrSelectValue = z.object(textValue).or(selectValue)
 const fnValue = z.object({ fn: z.string(), args: z.array(inputOrSelectValue) })
-const complexValue = inputOrSelectValue.or(fnValue)
+const complexValue = inputOrSelectValue
+	.or(fnValue)
+	.or(z.object({ kind: z.literal('nested'), data: z.string() }))
+	.or(z.object({ kind: z.literal('json'), data: z.string() }))
+	.or(z.object({ kind: z.literal('json-array'), data: z.string() }))
 
 const schema = z.object({
 	name: z.string().min(1),
 	type: z.string().min(1),
 	integration: z.string().optional(),
 	others: z.record(complexValue.or(z.array(z.any())).optional()).optional(),
-	vars: z.array(z.object({ key: z.string(), value: inputOrSelectValue })).optional(),
+	vars: z.array(z.object({ key: z.string(), value: complexValue })).optional(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
 
@@ -50,6 +55,7 @@ export function useTaskSettings({
 		getValues,
 		setValue,
 		unregister,
+		reset,
 	} = useForm<TaskSettingsSchema>({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
@@ -77,7 +83,33 @@ export function useTaskSettings({
 			enabled: !!taskType,
 		}
 	)
-	const taskFields = taskFieldsQuery.data?.data?.fields ?? []
+
+	const taskFields = useMemo(
+		() => taskFieldsQuery.data?.data?.fields ?? [],
+		[taskFieldsQuery.data?.data?.fields]
+	)
+	const dynVariables = useMemo(
+		() =>
+			_.omit(
+				defaultValues?.others,
+				taskFields.map((field) => field.key)
+			) as TaskOthers,
+		[defaultValues?.others, taskFields]
+	)
+
+	console.log(dynVariables)
+	console.log('watch', watch())
+
+	useEffect(() => {
+		setValue(
+			'vars',
+			_.toPairs(dynVariables).map(([key, value]) => ({
+				key,
+				value: value as ComplexFieldValue,
+			}))
+		)
+	}, [dynVariables, setValue])
+
 	const integrationTypes = taskFieldsQuery.data?.data.integration_types
 	const selectedTaskType = _.values(tasks)
 		.flat()
@@ -119,7 +151,6 @@ export function useTaskSettings({
 	)
 	const outputGroups = [...noneCodeOutputGroups, ...codeOutputGroups]
 
-
 	const onSubmit = handleSubmit(() => {
 		onSave({
 			...getValues(),
@@ -147,6 +178,7 @@ export function useTaskSettings({
 		taskType,
 		selectedTaskIntegrationKind: taskFieldsQuery.data?.data.integration_types[0],
 		watch,
+		hasDynamicVariables: taskFieldsQuery.data?.data.has_dynamic_variables,
 	}
 }
 
