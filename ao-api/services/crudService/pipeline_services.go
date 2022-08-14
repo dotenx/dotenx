@@ -175,7 +175,13 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 		if isInteraction {
 			body := task.Body.(models.TaskBodyMap)
 			for key, value := range body {
-				if fmt.Sprintf("%v", value) == "" {
+				var insertDt models.TaskFieldDetailes
+				b, _ := json.Marshal(value)
+				err := json.Unmarshal(b, &insertDt)
+				if err != nil {
+					return nil, err
+				}
+				if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 					val := models.TaskFieldDetailes{
 						Source: config.Configs.App.InteractionBodyKey,
 						Key:    key,

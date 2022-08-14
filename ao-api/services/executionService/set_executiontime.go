@@ -10,6 +10,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
@@ -45,12 +46,13 @@ func (manager *executionManager) SetExecutionTime(executionId int, seconds int) 
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/execution/submit", requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/execution/submit", requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return err
 	}
 	//fmt.Println(string(out))
 	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println(string(out))
 		return errors.New("not ok with status: " + strconv.Itoa(status))
 	}
 	return nil

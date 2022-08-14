@@ -10,6 +10,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func (manager *executionManager) CheckAccess(accountId string, excutionId int) (bool, error) {
@@ -40,6 +41,7 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 	}
 	//fmt.Println(string(out))
 	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println(string(out))
 		return false, errors.New("not ok with status: " + strconv.Itoa(status))
 	}
 	var res struct {
