@@ -1,8 +1,8 @@
 service: jira
 type: Create jira ticket
-image: awrmin/create-jira-ticket:lambda2
+image: awrmin/create-jira-ticket:lambda3
 integrations: [jira]
-has_dynamic_variables: true
+has_dynamic_variables: false
 fields:
     - key: project_key
       type: text

@@ -1,9 +1,8 @@
+// image: stripe/stripe-create-customer:lambda3
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -31,7 +30,9 @@ type Event struct {
 }
 
 type Response struct {
-	Successfull bool `json:"successfull"`
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -40,8 +41,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp.Successfull = true
 	outputCnt := 0
 	outputs := make(map[string]interface{})
-	resultEndpoint := event.ResultEndpoint
-	authorization := event.Authorization
+	// resultEndpoint := event.ResultEndpoint
+	// authorization := event.Authorization
 	for _, val := range event.Body {
 		singleInput := val.(map[string]interface{})
 		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
@@ -62,39 +63,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		outputCnt++
 	}
 
-	data := map[string]interface{}{
-		"status":       "started",
-		"return_value": outputs,
-		"log":          "",
-	}
-	headers := []Header{
-		{
-			Key:   "Content-Type",
-			Value: "application/json",
-		},
-		{
-			Key:   "authorization",
-			Value: authorization,
-		},
-	}
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	if err != nil || status != http.StatusOK {
-		fmt.Println("err:", err)
-		fmt.Println("status code:", status)
-		resp.Successfull = false
-		return resp, err
-	}
-	fmt.Println(string(out))
-
+	resp.ReturnValue = outputs
 	if resp.Successfull {
+		resp.Status = "completed"
 		fmt.Println("All customer(s) created successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Some/all customer(s) can't created successfully")
 	}
 	return resp, nil
 }

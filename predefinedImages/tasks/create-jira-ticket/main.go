@@ -1,3 +1,4 @@
+// image: awrmin/create-jira-ticket:lambda3
 package main
 
 import (
@@ -29,6 +30,7 @@ type Response struct {
 func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
+	resp.Successfull = true
 	for _, val := range event.Body {
 		singleInput := val.(map[string]interface{})
 		project_key := singleInput["project_key"].(string)
@@ -38,25 +40,22 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		jiraUrl := singleInput["jira_url"].(string)
 		access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 		if access_token == "" {
-			fmt.Println("no api key")
-			// resp.Successfull = false
-			// return resp, errors.New("there isn't any api key")
+			fmt.Println("Error: There isn't access token, Please check your integration")
+			resp.Successfull = false
 			continue
 		}
 		err := CreateTicket(project_key, issueType, description, summery, jiraUrl, access_token)
 		if err != nil {
 			fmt.Println(err.Error())
-			// resp.Successfull = false
-			// return resp, err
 			fmt.Printf("creating jira ticket wasn't successful\n")
+			resp.Successfull = false
 			continue
 		} else {
 			fmt.Printf("creating jira ticket was successful\n")
-			resp.Successfull = true
 		}
 	}
 	if resp.Successfull {
-		fmt.Println("All/some email(s) send successfully")
+		fmt.Println("All ticket(s) created successfully")
 	}
 	return resp, nil
 }
