@@ -1,6 +1,6 @@
 service: slack
 type: Send slack message
-image: awrmin/slack-send-message:lambda2
+image: awrmin/slack-send-message:lambda3
 integrations: [slack-bot]
 fields:
     - key: target_id

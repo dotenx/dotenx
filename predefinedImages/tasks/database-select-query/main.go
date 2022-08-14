@@ -1,15 +1,15 @@
-// image: hojjat12/database-get-records:lambda3
+// image: hojjat12/database-get-records:lambda5
 package main
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -31,7 +31,9 @@ type Event struct {
 }
 
 type Response struct {
-	Successfull bool `json:"successfull"`
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -40,13 +42,31 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp.Successfull = true
 	outputCnt := 0
 	outputs := make(map[string]interface{})
-	resultEndpoint := event.ResultEndpoint
-	authorization := event.Authorization
+	// resultEndpoint := event.ResultEndpoint
+	// authorization := event.Authorization
 	for _, val := range event.Body {
 		singleInput := val.(map[string]interface{})
 		dtxAccessToken := singleInput["dtx_access_token"].(string)
 		projectTag := singleInput["project_tag"].(string)
 		tableName := singleInput["table_name"].(string)
+		pageStr := fmt.Sprint(singleInput["page"])
+		if pageStr != "" && pageStr != "<nil>" {
+			_, err := strconv.Atoi(pageStr)
+			if err != nil {
+				fmt.Println("page should be a number, error:", err)
+				resp.Successfull = false
+				continue
+			}
+		}
+		sizeStr := fmt.Sprint(singleInput["size"])
+		if sizeStr != "" && sizeStr != "<nil>" {
+			_, err := strconv.Atoi(sizeStr)
+			if err != nil {
+				fmt.Println("size should be a number, error:", err)
+				resp.Successfull = false
+				continue
+			}
+		}
 		body := fmt.Sprint(singleInput["body"])
 		url := fmt.Sprintf("https://api.dotenx.com/database/query/select/project/%s/table/%s", projectTag, tableName)
 		headers := []Header{
@@ -58,6 +78,18 @@ func HandleLambdaEvent(event Event) (Response, error) {
 				Key:   "DTX-auth",
 				Value: dtxAccessToken,
 			},
+		}
+		if pageStr != "" && pageStr != "<nil>" {
+			headers = append(headers, Header{
+				Key:   "page",
+				Value: pageStr,
+			})
+		}
+		if sizeStr != "" && sizeStr != "<nil>" {
+			headers = append(headers, Header{
+				Key:   "size",
+				Value: sizeStr,
+			})
 		}
 		var jsonMap map[string]interface{}
 		myMap, ok := singleInput["body"].(map[string]interface{})
@@ -96,41 +128,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		}
 	}
 
-	data := map[string]interface{}{
-		"status":       "started",
-		"return_value": outputs,
-		"log":          "",
-	}
-	headers := []Header{
-		{
-			Key:   "Content-Type",
-			Value: "application/json",
-		},
-		{
-			Key:   "authorization",
-			Value: authorization,
-		},
-	}
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err)
-		resp.Successfull = false
-		return resp, err
-	}
-	payload := bytes.NewBuffer(jsonData)
-	out, err, status, _ := httpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	fmt.Println("dotenx api status code:", status)
-	fmt.Println("dotenx api response (set results):", string(out))
-	if err != nil || status != http.StatusOK {
-		if status != http.StatusOK {
-			err = errors.New("can't get correct response from dotenx api")
-		}
-		resp.Successfull = false
-		return resp, err
-	}
-
+	resp.ReturnValue = outputs
 	if resp.Successfull {
+		resp.Status = "completed"
 		fmt.Println("All row(s) selected successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Some/all row(s) can't selected successfully")
 	}
 	return resp, nil
 }

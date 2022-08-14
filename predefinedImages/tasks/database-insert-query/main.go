@@ -1,4 +1,4 @@
-// image: hojjat12/database-add-record:lambda
+// image: hojjat12/database-add-record:lambda4
 package main
 
 import (
@@ -38,7 +38,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		dtxAccessToken := singleInput["dtx_access_token"].(string)
 		projectTag := singleInput["project_tag"].(string)
 		tableName := singleInput["table_name"].(string)
-		columnValues := fmt.Sprint(singleInput["DYNMAIC_VARIABLES"])
+		columnValues := fmt.Sprint(singleInput["column_values"])
 		url := fmt.Sprintf("https://api.dotenx.com/database/query/insert/project/%s/table/%s", projectTag, tableName)
 		headers := []Header{
 			{
@@ -51,7 +51,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			},
 		}
 		var jsonMap map[string]interface{}
-		myMap, ok := singleInput["DYNMAIC_VARIABLES"].(map[string]interface{})
+		myMap, ok := singleInput["column_values"].(map[string]interface{})
 		if ok {
 			jsonMap = myMap
 		} else {
