@@ -66,7 +66,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 			if insertDt.Type == models.RefrencedFieldType {
 				returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, insertDt.Source, taskName)
 				if err != nil {
-					log.Println(err)
+					logrus.Println(err)
 					return nil, err
 				}
 				if _, ok := returnValuesMap[insertDt.Source]; !ok {
@@ -88,7 +88,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 					}
 					returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
 					if err != nil {
-						log.Println(err)
+						logrus.Println(err)
 						return nil, err
 					}
 					if _, ok := returnValuesMap[source]; !ok {
@@ -101,7 +101,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 					sourceName := keys[0]
 					returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, sourceName, taskName)
 					if err != nil {
-						log.Println(err)
+						logrus.Println(err)
 						return nil, err
 					}
 					if _, ok := returnValuesMap[sourceName]; !ok {
@@ -114,7 +114,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 			} else if insertDt.Type == models.JsonFieldType || insertDt.Type == models.JsonArrayFieldType {
 				jsonReturnValuesMap, err := manager.getReturnValuesMap(execId, accountId, taskName, insertDt.Value.(map[string]interface{}))
 				if err != nil {
-					log.Println(err)
+					logrus.Println(err)
 					return nil, err
 				}
 				for jsonSourceName, jsonReturnValueArr := range jsonReturnValuesMap {
@@ -138,7 +138,6 @@ func getReturnValuesArray(body map[string]interface{}) (returnValues []map[strin
 		b, _ := json.Marshal(value)
 		err := json.Unmarshal(b, &returnValue)
 		if err != nil {
-			log.Printf("HAGAGAAF")
 			logrus.Println(value)
 			return nil, err
 		}
@@ -164,10 +163,11 @@ func getKey(i int, m map[string]int) string {
 func (manager *executionManager) getReturnArrayForSeource(execId int, accountId, source, taskName string) ([]map[string]interface{}, error) {
 	body, err := manager.CheckExecutionInitialData(execId, accountId, source, taskName)
 	if err != nil {
+		logrus.Println(err)
 		body, err = manager.CheckReturnValues(execId, accountId, source)
 		if err != nil {
-			log.Println(err)
-			return nil, errors.New("no value for this field in initial data or return values")
+			logrus.Println(err)
+			return nil, errors.New("no value for this field" + source + " in initial data or return values")
 		}
 	}
 	returnValueArr, err := getReturnValuesArray(body)
@@ -181,8 +181,8 @@ func (manager *executionManager) getReturnArrayForSeource(execId int, accountId,
 func (manager *executionManager) getFromNestedJson(keys []string, currentSourceData sourceData) ([]interface{}, error) {
 	sourceBody, ok := currentSourceData[keys[0]]
 	if !ok {
-		log.Println(keys[0])
-		return nil, errors.New("no value for this field in initial data or return values")
+		logrus.Println(currentSourceData)
+		return nil, errors.New("no value for this field " + keys[0] + " in initial data or return values")
 	}
 	jsonBytes, err := json.Marshal(sourceBody)
 	if err != nil {
@@ -219,7 +219,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 							return nil, errors.New("source Data map does not have a source with key " + arg.Source)
 						}
 						if _, ok := sourceBody[arg.Key]; !ok {
-							return nil, errors.New("no value for this field in initial data or return values")
+							return nil, errors.New("no value for this field in initial data or return values " + arg.Key)
 						}
 						values[argKey] = sourceBody[arg.Key]
 					} else if arg.Type == models.NestedFieldType {
@@ -239,7 +239,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 				}
 				result, err := insertDt.Formatter.Format(values)
 				if err != nil {
-					log.Println(err)
+					logrus.Println(err)
 					return nil, err
 				}
 				finalTaskBody[key] = result
@@ -259,7 +259,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 			} else if insertDt.Type == models.JsonFieldType || insertDt.Type == models.JsonArrayFieldType {
 				jBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, insertDt.Value.(map[string]interface{}), currentSourceData)
 				if err != nil {
-					log.Println(err)
+					logrus.Println(err)
 					return nil, err
 				}
 				if insertDt.Type == models.JsonFieldType {
@@ -267,7 +267,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 				} else {
 					newJArray, err := createJsonArr(jBody)
 					if err != nil {
-						log.Println(err)
+						logrus.Println(err)
 						return nil, err
 					}
 					finalTaskBody[key] = newJArray
@@ -304,7 +304,7 @@ we will create a json array like:
 ]
 */
 func createJsonArr(jBody map[string]interface{}) ([]map[string]interface{}, error) {
-	log.Println(jBody)
+	logrus.Println(jBody)
 	newJArray := make([]map[string]interface{}, 0)
 	maxLength := 0
 	minLength := math.MaxInt64

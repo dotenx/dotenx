@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/sirupsen/logrus"
 )
 
 // start first task (initial task) if you call this method wih task id <= 0,
@@ -87,15 +88,17 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 			jobDTO.SetIntegration(integration)
 		} else {
 			if tpAccountId == "" {
-				log.Println("task does not have an integration")
+				logrus.Println("task does not have an integration")
 			} else {
 				// TODO what if for tasks with several types of integrations
 				task.MetaData = models.AvaliableTasks[task.Type]
-				if len(task.MetaData.Integrations) > 0 { // check if task needs integration
+				if len(jobDTO.MetaData.Integrations) > 0 { // check if task needs integration
+					logrus.Println(task.MetaData.Integrations[0] + " || " + accountId + " || " + tpAccountId)
 					integration, err := manager.IntegrationService.GetIntegrationForThirdPartyAccount(accountId, tpAccountId, task.MetaData.Integrations[0])
 					if err != nil {
 						return err
 					}
+					logrus.Println(integration)
 					jobDTO.SetIntegration(integration)
 				}
 			}

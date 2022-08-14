@@ -1,3 +1,4 @@
+// image: awrmin/sendemail:lambda3
 package main
 
 import (
@@ -26,6 +27,7 @@ type Response struct {
 func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
+	resp.Successfull = true
 	for _, val := range event.Body {
 		singleInput := val.(map[string]interface{})
 		sender := singleInput["sender"].(string)
@@ -34,20 +36,17 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		apiKey := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 		if apiKey == "" {
 			fmt.Println("no api key")
-			// resp.Successfull = false
-			// return resp, errors.New("there isn't any api key")
+			resp.Successfull = false
 			continue
 		}
 		err := SendGridEmail(apiKey, sender, target, text)
 		if err != nil {
 			fmt.Println(err.Error())
-			// resp.Successfull = false
-			// return resp, err
 			fmt.Printf("sending email to '%s' wasn't successful\n", target)
+			resp.Successfull = false
 			continue
 		} else {
 			fmt.Printf("sending email to '%s' was successful\n", target)
-			resp.Successfull = true
 		}
 	}
 	// sender := event.Sender
@@ -66,7 +65,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	// 	return resp, err
 	// }
 	if resp.Successfull {
-		fmt.Println("All/some email(s) send successfully")
+		fmt.Println("All email(s) was send successfully")
 	}
 	return resp, nil
 }

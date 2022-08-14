@@ -1,13 +1,14 @@
 service: dotenx
 type: Http request
-image: awrmin/dotenx-http-call:lambda2
+image: awrmin/dotenx-http-call:lambda3
 fields:
     - key: method
       type: text
     - key: url
       type: text
     - key: body
-      type: JSON
+      type: object
+      description: The request body is a json format field that used to send and receive data via the REST API.
 author: Armingodiz
 icon: https://cdn-icons-png.flaticon.com/512/1674/1674969.png
 node_color: 2ECC71

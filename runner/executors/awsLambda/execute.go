@@ -98,10 +98,10 @@ func (executor *lambdaExecutor) Execute(task *models.Task) (result *models.TaskE
 		return
 	}
 	if !resp.Successfull {
-		result.Error = errors.New("error after invoking lambda function. task was not successfull.")
+		result.Error = errors.New("error after invoking lambda function, task was not successfull")
 		return
 	}
-	if task.Details.Type == "Run node code" {
+	if resp.Status != "" {
 		authHeader := config.Configs.Secrets.RunnerToken
 		resultEndpoint := task.Details.ResultEndpoint
 		headers := []shared.Header{

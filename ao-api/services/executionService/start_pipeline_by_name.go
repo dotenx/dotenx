@@ -98,7 +98,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	}
 	err = manager.GetNextTask(-1, executionId, "", accountId)
 	if err != nil {
-		manager.DeleteExecution(executionId)
+		//manager.DeleteExecution(executionId)
 		return -1, err
 	} // ch, err := manager.QueueService.NewChannel()
 	// if err != nil {
@@ -136,16 +136,24 @@ the format we want:
 		}
 	}
 */
-func transferInitialDataToWrightFormat(input map[string]interface{}) (map[string]interface{}, error) {
+func transferInitialDataToWrightFormat(input map[string]interface{}) (initialData map[string]interface{}, err error) {
 	interactionDataInterface, ok := input[config.Configs.App.InteractionBodyKey]
-	if ok && reflect.TypeOf(interactionDataInterface).Kind() == reflect.Map {
-		interactionDataMap := interactionDataInterface.(map[string]interface{})
-		newInteractionData := make(map[string]interface{})
-		newInteractionData["inp0"] = interactionDataMap
-		initialData := make(map[string]interface{})
-		initialData[config.Configs.App.InteractionBodyKey] = newInteractionData
-		return initialData, nil
-	} else {
-		return nil, errors.New("input data is not a map")
+	initialData = make(map[string]interface{})
+	if ok {
+		if reflect.TypeOf(interactionDataInterface).Kind() == reflect.Map {
+			interactionDataMap := interactionDataInterface.(map[string]interface{})
+			tasksDatas := make(map[string]interface{})
+			for taskName, taskBody := range interactionDataMap {
+				newInteractionDataForTask := make(map[string]interface{})
+				newInteractionDataForTask["inp0"] = taskBody
+				tasksDatas[taskName] = newInteractionDataForTask
+			}
+			initialData[config.Configs.App.InteractionBodyKey] = tasksDatas
+			return
+
+		} else {
+			return nil, errors.New("the initial data is not in the correct format")
+		}
 	}
+	return
 }

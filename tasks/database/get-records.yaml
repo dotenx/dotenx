@@ -1,6 +1,6 @@
 service: database
 type: Get table records
-image: hojjat12/database-get-records:lambda3
+image: hojjat12/database-get-records:lambda5
 fields:
     - key: dtx_access_token
       type: text
@@ -14,6 +14,14 @@ fields:
       type: text
       display_name: Table name 
       description: Your DoTenX table name
+    - key: page
+      type: text
+      display_name: Page number (optional) 
+      description: Number of page that you want get records from it (e.g if page size is 3 and page number is 2 you get table this records -> [4-6])
+    - key: size
+      type: text
+      display_name: Page size (optional) 
+      description: Size of each page (e.g if page size is 3 and page number is 2 you get table this records -> [4-6])
     - key: body
       type: object
       display_name: Column names and filters
