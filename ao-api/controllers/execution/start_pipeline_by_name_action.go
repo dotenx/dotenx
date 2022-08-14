@@ -16,7 +16,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		if tt, ok := c.Get("tokenType"); ok && tt == "tp" {
 			accId, _ := utils.GetThirdPartyAccountId(c)
 			tpAccountId = fmt.Sprintf("%v", accId)
-			ug, _ := c.Get("user_group") // We must always set the user_group claim even if it's empty
+			ug, _ := c.Get("userGroup") // We must always set the user_group claim even if it's empty
 			userGroup = ug.(string)
 		}
 
