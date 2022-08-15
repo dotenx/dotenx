@@ -20,6 +20,7 @@ import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
 import { ComplexFieldValue } from '../ui/complex-field'
+import { EditorInput, EditorObjectValue, JsonEditorFieldValue } from '../ui/json-editor'
 import { NodeType } from './types'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
@@ -148,14 +149,20 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	if (!fieldValue) return ['', '']
 
-	let normalized: ComplexFieldValue | BuilderSteps | { value: string }[] = {
+	let normalized:
+		| ComplexFieldValue
+		| BuilderSteps
+		| { value: string }[]
+		| EditorObjectValue[]
+		| string[] = {
 		type: InputOrSelectKind.Text,
 		data: '',
 	}
 
 	switch (fieldValue.type) {
 		case 'directValue':
-			normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
+			if (_.isArray(fieldValue.value)) normalized = fieldValue.value
+			else normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
 			break
 		case 'refrenced':
 			normalized = {
@@ -169,7 +176,7 @@ function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 			normalized = { kind: 'nested', data: fieldValue.nestedKey }
 			break
 		case 'json':
-			normalized = { kind: 'json', data: JSON.stringify(fieldValue.value, null, 2) }
+			normalized = mapToEditorJson(fieldValue.value)
 			break
 		case 'json_array':
 			normalized = { kind: 'json-array', data: JSON.stringify(fieldValue.value, null, 2) }
@@ -195,9 +202,29 @@ function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	]
 }
 
+function mapToEditorJson(json: Record<string, TaskFieldValue>): EditorObjectValue[] {
+	return _.toPairs(json).map(([name, value]) => ({
+		name,
+		id: nanoid(),
+		value: toJsonEditorProperty(value),
+	}))
+}
+
+function toJsonEditorProperty(value: TaskFieldValue): JsonEditorFieldValue {
+	if (value.type !== 'json') {
+		return toFieldValue(value, '')[1] as EditorInput
+	} else {
+		return _.toPairs(value.value).map(([name, innerValue]) => ({
+			id: nanoid(),
+			name,
+			value: toJsonEditorProperty(innerValue),
+		}))
+	}
+}
+
 const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
 	return 'value' in arg
-		? { type: InputOrSelectKind.Text, data: arg.value }
+		? { type: InputOrSelectKind.Text, data: arg.value as string }
 		: { type: InputOrSelectKind.Option, data: arg.key, groupName: arg.source, iconUrl: '' }
 }
 

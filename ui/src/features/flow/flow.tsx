@@ -93,7 +93,7 @@ function TaskSettingsModal({ updateNode, withIntegration }: NodeSettingsModalPro
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
 	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
 	const modalSize =
-		taskCode.isOpen || taskBuilder.opened ? 'xl' : isAddingIntegration ? 'lg' : 'md'
+		taskCode.isOpen || taskBuilder.opened ? 'xl' : isAddingIntegration ? 'lg' : 'lg'
 
 	useEffect(() => {
 		if (!modal.isOpen) {
