@@ -135,14 +135,14 @@ export type TaskFieldValue =
 	| TfCustomOutputs
 	| TfJsonArray
 
-type TfDirectValue = { type: 'directValue'; value: string }
-type TfRefrenced = { type: 'refrenced'; source: string; key: string }
-type TfNested = { type: 'nested'; nestedKey: string }
-type TfJson = { type: 'json'; value: AnyJson }
-type TfJsonArray = { type: 'json_array'; value: AnyJson }
-type TfFormatted = { type: 'formatted'; formatter: Formatter }
-type TfTaskBuilder = { type: 'taskBuilder'; prop: string; steps: BuilderStep[] }
-type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
+export type TfDirectValue = { type: 'directValue'; value: string | string[] }
+export type TfRefrenced = { type: 'refrenced'; source: string; key: string }
+export type TfNested = { type: 'nested'; nestedKey: string }
+export type TfJson = { type: 'json'; value: Record<string, TaskFieldValue> }
+export type TfJsonArray = { type: 'json_array'; value: AnyJson }
+export type TfFormatted = { type: 'formatted'; formatter: Formatter }
+export type TfTaskBuilder = { type: 'taskBuilder'; prop: string; steps: BuilderStep[] }
+export type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
 
 export type TaskBody = Record<string, TaskFieldValue>
 
@@ -462,7 +462,7 @@ export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
 
-type AnyJson = boolean | number | string | null | JsonArray | JsonMap
+export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 
 interface JsonMap {
 	[key: string]: AnyJson

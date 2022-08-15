@@ -30,6 +30,7 @@
 		"date-fns": "^2.29.1",
 		"framer-motion": "^6.5.1",
 		"fuse.js": "^6.6.2",
+		"immer": "^9.0.15",
 		"jotai": "^1.7.6",
 		"js-cookie": "^3.0.1",
 		"lodash": "^4.17.21",
