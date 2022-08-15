@@ -105,8 +105,6 @@ export function EditRecordForm({
 	)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
 
-	console.log(defaultValues)
-
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">

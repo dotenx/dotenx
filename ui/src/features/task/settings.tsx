@@ -9,16 +9,9 @@ import { FieldType } from '../../api'
 import { TaskBuilder } from '../../internal/task-builder'
 import { taskBuilderState, taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
-import {
-	Description,
-	Field,
-	Form,
-	GroupData,
-	GroupSelect, InputOrSelectKind,
-	Loader,
-	Textarea
-} from '../ui'
+import { Description, Field, Form, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
+import { JsonEditor } from '../ui/json-editor'
 import { CodeField } from './code-field'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
@@ -247,7 +240,7 @@ const getFieldComponent = (
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<Textarea {...props} />
+					<JsonEditor {...props} />
 					<Description>{props.description}</Description>
 				</div>
 			)

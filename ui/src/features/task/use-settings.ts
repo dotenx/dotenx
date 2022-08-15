@@ -55,7 +55,6 @@ export function useTaskSettings({
 		getValues,
 		setValue,
 		unregister,
-		reset,
 	} = useForm<TaskSettingsSchema>({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
@@ -96,9 +95,6 @@ export function useTaskSettings({
 			) as TaskOthers,
 		[defaultValues?.others, taskFields]
 	)
-
-	console.log(dynVariables)
-	console.log('watch', watch())
 
 	useEffect(() => {
 		setValue(

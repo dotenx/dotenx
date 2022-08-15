@@ -38,12 +38,12 @@ export type ComplexFieldValue =
 	| JsonValue
 	| JsonArrayValue
 
-interface FormattedValue {
+export interface FormattedValue {
 	fn: string
 	args: InputOrSelectValue[]
 }
 
-interface NestedValue {
+export interface NestedValue {
 	kind: 'nested'
 	data: string
 }
@@ -63,8 +63,8 @@ export interface ComplexFieldProps<
 	TName extends FieldPath<TFieldValues>
 > extends UseControllerProps<TFieldValues, TName> {
 	label?: string
-	groups: GroupData[]
-	errors: FieldErrors<TFieldValues>
+	groups?: GroupData[]
+	errors?: FieldErrors<TFieldValues>
 	placeholder?: string
 	valueKinds?: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
 }
@@ -75,11 +75,11 @@ export function ComplexField<
 >({
 	control,
 	errors,
-	groups,
+	groups = [],
 	name,
 	label,
 	placeholder,
-	valueKinds = ['json', 'json-array', 'nested', 'formatted', 'input-or-select'],
+	valueKinds,
 }: ComplexFieldProps<TFieldValues, TName>) {
 	return (
 		<div className="w-full">
@@ -98,7 +98,7 @@ export function ComplexField<
 					/>
 				)}
 			/>
-			<FieldError errors={errors} name={name} />
+			{errors && <FieldError errors={errors} name={name} />}
 		</div>
 	)
 }
@@ -106,20 +106,20 @@ export function ComplexField<
 interface ComplexFieldRawProps {
 	value: ComplexFieldValue
 	onChange: (value: ComplexFieldValue) => void
-	name: string
+	name?: string
 	label?: string
-	groups: GroupData[]
+	groups?: GroupData[]
 	placeholder?: string
-	valueKinds: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
+	valueKinds?: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
 }
-function ComplexFieldRaw({
+export function ComplexFieldRaw({
 	value,
 	onChange,
-	groups,
-	name,
+	groups = [],
+	name = '',
 	label,
 	placeholder,
-	valueKinds,
+	valueKinds = ['nested', 'formatted', 'input-or-select'],
 }: ComplexFieldRawProps) {
 	const [view, setView] = useState<
 		'input-or-select' | 'formatting' | 'formatted' | 'nested' | 'json' | 'json-array'

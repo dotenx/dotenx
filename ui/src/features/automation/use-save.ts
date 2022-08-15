@@ -1,5 +1,7 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAtom } from 'jotai'
+import _ from 'lodash'
 import { Edge, Elements, isEdge, isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
@@ -25,6 +27,7 @@ import { NodeType } from '../flow/types'
 import { useModal } from '../hooks'
 import { InputOrSelectKind } from '../ui'
 import { ComplexFieldValue } from '../ui/complex-field'
+import { EditorObjectValue } from '../ui/json-editor'
 import { saveFormSchema, SaveFormSchema } from './save-form'
 
 export function useSaveForm(kind: AutomationKind) {
@@ -115,7 +118,9 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 	return { tasks, triggers }
 }
 
-function toBackendData(fieldValue: ComplexFieldValue | BuilderSteps): TaskFieldValue {
+function toBackendData(
+	fieldValue: ComplexFieldValue | BuilderSteps | EditorObjectValue[]
+): TaskFieldValue {
 	if ('kind' in fieldValue) {
 		switch (fieldValue.kind) {
 			case 'nested':
@@ -153,13 +158,41 @@ function toBackendData(fieldValue: ComplexFieldValue | BuilderSteps): TaskFieldV
 				func_calls: { '1': { function: fieldValue.fn, args } },
 			},
 		}
-	} else {
+	} else if ('type' in fieldValue[0]) {
 		return {
 			type: 'taskBuilder',
 			prop: 'value',
-			steps: normalizeBuilderSteps(fieldValue),
+			steps: normalizeBuilderSteps(fieldValue as BuilderSteps),
+		}
+	} else {
+		return {
+			type: 'json',
+			value: mapJsonEditorToJsonValue(fieldValue as EditorObjectValue[]),
 		}
 	}
+}
+
+function mapJsonEditorToJsonValue(
+	jsonEditorData: EditorObjectValue[]
+): Record<string, TaskFieldValue> {
+	return _.fromPairs(
+		jsonEditorData.map(
+			(property) =>
+				[
+					property.name,
+					!_.isArray(property.value)
+						? toBackendData(property.value)
+						: typeof property.value[0] === 'string'
+						? { type: 'directValue', value: property.value }
+						: {
+								type: 'json',
+								value: mapJsonEditorToJsonValue(
+									property.value as EditorObjectValue[]
+								),
+						  },
+				] as [string, TaskFieldValue]
+		)
+	)
 }
 
 function mapEdgesToExecuteAfter(
@@ -203,7 +236,7 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 					params: {
 						name: step.params.fnName,
 						arguments: step.params.arguments.map((arg) => arg.data),
-						output: step.params.output.data || undefined,
+						output: step.params.output?.data || undefined,
 					},
 				}
 			case 'foreach':
