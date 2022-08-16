@@ -71,7 +71,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 					if arg.Type == models.NestedFieldType {
 						keys := strings.Split(arg.NestedKey, ".")
 						source, _, sourceType := getSourceType(keys[0])
-						if len(keys) <= 1 && sourceType != models.FullObjectSourceType {
+						if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpecificIndexSourceType {
 							return nil, errors.New("nested key is not in correct format1")
 						}
 						//source = strings.Split(arg.NestedKey, ".")[0]
@@ -88,7 +88,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 			} else if insertDt.Type == models.NestedFieldType {
 				keys := strings.Split(insertDt.NestedKey, ".")
 				sourceName, _, sourceType := getSourceType(keys[0])
-				if len(keys) <= 1 && sourceType != models.FullObjectSourceType {
+				if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpecificIndexSourceType {
 					return nil, errors.New("nested key is not in correct format1")
 				}
 				returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, sourceName, taskName)
@@ -238,6 +238,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 				}
 				finalTaskBody[key] = result
 			} else if insertDt.Type == models.NestedFieldType {
+				var speceficFullObject bool
 				keys := strings.Split(insertDt.NestedKey, ".")
 				// if we dont have any [*] in our nested key, we will get only one value
 				itsArray := strings.Contains(insertDt.NestedKey, "[*]")
@@ -285,12 +286,20 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 						logrus.Println(source)
 						return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
 					}
-					val, err = manager.getFromNestedJson(keys[1:], values[index])
-					if err != nil {
-						return nil, err
+					if len(keys) == 1 {
+						val = make([]interface{}, 0)
+						val = append(val, values[index])
+						speceficFullObject = true
+					} else {
+						val, err = manager.getFromNestedJson(keys[1:], values[index])
+						if err != nil {
+							return nil, err
+						}
 					}
 				}
-				if itsArray || sourceType == models.FullObjectSourceType {
+				if speceficFullObject {
+					finalTaskBody[key] = val[0]
+				} else if itsArray || sourceType == models.FullObjectSourceType {
 					finalTaskBody[key] = val
 				} else {
 					finalTaskBody[key] = val[0]

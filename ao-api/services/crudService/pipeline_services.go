@@ -206,7 +206,13 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				if err != nil {
 					return nil, err
 				}
-				code = fmt.Sprintf("module.exports = () => {\n%s\n}", gcode)
+				// inputs := body["inputs"].Value.(map[string]interface{})
+				// inputsArr := make([]string, 0)
+				// for input, _ := range inputs {
+				// 	inputsArr = append(inputsArr, input)
+				// }
+				// inputsStr := strings.TrimSuffix(strings.Join(inputsArr, ","), ",")
+				code = fmt.Sprintf("module.exports = (inputs) => {\n%s\n}", gcode)
 				dependency = "{}"
 			} else {
 				body := make(map[string]models.TaskFieldDetailes)
@@ -265,25 +271,44 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 	indexJs := `
 	exports.handler = async function (event) {
 		
-		console.log("event:", JSON.stringify(event));
+		console.log("event.body:", JSON.stringify(event.body));
 		
 		const filePath = event.code;
 		const dependenciesPath = event.dependency;
 		const resultEndpoint = event.RESULT_ENDPOINT;
 		const Aauthorization = event.AUTHORIZATION;
 		// Read function arguments from environment variables based on VARIABLE
-		const variables = (event.VARIABLES || '').split(',').map(v => event[v.trim()])
-	  
-		console.log("Function Arguments:", variables);
+		// const variables = (event.VARIABLES || '').split(',').map(v => event[v.trim()])
+		// console.log("Function Arguments:", variables);
+
+		var args = {};
+		const keys = Object.keys(event.body);
+		for (let key of keys) {
+			const inputkeys = Object.keys(event.body[key].inputs);
+			console.log(inputkeys);
+			for (let inputkey of inputkeys) {
+				if (keys.length == 1) {
+					args[inputkey] = event.body[key].inputs[inputkey];
+				} else {
+					if (args[inputkey] == undefined) {
+						args[inputkey] = [];
+					}
+					args[inputkey].push(event.body[key].inputs[inputkey]);
+				}
+			}
+		}
+		console.log("-------------------------------args-------------------------------");
+		console.log(args);
+		console.log("-------------------------------args-------------------------------");
 
 		const f = require('entry.js');
-		const result = await f(...variables) || {};
+		const result = await f(args) || {};
 		
 		console.log("result set successfully")
 		return {
-		successfull: true,
-		status: "completed",
-		return_value: result
+			successfull: true,
+			status: "completed",
+			return_value: result
 		}
 	}
 	`

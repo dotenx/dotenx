@@ -131,17 +131,18 @@ export type TaskFieldValue =
 	| TfNested
 	| TfJson
 	| TfFormatted
-	| TfTaskBuilder
 	| TfCustomOutputs
 	| TfJsonArray
 
-export type TfDirectValue = { type: 'directValue'; value: string | string[] }
+export type TfDirectValue = {
+	type: 'directValue'
+	value: string | string[] | { steps: BuilderStep[] }
+}
 export type TfRefrenced = { type: 'refrenced'; source: string; key: string }
 export type TfNested = { type: 'nested'; nestedKey: string }
 export type TfJson = { type: 'json'; value: Record<string, TaskFieldValue> }
 export type TfJsonArray = { type: 'json_array'; value: AnyJson }
 export type TfFormatted = { type: 'formatted'; formatter: Formatter }
-export type TfTaskBuilder = { type: 'taskBuilder'; prop: string; steps: BuilderStep[] }
 export type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
 
 export type TaskBody = Record<string, TaskFieldValue>
@@ -226,6 +227,7 @@ export enum FieldType {
 	Text = 'text',
 	Code = 'code',
 	Object = 'object',
+	CustomOutputs = 'custom-outputs',
 }
 
 export interface GetExecutionResultResponse {

@@ -221,6 +221,7 @@ func (manager *IntegrationManager) GetIntegrationForThirdPartyAccount(accountId,
 			}
 			userProvider.Key = decryptedKey
 			userProvider.Secret = decryptedSecret
+			oauthProvider.Name = userProvider.Type
 			oauthProvider.Key = decryptedKey
 			oauthProvider.Secret = decryptedSecret
 			oauthProvider.DirectUrl = userProvider.DirectUrl
