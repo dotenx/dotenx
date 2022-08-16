@@ -183,9 +183,8 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				}
 				if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 					val := models.TaskFieldDetailes{
-						Source: config.Configs.App.InteractionBodyKey,
-						Key:    key,
-						Type:   models.RefrencedFieldType,
+						Type:      models.NestedFieldType,
+						NestedKey: fmt.Sprintf("%s[0].%s", config.Configs.App.InteractionBodyKey, key),
 					}
 					body[key] = val
 				}
