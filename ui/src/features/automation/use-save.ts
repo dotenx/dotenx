@@ -18,7 +18,7 @@ import {
 	TaskFieldValue,
 	Tasks,
 	Trigger,
-	Triggers,
+	Triggers
 } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
 import { flowAtom } from '../atoms'
@@ -160,9 +160,8 @@ function toBackendData(
 		}
 	} else if ('type' in fieldValue[0]) {
 		return {
-			type: 'taskBuilder',
-			prop: 'value',
-			steps: normalizeBuilderSteps(fieldValue as BuilderSteps),
+			type: 'directValue',
+			value: { steps: normalizeBuilderSteps(fieldValue as BuilderSteps) },
 		}
 	} else {
 		return {

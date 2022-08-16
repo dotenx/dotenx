@@ -140,8 +140,6 @@ function TaskSettings({
 	} = taskForm
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
-	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
-	const showOutputs = isCodeTask || taskType === 'Get table records'
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -194,7 +192,6 @@ function TaskSettings({
 				{hasDynamicVariables && (
 					<Variables control={control} errors={errors} outputGroups={outputGroups} />
 				)}
-				{showOutputs && <Outputs control={control} errors={errors} />}
 			</div>
 
 			<Button type="submit" disabled={disableSubmit}>
@@ -216,12 +213,13 @@ const getFieldComponent = (
 	} & { openBuilder: () => void },
 	type: string
 ) => {
-	if (type === 'Run mini tasks')
+	if (type === 'Run mini tasks' && props.label === 'tasks') {
 		return (
 			<Button key={props.key} type="button" onClick={props.openBuilder}>
 				Build A Task
 			</Button>
 		)
+	}
 
 	switch (kind) {
 		case FieldType.Text:
@@ -243,6 +241,14 @@ const getFieldComponent = (
 					<JsonEditor {...props} />
 					<Description>{props.description}</Description>
 				</div>
+			)
+		case FieldType.CustomOutputs:
+			return (
+				<Outputs
+					key={props.key}
+					control={props.control as any}
+					errors={props.errors as any}
+				/>
 			)
 		default:
 			return null

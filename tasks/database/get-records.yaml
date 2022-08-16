@@ -26,6 +26,8 @@ fields:
       type: object
       display_name: Column names and filters
       description: A json field consist of column names that you want get values and an optional field that declare filters for our system (you can use 'filters' section in our query builder that presents in all tables)
+    - key: outputs
+      type: custom-outputs
 author: Hojjat-1
 icon: https://cdn-icons-png.flaticon.com/512/138/138932.png
 node_color: 4ABAFF

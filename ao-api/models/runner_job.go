@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/miniTasks"
-	"github.com/sirupsen/logrus"
 )
 
 type Job struct {
@@ -117,23 +115,23 @@ func (job *Job) PrepRunMiniTasks() {
 	job.Type = "Run node code"
 	job.MetaData = AvaliableTasks["Run node code"]
 	for inputNumber, _ := range job.Body {
-		logrus.Info(job.Body)
-		logrus.Info(job.Body["tasks"])
-		importStore := miniTasks.NewImportStore()
-		parsed := job.Body[inputNumber]["tasks"].(map[string]interface{})
-		code, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
+		// logrus.Info(job.Body)
+		// logrus.Info(job.Body["tasks"])
+		// importStore := miniTasks.NewImportStore()
+		// parsed := job.Body[inputNumber]["tasks"].(map[string]interface{})
+		// code, err := miniTasks.ConvertToCode(parsed["steps"].([]interface{}), &importStore)
 
-		if err != nil {
-			fmt.Println(err)
-		}
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
 
-		fmt.Println(`********************************************************************************`)
-		fmt.Println(code)
-		fmt.Println(`********************************************************************************`)
-		job.Body[inputNumber]["code"] = fmt.Sprintf("module.exports = () => {\n%s\n}", code)
-		job.Body[inputNumber]["VARIABLES"] = "outputs"
-		job.Body[inputNumber]["outputs"] = make([]string, 0)
-		job.Body[inputNumber]["dependency"] = "{}"
-		delete(job.Body, "tasks")
+		// fmt.Println(`********************************************************************************`)
+		// fmt.Println(code)
+		// fmt.Println(`********************************************************************************`)
+		// job.Body[inputNumber]["code"] = fmt.Sprintf("module.exports = () => {\n%s\n}", code)
+		// job.Body[inputNumber]["VARIABLES"] = "outputs"
+		// job.Body[inputNumber]["outputs"] = make([]string, 0)
+		// job.Body[inputNumber]["dependency"] = "{}"
+		delete(job.Body[inputNumber], "tasks")
 	}
 }

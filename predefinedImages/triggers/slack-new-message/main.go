@@ -74,7 +74,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			body["workspace"] = workspace
 			innerInnerBody["text"] = res.Messages[0].Msg.Text
 			innerInnerBody["timestamp"] = res.Messages[0].Timestamp
-			innerBody["out1"] = innerInnerBody
+			innerBody["0"] = innerInnerBody
 			body[triggerName] = innerBody
 			resp.ReturnValue = body
 			resp.Triggered = true

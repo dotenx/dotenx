@@ -194,6 +194,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	public := r.Group("/public")
 	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 
+	// this is a mock admin endpoints for test locally
+	admin := r.Group("/internal")
+
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware(httpHelper))
 	} else {
@@ -207,7 +210,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	execution := r.Group("/execution")
 	integration := r.Group("/integration")
 	trigger := r.Group("/trigger")
-	admin := r.Group("/internal")
 	funcs := r.Group("/funcs")
 	project := r.Group("/project")
 	database := r.Group("/database")

@@ -11,7 +11,7 @@ import {
 	FlowElement,
 	OnLoadFunc,
 	OnLoadParams,
-	removeElements,
+	removeElements
 } from 'react-flow-renderer'
 import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
@@ -162,7 +162,9 @@ function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	switch (fieldValue.type) {
 		case 'directValue':
 			if (_.isArray(fieldValue.value)) normalized = fieldValue.value
-			else normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
+			else if (_.isString(fieldValue.value))
+				normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
+			else normalized = mapToUiTaskBuilder(fieldValue.value.steps)
 			break
 		case 'refrenced':
 			normalized = {
@@ -187,9 +189,6 @@ function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 				const args = fn?.args?.map(argToInputOrSelect)
 				normalized = { fn: fn?.function, args }
 			}
-			break
-		case 'taskBuilder':
-			normalized = mapToUiTaskBuilder(fieldValue.steps)
 			break
 		case 'customOutputs':
 			normalized = fieldValue.outputs.map((output) => ({ value: output }))
