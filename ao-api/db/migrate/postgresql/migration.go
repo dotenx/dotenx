@@ -171,6 +171,10 @@ var migrations = []struct {
 		name: "add-column-user-groups-to-pipelines-table",
 		stmt: addColumnUserGroupsToPipelinesTable,
 	},
+	{
+		name: "create-table-ui-pages",
+		stmt: createTableUIPages,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -509,4 +513,15 @@ ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
 var addColumnUserGroupsToPipelinesTable = `
 ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS user_groups VARCHAR [] NOT NULL DEFAULT '{}';
+`
+
+var createTableUIPages = `
+CREATE TABLE IF NOT EXISTS ui_pages (
+name       									varchar(64) NOT NULL,
+account_id  								varchar(64) NOT NULL,
+project_tag									varchar(32) NOT NULL,
+content        							JSONB NOT NULL,
+status											varchar(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
+UNIQUE (account_id, name, project_tag)
+)
 `
