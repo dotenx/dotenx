@@ -13,6 +13,10 @@ type NotifierService interface {
 type NotifierServiceImpl struct {
 }
 
+func NewNotifierService() NotifierService {
+	return &NotifierServiceImpl{}
+}
+
 func (ns *NotifierServiceImpl) SendWelcomeEmail(username string, userEmail string) error {
 	email := mail.NewV3Mail()
 	from := mail.NewEmail("dotenx", "support@dotenx.com")

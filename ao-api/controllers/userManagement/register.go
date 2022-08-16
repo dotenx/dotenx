@@ -49,7 +49,7 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 			})
 			return
 		}
-
-		ctx.Status(http.StatusOK)
+		err = umc.NotifyService.SendWelcomeEmail(userInfo.FullName, userInfo.Email)
+		ctx.JSON(http.StatusOK, gin.H{"welcome-message": err == nil})
 	}
 }
