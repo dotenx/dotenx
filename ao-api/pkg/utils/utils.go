@@ -310,6 +310,7 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 	keyIndex := -2
 	pureIndex := ""
 	if strings.Contains(key, "[") && strings.Contains(key, "]") {
+
 		indexes := strings.Split(key, "[")
 		pureIndex = indexes[0]
 		tempIndex := strings.ReplaceAll(indexes[1], "]", "")
@@ -326,11 +327,14 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 	var data map[string]interface{}
 	err := json.Unmarshal(jsonBytes, &data)
 	if err != nil {
-		log.Println("tsssssssssss")
 		return nil, err
 	}
 	newValue, ok := data[pureIndex]
 	if !ok {
+		log.Println("#######################")
+		log.Println(data)
+		log.Println(pureIndex)
+		log.Println("#######################")
 		return nil, errors.New("key not found")
 	}
 	if index+1 >= len(keys) {

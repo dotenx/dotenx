@@ -145,7 +145,7 @@ func transferInitialDataToWrightFormat(input map[string]interface{}) (initialDat
 			tasksDatas := make(map[string]interface{})
 			for taskName, taskBody := range interactionDataMap {
 				newInteractionDataForTask := make(map[string]interface{})
-				newInteractionDataForTask["inp0"] = taskBody
+				newInteractionDataForTask["0"] = taskBody
 				tasksDatas[taskName] = newInteractionDataForTask
 			}
 			initialData[config.Configs.App.InteractionBodyKey] = tasksDatas

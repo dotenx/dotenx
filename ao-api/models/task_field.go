@@ -19,3 +19,10 @@ const (
 	JsonFieldType        = "json"        // value is json and each value of the json is a field
 	JsonArrayFieldType   = "json_array"  // value is json array and each value of the json could be array
 )
+
+const (
+	ForeachSourceType       = "foreach"
+	GetAllSourceType        = "getAll"
+	SpecificIndexSourceType = "specificIndex"
+	FullObjectSourceType    = "fullObject"
+)

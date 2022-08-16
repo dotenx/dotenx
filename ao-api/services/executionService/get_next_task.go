@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -128,11 +129,17 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("###################################################### return value map:")
+	fmt.Println(returnValuesMap)
+	fmt.Println("######################################################")
 	//  Cartesian product of returnVlauesMap sources
 	sourceDataArr, err := getSourceDataArray(returnValuesMap)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("###################################################### source data arr")
+	fmt.Println(sourceDataArr)
+	fmt.Println("######################################################")
 	// for each source we need a task body instance
 	for i, currentSourceData := range sourceDataArr {
 		inputIndex := strconv.Itoa(i)
