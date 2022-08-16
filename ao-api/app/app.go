@@ -19,6 +19,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
+	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/oauth"
@@ -34,6 +35,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
+	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
@@ -45,6 +47,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/dotenx/dotenx/ao-api/stores/uibuilderStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 	"github.com/dotenx/goth"
 	"github.com/dotenx/goth/gothic"
@@ -119,7 +122,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.Use(middlewares.CORSMiddleware(config.Configs.App.AllowedOrigins))
 	healthCheckController := health.HealthCheckController{}
 	r.GET("/health", healthCheckController.GetStatus())
-	// Routes
+	// Stores
 	pipelineStore := pipelineStore.New(db)
 	IntegrationStore := integrationStore.New(db)
 	TriggerStore := triggerStore.New(db)
@@ -130,10 +133,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	DatabaseStore := databaseStore.New(db)
 	UserManagementStore := userManagementStore.New()
 	objectstoreStore := objectstoreStore.New(db)
+	uibuilderStore := uibuilderStore.New(db)
 
+	// Services
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
-
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predifinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
@@ -143,7 +147,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
 	objectstoreService := objectstoreService.NewObjectstoreService(objectstoreStore)
+	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
 
+	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
@@ -157,7 +163,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
 	profileController := profile.ProfileController{}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
+	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService}
 
+	// Routes
 	// endpoints with runner token
 	r.POST("/execution/id/:id/next", executionController.GetNextTask())
 	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
@@ -192,7 +200,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// Routes
 	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
@@ -207,6 +214,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profile := r.Group("/profile")
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
+	uibuilder := r.Group("/uibuilder")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -311,7 +319,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
-	// database userGroups
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
 	// user group management router (with authentication)
@@ -328,6 +335,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstore.GET("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.GetFile())
 	public.GET("/project/:project_tag/file/:file_name", objectstoreController.GetPublicFile())
 
+	// uibuilder router
+	uibuilder.POST("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.UpsertPage())
+	uibuilder.DELETE("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.DeletePage())
+	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
+	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
+
+	// profile router
 	profile.GET("", profileController.GetProfile())
 
 	go TriggerServic.StartChecking(IntegrationStore)
