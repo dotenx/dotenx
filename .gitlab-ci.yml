@@ -86,19 +86,21 @@ build runner:
       - "runner/**/*"
 
 
-build ui:
+build ui: &build_ui
   image: node:16.15.1-slim
   stage: build
   services:
     - docker:stable-dind
   variables:
     environment: prod
+    folder: ui
+    build_dest: build
   script:
-    - cd ui
+    - cd ${folder}
     - cp .env.${environment} .env.production
     - npm install
     - CI='' npm run build
-    - tar -czvf ${environment}_build.tar.gz ./build
+    - tar -czvf ${environment}_build.tar.gz ./${build_dest}
     - mv ${environment}_build.tar.gz ../${environment}_build.tar.gz
   except:
     - schedules
@@ -110,6 +112,20 @@ build ui:
     #   - master
     changes:
       - "ui/**/*"
+
+build ui builder:
+  <<: *build_ui
+  variables:
+    environment: prod
+    folder: ui-builder
+    build_dest: dist
+  only:
+    # refs:
+    #   - master
+    changes:
+      - "ui-builder/**/*"
+      - ".gitlab-ci.yml"
+
 
 
 deploy api: &deploy
@@ -153,7 +169,6 @@ deploy api: &deploy
     # refs:
     #   - master
     changes:
-      - ".gitlab-ci.yml"
       - "ao-api/**/*" 
 
 deploy scheduler:
@@ -201,12 +216,11 @@ deploy runner:
     # refs:
     #   - master
     changes:
-      - ".gitlab-ci.yml"
       - "runner/**/*" 
 
   
 
-deploy ui:
+deploy ui: &deploy_ui
   image: utopiops/devops:assume-role-12
   stage: deploy
   variables:
@@ -217,13 +231,14 @@ deploy ui:
     BUCKET: app.dotenx.com
     environment: prod
     DISTRIBUTION_ID: EXE3WNBU24B4E
+    build_dest: build
   environment:
     name: production-ui
     url: https://app.dotenx.com
   script:
-    - mkdir build
+    - mkdir ${build_dest}
     - tar -xzvf ${environment}_build.tar.gz
-    - cd ./build
+    - cd ./${build_dest}
     - aws s3 sync --delete --acl public-read . s3://${BUCKET}
     - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/index.html"
   except:
@@ -233,3 +248,24 @@ deploy ui:
     #   - master
     changes:
       - "ui/**/*" 
+
+deploy ui builder:
+  <<: *deploy_ui
+  variables:
+    CORE_USERNAME: ${DEV_CORE_USERNAME}
+    CORE_PASSWORD: ${DEV_CORE_PASSWORD}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    BUCKET: ui.dotenx.com
+    environment: prod
+    DISTRIBUTION_ID: E10STPNB69BH30
+    build_dest: dist
+  environment:
+    name: production-ui-builder
+    url: https://ui.dotenx.com
+  only:
+    # refs:
+    #   - master
+    changes:
+      - "ui-builder/**/*"
+      - ".gitlab-ci.yml"
