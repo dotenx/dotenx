@@ -5,6 +5,7 @@ export const ADMIN_API_URL = process.env.REACT_APP_ADMIN_API_URL
 export const ADMIN_URL = 'https://admin.dotenx.com'
 export const PUBLIC_VERSION = versions.public
 export const PRIVATE_VERSION = versions.private
+export const UI_BUILDER_ADDRESS = process.env.REACT_APP_UI_BUILDER_ADDRESS
 
 export const columnTypeOptions = [
 	{ label: 'Yes/No', value: 'yes_no' },

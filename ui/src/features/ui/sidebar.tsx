@@ -1,13 +1,14 @@
 import { memo, ReactNode } from 'react'
 import {
 	BsBricks,
+	BsFileEarmarkPdf,
 	BsFillCalendar3WeekFill,
 	BsFillDiagram3Fill,
+	BsFillGrid1X2Fill,
 	BsFillXDiamondFill,
 	BsHddNetworkFill,
 	BsTable,
 	BsWindowSidebar,
-	BsFileEarmarkPdf,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'
@@ -15,7 +16,13 @@ import { useMutation } from 'react-query'
 import { useMatch, useParams } from 'react-router-dom'
 import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
-import { ADMIN_URL, IS_LOCAL, PRIVATE_VERSION, PUBLIC_VERSION } from '../../constants'
+import {
+	ADMIN_URL,
+	IS_LOCAL,
+	PRIVATE_VERSION,
+	PUBLIC_VERSION,
+	UI_BUILDER_ADDRESS,
+} from '../../constants'
 import { NavItem } from './nav-item'
 
 const studioLinks = [
@@ -76,12 +83,12 @@ export const Sidebar = memo(() => {
 						className="flex items-center gap-2 px-2.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
 						href="https://admin.dotenx.com/projects"
 					>
-						<div className="w-0 transition-all scale-0 hidden group-hover:inline group-hover:w-6 group-hover:scale-100">
+						<div className="hidden w-0 transition-all scale-0 group-hover:inline group-hover:w-6 group-hover:scale-100">
 							<IoArrowBack />
 						</div>
 						<div>
 							<span className="text-center capitalize ">{projectName[0]}</span>
-							<span className="transition hidden group-hover:inline truncate ">
+							<span className="hidden truncate transition group-hover:inline ">
 								{projectName.substring(1)}
 							</span>
 						</div>
@@ -91,9 +98,28 @@ export const Sidebar = memo(() => {
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
 
-				{!IS_LOCAL && <Logout />}
+				<div className="space-y-2">
+					<a
+						href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
+						target="_blank"
+						rel="noreferrer"
+						className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+					>
+						<div className="w-1 h-8 transition rounded-sm shrink-0" />
+						<div className="flex items-center gap-3 grow">
+							<span className="text-xl">
+								<BsFillGrid1X2Fill />
+							</span>
+							<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+								UI Builder
+							</span>
+						</div>
+					</a>
+					{IS_LOCAL && <Logout />}
+				</div>
 			</div>
-			<div className="pt-4 text-[10px] text-center">
+
+			<div className="pt-4 text-[10px] text-center opacity-0 group-hover:opacity-100 transition-opacity">
 				<span title="Public Version">v{PUBLIC_VERSION}</span>
 				{PRIVATE_VERSION && (
 					<>
@@ -116,7 +142,7 @@ type SidebarLinksProps = {
 
 function SidebarLinks({ links }: SidebarLinksProps) {
 	return (
-		<div className="flex flex-col gap-6 mt-16">
+		<div className="flex flex-col gap-2 mt-16">
 			{links.map((item) => (
 				<NavItem key={item.label} to={item.to}>
 					<span className="text-xl">{item.icon}</span>
@@ -136,7 +162,7 @@ function Logout() {
 
 	return (
 		<button
-			className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+			className="flex items-center justify-between w-full h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
 			onClick={() => logoutMutation.mutate()}
 		>
 			<div className="w-1 h-8 transition rounded-sm shrink-0" />
