@@ -29,6 +29,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/notifyService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
@@ -160,7 +161,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
-	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
+	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService, NotifyService: notifyService.NewNotifierService()}
 	profileController := profile.ProfileController{}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService}

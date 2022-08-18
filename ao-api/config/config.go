@@ -73,6 +73,7 @@ type (
 		AwsRegion            string `envconfig:"AOA_AWS_REGION"`
 		CodeChallenge        string `envconfig:"AOA_CODE_CHALLENGE"`
 		EbayNotifToken       string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
+		SendGridToken        string `envconfig:"AOA_SEND_GRID_TOKEN"`
 	}
 
 	Upload struct {
