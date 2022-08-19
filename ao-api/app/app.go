@@ -29,6 +29,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/notifyService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
@@ -160,10 +161,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	adminController := admin.AdminController{}
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
-	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService}
+	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService, NotifyService: notifyService.NewNotifierService()}
 	profileController := profile.ProfileController{}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
-	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService}
+	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 
 	// Routes
 	// endpoints with runner token
@@ -194,6 +195,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	public := r.Group("/public")
 	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 
+	// this is a mock admin endpoints for test locally
+	admin := r.Group("/internal")
+
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware(httpHelper))
 	} else {
@@ -207,7 +211,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	execution := r.Group("/execution")
 	integration := r.Group("/integration")
 	trigger := r.Group("/trigger")
-	admin := r.Group("/internal")
 	funcs := r.Group("/funcs")
 	project := r.Group("/project")
 	database := r.Group("/database")
@@ -307,6 +310,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
+	project.POST("/:project_tag/domain", projectController.SetProjectExternalDomain())
+	project.POST("/:project_tag/domain/verify", projectController.VerifyExternalDomain())
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
@@ -340,6 +345,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.DELETE("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.DeletePage())
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
+	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
 
 	// profile router
 	profile.GET("", profileController.GetProfile())

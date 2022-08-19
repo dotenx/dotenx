@@ -16,6 +16,9 @@ type UIbuilderService interface {
 	DeletePage(accountId, projectTag, pageName string) error
 	ListPages(accountId, projectTag string) ([]string, error)
 	GetPage(accountId, projectTag, pageName string) (models.UIPage, error)
+	SetPageStatus(accountId, projectTag, pageName, status string) error
+	GetUiInfrastructure(accountId, projectTag string) (models.UiInfrastructure, error)
+	UpsertUiInfrastructure(uiInfra models.UiInfrastructure) error
 }
 
 type uibuilderService struct {

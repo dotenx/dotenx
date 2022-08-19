@@ -1,6 +1,6 @@
 import { clsx } from '@mantine/core'
 import { useCanvasStore } from './canvas-store'
-import { renderComponents } from './component-renderer'
+import { RenderComponents } from './component-renderer'
 import { Droppable, DroppableMode } from './droppable'
 import { useSelectionStore } from './selection-store'
 import { useViewportStore } from './viewport-store'
@@ -24,7 +24,7 @@ export function Canvas() {
 			id={ROOT_ID}
 			onClick={deselectComponent}
 		>
-			{renderComponents(components)}
+			<RenderComponents components={components} />
 		</Droppable>
 	)
 }

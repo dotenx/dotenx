@@ -59,7 +59,7 @@ export interface DataSource {
 	url: string
 }
 
-interface Property {
+export interface Property {
 	kind: PropertyKind
 	path: string
 }

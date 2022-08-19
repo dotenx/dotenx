@@ -81,11 +81,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			continue
 		}
 
-		if statusCode >= http.StatusOK && statusCode <= 299 {
-			var res interface{}
-			json.Unmarshal(out, &res)
-			resultData[index] = res
-		}
+		fmt.Println("Status code:", statusCode)
+		// if statusCode >= http.StatusOK && statusCode <= 299 {
+		var res interface{}
+		json.Unmarshal(out, &res)
+		resultData[index] = res
+		// }
 	}
 
 	resp.ReturnValue = resultData

@@ -24,6 +24,7 @@ import {
 	Component,
 	ComponentEvent,
 	EventKind,
+	findComponent,
 	getStateNames,
 	useCanvasStore,
 } from './canvas-store'
@@ -31,6 +32,7 @@ import { DataSourceForm } from './data-source-form'
 import {
 	DataSource,
 	findPropertyPaths,
+	JsonArray,
 	PropertyKind,
 	useDataSourceStore,
 } from './data-source-store'
@@ -73,6 +75,16 @@ export function DataEditor({ component }: { component: Component }) {
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
 	const repeatedProperties = findPropertyPaths(repeatedSample)
 
+	const repeatedParent = findRepeatedParent(component, components)
+	let passedProperties: { kind: PropertyKind; name: string }[] = []
+	if (repeatedParent?.repeatFrom) {
+		const parentState = pageStates[repeatedParent.repeatFrom] as JsonArray
+		passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
+			kind: property.kind,
+			name: `${repeatedParent.repeatFrom}${property.path}`,
+		}))
+	}
+
 	const states = [
 		...getStateNames(components).map((stateName) => ({
 			kind: PropertyKind.Unknown,
@@ -86,10 +98,13 @@ export function DataEditor({ component }: { component: Component }) {
 				}))
 			)
 			.flat(),
-		...repeatedProperties.map((property) => ({
-			kind: property.kind,
-			name: `${component.repeatFrom}${property.path}`,
-		})),
+		...(component.repeatFrom
+			? repeatedProperties.map((property) => ({
+					kind: property.kind,
+					name: `${component.repeatFrom}${property.path}`,
+			  }))
+			: []),
+		...passedProperties,
 	]
 
 	const events = component.events.map((event) => (
@@ -138,8 +153,9 @@ export function DataEditor({ component }: { component: Component }) {
 						.filter((state) => state.kind === PropertyKind.Array)
 						.map((state) => state.name)}
 					className="grow"
-					value={component.repeatFrom}
+					value={component.repeatFrom ?? ''}
 					onChange={(value) => editRepeatFrom(component.id, value ?? '')}
+					clearable
 				/>
 			</div>
 
@@ -150,6 +166,13 @@ export function DataEditor({ component }: { component: Component }) {
 			</Button>
 		</div>
 	)
+}
+
+const findRepeatedParent = (component: Component, components: Component[]): Component | null => {
+	const parent = findComponent(component.parentId, components)
+	if (!parent) return null
+	if (parent.repeatFrom) return parent
+	return findRepeatedParent(parent, components)
 }
 
 function DataSourceItem({ dataSource }: { dataSource: DataSource }) {

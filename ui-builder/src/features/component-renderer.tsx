@@ -2,6 +2,7 @@ import { clsx, Image, TypographyStylesProvider } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useMemo, useState } from 'react'
+import { withInsert } from '../utils'
 import {
 	ActionKind,
 	BindingKind,
@@ -24,61 +25,63 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
-import { AnyJson } from './data-source-store'
+import { AnyJson, JsonArray } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
 import { Droppable, DroppableMode } from './droppable'
 import { usePageStates } from './page-states'
 import { useSelectionStore } from './selection-store'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
-export const renderComponents = (components: Component[]) => {
-	return components.map((component) => (
-		<ComponentWrapper key={component.id} component={component}>
-			<ComponentShaper component={component} />
-		</ComponentWrapper>
-	))
+export function RenderComponents({
+	components,
+	index,
+}: {
+	components: Component[]
+	index?: number
+}) {
+	const states = usePageStates((store) => store.states)
+
+	return (
+		<>
+			{components.map((component) => {
+				let repeated = null
+				if (component.repeatFrom) {
+					const repeatedState = states[component.repeatFrom] as JsonArray
+					repeated = repeatedState.map((_, index) => (
+						<ComponentShaper key={index} component={component} index={index} />
+					))
+				}
+
+				return (
+					<ComponentWrapper key={component.id} component={component}>
+						{repeated ? (
+							repeated
+						) : (
+							<ComponentShaper component={component} index={index} />
+						)}
+					</ComponentWrapper>
+				)
+			})}
+		</>
+	)
 }
 
-export function TextRenderer({ component }: { component: TextComponent }) {
+export function TextRenderer({ component, index }: { component: TextComponent; index?: number }) {
 	const states = usePageStates((store) => store.states)
-	const repeatedState = component.repeatFrom ? states[component.repeatFrom] : null
 	const stateText =
 		component.bindings
 			.filter((binding) => binding.kind === BindingKind.Text)
 			.map((binding) => {
-				const path = binding.fromStateName.split(' - ')
+				const path =
+					index === undefined
+						? binding.fromStateName.split(' - ')
+						: withInsert(binding.fromStateName.split(' - '), 1, index.toString())
 				const value = _.get(states, path) as AnyJson
 				return value
 			})
 			.filter((text) => !!text)[0] ?? ''
 	const viewport = useViewportStore((store) => store.device)
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
-
-	if (_.isArray(repeatedState)) {
-		const fromStateName =
-			component.bindings.filter((binding) => binding.kind === BindingKind.Text)[0]
-				?.fromStateName ?? ''
-		const path = _.replace(fromStateName, component.repeatFrom ?? '', '')
-			.split(' - ')
-			.filter((p) => !!p)
-		console.log(path)
-		return (
-			<>
-				{repeatedState.map((state, index) => {
-					const value = _.get(state, path) as AnyJson
-					return (
-						<div
-							key={index}
-							className="overflow-auto"
-							style={combineStyles(viewport, component.data.style)}
-						>
-							<TypographyStylesProvider>{value?.toString()}</TypographyStylesProvider>
-						</div>
-					)
-				})}
-			</>
-		)
-	}
 
 	return (
 		<div className="overflow-auto" style={combineStyles(viewport, component.data.style)}>
@@ -89,17 +92,23 @@ export function TextRenderer({ component }: { component: TextComponent }) {
 	)
 }
 
-export function BoxRenderer({ component }: { component: BoxComponent }) {
+export function BoxRenderer({ component, index }: { component: BoxComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
 		<div className="p-10" style={combineStyles(viewport, component.data.style)}>
-			{renderComponents(component.components)}
+			<RenderComponents components={component.components} index={index} />
 		</div>
 	)
 }
 
-export function ButtonRenderer({ component }: { component: ButtonComponent }) {
+export function ButtonRenderer({
+	component,
+	index,
+}: {
+	component: ButtonComponent
+	index?: number
+}) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -107,7 +116,13 @@ export function ButtonRenderer({ component }: { component: ButtonComponent }) {
 	)
 }
 
-export function ColumnsRenderer({ component }: { component: ColumnsComponent }) {
+export function ColumnsRenderer({
+	component,
+	index,
+}: {
+	component: ColumnsComponent
+	index?: number
+}) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -121,7 +136,7 @@ export function ColumnsRenderer({ component }: { component: ColumnsComponent }) 
 					)}
 				>
 					<ComponentWrapper component={component}>
-						<ComponentShaper component={component} />
+						<ComponentShaper component={component} index={index} />
 					</ComponentWrapper>
 				</div>
 			))}
@@ -129,7 +144,7 @@ export function ColumnsRenderer({ component }: { component: ColumnsComponent }) 
 	)
 }
 
-export function ImageRenderer({ component }: { component: ImageComponent }) {
+export function ImageRenderer({ component, index }: { component: ImageComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = useMemo(
 		() => (component.data.image ? URL.createObjectURL(component.data.image) : undefined),
@@ -147,7 +162,7 @@ export function ImageRenderer({ component }: { component: ImageComponent }) {
 	)
 }
 
-export function InputRenderer({ component }: { component: InputComponent }) {
+export function InputRenderer({ component, index }: { component: InputComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<input
@@ -163,7 +178,13 @@ export function InputRenderer({ component }: { component: InputComponent }) {
 	)
 }
 
-export function SelectRenderer({ component }: { component: SelectComponent }) {
+export function SelectRenderer({
+	component,
+	index,
+}: {
+	component: SelectComponent
+	index?: number
+}) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<select
@@ -181,7 +202,13 @@ export function SelectRenderer({ component }: { component: SelectComponent }) {
 	)
 }
 
-export function TextareaRenderer({ component }: { component: TextareaComponent }) {
+export function TextareaRenderer({
+	component,
+	index,
+}: {
+	component: TextareaComponent
+	index?: number
+}) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<textarea
@@ -192,7 +219,13 @@ export function TextareaRenderer({ component }: { component: TextareaComponent }
 	)
 }
 
-export function SubmitButtonRenderer({ component }: { component: SubmitButtonComponent }) {
+export function SubmitButtonRenderer({
+	component,
+	index,
+}: {
+	component: SubmitButtonComponent
+	index?: number
+}) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<button type="submit" style={combineStyles(viewport, component.data.style)}>
@@ -201,40 +234,40 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 	)
 }
 
-function ComponentShaper({ component }: { component: Component }) {
+function ComponentShaper({ component, index }: { component: Component; index?: number }) {
 	switch (component.kind) {
 		case ComponentKind.Text:
-			return <TextRenderer component={component} />
+			return <TextRenderer component={component} index={index} />
 		case ComponentKind.Box:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<BoxRenderer component={component} />
+					<BoxRenderer component={component} index={index} />
 				</Droppable>
 			)
 		case ComponentKind.Button:
-			return <ButtonRenderer component={component} />
+			return <ButtonRenderer component={component} index={index} />
 		case ComponentKind.Columns:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<ColumnsRenderer component={component} />
+					<ColumnsRenderer component={component} index={index} />
 				</Droppable>
 			)
 		case ComponentKind.Image:
-			return <ImageRenderer component={component} />
+			return <ImageRenderer component={component} index={index} />
 		case ComponentKind.Input:
-			return <InputRenderer component={component} />
+			return <InputRenderer component={component} index={index} />
 		case ComponentKind.Select:
-			return <SelectRenderer component={component} />
+			return <SelectRenderer component={component} index={index} />
 		case ComponentKind.Textarea:
-			return <TextareaRenderer component={component} />
+			return <TextareaRenderer component={component} index={index} />
 		case ComponentKind.SubmitButton:
-			return <SubmitButtonRenderer component={component} />
+			return <SubmitButtonRenderer component={component} index={index} />
 		default:
 			return null
 	}

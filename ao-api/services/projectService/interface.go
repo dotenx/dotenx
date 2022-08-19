@@ -17,6 +17,8 @@ type ProjectService interface {
 	ListProjects(accountId string) ([]models.Project, error)
 	GetProject(accountId string, projectName string) (models.Project, error)
 	GetProjectByTag(tag string) (models.Project, error)
+	GetProjectDomain(accountId, projectTag string) (models.ProjectDomain, error)
+	UpsertProjectDomain(projectDomain models.ProjectDomain) error
 }
 
 type projectService struct {
