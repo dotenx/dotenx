@@ -164,7 +164,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService, NotifyService: notifyService.NewNotifierService()}
 	profileController := profile.ProfileController{}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
-	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService}
+	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 
 	// Routes
 	// endpoints with runner token
@@ -310,6 +310,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
+	project.POST("/:project_tag/domain", projectController.SetProjectExternalDomain())
+	project.POST("/:project_tag/domain/verify", projectController.VerifyExternalDomain())
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
@@ -343,6 +345,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.DELETE("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.DeletePage())
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
+	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
 
 	// profile router
 	profile.GET("", profileController.GetProfile())

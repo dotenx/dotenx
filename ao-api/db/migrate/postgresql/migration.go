@@ -175,6 +175,14 @@ var migrations = []struct {
 		name: "create-table-ui-pages",
 		stmt: createTableUIPages,
 	},
+	{
+		name: "create-table-project-domain",
+		stmt: createTableProjectDomain,
+	},
+	{
+		name: "create-table-project-ui-infrastructure",
+		stmt: createTableProjectUIInfrastructure,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -523,5 +531,29 @@ project_tag									varchar(32) NOT NULL,
 content        							JSONB NOT NULL,
 status											varchar(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
 UNIQUE (account_id, name, project_tag)
+)
+`
+
+var createTableProjectDomain = `
+CREATE TABLE IF NOT EXISTS project_domain (
+internal_domain       			varchar(64) NOT NULL,
+external_domain       			varchar(64) NOT NULL,
+hosted_zone_id							varchar(64),
+ns_records									VARCHAR [] DEFAULT array[]::varchar[] NOT NULL,
+tls_arn											varchar DEFAULT '',
+account_id  								varchar(64) NOT NULL,
+project_tag									varchar(32) NOT NULL,
+UNIQUE (account_id, project_tag)
+)
+`
+
+var createTableProjectUIInfrastructure = `
+CREATE TABLE IF NOT EXISTS project_ui_infrastructure (
+account_id  								varchar(64) NOT NULL,
+project_tag									varchar(32) NOT NULL,
+cdn_arn											varchar(64) DEFAULT '',
+cdn_domain									varchar(64) DEFAULT '',
+s3_bucket										varchar(64) DEFAULT '',
+UNIQUE (account_id, project_tag)
 )
 `
