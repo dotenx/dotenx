@@ -60,12 +60,12 @@ const findInnerPropertyPaths = (object: AnyJson, basePath: string): Property[] =
 export interface DataSource {
 	id: string
 	stateName: string
-	properties: Property[]
 	url: string
 	method: HttpMethod
 	headers: string
 	body: string
 	fetchOnload: boolean
+	properties: Property[]
 }
 
 export enum HttpMethod {

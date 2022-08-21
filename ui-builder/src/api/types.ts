@@ -29,7 +29,7 @@ export type CreatePageRequest = PageDetails & { projectTag: string }
 interface PageDetails {
 	name: string
 	content: {
-		components: Component[]
+		layout: Component[]
 		dataSources: DataSource[]
 	}
 }

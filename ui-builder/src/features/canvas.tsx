@@ -25,7 +25,7 @@ export function Canvas() {
 				id={ROOT_ID}
 				onClick={deselectComponent}
 			>
-				<RenderComponents components={components} />
+				<RenderComponents components={components} state={{}} />
 			</Droppable>
 		</div>
 	)

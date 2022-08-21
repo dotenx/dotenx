@@ -1,4 +1,7 @@
 import axios from 'axios'
+import _ from 'lodash'
+import { ActionKind, Component } from '../features/canvas-store'
+import { safeParseToJson } from '../utils'
 import {
 	CreatePageRequest,
 	GetPageDetailsRequest,
@@ -35,5 +38,34 @@ export const getPageDetails = ({ projectTag, name }: GetPageDetailsRequest) => {
 }
 
 export const createPage = ({ projectTag, name, content }: CreatePageRequest) => {
-	return api.post(`/uibuilder/project/${projectTag}/page`, { name, content })
+	const dataSources = content.dataSources.map((source) =>
+		_.omit(
+			{
+				...source,
+				body: safeParseToJson(source.body),
+				headers: safeParseToJson(source.headers),
+			},
+			['properties']
+		)
+	)
+	const components = normalize(content.layout)
+
+	return api.post(`/uibuilder/project/${projectTag}/page`, {
+		name,
+		content: { dataSources, layout: components },
+	})
+}
+
+function normalize(components: Component[]): any[] {
+	return components.map((component) => ({
+		...component,
+		components: normalize(component.components),
+		events: component.events.map((event) =>
+			event.actions.map((action) =>
+				action.kind === ActionKind.Fetch
+					? { ...action, body: safeParseToJson(action.body) }
+					: action
+			)
+		),
+	}))
 }

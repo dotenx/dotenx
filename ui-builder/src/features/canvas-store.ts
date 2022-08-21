@@ -19,7 +19,7 @@ interface CanvasState {
 	addBinding: (componentId: string, binding: Binding) => void
 	editBinding: (componentId: string, binding: Binding) => void
 	removeBinding: (componentId: string, bindingId: string) => void
-	editRepeatFrom: (componentId: string, repeatFrom: string[]) => void
+	editRepeatFrom: (componentId: string, repeatFrom: RepeatFrom) => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
@@ -169,7 +169,7 @@ const addBinding = (componentId: string, binding: Binding, components: Component
 	return newComponents
 }
 
-const editRepeatFrom = (componentId: string, repeatFrom: string[], components: Component[]) => {
+const editRepeatFrom = (componentId: string, repeatFrom: RepeatFrom, components: Component[]) => {
 	const newComponents = _.cloneDeep(components)
 	const found = findComponent(componentId, newComponents)
 	if (found) found.repeatFrom = repeatFrom
@@ -376,6 +376,11 @@ export const componentKinds = [
 	ComponentKind.SubmitButton,
 ]
 
+export interface RepeatFrom {
+	name: string
+	iterator: string
+}
+
 interface BaseComponent {
 	id: string
 	parentId: string
@@ -384,7 +389,7 @@ interface BaseComponent {
 	data: ComponentData
 	events: ComponentEvent[]
 	bindings: Binding[]
-	repeatFrom?: string[]
+	repeatFrom: RepeatFrom
 }
 
 export interface TextComponent extends BaseComponent {
@@ -553,7 +558,7 @@ export interface SetStateAction extends BaseAction {
 
 export interface FetchAction extends BaseAction {
 	kind: ActionKind.Fetch
-	dataSourceId: string
+	dataSourceName: string
 	body: string
 	params: string
 }
@@ -577,7 +582,7 @@ export const actionKinds = [
 export interface Binding {
 	id: string
 	kind: BindingKind
-	fromStateName: string[]
+	fromStateName: string
 }
 
 export enum BindingKind {

@@ -28,7 +28,6 @@ export function TopBar() {
 				<Menu
 					opened={opened}
 					onChange={setOpened}
-					transition={'pop'}
 					width={260}
 					shadow="sm"
 					position="bottom-start"

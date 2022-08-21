@@ -3,7 +3,7 @@ import { useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useMemo, useState } from 'react'
-import { AnyJson, JsonArray, safeParseToHeaders, safeParseToJson, withInsert } from '../utils'
+import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import {
 	ActionKind,
 	BindingKind,
@@ -37,9 +37,11 @@ import { useViewportStore, ViewportDevice } from './viewport-store'
 export function RenderComponents({
 	components,
 	index,
+	state,
 }: {
 	components: Component[]
 	index?: number
+	state: JsonMap
 }) {
 	const states = usePageStates((store) => store.states)
 
@@ -47,10 +49,15 @@ export function RenderComponents({
 		<>
 			{components.map((component) => {
 				let repeated = null
-				if (component.repeatFrom) {
-					const repeatedState = (_.get(states, component.repeatFrom) as JsonArray) ?? []
-					repeated = repeatedState.map((_, index) => (
-						<ComponentShaper key={index} component={component} index={index} />
+				if (component.repeatFrom.name) {
+					const repeatedState =
+						(_.get(states, component.repeatFrom.name) as JsonArray) ?? []
+					repeated = repeatedState.map((itemState, index) => (
+						<ComponentShaper
+							key={index}
+							component={component}
+							state={{ ...state, [component.repeatFrom.iterator]: itemState }}
+						/>
 					))
 				}
 
@@ -59,7 +66,7 @@ export function RenderComponents({
 						{repeated ? (
 							repeated
 						) : (
-							<ComponentShaper component={component} index={index} />
+							<ComponentShaper component={component} index={index} state={state} />
 						)}
 					</ComponentWrapper>
 				)
@@ -68,19 +75,22 @@ export function RenderComponents({
 	)
 }
 
-export function TextRenderer({ component, index }: { component: TextComponent; index?: number }) {
+export function TextRenderer({
+	component,
+	state,
+}: {
+	component: TextComponent
+	index?: number
+	state: JsonMap
+}) {
+	console.log(state)
+
 	const states = usePageStates((store) => store.states)
+	const allStates = { ...states, ...state }
 	const stateText =
 		component.bindings
 			.filter((binding) => binding.kind === BindingKind.Text)
-			.map((binding) => {
-				const path =
-					index === undefined
-						? binding.fromStateName
-						: withInsert(binding.fromStateName, 1, index.toString())
-				const value = _.get(states, path) as AnyJson
-				return value
-			})
+			.map((binding) => _.get(allStates, binding.fromStateName))
 			.filter((text) => !!text)[0] ?? ''
 	const viewport = useViewportStore((store) => store.device)
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
@@ -94,23 +104,25 @@ export function TextRenderer({ component, index }: { component: TextComponent; i
 	)
 }
 
-export function BoxRenderer({ component, index }: { component: BoxComponent; index?: number }) {
+export function BoxRenderer({
+	component,
+	index,
+	state,
+}: {
+	component: BoxComponent
+	index?: number
+	state: JsonMap
+}) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
 		<div className="p-10" style={combineStyles(viewport, component.data.style)}>
-			<RenderComponents components={component.components} index={index} />
+			<RenderComponents components={component.components} index={index} state={state} />
 		</div>
 	)
 }
 
-export function ButtonRenderer({
-	component,
-	index,
-}: {
-	component: ButtonComponent
-	index?: number
-}) {
+export function ButtonRenderer({ component }: { component: ButtonComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -121,9 +133,11 @@ export function ButtonRenderer({
 export function ColumnsRenderer({
 	component,
 	index,
+	state,
 }: {
 	component: ColumnsComponent
 	index?: number
+	state: JsonMap
 }) {
 	const viewport = useViewportStore((store) => store.device)
 
@@ -138,7 +152,7 @@ export function ColumnsRenderer({
 					)}
 				>
 					<ComponentWrapper component={component}>
-						<ComponentShaper component={component} index={index} />
+						<ComponentShaper component={component} index={index} state={state} />
 					</ComponentWrapper>
 				</div>
 			))}
@@ -146,7 +160,7 @@ export function ColumnsRenderer({
 	)
 }
 
-export function ImageRenderer({ component, index }: { component: ImageComponent; index?: number }) {
+export function ImageRenderer({ component }: { component: ImageComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = useMemo(
 		() => (component.data.image ? URL.createObjectURL(component.data.image) : undefined),
@@ -164,7 +178,7 @@ export function ImageRenderer({ component, index }: { component: ImageComponent;
 	)
 }
 
-export function InputRenderer({ component, index }: { component: InputComponent; index?: number }) {
+export function InputRenderer({ component }: { component: InputComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<input
@@ -180,13 +194,7 @@ export function InputRenderer({ component, index }: { component: InputComponent;
 	)
 }
 
-export function SelectRenderer({
-	component,
-	index,
-}: {
-	component: SelectComponent
-	index?: number
-}) {
+export function SelectRenderer({ component }: { component: SelectComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<select
@@ -204,13 +212,7 @@ export function SelectRenderer({
 	)
 }
 
-export function TextareaRenderer({
-	component,
-	index,
-}: {
-	component: TextareaComponent
-	index?: number
-}) {
+export function TextareaRenderer({ component }: { component: TextareaComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<textarea
@@ -223,7 +225,6 @@ export function TextareaRenderer({
 
 export function SubmitButtonRenderer({
 	component,
-	index,
 }: {
 	component: SubmitButtonComponent
 	index?: number
@@ -236,17 +237,25 @@ export function SubmitButtonRenderer({
 	)
 }
 
-function ComponentShaper({ component, index }: { component: Component; index?: number }) {
+function ComponentShaper({
+	component,
+	index,
+	state,
+}: {
+	component: Component
+	index?: number
+	state: JsonMap
+}) {
 	switch (component.kind) {
 		case ComponentKind.Text:
-			return <TextRenderer component={component} index={index} />
+			return <TextRenderer component={component} index={index} state={state} />
 		case ComponentKind.Box:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<BoxRenderer component={component} index={index} />
+					<BoxRenderer component={component} index={index} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Button:
@@ -257,7 +266,7 @@ function ComponentShaper({ component, index }: { component: Component; index?: n
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<ColumnsRenderer component={component} index={index} />
+					<ColumnsRenderer component={component} index={index} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Image:
@@ -321,9 +330,11 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			.flatMap((event) => event.actions)
 			.filter((action): action is FetchAction => action.kind === ActionKind.Fetch)
 			.forEach((action) => {
-				const dataSource = dataSources.find((source) => source.id === action.dataSourceId)
+				const dataSource = dataSources.find(
+					(source) => source.stateName === action.dataSourceName
+				)
 				if (!dataSource)
-					return console.error(`Data source ${action.dataSourceId} not found`)
+					return console.error(`Data source ${action.dataSourceName} not found`)
 				axios.request({
 					method: dataSource.method,
 					url: dataSource.url,
