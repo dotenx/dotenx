@@ -22,6 +22,7 @@ import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
 import UserGroupsPage from '../../pages/user-groups'
+import DomainsPage from '../../pages/domains'
 import UserManagementPage from '../../pages/user-management'
 import { Layout } from '../ui'
 
@@ -50,6 +51,7 @@ const routes = [
 	},
 	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
 	{ path: '/builder/projects/:projectName/files', element: <Files /> },
+	{ path: '/builder/projects/:projectName/domains', element: <DomainsPage /> },
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },
