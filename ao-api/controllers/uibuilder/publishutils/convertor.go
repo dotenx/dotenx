@@ -29,9 +29,11 @@ var pageTemplate = `<!DOCTYPE html>
 	{{range .Head.Meta}}
 	<meta name="{{.Name}}" content="{{.Content}}">
 	{{end}}
+	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
+	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 	<link rel="stylesheet" href="./{{.Name}}.css">
 </head>
-<body>
+<body x-data>
 	{{.Body.Content}}
 	<script src="./{{.Name}}.js"></script>
 </body>
@@ -81,7 +83,7 @@ func convertToHTML(page map[string]interface{}) (renderedPage, renderedScripts, 
 		return "", "", "", err
 	}
 
-	scripts, err := functionStore.ConvertToHTML()
+	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}))
 	if err != nil {
 		return "", "", "", err
 	}

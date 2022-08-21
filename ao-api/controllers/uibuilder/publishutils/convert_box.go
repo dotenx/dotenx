@@ -12,7 +12,11 @@ type Box struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	Data       struct {
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Data struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -27,7 +31,7 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `<div id="{{.Id}}" class="dtx-{{.Id}}">{{.RenderedChildren}}</div>`
+const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}<div></div>`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -58,9 +62,14 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 	params := struct {
 		RenderedChildren string
 		Id               string
+		RepeatFrom       struct {
+			Name     string
+			Iterator string
+		}
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
+		RepeatFrom:       box.RepeatFrom,
 	}
 
 	var out bytes.Buffer

@@ -11,7 +11,11 @@ type Button struct {
 	kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	Data       struct {
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Data struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -21,7 +25,7 @@ type Button struct {
 	} `json:"data"`
 }
 
-const buttonTemplate = `<button id="{{.Id}}">{{.Data.Text}}</button>`
+const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

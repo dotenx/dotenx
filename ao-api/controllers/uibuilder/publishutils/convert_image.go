@@ -11,7 +11,11 @@ type Image struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	Data       struct {
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Data struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -24,7 +28,7 @@ type Image struct {
 	} `json:"data"`
 }
 
-const imageTemplate = `<img id="{{.Id}}" alt="{{.Data.AltText}}" src="{{.Data.Image.Path}}" />`
+const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" alt="{{.Data.AltText}}" x-bind:src="` + "`{{.Data.Image.Path}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertImage(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
