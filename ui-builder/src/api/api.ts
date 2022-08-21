@@ -10,6 +10,7 @@ import {
 	GetPagesResponse,
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
+	PublishPageRequest,
 } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -54,6 +55,10 @@ export const createPage = ({ projectTag, name, content }: CreatePageRequest) => 
 		name,
 		content: { dataSources, layout: components },
 	})
+}
+
+export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
+	return api.post(`/uibuilder/project/${projectTag}/page/${pageName}/publish`)
 }
 
 function normalize(components: Component[]): any[] {

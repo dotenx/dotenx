@@ -26,6 +26,11 @@ export type GetPageDetailsResponse = PageDetails
 
 export type CreatePageRequest = PageDetails & { projectTag: string }
 
+export type PublishPageRequest = {
+	projectTag: string
+	pageName: string
+}
+
 interface PageDetails {
 	name: string
 	content: {
