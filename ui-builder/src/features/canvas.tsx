@@ -13,18 +13,20 @@ export function Canvas() {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
-		<Droppable
-			data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
-			className={clsx(
-				'h-full p-px mx-auto transition-all',
-				viewport === 'desktop' && 'max-w-full',
-				viewport === 'tablet' && 'max-w-3xl',
-				viewport === 'mobile' && 'max-w-md'
-			)}
-			id={ROOT_ID}
-			onClick={deselectComponent}
-		>
-			<RenderComponents components={components} />
-		</Droppable>
+		<div className="h-full bg-gray-50 p-px">
+			<Droppable
+				data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
+				className={clsx(
+					'h-full mx-auto transition-all bg-white',
+					viewport === 'desktop' && 'max-w-full',
+					viewport === 'tablet' && 'max-w-3xl',
+					viewport === 'mobile' && 'max-w-md'
+				)}
+				id={ROOT_ID}
+				onClick={deselectComponent}
+			>
+				<RenderComponents components={components} />
+			</Droppable>
+		</div>
 	)
 }

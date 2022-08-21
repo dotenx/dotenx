@@ -1,17 +1,35 @@
-export enum QueryKey {
-    GetProject = 'get-project',
-    GetPages = 'get-pages',
-    GetPageDetails = 'get-page-details',
+import { Component } from '../features/canvas-store'
+import { DataSource } from '../features/data-source-store'
+
+export type GetProjectDetailsRequest = {
+	name: string
 }
 
-
-export interface GetPagesResponse {
-    name: string[]
+export type GetProjectDetailsResponse = {
+	name: string
+	description: string
+	tag: string
 }
 
-export type GetProjectResponse = Project & { tag: string }
+export type GetPagesRequest = {
+	projectTag: string
+}
 
-export interface Project {
-    name: string
-    description: string
+export type GetPagesResponse = string[] | null
+
+export type GetPageDetailsRequest = {
+	projectTag: string
+	name: string
+}
+
+export type GetPageDetailsResponse = PageDetails
+
+export type CreatePageRequest = PageDetails & { projectTag: string }
+
+interface PageDetails {
+	name: string
+	content: {
+		components: Component[]
+		dataSources: DataSource[]
+	}
 }
