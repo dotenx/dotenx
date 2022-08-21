@@ -31,6 +31,7 @@ export enum QueryKey {
 	GetProfile = 'get-profile',
 	GetUserGroups = 'get-user-groups',
 	GetUserGroup = 'get-user-group',
+	GetDomains = 'get-domains',
 }
 
 export enum TaskExecutionStatus {

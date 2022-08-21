@@ -9,6 +9,7 @@ import {
 	BsHddNetworkFill,
 	BsTable,
 	BsWindowSidebar,
+	BsGlobe2,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'
@@ -65,6 +66,11 @@ export const Sidebar = memo(() => {
 			to: `/builder/projects/${projectName}/files`,
 			label: 'Files',
 			icon: <BsFileEarmarkPdf />,
+		},
+		{
+			to: `/builder/projects/${projectName}/domains`,
+			label: 'Domains',
+			icon: <BsGlobe2 />,
 		},
 	]
 
