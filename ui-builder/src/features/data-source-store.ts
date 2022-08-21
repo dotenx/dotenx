@@ -1,9 +1,11 @@
 import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import { AnyJson } from '../utils'
 
 interface DataSourceState {
 	sources: DataSource[]
+	set: (sources: DataSource[]) => void
 	add: (source: DataSource) => void
 	edit: (id: string, source: DataSource) => void
 	remove: (id: string) => void
@@ -12,6 +14,11 @@ interface DataSourceState {
 export const useDataSourceStore = create<DataSourceState>()(
 	immer((set) => ({
 		sources: [],
+		set: (sources) => {
+			set((state) => {
+				state.sources = sources
+			})
+		},
 		add: (source: DataSource) => {
 			set((state) => {
 				state.sources.push(source)
@@ -21,9 +28,7 @@ export const useDataSourceStore = create<DataSourceState>()(
 			set((state) => {
 				const founded = state.sources.find((source) => source.id === id)
 				if (!founded) return console.error('data source not found')
-				founded.stateName = source.stateName
-				founded.properties = source.properties
-				founded.url = source.url
+				_.assign(founded, { ...source, id: founded.id })
 			})
 		},
 		remove: (id) => {
@@ -55,9 +60,29 @@ const findInnerPropertyPaths = (object: AnyJson, basePath: string): Property[] =
 export interface DataSource {
 	id: string
 	stateName: string
-	properties: Property[]
 	url: string
+	method: HttpMethod
+	headers: string
+	body: string
+	fetchOnload: boolean
+	properties: Property[]
 }
+
+export enum HttpMethod {
+	GET = 'GET',
+	POST = 'POST',
+	PUT = 'PUT',
+	PATCH = 'PATCH',
+	DELETE = 'DELETE',
+}
+
+export const httpMethods = [
+	HttpMethod.GET,
+	HttpMethod.POST,
+	HttpMethod.PUT,
+	HttpMethod.PATCH,
+	HttpMethod.DELETE,
+]
 
 export interface Property {
 	kind: PropertyKind
@@ -71,9 +96,3 @@ export enum PropertyKind {
 	Boolean = 'Boolean',
 	Unknown = 'Unknown',
 }
-
-export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
-export interface JsonMap {
-	[key: string]: AnyJson
-}
-export type JsonArray = AnyJson[]

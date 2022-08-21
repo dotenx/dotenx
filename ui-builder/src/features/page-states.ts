@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { AnyJson } from './data-source-store'
+import { AnyJson } from '../utils'
 
 interface PageStates {
 	states: States

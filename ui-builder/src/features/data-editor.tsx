@@ -1,8 +1,10 @@
 import {
+	ActionIcon,
 	Button,
 	CloseButton,
 	Code,
 	Divider,
+	JsonInput,
 	Menu,
 	NumberInput,
 	Select,
@@ -10,29 +12,33 @@ import {
 	Text,
 	TextInput,
 } from '@mantine/core'
-import { openModal } from '@mantine/modals'
+import { useForm } from '@mantine/form'
+import { closeAllModals, openModal } from '@mantine/modals'
 import Editor from '@monaco-editor/react'
 import _ from 'lodash'
 import { nanoid } from 'nanoid'
 import { useState } from 'react'
-import { TbPlus } from 'react-icons/tb'
+import { TbEdit, TbPlus } from 'react-icons/tb'
+import { JsonArray } from '../utils'
 import {
 	Action,
 	ActionKind,
+	actionKinds,
 	Binding,
 	BindingKind,
 	Component,
 	ComponentEvent,
 	EventKind,
+	FetchAction,
 	findComponent,
 	getStateNames,
+	RepeatFrom,
 	useCanvasStore,
 } from './canvas-store'
 import { DataSourceForm } from './data-source-form'
 import {
 	DataSource,
 	findPropertyPaths,
-	JsonArray,
 	PropertyKind,
 	useDataSourceStore,
 } from './data-source-store'
@@ -68,20 +74,26 @@ export function DataEditor({ component }: { component: Component }) {
 	}))
 
 	const handleAddDataSource = () =>
-		openModal({ children: <DataSourceForm />, title: 'New API Data Source' })
+		openModal({
+			children: <DataSourceForm mode="add" />,
+			title: 'New API Data Source',
+			size: 'xl',
+		})
 
 	const pageStates = usePageStates((store) => store.states)
-	const repeatedState = component.repeatFrom ? pageStates[component.repeatFrom] : null
+	const repeatedState = component.repeatFrom.name
+		? _.get(pageStates, component.repeatFrom.name)
+		: null
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
 	const repeatedProperties = findPropertyPaths(repeatedSample)
 
 	const repeatedParent = findRepeatedParent(component, components)
 	let passedProperties: { kind: PropertyKind; name: string }[] = []
-	if (repeatedParent?.repeatFrom) {
-		const parentState = pageStates[repeatedParent.repeatFrom] as JsonArray
+	if (repeatedParent && repeatedParent.repeatFrom.name) {
+		const parentState = _.get(pageStates, repeatedParent.repeatFrom.name) as JsonArray
 		passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
 			kind: property.kind,
-			name: `${repeatedParent.repeatFrom}${property.path}`,
+			name: `${repeatedParent.repeatFrom.iterator}${property.path}`,
 		}))
 	}
 
@@ -98,10 +110,10 @@ export function DataEditor({ component }: { component: Component }) {
 				}))
 			)
 			.flat(),
-		...(component.repeatFrom
+		...(component.repeatFrom.name
 			? repeatedProperties.map((property) => ({
 					kind: property.kind,
-					name: `${component.repeatFrom}${property.path}`,
+					name: `${component.repeatFrom.iterator}${property.path}`,
 			  }))
 			: []),
 		...passedProperties,
@@ -143,21 +155,14 @@ export function DataEditor({ component }: { component: Component }) {
 			<Button mt="md" leftIcon={<TbPlus />} size="xs" onClick={handleAddBinding}>
 				Binding
 			</Button>
-			<div className="flex items-center gap-2 mt-10">
-				<Text color="dimmed" size="xs" className="whitespace-nowrap">
-					Repeat for each
-				</Text>
-				<Select
-					size="xs"
-					data={states
-						.filter((state) => state.kind === PropertyKind.Array)
-						.map((state) => state.name)}
-					className="grow"
-					value={component.repeatFrom ?? ''}
-					onChange={(value) => editRepeatFrom(component.id, value ?? '')}
-					clearable
-				/>
-			</div>
+
+			<RepeatInput
+				states={states}
+				repeatFrom={component.repeatFrom}
+				onChange={(value) =>
+					editRepeatFrom(component.id, { name: value, iterator: `${value}Item` })
+				}
+			/>
 
 			<Divider label="API Data" mt="xl" mb="xs" />
 			<div className="space-y-4">{sources}</div>
@@ -168,10 +173,48 @@ export function DataEditor({ component }: { component: Component }) {
 	)
 }
 
+function RepeatInput({
+	repeatFrom,
+	onChange,
+	states,
+}: {
+	repeatFrom: RepeatFrom
+	onChange: (value: string) => void
+	states: { kind: PropertyKind; name: string }[]
+}) {
+	return (
+		<div>
+			<div className="flex items-center gap-2 mt-10">
+				<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+					Repeat for each
+				</Text>
+				<Select
+					size="xs"
+					data={states
+						.filter((state) => state.kind === PropertyKind.Array)
+						.map((state) => state.name)}
+					className="grow"
+					value={repeatFrom.name.split('.').join(' - ') ?? ''}
+					onChange={(value) => onChange(value?.split(' - ').join('.') ?? '')}
+					clearable
+				/>
+			</div>
+			{repeatFrom.iterator && (
+				<div className="flex items-center gap-2 mt-2">
+					<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+						as
+					</Text>
+					<Code>{repeatFrom.iterator}</Code>
+				</div>
+			)}
+		</div>
+	)
+}
+
 const findRepeatedParent = (component: Component, components: Component[]): Component | null => {
 	const parent = findComponent(component.parentId, components)
 	if (!parent) return null
-	if (parent.repeatFrom) return parent
+	if (parent.repeatFrom.name) return parent
 	return findRepeatedParent(parent, components)
 }
 
@@ -183,7 +226,21 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 
 	return (
 		<div className="space-y-2">
-			<CloseButton size="xs" ml="auto" onClick={() => remove(dataSource.id)} />
+			<div className="flex gap-1 justify-end">
+				<ActionIcon
+					size="xs"
+					onClick={() =>
+						openModal({
+							children: <DataSourceForm mode="edit" initialValues={dataSource} />,
+							title: 'Edit Data Source',
+							size: 'xl',
+						})
+					}
+				>
+					<TbEdit />
+				</ActionIcon>
+				<CloseButton size="xs" onClick={() => remove(dataSource.id)} />
+			</div>
 			<div className="flex items-center gap-2">
 				<Text color="dimmed" size="xs" className="w-8 shrink-0">
 					Fetch
@@ -236,6 +293,15 @@ function EventInput({
 				changeEvent({
 					...event,
 					actions: [...event.actions, { id: nanoid(), kind, name: '', valueToSet: '' }],
+				})
+				break
+			case ActionKind.Fetch:
+				changeEvent({
+					...event,
+					actions: [
+						...event.actions,
+						{ id: nanoid(), kind, dataSourceName: '', body: '', params: '' },
+					],
 				})
 				break
 		}
@@ -310,6 +376,25 @@ function EventInput({
 					),
 				})
 				break
+			case ActionKind.Fetch:
+				openModal({
+					title: 'Fetch',
+					children: (
+						<FetchSettings
+							initialValues={action}
+							onSave={(values) => {
+								changeEvent({
+									...event,
+									actions: event.actions.map((a) =>
+										a.id === action.id ? values : a
+									),
+								})
+								closeAllModals()
+							}}
+						/>
+					),
+				})
+				break
 		}
 	}
 
@@ -363,15 +448,11 @@ function EventInput({
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item onClick={() => addAction(ActionKind.ToggleState)}>
-									Toggle State
-								</Menu.Item>
-								<Menu.Item onClick={() => addAction(ActionKind.SetState)}>
-									Set State
-								</Menu.Item>
-								<Menu.Item onClick={() => addAction(ActionKind.Code)}>
-									Code
-								</Menu.Item>
+								{actionKinds.map((kind) => (
+									<Menu.Item key={kind} onClick={() => addAction(kind)}>
+										{kind}
+									</Menu.Item>
+								))}
 							</Menu.Dropdown>
 						</Menu>
 					</div>
@@ -379,6 +460,48 @@ function EventInput({
 			</Menu>
 			<CloseButton size="xs" onClick={removeEvent} />
 		</div>
+	)
+}
+
+function FetchSettings({
+	initialValues,
+	onSave,
+}: {
+	initialValues: FetchAction
+	onSave: (values: FetchAction) => void
+}) {
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const form = useForm({ initialValues })
+
+	return (
+		<form onSubmit={form.onSubmit(onSave)}>
+			<Select
+				label="Data source"
+				description="Fetch request of"
+				data={dataSources.map((source) => source.stateName)}
+				{...form.getInputProps('dataSourceId')}
+			/>
+			<TextInput
+				label="Query parameters"
+				description="Search params"
+				mt="xl"
+				{...form.getInputProps('params')}
+			/>
+			<JsonInput
+				label="Body"
+				description="Data passed to the request"
+				placeholder="JSON object"
+				validationError="Invalid JSON"
+				formatOnBlur
+				autosize
+				mt="xl"
+				minRows={3}
+				{...form.getInputProps('body')}
+			/>
+			<Button fullWidth mt="xl" type="submit">
+				Save
+			</Button>
+		</form>
 	)
 }
 
@@ -395,6 +518,7 @@ function CodeEditor({
 			defaultLanguage="javascript"
 			defaultValue={defaultValue}
 			onChange={(value) => onChange(value ?? '')}
+			options={{ fontFamily: 'monospace' }}
 		/>
 	)
 }
@@ -540,8 +664,10 @@ function BindingInput({
 					size="xs"
 					data={stateNames}
 					className="grow"
-					value={binding.fromStateName}
-					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
+					value={binding.fromStateName.split('.').join(' - ')}
+					onChange={(value) =>
+						onChange({ ...binding, fromStateName: value?.split(' - ').join('.') ?? '' })
+					}
 				/>
 			</div>
 		</div>

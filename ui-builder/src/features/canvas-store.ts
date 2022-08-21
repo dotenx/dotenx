@@ -4,6 +4,7 @@ import create from 'zustand'
 
 interface CanvasState {
 	components: Component[]
+	setComponents: (components: Component[]) => void
 	addComponent: (component: Component, parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
 	deleteComponent: (id: string) => void
@@ -18,11 +19,12 @@ interface CanvasState {
 	addBinding: (componentId: string, binding: Binding) => void
 	editBinding: (componentId: string, binding: Binding) => void
 	removeBinding: (componentId: string, bindingId: string) => void
-	editRepeatFrom: (componentId: string, repeatFrom: string) => void
+	editRepeatFrom: (componentId: string, repeatFrom: RepeatFrom) => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
 	components: [],
+	setComponents: (components: Component[]) => set((state) => ({ ...state, components })),
 	addComponent: (component, parentId) => {
 		set((state) => ({
 			...state,
@@ -126,7 +128,7 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 				components: editRepeatFrom(componentId, repeatFrom, state.components),
 			}
 		})
-	}
+	},
 }))
 
 export const findComponent = (id: string, components: Component[]): Component | null => {
@@ -167,7 +169,7 @@ const addBinding = (componentId: string, binding: Binding, components: Component
 	return newComponents
 }
 
-const editRepeatFrom = (componentId: string, repeatFrom: string, components: Component[]) => {
+const editRepeatFrom = (componentId: string, repeatFrom: RepeatFrom, components: Component[]) => {
 	const newComponents = _.cloneDeep(components)
 	const found = findComponent(componentId, newComponents)
 	if (found) found.repeatFrom = repeatFrom
@@ -359,7 +361,24 @@ export enum ComponentKind {
 	Input = 'Input',
 	Select = 'Select',
 	Textarea = 'Textarea',
-	SubmitButton = 'SubmitButton',
+	SubmitButton = 'Submit',
+}
+
+export const componentKinds = [
+	ComponentKind.Text,
+	ComponentKind.Box,
+	ComponentKind.Button,
+	ComponentKind.Columns,
+	ComponentKind.Image,
+	ComponentKind.Input,
+	ComponentKind.Select,
+	ComponentKind.Textarea,
+	ComponentKind.SubmitButton,
+]
+
+export interface RepeatFrom {
+	name: string
+	iterator: string
 }
 
 interface BaseComponent {
@@ -370,7 +389,7 @@ interface BaseComponent {
 	data: ComponentData
 	events: ComponentEvent[]
 	bindings: Binding[]
-	repeatFrom?: string
+	repeatFrom: RepeatFrom
 }
 
 export interface TextComponent extends BaseComponent {
@@ -537,13 +556,28 @@ export interface SetStateAction extends BaseAction {
 	valueToSet: string | number | boolean
 }
 
-export type Action = CodeAction | ToggleStateAction | SetStateAction
+export interface FetchAction extends BaseAction {
+	kind: ActionKind.Fetch
+	dataSourceName: string
+	body: string
+	params: string
+}
+
+export type Action = CodeAction | ToggleStateAction | SetStateAction | FetchAction
 
 export enum ActionKind {
 	Code = 'Code',
 	ToggleState = 'Toggle State',
 	SetState = 'Set State',
+	Fetch = 'Fetch',
 }
+
+export const actionKinds = [
+	ActionKind.Code,
+	ActionKind.ToggleState,
+	ActionKind.SetState,
+	ActionKind.Fetch,
+]
 
 export interface Binding {
 	id: string

@@ -1,5 +1,6 @@
 import { ActionIcon, clsx, Tabs } from '@mantine/core'
-import { ReactElement, useState } from 'react'
+import { useDisclosure } from '@mantine/hooks'
+import { ReactElement } from 'react'
 import {
 	TbChevronDown,
 	TbChevronUp,
@@ -16,11 +17,11 @@ import {
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
 } from 'react-icons/tb'
-import { Component, ComponentKind, useCanvasStore } from './canvas-store'
+import { Component, ComponentKind, componentKinds, useCanvasStore } from './canvas-store'
 import { Draggable, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
 
-export function SideBar() {
+export function ComponentSelectorAndLayers() {
 	const components = useCanvasStore((store) => store.components)
 
 	return (
@@ -35,7 +36,7 @@ export function SideBar() {
 			</Tabs.List>
 
 			<Tabs.Panel value="components" pt="xs">
-				<Components />
+				<ComponentSelector />
 			</Tabs.Panel>
 			<Tabs.Panel value="layers" pt="xs">
 				<Layers components={components} />
@@ -44,64 +45,21 @@ export function SideBar() {
 	)
 }
 
-function Components() {
+function ComponentSelector() {
 	return (
 		<div className="grid grid-cols-3 gap-2">
-			<Draggable
-				id={ComponentKind.Text}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Text }}
-			>
-				<ComponentCard label="Text" icon={getComponentIcon(ComponentKind.Text)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Box}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Box }}
-			>
-				<ComponentCard label="Box" icon={getComponentIcon(ComponentKind.Box)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Button}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Button }}
-			>
-				<ComponentCard label="Button" icon={getComponentIcon(ComponentKind.Button)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Columns}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Columns }}
-			>
-				<ComponentCard label="Columns" icon={getComponentIcon(ComponentKind.Columns)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Image}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Image }}
-			>
-				<ComponentCard label="Image" icon={getComponentIcon(ComponentKind.Image)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Input}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Input }}
-			>
-				<ComponentCard label="Input" icon={getComponentIcon(ComponentKind.Input)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Select}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Select }}
-			>
-				<ComponentCard label="Select" icon={getComponentIcon(ComponentKind.Select)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.Textarea}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.Textarea }}
-			>
-				<ComponentCard label="Textarea" icon={getComponentIcon(ComponentKind.Textarea)} />
-			</Draggable>
-			<Draggable
-				id={ComponentKind.SubmitButton}
-				data={{ mode: DraggableMode.Add, kind: ComponentKind.SubmitButton }}
-			>
-				<ComponentCard label="Submit" icon={getComponentIcon(ComponentKind.SubmitButton)} />
-			</Draggable>
+			{componentKinds.map((kind) => (
+				<DraggableComponent key={kind} kind={kind} />
+			))}
 		</div>
+	)
+}
+
+function DraggableComponent({ kind }: { kind: ComponentKind }) {
+	return (
+		<Draggable id={kind} data={{ mode: DraggableMode.Add, kind }}>
+			<ComponentCard label={kind} icon={getComponentIcon(kind)} />
+		</Draggable>
 	)
 }
 
@@ -130,37 +88,44 @@ function Layer({ component }: { component: Component }) {
 		unsetHovered: store.unsetHovered,
 		select: store.select,
 	}))
-	const [opened, setOpened] = useState(true)
+	const [opened, disclosure] = useDisclosure(true)
 	const icon = getComponentIcon(component.kind)
 	const name = component.kind
 	const hasChildren = component.components.length > 0
+	const selectAndScrollToComponent = () => {
+		select(component.id)
+		document.getElementById(component.id)?.scrollIntoView()
+	}
+
+	const disclosureButton = hasChildren && (
+		<ActionIcon
+			size="xs"
+			className="group-hover:opacity-100 opacity-0"
+			onClick={disclosure.toggle}
+		>
+			{opened ? <TbChevronUp /> : <TbChevronDown />}
+		</ActionIcon>
+	)
+
+	const childLayers = hasChildren && (
+		<div className="pl-4" hidden={!opened}>
+			<Layers components={component.components} />
+		</div>
+	)
 
 	return (
 		<div>
 			<div
-				className="flex py-1 items-center border-b"
+				className="flex py-1 items-center border-b group"
 				onMouseOver={() => setHovered(component.id)}
 				onMouseOut={() => unsetHovered()}
-				onClick={() => {
-					select(component.id)
-					document.getElementById(component.id)?.scrollIntoView()
-				}}
+				onClick={selectAndScrollToComponent}
 			>
-				<div>
-					{hasChildren && (
-						<ActionIcon size="xs" onClick={() => setOpened((opened) => !opened)}>
-							{opened ? <TbChevronUp /> : <TbChevronDown />}
-						</ActionIcon>
-					)}
-				</div>
+				<div>{disclosureButton}</div>
 				<span className={clsx('pl-1', !hasChildren && 'pl-[22px]')}>{icon}</span>
 				<p className="pl-2 cursor-default">{name}</p>
 			</div>
-			{hasChildren && (
-				<div className="pl-4" hidden={!opened}>
-					<Layers components={component.components} />
-				</div>
-			)}
+			{childLayers}
 		</div>
 	)
 }

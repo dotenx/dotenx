@@ -3,6 +3,7 @@ package publishutils
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"sync"
 	"text/template"
 )
@@ -40,7 +41,7 @@ function {{$id}}_{{$event}}(event) {
 	{{$code}}
 }{{end}}{{end}}`
 
-func (i *FunctionStore) ConvertToHTML() (string, error) {
+func (i *FunctionStore) ConvertToHTML(dataSources []interface{}) (string, error) {
 
 	i.lock.RLock()
 	defer i.lock.RUnlock()
@@ -56,6 +57,15 @@ func (i *FunctionStore) ConvertToHTML() (string, error) {
 		fmt.Println(err)
 		return "", err
 	}
-	fmt.Println(out.String())
-	return out.String(), nil
+
+	ds, err := convertDataSources(dataSources)
+	if err != nil {
+		return "", err
+	}
+
+	var converted strings.Builder
+	converted.WriteString(ds)
+	converted.WriteString(out.String())
+
+	return converted.String(), nil
 }

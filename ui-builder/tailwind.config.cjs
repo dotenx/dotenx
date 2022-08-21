@@ -1,10 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 const plugin = require('tailwindcss/plugin')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
 	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
 	theme: {
-		extend: {},
+		extend: {
+			sans: ['Inter', ...defaultTheme.fontFamily.sans],
+		},
 	},
 	plugins: [
 		plugin(function ({ addUtilities }) {

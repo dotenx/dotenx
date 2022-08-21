@@ -11,7 +11,11 @@ type Text struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	Data       struct {
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Data struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -21,7 +25,7 @@ type Text struct {
 	} `json:"data"`
 }
 
-const textTemplate = `<div id="{{.Id}}" display="inline">{{.Data.Text}}</div>`
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" display="inline" x-html=` + "`{{.Data.Text}}`" + `></div>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

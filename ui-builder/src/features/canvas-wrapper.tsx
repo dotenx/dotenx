@@ -101,6 +101,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -113,6 +114,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -137,6 +139,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -153,6 +156,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -171,6 +175,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -198,6 +203,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -224,6 +230,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -248,6 +255,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,
@@ -258,6 +266,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 			return {
 				kind,
 				components: [],
+				repeatFrom: { name: '', iterator: '' },
 				bindings: [],
 				events: [],
 				id,

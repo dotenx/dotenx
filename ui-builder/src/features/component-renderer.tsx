@@ -1,8 +1,9 @@
-import { clsx, Image, TypographyStylesProvider } from '@mantine/core'
+import { clsx, Image, Popover, Text, TypographyStylesProvider } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
+import axios from 'axios'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useMemo, useState } from 'react'
-import { withInsert } from '../utils'
+import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import {
 	ActionKind,
 	BindingKind,
@@ -14,6 +15,7 @@ import {
 	ComponentEvent,
 	ComponentKind,
 	EventKind,
+	FetchAction,
 	ImageComponent,
 	InputComponent,
 	SelectComponent,
@@ -25,7 +27,7 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
-import { AnyJson, JsonArray } from './data-source-store'
+import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
 import { Droppable, DroppableMode } from './droppable'
 import { usePageStates } from './page-states'
@@ -35,9 +37,11 @@ import { useViewportStore, ViewportDevice } from './viewport-store'
 export function RenderComponents({
 	components,
 	index,
+	state,
 }: {
 	components: Component[]
 	index?: number
+	state: JsonMap
 }) {
 	const states = usePageStates((store) => store.states)
 
@@ -45,10 +49,15 @@ export function RenderComponents({
 		<>
 			{components.map((component) => {
 				let repeated = null
-				if (component.repeatFrom) {
-					const repeatedState = states[component.repeatFrom] as JsonArray
-					repeated = repeatedState.map((_, index) => (
-						<ComponentShaper key={index} component={component} index={index} />
+				if (component.repeatFrom.name) {
+					const repeatedState =
+						(_.get(states, component.repeatFrom.name) as JsonArray) ?? []
+					repeated = repeatedState.map((itemState, index) => (
+						<ComponentShaper
+							key={index}
+							component={component}
+							state={{ ...state, [component.repeatFrom.iterator]: itemState }}
+						/>
 					))
 				}
 
@@ -57,7 +66,7 @@ export function RenderComponents({
 						{repeated ? (
 							repeated
 						) : (
-							<ComponentShaper component={component} index={index} />
+							<ComponentShaper component={component} index={index} state={state} />
 						)}
 					</ComponentWrapper>
 				)
@@ -66,19 +75,22 @@ export function RenderComponents({
 	)
 }
 
-export function TextRenderer({ component, index }: { component: TextComponent; index?: number }) {
+export function TextRenderer({
+	component,
+	state,
+}: {
+	component: TextComponent
+	index?: number
+	state: JsonMap
+}) {
+	console.log(state)
+
 	const states = usePageStates((store) => store.states)
+	const allStates = { ...states, ...state }
 	const stateText =
 		component.bindings
 			.filter((binding) => binding.kind === BindingKind.Text)
-			.map((binding) => {
-				const path =
-					index === undefined
-						? binding.fromStateName.split(' - ')
-						: withInsert(binding.fromStateName.split(' - '), 1, index.toString())
-				const value = _.get(states, path) as AnyJson
-				return value
-			})
+			.map((binding) => _.get(allStates, binding.fromStateName))
 			.filter((text) => !!text)[0] ?? ''
 	const viewport = useViewportStore((store) => store.device)
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
@@ -92,23 +104,25 @@ export function TextRenderer({ component, index }: { component: TextComponent; i
 	)
 }
 
-export function BoxRenderer({ component, index }: { component: BoxComponent; index?: number }) {
+export function BoxRenderer({
+	component,
+	index,
+	state,
+}: {
+	component: BoxComponent
+	index?: number
+	state: JsonMap
+}) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
 		<div className="p-10" style={combineStyles(viewport, component.data.style)}>
-			<RenderComponents components={component.components} index={index} />
+			<RenderComponents components={component.components} index={index} state={state} />
 		</div>
 	)
 }
 
-export function ButtonRenderer({
-	component,
-	index,
-}: {
-	component: ButtonComponent
-	index?: number
-}) {
+export function ButtonRenderer({ component }: { component: ButtonComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -119,9 +133,11 @@ export function ButtonRenderer({
 export function ColumnsRenderer({
 	component,
 	index,
+	state,
 }: {
 	component: ColumnsComponent
 	index?: number
+	state: JsonMap
 }) {
 	const viewport = useViewportStore((store) => store.device)
 
@@ -136,7 +152,7 @@ export function ColumnsRenderer({
 					)}
 				>
 					<ComponentWrapper component={component}>
-						<ComponentShaper component={component} index={index} />
+						<ComponentShaper component={component} index={index} state={state} />
 					</ComponentWrapper>
 				</div>
 			))}
@@ -144,7 +160,7 @@ export function ColumnsRenderer({
 	)
 }
 
-export function ImageRenderer({ component, index }: { component: ImageComponent; index?: number }) {
+export function ImageRenderer({ component }: { component: ImageComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = useMemo(
 		() => (component.data.image ? URL.createObjectURL(component.data.image) : undefined),
@@ -162,7 +178,7 @@ export function ImageRenderer({ component, index }: { component: ImageComponent;
 	)
 }
 
-export function InputRenderer({ component, index }: { component: InputComponent; index?: number }) {
+export function InputRenderer({ component }: { component: InputComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<input
@@ -178,13 +194,7 @@ export function InputRenderer({ component, index }: { component: InputComponent;
 	)
 }
 
-export function SelectRenderer({
-	component,
-	index,
-}: {
-	component: SelectComponent
-	index?: number
-}) {
+export function SelectRenderer({ component }: { component: SelectComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<select
@@ -202,13 +212,7 @@ export function SelectRenderer({
 	)
 }
 
-export function TextareaRenderer({
-	component,
-	index,
-}: {
-	component: TextareaComponent
-	index?: number
-}) {
+export function TextareaRenderer({ component }: { component: TextareaComponent; index?: number }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<textarea
@@ -221,7 +225,6 @@ export function TextareaRenderer({
 
 export function SubmitButtonRenderer({
 	component,
-	index,
 }: {
 	component: SubmitButtonComponent
 	index?: number
@@ -234,17 +237,25 @@ export function SubmitButtonRenderer({
 	)
 }
 
-function ComponentShaper({ component, index }: { component: Component; index?: number }) {
+function ComponentShaper({
+	component,
+	index,
+	state,
+}: {
+	component: Component
+	index?: number
+	state: JsonMap
+}) {
 	switch (component.kind) {
 		case ComponentKind.Text:
-			return <TextRenderer component={component} index={index} />
+			return <TextRenderer component={component} index={index} state={state} />
 		case ComponentKind.Box:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<BoxRenderer component={component} index={index} />
+					<BoxRenderer component={component} index={index} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Button:
@@ -255,7 +266,7 @@ function ComponentShaper({ component, index }: { component: Component; index?: n
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<ColumnsRenderer component={component} index={index} />
+					<ColumnsRenderer component={component} index={index} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Image:
@@ -279,21 +290,21 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		selectedComponentId: store.selectedId,
 		hoveredId: store.hoveredId,
 	}))
+	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
 	const [hovered, setHovered] = useState(false)
 	const handleDelete = () => {
 		if (selectedComponentId) deleteComponent(selectedComponentId)
 	}
 	useHotkeys([['Backspace', handleDelete]])
-	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
 	const { states, toggleState, setState } = usePageStates((store) => ({
 		states: store.states,
 		toggleState: store.toggleState,
 		setState: store.setState,
 	}))
+	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
 
 	const handleEvents = (kind: EventKind) => {
-		// Run all component custom codes on specific event
 		evalCodes(component.events, kind)
 
 		component.events
@@ -313,62 +324,97 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 						break
 				}
 			})
+
+		component.events
+			.filter((event) => event.kind === kind)
+			.flatMap((event) => event.actions)
+			.filter((action): action is FetchAction => action.kind === ActionKind.Fetch)
+			.forEach((action) => {
+				const dataSource = dataSources.find(
+					(source) => source.stateName === action.dataSourceName
+				)
+				if (!dataSource)
+					return console.error(`Data source ${action.dataSourceName} not found`)
+				axios.request({
+					method: dataSource.method,
+					url: dataSource.url,
+					headers: safeParseToHeaders(dataSource.headers),
+					data: safeParseToJson(action.body || dataSource.body),
+					params: action.params,
+				})
+			})
 	}
 
 	const shouldShow = component.bindings
 		.filter((binding) => binding.kind === BindingKind.Show)
-		.some((binding) => states[binding.fromStateName])
+		.some((binding) => _.get(states, binding.fromStateName))
 
 	const shouldHide = component.bindings
 		.filter((binding) => binding.kind === BindingKind.Hide)
-		.some((binding) => states[binding.fromStateName])
+		.some((binding) => _.get(states, binding.fromStateName))
 
 	const link =
 		component.bindings
 			.filter((binding) => binding.kind === BindingKind.Link)
-			.map((binding) => states[binding.fromStateName])
+			.map((binding) => _.get(states, binding.fromStateName))
 			.filter((link) => !!link)[0] ?? ''
 
 	return (
 		<Draggable id={component.id} data={{ mode: DraggableMode.Move, componentId: component.id }}>
-			<div
-				id={component.id}
-				className={clsx('outline-1 cursor-default relative', isSelected && 'outline z-10')}
-				onMouseOver={(event) => {
-					event.stopPropagation()
-					setHovered(true)
-				}}
-				onMouseOut={(event) => {
-					event.stopPropagation()
-					setHovered(false)
-				}}
-				onClick={(event) => {
-					event.stopPropagation()
-					setSelectedComponent(component.id)
-				}}
-				hidden={!shouldShow && shouldHide}
+			<Popover
+				opened={isSelected}
+				transitionDuration={0}
+				shadow="xs"
+				zIndex={150}
+				positionDependencies={[component]}
 			>
-				<div
-					onClick={() => handleEvents(EventKind.Click)}
-					onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
-					onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
-					onKeyDown={() => handleEvents(EventKind.KeyDown)}
-					onChange={() => handleEvents(EventKind.Change)}
-					onSubmit={() => handleEvents(EventKind.Submit)}
-				>
-					{link ? <a href={link.toString()}>{children}</a> : children}
-				</div>
-				<Droppable
-					data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-					id={`${component.id}-before-drop`}
-					className="absolute top-0 left-0 right-0 z-10 h-4 pointer-events-none"
-				/>
-				<Droppable
-					data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-					id={`${component.id}-after-drop`}
-					className="absolute bottom-0 left-0 right-0 z-10 h-4 pointer-events-none"
-				/>
-			</div>
+				<Popover.Target>
+					<div
+						id={component.id}
+						className={clsx(
+							'outline-1 cursor-default relative',
+							isSelected && 'outline z-10'
+						)}
+						onMouseOver={(event) => {
+							event.stopPropagation()
+							setHovered(true)
+						}}
+						onMouseOut={(event) => {
+							event.stopPropagation()
+							setHovered(false)
+						}}
+						onClick={(event) => {
+							event.stopPropagation()
+							setSelectedComponent(component.id)
+						}}
+						hidden={!shouldShow && shouldHide}
+					>
+						<div
+							onClick={() => handleEvents(EventKind.Click)}
+							onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
+							onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
+							onKeyDown={() => handleEvents(EventKind.KeyDown)}
+							onChange={() => handleEvents(EventKind.Change)}
+							onSubmit={() => handleEvents(EventKind.Submit)}
+						>
+							{link ? <a href={link.toString()}>{children}</a> : children}
+						</div>
+						<Droppable
+							data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
+							id={`${component.id}-before-drop`}
+							className="absolute top-0 left-0 right-0 z-10 h-4 pointer-events-none"
+						/>
+						<Droppable
+							data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+							id={`${component.id}-after-drop`}
+							className="absolute bottom-0 left-0 right-0 z-10 h-4 pointer-events-none"
+						/>
+					</div>
+				</Popover.Target>
+				<Popover.Dropdown className="!px-2 !py-1">
+					<Text size="xs">{component.kind}</Text>
+				</Popover.Dropdown>
+			</Popover>
 		</Draggable>
 	)
 }
