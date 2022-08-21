@@ -1,8 +1,9 @@
-import { clsx, Image, TypographyStylesProvider } from '@mantine/core'
+import { clsx, Image, Popover, Text, TypographyStylesProvider } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
+import axios from 'axios'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useMemo, useState } from 'react'
-import { withInsert } from '../utils'
+import { AnyJson, JsonArray, safeParseToHeaders, safeParseToJson, withInsert } from '../utils'
 import {
 	ActionKind,
 	BindingKind,
@@ -14,6 +15,7 @@ import {
 	ComponentEvent,
 	ComponentKind,
 	EventKind,
+	FetchAction,
 	ImageComponent,
 	InputComponent,
 	SelectComponent,
@@ -25,7 +27,7 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
-import { AnyJson, JsonArray } from './data-source-store'
+import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
 import { Droppable, DroppableMode } from './droppable'
 import { usePageStates } from './page-states'
@@ -46,7 +48,7 @@ export function RenderComponents({
 			{components.map((component) => {
 				let repeated = null
 				if (component.repeatFrom) {
-					const repeatedState = states[component.repeatFrom] as JsonArray
+					const repeatedState = (_.get(states, component.repeatFrom) as JsonArray) ?? []
 					repeated = repeatedState.map((_, index) => (
 						<ComponentShaper key={index} component={component} index={index} />
 					))
@@ -74,8 +76,8 @@ export function TextRenderer({ component, index }: { component: TextComponent; i
 			.map((binding) => {
 				const path =
 					index === undefined
-						? binding.fromStateName.split(' - ')
-						: withInsert(binding.fromStateName.split(' - '), 1, index.toString())
+						? binding.fromStateName
+						: withInsert(binding.fromStateName, 1, index.toString())
 				const value = _.get(states, path) as AnyJson
 				return value
 			})
@@ -279,21 +281,21 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		selectedComponentId: store.selectedId,
 		hoveredId: store.hoveredId,
 	}))
+	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
 	const [hovered, setHovered] = useState(false)
 	const handleDelete = () => {
 		if (selectedComponentId) deleteComponent(selectedComponentId)
 	}
 	useHotkeys([['Backspace', handleDelete]])
-	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
 	const { states, toggleState, setState } = usePageStates((store) => ({
 		states: store.states,
 		toggleState: store.toggleState,
 		setState: store.setState,
 	}))
+	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
 
 	const handleEvents = (kind: EventKind) => {
-		// Run all component custom codes on specific event
 		evalCodes(component.events, kind)
 
 		component.events
@@ -313,62 +315,95 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 						break
 				}
 			})
+
+		component.events
+			.filter((event) => event.kind === kind)
+			.flatMap((event) => event.actions)
+			.filter((action): action is FetchAction => action.kind === ActionKind.Fetch)
+			.forEach((action) => {
+				const dataSource = dataSources.find((source) => source.id === action.dataSourceId)
+				if (!dataSource)
+					return console.error(`Data source ${action.dataSourceId} not found`)
+				axios.request({
+					method: dataSource.method,
+					url: dataSource.url,
+					headers: safeParseToHeaders(dataSource.headers),
+					data: safeParseToJson(action.body || dataSource.body),
+					params: action.params,
+				})
+			})
 	}
 
 	const shouldShow = component.bindings
 		.filter((binding) => binding.kind === BindingKind.Show)
-		.some((binding) => states[binding.fromStateName])
+		.some((binding) => _.get(states, binding.fromStateName))
 
 	const shouldHide = component.bindings
 		.filter((binding) => binding.kind === BindingKind.Hide)
-		.some((binding) => states[binding.fromStateName])
+		.some((binding) => _.get(states, binding.fromStateName))
 
 	const link =
 		component.bindings
 			.filter((binding) => binding.kind === BindingKind.Link)
-			.map((binding) => states[binding.fromStateName])
+			.map((binding) => _.get(states, binding.fromStateName))
 			.filter((link) => !!link)[0] ?? ''
 
 	return (
 		<Draggable id={component.id} data={{ mode: DraggableMode.Move, componentId: component.id }}>
-			<div
-				id={component.id}
-				className={clsx('outline-1 cursor-default relative', isSelected && 'outline z-10')}
-				onMouseOver={(event) => {
-					event.stopPropagation()
-					setHovered(true)
-				}}
-				onMouseOut={(event) => {
-					event.stopPropagation()
-					setHovered(false)
-				}}
-				onClick={(event) => {
-					event.stopPropagation()
-					setSelectedComponent(component.id)
-				}}
-				hidden={!shouldShow && shouldHide}
+			<Popover
+				opened={isSelected}
+				transitionDuration={0}
+				shadow="xs"
+				zIndex={150}
+				positionDependencies={[component]}
 			>
-				<div
-					onClick={() => handleEvents(EventKind.Click)}
-					onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
-					onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
-					onKeyDown={() => handleEvents(EventKind.KeyDown)}
-					onChange={() => handleEvents(EventKind.Change)}
-					onSubmit={() => handleEvents(EventKind.Submit)}
-				>
-					{link ? <a href={link.toString()}>{children}</a> : children}
-				</div>
-				<Droppable
-					data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-					id={`${component.id}-before-drop`}
-					className="absolute top-0 left-0 right-0 z-10 h-4 pointer-events-none"
-				/>
-				<Droppable
-					data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-					id={`${component.id}-after-drop`}
-					className="absolute bottom-0 left-0 right-0 z-10 h-4 pointer-events-none"
-				/>
-			</div>
+				<Popover.Target>
+					<div
+						id={component.id}
+						className={clsx(
+							'outline-1 cursor-default relative',
+							isSelected && 'outline z-10'
+						)}
+						onMouseOver={(event) => {
+							event.stopPropagation()
+							setHovered(true)
+						}}
+						onMouseOut={(event) => {
+							event.stopPropagation()
+							setHovered(false)
+						}}
+						onClick={(event) => {
+							event.stopPropagation()
+							setSelectedComponent(component.id)
+						}}
+						hidden={!shouldShow && shouldHide}
+					>
+						<div
+							onClick={() => handleEvents(EventKind.Click)}
+							onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
+							onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
+							onKeyDown={() => handleEvents(EventKind.KeyDown)}
+							onChange={() => handleEvents(EventKind.Change)}
+							onSubmit={() => handleEvents(EventKind.Submit)}
+						>
+							{link ? <a href={link.toString()}>{children}</a> : children}
+						</div>
+						<Droppable
+							data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
+							id={`${component.id}-before-drop`}
+							className="absolute top-0 left-0 right-0 z-10 h-4 pointer-events-none"
+						/>
+						<Droppable
+							data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+							id={`${component.id}-after-drop`}
+							className="absolute bottom-0 left-0 right-0 z-10 h-4 pointer-events-none"
+						/>
+					</div>
+				</Popover.Target>
+				<Popover.Dropdown className="!px-2 !py-1">
+					<Text size="xs">{component.kind}</Text>
+				</Popover.Dropdown>
+			</Popover>
 		</Draggable>
 	)
 }

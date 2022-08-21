@@ -1,62 +1,54 @@
-import { AppShell, Aside, createEmotionCache, Header, MantineProvider, Navbar } from '@mantine/core'
+import { createEmotionCache, MantineProvider, MantineThemeOverride } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Canvas } from './features/canvas'
-import { CanvasWrapper } from './features/canvas-wrapper'
-import { Settings } from './features/settings'
-import { SideBar } from './features/side-bar'
-import { TopBar } from './features/top-bar'
-import { useGetProjectTag, usePages } from './hooks'
+import { HomePage } from './pages/home'
+import { NotFoundPage } from './pages/not-found'
 
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
 })
 const emotionCache = createEmotionCache({ key: 'mantine' })
+const theme: MantineThemeOverride = {
+	colors: {
+		rose: [
+			'#fff1f2',
+			'#ffe4e6',
+			'#fecdd3',
+			'#fda4af',
+			'#fb7185',
+			'#f43f5e',
+			'#e11d48',
+			'#be123c',
+			'#9f1239',
+			'#881337',
+		],
+	},
+	primaryColor: 'rose',
+	fontFamily: "'Inter', sans-serif",
+	fontFamilyMonospace: 'monospace',
+}
 
 export function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
-			<MantineProvider emotionCache={emotionCache}>
+			<MantineProvider emotionCache={emotionCache} theme={theme}>
 				<ModalsProvider>
 					<BrowserRouter>
-						<Routes>
-							<Route path="/projects/:projectName" element={<AppLayout />} />
-						</Routes>
+						<Layout>
+							<Routes>
+								<Route path="/projects/:projectName" element={<HomePage />} />
+								<Route path="/*" element={<NotFoundPage />} />
+							</Routes>
+						</Layout>
 					</BrowserRouter>
 				</ModalsProvider>
 			</MantineProvider>
 		</QueryClientProvider>
 	)
 }
-const AppLayout = () => {
-	const { projectTag } = useGetProjectTag()
-	const { pagesList } = usePages(projectTag)
 
-	return (
-		<div className="text-slate-700">
-			<CanvasWrapper>
-				<AppShell
-					header={
-						<Header height={60} sx={{ zIndex: 110 }}>
-							<TopBar projectTag={projectTag} pagesList={pagesList} />
-						</Header>
-					}
-					navbar={
-						<Navbar width={{ base: 310 }} p="xl">
-							<SideBar />
-						</Navbar>
-					}
-					aside={
-						<Aside width={{ base: 310 }} p="xl">
-							<Settings />
-						</Aside>
-					}
-					padding={0}
-				>
-					<Canvas />
-				</AppShell>
-			</CanvasWrapper>
-		</div>
-	)
+function Layout({ children }: { children: ReactNode }) {
+	return <div className="text-slate-700">{children}</div>
 }
