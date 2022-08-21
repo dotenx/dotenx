@@ -12,7 +12,11 @@ type Columns struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	Data       struct {
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Data struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -27,7 +31,7 @@ type Columns struct {
 	} `json:"data"`
 }
 
-const columnsTemplate = `<div id="{{.Id}}" class="dtx-{{.Id}}">{{.RenderedChildren}}</div>`
+const columnsTemplate = `<div {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -52,9 +56,14 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 	params := struct {
 		RenderedChildren string
 		Id               string
+		RepeatFrom       struct {
+			Name     string
+			Iterator string
+		}
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               columns.Id,
+		RepeatFrom:       columns.RepeatFrom,
 	}
 
 	// Render the component and its children
