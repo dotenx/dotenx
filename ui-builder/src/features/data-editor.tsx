@@ -32,6 +32,7 @@ import {
 	FetchAction,
 	findComponent,
 	getStateNames,
+	RepeatFrom,
 	useCanvasStore,
 } from './canvas-store'
 import { DataSourceForm } from './data-source-form'
@@ -66,7 +67,7 @@ export function DataEditor({ component }: { component: Component }) {
 	const handleAddEvent = () =>
 		addEvent(component.id, { id: nanoid(), kind: EventKind.Click, actions: [] })
 	const handleAddBinding = () =>
-		addBinding(component.id, { id: nanoid(), kind: BindingKind.Text, fromStateName: [] })
+		addBinding(component.id, { id: nanoid(), kind: BindingKind.Text, fromStateName: '' })
 	const { dataSources } = useDataSourceStore((store) => ({
 		dataSources: store.sources,
 		addDataSource: store.add,
@@ -80,17 +81,19 @@ export function DataEditor({ component }: { component: Component }) {
 		})
 
 	const pageStates = usePageStates((store) => store.states)
-	const repeatedState = component.repeatFrom ? _.get(pageStates, component.repeatFrom) : null
+	const repeatedState = component.repeatFrom.name
+		? _.get(pageStates, component.repeatFrom.name)
+		: null
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
 	const repeatedProperties = findPropertyPaths(repeatedSample)
 
 	const repeatedParent = findRepeatedParent(component, components)
 	let passedProperties: { kind: PropertyKind; name: string }[] = []
-	if (repeatedParent?.repeatFrom) {
-		const parentState = _.get(pageStates, repeatedParent.repeatFrom) as JsonArray
+	if (repeatedParent && repeatedParent.repeatFrom.name) {
+		const parentState = _.get(pageStates, repeatedParent.repeatFrom.name) as JsonArray
 		passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
 			kind: property.kind,
-			name: `${repeatedParent.repeatFrom}${property.path}`,
+			name: `${repeatedParent.repeatFrom.iterator}${property.path}`,
 		}))
 	}
 
@@ -107,10 +110,10 @@ export function DataEditor({ component }: { component: Component }) {
 				}))
 			)
 			.flat(),
-		...(component.repeatFrom
+		...(component.repeatFrom.name
 			? repeatedProperties.map((property) => ({
 					kind: property.kind,
-					name: `${component.repeatFrom}${property.path}`,
+					name: `${component.repeatFrom.iterator}${property.path}`,
 			  }))
 			: []),
 		...passedProperties,
@@ -152,21 +155,14 @@ export function DataEditor({ component }: { component: Component }) {
 			<Button mt="md" leftIcon={<TbPlus />} size="xs" onClick={handleAddBinding}>
 				Binding
 			</Button>
-			<div className="flex items-center gap-2 mt-10">
-				<Text color="dimmed" size="xs" className="whitespace-nowrap">
-					Repeat for each
-				</Text>
-				<Select
-					size="xs"
-					data={states
-						.filter((state) => state.kind === PropertyKind.Array)
-						.map((state) => state.name)}
-					className="grow"
-					value={component.repeatFrom?.join(' - ') ?? ''}
-					onChange={(value) => editRepeatFrom(component.id, value?.split(' - ') ?? [])}
-					clearable
-				/>
-			</div>
+
+			<RepeatInput
+				states={states}
+				repeatFrom={component.repeatFrom}
+				onChange={(value) =>
+					editRepeatFrom(component.id, { name: value, iterator: `${value}Item` })
+				}
+			/>
 
 			<Divider label="API Data" mt="xl" mb="xs" />
 			<div className="space-y-4">{sources}</div>
@@ -177,10 +173,48 @@ export function DataEditor({ component }: { component: Component }) {
 	)
 }
 
+function RepeatInput({
+	repeatFrom,
+	onChange,
+	states,
+}: {
+	repeatFrom: RepeatFrom
+	onChange: (value: string) => void
+	states: { kind: PropertyKind; name: string }[]
+}) {
+	return (
+		<div>
+			<div className="flex items-center gap-2 mt-10">
+				<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+					Repeat for each
+				</Text>
+				<Select
+					size="xs"
+					data={states
+						.filter((state) => state.kind === PropertyKind.Array)
+						.map((state) => state.name)}
+					className="grow"
+					value={repeatFrom.name.split('.').join(' - ') ?? ''}
+					onChange={(value) => onChange(value?.split(' - ').join('.') ?? '')}
+					clearable
+				/>
+			</div>
+			{repeatFrom.iterator && (
+				<div className="flex items-center gap-2 mt-2">
+					<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+						as
+					</Text>
+					<Code>{repeatFrom.iterator}</Code>
+				</div>
+			)}
+		</div>
+	)
+}
+
 const findRepeatedParent = (component: Component, components: Component[]): Component | null => {
 	const parent = findComponent(component.parentId, components)
 	if (!parent) return null
-	if (parent.repeatFrom) return parent
+	if (parent.repeatFrom.name) return parent
 	return findRepeatedParent(parent, components)
 }
 
@@ -266,7 +300,7 @@ function EventInput({
 					...event,
 					actions: [
 						...event.actions,
-						{ id: nanoid(), kind, dataSourceId: '', body: '', params: '' },
+						{ id: nanoid(), kind, dataSourceName: '', body: '', params: '' },
 					],
 				})
 				break
@@ -444,7 +478,7 @@ function FetchSettings({
 			<Select
 				label="Data source"
 				description="Fetch request of"
-				data={dataSources.map((source) => ({ label: source.stateName, value: source.id }))}
+				data={dataSources.map((source) => source.stateName)}
 				{...form.getInputProps('dataSourceId')}
 			/>
 			<TextInput
@@ -630,9 +664,9 @@ function BindingInput({
 					size="xs"
 					data={stateNames}
 					className="grow"
-					value={binding.fromStateName.join(' - ')}
+					value={binding.fromStateName.split('.').join(' - ')}
 					onChange={(value) =>
-						onChange({ ...binding, fromStateName: value?.split(' - ') ?? [] })
+						onChange({ ...binding, fromStateName: value?.split(' - ').join('.') ?? '' })
 					}
 				/>
 			</div>

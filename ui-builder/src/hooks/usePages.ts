@@ -27,7 +27,7 @@ export const usePages = (projectTag: string) => {
 			enabled: !!pageName,
 			onSuccess: (data) => {
 				const content = data.data.content
-				setComponents(content.components)
+				setComponents(content.layout)
 				setDataSources(content.dataSources)
 			},
 		}
@@ -38,7 +38,7 @@ export const usePages = (projectTag: string) => {
 			createPage({
 				projectTag,
 				name: payload.name,
-				content: { components: payload.components, dataSources: payload.dataSources },
+				content: { layout: payload.components, dataSources: payload.dataSources },
 			})
 	)
 
