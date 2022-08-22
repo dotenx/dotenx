@@ -56,16 +56,19 @@ const Domain = ({
 	projectTag: string
 	domainData: GetDomainResponse | undefined
 }) => {
+	const client = useQueryClient()
+
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
-			toast('Domain verified successfuly', { type: 'success', autoClose: 2000 })
+			toast('Domain verified successfuly', { type: 'success', autoClose: 2000 }),
+				client.invalidateQueries(QueryKey.GetDomains)
 		},
 		onError: () => {
 			toast('External domain is not verified', { type: 'error', autoClose: 2000 })
 		},
 	})
 	return (
-		<div className="grid grid-cols-1 gap-3">
+		<div className="grid grid-cols-1 gap-3 ">
 			<div className="border-2 rounded-md text-left p-3  ">
 				<h1 className="font-semibold">Domain</h1>
 				<a
@@ -76,14 +79,18 @@ const Domain = ({
 				>
 					{domainData?.external_domain}
 				</a>
-				<Button
-					type="button"
-					loading={isLoading}
-					onClick={() => mutate({ projectTag })}
-					className="float-right"
-				>
-					Verify
-				</Button>
+				{!domainData?.tls_arn ? (
+					<span className="text-green-500 float-right font-medium">verified</span>
+				) : (
+					<Button
+						type="button"
+						loading={isLoading}
+						onClick={() => mutate({ projectTag })}
+						className="float-right"
+					>
+						Verify
+					</Button>
+				)}
 			</div>
 			<div className="border-2 rounded-md text-left p-3 ">
 				<NSList nsList={domainData?.ns_records} />
