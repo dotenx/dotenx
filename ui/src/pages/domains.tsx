@@ -68,7 +68,7 @@ const Domain = ({
 		},
 	})
 	return (
-		<div className="grid grid-cols-1 gap-3">
+		<div className="grid grid-cols-1 gap-3 ">
 			<div className="border-2 rounded-md text-left p-3  ">
 				<h1 className="font-semibold">Domain</h1>
 				<a
@@ -79,8 +79,8 @@ const Domain = ({
 				>
 					{domainData?.external_domain}
 				</a>
-				{domainData?.tls_arn ? (
-					<span className="text-green-500 float-right">Verified</span>
+				{!domainData?.tls_arn ? (
+					<span className="text-green-500 float-right font-medium">verified</span>
 				) : (
 					<Button
 						type="button"
