@@ -544,7 +544,7 @@ function ToggleStateSettings({
 	)
 }
 
-type ValueKind = 'text' | 'number' | 'switch'
+type ValueKind = 'text' | 'number' | 'yes/no'
 
 function SetStateSettings({
 	defaultValue,
@@ -558,7 +558,7 @@ function SetStateSettings({
 			? 'text'
 			: typeof defaultValue.value === 'number'
 			? 'number'
-			: 'switch'
+			: 'yes/no'
 	)
 	const [name, setName] = useState(defaultValue.name)
 	const [value, setValue] = useState(defaultValue.value)
@@ -589,7 +589,7 @@ function SetStateSettings({
 						label="To"
 						className="w-28"
 						value={valueKind}
-						data={['text', 'number', 'switch']}
+						data={['text', 'number', 'yes/no']}
 						onChange={(value: ValueKind) => {
 							setValueKind(value)
 							setValue(value === 'text' ? '' : value === 'number' ? 0 : false)
@@ -611,7 +611,7 @@ function SetStateSettings({
 							onChange={(value) => handleChangeValue(value ?? 0)}
 						/>
 					)}
-					{valueKind === 'switch' && (
+					{valueKind === 'yes/no' && (
 						<Switch
 							checked={value as boolean}
 							className="self-center grow"
@@ -619,6 +619,9 @@ function SetStateSettings({
 							onChange={(e) => handleChangeValue(e.currentTarget.checked)}
 							ml="xs"
 							mt="xl"
+							onLabel="Yes"
+							offLabel="No"
+							size="xl"
 						/>
 					)}
 				</div>

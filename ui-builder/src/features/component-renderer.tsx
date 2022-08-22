@@ -83,8 +83,6 @@ export function TextRenderer({
 	index?: number
 	state: JsonMap
 }) {
-	console.log(state)
-
 	const states = usePageStates((store) => store.states)
 	const allStates = { ...states, ...state }
 	const stateText =
