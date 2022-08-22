@@ -10,11 +10,13 @@ import (
 )
 
 type DataSource struct {
-	StateName   string
-	Url         string
-	Method      string
-	Headers     map[string]string
-	Body        map[string]interface{}
+	StateName string
+	Url       string
+	Method    string
+	// Headers     map[string]string
+	// Body        map[string]interface{}
+	Headers     string
+	Body        string
 	Id          string
 	FetchOnload bool
 }
@@ -30,10 +32,8 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			url = '{{.Url}}';
 			fetch(url, {
 				method: '{{.Method}}',
-				headers: {
-					{{range $key, $value := .Headers}}'{{$key}}': '{{$value}}',{{end}}
-				}{{if .Body}},
-				body: JSON.stringify(body){{end}}
+				{{if .Headers}}headers: {{.Headers}}{{end}}{{if .Body}},
+				body: {{.Body}}{{end}}
 			})
 				.then(response => response.json())
 				.then(data => {
@@ -44,8 +44,34 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	})
 	{{if .FetchOnload}}Alpine.store('{{.StateName}}').fetch();{{end}}
 	{{end}}
-}
+})
 `
+	// 	const dataSourcesTemplate = `document.addEventListener('alpine:init', () => {
+	// 	{{range .}}
+	// 	Alpine.store('{{.StateName}}', {
+	// 		isLoading: true,
+	// 		{{.StateName}}: Alpine.store(null),
+	// 		fetch: function ({body{{if .Body}}={{.Body}}{{end}}}={}) {
+
+	// 			url = '{{.Url}}';
+	// 			fetch(url, {
+	// 				method: '{{.Method}}',
+	// 				headers: {
+	// 					{{range $key, $value := .Headers}}'{{$key}}': '{{$value}}',{{end}}
+	// 				}{{if .Body}},
+	// 				body: JSON.stringify(body){{end}}
+	// 			})
+	// 				.then(response => response.json())
+	// 				.then(data => {
+	// 					this.{{.StateName}} = data;
+	// 					this.isLoading = false;
+	// 				})
+	// 		}
+	// 	})
+	// 	{{if .FetchOnload}}Alpine.store('{{.StateName}}').fetch();{{end}}
+	// 	{{end}}
+	// }
+	// `
 
 	b, err := json.Marshal(dataSources)
 	if err != nil {
