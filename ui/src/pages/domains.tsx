@@ -34,7 +34,7 @@ export default function DomainsPage() {
 	return (
 		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 			<Title order={2}>Domains</Title>
-			{getDomainsQuery.isLoading || projectTagisLoading ? (
+			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
 				<Loader className="mx-auto" />
 			) : (
 				<div className="mx-auto py-10  px-20 max-w-4xl ">
@@ -79,7 +79,7 @@ const Domain = ({
 				>
 					{domainData?.external_domain}
 				</a>
-				{!domainData?.tls_arn ? (
+				{domainData && !!domainData.tls_arn ? (
 					<span className="text-green-500 float-right font-medium">verified</span>
 				) : (
 					<Button
