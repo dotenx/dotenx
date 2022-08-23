@@ -40,7 +40,7 @@ var pageTemplate = `<!DOCTYPE html>
 </html>
 `
 
-func convertToHTML(page map[string]interface{}) (renderedPage, renderedScripts, renderStyles string, err error) {
+func convertToHTML(page map[string]interface{}, name string) (renderedPage, renderedScripts, renderStyles string, err error) {
 	styleStore := NewStyleStore()
 	functionStore := NewFunctionStore()
 
@@ -50,7 +50,7 @@ func convertToHTML(page map[string]interface{}) (renderedPage, renderedScripts, 
 	}
 
 	p := Page{
-		Name: page["name"].(string),
+		Name: name,
 		Head: struct {
 			Title string
 			Meta  []struct {
@@ -59,7 +59,7 @@ func convertToHTML(page map[string]interface{}) (renderedPage, renderedScripts, 
 			}
 			Scripts []string
 		}{
-			Title:   page["title"].(string),
+			Title:   name, // todo: UI should have a title and use it here
 			Meta:    nil,
 			Scripts: []string{},
 		},

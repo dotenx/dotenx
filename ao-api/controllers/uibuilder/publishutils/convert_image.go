@@ -11,6 +11,7 @@ type Image struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
+	Events     []Event       `json:"events"`
 	RepeatFrom struct {
 		Name     string
 		Iterator string
@@ -28,7 +29,7 @@ type Image struct {
 	} `json:"data"`
 }
 
-const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" alt="{{.Data.AltText}}" x-bind:src="` + "`{{.Data.Image.Path}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
+const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" alt="{{.Data.AltText}}" x-bind:src="` + "`{{.Data.Image.Path}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertImage(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -50,6 +51,9 @@ func convertImage(component map[string]interface{}, styleStore *StyleStore, func
 		fmt.Println("error: ", err.Error())
 		return "", err
 	}
+
+	// Add the events to the function store to be rendered later
+	functionStore.AddEvents(image.Events)
 
 	// Add the styles to the styleStore to be rendered later
 	styleStore.AddStyle(image.Id, image.Data.Style.Desktop, image.Data.Style.Tablet, image.Data.Style.Mobile)

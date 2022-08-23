@@ -16,7 +16,8 @@ type Box struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Data struct {
+	Events []Event `json:"events"`
+	Data   struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -31,7 +32,7 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}<div></div>`
+const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}<div></div>`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -66,10 +67,12 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 			Name     string
 			Iterator string
 		}
+		Events []Event
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
 		RepeatFrom:       box.RepeatFrom,
+		Events:           box.Events,
 	}
 
 	var out bytes.Buffer
@@ -78,6 +81,9 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		fmt.Println("error: ", err.Error())
 		return "", err
 	}
+
+	// Add the events to the function store to be rendered later
+	functionStore.AddEvents(box.Events)
 
 	// Add the styles to the styleStore to be rendered later
 	styleStore.AddStyle(box.Id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)

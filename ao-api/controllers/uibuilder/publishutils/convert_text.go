@@ -11,6 +11,7 @@ type Text struct {
 	kind       string        `json:"type"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
+	Events     []Event       `json:"events"`
 	RepeatFrom struct {
 		Name     string
 		Iterator string
@@ -25,7 +26,7 @@ type Text struct {
 	} `json:"data"`
 }
 
-const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" display="inline" x-html=` + "`{{.Data.Text}}`" + `></div>{{if .RepeatFrom.Name}}</template>{{end}}`
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" display="inline" x-html="` + "`{{.Data.Text}}`" + `"></div>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -48,6 +49,9 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 		fmt.Println("error: ", err.Error())
 		return "", err
 	}
+
+	// Add the events to the function store to be rendered later
+	functionStore.AddEvents(text.Events)
 
 	// Add the styles to the styleStore to be rendered later
 	styleStore.AddStyle(text.Id, text.Data.Style.Desktop, text.Data.Style.Tablet, text.Data.Style.Mobile)
