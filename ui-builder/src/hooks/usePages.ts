@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { useState } from 'react'
 import { createPage, getPageDetails, getPages, QueryKey } from '../api/api'
 import { Component, useCanvasStore } from '../features/canvas-store'
 import { DataSource, useDataSourceStore } from '../features/data-source-store'
+import { usePageStates } from '../features/page-states'
+import { AnyJson } from '../utils'
 
 export const usePages = (projectTag: string) => {
 	const [pagesList, setPagesList] = useState<string[]>([])
@@ -11,7 +14,9 @@ export const usePages = (projectTag: string) => {
 		() => getPages({ projectTag }),
 		{
 			onSuccess: (data) => {
-				setPagesList(data?.data ?? [])
+				const pages = data.data ?? []
+				setPagesList(pages)
+				setPageName(pages[0] ?? 'index')
 			},
 			enabled: !!projectTag,
 		}
@@ -19,6 +24,7 @@ export const usePages = (projectTag: string) => {
 	const [pageName, setPageName] = useState('')
 	const setComponents = useCanvasStore((store) => store.setComponents)
 	const setDataSources = useDataSourceStore((store) => store.set)
+	const setPageState = usePageStates((store) => store.setState)
 
 	const pageDetailsQuery = useQuery(
 		[QueryKey.PageDetails, pageName],
@@ -29,6 +35,11 @@ export const usePages = (projectTag: string) => {
 				const content = data.data.content
 				setComponents(content.layout)
 				setDataSources(content.dataSources)
+				content.dataSources.map((source) =>
+					axios
+						.get<AnyJson>(source.url)
+						.then((data) => setPageState(source.stateName, data.data))
+				)
 			},
 		}
 	)

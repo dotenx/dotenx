@@ -38,8 +38,27 @@ export function deleteAccessToken() {
 	return adminApi.delete<void>('/auth/access/token/delete')
 }
 
+export function getDomains(projectTag: string) {
+	return api.get<GetDomainResponse>(`/project/tag/${projectTag}/domain`)
+}
+
+export function addDomain({ projectTag, domainName }: { projectTag: string, domainName: any }) {
+	return api.post<void>(`/project/${projectTag}/domain`, domainName)
+}
+export function verifyDomain({ projectTag }: { projectTag: string }) {
+	return api.post(`/project/${projectTag}/domain/verify`)
+}
+
+
 export interface TaskBuilderFunctionsResponse {
 	mini_tasks: MiniTask[]
+}
+export interface GetDomainResponse {
+	external_domain: string
+	hosted_zone_id: string
+	internal_domain: string
+	ns_records: string[]
+	tls_arn: string
 }
 
 export interface MiniTask {

@@ -1,3 +1,5 @@
+import { QueryBuilderValues } from "../features/database"
+
 export enum QueryKey {
 	GetUserManagementData = 'get-user-management-data',
 	GetAutomations = 'get-automation',
@@ -31,6 +33,7 @@ export enum QueryKey {
 	GetProfile = 'get-profile',
 	GetUserGroups = 'get-user-groups',
 	GetUserGroup = 'get-user-group',
+	GetDomains = 'get-domains',
 }
 
 export enum TaskExecutionStatus {
@@ -361,14 +364,7 @@ export type StartAutomationRequest =
 
 export interface RecordsFilters {
 	columns: string[]
-	filters?: {
-		conjunction: 'and' | 'or'
-		filterSet: {
-			value: string
-			key: string
-			operator: string
-		}[]
-	}
+	filters?: QueryBuilderValues
 }
 
 export type GetTableRecordsRequest = RecordsFilters

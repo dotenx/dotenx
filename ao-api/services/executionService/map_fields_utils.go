@@ -70,8 +70,8 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 				for _, arg := range args {
 					if arg.Type == models.NestedFieldType {
 						keys := strings.Split(arg.NestedKey, ".")
-						source, _, sourceType := getSourceType(keys[0])
-						if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpecificIndexSourceType {
+						source, _, sourceType := getSourceType(keys[0], len(keys))
+						if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpeceficFullObjectSourceType {
 							return nil, errors.New("nested key is not in correct format1")
 						}
 						//source = strings.Split(arg.NestedKey, ".")[0]
@@ -87,8 +87,8 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 				}
 			} else if insertDt.Type == models.NestedFieldType {
 				keys := strings.Split(insertDt.NestedKey, ".")
-				sourceName, _, sourceType := getSourceType(keys[0])
-				if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpecificIndexSourceType {
+				sourceName, _, sourceType := getSourceType(keys[0], len(keys))
+				if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpeceficFullObjectSourceType {
 					return nil, errors.New("nested key is not in correct format1")
 				}
 				returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, sourceName, taskName)
@@ -191,10 +191,10 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 					argKey := fmt.Sprintf("%s.%s", arg.FuncName, arg.Name)
 					if arg.Type == models.NestedFieldType {
 						keys := strings.Split(arg.NestedKey, ".")
-						source, index, sourceType := getSourceType(keys[0])
+						source, index, sourceType := getSourceType(keys[0], len(keys))
 						var val []interface{}
 						var err error
-						if sourceType == models.FullObjectSourceType {
+						if sourceType == models.FullObjectSourceType || sourceType == models.SpeceficFullObjectSourceType {
 							return nil, errors.New("can't use source. in formatter")
 						} else if sourceType == models.ForeachSourceType {
 							selectedSourceData, ok := currentSourceData[source]
@@ -238,11 +238,10 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 				}
 				finalTaskBody[key] = result
 			} else if insertDt.Type == models.NestedFieldType {
-				var speceficFullObject bool
 				keys := strings.Split(insertDt.NestedKey, ".")
 				// if we dont have any [*] in our nested key, we will get only one value
 				itsArray := strings.Contains(insertDt.NestedKey, "[*]")
-				source, index, sourceType := getSourceType(keys[0])
+				source, index, sourceType := getSourceType(keys[0], len(keys))
 				var val []interface{}
 				var err error
 				if sourceType == models.FullObjectSourceType { // source
@@ -277,7 +276,7 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 						}
 						val = append(val, newVal...)
 					}
-				} else { // source[index].
+				} else if sourceType == models.SpecificIndexSourceType { // source[index].
 					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
 					if err != nil {
 						return nil, err
@@ -286,18 +285,23 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 						logrus.Println(source)
 						return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
 					}
-					if len(keys) == 1 {
-						val = make([]interface{}, 0)
-						val = append(val, values[index])
-						speceficFullObject = true
-					} else {
-						val, err = manager.getFromNestedJson(keys[1:], values[index])
-						if err != nil {
-							return nil, err
-						}
+					val, err = manager.getFromNestedJson(keys[1:], values[index])
+					if err != nil {
+						return nil, err
 					}
+				} else { // models.SpeceficFullObjectSourceType
+					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
+					if err != nil {
+						return nil, err
+					}
+					if index >= len(values) {
+						logrus.Println(source)
+						return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+					}
+					val = make([]interface{}, 0)
+					val = append(val, values[index])
 				}
-				if speceficFullObject {
+				if sourceType == models.SpeceficFullObjectSourceType {
 					finalTaskBody[key] = val[0]
 				} else if itsArray || sourceType == models.FullObjectSourceType {
 					finalTaskBody[key] = val
@@ -387,7 +391,7 @@ func createJsonArr(jBody map[string]interface{}) ([]map[string]interface{}, erro
 	return newJArray, nil
 }
 
-func getSourceType(source string) (realSource string, index int, sourceType string) {
+func getSourceType(source string, lenKeys int) (realSource string, index int, sourceType string) {
 	if strings.Contains(source, "(foreach)") { // we must use current source
 		return strings.ReplaceAll(source, "(foreach)", ""), -1, models.ForeachSourceType
 	} else if strings.Contains(source, "[*]") { // we should return all objects from source
@@ -395,7 +399,11 @@ func getSourceType(source string) (realSource string, index int, sourceType stri
 	} else if strings.Contains(source, "[") && strings.Contains(source, "]") { // we should return object from specific source index
 		index = extractIndex(source)
 		indextr := fmt.Sprintf("[%d]", index)
-		return strings.ReplaceAll(source, indextr, ""), index, models.SpecificIndexSourceType
+		if lenKeys == 1 {
+			return strings.ReplaceAll(source, indextr, ""), index, models.SpeceficFullObjectSourceType
+		} else {
+			return strings.ReplaceAll(source, indextr, ""), index, models.SpecificIndexSourceType
+		}
 	} else {
 		return source, -1, models.FullObjectSourceType
 	}

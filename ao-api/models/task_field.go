@@ -21,8 +21,9 @@ const (
 )
 
 const (
-	ForeachSourceType       = "foreach"
-	GetAllSourceType        = "getAll"
-	SpecificIndexSourceType = "specificIndex"
-	FullObjectSourceType    = "fullObject"
+	ForeachSourceType            = "foreach"
+	GetAllSourceType             = "getAll"
+	SpecificIndexSourceType      = "specificIndex"
+	FullObjectSourceType         = "fullObject"
+	SpeceficFullObjectSourceType = "specificFullObject"
 )

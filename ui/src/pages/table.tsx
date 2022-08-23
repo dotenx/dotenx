@@ -2,6 +2,7 @@
 import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
@@ -165,8 +166,18 @@ function QueryTable({
 	projectTag: string
 	tableName: string
 }) {
+	const defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' }
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
+	const form = useForm<QueryBuilderValues>({ defaultValues })
 	return (
-		<QueryBuilder projectName={projectName} tableName={tableName}>
+		<QueryBuilder
+			index={0}
+			name=""
+			query={query}
+			form={form}
+			projectName={projectName}
+			tableName={tableName}
+		>
 			{(values) => (
 				<Endpoint
 					method="POST"
@@ -277,8 +288,18 @@ function RecordFilter({
 	defaultValues?: QueryBuilderValues
 	onSubmit: (values: QueryBuilderValues) => void
 }) {
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
+	const form = useForm<QueryBuilderValues>({ defaultValues })
 	return (
-		<QueryBuilder projectName={projectName} tableName={tableName} defaultValues={defaultValues}>
+		<QueryBuilder
+			index={0}
+			name=""
+			query={query}
+			form={form}
+			projectName={projectName}
+			tableName={tableName}
+			defaultValues={defaultValues}
+		>
 			{(values) => (
 				<Button type="button" onClick={() => onSubmit(values)}>
 					Apply Filter

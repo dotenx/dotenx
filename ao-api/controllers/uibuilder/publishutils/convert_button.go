@@ -8,14 +8,15 @@ import (
 )
 
 type Button struct {
-	kind       string        `json:"kind"`
+	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
 	RepeatFrom struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Data struct {
+	Events []Event `json:"events"`
+	Data   struct {
 		Style struct {
 			Desktop map[string]string `json:"desktop"`
 			Tablet  map[string]string `json:"tablet"`
@@ -25,7 +26,7 @@ type Button struct {
 	} `json:"data"`
 }
 
-const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
+const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -34,6 +35,7 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 		return "", err
 	}
 	var button Button
+	fmt.Println("events", component["events"])
 	json.Unmarshal(b, &button)
 	tmpl, err := template.New("button").Parse(buttonTemplate)
 	if err != nil {
@@ -47,6 +49,9 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 		fmt.Println("error: ", err.Error())
 		return "", err
 	}
+
+	// Add the events to the function store to be rendered later
+	functionStore.AddEvents(button.Events)
 
 	// Add the styles to the styleStore to be rendered later
 	styleStore.AddStyle(button.Id, button.Data.Style.Desktop, button.Data.Style.Tablet, button.Data.Style.Mobile)

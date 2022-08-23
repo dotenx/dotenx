@@ -1,9 +1,9 @@
-import { Button, Divider, Menu, SegmentedControl, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Divider, Menu, SegmentedControl, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { TbDeviceDesktop, TbDeviceMobile, TbDeviceTablet } from 'react-icons/tb'
-import { QueryKey } from '../api/api'
+import { TbDeviceDesktop, TbDeviceFloppy, TbDeviceMobile, TbDeviceTablet } from 'react-icons/tb'
+import { publishPage, QueryKey } from '../api/api'
 import { useGetProjectTag, usePages } from '../hooks'
 import { useCanvasStore } from './canvas-store'
 import { useDataSourceStore } from './data-source-store'
@@ -21,6 +21,7 @@ export function TopBar() {
 	const [opened, setOpened] = useState(false)
 	const components = useCanvasStore((store) => store.components)
 	const dataSources = useDataSourceStore((store) => store.sources)
+	const publishMutation = useMutation(publishPage)
 
 	return (
 		<div className="flex items-center justify-between h-full px-6">
@@ -74,13 +75,23 @@ export function TopBar() {
 					]}
 				/>
 			</div>
-			<Button
-				size="xs"
-				onClick={() => addPageMutate({ name: pageName, components, dataSources })}
-				loading={addPageLoading}
-			>
-				Publish
-			</Button>
+			<div className="flex items-center">
+				<ActionIcon
+					color="rose"
+					onClick={() => addPageMutate({ name: pageName, components, dataSources })}
+					loading={addPageLoading}
+					mr="xl"
+				>
+					<TbDeviceFloppy className="text-lg" />
+				</ActionIcon>
+				<Button
+					size="xs"
+					onClick={() => publishMutation.mutate({ projectTag, pageName })}
+					loading={publishMutation.isLoading}
+				>
+					Publish
+				</Button>
+			</div>
 		</div>
 	)
 }

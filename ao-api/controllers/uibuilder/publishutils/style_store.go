@@ -34,10 +34,6 @@ func (i *StyleStore) AddStyle(id string, desktopStyles, tabletStyles, mobileStyl
 	i.TabletStyles[id] = tabletStyles
 	i.MobileStyles[id] = mobileStyles
 
-	fmt.Printf("==========> %#v\n", i.DesktopStyles)
-	fmt.Printf("==========> %#v\n", i.TabletStyles)
-	fmt.Printf("==========> %#v\n", i.MobileStyles)
-
 }
 
 // a template to render all the imports

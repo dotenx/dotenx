@@ -6,6 +6,7 @@ import {
 	BsFillDiagram3Fill,
 	BsFillGrid1X2Fill,
 	BsFillXDiamondFill,
+	BsGlobe2,
 	BsHddNetworkFill,
 	BsTable,
 	BsWindowSidebar,
@@ -66,6 +67,11 @@ export const Sidebar = memo(() => {
 			label: 'Files',
 			icon: <BsFileEarmarkPdf />,
 		},
+		{
+			to: `/builder/projects/${projectName}/domains`,
+			label: 'Domains',
+			icon: <BsGlobe2 />,
+		},
 	]
 
 	return (
@@ -115,7 +121,7 @@ export const Sidebar = memo(() => {
 							</span>
 						</div>
 					</a>
-					{IS_LOCAL && <Logout />}
+					{!IS_LOCAL && <Logout />}
 				</div>
 			</div>
 
