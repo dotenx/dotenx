@@ -6,10 +6,10 @@ import {
 	BsFillDiagram3Fill,
 	BsFillGrid1X2Fill,
 	BsFillXDiamondFill,
+	BsGlobe2,
 	BsHddNetworkFill,
 	BsTable,
 	BsWindowSidebar,
-	BsGlobe2,
 } from 'react-icons/bs'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'

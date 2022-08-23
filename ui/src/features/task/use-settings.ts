@@ -9,10 +9,9 @@ import { useQueries, useQuery } from 'react-query'
 import { z } from 'zod'
 import { getTaskFields, getTaskKinds, getTriggerDefinition, QueryKey, TriggerData } from '../../api'
 import { flowAtom } from '../atoms'
-import { TaskNodeData, TaskOthers } from '../flow'
+import { TaskNodeData } from '../flow'
 import { NodeType } from '../flow/types'
 import { GroupData } from '../ui'
-import { ComplexFieldValue } from '../ui/complex-field'
 import { InputOrSelectKind } from '../ui/input-or-select'
 
 const textValue = { type: z.literal(InputOrSelectKind.Text), data: z.string() }
@@ -87,24 +86,24 @@ export function useTaskSettings({
 		() => taskFieldsQuery.data?.data?.fields ?? [],
 		[taskFieldsQuery.data?.data?.fields]
 	)
-	const dynVariables = useMemo(
-		() =>
-			_.omit(
-				defaultValues?.others,
-				taskFields.map((field) => field.key)
-			) as TaskOthers,
-		[defaultValues?.others, taskFields]
-	)
+	// const dynVariables = useMemo(
+	// 	() =>
+	// 		_.omit(
+	// 			defaultValues?.others,
+	// 			taskFields.map((field) => field.key)
+	// 		) as TaskOthers,
+	// 	[defaultValues?.others, taskFields]
+	// )
 
-	useEffect(() => {
-		setValue(
-			'vars',
-			_.toPairs(dynVariables).map(([key, value]) => ({
-				key,
-				value: value as ComplexFieldValue,
-			}))
-		)
-	}, [dynVariables, setValue])
+	// useEffect(() => {
+	// 	setValue(
+	// 		'vars',
+	// 		_.toPairs(dynVariables).map(([key, value]) => ({
+	// 			key,
+	// 			value: value as ComplexFieldValue,
+	// 		}))
+	// 	)
+	// }, [dynVariables, setValue])
 
 	const integrationTypes = taskFieldsQuery.data?.data.integration_types
 	const selectedTaskType = _.values(tasks)
