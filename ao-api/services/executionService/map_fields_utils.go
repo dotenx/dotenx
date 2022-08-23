@@ -238,7 +238,6 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 				}
 				finalTaskBody[key] = result
 			} else if insertDt.Type == models.NestedFieldType {
-				var speceficFullObject bool
 				keys := strings.Split(insertDt.NestedKey, ".")
 				// if we dont have any [*] in our nested key, we will get only one value
 				itsArray := strings.Contains(insertDt.NestedKey, "[*]")
