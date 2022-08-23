@@ -121,7 +121,7 @@ export const Sidebar = memo(() => {
 							</span>
 						</div>
 					</a>
-					{IS_LOCAL && <Logout />}
+					{!IS_LOCAL && <Logout />}
 				</div>
 			</div>
 
