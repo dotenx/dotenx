@@ -1,3 +1,4 @@
+// image: hojjat12/twitter-send-tweet:lambda3
 package main
 
 import (
@@ -17,7 +18,7 @@ import (
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -29,7 +30,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		consumerKey := singleInput["INTEGRATION_CONSUMER_KEY"].(string)
 		consumerSecret := singleInput["INTEGRATION_CONSUMER_SECRET"].(string)
 		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)

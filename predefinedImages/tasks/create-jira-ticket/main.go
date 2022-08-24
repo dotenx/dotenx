@@ -1,4 +1,4 @@
-// image: awrmin/create-jira-ticket:lambda3
+// image: awrmin/create-jira-ticket:lambda4
 package main
 
 import (
@@ -11,7 +11,7 @@ import (
 )
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 // type Event struct {
@@ -32,7 +32,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		project_key := singleInput["project_key"].(string)
 		issueType := singleInput["issue_type"].(string)
 		description := singleInput["description"].(string)

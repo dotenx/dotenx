@@ -1,4 +1,4 @@
-// image: hojjat12/facebook-publish-new-post:lambda3
+// image: hojjat12/facebook-publish-new-post:lambda4
 package main
 
 import (
@@ -54,7 +54,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 	targetPosts := make([]Post, 0)
-	innerBody := make(map[string]interface{})
+	innerBody := make([]map[string]interface{}, 0)
 
 	if len(posts) > 0 {
 		for _, post := range posts {
@@ -78,13 +78,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		resp.Triggered = false
 		return resp, nil
 	}
-	for i, post := range targetPosts {
+	for _, post := range targetPosts {
 		createdTime, _ := time.Parse("2006-01-02T15:04:05-0700", post.CreatedTime)
 		output := make(map[string]interface{})
 		output["created_time"] = createdTime.String()
 		output["message"] = post.Message
 		output["id"] = post.Id
-		innerBody[fmt.Sprint(i)] = output
+		innerBody = append(innerBody, output)
 	}
 	fmt.Println("innerBody:", innerBody)
 	returnValue := make(map[string]interface{})

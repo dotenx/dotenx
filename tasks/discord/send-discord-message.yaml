@@ -1,6 +1,6 @@
 service: discord
 type: Send discord message
-image: hawwwdi/send-discord-message:lambda2
+image: hawwwdi/send-discord-message:lambda3
 fields:
     - key: TEXT
       type: text

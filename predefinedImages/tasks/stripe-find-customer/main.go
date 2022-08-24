@@ -1,4 +1,4 @@
-// image: stripe/stripe-find-customer:lambda3
+// image: stripe/stripe-find-customer:lambda4
 package main
 
 import (
@@ -23,9 +23,9 @@ import (
 // }
 
 type Event struct {
-	Body           map[string]interface{} `json:"body"`
-	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
-	Authorization  string                 `json:"AUTHORIZATION"`
+	Body           []map[string]interface{} `json:"body"`
+	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
+	Authorization  string                   `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -39,11 +39,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	outputCnt := 0
-	outputs := make(map[string]interface{})
+	outputs := make([]map[string]interface{}, 0)
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
 		email := singleInput["CUS_EMAIL"].(string)
 		id := singleInput["CUS_ID"].(string)
@@ -55,11 +55,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			resp.Successfull = false
 			continue
 		}
-		outputs[fmt.Sprint(outputCnt)] = cus
+		outputs = append(outputs, cus)
 		outputCnt++
 	}
 
-	resp.ReturnValue = outputs
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": outputs,
+	}
 	if resp.Successfull {
 		resp.Status = "completed"
 		fmt.Println("All customer(s) founded successfully")

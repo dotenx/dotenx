@@ -1,6 +1,6 @@
 service: database
 type: Get table records
-image: hojjat12/database-get-records:lambda5
+image: hojjat12/database-get-records:lambda6
 fields:
     - key: dtx_access_token
       type: text

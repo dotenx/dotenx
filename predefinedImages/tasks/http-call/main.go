@@ -1,4 +1,4 @@
-// image: awrmin/dotenx-http-call:lambda3
+// image: awrmin/dotenx-http-call:lambda4
 package main
 
 import (
@@ -15,9 +15,9 @@ import (
 )
 
 type Event struct {
-	Body           map[string]interface{} `json:"body"`
-	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
-	Authorization  string                 `json:"AUTHORIZATION"`
+	Body           []map[string]interface{} `json:"body"`
+	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
+	Authorization  string                   `json:"AUTHORIZATION"`
 }
 
 // type Event struct {
@@ -40,9 +40,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp.Successfull = true
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
-	resultData := make(map[string]interface{})
-	for index, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+	resultData := make([]interface{}, 0)
+	for _, val := range event.Body {
+		singleInput := val
 		method := singleInput["method"].(string)
 		url := singleInput["url"].(string)
 		body := fmt.Sprint(singleInput["body"])
@@ -85,11 +85,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		// if statusCode >= http.StatusOK && statusCode <= 299 {
 		var res interface{}
 		json.Unmarshal(out, &res)
-		resultData[index] = res
+		resultData = append(resultData, res)
 		// }
 	}
 
-	resp.ReturnValue = resultData
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": resultData,
+	}
 	if resp.Successfull {
 		resp.Status = "completed"
 		fmt.Println("All request(s) sended successfully")

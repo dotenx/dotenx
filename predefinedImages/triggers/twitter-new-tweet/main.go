@@ -1,4 +1,4 @@
-// image: hojjat12/twitter-new-tweet:lambda3
+// image: hojjat12/twitter-new-tweet:lambda4
 package main
 
 import (
@@ -55,7 +55,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 	targetTweets := make([]twitter.Tweet, 0)
-	innerBody := make(map[string]interface{})
+	innerBody := make([]map[string]interface{}, 0)
 
 	if len(tweets) > 0 {
 		for _, tweet := range tweets {
@@ -78,11 +78,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		resp.Triggered = false
 		return resp, nil
 	}
-	for i, tweet := range targetTweets {
+	for _, tweet := range targetTweets {
 		output := make(map[string]interface{})
 		output["created_at"] = tweet.CreatedAt
 		output["text"] = tweet.Text
-		innerBody[fmt.Sprint(i)] = output
+		innerBody = append(innerBody, output)
 	}
 	fmt.Println("innerBody:", innerBody)
 	returnValue := make(map[string]interface{})

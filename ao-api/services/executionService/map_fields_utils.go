@@ -120,22 +120,22 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 }
 
 // getReturnValuesArray returns an array of body outputs
-func getReturnValuesArray(body map[string]interface{}) (returnValues []map[string]interface{}, err error) {
-	returnValues = make([]map[string]interface{}, 0)
-	lenMap := len(body)
-	for i := 0; i < lenMap; i++ {
-		value := body[fmt.Sprintf("%d", i)]
-		var returnValue map[string]interface{}
-		b, _ := json.Marshal(value)
-		err := json.Unmarshal(b, &returnValue)
-		if err != nil {
-			logrus.Println(value)
-			return nil, err
-		}
-		returnValues = append(returnValues, returnValue)
-	}
-	return
-}
+// func getReturnValuesArray(body map[string]interface{}) (returnValues []map[string]interface{}, err error) {
+// 	returnValues = make([]map[string]interface{}, 0)
+// 	lenMap := len(body)
+// 	for i := 0; i < lenMap; i++ {
+// 		value := body[fmt.Sprintf("%d", i)]
+// 		var returnValue map[string]interface{}
+// 		b, _ := json.Marshal(value)
+// 		err := json.Unmarshal(b, &returnValue)
+// 		if err != nil {
+// 			logrus.Println(value)
+// 			return nil, err
+// 		}
+// 		returnValues = append(returnValues, returnValue)
+// 	}
+// 	return
+// }
 
 // get key from a given index and a map of keys
 func getKey(i int, m map[string]int) string {
@@ -152,20 +152,20 @@ func getKey(i int, m map[string]int) string {
 // get return value array for certain key from certain source of an a task or trigger (task name could be task or trigger name)
 
 func (manager *executionManager) getReturnArrayForSeource(execId int, accountId, source, taskName string) ([]map[string]interface{}, error) {
-	body, err := manager.CheckExecutionInitialData(execId, accountId, source, taskName)
+	bodies, err := manager.CheckExecutionInitialData(execId, accountId, source, taskName)
 	if err != nil {
 		logrus.Println(err)
-		body, err = manager.CheckReturnValues(execId, accountId, source)
+		bodies, err = manager.CheckReturnValues(execId, accountId, source)
 		if err != nil {
 			logrus.Println(err)
 			return nil, errors.New("no value for this field" + source + " in initial data or return values")
 		}
 	}
-	returnValueArr, err := getReturnValuesArray(body)
-	if err != nil {
-		return nil, err
-	}
-	return returnValueArr, nil
+	// returnValueArr, err := getReturnValuesArray(body)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return bodies, nil
 }
 
 // first key in nested key is our source then we need to use getfromNestedJson utils to get array of values

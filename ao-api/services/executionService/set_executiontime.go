@@ -14,9 +14,6 @@ import (
 )
 
 func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
-	// fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-	// fmt.Println("setting execution time")
-	// fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	err := manager.Store.SetExecutionTime(executionId, seconds)
 	if err != nil {
 		return err
@@ -26,6 +23,7 @@ func (manager *executionManager) SetExecutionTime(executionId int, seconds int) 
 		return err
 	}
 	dt := ExecutionDto{AccountId: accountId, ExecutionId: strconv.Itoa(executionId), Seconds: seconds}
+	logrus.Println(dt)
 	json_data, err := json.Marshal(dt)
 	if err != nil {
 		return errors.New("bad input body")

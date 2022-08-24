@@ -7,18 +7,18 @@ import (
 )
 
 type Job struct {
-	ExecutionId    int                               `json:"executionId"`
-	TaskId         int                               `json:"taskId"`
-	Timeout        int                               `json:"timeout"`
-	Name           string                            `json:"name"`
-	Type           string                            `json:"type"`
-	AwsLambda      string                            `json:"aws_lambda"`
-	Image          string                            `json:"image"`
-	AccountId      string                            `json:"account_id"`
-	Body           map[string]map[string]interface{} `json:"body"`
-	MetaData       TaskDefinition                    `json:"task_meta_data"`
-	ResultEndpoint string                            `json:"result_endpoint"`
-	WorkSpace      string                            `json:"workspace"`
+	ExecutionId    int                      `json:"executionId"`
+	TaskId         int                      `json:"taskId"`
+	Timeout        int                      `json:"timeout"`
+	Name           string                   `json:"name"`
+	Type           string                   `json:"type"`
+	AwsLambda      string                   `json:"aws_lambda"`
+	Image          string                   `json:"image"`
+	AccountId      string                   `json:"account_id"`
+	Body           []map[string]interface{} `json:"body"`
+	MetaData       TaskDefinition           `json:"task_meta_data"`
+	ResultEndpoint string                   `json:"result_endpoint"`
+	WorkSpace      string                   `json:"workspace"`
 }
 
 // creates a new job dto for runner based on given task for certain execution

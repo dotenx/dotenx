@@ -19,7 +19,7 @@ services:
     # ui:
     #     build:
     #         context: ./ui
-    #         dockerfile: Dockerfile
+    #         dockerfile: Dockerfile.dev
     #     ports:
     #         - "3010:80"
     #     networks:
@@ -28,6 +28,8 @@ services:
     #         - ./ui:/usr/src/app
     #         - ./ui/nginx.conf:/etc/nginx/nginx.conf
     #         - /usr/src/app/node_modules
+    #     env_file:
+    #         - ./ui/.env.development
 
     redis:
         image: redis

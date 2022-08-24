@@ -1,4 +1,4 @@
-// image: hojjat12/typeform-new-response:lambda3
+// image: hojjat12/typeform-new-response:lambda4
 package main
 
 import (
@@ -71,9 +71,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
-	innerBody := make(map[string]interface{})
+	innerBody := make([]map[string]interface{}, 0)
 	if len(resps) > 0 {
-		for i, resp := range resps {
+		for _, resp := range resps {
 			myAnswer := make(map[string]string)
 			for _, ans := range resp.Answers {
 				fieldId := ans["field"].(map[string]interface{})["id"].(string)
@@ -87,7 +87,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			output["submitted_at"] = resp.SubmittedAt
 			output["response_id"] = resp.ResponseId
 			output["answers"] = string(answers)
-			innerBody[fmt.Sprint(i)] = output
+			innerBody = append(innerBody, output)
 		}
 	} else {
 		fmt.Println("no new response in form")

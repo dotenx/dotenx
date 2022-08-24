@@ -1,4 +1,4 @@
-// image: awrmin/sendemail:lambda3
+// image: awrmin/sendemail:lambda4
 package main
 
 import (
@@ -17,7 +17,7 @@ import (
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -29,7 +29,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		sender := singleInput["sender"].(string)
 		target := singleInput["target"].(string)
 		text := singleInput["text"].(string)
