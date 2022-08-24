@@ -12,6 +12,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
+	"github.com/dotenx/dotenx/ao-api/controllers/marketplace"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	"github.com/dotenx/dotenx/ao-api/controllers/objectstore"
 	"github.com/dotenx/dotenx/ao-api/controllers/predefinedMiniTask"
@@ -29,6 +30,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/dotenx/dotenx/ao-api/services/notifyService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
@@ -42,6 +44,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/marketplaceStore"
 	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
 	"github.com/dotenx/dotenx/ao-api/stores/objectstoreStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
@@ -135,6 +138,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	UserManagementStore := userManagementStore.New()
 	objectstoreStore := objectstoreStore.New(db)
 	uibuilderStore := uibuilderStore.New(db)
+	marketplaceStore := marketplaceStore.New(db)
 
 	// Services
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
@@ -149,6 +153,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
 	objectstoreService := objectstoreService.NewObjectstoreService(objectstoreStore)
 	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
+	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore)
 
 	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
@@ -165,6 +170,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profileController := profile.ProfileController{}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
+	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
 
 	// Routes
 	// endpoints with runner token
@@ -218,6 +224,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
+	marketplace := r.Group("/marketplace")
 
 	admin.POST("/automation/activate", adminController.ActivateAutomation)
 	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
@@ -347,6 +354,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
+
+	// marketplace router
+	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem())
+	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
+	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
+	public.GET("/marketplace", marketplaceController.ListItems())
 
 	// profile router
 	profile.GET("", profileController.GetProfile())
