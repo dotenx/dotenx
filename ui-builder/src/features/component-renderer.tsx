@@ -6,7 +6,6 @@ import { CSSProperties, ReactNode, useMemo, useState } from 'react'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import {
 	ActionKind,
-	BindingKind,
 	BoxComponent,
 	ButtonComponent,
 	CodeAction,
@@ -77,11 +76,8 @@ export function RenderComponents({
 function TextRenderer({ component, state }: { component: TextComponent; state: JsonMap }) {
 	const states = usePageStates((store) => store.states)
 	const allStates = { ...states, ...state }
-	const stateText =
-		component.bindings
-			.filter((binding) => binding.kind === BindingKind.Text)
-			.map((binding) => _.get(allStates, binding.fromStateName))
-			.filter((text) => !!text)[0] ?? ''
+	const textBinding = component.bindings.text
+	const stateText = textBinding ? _.get(allStates, textBinding.fromStateName) ?? '' : ''
 	const viewport = useViewportStore((store) => store.device)
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
 
@@ -327,19 +323,14 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			})
 	}
 
-	const shouldShow = component.bindings
-		.filter((binding) => binding.kind === BindingKind.Show)
-		.some((binding) => _.get(states, binding.fromStateName))
-
-	const shouldHide = component.bindings
-		.filter((binding) => binding.kind === BindingKind.Hide)
-		.some((binding) => _.get(states, binding.fromStateName))
-
-	const link =
-		component.bindings
-			.filter((binding) => binding.kind === BindingKind.Link)
-			.map((binding) => _.get(states, binding.fromStateName))
-			.filter((link) => !!link)[0] ?? ''
+	const bindings = component.bindings
+	const shouldShow = bindings.show
+		? (_.get(states, bindings.show.fromStateName) as boolean)
+		: false
+	const shouldHide = bindings.hide
+		? (_.get(states, bindings.hide.fromStateName) as boolean)
+		: false
+	const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
 
 	return (
 		<Draggable id={component.id} data={{ mode: DraggableMode.Move, componentId: component.id }}>
