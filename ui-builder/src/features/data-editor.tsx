@@ -16,10 +16,9 @@ import { useForm } from '@mantine/form'
 import { closeAllModals, openModal } from '@mantine/modals'
 import Editor from '@monaco-editor/react'
 import _ from 'lodash'
-import { nanoid } from 'nanoid'
 import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
-import { JsonArray } from '../utils'
+import { JsonArray, uuid } from '../utils'
 import {
 	Action,
 	ActionKind,
@@ -65,9 +64,9 @@ export function DataEditor({ component }: { component: Component }) {
 		editRepeatFrom: store.editRepeatFrom,
 	}))
 	const handleAddEvent = () =>
-		addEvent(component.id, { id: nanoid(), kind: EventKind.Click, actions: [] })
+		addEvent(component.id, { id: uuid(), kind: EventKind.Click, actions: [] })
 	const handleAddBinding = () =>
-		addBinding(component.id, { id: nanoid(), kind: BindingKind.Text, fromStateName: '' })
+		addBinding(component.id, { id: uuid(), kind: BindingKind.Text, fromStateName: '' })
 	const { dataSources } = useDataSourceStore((store) => ({
 		dataSources: store.sources,
 		addDataSource: store.add,
@@ -106,7 +105,7 @@ export function DataEditor({ component }: { component: Component }) {
 			.map((source) =>
 				source.properties.map((property) => ({
 					kind: property.kind,
-					name: `${source.stateName}${property.path}`,
+					name: `$store.${source.stateName}${property.path}`,
 				}))
 			)
 			.flat(),
@@ -160,7 +159,12 @@ export function DataEditor({ component }: { component: Component }) {
 				states={states}
 				repeatFrom={component.repeatFrom}
 				onChange={(value) =>
-					editRepeatFrom(component.id, { name: value, iterator: `${value}Item` })
+					editRepeatFrom(component.id, {
+						name: value,
+						iterator: value.replace('$store.', '')
+							? `${value.replace('$store.', '')}Item`
+							: '',
+					})
 				}
 			/>
 
@@ -185,23 +189,26 @@ function RepeatInput({
 	return (
 		<div>
 			<div className="flex items-center gap-2 mt-10">
-				<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+				<Text color="dimmed" size="xs" className="w-24 whitespace-nowrap shrink-0">
 					Repeat for each
 				</Text>
 				<Select
 					size="xs"
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
-						.map((state) => state.name)}
+						.map((state) => ({
+							label: state.name.replace('$store.', ''),
+							value: state.name,
+						}))}
 					className="grow"
-					value={repeatFrom.name.split('.').join(' - ') ?? ''}
-					onChange={(value) => onChange(value?.split(' - ').join('.') ?? '')}
+					value={repeatFrom.name ?? ''}
+					onChange={(value) => onChange(value ?? '')}
 					clearable
 				/>
 			</div>
 			{repeatFrom.iterator && (
 				<div className="flex items-center gap-2 mt-2">
-					<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+					<Text color="dimmed" size="xs" className="w-24 whitespace-nowrap shrink-0">
 						as
 					</Text>
 					<Code>{repeatFrom.iterator}</Code>
@@ -226,7 +233,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 
 	return (
 		<div className="space-y-2">
-			<div className="flex gap-1 justify-end">
+			<div className="flex justify-end gap-1">
 				<ActionIcon
 					size="xs"
 					onClick={() =>
@@ -251,7 +258,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 				<Text color="dimmed" size="xs" className="w-8 shrink-0">
 					from
 				</Text>
-				<Code className="grow overflow-x-auto no-scrollbar">{dataSource.url}</Code>
+				<Code className="overflow-x-auto grow no-scrollbar">{dataSource.url}</Code>
 			</div>
 		</div>
 	)
@@ -266,6 +273,19 @@ const eventOptions = [
 	{ label: 'submit', value: EventKind.Submit },
 ]
 
+export const getActionDefaultValue = (kind: ActionKind) => {
+	switch (kind) {
+		case ActionKind.Code:
+			return { id: uuid(), kind, code: '' }
+		case ActionKind.ToggleState:
+			return { id: uuid(), kind, name: '' }
+		case ActionKind.SetState:
+			return { id: uuid(), kind, name: '', valueToSet: '' }
+		case ActionKind.Fetch:
+			return { id: uuid(), kind, dataSourceName: '', body: '', params: '' }
+	}
+}
+
 function EventInput({
 	event,
 	changeEvent,
@@ -276,33 +296,19 @@ function EventInput({
 	removeEvent: () => void
 }) {
 	const addAction = (kind: ActionKind) => {
+		const action = getActionDefaultValue(kind)
 		switch (kind) {
 			case ActionKind.Code:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, code: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.ToggleState:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, name: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.SetState:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, name: '', valueToSet: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.Fetch:
-				changeEvent({
-					...event,
-					actions: [
-						...event.actions,
-						{ id: nanoid(), kind, dataSourceName: '', body: '', params: '' },
-					],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 		}
 	}
@@ -463,7 +469,7 @@ function EventInput({
 	)
 }
 
-function FetchSettings({
+export function FetchSettings({
 	initialValues,
 	onSave,
 }: {
@@ -479,7 +485,7 @@ function FetchSettings({
 				label="Data source"
 				description="Fetch request of"
 				data={dataSources.map((source) => source.stateName)}
-				{...form.getInputProps('dataSourceId')}
+				{...form.getInputProps('dataSourceName')}
 			/>
 			<TextInput
 				label="Query parameters"
@@ -505,7 +511,7 @@ function FetchSettings({
 	)
 }
 
-function CodeEditor({
+export function CodeEditor({
 	defaultValue,
 	onChange,
 }: {
@@ -523,7 +529,7 @@ function CodeEditor({
 	)
 }
 
-function ToggleStateSettings({
+export function ToggleStateSettings({
 	defaultValue,
 	onChange,
 }: {
@@ -546,7 +552,7 @@ function ToggleStateSettings({
 
 type ValueKind = 'text' | 'number' | 'yes/no'
 
-function SetStateSettings({
+export function SetStateSettings({
 	defaultValue,
 	onChange,
 }: {
@@ -665,12 +671,13 @@ function BindingInput({
 				</Text>
 				<Select
 					size="xs"
-					data={stateNames}
+					data={stateNames.map((name) => ({
+						label: name.replace('$store.', ''),
+						value: name,
+					}))}
 					className="grow"
-					value={binding.fromStateName.split('.').join(' - ')}
-					onChange={(value) =>
-						onChange({ ...binding, fromStateName: value?.split(' - ').join('.') ?? '' })
-					}
+					value={binding.fromStateName}
+					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
 				/>
 			</div>
 		</div>

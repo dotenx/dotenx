@@ -4,7 +4,7 @@ import create from 'zustand'
 
 interface CanvasState {
 	components: Component[]
-	setComponents: (components: Component[]) => void
+	set: (components: Component[]) => void
 	addComponent: (component: Component, parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
 	deleteComponent: (id: string) => void
@@ -24,7 +24,7 @@ interface CanvasState {
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
 	components: [],
-	setComponents: (components: Component[]) => set((state) => ({ ...state, components })),
+	set: (components: Component[]) => set((state) => ({ ...state, components })),
 	addComponent: (component, parentId) => {
 		set((state) => ({
 			...state,
@@ -362,6 +362,7 @@ export enum ComponentKind {
 	Select = 'Select',
 	Textarea = 'Textarea',
 	SubmitButton = 'Submit',
+	Form = 'Form',
 }
 
 export const componentKinds = [
@@ -370,6 +371,7 @@ export const componentKinds = [
 	ComponentKind.Button,
 	ComponentKind.Columns,
 	ComponentKind.Image,
+	ComponentKind.Form,
 	ComponentKind.Input,
 	ComponentKind.Select,
 	ComponentKind.Textarea,
@@ -437,6 +439,11 @@ export interface SubmitButtonComponent extends BaseComponent {
 	data: SubmitButtonComponentData
 }
 
+export interface FormComponent extends BaseComponent {
+	kind: ComponentKind.Form
+	data: FormComponentData
+}
+
 export type Component =
 	| TextComponent
 	| BoxComponent
@@ -447,6 +454,7 @@ export type Component =
 	| SelectComponent
 	| TextareaComponent
 	| SubmitButtonComponent
+	| FormComponent
 
 export interface Style {
 	desktop: CSSProperties
@@ -510,6 +518,11 @@ export interface SubmitButtonComponentData {
 	text: string
 }
 
+export interface FormComponentData {
+	style: Style
+	dataSourceName: string
+}
+
 export type ComponentData =
 	| TextComponentData
 	| BoxComponentData
@@ -520,6 +533,7 @@ export type ComponentData =
 	| SelectComponentData
 	| TextareaComponentData
 	| SubmitButtonComponentData
+	| FormComponentData
 
 export interface ComponentEvent {
 	id: string
@@ -528,12 +542,12 @@ export interface ComponentEvent {
 }
 
 export enum EventKind {
-	Click = 'Click',
-	MouseEnter = 'MouseEnter',
-	MouseLeave = 'MouseLeave',
-	KeyDown = 'KeyDown',
-	Change = 'Change',
-	Submit = 'Submit',
+	Click = 'click',
+	MouseEnter = 'mouseenter',
+	MouseLeave = 'mouseleave',
+	KeyDown = 'keydown',
+	Change = 'change',
+	Submit = 'submit',
 }
 
 interface BaseAction {
@@ -573,10 +587,10 @@ export enum ActionKind {
 }
 
 export const actionKinds = [
-	ActionKind.Code,
 	ActionKind.ToggleState,
 	ActionKind.SetState,
 	ActionKind.Fetch,
+	ActionKind.Code,
 ]
 
 export interface Binding {
