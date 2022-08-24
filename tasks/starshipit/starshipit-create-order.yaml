@@ -1,6 +1,6 @@
 service: starshipit
 type: Starshipit create order
-image: hojjat12/starshipit-create-order:lambda
+image: hojjat12/starshipit-create-order:lambda2
 integrations: [starshipit]
 fields:
     - key: order_date

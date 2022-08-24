@@ -1,4 +1,4 @@
-// image: awrmin/slack-new-message:lambda3
+// image: awrmin/slack-new-message:lambda4
 package main
 
 import (
@@ -70,11 +70,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			body := make(map[string]interface{})
 			body["accountId"] = accId
 			innerInnerBody := make(map[string]interface{})
-			innerBody := make(map[string]interface{})
+			innerBody := make([]map[string]interface{}, 0)
 			body["workspace"] = workspace
 			innerInnerBody["text"] = res.Messages[0].Msg.Text
 			innerInnerBody["timestamp"] = res.Messages[0].Timestamp
-			innerBody["0"] = innerInnerBody
+			innerBody = append(innerBody, innerInnerBody)
 			body[triggerName] = innerBody
 			resp.ReturnValue = body
 			resp.Triggered = true

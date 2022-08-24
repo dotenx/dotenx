@@ -1,4 +1,4 @@
-// image: stripe/stripe-update-customer:lambda3
+// image: stripe/stripe-update-customer:lambda4
 package main
 
 import (
@@ -24,9 +24,9 @@ import (
 // }
 
 type Event struct {
-	Body           map[string]interface{} `json:"body"`
-	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
-	Authorization  string                 `json:"AUTHORIZATION"`
+	Body           []map[string]interface{} `json:"body"`
+	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
+	Authorization  string                   `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -40,11 +40,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	outputCnt := 0
-	outputs := make(map[string]interface{})
+	outputs := make([]map[string]interface{}, 0)
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
 		name := singleInput["CUS_NAME"].(string)
 		phone := singleInput["CUS_PHONE"].(string)
@@ -58,13 +58,15 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			resp.Successfull = false
 			continue
 		}
-		outputs[fmt.Sprint(outputCnt)] = map[string]interface{}{
+		outputs = append(outputs, map[string]interface{}{
 			"customer_id": id,
-		}
+		})
 		outputCnt++
 	}
 
-	resp.ReturnValue = outputs
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": outputs,
+	}
 	if resp.Successfull {
 		resp.Status = "completed"
 		fmt.Println("All customer(s) updated successfully")

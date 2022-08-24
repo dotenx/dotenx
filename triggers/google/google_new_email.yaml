@@ -1,7 +1,7 @@
 service: google
 type: Google new email
 integrations: [google]
-image: awrmin/google-new-email:lambda3
+image: awrmin/google-new-email:lambda4
 credentials:
     - key: passed_seconds
       type: text

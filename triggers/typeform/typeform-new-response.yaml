@@ -1,7 +1,7 @@
 service: typeform
 type: Typeform new response
 integrations: [typeform]
-image: hojjat12/typeform-new-response:lambda3
+image: hojjat12/typeform-new-response:lambda4
 credentials:
     - key: form_id
       type: text

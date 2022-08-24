@@ -1,4 +1,4 @@
-// image: awrmin/google-new-email:lambda3
+// image: awrmin/google-new-email:lambda4
 package main
 
 import (
@@ -67,7 +67,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			body := make(map[string]interface{})
 			body["accountId"] = accId
 			innerBody := make(map[string]interface{})
-			outerBody := make(map[string]map[string]interface{})
+			outerBody := make([]map[string]interface{}, 0)
 			msgBody, _ := base64.URLEncoding.DecodeString(messages[0].Payload.Body.Data)
 			innerBody["body"] = string(msgBody)
 			innerBody["date"] = time.Unix(messages[0].InternalDate/1000, 0).String()
@@ -76,7 +76,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 					innerBody[strings.ToLower(header.Name)] = header.Value
 				}
 			}
-			outerBody["0"] = innerBody
+			outerBody = append(outerBody, innerBody)
 			body[triggerName] = outerBody
 			resp.Triggered = true
 			resp.ReturnValue = body
