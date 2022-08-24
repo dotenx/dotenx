@@ -8,11 +8,11 @@ import {
 	TbComponents,
 	TbFileImport as IcInput,
 	TbFileText as IcTextarea,
+	TbForms,
 	TbLayersDifference,
 	TbLayoutColumns as IcColumns,
 	TbMessage2 as IcText,
 	TbPhoto as IcImage,
-	TbQuestionMark,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
@@ -100,14 +100,14 @@ function Layer({ component }: { component: Component }) {
 	const disclosureButton = hasChildren && (
 		<ActionIcon
 			size="xs"
-			className="group-hover:opacity-100 opacity-0"
+			className="opacity-0 group-hover:opacity-100"
 			onClick={disclosure.toggle}
 		>
 			{opened ? <TbChevronUp /> : <TbChevronDown />}
 		</ActionIcon>
 	)
 
-	const childLayers = hasChildren && (
+	const childrenLayers = hasChildren && (
 		<div className="pl-4" hidden={!opened}>
 			<Layers components={component.components} />
 		</div>
@@ -116,7 +116,7 @@ function Layer({ component }: { component: Component }) {
 	return (
 		<div>
 			<div
-				className="flex py-1 items-center border-b group"
+				className="flex items-center py-1 border-b group"
 				onMouseOver={() => setHovered(component.id)}
 				onMouseOut={() => unsetHovered()}
 				onClick={selectAndScrollToComponent}
@@ -125,7 +125,7 @@ function Layer({ component }: { component: Component }) {
 				<span className={clsx('pl-1', !hasChildren && 'pl-[22px]')}>{icon}</span>
 				<p className="pl-2 cursor-default">{name}</p>
 			</div>
-			{childLayers}
+			{childrenLayers}
 		</div>
 	)
 }
@@ -151,6 +151,6 @@ const getComponentIcon = (kind: ComponentKind) => {
 		case ComponentKind.SubmitButton:
 			return <IcSubmitButton />
 		default:
-			return <TbQuestionMark />
+			return <TbForms />
 	}
 }

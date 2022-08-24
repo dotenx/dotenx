@@ -16,6 +16,7 @@ import {
 	ComponentKind,
 	EventKind,
 	FetchAction,
+	FormComponent,
 	ImageComponent,
 	InputComponent,
 	SelectComponent,
@@ -36,14 +37,12 @@ import { useViewportStore, ViewportDevice } from './viewport-store'
 
 export function RenderComponents({
 	components,
-	index,
 	state,
 }: {
 	components: Component[]
-	index?: number
 	state: JsonMap
 }) {
-	const states = usePageStates((store) => store.states)
+	const globalStates = usePageStates((store) => store.states)
 
 	return (
 		<>
@@ -51,7 +50,7 @@ export function RenderComponents({
 				let repeated = null
 				if (component.repeatFrom.name) {
 					const repeatedState =
-						(_.get(states, component.repeatFrom.name) as JsonArray) ?? []
+						(_.get(globalStates, component.repeatFrom.name) as JsonArray) ?? []
 					repeated = repeatedState.map((itemState, index) => (
 						<ComponentShaper
 							key={index}
@@ -66,7 +65,7 @@ export function RenderComponents({
 						{repeated ? (
 							repeated
 						) : (
-							<ComponentShaper component={component} index={index} state={state} />
+							<ComponentShaper component={component} state={state} />
 						)}
 					</ComponentWrapper>
 				)
@@ -75,14 +74,7 @@ export function RenderComponents({
 	)
 }
 
-export function TextRenderer({
-	component,
-	state,
-}: {
-	component: TextComponent
-	index?: number
-	state: JsonMap
-}) {
+function TextRenderer({ component, state }: { component: TextComponent; state: JsonMap }) {
 	const states = usePageStates((store) => store.states)
 	const allStates = { ...states, ...state }
 	const stateText =
@@ -102,25 +94,17 @@ export function TextRenderer({
 	)
 }
 
-export function BoxRenderer({
-	component,
-	index,
-	state,
-}: {
-	component: BoxComponent
-	index?: number
-	state: JsonMap
-}) {
+function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
 		<div className="p-10" style={combineStyles(viewport, component.data.style)}>
-			<RenderComponents components={component.components} index={index} state={state} />
+			<RenderComponents components={component.components} state={state} />
 		</div>
 	)
 }
 
-export function ButtonRenderer({ component }: { component: ButtonComponent; index?: number }) {
+function ButtonRenderer({ component }: { component: ButtonComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -128,15 +112,7 @@ export function ButtonRenderer({ component }: { component: ButtonComponent; inde
 	)
 }
 
-export function ColumnsRenderer({
-	component,
-	index,
-	state,
-}: {
-	component: ColumnsComponent
-	index?: number
-	state: JsonMap
-}) {
+function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
 
 	return (
@@ -150,7 +126,7 @@ export function ColumnsRenderer({
 					)}
 				>
 					<ComponentWrapper component={component}>
-						<ComponentShaper component={component} index={index} state={state} />
+						<ComponentShaper component={component} state={state} />
 					</ComponentWrapper>
 				</div>
 			))}
@@ -158,7 +134,7 @@ export function ColumnsRenderer({
 	)
 }
 
-export function ImageRenderer({ component }: { component: ImageComponent; index?: number }) {
+function ImageRenderer({ component }: { component: ImageComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = useMemo(
 		() => (component.data.image ? URL.createObjectURL(component.data.image) : undefined),
@@ -176,7 +152,7 @@ export function ImageRenderer({ component }: { component: ImageComponent; index?
 	)
 }
 
-export function InputRenderer({ component }: { component: InputComponent; index?: number }) {
+function InputRenderer({ component }: { component: InputComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<input
@@ -192,7 +168,7 @@ export function InputRenderer({ component }: { component: InputComponent; index?
 	)
 }
 
-export function SelectRenderer({ component }: { component: SelectComponent; index?: number }) {
+function SelectRenderer({ component }: { component: SelectComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<select
@@ -210,7 +186,7 @@ export function SelectRenderer({ component }: { component: SelectComponent; inde
 	)
 }
 
-export function TextareaRenderer({ component }: { component: TextareaComponent; index?: number }) {
+function TextareaRenderer({ component }: { component: TextareaComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<textarea
@@ -221,12 +197,7 @@ export function TextareaRenderer({ component }: { component: TextareaComponent; 
 	)
 }
 
-export function SubmitButtonRenderer({
-	component,
-}: {
-	component: SubmitButtonComponent
-	index?: number
-}) {
+export function SubmitButtonRenderer({ component }: { component: SubmitButtonComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	return (
 		<button type="submit" style={combineStyles(viewport, component.data.style)}>
@@ -235,48 +206,61 @@ export function SubmitButtonRenderer({
 	)
 }
 
-function ComponentShaper({
-	component,
-	index,
-	state,
-}: {
-	component: Component
-	index?: number
-	state: JsonMap
-}) {
+function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
+	const viewport = useViewportStore((store) => store.device)
+	return (
+		<form
+			onSubmit={(e) => e.preventDefault()}
+			style={combineStyles(viewport, component.data.style)}
+		>
+			<RenderComponents components={component.components} state={state} />
+		</form>
+	)
+}
+
+function ComponentShaper({ component, state }: { component: Component; state: JsonMap }) {
 	switch (component.kind) {
 		case ComponentKind.Text:
-			return <TextRenderer component={component} index={index} state={state} />
+			return <TextRenderer component={component} state={state} />
 		case ComponentKind.Box:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<BoxRenderer component={component} index={index} state={state} />
+					<BoxRenderer component={component} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Button:
-			return <ButtonRenderer component={component} index={index} />
+			return <ButtonRenderer component={component} />
 		case ComponentKind.Columns:
 			return (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					id={component.id}
 				>
-					<ColumnsRenderer component={component} index={index} state={state} />
+					<ColumnsRenderer component={component} state={state} />
 				</Droppable>
 			)
 		case ComponentKind.Image:
-			return <ImageRenderer component={component} index={index} />
+			return <ImageRenderer component={component} />
 		case ComponentKind.Input:
-			return <InputRenderer component={component} index={index} />
+			return <InputRenderer component={component} />
 		case ComponentKind.Select:
-			return <SelectRenderer component={component} index={index} />
+			return <SelectRenderer component={component} />
 		case ComponentKind.Textarea:
-			return <TextareaRenderer component={component} index={index} />
+			return <TextareaRenderer component={component} />
 		case ComponentKind.SubmitButton:
-			return <SubmitButtonRenderer component={component} index={index} />
+			return <SubmitButtonRenderer component={component} />
+		case ComponentKind.Form:
+			return (
+				<Droppable
+					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
+					id={component.id}
+				>
+					<FormRenderer component={component} state={state} />
+				</Droppable>
+			)
 		default:
 			return null
 	}
