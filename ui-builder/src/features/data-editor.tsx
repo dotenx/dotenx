@@ -25,6 +25,7 @@ import {
 	actionKinds,
 	Binding,
 	BindingKind,
+	bindingKinds,
 	Component,
 	ComponentEvent,
 	EventKind,
@@ -65,8 +66,8 @@ export function DataEditor({ component }: { component: Component }) {
 	}))
 	const handleAddEvent = () =>
 		addEvent(component.id, { id: uuid(), kind: EventKind.Click, actions: [] })
-	const handleAddBinding = () =>
-		addBinding(component.id, { id: uuid(), kind: BindingKind.Text, fromStateName: '' })
+	const handleAddBinding = (bindingKind: BindingKind) =>
+		addBinding(component.id, bindingKind, { fromStateName: '' })
 	const { dataSources } = useDataSourceStore((store) => ({
 		dataSources: store.sources,
 		addDataSource: store.add,
@@ -127,19 +128,24 @@ export function DataEditor({ component }: { component: Component }) {
 		/>
 	))
 
-	const bindings = component.bindings.map((binding) => (
-		<BindingInput
-			key={binding.id}
-			binding={binding}
-			stateNames={states.map((stateName) => stateName.name)}
-			onChange={(binding: Binding) => editBinding(component.id, binding)}
-			removeBinding={() => removeBinding(component.id, binding.id)}
-		/>
-	))
+	const bindings = _.toPairs(component.bindings)
+		.filter((b): b is [BindingKind, Binding] => !!b[1])
+		.map(([bindingKind, binding]) => (
+			<BindingInput
+				key={bindingKind}
+				kind={bindingKind}
+				binding={binding}
+				stateNames={states.map((stateName) => stateName.name)}
+				onChange={(binding: Binding) => editBinding(component.id, bindingKind, binding)}
+				removeBinding={() => removeBinding(component.id, bindingKind)}
+			/>
+		))
 
 	const sources = dataSources.map((dataSource) => (
 		<DataSourceItem key={dataSource.id} dataSource={dataSource} />
 	))
+
+	const remainingBindings = bindingKinds.filter((binding) => !component.bindings[binding])
 
 	return (
 		<div>
@@ -151,9 +157,21 @@ export function DataEditor({ component }: { component: Component }) {
 
 			<Divider label="Data bindings" mt="xl" mb="xs" />
 			<div className="space-y-4">{bindings}</div>
-			<Button mt="md" leftIcon={<TbPlus />} size="xs" onClick={handleAddBinding}>
-				Binding
-			</Button>
+			<Menu width={150} shadow="sm" position="bottom-start">
+				<Menu.Target>
+					<Button mt="md" leftIcon={<TbPlus />} size="xs">
+						Binding
+					</Button>
+				</Menu.Target>
+
+				<Menu.Dropdown>
+					{remainingBindings.map((kind) => (
+						<Menu.Item key={kind} onClick={() => handleAddBinding(kind)}>
+							{kind}
+						</Menu.Item>
+					))}
+				</Menu.Dropdown>
+			</Menu>
 
 			<RepeatInput
 				states={states}
@@ -644,10 +662,12 @@ function BindingInput({
 	onChange,
 	binding,
 	removeBinding,
+	kind,
 }: {
 	stateNames: string[]
 	onChange: (binding: Binding) => void
 	binding: Binding
+	kind: BindingKind
 	removeBinding: () => void
 }) {
 	return (
@@ -657,13 +677,7 @@ function BindingInput({
 				<Text color="dimmed" size="xs" className="w-8">
 					Get
 				</Text>
-				<Select
-					size="xs"
-					data={bindingOptions}
-					className="grow"
-					value={binding.kind}
-					onChange={(value: BindingKind) => onChange({ ...binding, kind: value })}
-				/>
+				<Code className="grow">{kind}</Code>
 			</div>
 			<div className="flex items-center gap-2">
 				<Text color="dimmed" size="xs" className="w-8">
@@ -683,10 +697,3 @@ function BindingInput({
 		</div>
 	)
 }
-
-const bindingOptions = [
-	{ label: 'text', value: BindingKind.Text },
-	{ label: 'hide if', value: BindingKind.Hide },
-	{ label: 'show if', value: BindingKind.Show },
-	{ label: 'link', value: BindingKind.Link },
-]
