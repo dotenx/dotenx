@@ -121,8 +121,8 @@ function ConditionRow({
 
 	return (
 		<div className="grid items-center grid-cols-12 gap-2 px-4">
-			<div className="col-span-">
-				{index === 0 && <p className="pl-2">Where</p>}
+			<div className="shrink-0">
+				{index === 0 && <p className="pl-2 whitespace-nowrap">Where</p>}
 				{index === 1 && (
 					<NewSelect
 						name={`${name}conjunction` as any}
@@ -130,7 +130,7 @@ function ConditionRow({
 						control={control}
 					/>
 				)}
-				{index > 1 && <p className="pl-2">{conjunction}</p>}
+				{index > 1 && <p className="pl-2 whitespace-nowrap">{conjunction}</p>}
 			</div>
 			<div className="col-span-3">
 				<NewSelect
@@ -226,23 +226,42 @@ function FieldsWrapper({
 
 				if ('filterSet' in filterSetValue) {
 					return (
-						<QueryBuilder
-							key={field.id}
-							index={index}
-							onDelete={() =>
-								form.setValue(
-									`${name}filterSet`,
-									filterSetItems.filter((item: any, i: number) => index !== i)
-								)
-							}
-							form={form}
-							query={query}
-							name={`${name}filterSet.${index}.`}
-							projectName={projectName}
-							tableName={tableName}
-						>
-							{() => <div></div>}
-						</QueryBuilder>
+						<div className="flex gap-4">
+							<div className="shrink-0">
+								{index === 0 && <p className="pl-2 whitespace-nowrap">Where</p>}
+								{index === 1 && (
+									<NewSelect
+										name={`${name}conjunction` as any}
+										options={chainedConditionOptions}
+										control={form.control}
+									/>
+								)}
+								{index > 1 && (
+									<p className="pl-2 whitespace-nowrap">{conjunction}</p>
+								)}
+							</div>
+							<div className="grow">
+								<QueryBuilder
+									key={field.id}
+									index={index}
+									onDelete={() =>
+										form.setValue(
+											`${name}filterSet`,
+											filterSetItems.filter(
+												(item: any, i: number) => index !== i
+											)
+										)
+									}
+									form={form}
+									query={query}
+									name={`${name}filterSet.${index}.`}
+									projectName={projectName}
+									tableName={tableName}
+								>
+									{() => <div></div>}
+								</QueryBuilder>
+							</div>
+						</div>
 					)
 				} else
 					return (
