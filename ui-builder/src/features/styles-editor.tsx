@@ -314,7 +314,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 					className="grow"
 				/>
 				<TextInput
-					value={styles.borderRadius}
+					value={styles.borderRadius ?? 0}
 					onChange={(event) => editStyle('borderRadius', event.target.value)}
 					className="w-16"
 					size="xs"
@@ -323,7 +323,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 
 			<p className="col-span-3">Style</p>
 			<SegmentedControl
-				value={styles.borderStyle}
+				value={styles.borderStyle ?? 'solid'}
 				onChange={(value) => editStyle('borderStyle', value)}
 				data={borderStyles}
 				className="col-span-9"
@@ -332,7 +332,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 
 			<p className="col-span-3">Width</p>
 			<TextInput
-				value={styles.borderWidth}
+				value={styles.borderWidth ?? 0}
 				onChange={(event) => editStyle('borderWidth', event.target.value)}
 				className="col-span-9"
 				size="xs"
@@ -340,7 +340,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
-				value={styles.borderColor}
+				value={styles.borderColor ?? ''}
 				onChange={(value) => editStyle('borderColor', value)}
 				className="col-span-9"
 				size="xs"
@@ -361,7 +361,7 @@ function BackgroundsEditor({ styles, editStyle }: { styles: CSSProperties; editS
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Color</p>
 			<ColorInput
-				value={styles.backgroundColor}
+				value={styles.backgroundColor ?? ''}
 				onChange={(value) => editStyle('backgroundColor', value)}
 				className="col-span-9"
 				size="xs"
@@ -369,7 +369,7 @@ function BackgroundsEditor({ styles, editStyle }: { styles: CSSProperties; editS
 
 			<p className="col-span-3">Clipping</p>
 			<Select
-				value={styles.backgroundClip}
+				value={styles.backgroundClip ?? ''}
 				onChange={(value) => editStyle('backgroundClip', value ?? '')}
 				data={backgroundClippings}
 				className="col-span-9"
@@ -410,7 +410,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Font</p>
 			<TextInput
-				value={styles.fontFamily}
+				value={styles.fontFamily ?? ''}
 				onChange={(event) => editStyle('fontFamily', event.target.value)}
 				className="col-span-9"
 				size="xs"
@@ -427,7 +427,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 
 			<p className="col-span-3">Size</p>
 			<TextInput
-				value={styles.fontSize}
+				value={styles.fontSize ?? ''}
 				onChange={(event) => editStyle('fontSize', event.target.value)}
 				className="col-span-3"
 				size="xs"
@@ -435,7 +435,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 
 			<p className="col-span-3 ml-3">Height</p>
 			<TextInput
-				value={styles.height}
+				value={styles.height ?? ''}
 				onChange={(event) => editStyle('lineHeight', event.target.value)}
 				className="col-span-3"
 				size="xs"
@@ -443,7 +443,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
-				value={styles.color}
+				value={styles.color ?? ''}
 				onChange={(value) => editStyle('color', value)}
 				className="col-span-9"
 				size="xs"
@@ -451,7 +451,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 
 			<p className="col-span-3">Align</p>
 			<SegmentedControl
-				value={styles.textAlign}
+				value={styles.textAlign ?? ''}
 				onChange={(value) => editStyle('textAlign', value)}
 				className="col-span-9"
 				data={aligns}
@@ -498,7 +498,7 @@ function PositionEditor({ styles, editStyle }: { styles: CSSProperties; editStyl
 	return (
 		<div>
 			<Select
-				value={styles.position}
+				value={styles.position ?? ''}
 				onChange={(value) => editStyle('position', value ?? '')}
 				data={positions}
 				size="xs"
@@ -574,7 +574,7 @@ function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: E
 				<p className="whitespace-nowrap">Overflow</p>
 				<SegmentedControl
 					data={overflows}
-					value={styles.overflow}
+					value={styles.overflow ?? ''}
 					onChange={(value) => editStyle('overflow', value)}
 					size="xs"
 					fullWidth
@@ -589,7 +589,7 @@ function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: E
 						{ label: 'None', value: 'none' },
 						{ label: 'Scale Down', value: 'scale-down' },
 					]}
-					value={styles.objectFit}
+					value={styles.objectFit ?? ''}
 					onChange={(value) => editStyle('objectFit', value ?? '')}
 					size="xs"
 					className="col-span-3"
@@ -611,7 +611,11 @@ function InlineInput({
 	return (
 		<div className="grid grid-cols-2 items-center">
 			<Text className="whitespace-nowrap">{label}</Text>
-			<TextInput size="xs" value={value} onChange={(event) => onChange(event.target.value)} />
+			<TextInput
+				size="xs"
+				value={value ?? ''}
+				onChange={(event) => onChange(event.target.value)}
+			/>
 		</div>
 	)
 }
@@ -685,7 +689,7 @@ function MarginPaddingInput({
 	return (
 		<div className="w-[6ch] flex items-center justify-center self-center">
 			<input
-				value={value}
+				value={value ?? ''}
 				onChange={(event) => onChange(event.target.value)}
 				className="focus:outline-none outline-none"
 				style={{ maxWidth: '6ch', minWidth: '1ch', width: `${value.length}ch` }}
@@ -713,7 +717,7 @@ function CssPropertiesEditor({
 							creatable
 							data={normalizedCssProperties}
 							size="xs"
-							value={property}
+							value={property ?? ''}
 							onChange={(newProperty) => {
 								const newStyles = _.fromPairs(
 									styles.map(([p, v]) =>
@@ -725,7 +729,7 @@ function CssPropertiesEditor({
 						/>
 						<TextInput
 							size="xs"
-							value={value}
+							value={value ?? ''}
 							onChange={(event) => {
 								onChange({ ...style, [property]: event.target.value })
 							}}

@@ -25,7 +25,7 @@ import {
 	TextareaComponent,
 	TextComponent,
 	ToggleStateAction,
-	useCanvasStore,
+	useCanvasStore
 } from './canvas-store'
 import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
@@ -279,6 +279,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	}))
 	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
 
+
 	const handleEvents = (kind: EventKind) => {
 		evalCodes(component.events, kind)
 
@@ -337,6 +338,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 				shadow="xs"
 				zIndex={150}
 				positionDependencies={[component]}
+				withinPortal
 			>
 				<Popover.Target>
 					<div

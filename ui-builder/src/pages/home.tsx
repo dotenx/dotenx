@@ -1,7 +1,8 @@
 import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useParams } from 'react-router-dom'
 import { Canvas } from '../features/canvas'
-import { CanvasWrapper } from '../features/canvas-wrapper'
 import { ComponentSelectorAndLayers } from '../features/component-selector'
 import { Settings } from '../features/settings'
 import { TopBar } from '../features/top-bar'
@@ -10,7 +11,7 @@ export function HomePage() {
 	const { projectName = '' } = useParams()
 
 	return (
-		<CanvasWrapper>
+		<DndProvider backend={HTML5Backend}>
 			<AppShell
 				header={<AppHeader projectName={projectName} />}
 				navbar={<AppLeftSideBar />}
@@ -19,7 +20,7 @@ export function HomePage() {
 			>
 				<Canvas />
 			</AppShell>
-		</CanvasWrapper>
+		</DndProvider>
 	)
 }
 
