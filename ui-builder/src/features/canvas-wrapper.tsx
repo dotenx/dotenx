@@ -107,7 +107,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				id,
 				parentId,
 				data: {
-					style: { desktop: { backgroundColor: '#999999' }, tablet: {}, mobile: {} },
+					style: { desktop: { backgroundColor: '#eeeeee' }, tablet: {}, mobile: {} },
 				},
 			}
 		case ComponentKind.Button:
@@ -167,8 +167,8 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 						tablet: {},
 						mobile: {},
 					},
-					image: null,
-					altText: '',
+					src: null,
+					alt: '',
 				},
 			}
 		case ComponentKind.Input:
