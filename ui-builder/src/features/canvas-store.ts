@@ -378,7 +378,7 @@ export interface RepeatFrom {
 	iterator: string
 }
 
-interface BaseComponent {
+export interface BaseComponent {
 	id: string
 	parentId: string
 	components: Component[]

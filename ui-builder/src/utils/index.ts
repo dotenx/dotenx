@@ -37,6 +37,14 @@ export function uuid() {
 	return nanoid()
 }
 
+export function camelCaseToKebabCase(str: string) {
+	return str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase()
+}
+
+export function kebabCaseToCamelCase(str: string) {
+	return str.replace(/-./g, (x) => x[1].toUpperCase())
+}
+
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 export type JsonMap = { [key: string]: AnyJson }
 export type JsonArray = AnyJson[]

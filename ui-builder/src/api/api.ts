@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { mapStylesToCamelCase, mapStylesToKebabCase } from './mapper'
 import {
 	AddPageRequest,
 	DeletePageRequest,
@@ -34,14 +35,18 @@ export const getPages = ({ projectTag }: GetPagesRequest) => {
 	return api.get<GetPagesResponse>(`/uibuilder/project/${projectTag}/page`)
 }
 
-export const getPageDetails = ({ projectTag, pageName }: GetPageDetailsRequest) => {
-	return api.get<GetPageDetailsResponse>(`/uibuilder/project/${projectTag}/page/${pageName}`)
+export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsRequest) => {
+	const res = await api.get<GetPageDetailsResponse>(
+		`/uibuilder/project/${projectTag}/page/${pageName}`
+	)
+	const components = mapStylesToCamelCase(res.data.content.layout)
+	return { ...res, data: { ...res.data, content: { ...res.data.content, layout: components } } }
 }
 
 export const addPage = ({ projectTag, pageName, components, dataSources }: AddPageRequest) => {
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
-		content: { layout: components, dataSources },
+		content: { layout: mapStylesToKebabCase(components), dataSources },
 	})
 }
 
