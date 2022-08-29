@@ -48,3 +48,13 @@ export type DeletePageRequest = {
 	projectTag: string
 	pageName: string
 }
+
+export type UploadImageRequest = {
+	projectTag: string
+	image: File
+}
+
+export type UploadImageResponse = {
+	fileName: string
+	url: string
+}

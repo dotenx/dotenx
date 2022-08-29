@@ -9,6 +9,8 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	PublishPageRequest,
+	UploadImageRequest,
+	UploadImageResponse,
 } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -51,4 +53,14 @@ export const deletePage = ({ projectTag, pageName }: DeletePageRequest) => {
 
 export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	return api.post(`/uibuilder/project/${projectTag}/page/${pageName}/publish`)
+}
+
+export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
+	const formData = new FormData()
+	formData.append('file', image)
+	return api.post<UploadImageResponse>(`/objectstore/project/${projectTag}/upload`, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	})
 }

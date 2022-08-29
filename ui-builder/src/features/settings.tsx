@@ -19,8 +19,8 @@ import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useDidUpdate } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
 import RichTextEditor from '@mantine/rte'
-import cssProperties from 'known-css-properties'
-import _ from 'lodash'
+import { useMutation } from '@tanstack/react-query'
+import { useAtomValue } from 'jotai'
 import { CSSProperties, useState } from 'react'
 import {
 	TbDatabase,
@@ -32,6 +32,7 @@ import {
 	TbUpload,
 	TbX,
 } from 'react-icons/tb'
+import { uploadImage } from '../api'
 import { uuid } from '../utils'
 import {
 	Action,
@@ -64,15 +65,10 @@ import {
 } from './data-editor'
 import { DataSourceForm } from './data-source-form'
 import { useDataSourceStore } from './data-source-store'
+import { projectTagAtom } from './project-atom'
 import { useSelectionStore } from './selection-store'
+import { StylesEditor } from './styles-editor'
 import { useViewportStore } from './viewport-store'
-
-const normalizedCssProperties = cssProperties.all.map((property) =>
-	property
-		.split('-')
-		.map((part, index) => (index !== 0 ? _.capitalize(part) : part))
-		.join('')
-)
 
 export function Settings() {
 	const components = useCanvasStore((store) => store.components)
@@ -85,8 +81,7 @@ export function Settings() {
 	if (!selectedComponent) return <UnselectedMessage />
 
 	return (
-		<div className="flex flex-col gap-4 text-xs">
-			<p className="text-lg font-bold">{selectedComponent.kind}</p>
+		<div className="text-xs">
 			<Tabs defaultValue="options">
 				<Tabs.List grow>
 					<Tabs.Tab value="options" icon={<TbRuler />}>
@@ -105,7 +100,7 @@ export function Settings() {
 				</Tabs.Panel>
 				<Tabs.Panel value="styles" pt="xs">
 					<StylesEditor
-						style={selectedComponent.data.style[viewport]}
+						styles={selectedComponent.data.style[viewport]}
 						onChange={editStyle}
 					/>
 				</Tabs.Panel>
@@ -217,34 +212,54 @@ function ButtonComponentSettings({ component }: { component: ButtonComponent }) 
 }
 
 function ImageComponentSettings({ component }: { component: ImageComponent }) {
+	const projectTag = useAtomValue(projectTagAtom)
+	const uploadImageMutation = useMutation(uploadImage)
 	const editComponent = useCanvasStore((store) => store.editComponent)
-	const image = component.data.image
-	const setImage = (image: File | null) =>
-		editComponent(component.id, { ...component.data, image })
+	const src = component.data.src
+	const setImage = (src: string | null) => editComponent(component.id, { ...component.data, src })
 	const bgSize = (component.data.style.desktop.backgroundSize as string) ?? 'cover'
 	const bgPosition = (component.data.style.desktop.backgroundPosition as string) ?? 'cover'
-	const altText = component.data.altText
+	const altText = component.data.alt
 	const viewport = useViewportStore((store) => store.device)
 	const editStyle = useEditStyle(component)
 
-	const imagePart = image ? (
+	const imagePart = src ? (
 		<div>
-			<CloseButton onClick={() => setImage(null)} mb="xs" title="Clear image" />
-			<Image src={URL.createObjectURL(image)} />
+			<CloseButton
+				onClick={() => setImage(null)}
+				mb="xs"
+				size="xs"
+				ml="auto"
+				title="Clear image"
+			/>
+			<Image radius="xs" src={src} />
 		</div>
 	) : (
-		<Dropzone onDrop={(files) => setImage(files[0])} accept={IMAGE_MIME_TYPE}>
-			<Group position="center" spacing="xl" style={{ pointerEvents: 'none' }}>
+		<Dropzone
+			onDrop={(files) =>
+				uploadImageMutation.mutate(
+					{ projectTag, image: files[0] },
+					{ onSuccess: (data) => setImage(data.data.url) }
+				)
+			}
+			accept={IMAGE_MIME_TYPE}
+			loading={uploadImageMutation.isLoading}
+		>
+			<Group position="center" spacing="xl" py="xl" style={{ pointerEvents: 'none' }}>
 				<Dropzone.Accept>
 					<TbUpload />
 				</Dropzone.Accept>
 				<Dropzone.Reject>
 					<TbX />
 				</Dropzone.Reject>
-				<Dropzone.Idle>
-					<TbPhoto size={50} />
-				</Dropzone.Idle>
-				<p className="text-center">Drag an image here or click to select</p>
+				{!uploadImageMutation.isLoading && (
+					<Dropzone.Idle>
+						<TbPhoto size={50} />
+					</Dropzone.Idle>
+				)}
+				{!uploadImageMutation.isLoading && (
+					<p className="text-center">Drag an image here or click to select</p>
+				)}
 			</Group>
 		</Dropzone>
 	)
@@ -252,6 +267,17 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 	return (
 		<div className="space-y-6">
 			{imagePart}
+			<TextInput
+				size="xs"
+				label="Source"
+				value={src ?? ''}
+				onChange={(event) =>
+					editComponent(component.id, {
+						...component.data,
+						src: event.target.value,
+					})
+				}
+			/>
 			<Select
 				size="xs"
 				label="Background size"
@@ -296,7 +322,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				onChange={(event) =>
 					editComponent(component.id, {
 						...component.data,
-						altText: event.target.value,
+						alt: event.target.value,
 					})
 				}
 			/>
@@ -734,7 +760,7 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 			)}
 			{hasDataSource && (
 				<div className="space-y-2">
-					<div className="flex items-center gap-1 justify-end">
+					<div className="flex items-center justify-end gap-1">
 						<ActionIcon
 							size="xs"
 							onClick={() =>
@@ -794,61 +820,6 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 					))}
 				</Menu.Dropdown>
 			</Menu>
-		</div>
-	)
-}
-
-function StylesEditor({
-	style,
-	onChange,
-}: {
-	style: CSSProperties
-	onChange: (style: CSSProperties) => void
-}) {
-	const styles = _.toPairs(style)
-
-	return (
-		<div>
-			<div className="space-y-4">
-				{styles.map(([property, value]) => (
-					<div className="flex items-center gap-2" key={property}>
-						<Select
-							searchable
-							creatable
-							data={normalizedCssProperties}
-							size="xs"
-							value={property}
-							onChange={(newProperty) => {
-								const newStyles = _.fromPairs(
-									styles.map(([p, v]) =>
-										p === property ? [newProperty, v] : [p, v]
-									)
-								)
-								onChange(newStyles)
-							}}
-						/>
-						<TextInput
-							size="xs"
-							value={value}
-							onChange={(event) => {
-								onChange({ ...style, [property]: event.target.value })
-							}}
-						/>
-						<CloseButton size="xs" onClick={() => onChange(_.omit(style, property))} />
-					</div>
-				))}
-			</div>
-			<Button
-				leftIcon={<TbPlus />}
-				onClick={() => {
-					const newStyles = { ...style, '': '' }
-					onChange(newStyles)
-				}}
-				size="xs"
-				mt="md"
-			>
-				Property
-			</Button>
 		</div>
 	)
 }

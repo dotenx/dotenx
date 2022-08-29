@@ -11,7 +11,7 @@ import {
 	TbDeviceTablet,
 	TbSettings,
 	TbTrash,
-	TbWorldUpload,
+	TbWorldUpload
 } from 'react-icons/tb'
 import { z } from 'zod'
 import {
@@ -22,23 +22,23 @@ import {
 	getProjectDetails,
 	publishPage,
 	QueryKey,
-	updatePage,
+	updatePage
 } from '../api/api'
 import { AnyJson } from '../utils'
 import { useCanvasStore } from './canvas-store'
 import { useDataSourceStore } from './data-source-store'
 import { usePageStates } from './page-states'
+import { projectTagAtom } from './project-atom'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
 const selectedPageAtom = atom('')
 
 export function TopBar({ projectName }: { projectName: string }) {
-	const projectDetailsQuery = useQuery(
-		[QueryKey.ProjectDetails, projectName],
-		() => getProjectDetails({ projectName }),
-		{ enabled: !!projectName }
-	)
-	const projectTag = projectDetailsQuery.data?.data.tag ?? ''
+	const [projectTag, setProjectTag] = useAtom(projectTagAtom)
+	useQuery([QueryKey.ProjectDetails, projectName], () => getProjectDetails({ projectName }), {
+		enabled: !!projectName,
+		onSuccess: (data) => setProjectTag(data.data.tag),
+	})
 	const selectedPage = useAtomValue(selectedPageAtom)
 	const setComponents = useCanvasStore((store) => store.set)
 	const setDataSources = useDataSourceStore((store) => store.set)

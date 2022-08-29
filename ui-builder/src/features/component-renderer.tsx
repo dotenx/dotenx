@@ -2,7 +2,7 @@ import { clsx, Image, Popover, Text, TypographyStylesProvider } from '@mantine/c
 import { useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import _ from 'lodash'
-import { CSSProperties, ReactNode, useMemo, useState } from 'react'
+import { CSSProperties, ReactNode, useState } from 'react'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import {
 	ActionKind,
@@ -132,17 +132,14 @@ function ColumnsRenderer({ component, state }: { component: ColumnsComponent; st
 
 function ImageRenderer({ component }: { component: ImageComponent }) {
 	const viewport = useViewportStore((store) => store.device)
-	const imageUrl = useMemo(
-		() => (component.data.image ? URL.createObjectURL(component.data.image) : undefined),
-		[component.data.image]
-	)
+	const imageUrl = component.data.src
 
 	if (!imageUrl) return <Image height={120} withPlaceholder />
 
 	return (
 		<img
 			src={imageUrl}
-			alt={component.data.altText}
+			alt={component.data.alt}
 			style={combineStyles(viewport, component.data.style)}
 		/>
 	)

@@ -1,4 +1,4 @@
-import { AppShell, Aside, Header, Navbar } from '@mantine/core'
+import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { Canvas } from '../features/canvas'
 import { CanvasWrapper } from '../features/canvas-wrapper'
@@ -41,8 +41,20 @@ function AppLeftSideBar() {
 
 function AppRightSideBar() {
 	return (
-		<Aside width={{ base: 310 }} p="lg">
-			<Settings />
+		<Aside width={{ base: 310 }}>
+			<Aside.Section
+				component={ScrollArea}
+				grow
+				scrollbarSize={4}
+				scrollHideDelay={0}
+				offsetScrollbars
+				mx="-xs"
+				px="xl"
+			>
+				<div className="py-2">
+					<Settings />
+				</div>
+			</Aside.Section>
 		</Aside>
 	)
 }
