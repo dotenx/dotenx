@@ -1,4 +1,4 @@
-// image: hojjat12/ebay-new-order:lambda2
+// image: hojjat12/ebay-new-order:lambda3
 package main
 
 import (
@@ -55,11 +55,11 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		log.Println(err.Error())
 		return resp, err
 	}
-	innerBody := make(map[string]interface{})
+	innerBody := make([]map[string]interface{}, 0)
 
 	if len(orders) > 0 {
-		for i, order := range orders {
-			innerBody[fmt.Sprint(i)] = order
+		for _, order := range orders {
+			innerBody = append(innerBody, order.(map[string]interface{}))
 		}
 	} else {
 		fmt.Println("no new order exist (ebay)")

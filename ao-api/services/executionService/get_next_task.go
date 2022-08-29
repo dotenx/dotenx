@@ -3,7 +3,6 @@ package executionService
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -123,8 +122,8 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 }
 
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
-func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) (map[string]map[string]interface{}, error) {
-	finalTaskBody := make(map[string]map[string]interface{})
+func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) ([]map[string]interface{}, error) {
+	finalTaskBody := make([]map[string]interface{}, 0)
 	returnValuesMap, err := manager.getReturnValuesMap(execId, accountId, taskName, taskBody)
 	if err != nil {
 		return nil, err
@@ -141,14 +140,13 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 	fmt.Println(sourceDataArr)
 	fmt.Println("######################################################")
 	// for each source we need a task body instance
-	for i, currentSourceData := range sourceDataArr {
-		inputIndex := strconv.Itoa(i)
+	for _, currentSourceData := range sourceDataArr {
 		currentTaskBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, currentSourceData)
 		if err != nil {
 			log.Println(err)
 			return nil, err
 		}
-		finalTaskBody[inputIndex] = currentTaskBody
+		finalTaskBody = append(finalTaskBody, currentTaskBody)
 	}
 	return finalTaskBody, nil
 }

@@ -1,13 +1,16 @@
+import { Without } from '@dnd-kit/utilities'
 import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { AnyJson } from '../utils'
 
+type EditDataSource = Without<DataSource, 'id'>
+
 interface DataSourceState {
 	sources: DataSource[]
 	set: (sources: DataSource[]) => void
 	add: (source: DataSource) => void
-	edit: (id: string, source: DataSource) => void
+	edit: (id: string, source: EditDataSource) => void
 	remove: (id: string) => void
 }
 
@@ -52,7 +55,7 @@ const findInnerPropertyPaths = (object: AnyJson, basePath: string): Property[] =
 		return [{ kind: PropertyKind.Unknown, path: basePath }]
 
 	const paths = _.toPairs(object)
-		.map(([key, value]) => findInnerPropertyPaths(value, `${basePath} - ${key}`))
+		.map(([key, value]) => findInnerPropertyPaths(value, `${basePath}.${key}`))
 		.flat()
 	return paths
 }

@@ -1,4 +1,4 @@
-// image: awrmin/stripe-payment-completed:lambda3
+// image: awrmin/stripe-payment-completed:lambda4
 package main
 
 import (
@@ -60,9 +60,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
-	innerOut := make(map[string]map[string]interface{})
-	for index, p := range payments {
-		innerOut[strconv.Itoa(index)] = map[string]interface{}{
+	innerOut := make([]map[string]interface{}, 0)
+	for _, p := range payments {
+		innerOut = append(innerOut, map[string]interface{}{
 			"id":             p.ID,
 			"amount":         p.Amount,
 			"currency":       p.Currency,
@@ -71,7 +71,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			"customer_email": p.CustomerEmail,
 			"description":    p.Description,
 			"status":         p.Status,
-		}
+		})
 	}
 	returnValue := map[string]interface{}{
 		"workspace": workspace,

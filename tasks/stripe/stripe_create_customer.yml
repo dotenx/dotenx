@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create customer
-image: stripe/stripe-create-customer:lambda3
+image: stripe/stripe-create-customer:lambda4
 integrations: [stripe]
 fields:
     - key: CUS_NAME

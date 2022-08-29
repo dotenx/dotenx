@@ -1,5 +1,6 @@
 import { AxiosRequestHeaders } from 'axios'
 import produce from 'immer'
+import { customAlphabet } from 'nanoid'
 
 /**
  * Insert an item into an array at a specific index and returns it.
@@ -28,6 +29,12 @@ export function safeParseToJson(value: string) {
 	} catch (e) {
 		return null
 	}
+}
+
+export function uuid() {
+	const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
+	const nanoid = customAlphabet(alphabet, 16)
+	return nanoid()
 }
 
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap

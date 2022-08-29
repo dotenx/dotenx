@@ -1,4 +1,4 @@
-// iamge: hojjat12/database-update-record:lambda3
+// iamge: hojjat12/database-update-record:lambda4
 package main
 
 import (
@@ -23,7 +23,7 @@ import (
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -35,7 +35,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		dtxAccessToken := singleInput["dtx_access_token"].(string)
 		projectTag := singleInput["project_tag"].(string)
 		tableName := singleInput["table_name"].(string)

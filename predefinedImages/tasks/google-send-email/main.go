@@ -1,3 +1,4 @@
+// image: hojjat12/google-send-email:lambda3
 package main
 
 import (
@@ -20,7 +21,7 @@ import (
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -32,7 +33,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 		refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
 		from := singleInput["from"].(string)

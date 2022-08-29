@@ -1,6 +1,6 @@
 service: google
 type: Google send email
-image: hojjat12/google-send-email:lambda2
+image: hojjat12/google-send-email:lambda3
 integrations: [google]
 fields:
     - key: from

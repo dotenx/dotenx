@@ -1,4 +1,4 @@
-// iamge: hojjat12/starshipit-create-order:lambda
+// iamge: hojjat12/starshipit-create-order:lambda2
 package main
 
 import (
@@ -23,7 +23,7 @@ import (
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -35,7 +35,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		// required fields
 		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 		subscriptionKey := os.Getenv("STARSHIPIT_SUBSCRIPTION_KEY")

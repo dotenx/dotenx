@@ -183,6 +183,10 @@ var migrations = []struct {
 		name: "create-table-project-ui-infrastructure",
 		stmt: createTableProjectUIInfrastructure,
 	},
+	{
+		name: "create-table-marketplace-items",
+		stmt: createTableMarketplaceItems,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -555,5 +559,23 @@ cdn_arn											varchar(64) DEFAULT '',
 cdn_domain									varchar(64) DEFAULT '',
 s3_bucket										varchar(64) DEFAULT '',
 UNIQUE (account_id, project_tag)
+)
+`
+
+var createTableMarketplaceItems = `
+CREATE TABLE IF NOT EXISTS marketplace_items (
+id                          	SERIAL PRIMARY KEY,
+creator_account_id  					varchar(64) NOT NULL,
+item_type											varchar(32) NOT NULL,
+category											varchar(64) DEFAULT '',
+title													varchar DEFAULT '',
+short_description							varchar DEFAULT '',
+description										varchar DEFAULT '',
+price 												int DEFAULT 0,
+features        							JSON,
+image_url 										varchar,
+enabled												BOOLEAN DEFAULT TRUE,
+created_at 										timestamp,
+updated_at 										timestamp
 )
 `

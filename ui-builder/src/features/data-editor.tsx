@@ -16,16 +16,16 @@ import { useForm } from '@mantine/form'
 import { closeAllModals, openModal } from '@mantine/modals'
 import Editor from '@monaco-editor/react'
 import _ from 'lodash'
-import { nanoid } from 'nanoid'
 import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
-import { JsonArray } from '../utils'
+import { JsonArray, uuid } from '../utils'
 import {
 	Action,
 	ActionKind,
 	actionKinds,
 	Binding,
 	BindingKind,
+	bindingKinds,
 	Component,
 	ComponentEvent,
 	EventKind,
@@ -65,9 +65,9 @@ export function DataEditor({ component }: { component: Component }) {
 		editRepeatFrom: store.editRepeatFrom,
 	}))
 	const handleAddEvent = () =>
-		addEvent(component.id, { id: nanoid(), kind: EventKind.Click, actions: [] })
-	const handleAddBinding = () =>
-		addBinding(component.id, { id: nanoid(), kind: BindingKind.Text, fromStateName: '' })
+		addEvent(component.id, { id: uuid(), kind: EventKind.Click, actions: [] })
+	const handleAddBinding = (bindingKind: BindingKind) =>
+		addBinding(component.id, bindingKind, { fromStateName: '' })
 	const { dataSources } = useDataSourceStore((store) => ({
 		dataSources: store.sources,
 		addDataSource: store.add,
@@ -106,7 +106,7 @@ export function DataEditor({ component }: { component: Component }) {
 			.map((source) =>
 				source.properties.map((property) => ({
 					kind: property.kind,
-					name: `${source.stateName}${property.path}`,
+					name: `$store.${source.stateName}${property.path}`,
 				}))
 			)
 			.flat(),
@@ -128,19 +128,24 @@ export function DataEditor({ component }: { component: Component }) {
 		/>
 	))
 
-	const bindings = component.bindings.map((binding) => (
-		<BindingInput
-			key={binding.id}
-			binding={binding}
-			stateNames={states.map((stateName) => stateName.name)}
-			onChange={(binding: Binding) => editBinding(component.id, binding)}
-			removeBinding={() => removeBinding(component.id, binding.id)}
-		/>
-	))
+	const bindings = _.toPairs(component.bindings)
+		.filter((b): b is [BindingKind, Binding] => !!b[1])
+		.map(([bindingKind, binding]) => (
+			<BindingInput
+				key={bindingKind}
+				kind={bindingKind}
+				binding={binding}
+				stateNames={states.map((stateName) => stateName.name)}
+				onChange={(binding: Binding) => editBinding(component.id, bindingKind, binding)}
+				removeBinding={() => removeBinding(component.id, bindingKind)}
+			/>
+		))
 
 	const sources = dataSources.map((dataSource) => (
 		<DataSourceItem key={dataSource.id} dataSource={dataSource} />
 	))
+
+	const remainingBindings = bindingKinds.filter((binding) => !component.bindings[binding])
 
 	return (
 		<div>
@@ -152,15 +157,32 @@ export function DataEditor({ component }: { component: Component }) {
 
 			<Divider label="Data bindings" mt="xl" mb="xs" />
 			<div className="space-y-4">{bindings}</div>
-			<Button mt="md" leftIcon={<TbPlus />} size="xs" onClick={handleAddBinding}>
-				Binding
-			</Button>
+			<Menu width={150} shadow="sm" position="bottom-start">
+				<Menu.Target>
+					<Button mt="md" leftIcon={<TbPlus />} size="xs">
+						Binding
+					</Button>
+				</Menu.Target>
+
+				<Menu.Dropdown>
+					{remainingBindings.map((kind) => (
+						<Menu.Item key={kind} onClick={() => handleAddBinding(kind)}>
+							{kind}
+						</Menu.Item>
+					))}
+				</Menu.Dropdown>
+			</Menu>
 
 			<RepeatInput
 				states={states}
 				repeatFrom={component.repeatFrom}
 				onChange={(value) =>
-					editRepeatFrom(component.id, { name: value, iterator: `${value}Item` })
+					editRepeatFrom(component.id, {
+						name: value,
+						iterator: value.replace('$store.', '')
+							? `${value.replace('$store.', '')}Item`
+							: '',
+					})
 				}
 			/>
 
@@ -185,23 +207,26 @@ function RepeatInput({
 	return (
 		<div>
 			<div className="flex items-center gap-2 mt-10">
-				<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+				<Text color="dimmed" size="xs" className="w-24 whitespace-nowrap shrink-0">
 					Repeat for each
 				</Text>
 				<Select
 					size="xs"
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
-						.map((state) => state.name)}
+						.map((state) => ({
+							label: state.name.replace('$store.', ''),
+							value: state.name,
+						}))}
 					className="grow"
-					value={repeatFrom.name.split('.').join(' - ') ?? ''}
-					onChange={(value) => onChange(value?.split(' - ').join('.') ?? '')}
+					value={repeatFrom.name ?? ''}
+					onChange={(value) => onChange(value ?? '')}
 					clearable
 				/>
 			</div>
 			{repeatFrom.iterator && (
 				<div className="flex items-center gap-2 mt-2">
-					<Text color="dimmed" size="xs" className="whitespace-nowrap w-24 shrink-0">
+					<Text color="dimmed" size="xs" className="w-24 whitespace-nowrap shrink-0">
 						as
 					</Text>
 					<Code>{repeatFrom.iterator}</Code>
@@ -226,7 +251,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 
 	return (
 		<div className="space-y-2">
-			<div className="flex gap-1 justify-end">
+			<div className="flex justify-end gap-1">
 				<ActionIcon
 					size="xs"
 					onClick={() =>
@@ -251,7 +276,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 				<Text color="dimmed" size="xs" className="w-8 shrink-0">
 					from
 				</Text>
-				<Code className="grow overflow-x-auto no-scrollbar">{dataSource.url}</Code>
+				<Code className="overflow-x-auto grow no-scrollbar">{dataSource.url}</Code>
 			</div>
 		</div>
 	)
@@ -266,6 +291,19 @@ const eventOptions = [
 	{ label: 'submit', value: EventKind.Submit },
 ]
 
+export const getActionDefaultValue = (kind: ActionKind) => {
+	switch (kind) {
+		case ActionKind.Code:
+			return { id: uuid(), kind, code: '' }
+		case ActionKind.ToggleState:
+			return { id: uuid(), kind, name: '' }
+		case ActionKind.SetState:
+			return { id: uuid(), kind, name: '', valueToSet: '' }
+		case ActionKind.Fetch:
+			return { id: uuid(), kind, dataSourceName: '', body: '', params: '' }
+	}
+}
+
 function EventInput({
 	event,
 	changeEvent,
@@ -276,33 +314,19 @@ function EventInput({
 	removeEvent: () => void
 }) {
 	const addAction = (kind: ActionKind) => {
+		const action = getActionDefaultValue(kind)
 		switch (kind) {
 			case ActionKind.Code:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, code: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.ToggleState:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, name: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.SetState:
-				changeEvent({
-					...event,
-					actions: [...event.actions, { id: nanoid(), kind, name: '', valueToSet: '' }],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 			case ActionKind.Fetch:
-				changeEvent({
-					...event,
-					actions: [
-						...event.actions,
-						{ id: nanoid(), kind, dataSourceName: '', body: '', params: '' },
-					],
-				})
+				changeEvent({ ...event, actions: [...event.actions, action] })
 				break
 		}
 	}
@@ -463,7 +487,7 @@ function EventInput({
 	)
 }
 
-function FetchSettings({
+export function FetchSettings({
 	initialValues,
 	onSave,
 }: {
@@ -479,7 +503,7 @@ function FetchSettings({
 				label="Data source"
 				description="Fetch request of"
 				data={dataSources.map((source) => source.stateName)}
-				{...form.getInputProps('dataSourceId')}
+				{...form.getInputProps('dataSourceName')}
 			/>
 			<TextInput
 				label="Query parameters"
@@ -505,7 +529,7 @@ function FetchSettings({
 	)
 }
 
-function CodeEditor({
+export function CodeEditor({
 	defaultValue,
 	onChange,
 }: {
@@ -523,7 +547,7 @@ function CodeEditor({
 	)
 }
 
-function ToggleStateSettings({
+export function ToggleStateSettings({
 	defaultValue,
 	onChange,
 }: {
@@ -546,7 +570,7 @@ function ToggleStateSettings({
 
 type ValueKind = 'text' | 'number' | 'yes/no'
 
-function SetStateSettings({
+export function SetStateSettings({
 	defaultValue,
 	onChange,
 }: {
@@ -638,10 +662,12 @@ function BindingInput({
 	onChange,
 	binding,
 	removeBinding,
+	kind,
 }: {
 	stateNames: string[]
 	onChange: (binding: Binding) => void
 	binding: Binding
+	kind: BindingKind
 	removeBinding: () => void
 }) {
 	return (
@@ -651,13 +677,7 @@ function BindingInput({
 				<Text color="dimmed" size="xs" className="w-8">
 					Get
 				</Text>
-				<Select
-					size="xs"
-					data={bindingOptions}
-					className="grow"
-					value={binding.kind}
-					onChange={(value: BindingKind) => onChange({ ...binding, kind: value })}
-				/>
+				<Code className="grow">{kind}</Code>
 			</div>
 			<div className="flex items-center gap-2">
 				<Text color="dimmed" size="xs" className="w-8">
@@ -665,21 +685,15 @@ function BindingInput({
 				</Text>
 				<Select
 					size="xs"
-					data={stateNames}
+					data={stateNames.map((name) => ({
+						label: name.replace('$store.', ''),
+						value: name,
+					}))}
 					className="grow"
-					value={binding.fromStateName.split('.').join(' - ')}
-					onChange={(value) =>
-						onChange({ ...binding, fromStateName: value?.split(' - ').join('.') ?? '' })
-					}
+					value={binding.fromStateName}
+					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
 				/>
 			</div>
 		</div>
 	)
 }
-
-const bindingOptions = [
-	{ label: 'text', value: BindingKind.Text },
-	{ label: 'hide if', value: BindingKind.Hide },
-	{ label: 'show if', value: BindingKind.Show },
-	{ label: 'link', value: BindingKind.Link },
-]

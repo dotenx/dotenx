@@ -1,4 +1,4 @@
-// image: hojjat12/dropbox-upload-new-file:lambda3
+// image: hojjat12/dropbox-upload-new-file:lambda4
 package main
 
 import (
@@ -82,8 +82,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		innerBody["modified_time"] = latestFileUnix.String()
 		innerBody["file"] = fmt.Sprintf("%s_%s", workspace, latestFile.Name)
 		body["workspace"] = workspace
-		body[triggerName] = map[string]interface{}{
-			"0": innerBody,
+		body[triggerName] = []map[string]interface{}{
+			innerBody,
 		}
 		err = saveFile(accessToken, latestFile.PathDisplay, workspace)
 		if err != nil {

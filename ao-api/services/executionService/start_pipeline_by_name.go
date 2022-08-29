@@ -3,10 +3,8 @@ package executionService
 import (
 	"errors"
 	"log"
-	"reflect"
 	"time"
 
-	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -51,11 +49,6 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		InitialData:       input,
 	}
 	if pipeline.IsInteraction {
-		initialData, err := transferInitialDataToWrightFormat(input)
-		if err != nil {
-			return -1, err
-		}
-		execution.InitialData = initialData
 		execution.ThirdPartyAccountId = tpAccountId
 		hasPermission := false
 		if len(pipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
@@ -136,24 +129,3 @@ the format we want:
 		}
 	}
 */
-func transferInitialDataToWrightFormat(input map[string]interface{}) (initialData map[string]interface{}, err error) {
-	interactionDataInterface, ok := input[config.Configs.App.InteractionBodyKey]
-	initialData = make(map[string]interface{})
-	if ok {
-		if reflect.TypeOf(interactionDataInterface).Kind() == reflect.Map {
-			interactionDataMap := interactionDataInterface.(map[string]interface{})
-			tasksDatas := make(map[string]interface{})
-			for taskName, taskBody := range interactionDataMap {
-				newInteractionDataForTask := make(map[string]interface{})
-				newInteractionDataForTask["0"] = taskBody
-				tasksDatas[taskName] = newInteractionDataForTask
-			}
-			initialData[config.Configs.App.InteractionBodyKey] = tasksDatas
-			return
-
-		} else {
-			return nil, errors.New("the initial data is not in the correct format")
-		}
-	}
-	return
-}

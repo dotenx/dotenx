@@ -4,7 +4,7 @@ import create from 'zustand'
 
 interface CanvasState {
 	components: Component[]
-	setComponents: (components: Component[]) => void
+	set: (components: Component[]) => void
 	addComponent: (component: Component, parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
 	deleteComponent: (id: string) => void
@@ -16,15 +16,15 @@ interface CanvasState {
 	addComponentEvent: (componentId: string, event: ComponentEvent) => void
 	editComponentEvent: (componentId: string, event: ComponentEvent) => void
 	removeEvent: (componentId: string, eventId: string) => void
-	addBinding: (componentId: string, binding: Binding) => void
-	editBinding: (componentId: string, binding: Binding) => void
-	removeBinding: (componentId: string, bindingId: string) => void
+	addBinding: (componentId: string, bindingKind: BindingKind, binding: Binding) => void
+	editBinding: (componentId: string, bindingKind: BindingKind, binding: Binding) => void
+	removeBinding: (componentId: string, bindingKind: BindingKind) => void
 	editRepeatFrom: (componentId: string, repeatFrom: RepeatFrom) => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
 	components: [],
-	setComponents: (components: Component[]) => set((state) => ({ ...state, components })),
+	set: (components: Component[]) => set((state) => ({ ...state, components })),
 	addComponent: (component, parentId) => {
 		set((state) => ({
 			...state,
@@ -97,27 +97,27 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 			}
 		})
 	},
-	addBinding: (componentId, binding) => {
+	addBinding: (componentId, bindingKind, binding) => {
 		set((state) => {
 			return {
 				...state,
-				components: addBinding(componentId, binding, state.components),
+				components: addOrEditBinding(componentId, bindingKind, binding, state.components),
 			}
 		})
 	},
-	editBinding: (componentId, binding) => {
+	editBinding: (componentId, bindingKind, binding) => {
 		set((state) => {
 			return {
 				...state,
-				components: editBinding(componentId, binding, state.components),
+				components: addOrEditBinding(componentId, bindingKind, binding, state.components),
 			}
 		})
 	},
-	removeBinding: (componentId, bindingId) => {
+	removeBinding: (componentId, bindingKind) => {
 		set((state) => {
 			return {
 				...state,
-				components: deleteBinding(componentId, bindingId, state.components),
+				components: deleteBinding(componentId, bindingKind, state.components),
 			}
 		})
 	},
@@ -162,13 +162,6 @@ export const getStateNames = (components: Component[]) => {
 	return states
 }
 
-const addBinding = (componentId: string, binding: Binding, components: Component[]) => {
-	const newComponents = _.cloneDeep(components)
-	const found = findComponent(componentId, newComponents)
-	if (found) found.bindings.push(binding)
-	return newComponents
-}
-
 const editRepeatFrom = (componentId: string, repeatFrom: RepeatFrom, components: Component[]) => {
 	const newComponents = _.cloneDeep(components)
 	const found = findComponent(componentId, newComponents)
@@ -176,23 +169,22 @@ const editRepeatFrom = (componentId: string, repeatFrom: RepeatFrom, components:
 	return newComponents
 }
 
-const editBinding = (componentId: string, binding: Binding, components: Component[]) => {
+const addOrEditBinding = (
+	componentId: string,
+	bindingKind: BindingKind,
+	binding: Binding,
+	components: Component[]
+) => {
 	const newComponents = _.cloneDeep(components)
 	const found = findComponent(componentId, newComponents)
-	if (found) {
-		const index = found.bindings.findIndex((b) => b.id === binding.id)
-		if (index !== -1) found.bindings[index] = binding
-	}
+	if (found) found.bindings[bindingKind] = binding
 	return newComponents
 }
 
-const deleteBinding = (componentId: string, bindingId: string, components: Component[]) => {
+const deleteBinding = (componentId: string, bindingKind: BindingKind, components: Component[]) => {
 	const newComponents = _.cloneDeep(components)
 	const found = findComponent(componentId, newComponents)
-	if (found) {
-		const index = found.bindings.findIndex((b) => b.id === bindingId)
-		if (index !== -1) found.bindings.splice(index, 1)
-	}
+	if (found) found.bindings[bindingKind] = null
 	return newComponents
 }
 
@@ -362,6 +354,7 @@ export enum ComponentKind {
 	Select = 'Select',
 	Textarea = 'Textarea',
 	SubmitButton = 'Submit',
+	Form = 'Form',
 }
 
 export const componentKinds = [
@@ -370,6 +363,7 @@ export const componentKinds = [
 	ComponentKind.Button,
 	ComponentKind.Columns,
 	ComponentKind.Image,
+	ComponentKind.Form,
 	ComponentKind.Input,
 	ComponentKind.Select,
 	ComponentKind.Textarea,
@@ -388,9 +382,21 @@ interface BaseComponent {
 	kind: ComponentKind
 	data: ComponentData
 	events: ComponentEvent[]
-	bindings: Binding[]
+	bindings: Partial<Record<BindingKind, Binding | null>>
 	repeatFrom: RepeatFrom
 }
+
+export type Component =
+	| TextComponent
+	| BoxComponent
+	| ButtonComponent
+	| ColumnsComponent
+	| ImageComponent
+	| InputComponent
+	| SelectComponent
+	| TextareaComponent
+	| SubmitButtonComponent
+	| FormComponent
 
 export interface TextComponent extends BaseComponent {
 	kind: ComponentKind.Text
@@ -437,16 +443,10 @@ export interface SubmitButtonComponent extends BaseComponent {
 	data: SubmitButtonComponentData
 }
 
-export type Component =
-	| TextComponent
-	| BoxComponent
-	| ButtonComponent
-	| ColumnsComponent
-	| ImageComponent
-	| InputComponent
-	| SelectComponent
-	| TextareaComponent
-	| SubmitButtonComponent
+export interface FormComponent extends BaseComponent {
+	kind: ComponentKind.Form
+	data: FormComponentData
+}
 
 export interface Style {
 	desktop: CSSProperties
@@ -510,6 +510,11 @@ export interface SubmitButtonComponentData {
 	text: string
 }
 
+export interface FormComponentData {
+	style: Style
+	dataSourceName: string
+}
+
 export type ComponentData =
 	| TextComponentData
 	| BoxComponentData
@@ -520,6 +525,7 @@ export type ComponentData =
 	| SelectComponentData
 	| TextareaComponentData
 	| SubmitButtonComponentData
+	| FormComponentData
 
 export interface ComponentEvent {
 	id: string
@@ -528,12 +534,12 @@ export interface ComponentEvent {
 }
 
 export enum EventKind {
-	Click = 'Click',
-	MouseEnter = 'MouseEnter',
-	MouseLeave = 'MouseLeave',
-	KeyDown = 'KeyDown',
-	Change = 'Change',
-	Submit = 'Submit',
+	Click = 'click',
+	MouseEnter = 'mouseenter',
+	MouseLeave = 'mouseleave',
+	KeyDown = 'keydown',
+	Change = 'change',
+	Submit = 'submit',
 }
 
 interface BaseAction {
@@ -573,21 +579,21 @@ export enum ActionKind {
 }
 
 export const actionKinds = [
-	ActionKind.Code,
 	ActionKind.ToggleState,
 	ActionKind.SetState,
 	ActionKind.Fetch,
+	ActionKind.Code,
 ]
 
 export interface Binding {
-	id: string
-	kind: BindingKind
 	fromStateName: string
 }
 
 export enum BindingKind {
-	Text = 'Text',
-	Hide = 'Hide',
-	Show = 'Show',
-	Link = 'Link',
+	Text = 'text',
+	Hide = 'hide',
+	Show = 'show',
+	Link = 'link',
 }
+
+export const bindingKinds = [BindingKind.Text, BindingKind.Hide, BindingKind.Show, BindingKind.Link]

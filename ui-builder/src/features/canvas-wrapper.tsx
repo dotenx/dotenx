@@ -8,8 +8,8 @@ import {
 	useSensor,
 	useSensors,
 } from '@dnd-kit/core'
-import { nanoid } from 'nanoid'
 import { ReactNode } from 'react'
+import { uuid } from '../utils'
 import { Component, ComponentKind, useCanvasStore } from './canvas-store'
 import { DraggableData, DraggableMode } from './draggable'
 import { DroppableData, DroppableMode } from './droppable'
@@ -44,7 +44,7 @@ export function CanvasWrapper({ children }: { children: ReactNode }) {
 		const overData = event.over.data.current as DroppableData
 		const overId = overData.componentId
 		if (event.over && overId && !overId.includes(event.active.id as string)) {
-			const newComponentId = nanoid()
+			const newComponentId = uuid()
 			switch (activeData.mode) {
 				case DraggableMode.Add:
 					{
@@ -102,7 +102,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -115,7 +115,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -140,7 +140,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -157,7 +157,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -176,7 +176,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -204,7 +204,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -231,7 +231,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -256,7 +256,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -267,7 +267,7 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 				kind,
 				components: [],
 				repeatFrom: { name: '', iterator: '' },
-				bindings: [],
+				bindings: {},
 				events: [],
 				id,
 				parentId,
@@ -287,6 +287,20 @@ const getComponentDataToAdd = (kind: ComponentKind, id: string, parentId: string
 					defaultValue: '',
 					required: false,
 					name: '',
+				},
+			}
+		case ComponentKind.Form:
+			return {
+				kind,
+				components: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: { desktop: { padding: '40px' }, tablet: {}, mobile: {} },
+					dataSourceName: '',
 				},
 			}
 	}

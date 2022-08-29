@@ -1,3 +1,4 @@
+// image: hawwwdi/send-discord-message:lambda3
 package main
 
 import (
@@ -20,7 +21,7 @@ type DiscordBody struct {
 // }
 
 type Event struct {
-	Body map[string]interface{} `json:"body"`
+	Body []map[string]interface{} `json:"body"`
 }
 type Response struct {
 	Successfull bool `json:"successfull"`
@@ -31,7 +32,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	lambdaResp := Response{}
 	lambdaResp.Successfull = true
 	for _, val := range event.Body {
-		singleInput := val.(map[string]interface{})
+		singleInput := val
 		webhookURL := singleInput["WEBHOOK_URL"].(string)
 		text := singleInput["TEXT"].(string)
 		discordBody := DiscordBody{

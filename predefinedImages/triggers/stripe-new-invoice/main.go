@@ -1,4 +1,4 @@
-// image: awrmin/stripe-new-invoice:lambda3
+// image: awrmin/stripe-new-invoice:lambda4
 package main
 
 import (
@@ -56,9 +56,9 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
-	innerOut := make(map[string]map[string]interface{})
-	for index, i := range invoices {
-		innerOut[strconv.Itoa(index)] = map[string]interface{}{
+	innerOut := make([]map[string]interface{}, 0)
+	for _, i := range invoices {
+		innerOut = append(innerOut, map[string]interface{}{
 			"id":               i.Id,
 			"description":      i.Description,
 			"link":             i.Link,
@@ -71,7 +71,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			"created":          i.Created,
 			"customer_id":      i.CustomerId,
 			"customer_email":   i.CustomerEmail,
-		}
+		})
 	}
 	returnValue := map[string]interface{}{
 		"workspace": workspace,
