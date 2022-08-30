@@ -19,15 +19,11 @@ export enum DroppableMode {
 
 export function Droppable({
 	children,
-	className,
-	id,
 	onClick,
 	data,
 	style,
 }: {
 	children?: ReactNode
-	className?: string
-	id: string
 	onClick?: () => void
 	data: DroppableData
 	style?: CSSProperties
@@ -110,7 +106,7 @@ export function Droppable({
 	}))
 
 	return (
-		<div ref={drop} style={style}>
+		<div ref={drop} style={style} onClick={onClick}>
 			{children}
 		</div>
 	)

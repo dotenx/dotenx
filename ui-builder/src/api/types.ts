@@ -36,6 +36,10 @@ export type PublishPageRequest = {
 	pageName: string
 }
 
+export type PublishPageResponse = {
+	url: string
+}
+
 interface PageDetails {
 	name: string
 	content: {

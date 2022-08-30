@@ -16,7 +16,11 @@ export const getDefaultComponentState = (
 				id,
 				parentId,
 				data: {
-					style: { desktop: { backgroundColor: '#eeeeee' }, tablet: {}, mobile: {} },
+					style: {
+						desktop: {},
+						tablet: {},
+						mobile: {},
+					},
 				},
 			}
 		case ComponentKind.Button:
@@ -31,12 +35,13 @@ export const getDefaultComponentState = (
 				data: {
 					style: {
 						desktop: {
-							width: '100%',
-							borderRadius: '4px',
-							backgroundColor: '#2563eb',
-							padding: '4px',
-							color: '#ffffff',
-							fontWeight: '500',
+							backgroundColor: '#3b82f6',
+							color: 'white',
+							border: '0',
+							paddingTop: '10px',
+							paddingBottom: '10px',
+							paddingLeft: '20px',
+							paddingRight: '20px',
 						},
 						tablet: {},
 						mobile: {},
@@ -55,7 +60,7 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: { gap: '40px', flex: '1 1 0px', display: 'flex', padding: '40px' },
+						desktop: { gap: '40px', flex: '1 1 0px', display: 'flex' },
 						tablet: {},
 						mobile: {},
 					},
@@ -91,12 +96,7 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: {
-							border: '1px solid #cccccc',
-							borderRadius: '4px',
-							width: '100%',
-							padding: '4px',
-						},
+						desktop: {},
 						tablet: {},
 						mobile: {},
 					},
@@ -119,12 +119,7 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: {
-							border: '1px solid #cccccc',
-							borderRadius: '4px',
-							width: '100%',
-							padding: '4px',
-						},
+						desktop: {},
 						tablet: {},
 						mobile: {},
 					},
@@ -147,12 +142,13 @@ export const getDefaultComponentState = (
 				data: {
 					style: {
 						desktop: {
-							width: '100%',
-							borderRadius: '4px',
-							backgroundColor: '#2563eb',
-							padding: '4px',
-							color: '#ffffff',
-							fontWeight: '500',
+							backgroundColor: '#3b82f6',
+							color: 'white',
+							border: '0',
+							paddingTop: '10px',
+							paddingBottom: '10px',
+							paddingLeft: '20px',
+							paddingRight: '20px',
 						},
 						tablet: {},
 						mobile: {},
@@ -182,12 +178,7 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: {
-							border: '1px solid #cccccc',
-							borderRadius: '4px',
-							width: '100%',
-							padding: '4px',
-						},
+						desktop: {},
 						tablet: {},
 						mobile: {},
 					},
@@ -208,7 +199,7 @@ export const getDefaultComponentState = (
 				id,
 				parentId,
 				data: {
-					style: { desktop: { padding: '40px' }, tablet: {}, mobile: {} },
+					style: { desktop: {}, tablet: {}, mobile: {} },
 					dataSourceName: '',
 				},
 			}

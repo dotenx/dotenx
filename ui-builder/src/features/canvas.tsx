@@ -1,7 +1,6 @@
 import { ReactNode, useContext, useEffect } from 'react'
-import { DndContext, DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import Frame, { FrameContext, FrameContextConsumer } from 'react-frame-component'
+import { DndContext } from 'react-dnd'
+import Frame, { FrameContext } from 'react-frame-component'
 import { useCanvasStore } from './canvas-store'
 import { RenderComponents } from './component-renderer'
 import { Droppable, DroppableMode } from './droppable'
@@ -9,18 +8,6 @@ import { useSelectionStore } from './selection-store'
 import { useViewportStore } from './viewport-store'
 
 export const ROOT_ID = 'root'
-
-function FrameBindingContext({ children }: { children: ReactNode }) {
-	return (
-		<FrameContextConsumer>
-			{({ window }) => (
-				<DndProvider backend={HTML5Backend} context={window}>
-					{children}
-				</DndProvider>
-			)}
-		</FrameContextConsumer>
-	)
-}
 
 const DndFrame = ({ children }: { children: ReactNode }) => {
 	const { dragDropManager } = useContext(DndContext)
@@ -42,26 +29,33 @@ export function Canvas() {
 
 	return (
 		<div className="h-full bg-gray-50 p-px">
-			<Frame
-				className="h-full w-full"
-				onClick={() => document.querySelector('iframe')?.contentWindow?.focus()}
-			>
+			<Frame className="h-full w-full">
 				<DndFrame>
 					<style>{`body { margin: 0 }`}</style>
-					<Droppable
-						data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
-						id={ROOT_ID}
-						onClick={deselectComponent}
+					<div
 						style={{
-							minHeight: '100vh',
-							margin: '0 auto',
-							transition: 'all 150ms',
-							backgroundColor: 'white',
-							maxWidth,
+							height: '100vh',
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'start',
 						}}
 					>
-						<RenderComponents components={components} state={{}} />
-					</Droppable>
+						<div style={{ padding: 2, flexGrow: 1 }}>
+							<Droppable
+								data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
+								onClick={deselectComponent}
+								style={{
+									minHeight: '100%',
+									margin: '0 auto',
+									transition: 'all 150ms',
+									backgroundColor: 'white',
+									maxWidth,
+								}}
+							>
+								<RenderComponents components={components} state={{}} />
+							</Droppable>
+						</div>
+					</div>
 				</DndFrame>
 			</Frame>
 		</div>
