@@ -38,20 +38,23 @@ func (i *StyleStore) AddStyle(id string, desktopStyles, tabletStyles, mobileStyl
 
 // a template to render all the imports
 
-const importTemplate = `@media (max-width: 1234px) {
+const importTemplate = `
+body {
+	margin: 0;
+}
 {{range $id, $styles := .DesktopStyles}}{{if $styles}}
 #{{$id}} {
-{{range $attr, $value := $styles}}{{$attr}}: {{$value}};{{end}}
+{{range $attr, $value := $styles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
 }{{end}}{{end}}
-}
-@media (max-width: 774px) {
+
+@media (max-width: 768px) {
 {{range $id, $styles := .TabletStyles}}{{if $styles}}#{{$id}} {
-		{{range $attr, $value := $styles}}{{$attr}}: {{$value}};{{end}}
+		{{range $attr, $value := $styles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
 }{{end}}{{end}}
 }
-@media (max-width: 500px) {
+@media (max-width: 640px) {
 {{range $id, $styles := .MobileStyles}}{{if $styles}}#{{$id}} {
-{{range $attr, $value := $styles}}{{$attr}}: {{$value}};{{end}}
+{{range $attr, $value := $styles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
 }{{end}}{{end}}
 }
 `

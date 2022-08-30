@@ -32,8 +32,8 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			url = '{{.Url}}';
 			fetch(url, {
 				method: '{{.Method}}',
-				{{if .Headers}}headers: {{.Headers}}{{end}}{{if .Body}},
-				body: {{.Body}}{{end}}
+				{{if .Headers}}headers: {{.Headers}},{{end}}
+				...(body? {body: JSON.stringify(body)} : {})
 			})
 				.then(response => response.json())
 				.then(data => {

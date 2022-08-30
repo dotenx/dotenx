@@ -36,6 +36,10 @@ export type PublishPageRequest = {
 	pageName: string
 }
 
+export type PublishPageResponse = {
+	url: string
+}
+
 interface PageDetails {
 	name: string
 	content: {
@@ -47,4 +51,14 @@ interface PageDetails {
 export type DeletePageRequest = {
 	projectTag: string
 	pageName: string
+}
+
+export type UploadImageRequest = {
+	projectTag: string
+	image: File
+}
+
+export type UploadImageResponse = {
+	fileName: string
+	url: string
 }

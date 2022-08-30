@@ -8,7 +8,7 @@ import (
 )
 
 type Image struct {
-	kind       string        `json:"type"`
+	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
 	Events     []Event       `json:"events"`
@@ -22,14 +22,12 @@ type Image struct {
 			Tablet  map[string]string `json:"tablet"`
 			Mobile  map[string]string `json:"mobile"`
 		} `json:"style"`
-		Image struct {
-			Path string `json:"path"`
-		} `json:"image"`
-		AltText string `json:"altText"`
+		Alt string `json:"alt"`
+		Src string `json:"src"`
 	} `json:"data"`
 }
 
-const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" alt="{{.Data.AltText}}" x-bind:src="` + "`{{.Data.Image.Path}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
+const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" alt="{{.Data.Alt}}" x-bind:src="` + "`{{.Data.Src}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertImage(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

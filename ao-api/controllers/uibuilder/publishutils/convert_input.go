@@ -8,10 +8,10 @@ import (
 )
 
 type Input struct {
-	kind       string        `json:"kind"`
+	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
-	RepeatFrom struct {
+	RepeatFrom struct {      // We're currently ignoring this field for inputs
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
@@ -30,7 +30,7 @@ type Input struct {
 	} `json:"data"`
 }
 
-const inputTemplate = `<input type="{{.Data.Type}}" id="{{.Id}}" placeholder="{{.Data.Placeholder}}" value="{{.Data.Value}}"/>`
+const inputTemplate = `<input type="{{.Data.Type}}" id="{{.Id}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
 
 func convertInput(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

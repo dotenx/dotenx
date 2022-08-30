@@ -1,4 +1,13 @@
-import { ActionIcon, Button, Divider, Menu, SegmentedControl, TextInput } from '@mantine/core'
+import {
+	Anchor,
+	Button,
+	Divider,
+	Menu,
+	SegmentedControl,
+	Text,
+	TextInput,
+	Tooltip,
+} from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
@@ -9,11 +18,11 @@ import {
 	TbDeviceFloppy,
 	TbDeviceMobile,
 	TbDeviceTablet,
-	TbSettings,
 	TbTrash,
 	TbWorldUpload,
 } from 'react-icons/tb'
 import { z } from 'zod'
+import { PublishPageRequest } from '../api'
 import {
 	addPage,
 	deletePage,
@@ -24,28 +33,29 @@ import {
 	QueryKey,
 	updatePage,
 } from '../api/api'
+import logoUrl from '../assets/logo.png'
 import { AnyJson } from '../utils'
 import { useCanvasStore } from './canvas-store'
 import { useDataSourceStore } from './data-source-store'
 import { usePageStates } from './page-states'
+import { projectTagAtom } from './project-atom'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
-const selectedPageAtom = atom('')
+const selectedPageAtom = atom({ exists: false, route: '' })
 
 export function TopBar({ projectName }: { projectName: string }) {
-	const projectDetailsQuery = useQuery(
-		[QueryKey.ProjectDetails, projectName],
-		() => getProjectDetails({ projectName }),
-		{ enabled: !!projectName }
-	)
-	const projectTag = projectDetailsQuery.data?.data.tag ?? ''
+	const [projectTag, setProjectTag] = useAtom(projectTagAtom)
+	useQuery([QueryKey.ProjectDetails, projectName], () => getProjectDetails({ projectName }), {
+		enabled: !!projectName,
+		onSuccess: (data) => setProjectTag(data.data.tag),
+	})
 	const selectedPage = useAtomValue(selectedPageAtom)
 	const setComponents = useCanvasStore((store) => store.set)
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
 	useQuery(
 		[QueryKey.PageDetails, projectTag, selectedPage],
-		() => getPageDetails({ projectTag, pageName: selectedPage }),
+		() => getPageDetails({ projectTag, pageName: selectedPage.route }),
 		{
 			onSuccess: (data) => {
 				const { content } = data.data
@@ -58,17 +68,41 @@ export function TopBar({ projectName }: { projectName: string }) {
 						.then((data) => setPageState(source.stateName, data.data))
 				)
 			},
-			enabled: !!projectTag && !!selectedPage,
+			enabled: !!projectTag && !!selectedPage.route,
 		}
 	)
+	const publishPageMutation = useMutation(publishPage)
+	const publishedUrl = publishPageMutation.data?.data.url
 
 	return (
 		<div className="flex items-center justify-between h-full px-6">
 			<div className="flex items-center gap-6">
+				<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
+					<Anchor href={import.meta.env.VITE_ADMIN_PANEL_URL}>
+						<img src={logoUrl} className="w-8" alt="logo" />
+					</Anchor>
+				</Tooltip>
 				<PageSelection projectTag={projectTag} />
 				<DeviceSelection />
 			</div>
-			<PageActions projectTag={projectTag} />
+			<div className="flex gap-6 items-center">
+				{publishedUrl && (
+					<Anchor
+						weight={500}
+						target="_blank"
+						size="xs"
+						rel="noopener noreferrer"
+						href={publishedUrl}
+					>
+						View Published Page
+					</Anchor>
+				)}
+				<PageActions
+					projectTag={projectTag}
+					handlePublish={publishPageMutation.mutate}
+					isPublishing={publishPageMutation.isLoading}
+				/>
+			</div>
 		</div>
 	)
 }
@@ -80,7 +114,7 @@ function PageSelection({ projectTag }: { projectTag: string }) {
 		onSuccess: (data) => {
 			const pages = data.data ?? []
 			const firstPage = pages[0] ?? 'index'
-			setSelectedPage(firstPage)
+			setSelectedPage({ exists: !!pages[0], route: firstPage })
 		},
 		enabled: !!projectTag,
 	})
@@ -88,7 +122,7 @@ function PageSelection({ projectTag }: { projectTag: string }) {
 	const closeMenu = () => setMenuOpened(false)
 
 	const pageList = pages.map((page) => (
-		<Menu.Item key={page} onClick={() => setSelectedPage(page)}>
+		<Menu.Item key={page} onClick={() => setSelectedPage({ exists: true, route: page })}>
 			/{page}
 		</Menu.Item>
 	))
@@ -97,13 +131,12 @@ function PageSelection({ projectTag }: { projectTag: string }) {
 		<Menu opened={menuOpened} onChange={setMenuOpened} width={260} shadow="sm">
 			<Menu.Target>
 				<Button
-					variant="subtle"
+					variant="light"
 					size="xs"
-					sx={{ minWidth: 260 }}
+					sx={{ minWidth: 200 }}
 					loading={pagesQuery.isLoading}
-					title="Page"
 				>
-					{`/${selectedPage}`}
+					{`/${selectedPage.route}`}
 				</Button>
 			</Menu.Target>
 
@@ -148,70 +181,97 @@ function DeviceSelection() {
 	)
 }
 
-function PageActions({ projectTag }: { projectTag: string }) {
+function PageActions({
+	projectTag,
+	handlePublish,
+	isPublishing,
+}: {
+	projectTag: string
+	handlePublish: (payload: PublishPageRequest) => void
+	isPublishing: boolean
+}) {
+	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
 	const queryClient = useQueryClient()
-	const pageName = useAtomValue(selectedPageAtom)
-	const savePageMutation = useMutation(updatePage)
+	const savePageMutation = useMutation(updatePage, {
+		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
+	})
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.Pages]),
 	})
 	const components = useCanvasStore((store) => store.components)
 	const dataSources = useDataSourceStore((store) => store.sources)
-	const publishPageMutation = useMutation(publishPage)
-	const save = () => savePageMutation.mutate({ projectTag, pageName, components, dataSources })
-	const publish = () => publishPageMutation.mutate({ projectTag, pageName })
-	const remove = () => deletePageMutation.mutate({ projectTag, pageName })
+	const save = () =>
+		savePageMutation.mutate({
+			projectTag,
+			pageName: selectedPage.route,
+			components,
+			dataSources,
+		})
+	const publish = () => handlePublish({ projectTag, pageName: selectedPage.route })
+	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
 
 	return (
-		<Menu position="bottom-end" width={120} shadow="sm">
-			<Menu.Target>
-				<ActionIcon color="rose" title="Page actions">
-					<TbSettings className="text-lg" />
-				</ActionIcon>
-			</Menu.Target>
-
-			<Menu.Dropdown>
-				<div className="space-y-1">
-					<Button
-						onClick={save}
-						loading={savePageMutation.isLoading}
-						variant="subtle"
-						size="xs"
-						leftIcon={<TbDeviceFloppy className="text-sm" />}
-						fullWidth
-						styles={{ inner: { justifyContent: 'start' } }}
-					>
-						Save
-					</Button>
-					<Button
-						onClick={publish}
-						loading={publishPageMutation.isLoading}
-						variant="subtle"
-						size="xs"
-						leftIcon={<TbWorldUpload className="text-sm" />}
-						fullWidth
-						styles={{ inner: { justifyContent: 'start' } }}
-					>
-						Publish
-					</Button>
-					<Button
-						onClick={remove}
-						loading={deletePageMutation.isLoading}
-						variant="subtle"
-						size="xs"
-						leftIcon={<TbTrash className="text-sm" />}
-						fullWidth
-						styles={{ inner: { justifyContent: 'start' } }}
-					>
-						Delete
-					</Button>
-				</div>
-			</Menu.Dropdown>
-		</Menu>
+		<Button.Group>
+			<Tooltip
+				withinPortal
+				withArrow
+				disabled={!selectedPage.exists}
+				label={<Text size="xs">Delete Page</Text>}
+			>
+				<Button
+					onClick={remove}
+					loading={deletePageMutation.isLoading}
+					size="xs"
+					fullWidth
+					styles={{ inner: { justifyContent: 'start' } }}
+					disabled={!selectedPage.exists}
+					variant="default"
+				>
+					<TbTrash className="text-sm" />
+				</Button>
+			</Tooltip>
+			<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
+				<Button
+					onClick={save}
+					loading={savePageMutation.isLoading}
+					size="xs"
+					fullWidth
+					styles={{ inner: { justifyContent: 'start' } }}
+					variant="default"
+				>
+					<TbDeviceFloppy className="text-sm" />
+				</Button>
+			</Tooltip>
+			<Tooltip
+				disabled={!selectedPage.exists}
+				withinPortal
+				withArrow
+				label={<Text size="xs">Publish Page</Text>}
+			>
+				<Button
+					onClick={publish}
+					loading={isPublishing}
+					size="xs"
+					fullWidth
+					styles={{ inner: { justifyContent: 'start' } }}
+					disabled={!selectedPage.exists}
+				>
+					<TbWorldUpload className="text-sm" />
+				</Button>
+			</Tooltip>
+		</Button.Group>
 	)
 }
 
-const schema = z.object({ pageName: z.string().min(2).max(20) })
+const schema = z.object({
+	pageName: z
+		.string()
+		.min(2)
+		.max(20)
+		.regex(/^[a-z0-9-]+$/i, {
+			message: 'Page name can only contain lowercase letters, numbers and dashes',
+		}),
+})
 
 function AddPageForm({ projectTag, onSuccess }: { projectTag: string; onSuccess: () => void }) {
 	const queryClient = useQueryClient()

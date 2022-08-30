@@ -1,7 +1,5 @@
-import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
-import { clsx } from '@mantine/core'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
+import { useDrag } from 'react-dnd'
 import { ComponentKind } from './canvas-store'
 
 export type DraggableData =
@@ -19,26 +17,23 @@ export enum DraggableMode {
 	Move = 'move',
 }
 
+export enum DraggableKinds {
+	Component = 'component',
+}
+
 export function Draggable({
 	children,
-	id,
 	data,
+	style,
 }: {
 	children: ReactNode
-	id: string
 	data: DraggableData
+	style?: CSSProperties
 }) {
-	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id, data })
-	const style = { transform: CSS.Translate.toString(transform) }
+	const [, drag] = useDrag(() => ({ type: DraggableKinds.Component, item: data }))
 
 	return (
-		<div
-			ref={setNodeRef}
-			style={style}
-			className={clsx('cursor-grab grow', isDragging && 'z-10 relative opacity-50')}
-			{...listeners}
-			{...attributes}
-		>
+		<div ref={drag} style={style}>
 			{children}
 		</div>
 	)

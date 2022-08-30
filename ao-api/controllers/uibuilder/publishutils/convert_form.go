@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-type Box struct {
+type Form struct {
 	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
@@ -23,22 +23,23 @@ type Box struct {
 			Tablet  map[string]string `json:"tablet"`
 			Mobile  map[string]string `json:"mobile"`
 		} `json:"style"`
-		Name string `json:"name"`
+		Text           string `json:"text"`
+		DataSourceName string `json:"dataSourceName"`
 	} `json:"data"`
 }
 
-const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
+const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
 
-func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
 	}
-	var box Box
-	json.Unmarshal(b, &box)
-	fmt.Printf("box:::: %#v\n", box)
-	tmpl, err := template.New("box").Parse(boxTemplate)
+
+	var form Form
+	json.Unmarshal(b, &form)
+	tmpl, err := template.New("form").Parse(formTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -46,7 +47,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 
 	var renderedChildren []string
 
-	for _, child := range box.Components {
+	for _, child := range form.Components {
 		renderedChild, err := convertComponentToHTML(child.(map[string]interface{}), styleStore, functionStore)
 		if err != nil {
 			fmt.Println(err)
@@ -62,12 +63,14 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 			Name     string
 			Iterator string
 		}
-		Events []Event
+		Events         []Event
+		DataSourceName string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
-		Id:               box.Id,
-		RepeatFrom:       box.RepeatFrom,
-		Events:           box.Events,
+		Id:               form.Id,
+		RepeatFrom:       form.RepeatFrom,
+		Events:           form.Events,
+		DataSourceName:   form.Data.DataSourceName,
 	}
 
 	var out bytes.Buffer
@@ -78,10 +81,10 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 	}
 
 	// Add the events to the function store to be rendered later
-	functionStore.AddEvents(box.Events)
+	functionStore.AddEvents(form.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(box.Id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
+	styleStore.AddStyle(form.Id, form.Data.Style.Desktop, form.Data.Style.Tablet, form.Data.Style.Mobile)
 
 	return out.String(), nil
 }

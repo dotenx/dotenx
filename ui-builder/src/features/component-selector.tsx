@@ -1,4 +1,4 @@
-import { ActionIcon, clsx, Tabs } from '@mantine/core'
+import { ActionIcon, clsx, Divider, Tabs } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { ReactElement } from 'react'
 import {
@@ -17,7 +17,13 @@ import {
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
 } from 'react-icons/tb'
-import { Component, ComponentKind, componentKinds, useCanvasStore } from './canvas-store'
+import {
+	basicComponents,
+	Component,
+	ComponentKind,
+	formComponents,
+	useCanvasStore,
+} from './canvas-store'
 import { Draggable, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
 
@@ -36,7 +42,10 @@ export function ComponentSelectorAndLayers() {
 			</Tabs.List>
 
 			<Tabs.Panel value="components" pt="xs">
-				<ComponentSelector />
+				<Divider mb="xs" label="Basic" labelPosition="center" />
+				<ComponentSelector kinds={basicComponents} />
+				<Divider mt="xl" mb="xs" label="Form" labelPosition="center" />
+				<ComponentSelector kinds={formComponents} />
 			</Tabs.Panel>
 			<Tabs.Panel value="layers" pt="xs">
 				<Layers components={components} />
@@ -45,10 +54,10 @@ export function ComponentSelectorAndLayers() {
 	)
 }
 
-function ComponentSelector() {
+function ComponentSelector({ kinds }: { kinds: ComponentKind[] }) {
 	return (
 		<div className="grid grid-cols-3 gap-2">
-			{componentKinds.map((kind) => (
+			{kinds.map((kind) => (
 				<DraggableComponent key={kind} kind={kind} />
 			))}
 		</div>
@@ -57,7 +66,7 @@ function ComponentSelector() {
 
 function DraggableComponent({ kind }: { kind: ComponentKind }) {
 	return (
-		<Draggable id={kind} data={{ mode: DraggableMode.Add, kind }}>
+		<Draggable data={{ mode: DraggableMode.Add, kind }}>
 			<ComponentCard label={kind} icon={getComponentIcon(kind)} />
 		</Draggable>
 	)
@@ -73,6 +82,9 @@ function ComponentCard({ label, icon }: { label: string; icon: ReactElement }) {
 }
 
 function Layers({ components }: { components: Component[] }) {
+	if (components.length === 0)
+		return <p className="text-xs text-center">Add a component to see layers</p>
+
 	return (
 		<div className="text-sm">
 			{components.map((component) => (

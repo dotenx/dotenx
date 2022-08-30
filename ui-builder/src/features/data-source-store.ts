@@ -1,10 +1,9 @@
-import { Without } from '@dnd-kit/utilities'
 import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { AnyJson } from '../utils'
 
-type EditDataSource = Without<DataSource, 'id'>
+type EditDataSource = Omit<DataSource, 'id'>
 
 interface DataSourceState {
 	sources: DataSource[]

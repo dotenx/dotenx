@@ -357,12 +357,15 @@ export enum ComponentKind {
 	Form = 'Form',
 }
 
-export const componentKinds = [
+export const basicComponents = [
 	ComponentKind.Text,
 	ComponentKind.Box,
 	ComponentKind.Button,
 	ComponentKind.Columns,
 	ComponentKind.Image,
+]
+
+export const formComponents = [
 	ComponentKind.Form,
 	ComponentKind.Input,
 	ComponentKind.Select,
@@ -375,7 +378,7 @@ export interface RepeatFrom {
 	iterator: string
 }
 
-interface BaseComponent {
+export interface BaseComponent {
 	id: string
 	parentId: string
 	components: Component[]
@@ -473,8 +476,8 @@ export interface ColumnsComponentData {
 
 export interface ImageComponentData {
 	style: Style
-	image: File | null
-	altText: string
+	src: string | null
+	alt: string
 }
 
 export interface InputComponentData {
