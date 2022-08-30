@@ -10,6 +10,7 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	PublishPageRequest,
+	PublishPageResponse,
 	UploadImageRequest,
 	UploadImageResponse,
 } from './types'
@@ -57,7 +58,9 @@ export const deletePage = ({ projectTag, pageName }: DeletePageRequest) => {
 }
 
 export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
-	return api.post(`/uibuilder/project/${projectTag}/page/${pageName}/publish`)
+	return api.post<PublishPageResponse>(
+		`/uibuilder/project/${projectTag}/page/${pageName}/publish`
+	)
 }
 
 export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {

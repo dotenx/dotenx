@@ -1,5 +1,5 @@
-import { clsx, Image, Popover, Text, TypographyStylesProvider } from '@mantine/core'
-import { useHotkeys } from '@mantine/hooks'
+import { clsx, TypographyStylesProvider } from '@mantine/core'
+import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
@@ -25,7 +25,7 @@ import {
 	TextareaComponent,
 	TextComponent,
 	ToggleStateAction,
-	useCanvasStore
+	useCanvasStore,
 } from './canvas-store'
 import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
@@ -82,7 +82,7 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
 
 	return (
-		<div className="overflow-auto" style={combineStyles(viewport, component.data.style)}>
+		<div style={{ overflow: 'auto', ...combineStyles(viewport, component.data.style) }}>
 			<TypographyStylesProvider>
 				<div dangerouslySetInnerHTML={{ __html: text }} />
 			</TypographyStylesProvider>
@@ -92,9 +92,10 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 
 function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
+	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
 
 	return (
-		<div className="p-10" style={combineStyles(viewport, component.data.style)}>
+		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
 			<RenderComponents components={component.components} state={state} />
 		</div>
 	)
@@ -110,9 +111,10 @@ function ButtonRenderer({ component }: { component: ButtonComponent }) {
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
+	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
 
 	return (
-		<div style={combineStyles(viewport, component.data.style)}>
+		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
 			{component.components.map((component) => (
 				<div
 					key={component.id}
@@ -134,7 +136,7 @@ function ImageRenderer({ component }: { component: ImageComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = component.data.src
 
-	if (!imageUrl) return <Image height={120} withPlaceholder />
+	if (!imageUrl) return <img height={120} />
 
 	return (
 		<img
@@ -186,6 +188,7 @@ function TextareaRenderer({ component }: { component: TextareaComponent }) {
 			placeholder={component.data.placeholder}
 			value={component.data.value || component.data.defaultValue}
 			style={combineStyles(viewport, component.data.style)}
+			readOnly
 		/>
 	)
 }
@@ -201,10 +204,12 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 
 function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
+	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
+
 	return (
 		<form
 			onSubmit={(e) => e.preventDefault()}
-			style={combineStyles(viewport, component.data.style)}
+			style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}
 		>
 			<RenderComponents components={component.components} state={state} />
 		</form>
@@ -217,10 +222,7 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <TextRenderer component={component} state={state} />
 		case ComponentKind.Box:
 			return (
-				<Droppable
-					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
-					id={component.id}
-				>
+				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
 					<BoxRenderer component={component} state={state} />
 				</Droppable>
 			)
@@ -228,10 +230,7 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <ButtonRenderer component={component} />
 		case ComponentKind.Columns:
 			return (
-				<Droppable
-					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
-					id={component.id}
-				>
+				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
 					<ColumnsRenderer component={component} state={state} />
 				</Droppable>
 			)
@@ -247,10 +246,7 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <SubmitButtonRenderer component={component} />
 		case ComponentKind.Form:
 			return (
-				<Droppable
-					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
-					id={component.id}
-				>
+				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
 					<FormRenderer component={component} state={state} />
 				</Droppable>
 			)
@@ -268,6 +264,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
 	const [hovered, setHovered] = useState(false)
+	const viewport = useViewportStore((store) => store.device)
 	const handleDelete = () => {
 		if (selectedComponentId) deleteComponent(selectedComponentId)
 	}
@@ -278,7 +275,6 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		setState: store.setState,
 	}))
 	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
-
 
 	const handleEvents = (kind: EventKind) => {
 		evalCodes(component.events, kind)
@@ -329,64 +325,93 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		? (_.get(states, bindings.hide.fromStateName) as boolean)
 		: false
 	const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
+	const combinedStyles = combineStyles(viewport, component.data.style)
 
 	return (
-		<Draggable id={component.id} data={{ mode: DraggableMode.Move, componentId: component.id }}>
-			<Popover
-				opened={isSelected}
-				transitionDuration={0}
-				shadow="xs"
-				zIndex={150}
-				positionDependencies={[component]}
-				withinPortal
+		<Draggable
+			style={{ display: combinedStyles.display }}
+			data={{ mode: DraggableMode.Move, componentId: component.id }}
+		>
+			<div
+				onKeyDown={getHotkeyHandler([['Backspace', handleDelete]])}
+				tabIndex={0}
+				id={component.id}
+				style={{
+					display: combinedStyles.display,
+					outlineWidth: hovered ? 2 : 1,
+					cursor: 'default',
+					position: 'relative',
+					zIndex: isSelected ? 10 : undefined,
+					outlineStyle: isSelected ? 'solid' : undefined,
+					outlineColor: '#fb7185',
+					borderRadius: 2,
+				}}
+				onMouseOver={(event) => {
+					event.stopPropagation()
+					setHovered(true)
+				}}
+				onMouseOut={(event) => {
+					event.stopPropagation()
+					setHovered(false)
+				}}
+				onClick={(event) => {
+					event.stopPropagation()
+					setSelectedComponent(component.id)
+				}}
+				hidden={!shouldShow && shouldHide}
 			>
-				<Popover.Target>
+				<div
+					style={{ display: combinedStyles.display }}
+					onClick={() => handleEvents(EventKind.Click)}
+					onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
+					onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
+					onKeyDown={() => handleEvents(EventKind.KeyDown)}
+					onChange={() => handleEvents(EventKind.Change)}
+					onSubmit={() => handleEvents(EventKind.Submit)}
+				>
+					{link ? <a href={link.toString()}>{children}</a> : children}
+				</div>
+				<Droppable
+					data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
+					style={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						right: 0,
+						zIndex: 10,
+						height: 16,
+						pointerEvents: 'none',
+					}}
+				/>
+				<Droppable
+					data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+					style={{
+						position: 'absolute',
+						bottom: 0,
+						left: 0,
+						right: 0,
+						zIndex: 10,
+						height: 16,
+						pointerEvents: 'none',
+					}}
+				/>
+				{isSelected && (
 					<div
-						id={component.id}
-						className={clsx(
-							'outline-1 cursor-default relative',
-							isSelected && 'outline z-10'
-						)}
-						onMouseOver={(event) => {
-							event.stopPropagation()
-							setHovered(true)
+						style={{
+							position: 'absolute',
+							backgroundColor: '#f43f5e',
+							fontFamily: 'monospace',
+							padding: '2px 6px',
+							bottom: -22,
+							color: 'white',
+							borderRadius: 2,
+							zIndex: 100,
 						}}
-						onMouseOut={(event) => {
-							event.stopPropagation()
-							setHovered(false)
-						}}
-						onClick={(event) => {
-							event.stopPropagation()
-							setSelectedComponent(component.id)
-						}}
-						hidden={!shouldShow && shouldHide}
 					>
-						<div
-							onClick={() => handleEvents(EventKind.Click)}
-							onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
-							onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
-							onKeyDown={() => handleEvents(EventKind.KeyDown)}
-							onChange={() => handleEvents(EventKind.Change)}
-							onSubmit={() => handleEvents(EventKind.Submit)}
-						>
-							{link ? <a href={link.toString()}>{children}</a> : children}
-						</div>
-						<Droppable
-							data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-							id={`${component.id}-before-drop`}
-							className="absolute top-0 left-0 right-0 z-10 h-4 pointer-events-none"
-						/>
-						<Droppable
-							data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-							id={`${component.id}-after-drop`}
-							className="absolute bottom-0 left-0 right-0 z-10 h-4 pointer-events-none"
-						/>
+						{component.kind}
 					</div>
-				</Popover.Target>
-				<Popover.Dropdown className="!px-2 !py-1">
-					<Text size="xs">{component.kind}</Text>
-				</Popover.Dropdown>
-			</Popover>
+				)}
+			</div>
 		</Draggable>
 	)
 }

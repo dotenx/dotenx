@@ -12,11 +12,10 @@ import {
 	Text,
 	TextInput,
 } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import produce from 'immer'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import cssProperties from 'known-css-properties'
 import _ from 'lodash'
-import { CSSProperties, ReactNode } from 'react'
+import { CSSProperties, ReactNode, useState } from 'react'
 import {
 	TbAlignCenter,
 	TbAlignJustified,
@@ -83,12 +82,7 @@ export function StylesEditor({
 	onChange: (style: CSSProperties) => void
 }) {
 	const editStyle: EditStyle = (style, value) => {
-		onChange(
-			produce(styles, (draft) => {
-				const newStyles = draft as Record<string, string>
-				newStyles[style] = value
-			})
-		)
+		onChange({ ...styles, [style]: value })
 	}
 
 	return (
@@ -297,6 +291,13 @@ const borderStyles = [
 ].map(toCenter)
 
 function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+	const defaultBorderRadius = _.parseInt(styles.borderRadius?.toString().replace('px', '') ?? '0')
+	const [borderRadius, setBorderRadius] = useState(defaultBorderRadius)
+
+	useDidUpdate(() => {
+		editStyle('borderRadius', borderRadius + 'px')
+	}, [borderRadius])
+
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Radius</p>
@@ -304,12 +305,8 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 				<Slider
 					min={0}
 					max={20}
-					value={
-						styles.borderRadius
-							? _.parseInt((styles.borderRadius.toString() ?? '').replace('px', ''))
-							: 0
-					}
-					onChange={(value) => editStyle('borderRadius', value.toString() + 'px')}
+					value={borderRadius}
+					onChange={setBorderRadius}
 					size="xs"
 					className="grow"
 				/>
@@ -344,6 +341,8 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 				onChange={(value) => editStyle('borderColor', value)}
 				className="col-span-9"
 				size="xs"
+				autoComplete="off"
+				name="color"
 			/>
 		</div>
 	)

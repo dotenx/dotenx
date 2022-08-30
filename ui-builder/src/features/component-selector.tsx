@@ -66,7 +66,7 @@ function ComponentSelector({ kinds }: { kinds: ComponentKind[] }) {
 
 function DraggableComponent({ kind }: { kind: ComponentKind }) {
 	return (
-		<Draggable id={kind} data={{ mode: DraggableMode.Add, kind }}>
+		<Draggable data={{ mode: DraggableMode.Add, kind }}>
 			<ComponentCard label={kind} icon={getComponentIcon(kind)} />
 		</Draggable>
 	)
@@ -82,6 +82,9 @@ function ComponentCard({ label, icon }: { label: string; icon: ReactElement }) {
 }
 
 function Layers({ components }: { components: Component[] }) {
+	if (components.length === 0)
+		return <p className="text-xs text-center">Add a component to see layers</p>
+
 	return (
 		<div className="text-sm">
 			{components.map((component) => (

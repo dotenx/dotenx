@@ -185,6 +185,7 @@ function BoxComponentSettings({ component }: { component: BoxComponent }) {
 				<p className="mb-1 text-base font-medium">Background</p>
 				<ColorPicker
 					format="hex"
+					fullWidth
 					value={backgroundColor}
 					onChange={(newColor) =>
 						editStyle({ ...component.data.style[viewport], backgroundColor: newColor })
