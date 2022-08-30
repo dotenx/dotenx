@@ -32,7 +32,7 @@ type TextArea struct {
 	} `json:"data"`
 }
 
-const textAreaTemplate = `<textarea cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{.Id}}" placeholder="{{.Data.Placeholder}}">{{.Data.Value}}</textarea>`
+const textAreaTemplate = `<textarea cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{.Id}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
 
 func convertTextArea(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

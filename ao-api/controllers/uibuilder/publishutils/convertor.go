@@ -31,6 +31,7 @@ var pageTemplate = `<!DOCTYPE html>
 	{{end}}
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
+	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="./{{.Name}}.css">
 </head>
 <body x-data>
@@ -112,6 +113,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 	fmt.Printf("kind: %#v\n", component["kind"])
 
 	switch component["kind"] {
+	case "Form":
+		return convertForm(component, styleStore, functionStore)
 	case "Box":
 		return convertBox(component, styleStore, functionStore)
 	case "Columns":
@@ -120,7 +123,7 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertInput(component, styleStore, functionStore)
 	case "Button":
 		return convertButton(component, styleStore, functionStore)
-	case "SubmitButton":
+	case "Submit":
 		return convertSubmitButton(component, styleStore, functionStore)
 	case "Textarea":
 		return convertTextArea(component, styleStore, functionStore)

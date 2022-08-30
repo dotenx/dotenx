@@ -27,6 +27,7 @@ type Select struct {
 		Required     bool   `json:"required"`
 		Type         string `json:"type"`
 		Value        string `json:"value"`
+		Multiple     bool   `json:"multiple"`
 		Options      []struct {
 			Label string `json:"label"`
 			Value string `json:"value"`
@@ -34,7 +35,7 @@ type Select struct {
 	} `json:"data"`
 }
 
-const selectTemplate = `<select id="{{.Id}}" display="inline" value="{{.Data.Value}}">{{range .Data.Options}}<option value="{{.Value}}">{{.Label}}</option>{{end}}</select>`
+const selectTemplate = `<select id="{{.Id}}" {{if .Data.Multiple}}multiple{{end}} x-data="{ options: {{.Data.Options}} }"  x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}><template x-for="option in options" :key="option"><option x-text="option.label" :value="option.value" :selected="{{if .Data.Multiple}}formData.{{.Data.Name}} === option.value{{else}}formData.{{.Data.Name}}.lastIndexOf(option.value) != -1{{end}}"></option></template></select>`
 
 func convertSelect(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
