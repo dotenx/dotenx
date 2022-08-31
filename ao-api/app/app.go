@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/controllers/admin"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/database"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
+	internalController "github.com/dotenx/dotenx/ao-api/controllers/internalController"
 	"github.com/dotenx/dotenx/ao-api/controllers/marketplace"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	"github.com/dotenx/dotenx/ao-api/controllers/objectstore"
@@ -30,6 +30,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
+	"github.com/dotenx/dotenx/ao-api/services/internalService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/dotenx/dotenx/ao-api/services/notifyService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
@@ -148,6 +149,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
@@ -163,7 +165,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService, OauthService: OauthService}
 	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
-	adminController := admin.AdminController{}
+	InternalController := internalController.InternalController{Service: InternalService}
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService, NotifyService: notifyService.NewNotifierService()}
@@ -201,8 +203,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	public := r.Group("/public")
 	public.POST("/execution/ep/:endpoint/start", executionController.StartPipeline())
 
-	// this is a mock admin endpoints for test locally
-	admin := r.Group("/internal")
+	// this is a mock admin endpoints for test locally and other report endpoints that be used in plan-manager
+	internal := r.Group("/internal")
 
 	if !config.Configs.App.RunLocally {
 		r.Use(middlewares.OauthMiddleware(httpHelper))
@@ -226,10 +228,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder := r.Group("/uibuilder")
 	marketplace := r.Group("/marketplace")
 
-	admin.POST("/automation/activate", adminController.ActivateAutomation)
-	admin.POST("/automation/deactivate", adminController.DeActivateAutomation)
-	admin.POST("/execution/submit", adminController.SubmitExecution)
-	admin.POST("/user/access/:resource", adminController.CheckAccess)
+	internal.POST("/automation/activate", InternalController.ActivateAutomation)
+	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
+	internal.POST("/execution/submit", InternalController.SubmitExecution)
+	internal.POST("/user/access/:resource", InternalController.CheckAccess)
+	internal.POST("/project/list", middlewares.InternalMiddleware(), InternalController.ListProjects)
+	internal.POST("/db_project/list", middlewares.InternalMiddleware(), InternalController.ListDBProjects)
+	internal.POST("/tp_user/list", middlewares.InternalMiddleware(), InternalController.ListTpUsers)
 
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)

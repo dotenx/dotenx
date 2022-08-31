@@ -31,6 +31,12 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		res, err := e.Service.StartPipelineByName(input, accountId, name, tpAccountId, userGroup)
 		if err != nil {
 			logrus.Error(err.Error())
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 			switch err.Error() {
 			case "you don't have permission to execute this interaction":
 				c.Status(http.StatusForbidden)

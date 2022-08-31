@@ -8,16 +8,17 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-var ListProjects = `
-Select id, name, description, tag, has_database from projects
-WHERE account_id = $1
+var ListDBProjects = `
+Select id, name, description, tag from projects
+WHERE account_id = $1 AND has_database = true
 `
 
-func (store *projectStore) ListProjects(ctx context.Context, accountId string) ([]models.Project, error) {
+// ListDBProjects returns projects that have database
+func (store *projectStore) ListDBProjects(ctx context.Context, accountId string) ([]models.Project, error) {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
-		stmt = ListProjects
+		stmt = ListDBProjects
 	default:
 		return nil, fmt.Errorf("driver not supported")
 	}
@@ -29,7 +30,7 @@ func (store *projectStore) ListProjects(ctx context.Context, accountId string) (
 	var projects []models.Project
 	for rows.Next() {
 		var project models.Project
-		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag, &project.HasDatabase); err != nil {
+		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag); err != nil {
 			return nil, err
 		}
 		projects = append(projects, project)

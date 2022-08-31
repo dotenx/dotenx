@@ -9,6 +9,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
+	"github.com/sirupsen/logrus"
 )
 
 func NewUserManagementService(store userManagementStore.UserManagementStore, projStore projectStore.ProjectStore) UserManagementService {
@@ -88,6 +89,16 @@ func (ums *userManagementService) SetUserInfo(userInfo models.ThirdUser, project
 	if err != nil {
 		return err
 	}
+
+	hasAccess, err := ums.CheckAccess(project.AccountId)
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
+	if !hasAccess {
+		return utils.ErrReachLimitationOfPlan
+	}
+
 	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
 	if err != nil {
 		return err

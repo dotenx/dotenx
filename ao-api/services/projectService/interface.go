@@ -19,6 +19,8 @@ type ProjectService interface {
 	GetProjectByTag(tag string) (models.Project, error)
 	GetProjectDomain(accountId, projectTag string) (models.ProjectDomain, error)
 	UpsertProjectDomain(projectDomain models.ProjectDomain) error
+	CheckCreateProjectAccess(accountId string) (bool, error)
+	CheckCreateDatabaseAccess(accountId string) (bool, error)
 }
 
 type projectService struct {

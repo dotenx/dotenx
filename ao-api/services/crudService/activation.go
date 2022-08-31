@@ -20,7 +20,7 @@ func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error
 		return err
 	}
 	if !hasAccess {
-		return errors.New("you have reached your limit")
+		return utils.ErrReachLimitationOfPlan
 	}
 	err = cm.Store.ActivatePipeline(noContext, accountId, pipelineId)
 	if err != nil {
