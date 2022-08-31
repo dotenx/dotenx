@@ -276,7 +276,9 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 				<Text color="dimmed" size="xs" className="w-8 shrink-0">
 					from
 				</Text>
-				<Code className="overflow-x-auto grow no-scrollbar">{dataSource.url}</Code>
+				<Code className="overflow-x-auto grow no-scrollbar max-w-[237px]">
+					{dataSource.url}
+				</Code>
 			</div>
 		</div>
 	)
@@ -437,7 +439,7 @@ function EventInput({
 			<Text size="xs" color="dimmed">
 				do
 			</Text>
-			<Menu shadow="sm" width={350} position="bottom-end">
+			<Menu shadow="sm" width={350} position="bottom-end" withinPortal>
 				<Menu.Target>
 					<Button variant="outline" size="xs">
 						Action
@@ -465,7 +467,7 @@ function EventInput({
 
 					<Menu.Divider />
 					<div className="p-2">
-						<Menu width={200} position="left-start" shadow="md">
+						<Menu width={200} withinPortal position="left-start" shadow="md">
 							<Menu.Target>
 								<Button size="xs" fullWidth leftIcon={<TbPlus />}>
 									Action

@@ -15,14 +15,14 @@ import {
 	TbPhoto as IcImage,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
-	TbSquareCheck as IcSubmitButton,
+	TbSquareCheck as IcSubmitButton
 } from 'react-icons/tb'
 import {
 	basicComponents,
 	Component,
 	ComponentKind,
 	formComponents,
-	useCanvasStore,
+	useCanvasStore
 } from './canvas-store'
 import { Draggable, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
@@ -142,7 +142,7 @@ function Layer({ component }: { component: Component }) {
 	)
 }
 
-const getComponentIcon = (kind: ComponentKind) => {
+export const getComponentIcon = (kind: ComponentKind) => {
 	switch (kind) {
 		case ComponentKind.Text:
 			return <IcText />
