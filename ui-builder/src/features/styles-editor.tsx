@@ -33,6 +33,7 @@ import {
 	TbLayoutAlignCenter,
 	TbLayoutAlignLeft,
 	TbLayoutAlignRight,
+	TbLayoutDistributeVertical,
 	TbLayoutGrid,
 	TbLayoutList,
 	TbLineDashed,
@@ -130,6 +131,18 @@ const flexAligns = [
 	{ label: <TbBaseline />, title: 'Baseline', value: 'baseline' },
 ].map(toCenter)
 
+const flexJustifies = [
+	{ label: <TbLayoutAlignLeft />, title: 'Start', value: 'flex-start' },
+	{ label: <TbLayoutAlignCenter />, title: 'Center', value: 'center' },
+	{ label: <TbLayoutAlignRight />, title: 'End', value: 'flex-end' },
+	{
+		label: <TbLayoutList />,
+		title: 'Space between',
+		value: 'space-between',
+	},
+	{ label: <TbLayoutDistributeVertical />, title: 'Space around', value: 'space-around' },
+].map(toCenter)
+
 function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	const isFlex = styles.display === 'flex'
 
@@ -168,11 +181,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 							className="grow"
 						/>
 						<Chip
-							checked={
-								styles.flexDirection === 'row' || styles.flexDirection === 'column'
-									? false
-									: true
-							}
+							checked={styles.flexDirection?.includes('reverse') ? true : false}
 							onChange={() =>
 								editStyle(
 									'flexDirection',
@@ -202,7 +211,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 					<p className="col-span-3">Justify</p>
 					<SegmentedControl
 						className="col-span-9"
-						data={flexAligns}
+						data={flexJustifies}
 						fullWidth
 						size="xs"
 						value={styles.justifyContent ?? 'flex-start'}

@@ -3,6 +3,7 @@ import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
+import { TbPhoto } from 'react-icons/tb'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import {
 	ActionKind,
@@ -27,6 +28,7 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
+import { getComponentIcon } from './component-selector'
 import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
 import { Droppable, DroppableMode } from './droppable'
@@ -90,9 +92,11 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	)
 }
 
+const emptyContainerStyle = { height: 100, border: '1px dashed black' }
+
 function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
-	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
+	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
 
 	return (
 		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
@@ -111,7 +115,7 @@ function ButtonRenderer({ component }: { component: ButtonComponent }) {
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
-	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
+	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
 
 	return (
 		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
@@ -136,13 +140,26 @@ function ImageRenderer({ component }: { component: ImageComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = component.data.src
 
-	if (!imageUrl) return <img height={120} />
+	if (!imageUrl)
+		return (
+			<div
+				style={{
+					...emptyContainerStyle,
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					color: '#334155',
+				}}
+			>
+				<TbPhoto size={48} />
+			</div>
+		)
 
 	return (
 		<img
 			src={imageUrl}
 			alt={component.data.alt}
-			style={combineStyles(viewport, component.data.style)}
+			style={{ display: 'flex', ...combineStyles(viewport, component.data.style) }}
 		/>
 	)
 }
@@ -204,7 +221,7 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 
 function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
 	const viewport = useViewportStore((store) => store.device)
-	const emptyStyle = { height: component.components.length === 0 ? 100 : undefined }
+	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
 
 	return (
 		<form
@@ -264,7 +281,6 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
 	const [hovered, setHovered] = useState(false)
-	const viewport = useViewportStore((store) => store.device)
 	const handleDelete = () => {
 		if (selectedComponentId) deleteComponent(selectedComponentId)
 	}
@@ -274,7 +290,9 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		toggleState: store.toggleState,
 		setState: store.setState,
 	}))
-	const isSelected = component.id === selectedComponentId || hovered || hoveredId === component.id
+	const isHovered = hovered || hoveredId === component.id
+	const isSelected = component.id === selectedComponentId
+	const isHighlighted = isSelected || isHovered
 
 	const handleEvents = (kind: EventKind) => {
 		evalCodes(component.events, kind)
@@ -325,24 +343,18 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		? (_.get(states, bindings.hide.fromStateName) as boolean)
 		: false
 	const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
-	const combinedStyles = combineStyles(viewport, component.data.style)
 
 	return (
-		<Draggable
-			style={{ display: combinedStyles.display }}
-			data={{ mode: DraggableMode.Move, componentId: component.id }}
-		>
+		<Draggable data={{ mode: DraggableMode.Move, componentId: component.id }}>
 			<div
 				onKeyDown={getHotkeyHandler([['Backspace', handleDelete]])}
 				tabIndex={0}
 				id={component.id}
 				style={{
-					display: combinedStyles.display,
-					outlineWidth: hovered ? 2 : 1,
+					outlineWidth: isHovered ? 2 : 1,
 					cursor: 'default',
 					position: 'relative',
-					zIndex: isSelected ? 10 : undefined,
-					outlineStyle: isSelected ? 'solid' : undefined,
+					outlineStyle: isHighlighted ? 'solid' : undefined,
 					outlineColor: '#fb7185',
 					borderRadius: 2,
 				}}
@@ -361,7 +373,6 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 				hidden={!shouldShow && shouldHide}
 			>
 				<div
-					style={{ display: combinedStyles.display }}
 					onClick={() => handleEvents(EventKind.Click)}
 					onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
 					onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
@@ -395,19 +406,24 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 						pointerEvents: 'none',
 					}}
 				/>
-				{isSelected && (
+				{isHighlighted && (
 					<div
 						style={{
 							position: 'absolute',
-							backgroundColor: '#f43f5e',
+							backgroundColor: isHovered ? '#f43f5e' : 'white',
 							fontFamily: 'monospace',
 							padding: '2px 6px',
-							bottom: -22,
-							color: 'white',
+							bottom: -21,
+							color: isHovered ? 'white' : '#f43f5e',
 							borderRadius: 2,
 							zIndex: 100,
+							border: '1px solid #f43f5e',
+							display: 'flex',
+							gap: 2,
+							alignItems: 'center',
 						}}
 					>
+						{getComponentIcon(component.kind)}
 						{component.kind}
 					</div>
 				)}
