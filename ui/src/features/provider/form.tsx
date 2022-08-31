@@ -14,6 +14,7 @@ import {
 	getProject,
 	QueryKey,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
 import { CreatableSelect, Field, Form, NewSelect } from '../ui'
@@ -63,7 +64,7 @@ export function ProviderForm() {
 		.filter((integration) => !!integration.oauth_provider)
 		.map((integration) => integration.type)
 		.map(toOption)
-	const { projectName = '' } = useParams()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const providerName = form.watch('name')
 
 	return (

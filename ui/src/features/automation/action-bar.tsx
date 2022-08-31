@@ -30,9 +30,10 @@ import { AutomationYaml } from './yaml'
 interface ActionBarProps {
 	automationName?: string
 	kind: AutomationKind
+	projectName: string
 }
 
-export function ActionBar({ automationName, kind }: ActionBarProps) {
+export function ActionBar({ automationName, kind, projectName }: ActionBarProps) {
 	const modal = useModal()
 	const {
 		onDelete,
@@ -97,7 +98,8 @@ export function ActionBar({ automationName, kind }: ActionBarProps) {
 
 	const { handleActivate, activateIsLoading } = useActivateAutomation(
 		selectedAutomation?.is_active ?? false,
-		automationName ?? ''
+		automationName ?? '',
+		projectName
 	)
 
 	return (

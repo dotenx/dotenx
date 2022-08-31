@@ -9,6 +9,7 @@ import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 import { Loader } from '../features/ui'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function ExecutionPage({ kind = 'automation' }: { kind?: AutomationKind }) {
 	return (
@@ -19,19 +20,22 @@ export default function ExecutionPage({ kind = 'automation' }: { kind?: Automati
 }
 
 function Content({ kind }: { kind: AutomationKind }) {
-	const { name: automationName, id: executionId } = useParams()
+	const {
+		name: automationName,
+		id: executionId,
+		projectName = AUTOMATION_PROJECT_NAME,
+	} = useParams()
 	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
 	const automationQuery = useQuery(
 		[QueryKey.GetAutomation, automationName],
 		() => {
 			if (!automationName) return
-			return getAutomation(automationName)
+			return getAutomation({ name: automationName, projectName })
 		},
 		{ enabled: !!automationName, onSuccess: (data) => setSelectedAutomation(data?.data) }
 	)
 	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
-	const { projectName } = useParams()
 
 	useEffect(() => {
 		if (automationName && automation)

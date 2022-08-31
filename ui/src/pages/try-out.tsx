@@ -4,12 +4,13 @@ import { useMutation } from 'react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { createAutomation, CreateAutomationRequest } from '../api'
 import { Loader } from '../features/ui'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function TryOutPage() {
 	const [params] = useSearchParams()
 	const navigate = useNavigate()
 	const mutation = useMutation(createAutomation, {
-		onSuccess: (_, vars) => navigate(`/automations/${vars.name}`, { replace: true }),
+		onSuccess: (_, vars) => navigate(`/automations/${vars.payload.name}`, { replace: true }),
 		onError: () => navigate('/', { replace: true }),
 	})
 
@@ -19,7 +20,7 @@ export default function TryOutPage() {
 			const automationPayload: CreateAutomationRequest = JSON.parse(parsedPayload)
 			const id = nanoid(4)
 			automationPayload.name = `${automationPayload.name}-${id}`
-			mutation.mutate(automationPayload)
+			mutation.mutate({ projectName: AUTOMATION_PROJECT_NAME, payload: automationPayload })
 		} catch (error) {
 			console.error(error)
 			navigate('/')
