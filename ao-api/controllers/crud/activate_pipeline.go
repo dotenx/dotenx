@@ -26,7 +26,15 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 		err = mc.Service.ActivatePipeline(accountId, pipeline.PipelineDetailes.Id)
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": err.Error(),
+				})
+			}
 			return
 		}
 	}

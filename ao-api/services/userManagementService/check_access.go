@@ -1,4 +1,4 @@
-package executionService
+package userManagementService
 
 import (
 	"bytes"
@@ -13,10 +13,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// TODO: automation_id isn't important for plan manager and should be deleted from CheckAccess function
-func (manager *executionManager) CheckAccess(accountId string, excutionId int) (bool, error) {
-	dt := automationDto{AccountId: accountId, AutomationId: strconv.Itoa(excutionId)}
-	json_data, err := json.Marshal(dt)
+func (ums *userManagementService) CheckAccess(accountId string) (bool, error) {
+	dto := tpUserDto{
+		AccountId: accountId,
+	}
+	json_data, err := json.Marshal(dto)
 	if err != nil {
 		return false, errors.New("bad input body")
 	}
@@ -36,7 +37,8 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/executionMinutes", requestBody, Requestheaders, time.Minute, true)
+	url := config.Configs.Endpoints.Admin + "/internal/user/access/tpUser"
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}
@@ -55,7 +57,6 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 	return res.Access, nil
 }
 
-type automationDto struct {
-	AccountId    string `json:"account_id" binding:"required"`
-	AutomationId string `json:"automation_id" binding:"required"`
+type tpUserDto struct {
+	AccountId string `json:"account_id" binding:"required"`
 }

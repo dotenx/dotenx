@@ -3,6 +3,7 @@ package execution
 import (
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -18,6 +19,12 @@ func (e *ExecutionController) StartPipeline() gin.HandlerFunc {
 		}
 		res, err := e.Service.StartPipelineByEndpoint(input, endpoint)
 		if err != nil {
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 			if err.Error() == "automation is not active" || err.Error() == "pipeline is not public" {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return

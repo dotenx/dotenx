@@ -7,4 +7,5 @@ type Project struct {
 	AccountId        string `db:"account_id" json:"-"`
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
+	HasDatabase      bool   `db:"has_database" json:"hasDatabase"`
 }
