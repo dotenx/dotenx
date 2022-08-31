@@ -21,6 +21,7 @@ import {
 	Triggers
 } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { flowAtom } from '../atoms'
 import { EdgeData, TaskNodeData } from '../flow'
 import { NodeType } from '../flow/types'
@@ -36,7 +37,7 @@ export function useSaveForm(kind: AutomationKind) {
 		formState: { errors },
 		handleSubmit,
 	} = useForm<SaveFormSchema>({ resolver: zodResolver(saveFormSchema) })
-	const { projectName } = useParams()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 
 	const modal = useModal()
 	const addAutomationMutation = useMutation(createAutomation)
@@ -47,10 +48,13 @@ export function useSaveForm(kind: AutomationKind) {
 	const onSave = (values: SaveFormSchema) => {
 		addAutomationMutation.mutate(
 			{
-				name: values.name,
-				manifest: mapElementsToPayload(elements),
-				is_template: kind === 'template',
-				is_interaction: kind === 'interaction',
+				projectName,
+				payload: {
+					name: values.name,
+					manifest: mapElementsToPayload(elements),
+					is_template: kind === 'template',
+					is_interaction: kind === 'interaction',
+				},
 			},
 			{
 				onSuccess: () => {

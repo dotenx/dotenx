@@ -10,6 +10,7 @@ import {
 	QueryKey,
 	TriggerData,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -41,7 +42,9 @@ export function useTriggerForm({
 	})
 	const triggerType = watch('type')
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerKinds)
-	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const automationsQuery = useQuery([QueryKey.GetAutomations], () =>
+		getAutomations(AUTOMATION_PROJECT_NAME)
+	)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
 		() => getTriggerDefinition(triggerType),

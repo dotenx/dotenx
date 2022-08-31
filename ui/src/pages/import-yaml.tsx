@@ -2,8 +2,9 @@ import { Button } from '@mantine/core'
 import CodeEditor from '@uiw/react-textarea-code-editor'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { createAutomationYaml } from '../api'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
@@ -11,6 +12,7 @@ export default function ImportYamlPage() {
 		onSuccess: ({ data }) => navigate(`/automations/${data.name}`),
 	})
 	const [code, setCode] = useState('')
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 
 	return (
 		<div className="grow">
@@ -20,7 +22,7 @@ export default function ImportYamlPage() {
 					className="flex flex-col gap-6 grow"
 					onSubmit={(e) => {
 						e.preventDefault()
-						mutate(code)
+						mutate({ payload: code, projectName })
 					}}
 				>
 					<CodeEditor

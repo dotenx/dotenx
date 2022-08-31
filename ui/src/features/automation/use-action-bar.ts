@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
 	AutomationKind,
 	deleteAutomation,
@@ -9,6 +9,7 @@ import {
 	QueryKey,
 	startAutomation,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
 import { useClearStatus, useLayout } from '../flow'
 import { Modals, useModal } from '../hooks'
@@ -25,10 +26,15 @@ export function useActionBar(kind: AutomationKind) {
 	const newAutomation = useNewAutomation('/automations/new')
 	const navigate = useNavigate()
 	const modal = useModal()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const query = useQuery(
 		[QueryKey.GetInteractionEndpointFields, selectedAutomationData?.name],
-		() => getInteractionEndpointFields(selectedAutomationData?.name ?? ''),
-		{ enabled: !!selectedAutomationData?.name }
+		() =>
+			getInteractionEndpointFields({
+				interactionName: selectedAutomationData?.name ?? '',
+				projectName,
+			}),
+		{ enabled: !!selectedAutomationData?.name && kind === 'interaction' }
 	)
 
 	const runMutation = useMutation(startAutomation)
@@ -36,22 +42,28 @@ export function useActionBar(kind: AutomationKind) {
 	const onRun = () => {
 		if (selectedAutomationData)
 			if (kind === 'automation') {
-				runMutation.mutate(selectedAutomationData.name, {
-					onSuccess: (data) => {
-						navigate(
-							`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
-						)
-						client.invalidateQueries(QueryKey.GetExecutions)
-						clearStatus()
-						setListen((x) => x + 1)
-					},
-				})
+				runMutation.mutate(
+					{ automationName: selectedAutomationData.name, projectName },
+					{
+						onSuccess: (data) => {
+							navigate(
+								`/automations/${selectedAutomationData.name}/executions/${data.data.id}`
+							)
+							client.invalidateQueries(QueryKey.GetExecutions)
+							clearStatus()
+							setListen((x) => x + 1)
+						},
+					}
+				)
 			} else {
 				if (_.entries(query.data?.data).length !== 0) modal.open(Modals.InteractionBody)
 				else
-					runMutation.mutate(selectedAutomationData.name, {
-						onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data),
-					})
+					runMutation.mutate(
+						{ automationName: selectedAutomationData.name, projectName },
+						{
+							onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data),
+						}
+					)
 			}
 		else {
 			console.error('No automation is selected')
@@ -64,13 +76,16 @@ export function useActionBar(kind: AutomationKind) {
 
 	const handleDeleteAutomation = () => {
 		if (!selectedAutomationData) return
-		deleteAutomationMutation.mutate(selectedAutomationData.name, {
-			onSuccess: () => {
-				newAutomation()
-				client.invalidateQueries(QueryKey.GetAutomations)
-				modal.close()
-			},
-		})
+		deleteAutomationMutation.mutate(
+			{ name: selectedAutomationData.name, projectName },
+			{
+				onSuccess: () => {
+					newAutomation()
+					client.invalidateQueries(QueryKey.GetAutomations)
+					modal.close()
+				},
+			}
+		)
 	}
 
 	return {

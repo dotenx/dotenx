@@ -4,13 +4,15 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { CellProps } from 'react-table'
 import { AutomationKind, Execution, getAutomationExecutions, QueryKey } from '../api'
 import { ContentWrapper, Table } from '../features/ui'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function HistoryPage({ kind = 'automation' }: { kind?: AutomationKind }) {
-	const { name: automationName } = useParams()
+	const { name: automationName, projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const query = useQuery(
 		[QueryKey.GetExecutions, automationName],
 		() => {
-			if (automationName) return getAutomationExecutions(automationName)
+			if (automationName)
+				return getAutomationExecutions({ name: automationName, projectName })
 		},
 		{ enabled: !!automationName }
 	)
