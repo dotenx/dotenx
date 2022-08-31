@@ -31,7 +31,7 @@ export function Canvas() {
 		<div className="h-full bg-gray-50 p-px">
 			<Frame className="h-full w-full">
 				<DndFrame>
-					<style>{`body { margin: 0 }`}</style>
+					<style>{`body { margin: 0; font-family: sans-serif; }`}</style>
 					<div
 						style={{
 							height: '100vh',
