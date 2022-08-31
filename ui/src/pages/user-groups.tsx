@@ -6,9 +6,10 @@ import { getProject, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, NewModal } from '../features/ui'
 import { UserGroups, UserGroupsForm, UserGroupValues } from '../features/user-groups'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function UserGroupsPage() {
-	const { projectName = '' } = useParams()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
 	const projectTag = projectQuery.data?.data.tag ?? ''
 	const modals = useModal()

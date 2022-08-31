@@ -1,9 +1,13 @@
 import { useQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
 import { getAutomations, QueryKey } from '../api'
 import { AutomationList } from '../features/automation'
 
 export default function TemplatesPage() {
-	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const { projectName = '' } = useParams()
+	const automationsQuery = useQuery([QueryKey.GetAutomations, projectName], () =>
+		getAutomations(projectName)
+	)
 	const templates = automationsQuery.data?.data.filter((automation) => automation.is_template)
 
 	return (

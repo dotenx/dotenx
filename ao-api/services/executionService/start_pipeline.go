@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +40,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return -1, err
 	}
 	if !hasAccess {
-		return -1, errors.New("you have reached your limit")
+		return -1, utils.ErrReachLimitationOfPlan
 	}
 	execution := models.Execution{
 		PipelineVersionId: pipelineId,

@@ -2,25 +2,29 @@ import { Button } from '@mantine/core'
 import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
 import {
 	getInteractionEndpointFields,
 	QueryKey,
 	startAutomation,
 	StartAutomationRequest,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { Modals, useModal } from '../hooks'
 import { Field, Form, Loader } from '../ui'
 
 export function RunInteractionForm({ interactionName }: { interactionName: string }) {
 	const modal = useModal()
 	const form = useForm()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const mutation = useMutation(
-		(values: StartAutomationRequest) => startAutomation(interactionName, values),
+		(values: StartAutomationRequest) =>
+			startAutomation({ automationName: interactionName, projectName, payload: values }),
 		{ onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data) }
 	)
 	const query = useQuery(
 		[QueryKey.GetInteractionEndpointFields, interactionName],
-		() => getInteractionEndpointFields(interactionName),
+		() => getInteractionEndpointFields({ interactionName, projectName }),
 		{ enabled: !!interactionName }
 	)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate({ interactionRunTime: values }))

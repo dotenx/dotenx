@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,14 +33,14 @@ func (manager *executionManager) StartPipelineByEndpoint(input map[string]interf
 	if !pipeline.IsActive {
 		return -1, errors.New("pipeline is not active")
 	}
-	// TODO: Properly handle the plans
-	// hasAccess, err := manager.CheckAccess(accountId, pipelineId)
-	// if err != nil {
-	// 	return -1, err
-	// }
-	// if !hasAccess {
-	// 	return -1, errors.New("you have reached your limit")
-	// }
+	// TODO: pipeline id isn't important for plan manager and should be deleted from CheckAccess function
+	hasAccess, err := manager.CheckAccess(pipeline.AccountId, -1)
+	if err != nil {
+		return -1, err
+	}
+	if !hasAccess {
+		return -1, utils.ErrReachLimitationOfPlan
+	}
 
 	id, _ := strconv.Atoi(pipeline.PipelineDetailes.Id)
 	execution := models.Execution{

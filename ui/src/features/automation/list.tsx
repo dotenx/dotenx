@@ -16,8 +16,9 @@ import {
 	getUserGroups,
 	QueryKey,
 	setAccess,
-	setInteractionUserGroup,
+	setInteractionUserGroup
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { Modals, useModal } from '../hooks'
 import { Confirm, ContentWrapper, Endpoint, Form, Loader, Modal, NewModal, Table } from '../ui'
 import { useDeleteAutomation } from './use-delete'
@@ -44,7 +45,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 		}
 	)
 
-	const { projectName = '' } = useParams()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
 	const projectTag = projectQuery.data?.data.tag ?? ''
 
@@ -188,6 +189,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 							mutate({
 								name: rowData.name,
 								isPublic: rowData.value,
+								projectName,
 							}),
 								modal.close()
 						}}
@@ -209,12 +211,13 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 									{
 										name: data.name,
 										payload: values,
+										projectName,
 									},
 									{ onSuccess: () => modal.close() }
 								)
 							)}
 						>
-							<div className="flex flex-col gap-5 grow pb-10 ">
+							<div className="flex flex-col gap-5 pb-10 grow ">
 								<MultiSelect
 									searchable
 									clearable
@@ -275,6 +278,8 @@ function AutomationActions({ automationName, kind, endpoint, isPublic }: Automat
 	const deleteMutation = useDeleteAutomation()
 	const modal = useModal()
 	const textKind = kind === 'template' ? 'automation template' : kind
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
+
 	return (
 		<div className="flex items-center justify-end gap-4">
 			{kind !== 'automation' && (
@@ -291,7 +296,7 @@ function AutomationActions({ automationName, kind, endpoint, isPublic }: Automat
 			)}
 			<Confirm
 				confirmText={`Are you sure you want to delete this ${textKind}?`}
-				onConfirm={() => deleteMutation.mutate(automationName)}
+				onConfirm={() => deleteMutation.mutate({ name: automationName, projectName })}
 				target={(open) => (
 					<ActionIcon loading={deleteMutation.isLoading} onClick={open}>
 						<IoTrash />
@@ -315,9 +320,10 @@ function ActivationStatus({ isActive }: { isActive: boolean }) {
 }
 
 function TemplateEndpoint({ automationName }: { automationName: string }) {
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const fieldsQuery = useQuery(
-		[QueryKey.GetTemplateEndpointFields, automationName],
-		() => getTemplateEndpointFields(automationName),
+		[QueryKey.GetTemplateEndpointFields, automationName, projectName],
+		() => getTemplateEndpointFields({ projectName, templateName: automationName }),
 		{ enabled: !!automationName }
 	)
 	const fields = fieldsQuery.data?.data
@@ -328,7 +334,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 	return (
 		<Endpoint
 			label="Add an automation"
-			url={`${API_URL}/pipeline/template/name/${automationName}`}
+			url={`${API_URL}/pipeline/project/${projectName}/template/name/${automationName}`}
 			method="POST"
 			code={body}
 		/>
@@ -344,9 +350,10 @@ function InteractionEndpoint({
 	isPublic: boolean
 	endpoint: string
 }) {
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const query = useQuery(
-		[QueryKey.GetInteractionEndpointFields, automationName],
-		() => getInteractionEndpointFields(automationName),
+		[QueryKey.GetInteractionEndpointFields, automationName, projectName],
+		() => getInteractionEndpointFields({ interactionName: automationName, projectName }),
 		{ enabled: !!automationName }
 	)
 	const pairs = mapFieldsToPairs(query.data?.data)

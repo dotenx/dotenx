@@ -21,8 +21,17 @@ func (pc *ProjectController) AddProject() gin.HandlerFunc {
 			return
 		}
 
+		// this is a temporary assignment until front-end supports hasDatabase field
+		dto.HasDatabase = true
+
 		if err := pc.Service.AddProject(accountId, dto); err != nil {
 			log.Println(err)
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": err.Error(),
 			})

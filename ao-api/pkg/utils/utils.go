@@ -24,6 +24,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Errors
+var ErrReachLimitationOfPlan = errors.New("you have reached your limit. please upgrade your plan")
+
 func FailOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)

@@ -187,6 +187,10 @@ var migrations = []struct {
 		name: "create-table-marketplace-items",
 		stmt: createTableMarketplaceItems,
 	},
+	{
+		name: "add-has-database-field-to-projects-table",
+		stmt: addHasDatabaseFieldToProjectsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -578,4 +582,9 @@ enabled												BOOLEAN DEFAULT TRUE,
 created_at 										timestamp,
 updated_at 										timestamp
 )
+`
+
+var addHasDatabaseFieldToProjectsTable = `
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS has_database BOOLEAN NOT NULL DEFAULT FALSE;
 `
