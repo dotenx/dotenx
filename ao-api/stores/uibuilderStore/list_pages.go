@@ -9,13 +9,13 @@ import (
 )
 
 func (store *uibuilderStore) ListPages(ctx context.Context, accountId, projectTag string) ([]string, error) {
-	upsertPage := `
+	listPages := `
 	SELECT name FROM ui_pages WHERE account_id = $1 AND project_tag = $2
 	`
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
-		stmt = upsertPage
+		stmt = listPages
 	default:
 		return nil, fmt.Errorf("driver not supported")
 	}

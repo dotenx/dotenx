@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { getProject, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, NewModal } from '../features/ui'
+import { PageTitle } from '../features/ui/page-title'
 import { UserGroups, UserGroupsForm, UserGroupValues } from '../features/user-groups'
 import { AUTOMATION_PROJECT_NAME } from './automation'
 
@@ -16,11 +17,19 @@ export default function UserGroupsPage() {
 	const [defaultValues, setDefaultValues] = useState<UserGroupValues>()
 	const title = defaultValues ? 'Edit User Group' : 'Create User Group'
 
+	const helpDetails = {
+		title: 'Use user groups to set permissions for your users',
+		description:
+			'With user groups you can control the access of your users to tables and interactions. Each user by default is assigned to the default user group of your project.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<>
 			<ContentWrapper>
 				<div className="flex justify-between">
-					<Title order={2}>User Groups</Title>
+					<PageTitle title="User Groups" helpDetails={helpDetails} />
 					<Button
 						type="button"
 						onClick={() => {

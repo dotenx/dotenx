@@ -4,6 +4,10 @@ import (
 	"context"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
+	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 )
@@ -19,8 +23,11 @@ type ProjectService interface {
 	GetProjectByTag(tag string) (models.Project, error)
 	GetProjectDomain(accountId, projectTag string) (models.ProjectDomain, error)
 	UpsertProjectDomain(projectDomain models.ProjectDomain) error
+	ImportProject(accountId, newProjectName, newProjectDescription string, itemId int, mService marketplaceService.MarketplaceService, dbService databaseService.DatabaseService, cService crudService.CrudService, uiBuilderService uibuilderService.UIbuilderService) error
 	CheckCreateProjectAccess(accountId string) (bool, error)
 	CheckCreateDatabaseAccess(accountId string) (bool, error)
+	// DeleteProject deletes a project and all its associated resources
+	DeleteProject(accountId, projectTag string, ubService uibuilderService.UIbuilderService, dbService databaseService.DatabaseService, cService crudService.CrudService) error
 }
 
 type projectService struct {

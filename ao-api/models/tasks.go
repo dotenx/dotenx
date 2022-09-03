@@ -6,8 +6,10 @@ import (
 	"errors"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"gopkg.in/yaml.v2"
 )
 
@@ -78,7 +80,11 @@ type TaskResultDto struct {
 
 func init() {
 	AvaliableTasks = make(map[string]TaskDefinition)
-	filepath.WalkDir("tasks", walkTasks)
+	address := "tasks"
+	if config.Configs.App.RunLocally && os.Getenv("RUNNING_IN_DOCKER") != "true" { // This is only for the case we run ao-api without docker and locally
+		address = "../tasks"
+	}
+	filepath.WalkDir(address, walkTasks)
 }
 
 func readTaskFile(addr string) {

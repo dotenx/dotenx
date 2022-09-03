@@ -21,6 +21,7 @@ import {
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { Modals, useModal } from '../hooks'
 import { Confirm, ContentWrapper, Endpoint, Form, Loader, Modal, NewModal, Table } from '../ui'
+import { HelpDetails } from '../ui/help-popover'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
 
@@ -28,10 +29,12 @@ interface AutomationListProps {
 	automations?: Automation[]
 	loading: boolean
 	title: string
-	kind: AutomationKind
+	kind: AutomationKind, 
+	helpDetails?: HelpDetails
 }
 
-export function AutomationList({ automations, loading, title, kind }: AutomationListProps) {
+
+export function AutomationList({ automations, loading, title, kind, helpDetails }: AutomationListProps) {
 	const modal = useModal()
 	const client = useQueryClient()
 	const [rowData, setRowData] = useState({ value: false, name: '' })
@@ -70,6 +73,7 @@ export function AutomationList({ automations, loading, title, kind }: Automation
 			<ContentWrapper>
 				<Table
 					title={title}
+					helpDetails={helpDetails}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
 					loading={loading}
 					actionBar={<NewAutomation kind={kind} />}

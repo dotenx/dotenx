@@ -22,6 +22,8 @@ type MarketplaceItem struct {
 	CreatedAt        time.Time                `db:"created_at" json:"createdAt"`
 	UpdatedAtForDb   pq.NullTime              `db:"updated_at" json:"-"`
 	UpdatedAt        time.Time                `db:"-" json:"updatedAt"`
+	ProjectName      string                   `db:"project_name" json:"-"`
+	S3Key            string                   `db:"s3_key" json:"-"`
 }
 
 type MarketplaceItemFeature struct {

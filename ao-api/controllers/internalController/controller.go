@@ -104,7 +104,7 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 		return
 	}
 
-	projects, err := c.Service.ListProjects(dto.AccountId)
+	projects, err := c.Service.ListDBProjects(dto.AccountId)
 	if err != nil {
 		logrus.Error(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{

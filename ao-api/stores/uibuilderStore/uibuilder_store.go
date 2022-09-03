@@ -19,6 +19,9 @@ type UIbuilderStore interface {
 	SetPageStatus(ctx context.Context, accountId, projectTag, pageName, status string) error
 	GetUiInfrastructure(ctx context.Context, accountId, projectTag string) (models.UiInfrastructure, error)
 	UpsertUiInfrastructure(ctx context.Context, uiInfra models.UiInfrastructure) error
+	GetExportablePageByProjectName(ctx context.Context, accountId, projectName string) ([]models.ExportableUIPage, error)
+	// This function deletes all the pages of a project
+	DeleteAllPages(ctx context.Context, accountId, projectTag string) error
 }
 
 type uibuilderStore struct {

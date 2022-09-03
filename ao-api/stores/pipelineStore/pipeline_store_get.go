@@ -12,7 +12,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name, projectName string) (pipeline models.PipelineSummery, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	pipeline.PipelineDetailes.Manifest.Tasks = make(map[string]models.Task)
 
@@ -20,7 +20,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 	case db.Postgres:
 		conn := p.db.Connection
 		var ug pq.StringArray
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug)
+		err = conn.QueryRow(select_pipeline, accountId, name, projectName).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug, &pipeline.ProjectName)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -82,9 +82,9 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 }
 
 var select_pipeline = `
-SELECT id , endpoint, is_active, is_template, is_interaction, user_groups
+SELECT id , endpoint, is_active, is_template, is_interaction, user_groups, project_name
 FROM pipelines p
-WHERE account_id = $1 AND name = $2
+WHERE account_id = $1 AND name = $2 AND project_name = $3
 `
 var select_tasks_by_pipeline_id = `
 SELECT id, name, task_type, aws_lambda, integration, description, body FROM tasks

@@ -15,10 +15,10 @@ type ExecutionService interface {
 	GetInitialData(executionId int) (models.InputData, int)
 	StartPipeline(input map[string]interface{}, accountId, endpoint string) (interface{}, error)
 	StartPipelineByEndpoint(input map[string]interface{}, endpoint string) (interface{}, error)
-	StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup string) (interface{}, error)
+	StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup, projectName string) (interface{}, error)
 	GetExecution(string) (interface{}, error)
 	GetExecutionDetails(executionId int) (models.Execution, error)
-	GetExecutionIdForPipeline(accountId, pipeLineName string) (int, error)
+	GetExecutionIdForPipeline(accountId, pipeLineName, projectName string) (int, error)
 
 	// tasks
 	SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error

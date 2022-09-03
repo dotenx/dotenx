@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { getTables, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
 import { Loader } from '../ui'
+import { PageTitle } from '../ui/page-title'
 
 export function TableList({ projectName }: { projectName: string }) {
 	const query = useQuery(QueryKey.GetTables, () => getTables(projectName))
@@ -12,9 +13,17 @@ export function TableList({ projectName }: { projectName: string }) {
 
 	if (query.isLoading) return <Loader />
 
+	const helpDetails = {
+		title: 'Use tables to store the data of your application',
+		description:
+			'The tables provide all the necessary functionality to store and manage your data. You can create tables, add columns, and manage the permissions of your users.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<div>
-			<Title order={2}>Tables</Title>
+			<PageTitle title="Tables" helpDetails={helpDetails} />
 			<div className="flex flex-wrap gap-8 mt-4">
 				{tables
 					.filter((table) => table !== 'user_info' && table !== 'user_group')
