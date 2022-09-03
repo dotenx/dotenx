@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (store *marketplaceStore) ListItems(ctx context.Context, accountId, category, itemType string) ([]models.MarketplaceItem, error) {
+func (store *marketplaceStore) ListItems(ctx context.Context, accountId, category, itemType string, enabled bool) ([]models.MarketplaceItem, error) {
 
 	listItems := "SELECT * FROM marketplace_items WHERE "
 
@@ -33,7 +33,11 @@ func (store *marketplaceStore) ListItems(ctx context.Context, accountId, categor
 		i++
 		args = append(args, itemType)
 	}
-	listItems += "enabled = true"
+	if enabled {
+		listItems += "enabled = true"
+	} else {
+		listItems += "enabled = false"
+	}
 
 	var stmt string
 	switch store.db.Driver {

@@ -10,9 +10,9 @@ import (
 
 // function to iterate over interaction tasks fields and if their soucre is interactionRunTime,
 // we will pass them to fron to get them at run time
-func (cm *crudManager) GetInteractionDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
+func (cm *crudManager) GetInteractionDetailes(accountId string, name, projectName string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
-	interaction, err := cm.GetPipelineByName(accountId, name)
+	interaction, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
 		return
 	}

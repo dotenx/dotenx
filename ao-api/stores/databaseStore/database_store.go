@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
 
 func New(db *db.DB) DatabaseStore {
@@ -16,7 +17,7 @@ type DatabaseStore interface {
 	AddTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)
-	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]PgColumn, error)
+	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]models.PgColumn, error)
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, row map[string]interface{}) error

@@ -15,12 +15,14 @@ import (
 func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		// TODO: remove this
 		var tpAccountId string
 		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
 			accId, _ := utils.GetThirdPartyAccountId(c)
@@ -32,7 +34,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
 			return
 		}
-		p, err := mc.Service.GetPipelineByName(accountId, name)
+		p, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -57,7 +59,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			Manifest: p.PipelineDetailes.Manifest,
 		}
 
-		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId)
+		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId, p.ProjectName)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {
@@ -75,13 +77,14 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		temp, err := mc.Service.GetTemplateDetailes(accountId, name)
+		temp, err := mc.Service.GetTemplateDetailes(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -94,13 +97,14 @@ func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 func (mc *CRUDController) GetInteractionDetailes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		temp, err := mc.Service.GetInteractionDetailes(accountId, name)
+		temp, err := mc.Service.GetInteractionDetailes(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

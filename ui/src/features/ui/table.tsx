@@ -7,6 +7,8 @@ import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
 import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
 import { Loader } from './loader'
+import { IconHelp } from '@tabler/icons'
+import { HelpDetails, HelpPopover } from './help-popover'
 
 interface TableProps<D extends object = Record<string, string>> {
 	title: string
@@ -15,7 +17,9 @@ interface TableProps<D extends object = Record<string, string>> {
 	columns: Column<D>[]
 	data: D[] | undefined
 	loading?: boolean
+	helpDetails?: HelpDetails
 }
+
 
 export function Table<D extends object = Record<string, string>>({
 	title,
@@ -24,6 +28,7 @@ export function Table<D extends object = Record<string, string>>({
 	columns,
 	data = [],
 	loading,
+	helpDetails
 }: TableProps<D>) {
 	const [search, setSearch] = useState('')
 	const fuzzySearch = useMemo(
@@ -47,7 +52,12 @@ export function Table<D extends object = Record<string, string>>({
 	return (
 		<div className="flex flex-col gap-10">
 			<div className="flex justify-between">
-				<Title order={2}>{title}</Title>
+				<div className="flex justify-start">
+					<Title order={2} sx={{ display: 'inline-flex' }}>
+						{title}
+					</Title>
+					{helpDetails && <HelpPopover helpDetails={helpDetails} />}
+				</div>
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>
 			{loading && <Loader />}

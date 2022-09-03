@@ -11,17 +11,17 @@ import (
 )
 
 // this methods create an Automation from given base template and fields
-func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string) (name string, err error) {
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string) (name string, err error) {
 	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
 	if err != nil {
 		return "", err
 	}
 	base.Name = base.Name + "_" + utils.GetNewUuid()
-	err = cm.Store.Create(noContext, base, pipeline, false, false)
+	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName)
 	if err != nil {
 		return
 	}
-	newPipeline, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	newPipeline, err := cm.Store.GetByName(noContext, base.AccountId, base.Name, projectName)
 	if err != nil {
 		return
 	}
@@ -39,9 +39,9 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 
 // function to iterate over template tasks and triggers fields and if their value were empty,
 // we will pass them to front to get them when we want create from template
-func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
+func (cm *crudManager) GetTemplateDetailes(accountId string, name, projectName string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
-	temp, err := cm.GetPipelineByName(accountId, name)
+	temp, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
 		return
 	}

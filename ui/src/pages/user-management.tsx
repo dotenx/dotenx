@@ -27,9 +27,18 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	)
 	const tableData = usersData?.data ?? []
 
+	const helpDetails = {
+		title: 'You can add manage the users of your application and control their access',
+		description:
+			'The list of users of your application and the endpoints to manage them are provided here. You can use user groups to control the access of your users.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<ContentWrapper>
 			<Table
+				helpDetails={helpDetails}
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
 				emptyText="Your users will be displayed here"

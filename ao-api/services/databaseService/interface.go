@@ -3,6 +3,7 @@ package databaseService
 import (
 	"context"
 
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 )
@@ -13,7 +14,7 @@ type DatabaseService interface {
 	AddTableColumn(accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(accountId string, projectName string) ([]string, error)
-	ListTableColumns(accountId string, projectName string, tableName string) ([]databaseStore.PgColumn, error)
+	ListTableColumns(accountId string, projectName string, tableName string) ([]models.PgColumn, error)
 
 	InsertRow(tpAccountId string, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error

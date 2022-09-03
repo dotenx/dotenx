@@ -4,11 +4,13 @@ import (
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/crudService"
+	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func (controller *MarketplaceController) AddItem() gin.HandlerFunc {
+func (controller *MarketplaceController) AddItem(dbService databaseService.DatabaseService, cService crudService.CrudService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type itemDTO struct {
@@ -20,6 +22,7 @@ func (controller *MarketplaceController) AddItem() gin.HandlerFunc {
 			Price            int                             `json:"price"`
 			ImageUrl         string                          `json:"imageUrl"`
 			Features         []models.MarketplaceItemFeature `json:"features"`
+			ProjectName      string                          `json:"projectName"`
 		}
 
 		var accountId string
@@ -44,9 +47,10 @@ func (controller *MarketplaceController) AddItem() gin.HandlerFunc {
 			Price:            dto.Price,
 			ImageUrl:         dto.ImageUrl,
 			Features:         dto.Features,
+			ProjectName:      dto.ProjectName,
 		}
 
-		if err := controller.Service.AddItem(item); err != nil {
+		if err := controller.Service.AddItem(item, dbService, cService); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

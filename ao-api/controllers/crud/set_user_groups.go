@@ -13,8 +13,9 @@ import (
 func (mc *CRUDController) SetUserGroups() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.Status(http.StatusInternalServerError)

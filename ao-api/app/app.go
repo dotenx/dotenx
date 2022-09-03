@@ -35,7 +35,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/notifyService"
 	"github.com/dotenx/dotenx/ao-api/services/oauthService"
 	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
-	predifinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
+	predfinedTaskService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
@@ -57,6 +57,7 @@ import (
 	"github.com/dotenx/goth"
 	"github.com/dotenx/goth/gothic"
 	"github.com/gin-contrib/sessions"
+
 	sessRedis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -145,7 +146,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
-	predefinedService := predifinedTaskService.NewPredefinedTaskService()
+	predefinedService := predfinedTaskService.NewPredefinedTaskService()
 	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
 	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
@@ -155,7 +156,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
 	objectstoreService := objectstoreService.NewObjectstoreService(objectstoreStore)
 	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
-	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore)
+	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore, uibuilderStore)
 
 	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
@@ -250,26 +251,27 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// pipeline router
 	// TODO: fix the type of the pipeline
-	pipeline.POST("", crudController.AddPipeline())
-	pipeline.POST("/template/name/:name", crudController.CreateFromTemplate())
-	pipeline.GET("/template/name/:name", crudController.GetTemplateDetailes())
-	pipeline.GET("/interaction/name/:name", crudController.GetInteractionDetailes())
+	pipeline.POST("/project/:project_name", crudController.AddPipeline())
+	pipeline.GET("/project/:project_name", crudController.ListProjectPipelines())
+	pipeline.POST("/project/:project_name/template/name/:name", crudController.CreateFromTemplate())
+	pipeline.GET("/project/:project_name/template/name/:name", crudController.GetTemplateDetailes())
+	pipeline.GET("/project/:project_name/interaction/name/:name", crudController.GetInteractionDetailes())
 	pipeline.PUT("", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
-	pipeline.DELETE("/name/:name", crudController.DeletePipeline())
-	pipeline.GET("/name/:name/executions", crudController.GetListOfPipelineExecution())
-	pipeline.GET("/name/:name", crudController.GetPipeline())
-	pipeline.GET("/name/:name/activate", crudController.ActivatePipeline())
-	pipeline.GET("/name/:name/deactivate", crudController.DeActivatePipeline())
+	pipeline.DELETE("/project/:project_name/name/:name", crudController.DeletePipeline())
+	pipeline.GET("/project/:project_name/name/:name/executions", crudController.GetListOfPipelineExecution())
+	pipeline.GET("/project/:project_name/name/:name", crudController.GetPipeline())
+	pipeline.GET("/project/:project_name/name/:name/activate", crudController.ActivatePipeline())
+	pipeline.GET("/project/:project_name/name/:name/deactivate", crudController.DeActivatePipeline())
 	// Set the access (public or private) for the interaction
-	pipeline.PATCH("/name/:name/access", crudController.SetInteractionAccess())
+	pipeline.PATCH("/project/:project_name/name/:name/access", crudController.SetInteractionAccess())
 	// Set the authorized user groups for the pipeline (only applicable for interactions and templates). By default any authenticated user is authorized to access the pipeline.
-	pipeline.PATCH("/name/:name/usergroup", crudController.SetUserGroups())
+	pipeline.PATCH("/project/:project_name/name/:name/usergroup", crudController.SetUserGroups())
 
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
-	execution.POST("/name/:name/start", executionController.StartPipelineByName())
-	execution.GET("/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
+	execution.POST("/project/:project_name/name/:name/start", executionController.StartPipelineByName())
+	execution.GET("/project/:project_name/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
 	execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
 	//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
 
@@ -286,8 +288,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	integration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 
 	// trigger router
-	trigger.POST("", TriggerController.AddTriggers())
-	trigger.PUT("", TriggerController.UpdateTriggers())
+	// todo: delete in a future release
+	// trigger.POST("", TriggerController.AddTriggers())
+	// trigger.PUT("", TriggerController.UpdateTriggers())
 	trigger.GET("", TriggerController.GetAllTriggers())
 	trigger.GET("/type/:type", TriggerController.GetAllTriggersForAccountByType())
 	trigger.GET("/avaliable", TriggerController.GetTriggersTypes())
@@ -319,7 +322,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
 	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
-	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject())
+	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
+	project.DELETE("/tag/:project_tag", projectController.DeleteProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
 	project.GET("/tag/:project_tag/domain", projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
@@ -361,16 +365,23 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
 
 	// marketplace router
-	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem())
+	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices))
 	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
+	marketplace.PATCH("/item/:id/enable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.EnableItem())
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
 	public.GET("/marketplace", marketplaceController.ListItems())
 
 	// profile router
 	profile.GET("", profileController.GetProfile())
 
-	go TriggerServic.StartChecking(IntegrationStore)
-	go TriggerServic.StartScheduller()
+	// dt, err := marketplaceService.GetProjectOfItem(1)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(dt)
+
+	// go TriggerServic.StartChecking(IntegrationStore)
+	// go TriggerServic.StartScheduller()
 	return r
 }
 

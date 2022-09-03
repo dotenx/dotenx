@@ -21,11 +21,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		//return -1, http.StatusInternalServerError
 		return -1, err
 	}
-	name, err := manager.Store.GetPipelineNameById(noContext, accountId, pipelineId)
-	if err != nil {
-		return -1, err
-	}
-	pipeline, err := manager.Store.GetByName(noContext, accountId, name)
+	pipeline, err := manager.Store.GetById(noContext, pipelineId)
 	if pipeline.IsTemplate {
 		return -1, errors.New("automation is a template so you can't execute it")
 	}

@@ -7,12 +7,8 @@ import (
 	"log"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	"github.com/dotenx/dotenx/ao-api/models"
 )
-
-type PgColumn struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
 
 var listColumns = `
 SELECT column_name, domain_name
@@ -21,15 +17,15 @@ WHERE  table_schema = 'public'
 AND    table_name = $1
 `
 
-func (ds *databaseStore) ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]PgColumn, error) {
+func (ds *databaseStore) ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]models.PgColumn, error) {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 	defer fn(db.Connection)
 	if err != nil {
 		log.Println("Error getting database connection:", err)
-		return []PgColumn{}, err
+		return []models.PgColumn{}, err
 	}
 
-	columns := make([]PgColumn, 0)
+	columns := make([]models.PgColumn, 0)
 	conn := db.Connection
 	rows, err := conn.Queryx(listColumns, tableName)
 	if err != nil {
@@ -41,7 +37,7 @@ func (ds *databaseStore) ListTableColumns(ctx context.Context, accountId string,
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var cur PgColumn
+		var cur models.PgColumn
 		// TODO: id column hasn't domain_name (domain_name is null because this column not created by user)
 		// so we should handle sql null error for this column
 		rows.Scan(&cur.Name, &cur.Type)

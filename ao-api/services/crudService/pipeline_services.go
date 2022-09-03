@@ -21,16 +21,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) (err error) {
+func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string) (err error) {
 	pipeline.Manifest.Tasks, err = cm.prepareTasks(pipeline.Manifest.Tasks, base.AccountId, isTemplate, isInteraction)
 	if err != nil {
 		return err
 	}
-	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction)
+	// todo: return id here to avoid GetByName call
+	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction, projectName)
 	if err != nil {
 		return
 	}
-	p, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	p, err := cm.Store.GetByName(noContext, base.AccountId, base.Name, projectName)
 	if err != nil {
 		return
 	}
@@ -42,11 +43,11 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
-	p, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	p, err := cm.Store.GetByName(noContext, base.AccountId, base.Name, base.ProjectName)
 	if err != nil || p.PipelineDetailes.Id == "" {
 		return errors.New("your Automation has not been saved yet")
 	}
-	err = cm.DeletePipeline(base.AccountId, base.Name, true)
+	err = cm.DeletePipeline(base.AccountId, base.Name, p.ProjectName, true)
 	if err != nil {
 		return errors.New("error in deleting old version: " + err.Error())
 	}
@@ -54,11 +55,11 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return err
 	}
-	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction)
+	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction, p.ProjectName)
 	if err != nil {
 		return errors.New("error in creating new version: " + err.Error())
 	}
-	newP, err := cm.GetPipelineByName(base.AccountId, base.Name)
+	newP, err := cm.GetPipelineByName(base.AccountId, base.Name, base.ProjectName)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -77,12 +78,12 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	return cm.TriggerService.UpdateTriggers(base.AccountId, triggers, newP.Endpoint)
 }
 
-func (cm *crudManager) GetPipelineByName(accountId string, name string) (models.PipelineSummery, error) {
-	pipe, err := cm.Store.GetByName(noContext, accountId, name)
+func (cm *crudManager) GetPipelineByName(accountId string, name, project_name string) (models.PipelineSummery, error) {
+	pipe, err := cm.Store.GetByName(noContext, accountId, name, project_name)
 	if err != nil {
 		return models.PipelineSummery{}, err
 	}
-	triggers, err := cm.TriggerService.GetAllTriggersForPipeline(accountId, name)
+	triggers, err := cm.TriggerService.GetAllTriggersForPipelineByEndpoint(pipe.Endpoint)
 	if err != nil {
 		return models.PipelineSummery{}, err
 	}
@@ -97,8 +98,8 @@ func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error)
 	return cm.Store.GetPipelines(noContext, accountId)
 }
 
-func (cm *crudManager) DeletePipeline(accountId, name string, deleteRecord bool) (err error) {
-	p, err := cm.GetPipelineByName(accountId, name)
+func (cm *crudManager) DeletePipeline(accountId, name, projectName string, deleteRecord bool) (err error) {
+	p, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
 		return
 	}
@@ -111,8 +112,8 @@ func (cm *crudManager) DeletePipeline(accountId, name string, deleteRecord bool)
 	return cm.Store.DeletePipeline(noContext, accountId, name)
 }
 
-func (cm *crudManager) GetAllExecutions(accountId string, name string) ([]models.Execution, error) {
-	pipelineId, err := cm.Store.GetPipelineId(noContext, accountId, name)
+func (cm *crudManager) GetAllExecutions(accountId string, name, projectName string) ([]models.Execution, error) {
+	pipelineId, err := cm.Store.GetPipelineId(noContext, accountId, name, projectName)
 	if err != nil {
 		return nil, err
 	}

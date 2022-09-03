@@ -16,6 +16,7 @@ type Pipeline struct {
 	IsInteraction bool     `db:"is_interaction" json:"is_interaction"`
 	IsPublic      bool     `db:"is_public" json:"is_public"`
 	UserGroups    []string `db:"user_groups" json:"user_groups"`
+	ProjectName   string   `db:"project_name" json:"project_name"`
 }
 
 type PipelineVersion struct {
@@ -38,6 +39,7 @@ type PipelineSummery struct {
 	IsInteraction    bool
 	IsPublic         bool
 	UserGroups       []string
+	ProjectName      string
 }
 
 type Manifest struct {

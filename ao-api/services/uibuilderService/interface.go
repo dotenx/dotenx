@@ -19,6 +19,8 @@ type UIbuilderService interface {
 	SetPageStatus(accountId, projectTag, pageName, status string) error
 	GetUiInfrastructure(accountId, projectTag string) (models.UiInfrastructure, error)
 	UpsertUiInfrastructure(uiInfra models.UiInfrastructure) error
+	// This function deletes all the pages of a project
+	DeleteAllPages(accountId, projectTag string) error
 }
 
 type uibuilderService struct {

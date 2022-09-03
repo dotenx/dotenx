@@ -17,14 +17,14 @@ import (
 	Current approach doesn't match the cases like the build pipelines in repositories where you have particular pipeline per git push
 	and at any time you are able to re-run it.
 */
-func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup string) (interface{}, error) {
+func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup, projectName string) (interface{}, error) {
 
-	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name)
+	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name, projectName)
 	if err != nil {
 		logrus.Error(err.Error())
 		return -1, err
 	}
-	pipeline, err := manager.Store.GetByName(noContext, accountId, name)
+	pipeline, err := manager.Store.GetByName(noContext, accountId, name, projectName)
 	if err != nil {
 		logrus.Error(err.Error())
 		return -1, err

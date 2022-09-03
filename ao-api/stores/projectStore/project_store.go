@@ -20,6 +20,12 @@ type ProjectStore interface {
 	GetProjectByTag(ctx context.Context, tag string) (models.Project, error)
 	GetProjectDomain(ctx context.Context, accountId, projectTag string) (models.ProjectDomain, error)
 	UpsertProjectDomain(ctx context.Context, projectDomain models.ProjectDomain) error
+
+	// This function deletes the domain associated with the project
+	DeleteProjectDomain(ctx context.Context, projectDomain models.ProjectDomain) error
+
+	// This function deletes the project record from the database
+	DeleteProjectByTag(ctx context.Context, projectTag string) error
 }
 
 type projectStore struct {

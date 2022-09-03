@@ -11,6 +11,8 @@ import { useGetProjectTag } from '../features/ui/hooks/use-get-project-tag'
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from '../internal/internal-api'
 import { z } from 'zod'
 import { toast } from 'react-toastify'
+import { HelpPopover } from '../features/ui/help-popover'
+import { PageTitle } from '../features/ui/page-title'
 
 export default function DomainsPage() {
 	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
@@ -31,9 +33,16 @@ export default function DomainsPage() {
 
 	if (!projectName) return <Navigate to="/" replace />
 
+	const helpDetails = {
+		title: 'Set a custom domain for your application instead of using the default domain',
+		description:'You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/domains',
+	}
+
 	return (
 		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
-			<Title order={2}>Domains</Title>
+			<PageTitle title="Domains" helpDetails={helpDetails} />
 			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
 				<Loader className="mx-auto" />
 			) : (

@@ -16,7 +16,7 @@ func (pc *ProjectController) GetProjectDomain() gin.HandlerFunc {
 		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
 		if err != nil {
 			if err.Error() == "project_domain not found" {
-				c.Status(http.StatusNotFound)
+				c.JSON(http.StatusNotFound, gin.H{"message": "entity not found"})
 				return
 			} else {
 				logrus.Error(err.Error())
