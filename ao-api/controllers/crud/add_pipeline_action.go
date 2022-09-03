@@ -19,9 +19,6 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
-		//fmt.Printf("%v\n", pipelineDto)
-		//fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$")
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
@@ -35,7 +32,13 @@ func (mc *CRUDController) AddPipeline() gin.HandlerFunc {
 			Manifest: pipelineDto.Manifest,
 		}
 
-		err = mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction)
+		// If the project name is not provided we assume this is an automation
+		projectName := c.Param("project_name")
+		if projectName == "" {
+			projectName = "AUTOMATION_STUDIO"
+		}
+
+		err = mc.Service.CreatePipeLine(&base, &pipeline, pipelineDto.IsTemplate, pipelineDto.IsInteraction, projectName)
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" {
@@ -53,6 +56,7 @@ type PipelineDto struct {
 	Name          string          `json:"name"`
 	IsTemplate    bool            `json:"is_template"`
 	IsInteraction bool            `json:"is_interaction"`
+	ProjectName   string          `json:"project_name"`
 	Manifest      models.Manifest `json:"manifest"`
 }
 

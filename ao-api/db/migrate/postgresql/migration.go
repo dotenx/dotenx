@@ -188,6 +188,46 @@ var migrations = []struct {
 		stmt: createTableMarketplaceItems,
 	},
 	{
+		name: "add-project-name-to-pipelines",
+		stmt: addProjectName,
+	},
+	{
+		name: "update-project-name",
+		stmt: updateProjectName,
+	},
+	{
+		name: "update-nill-project-name",
+		stmt: updateNillProjectName,
+	},
+	{
+		name: "drop-constaint-uniqueness-pipelines",
+		stmt: dropUniqueConstraintForPipelines,
+	},
+	{
+		name: "create-new-constaint-uniqueness-pipelines",
+		stmt: createNewUniqueConstraintForPipelines,
+	},
+	{
+		name: "add-project-name-to-triggers",
+		stmt: addProjectNameForTriggers,
+	},
+	{
+		name: "update-project-name-for-triggers",
+		stmt: updateProjectNameForTrigger,
+	},
+	{
+		name: "update-nill-project-name-for-triggers",
+		stmt: updateNillProjectNameForTriggers,
+	},
+	{
+		name: "drop-constaint-uniqueness-Triggers",
+		stmt: dropUniqueConstraintForTriggers,
+	},
+	{
+		name: "create-new-constaint-uniqueness-Triggers",
+		stmt: createNewUniqueConstraintForTriggers,
+	},
+	{
 		name: "add-has-database-field-to-projects-table",
 		stmt: addHasDatabaseFieldToProjectsTable,
 	},
@@ -268,10 +308,6 @@ var migrationSelect = `
 SELECT name FROM migration_history
 `
 
-//
-// 001_create_table_pipelines.sql
-//
-
 var enableUUIDExtension = `
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 `
@@ -312,7 +348,7 @@ FOREIGN KEY (pipeline_id) REFERENCES pipelines(id) ON DELETE CASCADE
 
 var addAwsLambdaFieldToTasks = `
 ALTER TABLE tasks
-ADD COLUMN IF NOT EXISTS aws_lambda varchar(64);
+ADD COLUMN IF NOT EXISTS aws_lambda VARCHAR(64);
 `
 
 var createTableTaskPreconditions = `
@@ -389,35 +425,37 @@ var dropIntegrations = ` DROP TABLE IF EXISTS integrations
 
 var createTableIntegrations = `
 CREATE TABLE IF NOT EXISTS integrations (
-account_id        varchar(64) NOT NULL,
-type              varchar(32) NOT NULL,
-name              varchar(32) NOT NULL,
+account_id        VARCHAR(64) NOT NULL,
+type              VARCHAR(32) NOT NULL,
+name              VARCHAR(32) NOT NULL,
 secrets                          JSONB,
 UNIQUE (account_id, name)
 )
 `
 var dropTriggers = `DROP TABLE IF EXISTS event_triggers`
 
+// todo: remove pipeline and project_name from event_triggers
 var createTableEventTriggers = `
 CREATE TABLE IF NOT EXISTS event_triggers (
-account_id               varchar(64) NOT NULL,
-type                     varchar(64) NOT NULL,
-name                     varchar(32) NOT NULL,
-integration              varchar(128) NOT NULL,
-endpoint                 varchar(128) NOT NULL,
-pipeline                 varchar(128) NOT NULL,
+account_id               VARCHAR(64) NOT NULL,
+type                     VARCHAR(64) NOT NULL,
+name                     VARCHAR(32) NOT NULL,
+integration              VARCHAR(128) NOT NULL,
+endpoint                 VARCHAR(128) NOT NULL,
+pipeline                 VARCHAR(128) NOT NULL,
 credentials									JSONB,
+project_name 		   VARCHAR(128),
 UNIQUE (account_id, name, pipeline)
 )
 `
 
 var createAuthorState = `
 CREATE TABLE IF NOT EXISTS author_state (
-author                   varchar(64) NOT NULL,
-type                     varchar(64) NOT NULL,
-name                     varchar(64) NOT NULL,
+author                   VARCHAR(64) NOT NULL,
+type                     VARCHAR(64) NOT NULL,
+name                     VARCHAR(64) NOT NULL,
 used_times               INT NOT NULL,
-service                  varchar(128),
+service                  VARCHAR(128),
 UNIQUE (author, type, name)
 )
 `
@@ -462,24 +500,50 @@ var updateNillIsInteraction = `
 UPDATE pipelines
 SET is_interaction=FALSE;`
 
+var addProjectName = `ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS project_name VARCHAR(128);`
+
+var updateProjectName = `
+ALTER TABLE pipelines
+ALTER COLUMN project_name
+SET DEFAULT 'automation_studio';`
+
+// todo: remove this
+var updateNillProjectName = `
+UPDATE pipelines
+SET project_name='AUTOMATION_STUDIO';`
+
+var addProjectNameForTriggers = `ALTER TABLE event_triggers
+ADD COLUMN IF NOT EXISTS project_name VARCHAR(128);`
+
+//todo: update this to use AUTOMATION_STUDIO
+var updateProjectNameForTrigger = `
+ALTER TABLE event_triggers
+ALTER COLUMN project_name
+SET DEFAULT 'AUTOMATION_STUDIO';`
+
+var updateNillProjectNameForTriggers = `
+UPDATE event_triggers
+SET project_name='AUTOMATION_STUDIO';`
+
 var createUserProviderTable = `
 CREATE TABLE IF NOT EXISTS user_provider (
-account_id        varchar(64) NOT NULL,
-name              varchar(64) NOT NULL,
-type              varchar(64) NOT NULL,
-key               varchar(256) NOT NULL,
-secret            varchar(256) NOT NULL,
-direct_url        text,
-scopes            text[],
-front_end_url     text,
-tag               varchar(32) NOT NULL,
+account_id        VARCHAR(64) NOT NULL,
+name              VARCHAR(64) NOT NULL,
+type              VARCHAR(64) NOT NULL,
+key               VARCHAR(256) NOT NULL,
+secret            VARCHAR(256) NOT NULL,
+direct_url        TEXT,
+scopes            TEXT[],
+front_end_url     TEXT,
+tag               VARCHAR(32) NOT NULL,
 UNIQUE (account_id, name)
 )
 `
 
 var addProviderFieldToIntegrations = `
 ALTER TABLE integrations
-ADD COLUMN IF NOT EXISTS provider varchar(64);
+ADD COLUMN IF NOT EXISTS provider VARCHAR(64);
 `
 
 var createTableProjects = `
@@ -488,7 +552,7 @@ id                           SERIAL PRIMARY KEY,
 name                         VARCHAR(128),
 account_id                   VARCHAR(64),
 description                  VARCHAR(128),
-tag                          varchar(32) NOT NULL,
+tag                          VARCHAR(32) NOT NULL,
 UNIQUE (account_id, name)
 )
 `
@@ -497,15 +561,15 @@ UNIQUE (account_id, name)
 
 var addTpAccountIdFieldToIntegrations = `
 ALTER TABLE integrations
-ADD COLUMN IF NOT EXISTS tp_account_id varchar(64);
+ADD COLUMN IF NOT EXISTS tp_account_id VARCHAR(64);
 `
 
 var createTableObjectstore = `
 CREATE TABLE IF NOT EXISTS object_store (
-key       									varchar(256) NOT NULL,
-account_id  								varchar(64) NOT NULL,
-tpaccount_id								varchar(64),
-project_tag									varchar(32) NOT NULL,
+key       									VARCHAR(256) NOT NULL,
+account_id  								VARCHAR(64) NOT NULL,
+tpaccount_id								VARCHAR(64),
+project_tag									VARCHAR(32) NOT NULL,
 size        								INT NOT NULL,
 UNIQUE (account_id, tpaccount_id, project_tag, key)
 )
@@ -533,35 +597,35 @@ ADD COLUMN IF NOT EXISTS user_groups VARCHAR [] NOT NULL DEFAULT '{}';
 
 var createTableUIPages = `
 CREATE TABLE IF NOT EXISTS ui_pages (
-name       									varchar(64) NOT NULL,
-account_id  								varchar(64) NOT NULL,
-project_tag									varchar(32) NOT NULL,
+name       									VARCHAR(64) NOT NULL,
+account_id  								VARCHAR(64) NOT NULL,
+project_tag									VARCHAR(32) NOT NULL,
 content        							JSONB NOT NULL,
-status											varchar(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
+status											VARCHAR(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
 UNIQUE (account_id, name, project_tag)
 )
 `
 
 var createTableProjectDomain = `
 CREATE TABLE IF NOT EXISTS project_domain (
-internal_domain       			varchar(64) NOT NULL,
-external_domain       			varchar(64) NOT NULL,
-hosted_zone_id							varchar(64),
-ns_records									VARCHAR [] DEFAULT array[]::varchar[] NOT NULL,
-tls_arn											varchar DEFAULT '',
-account_id  								varchar(64) NOT NULL,
-project_tag									varchar(32) NOT NULL,
+internal_domain       			VARCHAR(64) NOT NULL,
+external_domain       			VARCHAR(64) NOT NULL,
+hosted_zone_id							VARCHAR(64),
+ns_records									VARCHAR [] DEFAULT array[]::VARCHAR[] NOT NULL,
+tls_arn											VARCHAR DEFAULT '',
+account_id  								VARCHAR(64) NOT NULL,
+project_tag									VARCHAR(32) NOT NULL,
 UNIQUE (account_id, project_tag)
 )
 `
 
 var createTableProjectUIInfrastructure = `
 CREATE TABLE IF NOT EXISTS project_ui_infrastructure (
-account_id  								varchar(64) NOT NULL,
-project_tag									varchar(32) NOT NULL,
-cdn_arn											varchar(64) DEFAULT '',
-cdn_domain									varchar(64) DEFAULT '',
-s3_bucket										varchar(64) DEFAULT '',
+account_id  								VARCHAR(64) NOT NULL,
+project_tag									VARCHAR(32) NOT NULL,
+cdn_arn											VARCHAR(64) DEFAULT '',
+cdn_domain									VARCHAR(64) DEFAULT '',
+s3_bucket										VARCHAR(64) DEFAULT '',
 UNIQUE (account_id, project_tag)
 )
 `
@@ -569,21 +633,32 @@ UNIQUE (account_id, project_tag)
 var createTableMarketplaceItems = `
 CREATE TABLE IF NOT EXISTS marketplace_items (
 id                          	SERIAL PRIMARY KEY,
-creator_account_id  					varchar(64) NOT NULL,
-item_type											varchar(32) NOT NULL,
-category											varchar(64) DEFAULT '',
-title													varchar DEFAULT '',
-short_description							varchar DEFAULT '',
-description										varchar DEFAULT '',
-price 												int DEFAULT 0,
+creator_account_id  					VARCHAR(64) NOT NULL,
+item_type											VARCHAR(32) NOT NULL,
+category											VARCHAR(64) DEFAULT '',
+title													VARCHAR DEFAULT '',
+short_description							VARCHAR DEFAULT '',
+description										VARCHAR DEFAULT '',
+price 												INT DEFAULT 0,
 features        							JSON,
-image_url 										varchar,
-enabled												BOOLEAN DEFAULT TRUE,
-created_at 										timestamp,
-updated_at 										timestamp
+image_url 										VARCHAR,
+enabled												BOOLEAN DEFAULT FALSE,
+created_at 										TIMESTAMP,
+updated_at 										TIMESTAMP,
+project_name									VARCHAR(64) NOT NULL,
+s3_key												VARCHAR NOT NULL
 )
 `
 
+var dropUniqueConstraintForPipelines = `ALTER TABLE pipelines DROP CONSTRAINT IF EXISTS pipelines_name_account_id_key;`
+var createNewUniqueConstraintForPipelines = `ALTER TABLE pipelines ADD CONSTRAINT unique_project_automation UNIQUE(name, account_id, project_name);`
+
+var dropUniqueConstraintForTriggers = `ALTER TABLE event_triggers DROP CONSTRAINT event_triggers_account_id_name_pipeline_key;`
+var createNewUniqueConstraintForTriggers = `ALTER TABLE event_triggers ADD CONSTRAINT unique_project_triggers UNIQUE(account_id, name, pipeline, project_name);`
+
+var dropUniqueConstraintForEventTriggers = `ALTER TABLE event_triggers DROP CONSTRAINT unique_project_triggers;`
+
+var createNewUniqueConstraintForTriggersAgain = `ALTER TABLE event_triggers ADD CONSTRAINT unique_project_triggers UNIQUE(name, endpoint);`
 var addHasDatabaseFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS has_database BOOLEAN NOT NULL DEFAULT FALSE;

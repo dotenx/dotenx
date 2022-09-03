@@ -15,16 +15,19 @@ func New(db *db.DB) PipelineStore {
 // jwt token subject's own data or not, this is a BIG VULNERABILITY fix it
 type PipelineStore interface {
 	// pipelines
+	GetById(context context.Context, id int) (pipeline models.PipelineSummery, err error)
 	DeleteExecution(context context.Context, id int) (err error)
 	DeletePipeline(context context.Context, accountId, name string) (err error)
-	GetPipelineId(context context.Context, accountId, name string) (id int, err error)
+	GetPipelineId(context context.Context, accountId, name, projectId string) (id int, err error)
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
 	// Create pipelineStore a new pipeline
-	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool) error // todo: return the endpoint
+	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string) error // todo: return the endpoint
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
+	// Get All pipelines of a project in the account
+	ListProjectPipelines(context context.Context, accountId, projectName string) ([]models.Pipeline, error)
 	// Retrieve a pipeline based on name
-	GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error)
+	GetByName(context context.Context, accountId string, name, project_name string) (pipeline models.PipelineSummery, err error)
 	// Retrieve a pipeline based on endpoint
 	GetPipelineByEndpoint(context context.Context, endpoint string) (pipeline models.PipelineSummery, err error)
 	// Check if the endpoint is valid return the pipeline id
@@ -72,6 +75,9 @@ type PipelineStore interface {
 	DeActivatePipeline(context context.Context, accountId, pipelineId string) error
 
 	GetAccountIdByExecutionId(context context.Context, executionId int) (string, error)
+
+	// Deletes all the pipelines in the project
+	DeleteAllPipelines(context context.Context, accountId, projectName string) (err error)
 }
 
 type pipelineStore struct {

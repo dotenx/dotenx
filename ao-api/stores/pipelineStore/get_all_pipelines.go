@@ -30,6 +30,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				IsInteraction bool           `db:"is_interaction"`
 				IsPublic      bool           `db:"is_public"`
 				UserGroups    pq.StringArray `db:"user_groups"`
+				ProjectName   string         `db:"project_name"`
 			}
 			rows.StructScan(&cur)
 			if err != nil {
@@ -45,6 +46,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				IsInteraction: cur.IsInteraction,
 				IsPublic:      cur.IsPublic,
 				UserGroups:    ([]string)(cur.UserGroups),
+				ProjectName:   cur.ProjectName,
 			})
 		}
 	}

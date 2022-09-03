@@ -87,10 +87,19 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		(column) => column.name !== 'id' && column.name !== 'creator_id'
 	)
 
+	const helpDetails = {
+		title: `You can manage your table's records or find the data manipulation endpoints here`,
+		description:
+			'You can also add new columns or delete existing ones. Use the column types that best fit your data. Use the query builder to filter the records with simple or complex conditions.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<>
 			<ContentWrapper>
 				<Table
+					helpDetails={helpDetails}
 					title={`Table ${tableName}`}
 					columns={tableHeaders}
 					data={records}

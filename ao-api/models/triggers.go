@@ -39,6 +39,7 @@ type EventTrigger struct {
 	Integration string                 `db:"integration" json:"integration"`
 	Credentials map[string]interface{} `db:"credentials" json:"credentials"`
 	MetaData    TriggerDefinition      `json:"meta_data"`
+	ProjectName string                 `db:"project_name" json:"project_name"`
 }
 
 func (tr EventTrigger) IsValid() bool {

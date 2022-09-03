@@ -21,6 +21,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 		}
 
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		// Get the `input data` from the request body
 		var input map[string]interface{}
 		if err := c.ShouldBindJSON(&input); err != nil {
@@ -28,7 +29,7 @@ func (e *ExecutionController) StartPipelineByName() gin.HandlerFunc {
 			return
 		}
 
-		res, err := e.Service.StartPipelineByName(input, accountId, name, tpAccountId, userGroup)
+		res, err := e.Service.StartPipelineByName(input, accountId, name, tpAccountId, userGroup, projectName)
 		if err != nil {
 			logrus.Error(err.Error())
 			if err == utils.ErrReachLimitationOfPlan {

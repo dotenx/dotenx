@@ -32,9 +32,18 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	)
 	const tableData = filesData?.data ?? []
 
+	const helpDetails = {
+		title: 'You can upload files to your project or allow your users to upload files',
+		description:
+			'The files uploaded in your project can have different access levels. You can allow your users to upload files or upload files yourself.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 			<Table
+				helpDetails={helpDetails}
 				loading={projectDetailsLoading || filesDataLoading}
 				title="Files"
 				emptyText="Your files will be displayed here"

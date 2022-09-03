@@ -34,6 +34,9 @@ type dockerCleint struct {
 	cli *client.Client
 }
 
+/*
+This function (currently) finds all the triggers and check if they have to start the pipelines they belong to
+*/
 func (manager *TriggerManager) StartChecking(store integrationStore.IntegrationStore) error {
 	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
 	if err != nil {
@@ -41,12 +44,13 @@ func (manager *TriggerManager) StartChecking(store integrationStore.IntegrationS
 	}
 	for {
 		// todo: handle error
+		// TODO: handle this more efficiently and cater for different trigger intervals
 		go manager.check(store)
 		time.Sleep(time.Duration(freq) * time.Second)
-		//time.Sleep(time.Duration(5) * time.Second)
 	}
 }
 func (manager *TriggerManager) check(store integrationStore.IntegrationStore) error {
+	// TODO: replace this with GetActiveTriggers which returns the triggers corresponding to a pipeline with (pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction)
 	triggers, err := manager.GetAllTriggers()
 	if err != nil {
 		return err
@@ -57,9 +61,9 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore) er
 		return err
 	}
 	dc := dockerCleint{cli: cli}
-	//fmt.Println(triggers)
+
 	for _, trigger := range triggers {
-		pipeline, err := manager.PipelineStore.GetByName(context.Background(), trigger.AccountId, trigger.Pipeline)
+		pipeline, err := manager.PipelineStore.GetPipelineByEndpoint(context.Background(), trigger.Endpoint)
 		if err != nil {
 			fmt.Println("Unable to start checking this trigger:", err.Error())
 			continue
@@ -236,7 +240,7 @@ func (dc dockerCleint) invokeAwsLambda(execService executionService.ExecutionSer
 	}
 
 	if lambdaResp.Triggered {
-		res, err := execService.StartPipelineByName(lambdaResp.ReturnValue, trigger.AccountId, trigger.Pipeline, "", "")
+		res, err := execService.StartPipelineByName(lambdaResp.ReturnValue, trigger.AccountId, trigger.Pipeline, "", "", trigger.ProjectName)
 		if err != nil {
 			log.Println("error while starting pipeline: " + err.Error())
 			return

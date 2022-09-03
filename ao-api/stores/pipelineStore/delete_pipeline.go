@@ -9,6 +9,13 @@ import (
 )
 
 func (ps *pipelineStore) DeletePipeline(context context.Context, accountId, name string) (err error) {
+
+	var deletePipeline = `delete from pipelines where account_id = $1 and name = $2`
+
+	// TODO: This is unnecessary, we can just delete the pipeline and let the triggers cascade
+	var deleteTriggers = `delete from event_triggers
+where account_id = $1 and pipeline = $2;`
+
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
@@ -21,11 +28,7 @@ func (ps *pipelineStore) DeletePipeline(context context.Context, accountId, name
 			return err
 		}
 		return nil
+	default:
+		return errors.New("driver not supported")
 	}
-	return errors.New("driver not supported")
 }
-
-var deletePipeline = `delete from pipelines where account_id = $1 and name = $2`
-
-var deleteTriggers = `delete from event_triggers
-where account_id = $1 and pipeline = $2;`
