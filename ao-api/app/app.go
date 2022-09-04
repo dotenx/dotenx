@@ -355,6 +355,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.Upload())
 	objectstore.GET("/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.ListFiles())
 	objectstore.GET("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.GetFile())
+	objectstore.PATCH("/project/:project_tag/file/:file_name/access", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetAccess())
+	objectstore.PATCH("/project/:project_tag/file/:file_name/user_groups", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetUserGroups())
+	objectstore.DELETE("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.DeleteFile())
 	public.GET("/project/:project_tag/file/:file_name", objectstoreController.GetPublicFile())
 
 	// uibuilder router

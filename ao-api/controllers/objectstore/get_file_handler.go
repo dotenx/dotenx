@@ -1,14 +1,15 @@
 package objectstore
 
 import (
+	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -18,6 +19,53 @@ func (controller *ObjectstoreController) GetFile() gin.HandlerFunc {
 
 		fileName := c.Param("file_name")
 		projectTag := c.Param("project_tag")
+
+		accountId, _ := utils.GetAccountId(c)
+
+		var tpAccountId, userGroup string
+		hasPermission := false
+
+		if tpAccountId != "" {
+			accId, _ := utils.GetThirdPartyAccountId(c)
+			tpAccountId = fmt.Sprintf("%v", accId)
+			ug, _ := c.Get("userGroup") // We must always set the user_group claim even if it's empty
+			userGroup = ug.(string)
+		} else {
+			hasPermission = true
+		}
+
+		// Get the object from the database
+		object, err := controller.Service.GetObject(accountId, projectTag, fileName)
+
+		if err != nil {
+			if err.Error() == "entity not found" {
+				c.JSON(http.StatusNotFound, gin.H{
+					"message": "file not found",
+				})
+				return
+			}
+			logrus.Error(err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		if tpAccountId != "" {
+			if object.TpAccountId == tpAccountId { // By default everyone is allowed to download their own files
+				hasPermission = true
+			} else {
+				for _, group := range object.UserGroups {
+					if group == userGroup {
+						hasPermission = true
+						break
+					}
+				}
+			}
+		}
+
+		if !hasPermission {
+			c.Status(http.StatusForbidden)
+			return
+		}
 
 		cfg := &aws.Config{
 			Region: aws.String(config.Configs.Upload.S3Region),
@@ -29,28 +77,9 @@ func (controller *ObjectstoreController) GetFile() gin.HandlerFunc {
 		}
 		svc := s3.New(session.New(), cfg)
 
-		var accountId, tpAccountId string
-		tpAccountId = c.Query("tp_account_id") // If user wants to get file uploaded with a tp token they have to pass tp_account_id. This is provided to them in the list files endpoint.
-
-		if a, ok := c.Get("accountId"); ok {
-			accountId = a.(string)
-		}
-		if a, ok := c.Get("tpAccountId"); ok { // This overwrites the tpAccountId if request is coming with tp token.
-			tpAccountId = a.(string)
-		}
-
-		// If the request is sent with a tp token, we assume it's a request for a file with uploader access.
-		var sb strings.Builder
-		sb.WriteString(accountId + "/")
-		if tpAccountId != "" {
-			sb.WriteString(tpAccountId + "/")
-		}
-		sb.WriteString(projectTag + "/")
-		sb.WriteString(fileName)
-
 		response, err := svc.GetObject(&s3.GetObjectInput{
 			Bucket: aws.String(config.Configs.Upload.S3Bucket),
-			Key:    aws.String(sb.String()),
+			Key:    aws.String(object.Key),
 		})
 		if err != nil {
 			logrus.Error(err.Error())
