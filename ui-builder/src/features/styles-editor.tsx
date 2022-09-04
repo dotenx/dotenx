@@ -10,7 +10,7 @@ import {
 	Select,
 	Slider,
 	Text,
-	TextInput
+	TextInput,
 } from '@mantine/core'
 import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import cssProperties from 'known-css-properties'
@@ -45,7 +45,7 @@ import {
 	TbStrikethrough,
 	TbSwitchHorizontal,
 	TbUnderline,
-	TbX
+	TbX,
 } from 'react-icons/tb'
 import { ClassEditor } from './class-editor'
 

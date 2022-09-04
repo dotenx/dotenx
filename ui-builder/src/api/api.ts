@@ -1,10 +1,10 @@
 import axios from 'axios'
 import _ from 'lodash'
 import {
+	mapSelectorStyleToKebabCase,
 	mapStylesToCamelCase,
 	mapStylesToKebabCase,
 	mapStyleToCamelCase,
-	mapStyleToKebabCase,
 } from './mapper'
 import {
 	AddPageRequest,
@@ -77,9 +77,9 @@ export const addPage = ({
 		_.toPairs(classNames).map(([className, styles]) => [
 			className,
 			{
-				desktop: mapStyleToKebabCase(styles.desktop),
-				tablet: mapStyleToKebabCase(styles.tablet),
-				mobile: mapStyleToKebabCase(styles.mobile),
+				desktop: mapSelectorStyleToKebabCase(styles.desktop),
+				tablet: mapSelectorStyleToKebabCase(styles.tablet),
+				mobile: mapSelectorStyleToKebabCase(styles.mobile),
 			},
 		])
 	)

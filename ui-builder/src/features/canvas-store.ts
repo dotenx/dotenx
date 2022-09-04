@@ -470,10 +470,21 @@ export interface FormComponent extends BaseComponent {
 }
 
 export interface Style {
-	desktop: CSSProperties
-	tablet: CSSProperties
-	mobile: CSSProperties
+	desktop: SelectorStyle
+	tablet: SelectorStyle
+	mobile: SelectorStyle
 }
+
+export type SelectorStyle = Partial<Record<CssSelector, CSSProperties>>
+
+export enum CssSelector {
+	Default = 'default',
+	Hover = 'hover',
+	Focus = 'focus',
+}
+
+export const cssSelectors = [CssSelector.Default, CssSelector.Hover, CssSelector.Focus]
+
 export interface TextComponentData {
 	style: Style
 	text: string

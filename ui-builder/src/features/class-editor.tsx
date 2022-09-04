@@ -1,12 +1,20 @@
-import { Button, CloseButton, clsx, MultiSelect, MultiSelectValueProps } from '@mantine/core'
+import {
+	Button,
+	CloseButton,
+	clsx,
+	MultiSelect,
+	MultiSelectValueProps,
+	SegmentedControl,
+} from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { atom, useAtom } from 'jotai'
 import _ from 'lodash'
-import { Component, useCanvasStore } from './canvas-store'
+import { Component, CssSelector, cssSelectors, useCanvasStore } from './canvas-store'
 import { useClassNamesStore } from './class-names-store'
 import { useSelectedComponent } from './use-selected-component'
 
 export const selectedClassAtom = atom<string | null>(null)
+export const selectedSelectorAtom = atom<CssSelector>(CssSelector.Default)
 
 function Value({
 	value,
@@ -55,28 +63,27 @@ export function ClassEditor() {
 	const classNameList = _.keys(classNames)
 	const selectedComponent = useSelectedComponent()
 	const editComponentClassNames = useCanvasStore((store) => store.editClassNames)
+	const [selector, setSelector] = useAtom(selectedSelectorAtom)
 	if (!selectedComponent) return null
 	const componentClassNames = selectedComponent.classNames
 
 	return (
 		<div>
-			<div>
-				<MultiSelect
-					placeholder="Select class for this component"
-					data={classNameList}
-					value={componentClassNames}
-					onChange={(value) => editComponentClassNames(selectedComponent.id, value)}
-					getCreateLabel={(query) => `+ Create new class ${query} `}
-					onCreate={(query) => {
-						addClassName(query)
-						return query
-					}}
-					valueComponent={Value}
-					size="xs"
-					searchable
-					creatable
-				/>
-			</div>
+			<MultiSelect
+				placeholder="Select class for this component"
+				data={classNameList}
+				value={componentClassNames}
+				onChange={(value) => editComponentClassNames(selectedComponent.id, value)}
+				getCreateLabel={(query) => `+ Create new class ${query} `}
+				onCreate={(query) => {
+					addClassName(query)
+					return query
+				}}
+				valueComponent={Value}
+				size="xs"
+				searchable
+				creatable
+			/>
 			<Button
 				size="xs"
 				variant="subtle"
@@ -86,6 +93,14 @@ export function ClassEditor() {
 			>
 				All Classes
 			</Button>
+			<SegmentedControl
+				data={cssSelectors}
+				size="xs"
+				fullWidth
+				mt="xs"
+				value={selector}
+				onChange={(value: CssSelector) => setSelector(value)}
+			/>
 		</div>
 	)
 }

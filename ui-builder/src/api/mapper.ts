@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import { CSSProperties } from 'react'
-import { Component } from '../features/canvas-store'
+import { Component, SelectorStyle } from '../features/canvas-store'
 import { camelCaseToKebabCase, kebabCaseToCamelCase } from '../utils'
+import { BackendSelectorStyle } from './types'
 
 export const mapStylesToKebabCase = (components: Component[]): any[] => {
 	return components.map((component) => ({
@@ -11,17 +12,25 @@ export const mapStylesToKebabCase = (components: Component[]): any[] => {
 }
 
 const mapComponentStyleToKebab = (component: Component) => {
+	const style = component.data.style
+
 	return {
 		...component,
 		data: {
 			...component.data,
 			style: {
-				desktop: mapStyleToKebabCase(component.data.style.desktop),
-				tablet: mapStyleToKebabCase(component.data.style.tablet),
-				mobile: mapStyleToKebabCase(component.data.style.mobile),
+				desktop: mapSelectorStyleToKebabCase(style.desktop),
+				tablet: mapSelectorStyleToKebabCase(style.tablet),
+				mobile: mapSelectorStyleToKebabCase(style.mobile),
 			},
 		},
 	}
+}
+
+export const mapSelectorStyleToKebabCase = (selectorStyle: SelectorStyle) => {
+	return _.fromPairs(
+		_.toPairs(selectorStyle).map(([selector, style]) => [selector, mapStyleToKebabCase(style)])
+	)
 }
 
 export const mapStyleToKebabCase = (style: CSSProperties): Record<string, string> => {
@@ -49,6 +58,6 @@ const mapComponentStyleToCamelCase = (component: any) => {
 	}
 }
 
-export const mapStyleToCamelCase = (style: Record<string, string>): CSSProperties => {
+export const mapStyleToCamelCase = (style: BackendSelectorStyle): SelectorStyle => {
 	return _.fromPairs(_.toPairs(style).map(([key, value]) => [kebabCaseToCamelCase(key), value]))
 }
