@@ -70,11 +70,16 @@ func (mc *CRUDController) UpdatePipeline() gin.HandlerFunc {
 		//fmt.Println("################")
 		//fmt.Println(pipelineDto)
 		//fmt.Println("##################")
+		projectName := c.Param("project_name")
+		if projectName == "" {
+			projectName = "AUTOMATION_STUDIO"
+		}
 		accountId, _ := utils.GetAccountId(c)
 
 		base := models.Pipeline{
-			AccountId: accountId,
-			Name:      pipelineDto.Name,
+			AccountId:   accountId,
+			Name:        pipelineDto.Name,
+			ProjectName: projectName,
 		}
 
 		pipeline := models.PipelineVersion{

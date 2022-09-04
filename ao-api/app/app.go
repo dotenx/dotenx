@@ -256,7 +256,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.POST("/project/:project_name/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/project/:project_name/template/name/:name", crudController.GetTemplateDetailes())
 	pipeline.GET("/project/:project_name/interaction/name/:name", crudController.GetInteractionDetailes())
-	pipeline.PUT("", crudController.UpdatePipeline())
+	pipeline.PUT("/project/:project_name", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
 	pipeline.DELETE("/project/:project_name/name/:name", crudController.DeletePipeline())
 	pipeline.GET("/project/:project_name/name/:name/executions", crudController.GetListOfPipelineExecution())
@@ -380,8 +380,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// }
 	// fmt.Println(dt)
 
-	// go TriggerServic.StartChecking(IntegrationStore)
-	// go TriggerServic.StartScheduller()
+	go TriggerServic.StartChecking(IntegrationStore)
+	go TriggerServic.StartScheduller()
 	return r
 }
 
