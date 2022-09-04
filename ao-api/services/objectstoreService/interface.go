@@ -12,9 +12,25 @@ func NewObjectstoreService(store objectstoreStore.ObjectstoreStore) ObjectstoreS
 }
 
 type ObjectstoreService interface {
+
+	// Get total usage of the object store across all projects in the account
 	GetTotalUsage(accountId string) (int, error)
+
+	// Add an object to the object_store table
 	AddObject(objectstore models.Objectstore) error
+
+	// Get an object from the object_store table
+	GetObject(accountId, projectTag, fileName string) (models.Objectstore, error)
+
+	// Delete a file from the object_store table. If tpAccountId is not empty, it will be included in the where clause, o.w. it will be ignored
+	DeleteObject(accountId, tpAccountId, projectTag, fileName string) error
+
+	// List all objects of a project
 	ListFiles(accountId, projectTag string) ([]models.Objectstore, error)
+
+	SetUserGroups(accountId, projectTag, fileName string, userGroups []string) error
+
+	SetAccess(accountId, projectTag, fileName, newUrl string, isPublic bool) error
 }
 
 type objectstoreService struct {
