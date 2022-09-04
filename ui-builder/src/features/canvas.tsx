@@ -1,7 +1,9 @@
+import { useSetAtom } from 'jotai'
 import { ReactNode, useContext, useEffect } from 'react'
 import { DndContext } from 'react-dnd'
 import Frame, { FrameContext } from 'react-frame-component'
 import { useCanvasStore } from './canvas-store'
+import { selectedClassAtom } from './class-editor'
 import { RenderComponents } from './component-renderer'
 import { Droppable, DroppableMode } from './droppable'
 import { useSelectionStore } from './selection-store'
@@ -24,6 +26,7 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 export function Canvas() {
 	const components = useCanvasStore((store) => store.components)
 	const deselectComponent = useSelectionStore((store) => store.deselect)
+	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const viewport = useViewportStore((store) => store.device)
 	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '48rem' : '28rem'
 
@@ -43,7 +46,10 @@ export function Canvas() {
 						<div style={{ padding: 2, flexGrow: 1 }}>
 							<Droppable
 								data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
-								onClick={deselectComponent}
+								onClick={() => {
+									deselectComponent()
+									setSelectedClass(null)
+								}}
 								style={{
 									minHeight: '100%',
 									margin: '0 auto',

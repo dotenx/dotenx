@@ -1,5 +1,6 @@
 import { ActionIcon, clsx, Divider, Tabs } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useSetAtom } from 'jotai'
 import { ReactElement } from 'react'
 import {
 	TbChevronDown,
@@ -15,15 +16,16 @@ import {
 	TbPhoto as IcImage,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
-	TbSquareCheck as IcSubmitButton
+	TbSquareCheck as IcSubmitButton,
 } from 'react-icons/tb'
 import {
 	basicComponents,
 	Component,
 	ComponentKind,
 	formComponents,
-	useCanvasStore
+	useCanvasStore,
 } from './canvas-store'
+import { selectedClassAtom } from './class-editor'
 import { Draggable, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
 
@@ -95,17 +97,20 @@ function Layers({ components }: { components: Component[] }) {
 }
 
 function Layer({ component }: { component: Component }) {
-	const { setHovered, unsetHovered, select } = useSelectionStore((store) => ({
+	const { setHovered, unsetHovered, select, selectedId } = useSelectionStore((store) => ({
 		setHovered: store.setHovered,
 		unsetHovered: store.unsetHovered,
 		select: store.select,
+		selectedId: store.selectedId,
 	}))
+	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const [opened, disclosure] = useDisclosure(true)
 	const icon = getComponentIcon(component.kind)
 	const name = component.kind
 	const hasChildren = component.components.length > 0
 	const selectAndScrollToComponent = () => {
 		select(component.id)
+		if (selectedId !== component.id) setSelectedClass(null)
 		document.getElementById(component.id)?.scrollIntoView()
 	}
 

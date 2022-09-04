@@ -1,7 +1,9 @@
+import { useSetAtom } from 'jotai'
 import { CSSProperties, ReactNode } from 'react'
 import { useDrop } from 'react-dnd'
 import { uuid } from '../utils'
 import { useCanvasStore } from './canvas-store'
+import { selectedClassAtom } from './class-editor'
 import { getDefaultComponentState } from './default-values'
 import { DraggableData, DraggableKinds, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
@@ -44,6 +46,8 @@ export function Droppable({
 		moveComponentAfter: store.moveComponentAfter,
 	}))
 	const selectComponent = useSelectionStore((store) => store.select)
+	const setSelectedClass = useSetAtom(selectedClassAtom)
+
 	const [, drop] = useDrop(() => ({
 		accept: DraggableKinds.Component,
 		drop: (item: DraggableData, monitor) => {
@@ -85,6 +89,7 @@ export function Droppable({
 								break
 						}
 						selectComponent(newComponentId)
+						setSelectedClass(null)
 					}
 					break
 				case DraggableMode.Move:

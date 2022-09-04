@@ -45,7 +45,6 @@ import {
 	ComponentEvent,
 	ComponentKind,
 	EventKind,
-	findComponent,
 	FormComponent,
 	ImageComponent,
 	InputComponent,
@@ -55,6 +54,8 @@ import {
 	TextComponent,
 	useCanvasStore,
 } from './canvas-store'
+import { selectedClassAtom } from './class-editor'
+import { useClassNamesStore } from './class-names-store'
 import {
 	CodeEditor,
 	DataEditor,
@@ -66,19 +67,29 @@ import {
 import { DataSourceForm } from './data-source-form'
 import { useDataSourceStore } from './data-source-store'
 import { projectTagAtom } from './project-atom'
-import { useSelectionStore } from './selection-store'
 import { StylesEditor } from './styles-editor'
+import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore } from './viewport-store'
 
 export function Settings() {
-	const components = useCanvasStore((store) => store.components)
-	const selectedComponentId = useSelectionStore((store) => store.selectedId)
 	const viewport = useViewportStore((store) => store.device)
-	const selectedComponent = findComponent(selectedComponentId ?? '', components)
+	const selectedComponent = useSelectedComponent()
 	const editStyle = useEditStyle(selectedComponent)
+	const selectedClassName = useAtomValue(selectedClassAtom)
+	const { classNames, editClassName } = useClassNamesStore((store) => ({
+		classNames: store.classNames,
+		editClassName: store.edit,
+	}))
 
-	if (!selectedComponentId) return <UnselectedMessage />
 	if (!selectedComponent) return <UnselectedMessage />
+	const styles = selectedClassName
+		? classNames[selectedClassName][viewport]
+		: selectedComponent.data.style[viewport]
+	const editClassStyle = (styles: CSSProperties) => {
+		if (selectedClassName) editClassName(selectedClassName, viewport, styles)
+		else console.error("Can't edit class style without selected class name")
+	}
+	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editStyle
 
 	return (
 		<div className="text-xs">
@@ -99,10 +110,7 @@ export function Settings() {
 					<ComponentSettingsShaper component={selectedComponent} />
 				</Tabs.Panel>
 				<Tabs.Panel value="styles" pt="xs">
-					<StylesEditor
-						styles={selectedComponent.data.style[viewport]}
-						onChange={editStyle}
-					/>
+					<StylesEditor styles={styles} onChange={editClassOrComponentStyle} />
 				</Tabs.Panel>
 				<Tabs.Panel value="data" pt="xs">
 					<DataEditor component={selectedComponent} />
