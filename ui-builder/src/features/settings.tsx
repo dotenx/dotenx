@@ -54,7 +54,7 @@ import {
 	TextComponent,
 	useCanvasStore,
 } from './canvas-store'
-import { selectedClassAtom } from './class-editor'
+import { selectedClassAtom, selectedSelectorAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
 import {
 	CodeEditor,
@@ -80,13 +80,14 @@ export function Settings() {
 		classNames: store.classNames,
 		editClassName: store.edit,
 	}))
+	const selector = useAtomValue(selectedSelectorAtom)
 
 	if (!selectedComponent) return <UnselectedMessage />
 	const styles = selectedClassName
-		? classNames[selectedClassName][viewport]
-		: selectedComponent.data.style[viewport]
+		? classNames[selectedClassName][viewport][selector]
+		: selectedComponent.data.style[viewport][selector]
 	const editClassStyle = (styles: CSSProperties) => {
-		if (selectedClassName) editClassName(selectedClassName, viewport, styles)
+		if (selectedClassName) editClassName(selectedClassName, viewport, selector, styles)
 		else console.error("Can't edit class style without selected class name")
 	}
 	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editStyle
@@ -110,7 +111,7 @@ export function Settings() {
 					<ComponentSettingsShaper component={selectedComponent} />
 				</Tabs.Panel>
 				<Tabs.Panel value="styles" pt="xs">
-					<StylesEditor styles={styles} onChange={editClassOrComponentStyle} />
+					<StylesEditor styles={styles ?? {}} onChange={editClassOrComponentStyle} />
 				</Tabs.Panel>
 				<Tabs.Panel value="data" pt="xs">
 					<DataEditor component={selectedComponent} />
@@ -185,7 +186,8 @@ function TextComponentSettings({ component }: { component: TextComponent }) {
 function BoxComponentSettings({ component }: { component: BoxComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	const editStyle = useEditStyle(component)
-	const backgroundColor = component.data.style[viewport].backgroundColor
+	const selector = useAtomValue(selectedSelectorAtom)
+	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
 
 	return (
 		<div className="space-y-6">
@@ -196,7 +198,10 @@ function BoxComponentSettings({ component }: { component: BoxComponent }) {
 					fullWidth
 					value={backgroundColor}
 					onChange={(newColor) =>
-						editStyle({ ...component.data.style[viewport], backgroundColor: newColor })
+						editStyle({
+							...component.data.style[viewport][selector],
+							backgroundColor: newColor,
+						})
 					}
 				/>
 			</div>
@@ -221,15 +226,17 @@ function ButtonComponentSettings({ component }: { component: ButtonComponent }) 
 }
 
 function ImageComponentSettings({ component }: { component: ImageComponent }) {
+	const selector = useAtomValue(selectedSelectorAtom)
+	const viewport = useViewportStore((store) => store.device)
 	const projectTag = useAtomValue(projectTagAtom)
 	const uploadImageMutation = useMutation(uploadImage)
 	const editComponent = useCanvasStore((store) => store.editComponent)
 	const src = component.data.src
 	const setImage = (src: string | null) => editComponent(component.id, { ...component.data, src })
-	const bgSize = (component.data.style.desktop.backgroundSize as string) ?? 'cover'
-	const bgPosition = (component.data.style.desktop.backgroundPosition as string) ?? 'cover'
+	const bgSize = component.data.style[viewport][selector]?.backgroundSize?.toString() ?? 'cover'
+	const bgPosition =
+		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
-	const viewport = useViewportStore((store) => store.device)
 	const editStyle = useEditStyle(component)
 
 	const imagePart = src ? (
@@ -342,7 +349,8 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 function ColumnsComponentSettings({ component }: { component: ColumnsComponent }) {
 	const viewport = useViewportStore((store) => store.device)
 	const editStyle = useEditStyle(component)
-	const space = component.data.style[viewport].gap as number
+	const selector = useAtomValue(selectedSelectorAtom)
+	const space = component.data.style[viewport][selector]?.gap as number
 
 	return (
 		<div>
@@ -836,6 +844,7 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 const useEditStyle = (component: Component | null) => {
 	const editComponent = useCanvasStore((store) => store.editComponent)
 	const viewport = useViewportStore((store) => store.device)
+	const selector = useAtomValue(selectedSelectorAtom)
 
 	const editStyle = (style: CSSProperties) => {
 		if (!component) return
@@ -843,7 +852,7 @@ const useEditStyle = (component: Component | null) => {
 			...component.data,
 			style: {
 				...component.data.style,
-				[viewport]: style,
+				[viewport]: { ...component.data.style[viewport], [selector]: style },
 			},
 		})
 	}

@@ -1,7 +1,7 @@
 import { clsx, TypographyStylesProvider } from '@mantine/core'
 import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
-import { useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
 import { TbPhoto } from 'react-icons/tb'
@@ -15,6 +15,7 @@ import {
 	Component,
 	ComponentEvent,
 	ComponentKind,
+	CssSelector,
 	EventKind,
 	FetchAction,
 	FormComponent,
@@ -29,7 +30,7 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
-import { selectedClassAtom } from './class-editor'
+import { selectedClassAtom, selectedSelectorAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
 import { getComponentIcon } from './component-selector'
 import { useDataSourceStore } from './data-source-store'
@@ -87,12 +88,16 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ overflow: 'auto', ...styles }}>
+		<div className={getClasses(component)} style={{ overflow: 'auto', ...styles }}>
 			<TypographyStylesProvider>
 				<div dangerouslySetInnerHTML={{ __html: text }} />
 			</TypographyStylesProvider>
 		</div>
 	)
+}
+
+const getClasses = (component: Component) => {
+	return `${component.classNames.join(' ')} ${component.id}`
 }
 
 const emptyContainerStyle = { height: 100, border: '1px dashed black' }
@@ -102,7 +107,7 @@ function BoxRenderer({ component, state }: { component: BoxComponent; state: Jso
 	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ ...emptyStyle, ...styles }}>
+		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
 			<RenderComponents components={component.components} state={state} />
 		</div>
 	)
@@ -111,7 +116,11 @@ function BoxRenderer({ component, state }: { component: BoxComponent; state: Jso
 function ButtonRenderer({ component }: { component: ButtonComponent }) {
 	const styles = useCombinedStyles(component)
 
-	return <button style={styles}>{component.data.text}</button>
+	return (
+		<button className={getClasses(component)} style={styles}>
+			{component.data.text}
+		</button>
+	)
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
@@ -119,7 +128,7 @@ function ColumnsRenderer({ component, state }: { component: ColumnsComponent; st
 	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ ...emptyStyle, ...styles }}>
+		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
 			{component.components.map((component) => (
 				<div
 					key={component.id}
@@ -153,7 +162,14 @@ function ImageRenderer({ component }: { component: ImageComponent }) {
 			</div>
 		)
 
-	return <img src={imageUrl} alt={component.data.alt} style={{ display: 'flex', ...styles }} />
+	return (
+		<img
+			className={getClasses(component)}
+			src={imageUrl}
+			alt={component.data.alt}
+			style={{ display: 'flex', ...styles }}
+		/>
+	)
 }
 
 function InputRenderer({ component }: { component: InputComponent }) {
@@ -161,7 +177,7 @@ function InputRenderer({ component }: { component: InputComponent }) {
 
 	return (
 		<input
-			className="disabled:bg-transparent"
+			className={getClasses(component)}
 			disabled
 			style={styles}
 			name={component.data.name}
@@ -180,7 +196,7 @@ function SelectRenderer({ component }: { component: SelectComponent }) {
 		<select
 			name={component.data.name}
 			required={component.data.required}
-			className="w-full"
+			className={getClasses(component)}
 			style={styles}
 		>
 			{component.data.options.map((option, index) => (
@@ -197,6 +213,7 @@ function TextareaRenderer({ component }: { component: TextareaComponent }) {
 
 	return (
 		<textarea
+			className={getClasses(component)}
 			placeholder={component.data.placeholder}
 			value={component.data.value || component.data.defaultValue}
 			style={styles}
@@ -209,7 +226,7 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 	const styles = useCombinedStyles(component)
 
 	return (
-		<button type="submit" style={styles}>
+		<button className={getClasses(component)} type="submit" style={styles}>
 			{component.data.text}
 		</button>
 	)
@@ -220,7 +237,11 @@ function FormRenderer({ component, state }: { component: FormComponent; state: J
 	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
 
 	return (
-		<form onSubmit={(e) => e.preventDefault()} style={{ ...emptyStyle, ...styles }}>
+		<form
+			className={getClasses(component)}
+			onSubmit={(e) => e.preventDefault()}
+			style={{ ...emptyStyle, ...styles }}
+		>
 			<RenderComponents components={component.components} state={state} />
 		</form>
 	)
@@ -427,14 +448,22 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	)
 }
 
-const combineStyles = (viewport: ViewportDevice, style: Style): CSSProperties => {
+const combineStyles = (
+	viewport: ViewportDevice,
+	selector: CssSelector,
+	style: Style
+): CSSProperties => {
+	const desktopStyle = style.desktop[selector] ?? {}
+	const tabletStyle = style.tablet[selector] ?? {}
+	const mobileStyle = style.mobile[selector] ?? {}
+
 	switch (viewport) {
 		case 'desktop':
-			return style.desktop
+			return desktopStyle
 		case 'tablet':
-			return { ...style.desktop, ...style.tablet }
+			return { ...desktopStyle, ...tabletStyle }
 		case 'mobile':
-			return { ...style.desktop, ...style.tablet, ...style.mobile }
+			return { ...desktopStyle, ...tabletStyle, ...mobileStyle }
 	}
 }
 
@@ -448,11 +477,17 @@ const evalCodes = (events: ComponentEvent[], kind: EventKind) => {
 }
 
 const useCombinedStyles = (component: Component): CSSProperties => {
+	return {}
+
 	const viewport = useViewportStore((store) => store.device)
+	const selector = useAtomValue(selectedSelectorAtom)
 	const classNames = useClassNamesStore((store) => store.classNames)
-	const viewportStyles = combineStyles(viewport, component.data.style)
+	const viewportStyles = combineStyles(viewport, selector, component.data.style)
 	const classStyles = component.classNames.reduce<CSSProperties>(
-		(prev, className) => ({ ...prev, ...combineStyles(viewport, classNames[className]) }),
+		(prev, className) => ({
+			...prev,
+			...combineStyles(viewport, selector, classNames[className]),
+		}),
 		{}
 	)
 	return { ...classStyles, ...viewportStyles }

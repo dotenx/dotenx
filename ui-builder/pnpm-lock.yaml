@@ -21,7 +21,7 @@ specifiers:
   axios: ^0.27.2
   eslint: ^8.23.0
   eslint-config-prettier: ^8.5.0
-  eslint-plugin-react: ^7.31.4
+  eslint-plugin-react: ^7.31.5
   eslint-plugin-react-hooks: ^4.6.0
   immer: ^9.0.15
   jotai: ^1.8.2
@@ -62,7 +62,7 @@ dependencies:
   axios: 0.27.2
   eslint: 8.23.0
   eslint-config-prettier: 8.5.0_eslint@8.23.0
-  eslint-plugin-react: 7.31.4_eslint@8.23.0
+  eslint-plugin-react: 7.31.5_eslint@8.23.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.23.0
   immer: 9.0.15
   jotai: 1.8.2_sb2qszcxphfuz2vdyl7sff7oem
@@ -1760,8 +1760,8 @@ packages:
       eslint: 8.23.0
     dev: false
 
-  /eslint-plugin-react/7.31.4_eslint@8.23.0:
-    resolution: {integrity: sha512-2ry4HTT+c+hSgpnV2DXj3d5oAmH11KH8HHQwtcfRdq6/+R3nEimvMbwAqK79eb4ZW1/hp8yC5elBusZM6li/Gg==}
+  /eslint-plugin-react/7.31.5_eslint@8.23.0:
+    resolution: {integrity: sha512-y7472VAcqns17rsQUk6tQCnqBi+boYjGdYarX022719+wGd1T4U1fOYJ2T2Trd3Od2q5M92e42zJ2uZOGmWamA==}
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
