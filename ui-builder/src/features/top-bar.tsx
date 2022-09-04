@@ -36,6 +36,7 @@ import {
 import logoUrl from '../assets/logo.png'
 import { AnyJson } from '../utils'
 import { useCanvasStore } from './canvas-store'
+import { useClassNamesStore } from './class-names-store'
 import { useDataSourceStore } from './data-source-store'
 import { usePageStates } from './page-states'
 import { projectTagAtom } from './project-atom'
@@ -53,6 +54,8 @@ export function TopBar({ projectName }: { projectName: string }) {
 	const setComponents = useCanvasStore((store) => store.set)
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
+	const setClassNames = useClassNamesStore((store) => store.set)
+
 	useQuery(
 		[QueryKey.PageDetails, projectTag, selectedPage],
 		() => getPageDetails({ projectTag, pageName: selectedPage.route }),
@@ -61,6 +64,7 @@ export function TopBar({ projectName }: { projectName: string }) {
 				const { content } = data.data
 				setComponents(content.layout)
 				setDataSources(content.dataSources)
+				setClassNames(content.classNames)
 				// TODO: needs optimization
 				content.dataSources.map((source) =>
 					axios
@@ -200,12 +204,15 @@ function PageActions({
 	})
 	const components = useCanvasStore((store) => store.components)
 	const dataSources = useDataSourceStore((store) => store.sources)
+	const classNames = useClassNamesStore((store) => store.classNames)
+
 	const save = () =>
 		savePageMutation.mutate({
 			projectTag,
 			pageName: selectedPage.route,
 			components,
 			dataSources,
+			classNames,
 		})
 	const publish = () => handlePublish({ projectTag, pageName: selectedPage.route })
 	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
@@ -288,6 +295,7 @@ function AddPageForm({ projectTag, onSuccess }: { projectTag: string; onSuccess:
 			pageName: values.pageName,
 			components: [],
 			dataSources: [],
+			classNames: {},
 		})
 	})
 

@@ -24,7 +24,7 @@ const mapComponentStyleToKebab = (component: Component) => {
 	}
 }
 
-const mapStyleToKebabCase = (style: CSSProperties): Record<string, string> => {
+export const mapStyleToKebabCase = (style: CSSProperties): Record<string, string> => {
 	return _.fromPairs(_.toPairs(style).map(([key, value]) => [camelCaseToKebabCase(key), value]))
 }
 
@@ -49,6 +49,6 @@ const mapComponentStyleToCamelCase = (component: any) => {
 	}
 }
 
-const mapStyleToCamelCase = (style: Record<string, string>): CSSProperties => {
+export const mapStyleToCamelCase = (style: Record<string, string>): CSSProperties => {
 	return _.fromPairs(_.toPairs(style).map(([key, value]) => [kebabCaseToCamelCase(key), value]))
 }

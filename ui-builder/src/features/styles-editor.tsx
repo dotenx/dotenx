@@ -10,7 +10,7 @@ import {
 	Select,
 	Slider,
 	Text,
-	TextInput,
+	TextInput
 } from '@mantine/core'
 import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import cssProperties from 'known-css-properties'
@@ -45,8 +45,9 @@ import {
 	TbStrikethrough,
 	TbSwitchHorizontal,
 	TbUnderline,
-	TbX,
+	TbX
 } from 'react-icons/tb'
+import { ClassEditor } from './class-editor'
 
 const normalizedCssProperties = cssProperties.all.map((property) =>
 	property
@@ -88,6 +89,10 @@ export function StylesEditor({
 
 	return (
 		<div className="space-y-6">
+			<CollapseLine label="Class">
+				<ClassEditor />
+			</CollapseLine>
+
 			<CollapseLine label="Layout">
 				<LayoutEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>

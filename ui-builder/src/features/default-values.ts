@@ -10,6 +10,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -27,6 +28,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -53,6 +55,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -70,6 +73,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -89,6 +93,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -112,6 +117,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -134,6 +140,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -160,6 +167,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -171,6 +179,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -193,6 +202,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],

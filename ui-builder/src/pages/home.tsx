@@ -52,7 +52,7 @@ function AppRightSideBar() {
 				mx="-xs"
 				px="xl"
 			>
-				<div className="py-2">
+				<div className="py-2 px-1">
 					<Settings />
 				</div>
 			</Aside.Section>
