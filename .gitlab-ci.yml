@@ -244,8 +244,8 @@ deploy ui: &deploy_ui
   except:
     - schedules
   only:
-    # refs:
-    #   - master
+    refs:
+      - master
     changes:
       - "ui/**/*" 
 
@@ -264,8 +264,8 @@ deploy ui builder:
     name: production-ui-builder
     url: https://ui.dotenx.com
   only:
-    # refs:
-    #   - master
+    refs:
+      - master
     changes:
       - "ui-builder/**/*"
       - ".gitlab-ci.yml"

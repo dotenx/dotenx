@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// This function should not be used anymore. Let's just keep it for now!
 func (controller *ObjectstoreController) GetPublicFile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 

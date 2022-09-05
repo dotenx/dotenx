@@ -15,18 +15,19 @@ type Button struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Events []Event `json:"events"`
-	Data   struct {
+	Events     []Event  `json:"events"`
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Text string `json:"text"`
 	} `json:"data"`
 }
 
-const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
+const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

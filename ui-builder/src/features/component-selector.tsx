@@ -1,8 +1,14 @@
-import { ActionIcon, clsx, Divider, Tabs } from '@mantine/core'
+import { ActionIcon, Button, CloseButton, clsx, Divider, Tabs, TextInput } from '@mantine/core'
+import { useForm, zodResolver } from '@mantine/form'
 import { useDisclosure } from '@mantine/hooks'
-import { useSetAtom } from 'jotai'
+import { closeAllModals, openModal } from '@mantine/modals'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import produce from 'immer'
+import { useAtomValue, useSetAtom } from 'jotai'
+import _ from 'lodash'
 import { ReactElement } from 'react'
 import {
+	Tb3DCubeSphere,
 	TbChevronDown,
 	TbChevronUp,
 	TbClick as IcButton,
@@ -13,20 +19,26 @@ import {
 	TbLayersDifference,
 	TbLayoutColumns as IcColumns,
 	TbMessage2 as IcText,
+	TbPackgeExport,
 	TbPhoto as IcImage,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
 } from 'react-icons/tb'
+import { z } from 'zod'
+import { createCustomComponent, deleteCustomComponent, getCustomComponents, QueryKey } from '../api'
 import {
 	basicComponents,
 	Component,
 	ComponentKind,
 	formComponents,
+	Style,
 	useCanvasStore,
 } from './canvas-store'
 import { selectedClassAtom } from './class-editor'
+import { useClassNamesStore } from './class-names-store'
 import { Draggable, DraggableMode } from './draggable'
+import { projectTagAtom } from './project-atom'
 import { useSelectionStore } from './selection-store'
 
 export function ComponentSelectorAndLayers() {
@@ -48,11 +60,54 @@ export function ComponentSelectorAndLayers() {
 				<ComponentSelector kinds={basicComponents} />
 				<Divider mt="xl" mb="xs" label="Form" labelPosition="center" />
 				<ComponentSelector kinds={formComponents} />
+				<Divider mt="xl" mb="xs" label="Components" labelPosition="center" />
+				<CustomComponentSelector />
 			</Tabs.Panel>
 			<Tabs.Panel value="layers" pt="xs">
 				<Layers components={components} />
 			</Tabs.Panel>
 		</Tabs>
+	)
+}
+
+function CustomComponentSelector() {
+	const projectTag = useAtomValue(projectTagAtom)
+	const queryClient = useQueryClient()
+	const query = useQuery(
+		[QueryKey.CustomComponents, projectTag],
+		() => getCustomComponents({ projectTag }),
+		{ enabled: !!projectTag }
+	)
+	const deleteMutation = useMutation(deleteCustomComponent, {
+		onSuccess: () => queryClient.invalidateQueries([QueryKey.CustomComponents]),
+	})
+	const customComponents = query.data?.data ?? []
+
+	return (
+		<div className="grid grid-cols-3 gap-2">
+			{customComponents.map((component) => (
+				<Draggable
+					key={component.name}
+					data={{ mode: DraggableMode.AddWithData, data: component.content }}
+				>
+					<div className="flex flex-col items-center rounded bg-gray-50 cursor-grab text-slate-600 hover:text-slate-900">
+						<CloseButton
+							size="xs"
+							className="self-end"
+							title="Delete component"
+							onClick={() =>
+								deleteMutation.mutate({ componentName: component.name, projectTag })
+							}
+							loading={deleteMutation.isLoading}
+						/>
+						<div className="text-2xl">
+							<Tb3DCubeSphere />
+						</div>
+						<p className="text-xs text-center mt-2 pb-2">{component.name}</p>
+					</div>
+				</Draggable>
+			))}
+		</div>
 	)
 }
 
@@ -141,9 +196,76 @@ function Layer({ component }: { component: Component }) {
 				<div>{disclosureButton}</div>
 				<span className={clsx('pl-1', !hasChildren && 'pl-[22px]')}>{icon}</span>
 				<p className="pl-2 cursor-default">{name}</p>
+				<div className="ml-auto opacity-0 group-hover:opacity-100">
+					<ExtractButton component={component} />
+				</div>
 			</div>
 			{childrenLayers}
 		</div>
+	)
+}
+
+function ExtractButton({ component }: { component: Component }) {
+	return (
+		<ActionIcon
+			title="Create custom component"
+			size="sm"
+			onClick={() =>
+				openModal({
+					title: 'Create Component',
+					children: <CustomComponentForm component={component} />,
+				})
+			}
+		>
+			<TbPackgeExport />
+		</ActionIcon>
+	)
+}
+
+const schema = z.object({
+	name: z.string().min(2),
+})
+
+type Schema = z.infer<typeof schema>
+
+function CustomComponentForm({ component }: { component: Component }) {
+	const form = useForm<Schema>({ initialValues: { name: '' }, validate: zodResolver(schema) })
+	const queryClient = useQueryClient()
+	const mutation = useMutation(createCustomComponent, {
+		onSuccess: () => {
+			closeAllModals()
+			queryClient.invalidateQueries([QueryKey.CustomComponents])
+		},
+	})
+	const projectTag = useAtomValue(projectTagAtom)
+	const classNames = useClassNamesStore((store) => store.classNames)
+	const convertedClasses = _.toPairs(classNames)
+		.filter(([className]) => component.classNames.includes(className))
+		.map(([, value]) => value)
+		.reduce<Style>(mergeStyles, { desktop: {}, tablet: {}, mobile: {} })
+
+	const newComponent = produce(component, (draft) => {
+		draft.data.style = mergeStyles(convertedClasses, draft.data.style)
+		draft.classNames = []
+	})
+
+	return (
+		<form
+			onSubmit={form.onSubmit((values) =>
+				mutation.mutate({
+					projectTag,
+					payload: {
+						name: values.name,
+						content: newComponent,
+					},
+				})
+			)}
+		>
+			<TextInput label="Name" placeholder="Component name" {...form.getInputProps('name')} />
+			<Button fullWidth mt="xl" type="submit" loading={mutation.isLoading}>
+				Create
+			</Button>
+		</form>
 	)
 }
 
@@ -169,5 +291,25 @@ export const getComponentIcon = (kind: ComponentKind) => {
 			return <IcSubmitButton />
 		default:
 			return <TbForms />
+	}
+}
+
+const mergeStyles = (first: Style, second: Style) => {
+	return {
+		desktop: {
+			default: { ...first.desktop.default, ...second.desktop.default },
+			hover: { ...first.desktop.hover, ...second.desktop.hover },
+			focus: { ...first.desktop.focus, ...second.desktop.focus },
+		},
+		tablet: {
+			default: { ...first.tablet.default, ...second.tablet.default },
+			hover: { ...first.tablet.hover, ...second.tablet.hover },
+			focus: { ...first.tablet.focus, ...second.tablet.focus },
+		},
+		mobile: {
+			default: { ...first.mobile.default, ...second.mobile.default },
+			hover: { ...first.mobile.hover, ...second.mobile.hover },
+			focus: { ...first.mobile.focus, ...second.mobile.focus },
+		},
 	}
 }

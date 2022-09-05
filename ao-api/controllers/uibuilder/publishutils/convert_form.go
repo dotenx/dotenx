@@ -16,19 +16,20 @@ type Form struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Events []Event `json:"events"`
-	Data   struct {
+	Events     []Event  `json:"events"`
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Text           string `json:"text"`
 		DataSourceName string `json:"dataSourceName"`
 	} `json:"data"`
 }
 
-const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
+const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -65,12 +66,14 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 		}
 		Events         []Event
 		DataSourceName string
+		ClassNames     []string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               form.Id,
 		RepeatFrom:       form.RepeatFrom,
 		Events:           form.Events,
 		DataSourceName:   form.Data.DataSourceName,
+		ClassNames:       form.ClassNames,
 	}
 
 	var out bytes.Buffer

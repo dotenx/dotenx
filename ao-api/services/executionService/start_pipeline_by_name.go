@@ -11,12 +11,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-/*	Note: based on this implementation always the latest activated version will be executed. If you want to
-	execute specific version you need to get the version as another parameter and feed it to the GetActivatedPipelineVersionIdByEndpoint
-	but you would let people to execute inactive versions (current assumption is there is only one active version at any given time).
-	Current approach doesn't match the cases like the build pipelines in repositories where you have particular pipeline per git push
-	and at any time you are able to re-run it.
-*/
 func (manager *executionManager) StartPipelineByName(input map[string]interface{}, accountId, name, tpAccountId, userGroup, projectName string) (interface{}, error) {
 
 	pipelineId, err := manager.Store.GetPipelineId(noContext, accountId, name, projectName)

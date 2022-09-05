@@ -16,17 +16,20 @@ type Text struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Data struct {
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Text string `json:"text"`
 	} `json:"data"`
 }
 
-const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" display="inline" x-html='` + "`{{.Data.Text}}`" + `'></div>{{if .RepeatFrom.Name}}</template>{{end}}`
+// TODO: id in templates rendered with RepeatFrom won't work! Do something about it
+
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html='` + "`{{.Data.Text}}`" + `'></div>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

@@ -28,7 +28,7 @@
 		"axios": "^0.27.2",
 		"eslint": "^8.23.0",
 		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-react": "^7.31.5",
+		"eslint-plugin-react": "^7.31.6",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"immer": "^9.0.15",
 		"jotai": "^1.8.2",

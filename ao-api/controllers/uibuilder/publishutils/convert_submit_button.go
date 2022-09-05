@@ -15,17 +15,18 @@ type SubmitButton struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Data struct {
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Text string `json:"text"`
 	} `json:"data"`
 }
 
-const submitButtonTemplate = `<button type="submit" id="{{.Id}}">{{.Data.Text}}</button>`
+const submitButtonTemplate = `<button type="submit" id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
 
 func convertSubmitButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
