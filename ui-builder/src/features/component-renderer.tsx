@@ -1,6 +1,7 @@
 import { clsx, TypographyStylesProvider } from '@mantine/core'
 import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
+import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
 import { TbPhoto } from 'react-icons/tb'
@@ -14,6 +15,7 @@ import {
 	Component,
 	ComponentEvent,
 	ComponentKind,
+	CssSelector,
 	EventKind,
 	FetchAction,
 	FormComponent,
@@ -28,6 +30,8 @@ import {
 	ToggleStateAction,
 	useCanvasStore,
 } from './canvas-store'
+import { selectedClassAtom, selectedSelectorAtom } from './class-editor'
+import { useClassNamesStore } from './class-names-store'
 import { getComponentIcon } from './component-selector'
 import { useDataSourceStore } from './data-source-store'
 import { Draggable, DraggableMode } from './draggable'
@@ -80,11 +84,11 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const allStates = { ...states, ...state }
 	const textBinding = component.bindings.text
 	const stateText = textBinding ? _.get(allStates, textBinding.fromStateName) ?? '' : ''
-	const viewport = useViewportStore((store) => store.device)
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
+	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ overflow: 'auto', ...combineStyles(viewport, component.data.style) }}>
+		<div className={getClasses(component)} style={{ overflow: 'auto', ...styles }}>
 			<TypographyStylesProvider>
 				<div dangerouslySetInnerHTML={{ __html: text }} />
 			</TypographyStylesProvider>
@@ -92,40 +96,43 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	)
 }
 
+const getClasses = (component: Component) => {
+	return `${component.classNames.join(' ')} ${component.id}`
+}
+
 const emptyContainerStyle = { height: 100, border: '1px dashed black' }
 
 function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
-	const viewport = useViewportStore((store) => store.device)
 	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
+	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
+		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
 			<RenderComponents components={component.components} state={state} />
 		</div>
 	)
 }
 
 function ButtonRenderer({ component }: { component: ButtonComponent }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
 
 	return (
-		<button style={combineStyles(viewport, component.data.style)}>{component.data.text}</button>
+		<button className={getClasses(component)} style={styles}>
+			{component.data.text}
+		</button>
 	)
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
-	const viewport = useViewportStore((store) => store.device)
 	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
+	const styles = useCombinedStyles(component)
 
 	return (
-		<div style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}>
+		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
 			{component.components.map((component) => (
 				<div
 					key={component.id}
-					className={clsx(
-						'grow',
-						component.data.style[viewport].flexDirection === 'column' && 'w-0'
-					)}
+					className={clsx('grow', styles.flexDirection === 'column' && 'w-0')}
 				>
 					<ComponentWrapper component={component}>
 						<ComponentShaper component={component} state={state} />
@@ -137,8 +144,8 @@ function ColumnsRenderer({ component, state }: { component: ColumnsComponent; st
 }
 
 function ImageRenderer({ component }: { component: ImageComponent }) {
-	const viewport = useViewportStore((store) => store.device)
 	const imageUrl = component.data.src
+	const styles = useCombinedStyles(component)
 
 	if (!imageUrl)
 		return (
@@ -157,20 +164,22 @@ function ImageRenderer({ component }: { component: ImageComponent }) {
 
 	return (
 		<img
+			className={getClasses(component)}
 			src={imageUrl}
 			alt={component.data.alt}
-			style={{ display: 'flex', ...combineStyles(viewport, component.data.style) }}
+			style={{ display: 'flex', ...styles }}
 		/>
 	)
 }
 
 function InputRenderer({ component }: { component: InputComponent }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
+
 	return (
 		<input
-			className="disabled:bg-transparent"
+			className={getClasses(component)}
 			disabled
-			style={combineStyles(viewport, component.data.style)}
+			style={styles}
 			name={component.data.name}
 			placeholder={component.data.placeholder}
 			required={component.data.required}
@@ -181,13 +190,14 @@ function InputRenderer({ component }: { component: InputComponent }) {
 }
 
 function SelectRenderer({ component }: { component: SelectComponent }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
+
 	return (
 		<select
 			name={component.data.name}
 			required={component.data.required}
-			className="w-full"
-			style={combineStyles(viewport, component.data.style)}
+			className={getClasses(component)}
+			style={styles}
 		>
 			{component.data.options.map((option, index) => (
 				<option key={index} value={option.value}>
@@ -199,34 +209,38 @@ function SelectRenderer({ component }: { component: SelectComponent }) {
 }
 
 function TextareaRenderer({ component }: { component: TextareaComponent }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
+
 	return (
 		<textarea
+			className={getClasses(component)}
 			placeholder={component.data.placeholder}
 			value={component.data.value || component.data.defaultValue}
-			style={combineStyles(viewport, component.data.style)}
+			style={styles}
 			readOnly
 		/>
 	)
 }
 
 export function SubmitButtonRenderer({ component }: { component: SubmitButtonComponent }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
+
 	return (
-		<button type="submit" style={combineStyles(viewport, component.data.style)}>
+		<button className={getClasses(component)} type="submit" style={styles}>
 			{component.data.text}
 		</button>
 	)
 }
 
 function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
-	const viewport = useViewportStore((store) => store.device)
+	const styles = useCombinedStyles(component)
 	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
 
 	return (
 		<form
+			className={getClasses(component)}
 			onSubmit={(e) => e.preventDefault()}
-			style={{ ...emptyStyle, ...combineStyles(viewport, component.data.style) }}
+			style={{ ...emptyStyle, ...styles }}
 		>
 			<RenderComponents components={component.components} state={state} />
 		</form>
@@ -278,6 +292,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		selectedComponentId: store.selectedId,
 		hoveredId: store.hoveredId,
 	}))
+	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
 	const [hovered, setHovered] = useState(false)
@@ -369,6 +384,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 				onClick={(event) => {
 					event.stopPropagation()
 					setSelectedComponent(component.id)
+					if (selectedComponentId !== component.id) setSelectedClass(null)
 				}}
 				hidden={!shouldShow && shouldHide}
 			>
@@ -416,7 +432,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 							bottom: -21,
 							color: isHovered ? 'white' : '#f43f5e',
 							borderRadius: 2,
-							zIndex: 100,
+							zIndex: isHovered ? 101 : 100,
 							border: '1px solid #f43f5e',
 							display: 'flex',
 							gap: 2,
@@ -432,14 +448,22 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	)
 }
 
-const combineStyles = (viewport: ViewportDevice, style: Style): CSSProperties => {
+const combineStyles = (
+	viewport: ViewportDevice,
+	selector: CssSelector,
+	style: Style
+): CSSProperties => {
+	const desktopStyle = style.desktop[selector] ?? {}
+	const tabletStyle = style.tablet[selector] ?? {}
+	const mobileStyle = style.mobile[selector] ?? {}
+
 	switch (viewport) {
 		case 'desktop':
-			return style.desktop
+			return desktopStyle
 		case 'tablet':
-			return { ...style.desktop, ...style.tablet }
+			return { ...desktopStyle, ...tabletStyle }
 		case 'mobile':
-			return { ...style.desktop, ...style.tablet, ...style.mobile }
+			return { ...desktopStyle, ...tabletStyle, ...mobileStyle }
 	}
 }
 
@@ -450,4 +474,21 @@ const evalCodes = (events: ComponentEvent[], kind: EventKind) => {
 		.filter((action): action is CodeAction => action.kind === ActionKind.Code)
 		.map((action) => action.code)
 		.forEach(eval)
+}
+
+const useCombinedStyles = (component: Component): CSSProperties => {
+	return {}
+
+	const viewport = useViewportStore((store) => store.device)
+	const selector = useAtomValue(selectedSelectorAtom)
+	const classNames = useClassNamesStore((store) => store.classNames)
+	const viewportStyles = combineStyles(viewport, selector, component.data.style)
+	const classStyles = component.classNames.reduce<CSSProperties>(
+		(prev, className) => ({
+			...prev,
+			...combineStyles(viewport, selector, classNames[className]),
+		}),
+		{}
+	)
+	return { ...classStyles, ...viewportStyles }
 }

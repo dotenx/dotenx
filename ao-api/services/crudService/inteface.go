@@ -26,7 +26,7 @@ type CrudService interface {
 	DeletePipeline(accountId, name, projectName string, deleteRecord bool) (err error)
 	ActivatePipeline(accountId, pipelineId string) (err error)
 	DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error)
-	GetActivePipelines(accountId string) ([]models.Pipeline, error)
+	GetActivePipelines(accountId, projectName string) ([]models.Pipeline, error)
 	CheckAccess(accId string, excutionId int) (bool, error)
 	NotifyPlanmanageForActivation(accId, action string, pipelineId string, deleteRecord bool) error
 	SetInteractionAccess(pipelineId string, isPublic bool) (err error)

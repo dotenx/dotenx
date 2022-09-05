@@ -256,7 +256,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.POST("/project/:project_name/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/project/:project_name/template/name/:name", crudController.GetTemplateDetailes())
 	pipeline.GET("/project/:project_name/interaction/name/:name", crudController.GetInteractionDetailes())
-	pipeline.PUT("", crudController.UpdatePipeline())
+	pipeline.PUT("/project/:project_name", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())
 	pipeline.DELETE("/project/:project_name/name/:name", crudController.DeletePipeline())
 	pipeline.GET("/project/:project_name/name/:name/executions", crudController.GetListOfPipelineExecution())
@@ -355,6 +355,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.Upload())
 	objectstore.GET("/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.ListFiles())
 	objectstore.GET("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.GetFile())
+	objectstore.PATCH("/project/:project_tag/file/:file_name/access", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetAccess())
+	objectstore.PATCH("/project/:project_tag/file/:file_name/user_groups", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetUserGroups())
+	objectstore.DELETE("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.DeleteFile())
 	public.GET("/project/:project_tag/file/:file_name", objectstoreController.GetPublicFile())
 
 	// uibuilder router
@@ -380,8 +383,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// }
 	// fmt.Println(dt)
 
-	// go TriggerServic.StartChecking(IntegrationStore)
-	// go TriggerServic.StartScheduller()
+	go TriggerServic.StartChecking(IntegrationStore)
+	go TriggerServic.StartScheduller()
 	return r
 }
 

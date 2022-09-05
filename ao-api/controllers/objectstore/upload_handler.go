@@ -20,6 +20,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+/*
+This function uploads a file to S3, adds the record to objectstore table and returns the url of the file.
+
+The request MUST send a file, and optionally can contain is_public and user_groups.
+
+If is_public is true, the file's ACL permission on S3 will be set to public-read. By default, it is set to private.
+
+Also, when is_public is true, we return the public url of the file served through CloudFront, otherwise, we return the private url of the file being served by our server.
+*/
+
+// Todo: Get this from config
 const MaxFileSize = 1 * 1024 * 1024
 
 func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
@@ -40,44 +51,25 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 		}
 		projectTag := c.Param("project_tag")
 
-		ac := c.PostForm("access")
-		var access string
-		switch ac {
-		case "public":
-			access = "public"
-			break
-		case "uploader":
-			if tpAccountId == "" {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid access specified"})
-				return
-			}
-			access = "uploader"
-			break
-		case "owner":
-			access = "owner"
-			break
-		default:
-			access = "owner"
+		ac := c.PostForm("is_public")
+		ug := c.PostForm("user_groups")
+
+		isPublic, err := strconv.ParseBool(ac)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": "is_public must be a boolean"})
+			return
 		}
 
-		// Retrieve file information
+		userGroups := strings.Split(ug, ",")
+		if len(userGroups) == 1 && userGroups[0] == "" {
+			userGroups = []string{}
+		}
+
 		extension := filepath.Ext(file.Filename)
-
-		var sb strings.Builder
-		// This is how we store the files on S3 based on their access
-		if access == "public" {
-			sb.WriteString("public/")
-		} else if access == "uploader" {
-			sb.WriteString(accountId + "/" + tpAccountId + "/")
-		} else {
-			sb.WriteString(accountId + "/")
-		}
-		sb.WriteString(projectTag + "/")
-		// Generate random file name for the new uploaded file so it doesn't override the old file with same name
 		fileName := uuid.New().String() + extension
-		sb.WriteString(fileName)
-		filePathOnS3 := sb.String()
 
+		// Get the existing usage
 		used, err := controller.Service.GetTotalUsage(accountId)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -92,8 +84,8 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println(config.Configs.Upload.QuotaKB)
-
+		// Check if the user has enough space
+		// TODO: Check this based on user's plan
 		totalAllowedSize, err := strconv.Atoi(config.Configs.Upload.QuotaKB)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -106,24 +98,24 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			return
 		}
 
-		// Prepare the url of the file based on its access
-		var sbUrl strings.Builder
-		sbUrl.WriteString(config.Configs.Endpoints.AoApi + "/")
-		if access == "public" {
-			sbUrl.WriteString("public")
+		var url string
+		if isPublic {
+			url = fmt.Sprintf("%s/%s", config.Configs.Upload.PublicUrl, fileName)
 		} else {
-			sbUrl.WriteString("objectstore")
+			url = fmt.Sprintf("%s/%s/file/%s", config.Configs.Upload.PrivateUrl, projectTag, fileName)
 		}
-		sbUrl.WriteString("/project/" + projectTag + "/file/" + fileName)
-		url := sbUrl.String()
+
+		// Prepare the url of the file based on its access
 		toAdd := models.Objectstore{
 			Key:         fileName,
 			AccountId:   accountId,
 			TpAccountId: tpAccountId,
 			ProjectTag:  projectTag,
 			Size:        int(size),
-			Access:      access,
-			Url:         url,
+			// Access:      access,
+			Url:        url,
+			IsPublic:   isPublic,
+			UserGroups: userGroups,
 		}
 
 		err = controller.Service.AddObject(toAdd)
@@ -142,7 +134,7 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 
 		defer f.Close()
 
-		err = UploadFileToS3(f, filePathOnS3, int64(size))
+		err = UploadFileToS3(f, fileName, int64(size), isPublic)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -153,7 +145,8 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 	}
 }
 
-func UploadFileToS3(file multipart.File, fileName string, size int64) error {
+// simple utility function
+func UploadFileToS3(file multipart.File, fileName string, size int64, isPublic bool) error {
 
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
@@ -171,17 +164,23 @@ func UploadFileToS3(file multipart.File, fileName string, size int64) error {
 		return err
 	}
 
-	// Upload the file to S3
-	_, err = svc.PutObject(&s3.PutObjectInput{
+	pubObjectParam := &s3.PutObjectInput{
 		Bucket: aws.String(config.Configs.Upload.S3Bucket),
 		Key:    aws.String(fileName),
 		Body:   bytes.NewReader(buf),
-	})
+	}
+
+	if isPublic {
+		pubObjectParam.ACL = aws.String("public-read")
+	} else {
+		pubObjectParam.ACL = aws.String("private")
+	}
+
+	// Upload the file to S3
+	_, err = svc.PutObject(pubObjectParam)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
-
-//

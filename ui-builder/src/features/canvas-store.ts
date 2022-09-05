@@ -1,3 +1,4 @@
+import produce from 'immer'
 import _ from 'lodash'
 import { CSSProperties } from 'react'
 import create from 'zustand'
@@ -20,6 +21,7 @@ interface CanvasState {
 	editBinding: (componentId: string, bindingKind: BindingKind, binding: Binding) => void
 	removeBinding: (componentId: string, bindingKind: BindingKind) => void
 	editRepeatFrom: (componentId: string, repeatFrom: RepeatFrom) => void
+	editClassNames: (componentId: string, classNames: string[]) => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
@@ -129,7 +131,22 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 			}
 		})
 	},
+	editClassNames: (componentId, classNames) => {
+		set((state) => {
+			return {
+				...state,
+				components: editClassNames(componentId, classNames, state.components),
+			}
+		})
+	},
 }))
+
+const editClassNames = (componentId: string, classNames: string[], components: Component[]) => {
+	return produce(components, (draft) => {
+		const found = findComponent(componentId, draft)
+		if (found) found.classNames = classNames
+	})
+}
 
 export const findComponent = (id: string, components: Component[]): Component | null => {
 	for (const component of components) {
@@ -387,6 +404,7 @@ export interface BaseComponent {
 	events: ComponentEvent[]
 	bindings: Partial<Record<BindingKind, Binding | null>>
 	repeatFrom: RepeatFrom
+	classNames: string[]
 }
 
 export type Component =
@@ -452,10 +470,21 @@ export interface FormComponent extends BaseComponent {
 }
 
 export interface Style {
-	desktop: CSSProperties
-	tablet: CSSProperties
-	mobile: CSSProperties
+	desktop: SelectorStyle
+	tablet: SelectorStyle
+	mobile: SelectorStyle
 }
+
+export type SelectorStyle = Partial<Record<CssSelector, CSSProperties>>
+
+export enum CssSelector {
+	Default = 'default',
+	Hover = 'hover',
+	Focus = 'focus',
+}
+
+export const cssSelectors = [CssSelector.Default, CssSelector.Hover, CssSelector.Focus]
+
 export interface TextComponentData {
 	style: Style
 	text: string

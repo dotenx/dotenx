@@ -10,6 +10,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -27,6 +28,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -35,13 +37,15 @@ export const getDefaultComponentState = (
 				data: {
 					style: {
 						desktop: {
-							backgroundColor: '#3b82f6',
-							color: 'white',
-							border: '0',
-							paddingTop: '10px',
-							paddingBottom: '10px',
-							paddingLeft: '20px',
-							paddingRight: '20px',
+							default: {
+								backgroundColor: '#3b82f6',
+								color: 'white',
+								border: '0',
+								paddingTop: '10px',
+								paddingBottom: '10px',
+								paddingLeft: '20px',
+								paddingRight: '20px',
+							},
 						},
 						tablet: {},
 						mobile: {},
@@ -53,6 +57,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -60,7 +65,7 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: { gap: '40px', flex: '1 1 0px', display: 'flex' },
+						desktop: { default: { gap: '40px', flex: '1 1 0px', display: 'flex' } },
 						tablet: {},
 						mobile: {},
 					},
@@ -70,6 +75,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -77,7 +83,9 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: { backgroundSize: 'cover', backgroundPosition: 'center' },
+						desktop: {
+							default: { backgroundSize: 'cover', backgroundPosition: 'center' },
+						},
 						tablet: {},
 						mobile: {},
 					},
@@ -89,6 +97,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -112,6 +121,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -134,6 +144,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -142,13 +153,15 @@ export const getDefaultComponentState = (
 				data: {
 					style: {
 						desktop: {
-							backgroundColor: '#3b82f6',
-							color: 'white',
-							border: '0',
-							paddingTop: '10px',
-							paddingBottom: '10px',
-							paddingLeft: '20px',
-							paddingRight: '20px',
+							default: {
+								backgroundColor: '#3b82f6',
+								color: 'white',
+								border: '0',
+								paddingTop: '10px',
+								paddingBottom: '10px',
+								paddingLeft: '20px',
+								paddingRight: '20px',
+							},
 						},
 						tablet: {},
 						mobile: {},
@@ -160,6 +173,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -171,6 +185,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],
@@ -193,6 +208,7 @@ export const getDefaultComponentState = (
 			return {
 				kind,
 				components: [],
+				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
 				events: [],

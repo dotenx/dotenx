@@ -77,7 +77,7 @@ func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string, deleteRe
 	return cm.NotifyPlanmanageForActivation(accountId, "deactivate", pipelineId, deleteRecord)
 }
 
-func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, error) {
+func (cm *crudManager) GetActivePipelines(accountId, projectName string) ([]models.Pipeline, error) {
 	pipelines, err := cm.Store.GetPipelines(noContext, accountId)
 	if err != nil {
 		return nil, err

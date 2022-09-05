@@ -9,6 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/*
+
+This handler is used to set the is_public property of an interaction pipeline.
+This handler is used only for interaction pipelines.
+
+*/
+
 func (mc *CRUDController) SetInteractionAccess() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")

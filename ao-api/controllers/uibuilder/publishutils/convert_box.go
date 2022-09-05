@@ -16,18 +16,19 @@ type Box struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Events []Event `json:"events"`
-	Data   struct {
+	Events     []Event  `json:"events"`
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Name string `json:"name"`
 	} `json:"data"`
 }
 
-const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
+const boxTemplate = `<div {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -37,7 +38,6 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 	}
 	var box Box
 	json.Unmarshal(b, &box)
-	fmt.Printf("box:::: %#v\n", box)
 	tmpl, err := template.New("box").Parse(boxTemplate)
 	if err != nil {
 		fmt.Println(err)
@@ -62,12 +62,14 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 			Name     string
 			Iterator string
 		}
-		Events []Event
+		Events     []Event
+		ClassNames []string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
+		ClassNames:       box.ClassNames,
 	}
 
 	var out bytes.Buffer

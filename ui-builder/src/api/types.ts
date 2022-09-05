@@ -1,4 +1,4 @@
-import { Component } from '../features/canvas-store'
+import { Component, CssSelector, Style } from '../features/canvas-store'
 import { DataSource } from '../features/data-source-store'
 
 export type GetProjectDetailsRequest = {
@@ -29,6 +29,7 @@ export type AddPageRequest = {
 	pageName: string
 	components: Component[]
 	dataSources: DataSource[]
+	classNames: Record<string, Style>
 }
 
 export type PublishPageRequest = {
@@ -45,7 +46,16 @@ interface PageDetails {
 	content: {
 		layout: Component[]
 		dataSources: DataSource[]
+		classNames: Record<string, BackendStyle>
 	}
+}
+
+export type BackendSelectorStyle = Record<CssSelector, Record<string, string>>
+
+export interface BackendStyle {
+	desktop: BackendSelectorStyle
+	tablet: BackendSelectorStyle
+	mobile: BackendSelectorStyle
 }
 
 export type DeletePageRequest = {

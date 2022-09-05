@@ -1,5 +1,11 @@
 import axios from 'axios'
-import { mapStylesToCamelCase, mapStylesToKebabCase } from './mapper'
+import _ from 'lodash'
+import {
+	mapSelectorStyleToKebabCase,
+	mapStylesToCamelCase,
+	mapStylesToKebabCase,
+	mapStyleToCamelCase,
+} from './mapper'
 import {
 	AddPageRequest,
 	DeletePageRequest,
@@ -41,13 +47,50 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 		`/uibuilder/project/${projectTag}/page/${pageName}`
 	)
 	const components = mapStylesToCamelCase(res.data.content.layout)
-	return { ...res, data: { ...res.data, content: { ...res.data.content, layout: components } } }
+	const classNames = _.fromPairs(
+		_.toPairs(res.data.content.classNames).map(([className, styles]) => [
+			className,
+			{
+				desktop: mapStyleToCamelCase(styles.desktop),
+				tablet: mapStyleToCamelCase(styles.tablet),
+				mobile: mapStyleToCamelCase(styles.mobile),
+			},
+		])
+	)
+	return {
+		...res,
+		data: {
+			...res.data,
+			content: { ...res.data.content, layout: components, classNames: classNames },
+		},
+	}
 }
 
-export const addPage = ({ projectTag, pageName, components, dataSources }: AddPageRequest) => {
+export const addPage = ({
+	projectTag,
+	pageName,
+	components,
+	dataSources,
+	classNames,
+}: AddPageRequest) => {
+	const kebabClasses = _.fromPairs(
+		_.toPairs(classNames).map(([className, styles]) => [
+			className,
+			{
+				desktop: mapSelectorStyleToKebabCase(styles.desktop),
+				tablet: mapSelectorStyleToKebabCase(styles.tablet),
+				mobile: mapSelectorStyleToKebabCase(styles.mobile),
+			},
+		])
+	)
+
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
-		content: { layout: mapStylesToKebabCase(components), dataSources },
+		content: {
+			layout: mapStylesToKebabCase(components),
+			dataSources,
+			classNames: kebabClasses,
+		},
 	})
 }
 

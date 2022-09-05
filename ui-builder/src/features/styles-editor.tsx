@@ -47,6 +47,7 @@ import {
 	TbUnderline,
 	TbX,
 } from 'react-icons/tb'
+import { ClassEditor } from './class-editor'
 
 const normalizedCssProperties = cssProperties.all.map((property) =>
 	property
@@ -88,6 +89,10 @@ export function StylesEditor({
 
 	return (
 		<div className="space-y-6">
+			<CollapseLine label="Class">
+				<ClassEditor />
+			</CollapseLine>
+
 			<CollapseLine label="Layout">
 				<LayoutEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>

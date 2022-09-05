@@ -88,7 +88,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 	if err != nil {
 		return "", "", "", err
 	}
-	styles, err := styleStore.ConvertToHTML()
+	styles, err := styleStore.ConvertToHTML(page["classNames"].(map[string]interface{}))
 	if err != nil {
 		return "", "", "", err
 	}

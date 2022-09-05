@@ -231,6 +231,14 @@ var migrations = []struct {
 		name: "add-has-database-field-to-projects-table",
 		stmt: addHasDatabaseFieldToProjectsTable,
 	},
+	{
+		name: "add-column-user-groups-to-table-objectstore",
+		stmt: addColumnUserGroupsToTableObjectstore,
+	},
+	{
+		name: "add-column-is-public-to-table-objectstore",
+		stmt: addColumnIsPublicToTableObjectstore,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -662,4 +670,14 @@ var createNewUniqueConstraintForTriggersAgain = `ALTER TABLE event_triggers ADD 
 var addHasDatabaseFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS has_database BOOLEAN NOT NULL DEFAULT FALSE;
+`
+
+var addColumnUserGroupsToTableObjectstore = `
+ALTER TABLE object_store
+ADD COLUMN IF NOT EXISTS user_groups VARCHAR [] NOT NULL DEFAULT '{}';
+`
+
+var addColumnIsPublicToTableObjectstore = `
+ALTER TABLE object_store
+ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
 `
