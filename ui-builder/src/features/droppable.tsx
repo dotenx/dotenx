@@ -1,8 +1,9 @@
 import { useSetAtom } from 'jotai'
+import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { useDrop } from 'react-dnd'
 import { uuid } from '../utils'
-import { useCanvasStore } from './canvas-store'
+import { Component, useCanvasStore } from './canvas-store'
 import { selectedClassAtom } from './class-editor'
 import { getDefaultComponentState } from './default-values'
 import { DraggableData, DraggableKinds, DraggableMode } from './draggable'
@@ -105,6 +106,30 @@ export function Droppable({
 							break
 					}
 					break
+				case DraggableMode.AddWithData:
+					switch (data.mode) {
+						case DroppableMode.InsertIn:
+							addComponent(
+								regenComponent(item.data, data.componentId),
+								data.componentId
+							)
+							break
+						case DroppableMode.InsertBefore:
+							addComponentBefore(
+								regenComponent(item.data, data.componentId),
+								data.componentId
+							)
+							break
+						case DroppableMode.InsertAfter:
+							addComponentAfter(
+								regenComponent(item.data, data.componentId),
+								data.componentId
+							)
+							break
+					}
+					selectComponent(newComponentId)
+					setSelectedClass(null)
+					break
 			}
 		},
 		collect: (monitor) => ({ isOver: monitor.isOver() }),
@@ -115,4 +140,12 @@ export function Droppable({
 			{children}
 		</div>
 	)
+}
+
+const regenComponent = (component: Component, parentId: string) => {
+	const newComponent = _.cloneDeep(component)
+	newComponent.id = uuid()
+	newComponent.parentId = parentId
+	newComponent.components = newComponent.components.map((c) => regenComponent(c, component.id))
+	return newComponent
 }
