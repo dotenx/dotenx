@@ -1,20 +1,16 @@
 import { CSSProperties, ReactNode } from 'react'
 import { useDrag } from 'react-dnd'
-import { ComponentKind } from './canvas-store'
+import { Component, ComponentKind } from './canvas-store'
 
 export type DraggableData =
-	| {
-			mode: DraggableMode.Add
-			kind: ComponentKind
-	  }
-	| {
-			mode: DraggableMode.Move
-			componentId: string
-	  }
+	| { mode: DraggableMode.Add; kind: ComponentKind }
+	| { mode: DraggableMode.Move; componentId: string }
+	| { mode: DraggableMode.AddWithData; data: Component }
 
 export enum DraggableMode {
 	Add = 'add',
 	Move = 'move',
+	AddWithData = 'add-with-data',
 }
 
 export enum DraggableKinds {

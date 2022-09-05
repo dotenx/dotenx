@@ -8,7 +8,11 @@ import {
 } from './mapper'
 import {
 	AddPageRequest,
+	CreateCustomComponentRequest,
+	DeleteCustomComponentRequest,
 	DeletePageRequest,
+	GetCustomComponentsRequest,
+	GetCustomComponentsResponse,
 	GetPageDetailsRequest,
 	GetPageDetailsResponse,
 	GetPagesRequest,
@@ -32,6 +36,7 @@ export enum QueryKey {
 	ProjectDetails = 'project-details',
 	Pages = 'pages',
 	PageDetails = 'page-details',
+	CustomComponents = 'custom-components',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -110,8 +115,24 @@ export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	const formData = new FormData()
 	formData.append('file', image)
 	return api.post<UploadImageResponse>(`/objectstore/project/${projectTag}/upload`, formData, {
-		headers: {
-			'Content-Type': 'multipart/form-data',
-		},
+		headers: { 'Content-Type': 'multipart/form-data' },
 	})
+}
+
+export const createCustomComponent = ({ projectTag, payload }: CreateCustomComponentRequest) => {
+	return api.post(`/uibuilder/project/${projectTag}/component`, {
+		...payload,
+		category: 'uiComponentItem',
+	})
+}
+
+export const deleteCustomComponent = ({
+	projectTag,
+	componentName,
+}: DeleteCustomComponentRequest) => {
+	return api.delete(`/uibuilder/project/${projectTag}/component/${componentName}`)
+}
+
+export const getCustomComponents = ({ projectTag }: GetCustomComponentsRequest) => {
+	return api.get<GetCustomComponentsResponse>(`/uibuilder/project/${projectTag}/component`)
 }

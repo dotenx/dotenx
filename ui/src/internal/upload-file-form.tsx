@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@mantine/core'
+import { Button, Checkbox } from '@mantine/core'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillFolderSymlinkFill } from 'react-icons/bs'
@@ -7,29 +7,31 @@ import { useMutation, useQueryClient } from 'react-query'
 import { z } from 'zod'
 import { QueryKey, uploadFile } from '../api'
 import { useModal } from '../features/hooks'
-import { Form, Select } from '../features/ui'
+import { Form } from '../features/ui'
 
 const schema = z.object({
 	file: z.any(),
-	access: z.string(),
+	isPublic: z.boolean(),
 })
 
 type Schema = z.infer<typeof schema>
 
 export function UploadFileForm({ tag }: { tag: string }) {
 	const [file, setFile] = useState<File>()
+	const [isPublic, setisPublic] = useState(false)
 
 	const client = useQueryClient()
 	const modal = useModal()
 	const form = useForm<Schema>({
-		defaultValues: { file: undefined, access: '' },
+		defaultValues: { file: undefined, isPublic: false },
 		resolver: zodResolver(schema),
 	})
+
 	const mutation = useMutation(
-		(payload: { access: string }) => {
+		() => {
 			const formData = new FormData()
 			formData.append('file', file ? file : '')
-			formData.append('access', payload.access)
+			formData.append('is_public', JSON.stringify(isPublic))
 			return uploadFile(tag, formData)
 		},
 		{
@@ -39,21 +41,10 @@ export function UploadFileForm({ tag }: { tag: string }) {
 			},
 		}
 	)
-	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
-	const options = [
-		{ label: 'Public', value: 'public' },
-		{ label: 'Owner', value: 'owner' },
-		{ label: 'Private', value: 'private' },
-	]
+	const onSubmit = form.handleSubmit(() => mutation.mutate())
+
 	return (
 		<Form className="gap-16" onSubmit={onSubmit}>
-			<Select
-				label="Access"
-				name="access"
-				control={form.control}
-				options={options}
-				errors={form.formState.errors}
-			/>
 			<div className="grid grid-cols-2">
 				<div className="flex flex-col gap-1 ">
 					<span className="text-sm font-medium">Choose file: </span>
@@ -85,7 +76,18 @@ export function UploadFileForm({ tag }: { tag: string }) {
 					</div>
 				)}
 			</div>
-
+			<div>
+				<div className="py-2 text-sm font-medium">File access</div>
+				<Checkbox
+					name="isPublic"
+					label="Public"
+					readOnly
+					checked={isPublic}
+					onClick={() => {
+						setisPublic(!isPublic)
+					}}
+				/>
+			</div>
 			<Button loading={mutation.isLoading} type="submit">
 				Upload
 			</Button>

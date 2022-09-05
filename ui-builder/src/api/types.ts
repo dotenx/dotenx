@@ -72,3 +72,24 @@ export type UploadImageResponse = {
 	fileName: string
 	url: string
 }
+
+export type CreateCustomComponentRequest = {
+	projectTag: string
+	payload: { name: string; content: Component }
+}
+
+export type DeleteCustomComponentRequest = {
+	projectTag: string
+	componentName: string
+}
+
+export type GetCustomComponentsRequest = {
+	projectTag: string
+}
+
+export type GetCustomComponentsResponse =
+	| {
+			name: string
+			content: Component
+	  }[]
+	| null
