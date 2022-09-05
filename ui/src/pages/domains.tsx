@@ -22,8 +22,8 @@ export default function DomainsPage() {
 		() => getDomains(projectTag),
 		{
 			enabled: !!projectTag,
-			onSuccess: () => {
-				setIsDomainAdded(true)
+			onSuccess: (data) => {
+				if (data.data.external_domain) setIsDomainAdded(true)
 			},
 			onError: (err: any) => {
 				if (err.response.status === 404) setIsDomainAdded(false)
@@ -35,7 +35,8 @@ export default function DomainsPage() {
 
 	const helpDetails = {
 		title: 'Set a custom domain for your application instead of using the default domain',
-		description:'You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.',
+		description:
+			'You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.',
 		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
 		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/domains',
 	}
