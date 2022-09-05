@@ -31,7 +31,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 		() => {
 			const formData = new FormData()
 			formData.append('file', file ? file : '')
-			formData.append('is_public ', JSON.stringify(isPublic))
+			formData.append('is_public', JSON.stringify(isPublic))
 			return uploadFile(tag, formData)
 		},
 		{

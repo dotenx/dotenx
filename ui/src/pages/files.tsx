@@ -41,11 +41,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 
 	const projectTag = projectDetails?.data.tag ?? ''
 
-	const { data: filesData, isLoading: filesDataLoading } = useQuery(
-		QueryKey.GetFiles,
-		() => getFiles(projectTag),
-		{ enabled: !!projectTag }
-	)
+	const {
+		data: filesData,
+		isLoading: filesDataLoading,
+		isFetching,
+	} = useQuery(QueryKey.GetFiles, () => getFiles(projectTag), { enabled: !!projectTag })
 
 	const [defaultUserGroups, setDefaultUserGroups] = useState([])
 	const { onSubmit, ...form } = useForm()
@@ -84,7 +84,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 				<Table
 					helpDetails={helpDetails}
-					loading={projectDetailsLoading || filesDataLoading}
+					loading={projectDetailsLoading || filesDataLoading || isFetching}
 					title="Files"
 					emptyText="Your files will be displayed here"
 					columns={[
