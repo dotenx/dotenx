@@ -16,12 +16,13 @@ type Columns struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Events []Event `json:"events"`
-	Data   struct {
+	Events     []Event  `json:"events"`
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
@@ -32,7 +33,7 @@ type Columns struct {
 	} `json:"data"`
 }
 
-const columnsTemplate = `<div {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="dtx-{{.Id}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
+const columnsTemplate = `<div {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -61,12 +62,14 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 			Name     string
 			Iterator string
 		}
-		Events []Event
+		Events     []Event
+		ClassNames []string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               columns.Id,
 		RepeatFrom:       columns.RepeatFrom,
 		Events:           columns.Events,
+		ClassNames:       columns.ClassNames,
 	}
 
 	// Render the component and its children
