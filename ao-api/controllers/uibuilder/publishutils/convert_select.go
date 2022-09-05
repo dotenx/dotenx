@@ -15,11 +15,12 @@ type Select struct {
 		Name     string
 		Iterator string
 	} `json:"repeatFrom"`
-	Data struct {
+	ClassNames []string `json:"classNames"`
+	Data       struct {
 		Style struct {
-			Desktop map[string]string `json:"desktop"`
-			Tablet  map[string]string `json:"tablet"`
-			Mobile  map[string]string `json:"mobile"`
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
@@ -35,7 +36,7 @@ type Select struct {
 	} `json:"data"`
 }
 
-const selectTemplate = `<select id="{{.Id}}" {{if .Data.Multiple}}multiple{{end}} x-data="{ options: {{.Data.Options}} }"  x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}><template x-for="option in options" :key="option"><option x-text="option.label" :value="option.value" :selected="{{if .Data.Multiple}}formData.{{.Data.Name}} === option.value{{else}}formData.{{.Data.Name}}.lastIndexOf(option.value) != -1{{end}}"></option></template></select>`
+const selectTemplate = `<select id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .Data.Multiple}}multiple{{end}} x-data="{ options: {{.Data.Options}} }"  x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}><template x-for="option in options" :key="option"><option x-text="option.label" :value="option.value" :selected="{{if .Data.Multiple}}formData.{{.Data.Name}} === option.value{{else}}formData.{{.Data.Name}}.lastIndexOf(option.value) != -1{{end}}"></option></template></select>`
 
 func convertSelect(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
