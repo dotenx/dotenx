@@ -124,6 +124,17 @@ export function setInteractionUserGroup({
 }) {
 	return api.patch(`/pipeline/project/${projectName}/name/${name}/usergroup`, payload)
 }
+export function setFileUserGroup({
+	name,
+	payload,
+	projectTag,
+}: {
+	projectTag: string
+	name: string
+	payload: any
+}) {
+	return api.patch(`/objectstore/project/${projectTag}/file/${name}/user_groups`, payload)
+}
 export function setAccess({
 	name,
 	isPublic,
@@ -135,6 +146,19 @@ export function setAccess({
 }) {
 	return api.patch(`/pipeline/project/${projectName}/name/${name}/access`, {
 		isPublic: !isPublic,
+	})
+}
+export function setFilesAccess({
+	rowData
+}: {
+	rowData: {
+		projectTag: string
+		name: string
+		isPublic: boolean
+	}
+}) {
+	return api.patch(`/objectstore/project/${rowData.projectTag}/file/${rowData.name}/access`, {
+		isPublic: !rowData.isPublic,
 	})
 }
 
