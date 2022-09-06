@@ -85,7 +85,7 @@ const useTour = () => {
 			content: (
 				<div>
 					<h1 className="font-medium text-rose-600 text-lg mb-2  ">UI builder</h1>
-					<p>No code UI builder perfectly connected to project's back-end.</p>
+					<p>No code UI builder perfectly connected to project&apos;s back-end.</p>
 				</div>
 			),
 		},
