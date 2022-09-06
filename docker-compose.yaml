@@ -1,35 +1,35 @@
 version: "3"
 services:
-    # scheduler_server:
-    #     build:
-    #         context: ./job_scheduler/server
-    #         dockerfile: Dockerfile.dev
-    #     ports:
-    #         - "9090:9090"
-    #     networks:
-    #         - default
-    #     volumes:
-    #         - ./job_scheduler/server:/usr/src/app
-    #         - /usr/src/app/node_modules
-    #     environment:
-    #         - REDIS_HOST=redis
-    #         - AO_API_URL=http://ao-api:3004
-    #     command: npm run dev
+    scheduler_server:
+        build:
+            context: ./job_scheduler/server
+            dockerfile: Dockerfile.dev
+        ports:
+            - "9090:9090"
+        networks:
+            - default
+        volumes:
+            - ./job_scheduler/server:/usr/src/app
+            - /usr/src/app/node_modules
+        environment:
+            - REDIS_HOST=redis
+            - AO_API_URL=http://ao-api:3004
+        command: npm run dev
 
-    # ui:
-    #     build:
-    #         context: ./ui
-    #         dockerfile: Dockerfile.dev
-    #     ports:
-    #         - "3010:80"
-    #     networks:
-    #         - default
-    #     volumes:
-    #         - ./ui:/usr/src/app
-    #         - ./ui/nginx.conf:/etc/nginx/nginx.conf
-    #         - /usr/src/app/node_modules
-    #     env_file:
-    #         - ./ui/.env.development
+    ui:
+        build:
+            context: ./ui
+            dockerfile: Dockerfile.dev
+        ports:
+            - "3010:80"
+        networks:
+            - default
+        volumes:
+            - ./ui:/usr/src/app
+            - ./ui/nginx.conf:/etc/nginx/nginx.conf
+            - /usr/src/app/node_modules
+        env_file:
+            - ./ui/.env.development
 
     redis:
         image: redis
@@ -50,39 +50,39 @@ services:
             - "5434:5432"
         restart: unless-stopped
 
-    # ao-api:
-    #     build:
-    #         context: .
-    #         dockerfile: ./ao-api/Dockerfile
-    #     env_file:
-    #         - ./ao-api/.env
-    #     environment:
-    #         - RUNNING_IN_DOCKER=true
-    #     depends_on:
-    #         - psql
-    #         - scheduler_server
-    #         - redis
-    #     hostname: ao-api
-    #     working_dir: /root/
-    #     volumes:
-    #         - ao_api_data:/go/src/github.com/dotenx/dotenx/ao-api
-    #         - /var/run/docker.sock:/var/run/docker.sock
-    #     networks:
-    #         - default
-    #     ports:
-    #         - "3005:3004"
+    ao-api:
+        build:
+            context: .
+            dockerfile: ./ao-api/Dockerfile
+        env_file:
+            - ./ao-api/.env
+        environment:
+            - RUNNING_IN_DOCKER=true
+        depends_on:
+            - psql
+            - scheduler_server
+            - redis
+        hostname: ao-api
+        working_dir: /root/
+        volumes:
+            - ao_api_data:/go/src/github.com/dotenx/dotenx/ao-api
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - default
+        ports:
+            - "3005:3004"
 
-    # runner:
-    #     build:
-    #         context: runner
-    #         dockerfile: Dockerfile.dev
-    #     working_dir: /root/
-    #     volumes:
-    #         - /tmp/cache:/tmp/cache
-    #         - runner_data:/go/src/github.com/dotenx/dotenx/runner
-    #         - /var/run/docker.sock:/var/run/docker.sock
-    #     networks:
-    #         - default
+    runner:
+        build:
+            context: runner
+            dockerfile: Dockerfile.dev
+        working_dir: /root/
+        volumes:
+            - /tmp/cache:/tmp/cache
+            - runner_data:/go/src/github.com/dotenx/dotenx/runner
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - default
 
 networks:
   default:
