@@ -34,8 +34,18 @@ function AppHeader({ projectName }: { projectName: string }) {
 
 function AppLeftSideBar() {
 	return (
-		<Navbar width={{ base: 310 }} p="lg">
-			<ComponentSelectorAndLayers />
+		<Navbar width={{ base: 310 }}>
+			<Navbar.Section
+				component={ScrollArea}
+				grow
+				scrollbarSize={0}
+				scrollHideDelay={0}
+				offsetScrollbars
+			>
+				<div className="py-2 px-4">
+					<ComponentSelectorAndLayers />
+				</div>
+			</Navbar.Section>
 		</Navbar>
 	)
 }
