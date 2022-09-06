@@ -140,6 +140,6 @@ const regenComponent = (component: Component, parentId: string) => {
 	const newComponent = _.cloneDeep(component)
 	newComponent.id = uuid()
 	newComponent.parentId = parentId
-	newComponent.components = newComponent.components.map((c) => regenComponent(c, component.id))
+	newComponent.components = newComponent.components.map((c) => regenComponent(c, newComponent.id))
 	return newComponent
 }
