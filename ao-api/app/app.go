@@ -224,6 +224,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project := r.Group("/project")
 	database := r.Group("/database")
 	profile := r.Group("/profile")
+	userManagement := r.Group("/user/management")
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
@@ -342,6 +343,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
+
+	// user management router (with authentication)
+	userManagement.DELETE("/project/:tag/", userManagementController.DeleteUser())
 
 	// user group management router (with authentication)
 	userGroupManagement.POST("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.CreateUserGroup())
