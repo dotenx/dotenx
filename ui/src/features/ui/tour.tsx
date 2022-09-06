@@ -21,7 +21,7 @@ const useTour = () => {
 			content: (
 				<div>
 					<h1 className="font-medium text-rose-600 text-lg mb-2  ">Tables</h1>
-					<p>Use tables to store the data of your application</p>,
+					<p>Use tables to store the data of your application</p>
 				</div>
 			),
 		},
@@ -30,7 +30,7 @@ const useTour = () => {
 			content: (
 				<div>
 					<h1 className="font-medium text-rose-600 text-lg mb-2  ">Interactions</h1>
-					<p>Use Interactions to add custom logic to your applications</p>,
+					<p>Use Interactions to add custom logic to your applications</p>
 				</div>
 			),
 		},
@@ -85,10 +85,7 @@ const useTour = () => {
 			content: (
 				<div>
 					<h1 className="font-medium text-rose-600 text-lg mb-2  ">UI builder</h1>
-					<p>
-						build and edit UI for your project without code and directly conected to
-						your project back end in UI builder
-					</p>
+					<p>No code UI builder perfectly connected to project&apos;s back-end.</p>
 				</div>
 			),
 		},
