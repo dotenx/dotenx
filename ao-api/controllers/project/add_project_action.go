@@ -55,7 +55,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 }
 
 type ProjectRequest struct {
-	ItemId           int    `json:"item_id"`
+	ItemId           int    `json:"itemId"`
 	Id               int    `db:"id" json:"-"`
 	Name             string `db:"name" json:"name" binding:"regexp=^[a-z][a-z0-9_]*$,min=2,max=20"`
 	Description      string `db:"description" json:"description"`
