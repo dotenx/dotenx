@@ -109,11 +109,18 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 				>
 					Refresh
 				</Button>
-				<Button component={Link} to="user-groups">
+				<Button className="usergroups" component={Link} to="user-groups">
 					User Groups
 				</Button>
-				<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
-				<Button onClick={() => modal.open(Modals.AccessToken)}>Access Token</Button>
+				<Button
+					className="endpoints"
+					onClick={() => modal.open(Modals.UserManagementEndpoint)}
+				>
+					Endpoints
+				</Button>
+				<Button className="access_token" onClick={() => modal.open(Modals.AccessToken)}>
+					Access Token
+				</Button>
 			</div>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">

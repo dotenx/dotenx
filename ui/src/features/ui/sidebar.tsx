@@ -25,6 +25,7 @@ import {
 	UI_BUILDER_ADDRESS,
 } from '../../constants'
 import { NavItem } from './nav-item'
+import { Tour } from './tour'
 
 const studioLinks = [
 	{ to: '/automations', label: 'Automation', icon: <BsFillDiagram3Fill /> },
@@ -40,36 +41,43 @@ export const Sidebar = memo(() => {
 		{
 			to: `/builder/projects/${projectName}/user-management`,
 			label: 'User management',
+			tourSelector: 'user_management',
 			icon: <FaUsers />,
 		},
 		{
 			to: `/builder/projects/${projectName}/tables`,
 			label: 'Tables',
+			tourSelector: 'tables',
 			icon: <BsTable />,
 		},
 		{
 			to: `/builder/projects/${projectName}/interactions`,
 			label: 'Interactions',
+			tourSelector: 'interactions',
 			icon: <BsBricks />,
 		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
 			label: 'Automation Templates',
+			tourSelector: 'automation_Templates',
 			icon: <BsWindowSidebar />,
 		},
 		{
 			to: `/builder/projects/${projectName}/providers`,
 			label: 'Providers',
+			tourSelector: 'providers',
 			icon: <BsFillXDiamondFill />,
 		},
 		{
 			to: `/builder/projects/${projectName}/files`,
 			label: 'Files',
+			tourSelector: 'files',
 			icon: <BsFileEarmarkPdf />,
 		},
 		{
 			to: `/builder/projects/${projectName}/domains`,
 			label: 'Domains',
+			tourSelector: 'domains',
 			icon: <BsGlobe2 />,
 		},
 	]
@@ -77,7 +85,7 @@ export const Sidebar = memo(() => {
 	return (
 		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-64 overflow-hidden h-screen fixed z-10">
 			<div className="flex items-center gap-6 px-[21px] text-xl font-medium">
-				<img className="w-10 rounded" src={logo} alt="logo" />
+				<img className="w-10 rounded " src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
 					<h1>DoTenX</h1>
 					<h2 className="text-xs">{isBuilder ? 'Builder' : 'Studio'}</h2>
@@ -103,13 +111,13 @@ export const Sidebar = memo(() => {
 			)}
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
-
+				<Tour />
 				<div className="space-y-2">
 					<a
 						href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
 						target="_blank"
 						rel="noreferrer"
-						className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+						className="flex ui_builder items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
 					>
 						<div className="w-1 h-8 transition rounded-sm shrink-0" />
 						<div className="flex items-center gap-3 grow">
@@ -143,6 +151,7 @@ type SidebarLinksProps = {
 		to: string
 		label: string
 		icon: ReactNode
+		tourSelector?: string
 	}[]
 }
 
@@ -150,9 +159,9 @@ function SidebarLinks({ links }: SidebarLinksProps) {
 	return (
 		<div className="flex flex-col gap-2 mt-16">
 			{links.map((item) => (
-				<NavItem key={item.label} to={item.to}>
+				<NavItem key={item.label} to={item.to} tourSelector={item.tourSelector}>
 					<span className="text-xl">{item.icon}</span>
-					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100 ">
 						{item.label}
 					</span>
 				</NavItem>
