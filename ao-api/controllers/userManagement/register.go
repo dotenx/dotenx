@@ -49,7 +49,10 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 			})
 			return
 		}
-		err = umc.NotifyService.SendWelcomeEmail(userInfo.FullName, userInfo.Email)
-		ctx.JSON(http.StatusOK, gin.H{"welcome-message": err == nil})
+		// we sholudn't send welcome email to third party users so I comment this part of code (next line)
+		// err = umc.NotifyService.SendWelcomeEmail(userInfo.FullName, userInfo.Email)
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "user was registered successfully",
+		})
 	}
 }
