@@ -29,7 +29,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return "", err
 	}
-	err = cm.TriggerService.AddTriggers(base.AccountId, filledTriggers, newPipeline.Endpoint)
+	err = cm.TriggerService.AddTriggers(base.AccountId, base.ProjectName, filledTriggers, newPipeline.Endpoint)
 	if err != nil {
 		log.Println(err)
 		return "", err

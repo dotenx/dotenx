@@ -42,3 +42,9 @@ type ExportableUIPage struct {
 	Name    string          `db:"name" json:"name"`
 	Content json.RawMessage `db:"content" json:"content"`
 }
+
+type ExportableUIComponent struct {
+	Name     string          `db:"name" json:"name"`
+	Content  json.RawMessage `db:"content" json:"content"`
+	Category string          `db:"category" json:"category"`
+}

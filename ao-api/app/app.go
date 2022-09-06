@@ -21,6 +21,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
 	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder"
+	"github.com/dotenx/dotenx/ao-api/controllers/uicomponent"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/oauth"
@@ -39,6 +40,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
+	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
@@ -52,6 +54,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
+	"github.com/dotenx/dotenx/ao-api/stores/uiComponentStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uibuilderStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 	"github.com/dotenx/goth"
@@ -141,6 +144,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstoreStore := objectstoreStore.New(db)
 	uibuilderStore := uibuilderStore.New(db)
 	marketplaceStore := marketplaceStore.New(db)
+	componentStort := uiComponentStore.New(db)
 
 	// Services
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
@@ -157,6 +161,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstoreService := objectstoreService.NewObjectstoreService(objectstoreStore)
 	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
 	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore, uibuilderStore)
+	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 
 	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
@@ -174,6 +179,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
+	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 
 	// Routes
 	// endpoints with runner token
@@ -224,6 +230,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project := r.Group("/project")
 	database := r.Group("/database")
 	profile := r.Group("/profile")
+	userManagement := r.Group("/user/management")
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
@@ -343,6 +350,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
+	// user management router (with authentication)
+	userManagement.DELETE("/project/:tag/", userManagementController.DeleteUser())
+
 	// user group management router (with authentication)
 	userGroupManagement.POST("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.CreateUserGroup())
 	userGroupManagement.PUT("/project/:tag/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.UpdateUserGroup())
@@ -367,8 +377,14 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
 
+	// uicomponent router
+	uibuilder.POST("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.UpsertComponent(marketplaceService))
+	uibuilder.DELETE("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.DeleteComponent())
+	uibuilder.GET("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.ListComponents())
+	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.GetComponent())
+
 	// marketplace router
-	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices))
+	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices, uiComponentServi))
 	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
 	marketplace.PATCH("/item/:id/enable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.EnableItem())
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())

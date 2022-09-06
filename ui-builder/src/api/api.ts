@@ -8,13 +8,22 @@ import {
 } from './mapper'
 import {
 	AddPageRequest,
+	CreateCustomComponentRequest,
+	CreateDesignSystemRequest,
+	DeleteCustomComponentRequest,
 	DeletePageRequest,
+	GetCustomComponentsRequest,
+	GetCustomComponentsResponse,
+	GetDesignSystemsRequest,
+	GetDesignSystemsResponse,
+	GetMarketplaceItemsResponse,
 	GetPageDetailsRequest,
 	GetPageDetailsResponse,
 	GetPagesRequest,
 	GetPagesResponse,
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
+	ImportCustomComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
 	UploadImageRequest,
@@ -32,6 +41,9 @@ export enum QueryKey {
 	ProjectDetails = 'project-details',
 	Pages = 'pages',
 	PageDetails = 'page-details',
+	CustomComponents = 'custom-components',
+	DesignSystems = 'design-systems',
+	MarketplaceItems = 'marketplace-items',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -110,8 +122,64 @@ export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	const formData = new FormData()
 	formData.append('file', image)
 	return api.post<UploadImageResponse>(`/objectstore/project/${projectTag}/upload`, formData, {
-		headers: {
-			'Content-Type': 'multipart/form-data',
-		},
+		headers: { 'Content-Type': 'multipart/form-data' },
 	})
+}
+
+export const createCustomComponent = ({ projectTag, payload }: CreateCustomComponentRequest) => {
+	return api.post(`/uibuilder/project/${projectTag}/component`, {
+		...payload,
+		category: 'uiComponentItem',
+	})
+}
+
+export const importFromMarketplace = ({
+	projectTag,
+	itemId,
+	name,
+	category,
+}: ImportCustomComponentRequest) => {
+	return api.post(`/uibuilder/project/${projectTag}/component`, { itemId, name, category })
+}
+
+export const deleteCustomComponent = ({ projectTag, name }: DeleteCustomComponentRequest) => {
+	return api.delete(`/uibuilder/project/${projectTag}/component/${name}`)
+}
+
+export const deleteDesignSystem = deleteCustomComponent
+
+export const getCustomComponents = ({ projectTag }: GetCustomComponentsRequest) => {
+	return api.get<GetCustomComponentsResponse>(`/uibuilder/project/${projectTag}/component`)
+}
+
+export const createDesignSystem = ({ projectTag, payload }: CreateDesignSystemRequest) => {
+	return api.post(`/uibuilder/project/${projectTag}/component`, {
+		...payload,
+		category: 'uiDesignSystemItem',
+	})
+}
+
+export const getDesignSystems = ({ projectTag }: GetDesignSystemsRequest) => {
+	return api.get<GetDesignSystemsResponse>(`/uibuilder/project/${projectTag}/component`)
+}
+
+export const addToMarketPlace = ({
+	componentName,
+	projectName,
+	category,
+}: {
+	componentName: string
+	projectName: string
+	category: 'uiComponentItem' | 'uiDesignSystemItem'
+}) => {
+	return api.post(`/marketplace/item`, {
+		component_name: componentName,
+		category,
+		projectName,
+		title: componentName,
+	})
+}
+
+export const getMarketplaceItems = () => {
+	return api.get<GetMarketplaceItemsResponse>(`/public/marketplace`)
 }

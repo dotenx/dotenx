@@ -13,7 +13,7 @@ import (
 )
 
 type TriggerStore interface {
-	AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error
+	AddTrigger(ctx context.Context, accountId, projectName string, trigger models.EventTrigger) error
 	DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error
 	DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
@@ -35,7 +35,7 @@ INSERT INTO event_triggers (account_id, type, name, integration, pipeline, endpo
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
-func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
+func (store *triggerStore) AddTrigger(ctx context.Context, accountId, projectName string, trigger models.EventTrigger) error {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
@@ -45,7 +45,7 @@ func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, tri
 	}
 	js, _ := json.Marshal(trigger.Credentials)
 	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
-		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js, trigger.ProjectName)
+		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js, projectName)
 	if err != nil {
 		return err
 	}

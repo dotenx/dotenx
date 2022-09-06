@@ -369,7 +369,7 @@ function InteractionEndpoint({
 		<div className="grid grid-cols-1 space-y-4">
 			<Endpoint
 				label="Run interaction"
-				url={`${API_URL}/execution/name/${automationName}/start`}
+				url={`${API_URL}/execution/project/${projectName}/name/${automationName}/start`}
 				method="POST"
 				code={body}
 			/>
