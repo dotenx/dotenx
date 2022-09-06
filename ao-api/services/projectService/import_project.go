@@ -58,11 +58,18 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 		}
 	}
 
+	prj, err := ps.GetProject(accountId, newProjectName)
+	if err != nil {
+		return err
+	}
+
 	for _, page := range project.UIPages {
 		err := uiBuilderService.UpsertPage(models.UIPage{
-			AccountId: accountId,
-			Name:      page.Name,
-			Content:   page.Content,
+			AccountId:  accountId,
+			Name:       page.Name,
+			Content:    page.Content,
+			ProjectTag: prj.Tag,
+			Status:     "modified", // todo: use enum
 		})
 		if err != nil {
 			return err

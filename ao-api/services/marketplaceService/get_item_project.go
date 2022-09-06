@@ -48,9 +48,6 @@ func downloadProject(fileName string) (models.ProjectDto, error) {
 		logrus.Error(err.Error())
 		return models.ProjectDto{}, err
 	}
-	// fmt.Println("#############################################")
-	// fmt.Println(string(out))
-	// fmt.Println("#############################################")
 	var project models.ProjectDto
 
 	err = json.Unmarshal(out, &project)
