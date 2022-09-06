@@ -15,20 +15,26 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
 )
 
-func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService) error {
+func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService, componentService uiComponentService.UIcomponentService) error {
 	projectName := item.ProjectName
 
 	// Get an exportable form of the project
-	exportableProject, err := ps.ExportProject(item.AccountId, projectName, dbService, cService)
+	var dto interface{}
+	var err error
+	if item.Category == models.CategoryUIComponent || item.Category == models.CategoryUIDesignSystem {
+		dto, err = ps.ExportComponent(item.AccountId, projectName, item.ComponentName, componentService)
+	} else {
+		dto, err = ps.ExportProject(item.AccountId, projectName, dbService, cService)
+	}
+	// Upload the project as a JSON file to S3
+	item.S3Key = fmt.Sprintf("item_%s_%s_%s", utils.GetNewUuid(), item.Category, projectName)
 	if err != nil {
 		return err
 	}
-
-	// Upload the project as a JSON file to S3
-	item.S3Key = fmt.Sprintf("item_%s_project_%s", utils.GetNewUuid(), projectName)
-	err = uploadProject(exportableProject, item.S3Key)
+	err = uploadProject(dto, item.S3Key)
 	if err != nil {
 		return err
 	}
@@ -37,7 +43,7 @@ func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService dat
 	return ps.Store.AddItem(context.Background(), item)
 }
 
-func uploadProject(project models.ProjectDto, fileName string) error {
+func uploadProject(dto interface{}, fileName string) error {
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
 	}
@@ -47,7 +53,7 @@ func uploadProject(project models.ProjectDto, fileName string) error {
 		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
 	}
 	svc := s3.New(session.New(), cfg)
-	jsonBytes, err := json.Marshal(project)
+	jsonBytes, err := json.Marshal(dto)
 	if err != nil {
 		return err
 	}

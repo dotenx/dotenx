@@ -17,7 +17,6 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 	return func(c *gin.Context) {
 		var dto ProjectRequest
 		accountId, _ := utils.GetAccountId(c)
-
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "name of project should contain just small letters, numbers and underscores",
