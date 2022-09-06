@@ -48,10 +48,6 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	if err != nil || p.PipelineDetailes.Id == "" {
 		return errors.New("your Automation has not been saved yet")
 	}
-	err = cm.deleteLambdaFunctions(p.PipelineDetailes.Manifest.Tasks)
-	if err != nil {
-		return errors.New("error in deleting old aws lambda functions: " + err.Error())
-	}
 	err = cm.DeletePipeline(base.AccountId, base.Name, p.ProjectName, true)
 	if err != nil {
 		return errors.New("error in deleting old version: " + err.Error())
