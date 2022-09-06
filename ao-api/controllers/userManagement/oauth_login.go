@@ -13,6 +13,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func (umc *UserManagementController) OAuthLogin() gin.HandlerFunc {
@@ -49,7 +50,13 @@ func (umc *UserManagementController) OAuthLogin() gin.HandlerFunc {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())
 				return
 			}
-			//user.Role = "user"
+			defaultUserGroup, err := umc.Service.GetDefaultUserGroup(projectTag)
+			if err != nil {
+				logrus.Error(err)
+				user.UserGroup = "users"
+			} else {
+				user.UserGroup = defaultUserGroup.Name
+			}
 			err = umc.Service.SetUserInfo(user, projectTag)
 			if err != nil && err.Error() != "user already registered" {
 				ctx.Redirect(http.StatusTemporaryRedirect, provider.FrontEndUrl+"?error="+err.Error())
