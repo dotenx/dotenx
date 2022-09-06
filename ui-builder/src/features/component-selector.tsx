@@ -1,4 +1,15 @@
-import { ActionIcon, Button, CloseButton, clsx, Divider, Tabs, TextInput } from '@mantine/core'
+import {
+	ActionIcon,
+	Button,
+	Center,
+	CloseButton,
+	clsx,
+	Divider,
+	Loader,
+	MultiSelect,
+	Tabs,
+	TextInput,
+} from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useDisclosure } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
@@ -21,12 +32,29 @@ import {
 	TbMessage2 as IcText,
 	TbPackgeExport,
 	TbPhoto as IcImage,
+	TbPlus,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
+	TbTable,
+	TbTableExport,
+	TbTableImport,
 } from 'react-icons/tb'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { createCustomComponent, deleteCustomComponent, getCustomComponents, QueryKey } from '../api'
+import {
+	addToMarketPlace,
+	createCustomComponent,
+	createDesignSystem,
+	CustomComponent,
+	deleteCustomComponent,
+	deleteDesignSystem,
+	getCustomComponents,
+	getDesignSystems,
+	getMarketplaceItems,
+	importFromMarketplace,
+	QueryKey,
+} from '../api'
 import {
 	basicComponents,
 	Component,
@@ -62,6 +90,7 @@ export function ComponentSelectorAndLayers() {
 				<ComponentSelector kinds={formComponents} />
 				<Divider mt="xl" mb="xs" label="Components" labelPosition="center" />
 				<CustomComponentSelector />
+				<DesignSystems />
 			</Tabs.Panel>
 			<Tabs.Panel value="layers" pt="xs">
 				<Layers components={components} />
@@ -70,18 +99,261 @@ export function ComponentSelectorAndLayers() {
 	)
 }
 
-function CustomComponentSelector() {
+function DesignSystems() {
 	const projectTag = useAtomValue(projectTagAtom)
+	const { projectName = '' } = useParams()
+	const query = useQuery(
+		[QueryKey.DesignSystems, projectTag],
+		() => getDesignSystems({ projectTag }),
+		{ enabled: !!projectTag }
+	)
+	const designSystems =
+		query.data?.data?.filter((ds) => ds.category === 'uiDesignSystemItem') ?? []
 	const queryClient = useQueryClient()
+	const deleteMutation = useMutation(deleteDesignSystem, {
+		onSuccess: () => queryClient.invalidateQueries([QueryKey.DesignSystems]),
+	})
+	const addToMarketplaceMutation = useMutation(addToMarketPlace)
+
+	return (
+		<div>
+			{designSystems.map((ds) => (
+				<div key={ds.name}>
+					<Divider
+						mt="xl"
+						mb="xs"
+						label={
+							<div className="flex items-center gap-1">
+								<ActionIcon
+									title="Add to marketplace"
+									size="xs"
+									onClick={() =>
+										addToMarketplaceMutation.mutate({
+											componentName: ds.name,
+											projectName,
+											category: 'uiDesignSystemItem',
+										})
+									}
+									loading={addToMarketplaceMutation.isLoading}
+								>
+									<TbTableExport className="text-xs" />
+								</ActionIcon>
+								<div>{ds.name}</div>
+								<CloseButton
+									size="xs"
+									onClick={() =>
+										deleteMutation.mutate({ name: ds.name, projectTag })
+									}
+									loading={deleteMutation.isLoading}
+									title="Delete design system"
+								/>
+							</div>
+						}
+						labelPosition="center"
+					/>
+					<CustomComponentDraggable customComponents={ds.content} />
+				</div>
+			))}
+			<div className="flex gap-3 mt-6">
+				<Button
+					leftIcon={<TbPlus />}
+					size="xs"
+					onClick={() =>
+						openModal({ title: 'Create Design System', children: <DesignSystemForm /> })
+					}
+					fullWidth
+				>
+					Design System
+				</Button>
+				<Button
+					leftIcon={<TbTableImport />}
+					size="xs"
+					onClick={() =>
+						openModal({
+							title: 'Marketplace',
+							children: <Marketplace />,
+							size: 'xl',
+						})
+					}
+					fullWidth
+				>
+					Marketplace
+				</Button>
+			</div>
+		</div>
+	)
+}
+
+function Marketplace() {
+	const marketplaceQuery = useQuery([QueryKey.MarketplaceItems], getMarketplaceItems)
+	const components =
+		marketplaceQuery.data?.data.filter((item) => item.category === 'uiComponentItem') ?? []
+	const designSystems =
+		marketplaceQuery.data?.data.filter((item) => item.category === 'uiDesignSystemItem') ?? []
+
+	if (marketplaceQuery.isLoading)
+		return (
+			<Center>
+				<Loader />
+			</Center>
+		)
+
+	return (
+		<Tabs defaultValue="components">
+			<Tabs.List>
+				<Tabs.Tab value="components" icon={<TbComponents size={14} />}>
+					Components
+				</Tabs.Tab>
+				<Tabs.Tab value="design-systems" icon={<TbTable size={14} />}>
+					Design Systems
+				</Tabs.Tab>
+			</Tabs.List>
+
+			<Tabs.Panel value="components" pt="xs">
+				<div className="flex flex-wrap gap-6">
+					{components.map((c) => (
+						<MarketplaceComponent
+							key={c.id}
+							id={c.id}
+							title={c.title}
+							category={c.category}
+						/>
+					))}
+				</div>
+			</Tabs.Panel>
+			<Tabs.Panel value="design-systems" pt="xs">
+				<div className="flex flex-wrap gap-6">
+					{designSystems.map((c) => (
+						<MarketplaceComponent
+							key={c.id}
+							id={c.id}
+							title={c.title}
+							category={c.category}
+						/>
+					))}
+				</div>
+			</Tabs.Panel>
+		</Tabs>
+	)
+}
+
+function MarketplaceComponent({
+	id,
+	title,
+	category,
+}: {
+	id: number
+	title: string
+	category: string
+}) {
+	const queryClient = useQueryClient()
+	const importComponentMutation = useMutation(importFromMarketplace, {
+		onSuccess: () => {
+			queryClient.invalidateQueries([QueryKey.CustomComponents])
+			queryClient.invalidateQueries([QueryKey.DesignSystems])
+			closeAllModals()
+		},
+	})
+	const projectTag = useAtomValue(projectTagAtom)
+
+	return (
+		<Button
+			variant="default"
+			size="xl"
+			onClick={() =>
+				importComponentMutation.mutate({ projectTag, itemId: id, name: title, category })
+			}
+			loading={importComponentMutation.isLoading}
+		>
+			{title}
+		</Button>
+	)
+}
+
+function CustomComponentDraggable({ customComponents }: { customComponents: CustomComponent[] }) {
+	return (
+		<div className="grid grid-cols-3 gap-2">
+			{customComponents.map((component) => (
+				<Draggable
+					key={component.name}
+					data={{ mode: DraggableMode.AddWithData, data: component.content }}
+				>
+					<div className="flex flex-col items-center gap-2 p-2 rounded bg-gray-50 cursor-grab text-slate-600 hover:text-slate-900">
+						<div className="pt-1 text-2xl">
+							<Tb3DCubeSphere />
+						</div>
+						<p className="text-xs text-center">{component.name}</p>
+					</div>
+				</Draggable>
+			))}
+		</div>
+	)
+}
+
+const designSystemSchema = z.object({
+	name: z.string().min(1),
+	components: z.array(z.string()),
+})
+
+type DesignSystemSchema = z.infer<typeof designSystemSchema>
+
+function DesignSystemForm() {
+	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
+	const projectTag = useAtomValue(projectTagAtom)
+	const { customComponents } = useCustomComponents()
+	const queryClient = useQueryClient()
+	const createMutation = useMutation(createDesignSystem, {
+		onSuccess: () => {
+			closeAllModals()
+			queryClient.invalidateQueries([QueryKey.DesignSystems])
+		},
+	})
+
+	return (
+		<form
+			onSubmit={form.onSubmit((values) => {
+				const content = customComponents.filter((c) => values.components.includes(c.name))
+				createMutation.mutate({ projectTag, payload: { name: values.name, content } })
+			})}
+			className="space-y-6"
+		>
+			<TextInput
+				label="Name"
+				placeholder="Design system name"
+				{...form.getInputProps('name')}
+			/>
+			<MultiSelect
+				label="Components"
+				{...form.getInputProps('components')}
+				data={customComponents.map((c) => c.name)}
+			/>
+			<Button fullWidth type="submit" loading={createMutation.isLoading}>
+				Create
+			</Button>
+		</form>
+	)
+}
+
+const useCustomComponents = () => {
+	const projectTag = useAtomValue(projectTagAtom)
 	const query = useQuery(
 		[QueryKey.CustomComponents, projectTag],
 		() => getCustomComponents({ projectTag }),
 		{ enabled: !!projectTag }
 	)
+	const customComponents = query.data?.data?.filter((c) => c.category === 'uiComponentItem') ?? []
+	return { customComponents }
+}
+
+function CustomComponentSelector() {
+	const projectTag = useAtomValue(projectTagAtom)
+	const queryClient = useQueryClient()
+	const { customComponents } = useCustomComponents()
 	const deleteMutation = useMutation(deleteCustomComponent, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.CustomComponents]),
 	})
-	const customComponents = query.data?.data ?? []
+	const addToMarketplaceMutation = useMutation(addToMarketPlace)
+	const { projectName = '' } = useParams()
 
 	return (
 		<div className="grid grid-cols-3 gap-2">
@@ -91,19 +363,35 @@ function CustomComponentSelector() {
 					data={{ mode: DraggableMode.AddWithData, data: component.content }}
 				>
 					<div className="flex flex-col items-center rounded bg-gray-50 cursor-grab text-slate-600 hover:text-slate-900">
-						<CloseButton
-							size="xs"
-							className="self-end"
-							title="Delete component"
-							onClick={() =>
-								deleteMutation.mutate({ componentName: component.name, projectTag })
-							}
-							loading={deleteMutation.isLoading}
-						/>
+						<div className="flex self-stretch justify-between">
+							<ActionIcon
+								title="Add to marketplace"
+								size="xs"
+								onClick={() =>
+									addToMarketplaceMutation.mutate({
+										componentName: component.name,
+										projectName,
+										category: 'uiComponentItem',
+									})
+								}
+								loading={addToMarketplaceMutation.isLoading}
+							>
+								<TbTableExport className="text-xs" />
+							</ActionIcon>
+							<CloseButton
+								size="xs"
+								title="Delete component"
+								onClick={() =>
+									deleteMutation.mutate({ name: component.name, projectTag })
+								}
+								loading={deleteMutation.isLoading}
+							/>
+						</div>
+
 						<div className="text-2xl">
 							<Tb3DCubeSphere />
 						</div>
-						<p className="text-xs text-center mt-2 pb-2">{component.name}</p>
+						<p className="pb-2 mt-2 text-xs text-center">{component.name}</p>
 					</div>
 				</Draggable>
 			))}

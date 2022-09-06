@@ -75,12 +75,12 @@ export type UploadImageResponse = {
 
 export type CreateCustomComponentRequest = {
 	projectTag: string
-	payload: { name: string; content: Component }
+	payload: CustomComponent
 }
 
 export type DeleteCustomComponentRequest = {
 	projectTag: string
-	componentName: string
+	name: string
 }
 
 export type GetCustomComponentsRequest = {
@@ -88,8 +88,38 @@ export type GetCustomComponentsRequest = {
 }
 
 export type GetCustomComponentsResponse =
-	| {
-			name: string
-			content: Component
-	  }[]
+	| (CustomComponent & { category: 'uiComponentItem' | 'uiDesignSystemItem' })[]
 	| null
+
+export type CustomComponent = {
+	name: string
+	content: Component
+}
+
+export type CreateDesignSystemRequest = {
+	projectTag: string
+	payload: { name: string; content: CustomComponent[] }
+}
+
+export type GetDesignSystemsRequest = {
+	projectTag: string
+}
+
+export type GetDesignSystemsResponse =
+	| ({ name: string; content: CustomComponent[] } & {
+			category: 'uiComponentItem' | 'uiDesignSystemItem'
+	  })[]
+	| null
+
+export type GetMarketplaceItemsResponse = {
+	category: 'uiComponentItem' | 'uiDesignSystemItem'
+	id: number
+	title: string
+}[]
+
+export type ImportCustomComponentRequest = {
+	projectTag: string
+	itemId: number
+	name: string
+	category: string
+}
