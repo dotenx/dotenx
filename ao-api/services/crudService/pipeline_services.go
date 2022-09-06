@@ -36,11 +36,11 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return
 	}
-	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, p.Endpoint, base.AccountId, p.IsTemplate)
+	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, p.Endpoint, base.AccountId, p.IsTemplate, base.ProjectName)
 	if err != nil {
 		return
 	}
-	return cm.TriggerService.AddTriggers(base.AccountId, triggers, p.Endpoint)
+	return cm.TriggerService.AddTriggers(base.AccountId, projectName, triggers, p.Endpoint)
 }
 
 func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.PipelineVersion) error {
@@ -72,11 +72,11 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 			return err
 		}
 	}
-	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, newP.Endpoint, base.AccountId, newP.IsTemplate)
+	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, newP.Endpoint, base.AccountId, newP.IsTemplate, base.ProjectName)
 	if err != nil {
 		return err
 	}
-	return cm.TriggerService.UpdateTriggers(base.AccountId, triggers, newP.Endpoint)
+	return cm.TriggerService.UpdateTriggers(base.AccountId, p.ProjectName, triggers, newP.Endpoint)
 }
 
 func (cm *crudManager) GetPipelineByName(accountId string, name, project_name string) (models.PipelineSummery, error) {
@@ -137,7 +137,7 @@ type insertDto struct {
 }
 
 // checks trigger integration for templates and also convert trigger map to array of triggers
-func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger, pipelineName, endpoint, accountId string, isTemplate bool) ([]*models.EventTrigger, error) {
+func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger, pipelineName, endpoint, accountId string, isTemplate bool, projectName string) ([]*models.EventTrigger, error) {
 	arr := make([]*models.EventTrigger, 0)
 	for _, tr := range triggers {
 		// check integration provider if it is a template
@@ -159,6 +159,7 @@ func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger,
 			Pipeline:    pipelineName,
 			Integration: tr.Integration,
 			Credentials: tr.Credentials,
+			ProjectName: projectName,
 		})
 	}
 	return arr, nil

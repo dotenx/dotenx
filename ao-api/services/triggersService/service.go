@@ -28,8 +28,8 @@ type TriggerService interface {
 	GetAllTriggersForPipelineByEndpoint(pipelineEndpoint string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
-	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
-	UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
+	AddTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
+	UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(store integrationStore.IntegrationStore) error
 	StartScheduller() error
@@ -80,14 +80,14 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 	return triggers, nil
 }
 
-func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+func (manager *TriggerManager) AddTriggers(accountId string, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
 		tr.AccountId = accountId
 		if !tr.IsValid() {
 			return errors.New("invalid trigger dto")
 		}
-		err = manager.Store.AddTrigger(context.Background(), accountId, *tr)
+		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
 				err = manager.StartSchedulling(*tr)
@@ -102,7 +102,7 @@ func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.
 	return
 }
 
-func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
 	if len(triggers) == 0 {
 		return nil
 	}
@@ -116,7 +116,7 @@ func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*mode
 		if !tr.IsValid() {
 			return errors.New("invalid trigger dto")
 		}
-		err = manager.Store.AddTrigger(context.Background(), accountId, *tr)
+		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
 				err = manager.StartSchedulling(*tr)

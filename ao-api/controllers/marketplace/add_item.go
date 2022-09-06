@@ -6,11 +6,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func (controller *MarketplaceController) AddItem(dbService databaseService.DatabaseService, cService crudService.CrudService) gin.HandlerFunc {
+func (controller *MarketplaceController) AddItem(dbService databaseService.DatabaseService, cService crudService.CrudService, componentservice uiComponentService.UIcomponentService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type itemDTO struct {
@@ -23,6 +24,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			ImageUrl         string                          `json:"imageUrl"`
 			Features         []models.MarketplaceItemFeature `json:"features"`
 			ProjectName      string                          `json:"projectName"`
+			ComponentName    string                          `json:"component_name"`
 		}
 
 		var accountId string
@@ -48,9 +50,10 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			ImageUrl:         dto.ImageUrl,
 			Features:         dto.Features,
 			ProjectName:      dto.ProjectName,
+			ComponentName:    dto.ComponentName,
 		}
 
-		if err := controller.Service.AddItem(item, dbService, cService); err != nil {
+		if err := controller.Service.AddItem(item, dbService, cService, componentservice); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

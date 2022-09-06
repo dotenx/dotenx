@@ -20,11 +20,17 @@ func (ps *marketplaceService) GetProjectOfItem(id int) (models.ProjectDto, error
 	if err != nil {
 		return models.ProjectDto{}, err
 	}
-	return downloadProject(item.S3Key)
+	out, err := downloadFromS3(item.S3Key)
+	if err != nil {
+		logrus.Println(err)
+		return models.ProjectDto{}, err
+	}
+	var project models.ProjectDto
+	err = json.Unmarshal(out, &project)
+	return project, err
 }
 
-func downloadProject(fileName string) (models.ProjectDto, error) {
-
+func downloadFromS3(fileName string) ([]byte, error) {
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
 	}
@@ -41,15 +47,7 @@ func downloadProject(fileName string) (models.ProjectDto, error) {
 	})
 	if err != nil {
 		logrus.Error(err.Error())
-		return models.ProjectDto{}, err
+		return nil, err
 	}
-	out, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		logrus.Error(err.Error())
-		return models.ProjectDto{}, err
-	}
-	var project models.ProjectDto
-
-	err = json.Unmarshal(out, &project)
-	return project, err
+	return ioutil.ReadAll(response.Body)
 }
