@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -46,6 +47,10 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	p, err := cm.Store.GetByName(noContext, base.AccountId, base.Name, base.ProjectName)
 	if err != nil || p.PipelineDetailes.Id == "" {
 		return errors.New("your Automation has not been saved yet")
+	}
+	err = cm.deleteLambdaFunctions(p.PipelineDetailes.Manifest.Tasks)
+	if err != nil {
+		return errors.New("error in deleting old aws lambda functions: " + err.Error())
 	}
 	err = cm.DeletePipeline(base.AccountId, base.Name, p.ProjectName, true)
 	if err != nil {
@@ -102,6 +107,10 @@ func (cm *crudManager) DeletePipeline(accountId, name, projectName string, delet
 	p, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
 		return
+	}
+	err = cm.deleteLambdaFunctions(p.PipelineDetailes.Manifest.Tasks)
+	if err != nil {
+		return errors.New("error in deleting old aws lambda functions: " + err.Error())
 	}
 	if p.IsActive {
 		err = cm.DeActivatePipeline(accountId, p.PipelineDetailes.Id, deleteRecord)
@@ -239,6 +248,37 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 	return preparedTasks, nil
 }
 
+// deleteLambdaFunctions deletes Lmabda function of all given tasks (if exists)
+func (cm *crudManager) deleteLambdaFunctions(tasks map[string]models.Task) (err error) {
+
+	awsRegion := config.Configs.Secrets.AwsRegion
+	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
+	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config: aws.Config{
+			Region:      &awsRegion,
+			Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
+		},
+	}))
+	svc := lambda.New(sess)
+
+	for _, task := range tasks {
+		functionName := task.AwsLambda
+		logrus.Info("function name:", functionName)
+		if functionName == "" {
+			continue
+		}
+		deleteArgs := &lambda.DeleteFunctionInput{
+			FunctionName: &functionName,
+		}
+		_, err = svc.DeleteFunction(deleteArgs)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func createLambdaFunction(code, dependency string) (functionName string, err error) {
 	path, err := os.MkdirTemp("", "*")
 	if err != nil {
@@ -298,9 +338,6 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 				}
 			}
 		}
-		console.log("-------------------------------args-------------------------------");
-		console.log(args);
-		console.log("-------------------------------args-------------------------------");
 
 		const f = require('entry.js');
 		const result = await f(args) || {};
@@ -344,9 +381,6 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 
 	contents, err := ioutil.ReadFile(path + "/function.zip")
 	createCode := &lambda.FunctionCode{
-		//      S3Bucket:        bucket,
-		//      S3Key:           zipFile,
-		//      S3ObjectVersion: aws.String("1"),
 		ZipFile: contents,
 	}
 
@@ -360,5 +394,8 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 	}
 	svc := lambda.New(sess)
 	_, err = svc.CreateFunction(createArgs)
+	// TODO: we should find better solution than waiting 2s for deploying Lambda function be ended
+	// sleep 2s for deploying Lambda function
+	time.Sleep(2 * time.Second)
 	return functionName, err
 }
