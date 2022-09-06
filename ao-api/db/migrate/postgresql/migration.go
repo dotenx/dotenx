@@ -239,6 +239,10 @@ var migrations = []struct {
 		name: "add-column-is-public-to-table-objectstore",
 		stmt: addColumnIsPublicToTableObjectstore,
 	},
+	{
+		name: "create-table-ui_custom_components",
+		stmt: createTableUICustomComponents,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -680,4 +684,16 @@ ADD COLUMN IF NOT EXISTS user_groups VARCHAR [] NOT NULL DEFAULT '{}';
 var addColumnIsPublicToTableObjectstore = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
+`
+
+var createTableUICustomComponents = `
+CREATE TABLE IF NOT EXISTS ui_custom_components (
+name       									VARCHAR(64) NOT NULL,
+account_id  								VARCHAR(64) NOT NULL,
+project_tag									VARCHAR(32) NOT NULL,
+content        								JSONB NOT NULL,
+status										VARCHAR(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
+category									VARCHAR(64) DEFAULT 'custom_component',
+UNIQUE (account_id, name, project_tag)
+)
 `

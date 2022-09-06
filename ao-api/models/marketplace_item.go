@@ -23,6 +23,7 @@ type MarketplaceItem struct {
 	UpdatedAtForDb   pq.NullTime              `db:"updated_at" json:"-"`
 	UpdatedAt        time.Time                `db:"-" json:"updatedAt"`
 	ProjectName      string                   `db:"project_name" json:"-"`
+	ComponentName    string                   `db:"component_name" json:"-"`
 	S3Key            string                   `db:"s3_key" json:"-"`
 }
 
@@ -30,3 +31,11 @@ type MarketplaceItemFeature struct {
 	Icon        string `db:"icon" json:"icon"`
 	Description string `db:"description" json:"description"`
 }
+
+const (
+	CategoryProject        = "projectItem"
+	CategoryTask           = "taskItem"
+	CategoryTrigger        = "triggerItem"
+	CategoryUIComponent    = "uiComponentItem"
+	CategoryUIDesignSystem = "uiDesignSystemItem"
+)

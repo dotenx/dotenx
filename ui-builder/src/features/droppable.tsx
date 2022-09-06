@@ -107,28 +107,22 @@ export function Droppable({
 					}
 					break
 				case DraggableMode.AddWithData:
-					switch (data.mode) {
-						case DroppableMode.InsertIn:
-							addComponent(
-								regenComponent(item.data, data.componentId),
-								data.componentId
-							)
-							break
-						case DroppableMode.InsertBefore:
-							addComponentBefore(
-								regenComponent(item.data, data.componentId),
-								data.componentId
-							)
-							break
-						case DroppableMode.InsertAfter:
-							addComponentAfter(
-								regenComponent(item.data, data.componentId),
-								data.componentId
-							)
-							break
+					{
+						const component = regenComponent(item.data, data.componentId)
+						switch (data.mode) {
+							case DroppableMode.InsertIn:
+								addComponent(component, data.componentId)
+								break
+							case DroppableMode.InsertBefore:
+								addComponentBefore(component, data.componentId)
+								break
+							case DroppableMode.InsertAfter:
+								addComponentAfter(component, data.componentId)
+								break
+						}
+						selectComponent(component.id)
+						setSelectedClass(null)
 					}
-					selectComponent(newComponentId)
-					setSelectedClass(null)
 					break
 			}
 		},
@@ -146,6 +140,6 @@ const regenComponent = (component: Component, parentId: string) => {
 	const newComponent = _.cloneDeep(component)
 	newComponent.id = uuid()
 	newComponent.parentId = parentId
-	newComponent.components = newComponent.components.map((c) => regenComponent(c, component.id))
+	newComponent.components = newComponent.components.map((c) => regenComponent(c, newComponent.id))
 	return newComponent
 }
