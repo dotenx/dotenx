@@ -572,6 +572,7 @@ export enum EventKind {
 	KeyDown = 'keydown',
 	Change = 'change',
 	Submit = 'submit',
+	Onload = 'onload',
 }
 
 interface BaseAction {
@@ -601,13 +602,19 @@ export interface FetchAction extends BaseAction {
 	params: string
 }
 
-export type Action = CodeAction | ToggleStateAction | SetStateAction | FetchAction
+export interface AnimationAction extends BaseAction {
+	kind: ActionKind.Animation
+	animationName: string
+}
+
+export type Action = CodeAction | ToggleStateAction | SetStateAction | FetchAction | AnimationAction
 
 export enum ActionKind {
 	Code = 'Code',
 	ToggleState = 'Toggle State',
 	SetState = 'Set State',
 	Fetch = 'Fetch',
+	Animation = 'Animation',
 }
 
 export const actionKinds = [

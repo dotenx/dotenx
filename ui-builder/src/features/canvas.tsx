@@ -44,7 +44,17 @@ export function Canvas() {
 
 	return (
 		<div className="h-full bg-gray-50 p-px">
-			<Frame className="h-full w-full">
+			<Frame
+				className="h-full w-full"
+				head={
+					<>
+						<link
+							rel="stylesheet"
+							href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+						/>
+					</>
+				}
+			>
 				<DndFrame>
 					<style>{`body { margin: 0; font-family: sans-serif; }`}</style>
 					<style>
