@@ -45,12 +45,12 @@ export function UploadFileForm({ tag }: { tag: string }) {
 
 	return (
 		<Form className="gap-16" onSubmit={onSubmit}>
-			<div className="grid grid-cols-2">
+			<div className="grid grid-cols-1">
 				<div className="flex flex-col gap-1 ">
 					<span className="text-sm font-medium">Choose file: </span>
 					<label
 						htmlFor="file"
-						className="flex items-center text-white w-1/2 justify-center  font-bold px-2 bg-rose-500 transition-colors hover:bg-rose-600 cursor-pointer py-1  rounded-lg   form-input "
+						className="flex items-center shadow-sm cursor-pointer  active:bg-slate-100 active:shadow-none hover:bg-slate-50 transition-all border justify-center  font-medium px-2 w-full py-1  rounded   form-input "
 					>
 						<span className="mr-2">browse</span>
 						<BsFillFolderSymlinkFill />
@@ -67,26 +67,28 @@ export function UploadFileForm({ tag }: { tag: string }) {
 						value={undefined}
 					/>
 				</div>
-				{file && (
-					<div className="border pl-2 p-1 rounded">
+				{file ? (
+					<div className="border border-dotted mt-4  p-1 rounded">
 						<span className="font-medium">file name: </span>
 						<span className="truncate">{file?.name}</span>
 						<br /> <span className="font-medium">file size: </span>
 						{(file?.size / 1000).toFixed(1) + 'kb'}
 					</div>
+				) : (
+					<div></div>
 				)}
-			</div>
-			<div>
-				<div className="py-2 text-sm font-medium">File access</div>
-				<Checkbox
-					name="isPublic"
-					label="Public"
-					readOnly
-					checked={isPublic}
-					onClick={() => {
-						setisPublic(!isPublic)
-					}}
-				/>
+				<div className="mt-4">
+					<div className="pb-1  text-sm font-medium">File access</div>
+					<Checkbox
+						name="isPublic"
+						label="Public"
+						readOnly
+						checked={isPublic}
+						onClick={() => {
+							setisPublic(!isPublic)
+						}}
+					/>
+				</div>
 			</div>
 			<Button loading={mutation.isLoading} type="submit">
 				Upload
