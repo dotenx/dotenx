@@ -284,13 +284,14 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 	)
 }
 
-const eventOptions = [
+export const eventOptions = [
 	{ label: 'click', value: EventKind.Click },
 	{ label: 'mouse enter', value: EventKind.MouseEnter },
 	{ label: 'mouse leave', value: EventKind.MouseLeave },
 	{ label: 'key down', value: EventKind.KeyDown },
 	{ label: 'change', value: EventKind.Change },
 	{ label: 'submit', value: EventKind.Submit },
+	{ label: 'load', value: EventKind.Onload },
 ]
 
 export const getActionDefaultValue = (kind: ActionKind) => {
@@ -303,6 +304,8 @@ export const getActionDefaultValue = (kind: ActionKind) => {
 			return { id: uuid(), kind, name: '', valueToSet: '' }
 		case ActionKind.Fetch:
 			return { id: uuid(), kind, dataSourceName: '', body: '', params: '' }
+		case ActionKind.Animation:
+			return { id: uuid(), kind, animationName: '' }
 	}
 }
 

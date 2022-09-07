@@ -47,7 +47,11 @@ import {
 	TbUnderline,
 	TbX,
 } from 'react-icons/tb'
+import { uuid } from '../utils'
+import { ActionKind, AnimationAction, EventKind, useCanvasStore } from './canvas-store'
 import { ClassEditor } from './class-editor'
+import { eventOptions } from './data-editor'
+import { useSelectedComponent } from './use-selected-component'
 
 const normalizedCssProperties = cssProperties.all.map((property) =>
 	property
@@ -93,6 +97,10 @@ export function StylesEditor({
 				<ClassEditor />
 			</CollapseLine>
 
+			<CollapseLine label="Animation">
+				<AnimationEditor />
+			</CollapseLine>
+
 			<CollapseLine label="Layout">
 				<LayoutEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
@@ -124,6 +132,89 @@ export function StylesEditor({
 			<CollapseLine label="CSS Properties">
 				<CssPropertiesEditor onChange={onChange} style={styles} />
 			</CollapseLine>
+		</div>
+	)
+}
+
+const cssAnimations = [
+	'bounce',
+	'flash',
+	'pulse',
+	'rubberBand',
+	'shakeX',
+	'shakeY',
+	'headShake',
+	'swing',
+	'tada',
+	'wobble',
+	'jello',
+	'heartBeat',
+]
+
+function AnimationEditor() {
+	const selectedComponent = useSelectedComponent()
+	const { editEvent, addEvent, removeEvent } = useCanvasStore((store) => ({
+		addEvent: store.addComponentEvent,
+		removeEvent: store.removeEvent,
+		editEvent: store.editComponentEvent,
+	}))
+	if (!selectedComponent) return null
+	const addNewAnimation = () => {
+		addEvent(selectedComponent.id, {
+			id: uuid(),
+			kind: EventKind.MouseEnter,
+			actions: [{ id: uuid(), kind: ActionKind.Animation, animationName: cssAnimations[0] }],
+		})
+	}
+	const removeAnimation = (eventId: string) => {
+		removeEvent(selectedComponent.id, eventId)
+	}
+
+	const animations = selectedComponent.events.map((event) =>
+		event.actions
+			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+			.map((animation) => (
+				<div className="space-y-2" key={animation.id}>
+					<CloseButton ml="auto" onClick={() => removeAnimation(event.id)} size="xs" />
+					<div className="flex gap-2 items-center">
+						<Text className="w-14">On</Text>
+						<Select
+							size="xs"
+							data={eventOptions}
+							className="grow"
+							value={event.kind}
+							onChange={(value: EventKind) =>
+								editEvent(selectedComponent.id, { ...event, kind: value })
+							}
+						/>
+					</div>
+					<div className="flex gap-2 items-center">
+						<Text className="w-14">Animate</Text>
+						<Select
+							size="xs"
+							data={cssAnimations}
+							className="grow"
+							value={animation.animationName}
+							onChange={(value) =>
+								editEvent(selectedComponent.id, {
+									...event,
+									actions: [
+										{ ...animation, animationName: value ?? cssAnimations[0] },
+									],
+								})
+							}
+						/>
+					</div>
+				</div>
+			))
+	)
+
+	return (
+		<div>
+			<div className="space-y-4">{animations}</div>
+			<Button mt="xl" size="xs" leftIcon={<TbPlus />} onClick={addNewAnimation}>
+				Animation
+			</Button>
 		</div>
 	)
 }

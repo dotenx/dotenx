@@ -6,8 +6,10 @@ import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
 import { TbPhoto } from 'react-icons/tb'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
+import { animateCSS } from '../utils/animation'
 import {
 	ActionKind,
+	AnimationAction,
 	BoxComponent,
 	ButtonComponent,
 	CodeAction,
@@ -359,6 +361,14 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		: false
 	const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
 
+	const showHoverAnimations = () => {
+		component.events
+			.filter((event) => event.kind === EventKind.MouseEnter)
+			.flatMap((event) => event.actions)
+			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+			.forEach((animation) => animateCSS(`.${component.id}`, animation.animationName))
+	}
+
 	return (
 		<Draggable data={{ mode: DraggableMode.Move, componentId: component.id }}>
 			<div
@@ -395,6 +405,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 					onKeyDown={() => handleEvents(EventKind.KeyDown)}
 					onChange={() => handleEvents(EventKind.Change)}
 					onSubmit={() => handleEvents(EventKind.Submit)}
+					onMouseOver={showHoverAnimations}
 				>
 					{link ? <a href={link.toString()}>{children}</a> : children}
 				</div>
