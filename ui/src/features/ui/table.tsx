@@ -1,13 +1,11 @@
 /* eslint-disable react/jsx-key */
-import { Table as MantineTable, TextInput, Title } from '@mantine/core'
+import { Loader, Table as MantineTable, TextInput, Title } from '@mantine/core'
 import Fuse from 'fuse.js'
 import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
 import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
 import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
-import { Loader } from './loader'
-import { IconHelp } from '@tabler/icons'
 import { HelpDetails, HelpPopover } from './help-popover'
 
 interface TableProps<D extends object = Record<string, string>> {
@@ -20,7 +18,6 @@ interface TableProps<D extends object = Record<string, string>> {
 	helpDetails?: HelpDetails
 }
 
-
 export function Table<D extends object = Record<string, string>>({
 	title,
 	actionBar,
@@ -28,7 +25,7 @@ export function Table<D extends object = Record<string, string>>({
 	columns,
 	data = [],
 	loading,
-	helpDetails
+	helpDetails,
 }: TableProps<D>) {
 	const [search, setSearch] = useState('')
 	const fuzzySearch = useMemo(
@@ -60,7 +57,11 @@ export function Table<D extends object = Record<string, string>>({
 				</div>
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>
-			{loading && <Loader />}
+			{loading && (
+				<div className="left-1/2 top-1/3 absolute">
+					<Loader color="red" />
+				</div>
+			)}
 			{!loading && data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
 					{actionBar}

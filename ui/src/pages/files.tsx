@@ -28,7 +28,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	const [rowData, setRowData] = useState({ isPublic: false, name: '', projectTag: '' })
 
 	const client = useQueryClient()
-	const { mutate } = useMutation(setFilesAccess, {
+	const { mutate, isLoading: changeAccessisLoading } = useMutation(setFilesAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
 	})
 
@@ -41,11 +41,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 
 	const projectTag = projectDetails?.data.tag ?? ''
 
-	const {
-		data: filesData,
-		isLoading: filesDataLoading,
-		isFetching,
-	} = useQuery(QueryKey.GetFiles, () => getFiles(projectTag), { enabled: !!projectTag })
+	const { data: filesData, isLoading: filesDataLoading } = useQuery(
+		QueryKey.GetFiles,
+		() => getFiles(projectTag),
+		{ enabled: !!projectTag }
+	)
 
 	const [defaultUserGroups, setDefaultUserGroups] = useState([])
 	const { onSubmit, ...form } = useForm()
@@ -84,7 +84,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 				<Table
 					helpDetails={helpDetails}
-					loading={projectDetailsLoading || filesDataLoading || isFetching}
+					loading={projectDetailsLoading || filesDataLoading || changeAccessisLoading}
 					title="Files"
 					emptyText="Your files will be displayed here"
 					columns={[
@@ -250,7 +250,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 				</Button>
 				<Button onClick={() => modal.open(Modals.UploadFile)}>Upload file</Button>
 			</div>
-			<NewModal kind={Modals.UploadFile} title="Upload file" size="xl">
+			<NewModal kind={Modals.UploadFile} title="Upload file" size="md">
 				<UploadFileForm tag={projectTag} />
 			</NewModal>
 		</>
