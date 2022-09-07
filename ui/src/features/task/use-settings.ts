@@ -144,7 +144,7 @@ export function useTaskSettings({
 	const codeOutputGroups = nodes.filter(
 		(node) => node.type?.includes('code') || node.type?.includes('Get table records')
 	)
-	const outputGroups = [...noneCodeOutputGroups, ...codeOutputGroups]
+	const outputGroups = [] ?? [...noneCodeOutputGroups, ...codeOutputGroups]
 
 	const onSubmit = handleSubmit(() => {
 		onSave({
