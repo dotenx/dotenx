@@ -24,3 +24,5 @@ export const modalAtom = atom<{ isOpen: boolean; kind: Modals | null; data: unkn
 	kind: null,
 	data: null,
 })
+
+export const tourElementsLoading = atom({ userManagementLoading: false })
