@@ -38,23 +38,32 @@ export function JsonEditor<
 			<Controller
 				control={control}
 				name={rest.name}
-				render={({ field: { onChange, value } }) => (
-					<div className="p-2 mx-1 font-mono text-xs font-medium rounded cursor-default bg-gray-50">
-						<Object
-							properties={
-								value ?? [
-									{
-										id: nanoid(),
-										name: '',
-										value: { type: InputOrSelectKind.Text, data: '' },
-									},
-								]
-							}
-							changeProperties={onChange}
-							outputGroups={groups}
-						/>
-					</div>
-				)}
+				render={({ field: { onChange, value } }) => {
+					console.log('v', value)
+
+					return (
+						<div className="p-2 mx-1 font-mono text-xs font-medium rounded cursor-default bg-gray-50">
+							<Object
+								properties={
+									!_.isArray(value)
+										? [
+												{
+													id: nanoid(),
+													name: '',
+													value: {
+														type: InputOrSelectKind.Text,
+														data: '',
+													},
+												},
+										  ]
+										: value
+								}
+								changeProperties={onChange}
+								outputGroups={groups}
+							/>
+						</div>
+					)
+				}}
 			/>
 
 			{rest.name && errors && <FieldError errors={errors} name={rest.name} />}
@@ -130,6 +139,8 @@ function Object({
 			})
 		)
 	}
+
+	console.log(properties)
 
 	return (
 		<div className="group">
