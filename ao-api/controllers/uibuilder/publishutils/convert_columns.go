@@ -33,7 +33,7 @@ type Columns struct {
 	} `json:"data"`
 }
 
-const columnsTemplate = `<div {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}"><div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div></div>`
+const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

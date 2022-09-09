@@ -33,6 +33,12 @@ var pageTemplate = `<!DOCTYPE html>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="./{{.Name}}.css">
+	<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+	</head>
 </head>
 <body x-data>
 	{{.Body.Content}}
