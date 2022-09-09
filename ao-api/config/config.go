@@ -36,12 +36,14 @@ type (
 	}
 
 	Endpoints struct {
-		AoApi      string `envconfig:"AOA_AO_API_URL"`
-		AoApiLocal string `envconfig:"AOA_AO_API_LOCAL_URL"`
-		Core       string `envconfig:"AOA_CORE_API_URL"`
-		UI         string `envconfig:"AOA_UI_URL"`
-		UILocal    string `envconfig:"AOA_UI_LOCAL_URL"`
-		Admin      string `envconfig:"AOA_ADMIN_URL"`
+		AoApi        string `envconfig:"AOA_AO_API_URL"`
+		AoApiLocal   string `envconfig:"AOA_AO_API_LOCAL_URL"`
+		Core         string `envconfig:"AOA_CORE_API_URL"`
+		UI           string `envconfig:"AOA_UI_URL"`
+		UILocal      string `envconfig:"AOA_UI_LOCAL_URL"`
+		Admin        string `envconfig:"AOA_ADMIN_URL"`
+		SendGrid     string `envconfig:"AOA_SENDGRID_URL"`
+		SystemSender string `envconfig:"AOA_SYSTEM_SENDER"`
 	}
 
 	Database struct {

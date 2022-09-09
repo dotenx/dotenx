@@ -192,6 +192,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// user management router (without any authentication)
 	r.POST("/user/management/project/:tag/register", userManagementController.Register())
 	r.POST("/user/management/project/:tag/login", userManagementController.Login())
+	r.POST("/user/management/project/:tag/forget/password", userManagementController.SendForgetPasswordMail(httpHelper))
+	r.POST("/user/management/project/:tag/reset/password", userManagementController.ResetPassword())
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
