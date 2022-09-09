@@ -53,7 +53,7 @@ func convertAction(action EventAction) (string, error) {
 	const codeTemplate = `function {{.Id}}(dtx_event){
 		{{.Code}}
 	}
-	{{.Id}}();
+	{{.Id}}(dtx_event);
 `
 
 	const toggleStateTemplate = `
@@ -67,6 +67,27 @@ func convertAction(action EventAction) (string, error) {
 	const fetchTemplate = `
 	Alpine.store({{.DataSourceName}}).fetch({{.Body}});
 	`
+	const animateTemplate = `
+	function {{.Id}}(dtx_event){
+		new Promise((resolve, reject) => {
+			const prefix = "animate__";
+			const animationName = prefix + "{{.AnimationName}}";
+			const node = dtx_event.target;
+			
+			node.classList.add(prefix + "animated", animationName);
+	
+			// When the animation ends, we clean the classes and resolve the Promise
+			function handleAnimationEnd(event) {
+				event.stopPropagation();
+				node.classList.remove(prefix + "animated", animationName);
+				resolve('Animation ended');
+			}
+	
+			node.addEventListener('animationend', handleAnimationEnd, {once: true});
+		})
+	}
+	{{.Id}}(dtx_event);
+	`
 
 	var actionTemplate string
 	switch action.Kind {
@@ -78,6 +99,8 @@ func convertAction(action EventAction) (string, error) {
 		actionTemplate = codeTemplate
 	case "Fetch":
 		actionTemplate = fetchTemplate
+	case "Animation":
+		actionTemplate = animateTemplate
 	}
 
 	tmpl, err := template.New("action").Parse(actionTemplate)

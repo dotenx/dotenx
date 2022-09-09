@@ -129,11 +129,9 @@ func convertClasses(classNames map[string]interface{}) (string, error) {
 		Tablet  StyleModes `json:"tablet"`
 		Mobile  StyleModes `json:"mobile"`
 	}
-
 	json.Unmarshal(b, &tmp)
 
 	tmpStyleStore := NewStyleStore()
-
 	for className, styles := range tmp {
 		tmpStyleStore.AddStyle(className, styles.Desktop, styles.Tablet, styles.Mobile)
 	}
@@ -179,7 +177,7 @@ func convertClasses(classNames map[string]interface{}) (string, error) {
 	}
 	`
 
-	tmpl, err := template.New("import").Parse(importTemplate)
+	tmpl, err := template.New("classNames").Parse(classTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

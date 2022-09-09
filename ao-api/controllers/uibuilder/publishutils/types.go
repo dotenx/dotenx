@@ -15,4 +15,5 @@ type EventAction struct {
 	DataSourceName string `json:"dataSourceName"`
 	Body           string `json:"body"`
 	Params         string `json:"params"`
+	AnimationName  string `json:"animationName"`
 }
