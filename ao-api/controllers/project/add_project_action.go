@@ -33,7 +33,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 				Description:      dto.Description,
 				AccountId:        accountId,
 				DefaultUserGroup: dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
-				HasDatabase:      true,                 // this is a temporary assignment until front-end supports hasDatabase field
+				HasDatabase:      dto.HasDatabase,
 			})
 		}
 		if err != nil {
@@ -61,4 +61,5 @@ type ProjectRequest struct {
 	AccountId        string `db:"account_id" json:"-"`
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
+	HasDatabase      bool   `json:"hasDatabase"`
 }
