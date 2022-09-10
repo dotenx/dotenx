@@ -387,6 +387,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// marketplace router
 	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices, uiComponentServi))
+	marketplace.POST("/upload", marketplaceController.Upload())
 	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
 	marketplace.PATCH("/item/:id/enable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.EnableItem())
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
