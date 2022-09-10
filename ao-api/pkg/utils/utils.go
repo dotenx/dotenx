@@ -27,6 +27,9 @@ import (
 // Errors
 var ErrReachLimitationOfPlan = errors.New("you have reached your limit. please upgrade your plan")
 
+// constants
+const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)
+
 func FailOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)

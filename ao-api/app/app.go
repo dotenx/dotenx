@@ -192,6 +192,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// user management router (without any authentication)
 	r.POST("/user/management/project/:tag/register", userManagementController.Register())
 	r.POST("/user/management/project/:tag/login", userManagementController.Login())
+	r.POST("/user/management/project/:tag/forget/password", userManagementController.SendForgetPasswordMail(httpHelper))
+	r.POST("/user/management/project/:tag/reset/password", userManagementController.ResetPassword())
 	r.GET("/user/management/project/:project/provider/:provider/authorize", userManagementController.OAuthConsent())
 	r.GET("/user/management/project/:project/provider/:provider/callback", userManagementController.OAuthLogin())
 
@@ -344,10 +346,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTableColumn())
 	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
-	database.POST("/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRow())
-	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", databaseController.UpdateRow())
-	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", databaseController.DeleteRow())
-	database.POST("/query/select/project/:project_tag/table/:table_name", databaseController.SelectRows())
+	database.POST("/query/insert/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.InsertRow())
+	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.UpdateRow())
+	database.DELETE("/query/delete/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.DeleteRow())
+	database.POST("/query/select/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRows())
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
 	// user management router (with authentication)

@@ -17,6 +17,7 @@ func NewUserManagementService(store userManagementStore.UserManagementStore, pro
 }
 
 type UserManagementService interface {
+	// user_info functions
 	GetUserInfo(tpEmail, projectTag string) (user *models.ThirdUser, err error)
 	GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error)
 	SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
@@ -24,6 +25,11 @@ type UserManagementService interface {
 	UpdateUserGroup(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error)
 	DeleteUserInfo(tpAccountId, projectTag string) (err error)
+
+	// security_code functions
+	SetSecurityCodeInfo(securityCode models.SecurityCode, projectTag string) (err error)
+	GetSecurityCodeInfo(securityCodeStr, useCase, projectTag string) (securityCode models.SecurityCode, err error)
+	DisableSecurityCode(securityCode, useCase, projectTag string) (err error)
 
 	// user group functions
 	GetUserGroup(userGroupName, projectTag string) (userGroup *models.UserGroup, err error)

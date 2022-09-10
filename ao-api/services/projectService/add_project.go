@@ -71,6 +71,9 @@ func (ps *projectService) createAndPrepareDatabase(ctx context.Context, accountI
 	if err := ps.TpUserStore.CreateUserInfoTable(db); err != nil {
 		return err
 	}
+	if err := ps.TpUserStore.CreateSecurityCodeTable(db); err != nil {
+		return err
+	}
 
 	if defaultUserGroup == "" {
 		defaultUserGroup = "users"

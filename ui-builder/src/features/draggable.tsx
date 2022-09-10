@@ -1,4 +1,3 @@
-import { CSSProperties, ReactNode } from 'react'
 import { useDrag } from 'react-dnd'
 import { Component, ComponentKind } from './canvas-store'
 
@@ -17,20 +16,12 @@ export enum DraggableKinds {
 	Component = 'component',
 }
 
-export function Draggable({
-	children,
-	data,
-	style,
-}: {
-	children: ReactNode
+interface DraggableProps extends React.HTMLAttributes<HTMLDivElement> {
 	data: DraggableData
-	style?: CSSProperties
-}) {
+}
+
+export function Draggable({ data, ...rest }: DraggableProps) {
 	const [, drag] = useDrag(() => ({ type: DraggableKinds.Component, item: data }))
 
-	return (
-		<div ref={drag} style={style}>
-			{children}
-		</div>
-	)
+	return <div ref={drag} {...rest} />
 }
