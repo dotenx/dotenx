@@ -6,13 +6,16 @@ import {
 	Collapse,
 	ColorInput,
 	Divider,
+	Menu,
+	NumberInput,
+	Popover,
 	SegmentedControl,
 	Select,
-	Slider,
 	Text,
 	TextInput,
 } from '@mantine/core'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
+import produce from 'immer'
 import cssProperties from 'known-css-properties'
 import _ from 'lodash'
 import { CSSProperties, ReactNode, useState } from 'react'
@@ -129,9 +132,109 @@ export function StylesEditor({
 				<BordersEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 
+			<CollapseLine label="Shadows">
+				<ShadowsEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+
 			<CollapseLine label="CSS Properties">
 				<CssPropertiesEditor onChange={onChange} style={styles} />
 			</CollapseLine>
+		</div>
+	)
+}
+
+function ShadowsEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+	const shadowProperties = styles.boxShadow?.split(' ')
+	const shadowX = shadowProperties?.[0]
+	const shadowY = shadowProperties?.[1]
+	const shadowBlur = shadowProperties?.[2]
+	const shadowSpread = shadowProperties?.[3]
+	const shadowColor = shadowProperties?.[4]
+	console.log(shadowProperties)
+
+	return (
+		<div className="grid grid-cols-12 items-center gap-y-2 gap-x-3">
+			<p className="col-span-3">Color</p>
+			<div className="col-span-9">
+				<ColorInput
+					value={shadowColor}
+					onChange={(value) =>
+						editStyle(
+							'boxShadow',
+							produce(shadowProperties, (draft) => {
+								const withoutSpace = value.replaceAll(' ', '')
+								if (draft) draft[4] = withoutSpace
+								else return ['0px', '0px', '0px', '0px', withoutSpace]
+							})?.join(' ') ?? ''
+						)
+					}
+					format="hsla"
+				/>
+			</div>
+
+			<p className="col-span-3">X</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={shadowX}
+					onChange={(value) =>
+						editStyle(
+							'boxShadow',
+							produce(shadowProperties, (draft) => {
+								if (draft) draft[0] = value
+								else return [value, '0px', '0px', '0px', 'rgba(0,0,0,0.5)']
+							})?.join(' ') ?? ''
+						)
+					}
+				/>
+			</div>
+
+			<p className="col-span-3">Y</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={shadowY}
+					onChange={(value) =>
+						editStyle(
+							'boxShadow',
+							produce(shadowProperties, (draft) => {
+								if (draft) draft[1] = value
+								else return ['0px', value, '0px', '0px', 'rgba(0,0,0,0.5)']
+							})?.join(' ') ?? ''
+						)
+					}
+				/>
+			</div>
+
+			<p className="col-span-3">Blur</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={shadowBlur}
+					onChange={(value) =>
+						editStyle(
+							'boxShadow',
+							produce(shadowProperties, (draft) => {
+								if (draft) draft[2] = value
+								else return ['0px', '0px', value, '0px', 'rgba(0,0,0,0.5)']
+							})?.join(' ') ?? ''
+						)
+					}
+				/>
+			</div>
+
+			<p className="col-span-3">Spread</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={shadowSpread}
+					onChange={(value) =>
+						editStyle(
+							'boxShadow',
+							produce(shadowProperties, (draft) => {
+								if (draft) draft[3] = value
+								else return ['0px', '0px', '0px', value, 'rgba(0,0,0,0.5)']
+							})?.join(' ') ?? ''
+						)
+					}
+				/>
+			</div>
 		</div>
 	)
 }
@@ -315,20 +418,18 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 					/>
 
 					<p className="col-span-3">Gap</p>
-					<div className="col-span-9 flex gap-2">
-						<TextInput
-							size="xs"
+					<div className="col-span-9 flex gap-3">
+						<InputWithUnit
 							placeholder="Columns"
 							title="Columns"
-							value={styles.columnGap ?? ''}
-							onChange={(event) => editStyle('columnGap', event.target.value)}
+							value={styles.columnGap?.toString()}
+							onChange={(value) => editStyle('columnGap', value)}
 						/>
-						<TextInput
-							size="xs"
+						<InputWithUnit
 							placeholder="Rows"
 							title="Rows"
-							value={styles.rowGap ?? ''}
-							onChange={(event) => editStyle('rowGap', event.target.value)}
+							value={styles.rowGap?.toString()}
+							onChange={(value) => editStyle('rowGap', value)}
 						/>
 					</div>
 
@@ -396,30 +497,13 @@ const borderStyles = [
 ].map(toCenter)
 
 function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
-	const defaultBorderRadius = _.parseInt(styles.borderRadius?.toString().replace('px', '') ?? '0')
-	const [borderRadius, setBorderRadius] = useState(defaultBorderRadius)
-
-	useDidUpdate(() => {
-		editStyle('borderRadius', borderRadius + 'px')
-	}, [borderRadius])
-
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Radius</p>
-			<div className="col-span-9 flex gap-2 items-center">
-				<Slider
-					min={0}
-					max={20}
-					value={borderRadius}
-					onChange={setBorderRadius}
-					size="xs"
-					className="grow"
-				/>
-				<TextInput
-					value={styles.borderRadius ?? 0}
-					onChange={(event) => editStyle('borderRadius', event.target.value)}
-					className="w-16"
-					size="xs"
+			<div className="col-span-9">
+				<InputWithUnit
+					value={styles.borderRadius?.toString()}
+					onChange={(value) => editStyle('borderRadius', value)}
 				/>
 			</div>
 
@@ -433,12 +517,12 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 			/>
 
 			<p className="col-span-3">Width</p>
-			<TextInput
-				value={styles.borderWidth ?? 0}
-				onChange={(event) => editStyle('borderWidth', event.target.value)}
-				className="col-span-9"
-				size="xs"
-			/>
+			<div className="col-span-9">
+				<InputWithUnit
+					value={styles.borderWidth?.toString()}
+					onChange={(value) => editStyle('borderWidth', value)}
+				/>
+			</div>
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
@@ -448,6 +532,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 				size="xs"
 				autoComplete="off"
 				name="color"
+				format="hsla"
 			/>
 		</div>
 	)
@@ -469,6 +554,7 @@ function BackgroundsEditor({ styles, editStyle }: { styles: CSSProperties; editS
 				onChange={(value) => editStyle('backgroundColor', value)}
 				className="col-span-9"
 				size="xs"
+				format="hsla"
 			/>
 
 			<p className="col-span-3">Clipping</p>
@@ -530,20 +616,20 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 			/>
 
 			<p className="col-span-3">Size</p>
-			<TextInput
-				value={styles.fontSize ?? ''}
-				onChange={(event) => editStyle('fontSize', event.target.value)}
-				className="col-span-3"
-				size="xs"
-			/>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.fontSize?.toString()}
+					onChange={(value) => editStyle('fontSize', value)}
+				/>
+			</div>
 
 			<p className="col-span-3 ml-3">Height</p>
-			<TextInput
-				value={styles.height ?? ''}
-				onChange={(event) => editStyle('lineHeight', event.target.value)}
-				className="col-span-3"
-				size="xs"
-			/>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.height?.toString()}
+					onChange={(value) => editStyle('height', value)}
+				/>
+			</div>
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
@@ -551,6 +637,7 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 				onChange={(value) => editStyle('color', value)}
 				className="col-span-9"
 				size="xs"
+				format="hsla"
 			/>
 
 			<p className="col-span-3">Align</p>
@@ -609,22 +696,22 @@ function PositionEditor({ styles, editStyle }: { styles: CSSProperties; editStyl
 			/>
 			<div className="border py-2 px-2 rounded bg-white flex flex-col gap-2 mt-2 font-mono">
 				<MarginPaddingInput
-					value={styles.top?.toString() ?? '0'}
+					value={styles.top?.toString() ?? '0px'}
 					onChange={(value) => editStyle('top', value)}
 				/>
 				<div className="flex gap-2 items-center">
 					<MarginPaddingInput
-						value={styles.left?.toString() ?? '0'}
+						value={styles.left?.toString() ?? '0px'}
 						onChange={(value) => editStyle('left', value)}
 					/>
 					<div className="border h-4 bg-gray-200 rounded grow" />
 					<MarginPaddingInput
-						value={styles.right?.toString() ?? '0'}
+						value={styles.right?.toString() ?? '0px'}
 						onChange={(value) => editStyle('right', value)}
 					/>
 				</div>
 				<MarginPaddingInput
-					value={styles.bottom?.toString() ?? '0'}
+					value={styles.bottom?.toString() ?? '0px'}
 					onChange={(value) => editStyle('bottom', value)}
 				/>
 			</div>
@@ -642,37 +729,50 @@ const overflows = [
 function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	return (
 		<div>
-			<div className="grid grid-cols-2 gap-x-2 gap-y-3">
-				<InlineInput
-					label="Width"
-					value={styles.width?.toString() ?? ''}
-					onChange={(value) => editStyle('width', value)}
-				/>
-				<InlineInput
-					label="Height"
-					value={styles.height?.toString() ?? ''}
-					onChange={(value) => editStyle('height', value)}
-				/>
-				<InlineInput
-					label="Min W"
-					value={styles.minWidth?.toString() ?? ''}
-					onChange={(value) => editStyle('minWidth', value)}
-				/>
-				<InlineInput
-					label="Min H"
-					value={styles.minHeight?.toString() ?? ''}
-					onChange={(value) => editStyle('minHeight', value)}
-				/>
-				<InlineInput
-					label="Max W"
-					value={styles.maxWidth?.toString() ?? ''}
-					onChange={(value) => editStyle('maxWidth', value)}
-				/>
-				<InlineInput
-					label="Max H"
-					value={styles.maxHeight?.toString() ?? ''}
-					onChange={(value) => editStyle('maxHeight', value)}
-				/>
+			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
+				<p className="col-span-3">Width</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.width?.toString()}
+						onChange={(value) => editStyle('width', value)}
+					/>
+				</div>
+
+				<p className="col-span-3">Height</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.height?.toString()}
+						onChange={(value) => editStyle('height', value)}
+					/>
+				</div>
+				<p className="col-span-3">Min W</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.minWidth?.toString()}
+						onChange={(value) => editStyle('minWidth', value)}
+					/>
+				</div>
+				<p className="col-span-3">Min H</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.minHeight?.toString()}
+						onChange={(value) => editStyle('minHeight', value)}
+					/>
+				</div>
+				<p className="col-span-3">Max W</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.maxWidth?.toString()}
+						onChange={(value) => editStyle('maxWidth', value)}
+					/>
+				</div>
+				<p className="col-span-3">Max H</p>
+				<div className="col-span-3">
+					<InputWithUnit
+						value={styles.maxHeight?.toString()}
+						onChange={(value) => editStyle('maxHeight', value)}
+					/>
+				</div>
 			</div>
 			<div className="grid grid-cols-4 gap-2 items-center mt-6">
 				<p className="whitespace-nowrap">Overflow</p>
@@ -703,22 +803,67 @@ function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: E
 	)
 }
 
-function InlineInput({
+const units = ['px', 'rem', 'em', '%', 'vw', 'vh', 'auto'] as const
+type Unit = typeof units[number]
+
+function InputWithUnit({
 	label,
 	value,
 	onChange,
+	title,
+	placeholder,
 }: {
-	label: string
-	value: string
+	label?: string
+	value?: string
 	onChange: (value: string) => void
+	title?: string
+	placeholder?: string
 }) {
+	const unit = (value?.replace(/[0-9]/g, '') as Unit) ?? 'auto'
+	const number = (value ? _.parseInt(value.replace(unit, '')) : 0) || 0
+	const [opened, setOpened] = useState(false)
+
+	const unitSection = (
+		<Menu shadow="sm" opened={opened} onChange={setOpened}>
+			<Menu.Target>
+				<button className="bg-gray-50 uppercase text-[10px] font-medium flex items-center justify-center rounded hover:bg-gray-100 px-px">
+					{unit}
+				</button>
+			</Menu.Target>
+			<Menu.Dropdown p={0}>
+				<div>
+					{units.map((unit) => (
+						<button
+							key={unit}
+							onClick={() => {
+								setOpened(false)
+								if (unit === 'auto') onChange('auto')
+								else onChange(number + unit)
+							}}
+							className="px-2 py-0.5 w-full hover:bg-gray-100"
+						>
+							{unit}
+						</button>
+					))}
+				</div>
+			</Menu.Dropdown>
+		</Menu>
+	)
+
 	return (
-		<div className="grid grid-cols-2 items-center">
-			<Text className="whitespace-nowrap">{label}</Text>
-			<TextInput
+		<div className="flex gap-3 items-center">
+			{label && <Text className="whitespace-nowrap">{label}</Text>}
+			<NumberInput
 				size="xs"
-				value={value ?? ''}
-				onChange={(event) => onChange(event.target.value)}
+				value={unit === 'auto' ? undefined : number}
+				onChange={(newValue) => {
+					if (unit === 'auto') onChange(newValue + 'px')
+					else onChange((newValue ?? '0') + unit)
+				}}
+				rightSection={unitSection}
+				title={title}
+				placeholder={placeholder}
+				className="w-full"
 			/>
 		</div>
 	)
@@ -731,12 +876,12 @@ function SpacingEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 				Margin
 			</Text>
 			<MarginPaddingInput
-				value={styles.marginTop?.toString() ?? '0'}
+				value={styles.marginTop?.toString() ?? '0px'}
 				onChange={(value) => editStyle('marginTop', value)}
 			/>
 			<div className="flex gap-2">
 				<MarginPaddingInput
-					value={styles.marginLeft?.toString() ?? '0'}
+					value={styles.marginLeft?.toString() ?? '0px'}
 					onChange={(value) => editStyle('marginLeft', value)}
 				/>
 				<div className="border py-1 px-1 rounded bg-gray-200 grow">
@@ -750,33 +895,33 @@ function SpacingEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 							Padding
 						</Text>
 						<MarginPaddingInput
-							value={styles.paddingTop?.toString() ?? '0'}
+							value={styles.paddingTop?.toString() ?? '0px'}
 							onChange={(value) => editStyle('paddingTop', value)}
 						/>
 						<div className="flex gap-2 items-center">
 							<MarginPaddingInput
-								value={styles.paddingLeft?.toString() ?? '0'}
+								value={styles.paddingLeft?.toString() ?? '0px'}
 								onChange={(value) => editStyle('paddingLeft', value)}
 							/>
 							<div className="border h-4 bg-gray-200 rounded grow" />
 							<MarginPaddingInput
-								value={styles.paddingRight?.toString() ?? '0'}
+								value={styles.paddingRight?.toString() ?? '0px'}
 								onChange={(value) => editStyle('paddingRight', value)}
 							/>
 						</div>
 						<MarginPaddingInput
-							value={styles.paddingBottom?.toString() ?? '0'}
+							value={styles.paddingBottom?.toString() ?? '0px'}
 							onChange={(value) => editStyle('paddingBottom', value)}
 						/>
 					</div>
 				</div>
 				<MarginPaddingInput
-					value={styles.marginRight?.toString() ?? '0'}
+					value={styles.marginRight?.toString() ?? '0px'}
 					onChange={(value) => editStyle('marginRight', value)}
 				/>
 			</div>
 			<MarginPaddingInput
-				value={styles.marginBottom?.toString() ?? '0'}
+				value={styles.marginBottom?.toString() ?? '0px'}
 				onChange={(value) => editStyle('marginBottom', value)}
 			/>
 		</div>
@@ -790,15 +935,19 @@ function MarginPaddingInput({
 	value: string
 	onChange: (value: string) => void
 }) {
+	const isZero = value === '0px'
+
 	return (
-		<div className="w-[6ch] flex items-center justify-center self-center">
-			<input
-				value={value ?? ''}
-				onChange={(event) => onChange(event.target.value)}
-				className="focus:outline-none outline-none"
-				style={{ maxWidth: '6ch', minWidth: '1ch', width: `${value.length}ch` }}
-			/>
-		</div>
+		<Popover shadow="sm" withArrow position="left" withinPortal>
+			<Popover.Target>
+				<button className="self-center w-[6ch] no-scrollbar overflow-auto">
+					{isZero ? 0 : value}
+				</button>
+			</Popover.Target>
+			<Popover.Dropdown p="xs">
+				<InputWithUnit value={value} onChange={onChange} />
+			</Popover.Dropdown>
+		</Popover>
 	)
 }
 

@@ -70,13 +70,26 @@ export function DataSourceForm({
 				setPageState(`$store.${values.stateName}`, response)
 				closeAllModals()
 			},
+			onError: () => {
+				if (isAddMode) {
+					addSource({
+						...values,
+						id: uuid(),
+						properties: [],
+					})
+				} else {
+					editSource(initialValues.id, { ...values, properties: [] })
+				}
+				onSuccess?.(values)
+				closeAllModals()
+			},
 		})
 	})
 
 	const nameAndUrl = (
 		<>
 			<TextInput
-				label="State name"
+				label="Name"
 				description="Unique state name for this data"
 				required
 				name="stateName"
@@ -116,11 +129,25 @@ export function DataSourceForm({
 		</Button>
 	)
 
+	const headers = (
+		<JsonInput
+			label="Headers"
+			description="Passes additional context and metadata about the request"
+			placeholder="JSON object"
+			validationError="Invalid JSON"
+			formatOnBlur
+			autosize
+			minRows={3}
+			{...form.getInputProps('headers')}
+		/>
+	)
+
 	if (isSimple) {
 		return (
 			<form onSubmit={handleSubmit} className="space-y-6">
 				{methods}
 				{nameAndUrl}
+				{headers}
 				{submitButton}
 			</form>
 		)
@@ -137,16 +164,7 @@ export function DataSourceForm({
 			</div>
 			<div className="space-y-6">
 				{methods}
-				<JsonInput
-					label="Headers"
-					description="Passes additional context and metadata about the request"
-					placeholder="JSON object"
-					validationError="Invalid JSON"
-					formatOnBlur
-					autosize
-					minRows={3}
-					{...form.getInputProps('headers')}
-				/>
+				{headers}
 				<JsonInput
 					label="Body"
 					description="The request data"
