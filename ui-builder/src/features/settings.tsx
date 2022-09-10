@@ -174,7 +174,6 @@ function TextComponentSettings({ component }: { component: TextComponent }) {
 			controls={[
 				['bold', 'strike', 'italic', 'underline', 'clean'],
 				['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				// ['unorderedList', 'orderedList'], TODO: add list support
 				['link', 'blockquote'],
 				['sup', 'sub', 'code', 'codeBlock'],
 				['alignLeft', 'alignCenter', 'alignRight'],
@@ -304,7 +303,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				value={bgSize}
 				onChange={(value) =>
 					editStyle({
-						...component.data.style[viewport],
+						...component.data.style[viewport][selector],
 						backgroundSize: value ?? undefined,
 					})
 				}
@@ -326,7 +325,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				value={bgPosition}
 				onChange={(value) =>
 					editStyle({
-						...component.data.style[viewport],
+						...component.data.style[viewport][selector],
 						backgroundPosition: value ?? undefined,
 					})
 				}
@@ -358,7 +357,9 @@ function ColumnsComponentSettings({ component }: { component: ColumnsComponent }
 				size="xs"
 				label="Space"
 				value={space}
-				onChange={(value) => editStyle({ ...component.data.style[viewport], gap: value })}
+				onChange={(value) =>
+					editStyle({ ...component.data.style[viewport][selector], gap: value })
+				}
 			/>
 		</div>
 	)

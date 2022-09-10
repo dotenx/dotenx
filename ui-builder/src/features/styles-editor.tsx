@@ -320,14 +320,14 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 							size="xs"
 							placeholder="Columns"
 							title="Columns"
-							value={styles.columnGap ?? '0'}
+							value={styles.columnGap ?? ''}
 							onChange={(event) => editStyle('columnGap', event.target.value)}
 						/>
 						<TextInput
 							size="xs"
 							placeholder="Rows"
 							title="Rows"
-							value={styles.rowGap ?? '0'}
+							value={styles.rowGap ?? ''}
 							onChange={(event) => editStyle('rowGap', event.target.value)}
 						/>
 					</div>

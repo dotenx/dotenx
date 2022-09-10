@@ -49,7 +49,7 @@ export function Droppable({
 	const selectComponent = useSelectionStore((store) => store.select)
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 
-	const [, drop] = useDrop(() => ({
+	const [{ isOver }, drop] = useDrop(() => ({
 		accept: DraggableKinds.Component,
 		drop: (item: DraggableData, monitor) => {
 			if (!monitor.isOver({ shallow: true })) return
@@ -94,6 +94,7 @@ export function Droppable({
 					}
 					break
 				case DraggableMode.Move:
+					if (item.componentId === data.componentId) return
 					switch (data.mode) {
 						case DroppableMode.InsertIn:
 							moveComponent(item.componentId, data.componentId)
@@ -126,11 +127,15 @@ export function Droppable({
 					break
 			}
 		},
-		collect: (monitor) => ({ isOver: monitor.isOver() }),
+		collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
 	}))
 
 	return (
-		<div ref={drop} style={style} onClick={onClick}>
+		<div
+			ref={drop}
+			style={{ ...style, backgroundColor: isOver ? '#ffe4e6' : style?.backgroundColor }}
+			onClick={onClick}
+		>
 			{children}
 		</div>
 	)
