@@ -9,13 +9,14 @@ import (
 
 type (
 	Config struct {
-		App       App
-		Database  Database
-		Secrets   Secrets
-		Endpoints Endpoints
-		Queue     Queue
-		Redis     Redis
-		Upload    Upload
+		App         App
+		Database    Database
+		Secrets     Secrets
+		Endpoints   Endpoints
+		Queue       Queue
+		Redis       Redis
+		Upload      Upload
+		Marketplace Marketplace
 	}
 
 	App struct {
@@ -86,6 +87,10 @@ type (
 		QuotaKB          string `envconfig:"AOA_UPLOAD_QUOTA_KB"`
 		PublicUrl        string `envconfig:"AOA_UPLOAD_PUBLIC_URL"`
 		PrivateUrl       string `envconfig:"AOA_UPLOAD_PRIVATE_URL"`
+	}
+	Marketplace struct {
+		S3Bucket    string `envconfig:"AOA_MARKETPLACE_S3_BUCKET"`
+		MaxFileSize int    `envconfig:"AOA_MARKETPLACE_MAX_FILE_SIZE"`
 	}
 )
 
