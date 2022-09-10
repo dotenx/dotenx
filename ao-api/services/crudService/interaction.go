@@ -3,8 +3,8 @@ package crudService
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
-	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
@@ -23,10 +23,10 @@ func (cm *crudManager) GetInteractionDetailes(accountId string, name, projectNam
 		body := task.Body.(models.TaskBodyMap)
 		fields := make([]string, 0)
 		for key, value := range body {
-			var insertDt insertDto
+			var insertDt models.TaskFieldDetailes
 			b, _ := json.Marshal(value)
 			err := json.Unmarshal(b, &insertDt)
-			if err == nil && insertDt.Key != "" && insertDt.Source == config.Configs.App.InteractionBodyKey {
+			if err == nil && insertDt.Type == models.NestedFieldType && strings.Contains(insertDt.NestedKey, "interactionRunTime") {
 				fields = append(fields, key)
 			}
 		}
