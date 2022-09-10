@@ -1,4 +1,3 @@
-import { clsx, TypographyStylesProvider } from '@mantine/core'
 import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -87,14 +86,11 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const textBinding = component.bindings.text
 	const stateText = textBinding ? _.get(allStates, textBinding.fromStateName) ?? '' : ''
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
-	const styles = useCombinedStyles(component)
 
 	return (
-		<div className={getClasses(component)} style={{ overflow: 'auto', ...styles }}>
-			<TypographyStylesProvider>
-				<div dangerouslySetInnerHTML={{ __html: text }} />
-			</TypographyStylesProvider>
-		</div>
+		<>
+			<div style={{ overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: text }} />
+		</>
 	)
 }
 
@@ -102,52 +98,30 @@ const getClasses = (component: Component) => {
 	return `${component.classNames.join(' ')} ${component.id}`
 }
 
-const emptyContainerStyle = { height: 100, border: '1px dashed black' }
+const emptyContainerStyle = { minHeight: 100, minWidth: 100, border: '1px dashed black' }
 
 function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
-	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
-	const styles = useCombinedStyles(component)
-
 	return (
-		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
+		<>
 			<RenderComponents components={component.components} state={state} />
-		</div>
+		</>
 	)
 }
 
 function ButtonRenderer({ component }: { component: ButtonComponent }) {
-	const styles = useCombinedStyles(component)
-
-	return (
-		<button className={getClasses(component)} style={styles}>
-			{component.data.text}
-		</button>
-	)
+	return <>{component.data.text}</>
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
-	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
-	const styles = useCombinedStyles(component)
-
 	return (
-		<div className={getClasses(component)} style={{ ...emptyStyle, ...styles }}>
-			{component.components.map((component) => (
-				<div
-					key={component.id}
-					className={clsx('grow', styles.flexDirection === 'column' && 'w-0')}
-				>
-					<ComponentWrapper component={component}>
-						<ComponentShaper component={component} state={state} />
-					</ComponentWrapper>
-				</div>
-			))}
-		</div>
+		<>
+			<RenderComponents components={component.components} state={state} />
+		</>
 	)
 }
 
 function ImageRenderer({ component }: { component: ImageComponent }) {
 	const imageUrl = component.data.src
-	const styles = useCombinedStyles(component)
 
 	if (!imageUrl)
 		return (
@@ -169,19 +143,16 @@ function ImageRenderer({ component }: { component: ImageComponent }) {
 			className={getClasses(component)}
 			src={imageUrl}
 			alt={component.data.alt}
-			style={{ display: 'flex', ...styles }}
+			style={{ display: 'flex' }}
 		/>
 	)
 }
 
 function InputRenderer({ component }: { component: InputComponent }) {
-	const styles = useCombinedStyles(component)
-
 	return (
 		<input
 			className={getClasses(component)}
 			disabled
-			style={styles}
 			name={component.data.name}
 			placeholder={component.data.placeholder}
 			required={component.data.required}
@@ -192,14 +163,11 @@ function InputRenderer({ component }: { component: InputComponent }) {
 }
 
 function SelectRenderer({ component }: { component: SelectComponent }) {
-	const styles = useCombinedStyles(component)
-
 	return (
 		<select
 			name={component.data.name}
 			required={component.data.required}
 			className={getClasses(component)}
-			style={styles}
 		>
 			{component.data.options.map((option, index) => (
 				<option key={index} value={option.value}>
@@ -211,41 +179,25 @@ function SelectRenderer({ component }: { component: SelectComponent }) {
 }
 
 function TextareaRenderer({ component }: { component: TextareaComponent }) {
-	const styles = useCombinedStyles(component)
-
 	return (
 		<textarea
 			className={getClasses(component)}
 			placeholder={component.data.placeholder}
 			value={component.data.value || component.data.defaultValue}
-			style={styles}
 			readOnly
 		/>
 	)
 }
 
 export function SubmitButtonRenderer({ component }: { component: SubmitButtonComponent }) {
-	const styles = useCombinedStyles(component)
-
-	return (
-		<button className={getClasses(component)} type="submit" style={styles}>
-			{component.data.text}
-		</button>
-	)
+	return <>{component.data.text}</>
 }
 
 function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
-	const styles = useCombinedStyles(component)
-	const emptyStyle = component.components.length === 0 ? emptyContainerStyle : {}
-
 	return (
-		<form
-			className={getClasses(component)}
-			onSubmit={(e) => e.preventDefault()}
-			style={{ ...emptyStyle, ...styles }}
-		>
+		<>
 			<RenderComponents components={component.components} state={state} />
-		</form>
+		</>
 	)
 }
 
@@ -254,19 +206,11 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 		case ComponentKind.Text:
 			return <TextRenderer component={component} state={state} />
 		case ComponentKind.Box:
-			return (
-				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
-					<BoxRenderer component={component} state={state} />
-				</Droppable>
-			)
+			return <BoxRenderer component={component} state={state} />
 		case ComponentKind.Button:
 			return <ButtonRenderer component={component} />
 		case ComponentKind.Columns:
-			return (
-				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
-					<ColumnsRenderer component={component} state={state} />
-				</Droppable>
-			)
+			return <ColumnsRenderer component={component} state={state} />
 		case ComponentKind.Image:
 			return <ImageRenderer component={component} />
 		case ComponentKind.Input:
@@ -278,11 +222,7 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 		case ComponentKind.SubmitButton:
 			return <SubmitButtonRenderer component={component} />
 		case ComponentKind.Form:
-			return (
-				<Droppable data={{ mode: DroppableMode.InsertIn, componentId: component.id }}>
-					<FormRenderer component={component} state={state} />
-				</Droppable>
-			)
+			return <FormRenderer component={component} state={state} />
 		default:
 			return null
 	}
@@ -359,7 +299,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	const shouldHide = bindings.hide
 		? (_.get(states, bindings.hide.fromStateName) as boolean)
 		: false
-	const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
+	// const link = bindings.link ? _.get(states, bindings.link.fromStateName) : ''
 
 	const showHoverAnimations = () => {
 		component.events
@@ -368,93 +308,127 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
 			.forEach((animation) => animateCSS(`.${component.id}`, animation.animationName))
 	}
+	const isContainer =
+		component.kind === ComponentKind.Box ||
+		component.kind === ComponentKind.Columns ||
+		component.kind === ComponentKind.Form
+	const emptyStyle = isContainer && component.components.length === 0 ? emptyContainerStyle : {}
+	const styles = useCombinedStyles(component)
 
 	return (
-		<Draggable data={{ mode: DraggableMode.Move, componentId: component.id }}>
-			<div
-				onKeyDown={getHotkeyHandler([['Backspace', handleDelete]])}
-				tabIndex={0}
-				id={component.id}
+		<Draggable
+			className={getClasses(component)}
+			data={{ mode: DraggableMode.Move, componentId: component.id }}
+			tabIndex={0}
+			id={component.id}
+			onKeyDown={(event) => {
+				getHotkeyHandler([['Backspace', handleDelete]])(event)
+				handleEvents(EventKind.KeyDown)
+			}}
+			style={{
+				...emptyStyle,
+				outlineWidth: isHovered ? 2 : 1,
+				cursor: 'default',
+				position: 'relative',
+				outlineStyle: isHighlighted ? 'solid' : undefined,
+				outlineColor: '#fb7185',
+				borderRadius: styles.borderRadius ?? 2,
+			}}
+			onMouseOver={(event) => {
+				event.stopPropagation()
+				setHovered(true)
+				showHoverAnimations()
+			}}
+			onMouseOut={(event) => {
+				event.stopPropagation()
+				setHovered(false)
+			}}
+			onClick={(event) => {
+				event.stopPropagation()
+				setSelectedComponent(component.id)
+				if (selectedComponentId !== component.id) setSelectedClass(null)
+				handleEvents(EventKind.Click)
+			}}
+			hidden={!shouldShow && shouldHide}
+			onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
+			onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
+			onChange={() => handleEvents(EventKind.Change)}
+			onSubmit={() => handleEvents(EventKind.Submit)}
+		>
+			{isContainer && (
+				<Droppable
+					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
+					style={{
+						position: 'absolute',
+						top: 10,
+						bottom: 10,
+						left: 10,
+						right: 10,
+					}}
+				/>
+			)}
+			<Droppable
+				data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
 				style={{
-					outlineWidth: isHovered ? 2 : 1,
-					cursor: 'default',
-					position: 'relative',
-					outlineStyle: isHighlighted ? 'solid' : undefined,
-					outlineColor: '#fb7185',
-					borderRadius: 2,
+					position: 'absolute',
+					top: 0,
+					bottom: 0,
+					left: 0,
+					width: 10,
 				}}
-				onMouseOver={(event) => {
-					event.stopPropagation()
-					setHovered(true)
+			/>
+			<Droppable
+				data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+				style={{
+					position: 'absolute',
+					top: 0,
+					bottom: 0,
+					right: 0,
+					width: 10,
 				}}
-				onMouseOut={(event) => {
-					event.stopPropagation()
-					setHovered(false)
+			/>
+			<Droppable
+				data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					right: 0,
+					height: 10,
 				}}
-				onClick={(event) => {
-					event.stopPropagation()
-					setSelectedComponent(component.id)
-					if (selectedComponentId !== component.id) setSelectedClass(null)
+			/>
+			<Droppable
+				data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+				style={{
+					position: 'absolute',
+					bottom: 0,
+					left: 0,
+					right: 0,
+					height: 10,
 				}}
-				hidden={!shouldShow && shouldHide}
-			>
+			/>
+			{children}
+			{isSelected && (
 				<div
-					onClick={() => handleEvents(EventKind.Click)}
-					onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
-					onMouseLeave={() => handleEvents(EventKind.MouseLeave)}
-					onKeyDown={() => handleEvents(EventKind.KeyDown)}
-					onChange={() => handleEvents(EventKind.Change)}
-					onSubmit={() => handleEvents(EventKind.Submit)}
-					onMouseOver={showHoverAnimations}
+					style={{
+						position: 'absolute',
+						backgroundColor: isHovered ? '#f43f5e' : 'white',
+						fontFamily: 'monospace',
+						padding: '2px 6px',
+						bottom: -21,
+						color: isHovered ? 'white' : '#f43f5e',
+						borderRadius: 2,
+						zIndex: isHovered ? 101 : 100,
+						border: '1px solid #f43f5e',
+						display: 'flex',
+						gap: 2,
+						alignItems: 'center',
+					}}
 				>
-					{link ? <a href={link.toString()}>{children}</a> : children}
+					{getComponentIcon(component.kind)}
+					{component.kind}
 				</div>
-				<Droppable
-					data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-					style={{
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						right: 0,
-						zIndex: 10,
-						height: 16,
-						pointerEvents: 'none',
-					}}
-				/>
-				<Droppable
-					data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-					style={{
-						position: 'absolute',
-						bottom: 0,
-						left: 0,
-						right: 0,
-						zIndex: 10,
-						height: 16,
-						pointerEvents: 'none',
-					}}
-				/>
-				{isHighlighted && (
-					<div
-						style={{
-							position: 'absolute',
-							backgroundColor: isHovered ? '#f43f5e' : 'white',
-							fontFamily: 'monospace',
-							padding: '2px 6px',
-							bottom: -21,
-							color: isHovered ? 'white' : '#f43f5e',
-							borderRadius: 2,
-							zIndex: isHovered ? 101 : 100,
-							border: '1px solid #f43f5e',
-							display: 'flex',
-							gap: 2,
-							alignItems: 'center',
-						}}
-					>
-						{getComponentIcon(component.kind)}
-						{component.kind}
-					</div>
-				)}
-			</div>
+			)}
 		</Draggable>
 	)
 }
@@ -488,8 +462,6 @@ const evalCodes = (events: ComponentEvent[], kind: EventKind) => {
 }
 
 const useCombinedStyles = (component: Component): CSSProperties => {
-	return {}
-
 	const viewport = useViewportStore((store) => store.device)
 	const selector = useAtomValue(selectedSelectorAtom)
 	const classNames = useClassNamesStore((store) => store.classNames)
