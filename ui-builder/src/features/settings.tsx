@@ -18,7 +18,6 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useDidUpdate } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
-import RichTextEditor from '@mantine/rte'
 import { useMutation } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import { CSSProperties, useState } from 'react'
@@ -168,16 +167,12 @@ function TextComponentSettings({ component }: { component: TextComponent }) {
 	if (hide) return null
 
 	return (
-		<RichTextEditor
+		<TextInput
+			label="Text"
 			value={value}
-			onChange={(value) => editComponent(component.id, { ...component.data, text: value })}
-			controls={[
-				['bold', 'strike', 'italic', 'underline', 'clean'],
-				['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				['link', 'blockquote'],
-				['sup', 'sub', 'code', 'codeBlock'],
-				['alignLeft', 'alignCenter', 'alignRight'],
-			]}
+			onChange={(event) =>
+				editComponent(component.id, { ...component.data, text: event.target.value })
+			}
 		/>
 	)
 }
