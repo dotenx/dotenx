@@ -113,9 +113,24 @@ function ButtonRenderer({ component }: { component: ButtonComponent }) {
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
+	const styles = useCombinedStyles(component)
+
 	return (
 		<>
-			<RenderComponents components={component.components} state={state} />
+			{component.components.map((innerComponent, index) => {
+				const width =
+					component.data.columnWidths[index % component.data.columnWidths.length].value
+				return (
+					<div
+						key={innerComponent.id}
+						style={{
+							width: `calc(${width}% - ${styles.gap})`,
+						}}
+					>
+						<RenderComponents components={[innerComponent]} state={state} />
+					</div>
+				)
+			})}
 		</>
 	)
 }
@@ -312,8 +327,26 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		component.kind === ComponentKind.Box ||
 		component.kind === ComponentKind.Columns ||
 		component.kind === ComponentKind.Form
-	const emptyStyle = isContainer && component.components.length === 0 ? emptyContainerStyle : {}
 	const styles = useCombinedStyles(component)
+	const emptyStyle =
+		isContainer && component.components.length === 0
+			? {
+					minHeight: !(styles.height || styles.minHeight)
+						? emptyContainerStyle.minHeight
+						: undefined,
+					minWidth: !(styles.width || styles.minWidth)
+						? emptyContainerStyle.minWidth
+						: undefined,
+					border: !(
+						styles.border ||
+						styles.borderWidth ||
+						styles.borderColor ||
+						styles.borderStyle
+					)
+						? emptyContainerStyle.border
+						: undefined,
+			  }
+			: {}
 
 	return (
 		<Draggable
@@ -423,6 +456,11 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 						display: 'flex',
 						gap: 2,
 						alignItems: 'center',
+						fontSize: 12,
+						fontWeight: 600,
+						letterSpacing: 'normal',
+						lineHeight: 'normal',
+						left: 0,
 					}}
 				>
 					{getComponentIcon(component.kind)}

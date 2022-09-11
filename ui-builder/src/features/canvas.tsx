@@ -56,7 +56,15 @@ export function Canvas() {
 				}
 			>
 				<DndFrame>
-					<style>{`body { margin: 0; font-family: sans-serif; }`}</style>
+					<style>{`
+						body { margin: 0; font-family: sans-serif; }
+						html {
+							box-sizing: border-box;
+						}
+						*, *:before, *:after {
+							box-sizing: inherit;
+						}
+					`}</style>
 					<style>
 						{desktopClasses}
 						{`@media (max-width: 767px) { ${tabletClasses} }`}
