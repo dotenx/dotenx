@@ -16,7 +16,7 @@ Note: The assumption is that each project has only one domain associated with it
 
 func (store *projectStore) DeleteProjectDomain(ctx context.Context, projectDomain models.ProjectDomain) error {
 	deleteDomain := `
-		DELETE FROM project_domains
+		DELETE FROM project_domain
 		WHERE project_tag = $1
 `
 	var stmt string
