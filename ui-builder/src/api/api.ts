@@ -53,7 +53,9 @@ export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => 
 export const getPages = ({ projectTag }: GetPagesRequest) => {
 	return api.get<GetPagesResponse>(`/uibuilder/project/${projectTag}/page`)
 }
-
+export const uploadProjectImage = (data: FormData) => {
+	return api.post('/marketplace/upload', data)
+}
 export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsRequest) => {
 	const res = await api.get<GetPageDetailsResponse>(
 		`/uibuilder/project/${projectTag}/page/${pageName}`
@@ -167,15 +169,18 @@ export const addToMarketPlace = ({
 	componentName,
 	projectName,
 	category,
+	imageUrl,
 }: {
 	componentName: string
 	projectName: string
+	imageUrl: string
 	category: 'uiComponentItem' | 'uiDesignSystemItem'
 }) => {
 	return api.post(`/marketplace/item`, {
 		component_name: componentName,
 		category,
 		projectName,
+		imageUrl,
 		title: componentName,
 	})
 }
