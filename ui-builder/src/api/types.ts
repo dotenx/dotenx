@@ -94,6 +94,7 @@ export type GetCustomComponentsResponse =
 export type CustomComponent = {
 	name: string
 	content: Component
+	imageUrl?: string
 }
 
 export type CreateDesignSystemRequest = {
@@ -107,8 +108,8 @@ export type GetDesignSystemsRequest = {
 
 export type GetDesignSystemsResponse =
 	| ({ name: string; content: CustomComponent[] } & {
-			category: 'uiComponentItem' | 'uiDesignSystemItem'
-	  })[]
+		category: 'uiComponentItem' | 'uiDesignSystemItem'
+	})[]
 	| null
 
 export type GetMarketplaceItemsResponse = {

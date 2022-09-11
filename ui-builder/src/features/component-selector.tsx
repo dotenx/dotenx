@@ -115,7 +115,6 @@ function DesignSystems() {
 	const deleteMutation = useMutation(deleteDesignSystem, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.DesignSystems]),
 	})
-	const addToMarketplaceMutation = useMutation(addToMarketPlace)
 
 	return (
 		<div>
@@ -130,13 +129,16 @@ function DesignSystems() {
 									title="Add to marketplace"
 									size="xs"
 									onClick={() =>
-										addToMarketplaceMutation.mutate({
-											componentName: ds.name,
-											projectName,
-											category: 'uiDesignSystemItem',
+										openModal({
+											title: '',
+											children: (
+												<AddToMarketplaceDesignSystemForm
+													projectName={projectName}
+													ds={ds}
+												/>
+											),
 										})
 									}
-									loading={addToMarketplaceMutation.isLoading}
 								>
 									<TbTableExport className="text-xs" />
 								</ActionIcon>
@@ -315,12 +317,6 @@ const designSystemSchema = z.object({
 type DesignSystemSchema = z.infer<typeof designSystemSchema>
 
 function DesignSystemForm() {
-	const [file, setFile] = useState<File>()
-	const [imgSrc, setImgSrc] = useState()
-
-	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
-		useMutation(uploadProjectImage)
-
 	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
 	const projectTag = useAtomValue(projectTagAtom)
 	const { customComponents } = useCustomComponents()
@@ -330,6 +326,48 @@ function DesignSystemForm() {
 			closeAllModals()
 			queryClient.invalidateQueries([QueryKey.DesignSystems])
 		},
+	})
+
+	return (
+		<form
+			onSubmit={form.onSubmit((values) => {
+				const content = customComponents.filter((c) => values.components.includes(c.name))
+
+				createMutation.mutate({
+					projectTag,
+					payload: { name: values.name, content },
+				})
+			})}
+			className="space-y-6"
+		>
+			<TextInput
+				label="Name"
+				placeholder="Design system name"
+				{...form.getInputProps('name')}
+			/>
+			<MultiSelect
+				label="Components"
+				{...form.getInputProps('components')}
+				data={customComponents.map((c) => c.name)}
+			/>
+			<Button fullWidth type="submit" loading={createMutation.isLoading}>
+				{createMutation.isLoading ? 'Creating' : 'Create'}
+			</Button>
+		</form>
+	)
+}
+
+function AddToMarketplaceDesignSystemForm({ ds, projectName }: { ds: any; projectName: string }) {
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
+
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
+
+	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
+
+	const addToMarketplaceMutation = useMutation(addToMarketPlace, {
+		onSuccess: () => closeAllModals(),
 	})
 
 	useEffect(() => {
@@ -354,31 +392,26 @@ function DesignSystemForm() {
 	}, [file])
 	return (
 		<form
-			onSubmit={form.onSubmit((values) => {
+			onSubmit={form.onSubmit(() => {
 				const formData = new FormData()
 				formData.append('file', file ? file : '')
-				const content = customComponents.filter((c) => values.components.includes(c.name))
 				mutateUploadProjectImage(formData, {
 					onSuccess: (data: any) => {
-						createMutation.mutate({
-							projectTag,
-							payload: { name: values.name, content, imageUrl: data.data.url },
+						addToMarketplaceMutation.mutate({
+							componentName: ds.name,
+							projectName,
+							category: 'uiDesignSystemItem',
+							imageUrl: data.data.url,
 						})
 					},
 				})
 			})}
 			className="space-y-6"
 		>
-			<TextInput
-				label="Name"
-				placeholder="Design system name"
-				{...form.getInputProps('name')}
-			/>
-			<MultiSelect
-				label="Components"
-				{...form.getInputProps('components')}
-				data={customComponents.map((c) => c.name)}
-			/>
+			<div className="-mt-10 mb-5 font-semibold">
+				Add <span className="text-slate-500">{ds.name}</span> design system to the
+				Marketplace
+			</div>
 			<div>
 				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
 				<label
@@ -415,18 +448,17 @@ function DesignSystemForm() {
 			<Button
 				fullWidth
 				type="submit"
-				loading={createMutation.isLoading || loadingUploadimage}
+				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
 			>
 				{loadingUploadimage
 					? 'Uploading image'
-					: createMutation.isLoading
-					? 'Creating'
-					: 'Create'}
+					: addToMarketplaceMutation.isLoading
+					? 'Adding'
+					: 'Add'}
 			</Button>
 		</form>
 	)
 }
-
 const useCustomComponents = () => {
 	const projectTag = useAtomValue(projectTagAtom)
 	const query = useQuery(
@@ -445,7 +477,6 @@ function CustomComponentSelector() {
 	const deleteMutation = useMutation(deleteCustomComponent, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.CustomComponents]),
 	})
-	const addToMarketplaceMutation = useMutation(addToMarketPlace)
 	const { projectName = '' } = useParams()
 	return (
 		<div className="grid grid-cols-3 gap-2">
@@ -460,13 +491,16 @@ function CustomComponentSelector() {
 								title="Add to marketplace"
 								size="xs"
 								onClick={() =>
-									addToMarketplaceMutation.mutate({
-										componentName: component.name,
-										projectName,
-										category: 'uiComponentItem',
+									openModal({
+										title: '',
+										children: (
+											<AddtoMarketplaceCustomComponentForm
+												component={component}
+												projectName={projectName}
+											/>
+										),
 									})
 								}
-								loading={addToMarketplaceMutation.isLoading}
 							>
 								<TbTableExport className="text-xs" />
 							</ActionIcon>
@@ -614,8 +648,6 @@ type Schema = z.infer<typeof schema>
 
 function CustomComponentForm({ component }: { component: Component }) {
 	const form = useForm<Schema>({ initialValues: { name: '' }, validate: zodResolver(schema) })
-	const [file, setFile] = useState<File>()
-	const [imgSrc, setImgSrc] = useState()
 
 	const queryClient = useQueryClient()
 	const mutation = useMutation(createCustomComponent, {
@@ -624,8 +656,6 @@ function CustomComponentForm({ component }: { component: Component }) {
 			queryClient.invalidateQueries([QueryKey.CustomComponents])
 		},
 	})
-	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
-		useMutation(uploadProjectImage)
 	const projectTag = useAtomValue(projectTagAtom)
 	const classNames = useClassNamesStore((store) => store.classNames)
 	const convertedClasses = _.toPairs(classNames)
@@ -636,6 +666,45 @@ function CustomComponentForm({ component }: { component: Component }) {
 	const newComponent = produce(component, (draft) => {
 		draft.data.style = mergeStyles(convertedClasses, draft.data.style)
 		draft.classNames = []
+	})
+
+	return (
+		<form
+			onSubmit={form.onSubmit((values: any) => {
+				mutation.mutate({
+					projectTag,
+					payload: {
+						name: values.name,
+						content: newComponent,
+					},
+				})
+			})}
+		>
+			<TextInput label="Name" placeholder="Component name" {...form.getInputProps('name')} />
+
+			<Button fullWidth mt="xl" type="submit" loading={mutation.isLoading}>
+				{mutation.isLoading ? 'Creating' : 'Create'}
+			</Button>
+		</form>
+	)
+}
+function AddtoMarketplaceCustomComponentForm({
+	component,
+	projectName,
+}: {
+	component: any
+	projectName: string
+}) {
+	const form = useForm<Schema>()
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
+
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
+	const addToMarketplaceMutation = useMutation(addToMarketPlace, {
+		onSuccess: () => {
+			closeAllModals()
+		},
 	})
 	useEffect(() => {
 		let fileReader: any
@@ -657,27 +726,27 @@ function CustomComponentForm({ component }: { component: Component }) {
 			}
 		}
 	}, [file])
-
 	return (
 		<form
-			onSubmit={form.onSubmit((values: any) => {
+			onSubmit={form.onSubmit(() => {
 				const formData = new FormData()
 				formData.append('file', file ? file : '')
 				mutateUploadProjectImage(formData, {
 					onSuccess: (data: any) => {
-						mutation.mutate({
-							projectTag,
-							payload: {
-								name: values.name,
-								content: newComponent,
-								imageUrl: data.data.url,
-							},
+						addToMarketplaceMutation.mutate({
+							componentName: component.name,
+							projectName,
+							category: 'uiComponentItem',
+							imageUrl: data.data.url,
 						})
 					},
 				})
 			})}
 		>
-			<TextInput label="Name" placeholder="Component name" {...form.getInputProps('name')} />
+			<div className="-mt-10 mb-5 font-semibold">
+				Add <span className="text-slate-500">{component.name}</span> component to the
+				Marketplace
+			</div>
 			<div>
 				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
 				<label
@@ -715,18 +784,17 @@ function CustomComponentForm({ component }: { component: Component }) {
 				fullWidth
 				mt="xl"
 				type="submit"
-				loading={mutation.isLoading || loadingUploadimage}
+				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
 			>
 				{loadingUploadimage
 					? 'Uploading image'
-					: mutation.isLoading
-					? 'Creating'
-					: 'Create'}
+					: addToMarketplaceMutation.isLoading
+					? 'Adding'
+					: 'Add'}
 			</Button>
 		</form>
 	)
 }
-
 export const getComponentIcon = (kind: ComponentKind) => {
 	switch (kind) {
 		case ComponentKind.Text:
