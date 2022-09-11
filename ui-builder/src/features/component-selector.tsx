@@ -10,6 +10,7 @@ import {
 	Tabs,
 	TextInput,
 } from '@mantine/core'
+import { BsFillFolderSymlinkFill } from 'react-icons/bs'
 import { useForm, zodResolver } from '@mantine/form'
 import { useDisclosure } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
@@ -17,7 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import produce from 'immer'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
 	Tb3DCubeSphere,
 	TbChevronDown,
@@ -45,6 +46,7 @@ import { z } from 'zod'
 import {
 	addToMarketPlace,
 	createCustomComponent,
+	uploadProjectImage,
 	createDesignSystem,
 	CustomComponent,
 	deleteCustomComponent,
@@ -199,7 +201,7 @@ function Marketplace() {
 		)
 
 	return (
-		<Tabs defaultValue="components">
+		<Tabs defaultValue="components" className="h-96 scrollbar overflow-y-scroll">
 			<Tabs.List>
 				<Tabs.Tab value="components" icon={<TbComponents size={14} />}>
 					Components
@@ -210,9 +212,10 @@ function Marketplace() {
 			</Tabs.List>
 
 			<Tabs.Panel value="components" pt="xs">
-				<div className="flex flex-wrap gap-6">
+				<div className="grid grid-cols-3 gap-2">
 					{components.map((c) => (
 						<MarketplaceComponent
+							imageUrl={c.imageUrl}
 							key={c.id}
 							id={c.id}
 							title={c.title}
@@ -222,9 +225,10 @@ function Marketplace() {
 				</div>
 			</Tabs.Panel>
 			<Tabs.Panel value="design-systems" pt="xs">
-				<div className="flex flex-wrap gap-6">
+				<div className="grid grid-cols-3 gap-2 ">
 					{designSystems.map((c) => (
 						<MarketplaceComponent
+							imageUrl={c.imageUrl}
 							key={c.id}
 							id={c.id}
 							title={c.title}
@@ -241,9 +245,11 @@ function MarketplaceComponent({
 	id,
 	title,
 	category,
+	imageUrl,
 }: {
 	id: number
 	title: string
+	imageUrl: string
 	category: string
 }) {
 	const queryClient = useQueryClient()
@@ -258,6 +264,7 @@ function MarketplaceComponent({
 
 	return (
 		<Button
+			className="!p-2 !h-fit"
 			variant="default"
 			size="xl"
 			onClick={() =>
@@ -265,7 +272,17 @@ function MarketplaceComponent({
 			}
 			loading={importComponentMutation.isLoading}
 		>
-			{title}
+			<div>
+				{imageUrl ? (
+					<img src={imageUrl} className="w-50 h-40" />
+				) : (
+					<div className="flex justify-center">
+						<Tb3DCubeSphere />
+					</div>
+				)}
+
+				<div className="pt-1 pb-2 text-base">{title}</div>
+			</div>
 		</Button>
 	)
 }
@@ -298,6 +315,12 @@ const designSystemSchema = z.object({
 type DesignSystemSchema = z.infer<typeof designSystemSchema>
 
 function DesignSystemForm() {
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
+
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
+
 	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
 	const projectTag = useAtomValue(projectTagAtom)
 	const { customComponents } = useCustomComponents()
@@ -309,11 +332,40 @@ function DesignSystemForm() {
 		},
 	})
 
+	useEffect(() => {
+		let fileReader: any
+		let isCancel = false
+		if (file) {
+			fileReader = new FileReader()
+			fileReader.onload = (e: any) => {
+				const { result } = e.target
+				if (result && !isCancel) {
+					setImgSrc(result)
+				}
+			}
+			fileReader.readAsDataURL(file)
+		}
+		return () => {
+			isCancel = true
+			if (fileReader && fileReader.readyState === 1) {
+				fileReader.abort()
+			}
+		}
+	}, [file])
 	return (
 		<form
 			onSubmit={form.onSubmit((values) => {
+				const formData = new FormData()
+				formData.append('file', file ? file : '')
 				const content = customComponents.filter((c) => values.components.includes(c.name))
-				createMutation.mutate({ projectTag, payload: { name: values.name, content } })
+				mutateUploadProjectImage(formData, {
+					onSuccess: (data: any) => {
+						createMutation.mutate({
+							projectTag,
+							payload: { name: values.name, content, imageUrl: data.data.url },
+						})
+					},
+				})
 			})}
 			className="space-y-6"
 		>
@@ -327,8 +379,49 @@ function DesignSystemForm() {
 				{...form.getInputProps('components')}
 				data={customComponents.map((c) => c.name)}
 			/>
-			<Button fullWidth type="submit" loading={createMutation.isLoading}>
-				Create
+			<div>
+				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
+				<label
+					htmlFor="file"
+					className="flex items-center shadow-sm cursor-pointer  active:bg-slate-100 active:shadow-none hover:bg-slate-50 transition-all border justify-center  font-medium px-2 w-full py-1  rounded   form-input "
+				>
+					<span className="mr-2">browse</span>
+					<BsFillFolderSymlinkFill />
+				</label>
+				<input
+					name="file"
+					accept="image/*"
+					id="file"
+					className="hidden  appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					type="file"
+					required
+					onChange={(e) => {
+						setFile(e.target.files?.[0])
+					}}
+					value={undefined}
+				/>
+			</div>
+			{imgSrc ? (
+				<p className="img-preview-wrapper mt-2">
+					{
+						<img
+							src={imgSrc}
+							className="p-2 border border-dashed rounded"
+							alt="preview"
+						/>
+					}
+				</p>
+			) : null}
+			<Button
+				fullWidth
+				type="submit"
+				loading={createMutation.isLoading || loadingUploadimage}
+			>
+				{loadingUploadimage
+					? 'Uploading image'
+					: createMutation.isLoading
+					? 'Creating'
+					: 'Create'}
 			</Button>
 		</form>
 	)
@@ -354,7 +447,6 @@ function CustomComponentSelector() {
 	})
 	const addToMarketplaceMutation = useMutation(addToMarketPlace)
 	const { projectName = '' } = useParams()
-
 	return (
 		<div className="grid grid-cols-3 gap-2">
 			{customComponents.map((component) => (
@@ -388,9 +480,13 @@ function CustomComponentSelector() {
 							/>
 						</div>
 
-						<div className="text-2xl">
-							<Tb3DCubeSphere />
-						</div>
+						{component.imageUrl ? (
+							<img src={component.imageUrl} />
+						) : (
+							<div className="text-2xl">
+								<Tb3DCubeSphere />
+							</div>
+						)}
 						<p className="pb-2 mt-2 text-xs text-center">{component.name}</p>
 					</div>
 				</Draggable>
@@ -518,6 +614,9 @@ type Schema = z.infer<typeof schema>
 
 function CustomComponentForm({ component }: { component: Component }) {
 	const form = useForm<Schema>({ initialValues: { name: '' }, validate: zodResolver(schema) })
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
+
 	const queryClient = useQueryClient()
 	const mutation = useMutation(createCustomComponent, {
 		onSuccess: () => {
@@ -525,6 +624,8 @@ function CustomComponentForm({ component }: { component: Component }) {
 			queryClient.invalidateQueries([QueryKey.CustomComponents])
 		},
 	})
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
 	const projectTag = useAtomValue(projectTagAtom)
 	const classNames = useClassNamesStore((store) => store.classNames)
 	const convertedClasses = _.toPairs(classNames)
@@ -536,22 +637,91 @@ function CustomComponentForm({ component }: { component: Component }) {
 		draft.data.style = mergeStyles(convertedClasses, draft.data.style)
 		draft.classNames = []
 	})
+	useEffect(() => {
+		let fileReader: any
+		let isCancel = false
+		if (file) {
+			fileReader = new FileReader()
+			fileReader.onload = (e: any) => {
+				const { result } = e.target
+				if (result && !isCancel) {
+					setImgSrc(result)
+				}
+			}
+			fileReader.readAsDataURL(file)
+		}
+		return () => {
+			isCancel = true
+			if (fileReader && fileReader.readyState === 1) {
+				fileReader.abort()
+			}
+		}
+	}, [file])
 
 	return (
 		<form
-			onSubmit={form.onSubmit((values) =>
-				mutation.mutate({
-					projectTag,
-					payload: {
-						name: values.name,
-						content: newComponent,
+			onSubmit={form.onSubmit((values: any) => {
+				const formData = new FormData()
+				formData.append('file', file ? file : '')
+				mutateUploadProjectImage(formData, {
+					onSuccess: (data: any) => {
+						mutation.mutate({
+							projectTag,
+							payload: {
+								name: values.name,
+								content: newComponent,
+								imageUrl: data.data.url,
+							},
+						})
 					},
 				})
-			)}
+			})}
 		>
 			<TextInput label="Name" placeholder="Component name" {...form.getInputProps('name')} />
-			<Button fullWidth mt="xl" type="submit" loading={mutation.isLoading}>
-				Create
+			<div>
+				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
+				<label
+					htmlFor="file"
+					className="flex items-center shadow-sm cursor-pointer  active:bg-slate-100 active:shadow-none hover:bg-slate-50 transition-all border justify-center  font-medium px-2 w-full py-1  rounded   form-input "
+				>
+					<span className="mr-2">browse</span>
+					<BsFillFolderSymlinkFill />
+				</label>
+				<input
+					name="file"
+					accept="image/*"
+					id="file"
+					className="hidden  appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					type="file"
+					required
+					onChange={(e) => {
+						setFile(e.target.files?.[0])
+					}}
+					value={undefined}
+				/>
+			</div>
+			{imgSrc ? (
+				<p className="img-preview-wrapper mt-2">
+					{
+						<img
+							src={imgSrc}
+							className="p-2 border border-dashed rounded"
+							alt="preview"
+						/>
+					}
+				</p>
+			) : null}
+			<Button
+				fullWidth
+				mt="xl"
+				type="submit"
+				loading={mutation.isLoading || loadingUploadimage}
+			>
+				{loadingUploadimage
+					? 'Uploading image'
+					: mutation.isLoading
+					? 'Creating'
+					: 'Create'}
 			</Button>
 		</form>
 	)

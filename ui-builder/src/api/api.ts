@@ -53,7 +53,9 @@ export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => 
 export const getPages = ({ projectTag }: GetPagesRequest) => {
 	return api.get<GetPagesResponse>(`/uibuilder/project/${projectTag}/page`)
 }
-
+export const uploadProjectImage = (data: FormData) => {
+	return api.post('/marketplace/upload', data)
+}
 export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsRequest) => {
 	const res = await api.get<GetPageDetailsResponse>(
 		`/uibuilder/project/${projectTag}/page/${pageName}`
