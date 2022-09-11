@@ -42,7 +42,7 @@ export default function UserGroupsPage() {
 				</div>
 				<UserGroups projectTag={projectTag} onEdit={setDefaultValues} />
 			</ContentWrapper>
-			<NewModal size="xl" kind={Modals.CreateUserGroup} title={title}>
+			<NewModal size="md" kind={Modals.CreateUserGroup} title={title}>
 				<UserGroupsForm
 					projectName={projectName}
 					projectTag={projectTag}
