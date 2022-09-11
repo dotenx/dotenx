@@ -173,7 +173,7 @@ export const addToMarketPlace = ({
 }: {
 	componentName: string
 	projectName: string
-	imageUrl?: string
+	imageUrl: string
 	category: 'uiComponentItem' | 'uiDesignSystemItem'
 }) => {
 	return api.post(`/marketplace/item`, {

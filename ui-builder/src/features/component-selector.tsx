@@ -514,13 +514,9 @@ function CustomComponentSelector() {
 							/>
 						</div>
 
-						{component.imageUrl ? (
-							<img src={component.imageUrl} />
-						) : (
-							<div className="text-2xl">
-								<Tb3DCubeSphere />
-							</div>
-						)}
+						<div className="text-2xl">
+							<Tb3DCubeSphere />
+						</div>
 						<p className="pb-2 mt-2 text-xs text-center">{component.name}</p>
 					</div>
 				</Draggable>
