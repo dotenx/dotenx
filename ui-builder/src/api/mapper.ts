@@ -59,5 +59,10 @@ const mapComponentStyleToCamelCase = (component: any) => {
 }
 
 export const mapStyleToCamelCase = (style: BackendSelectorStyle): SelectorStyle => {
-	return _.fromPairs(_.toPairs(style).map(([key, value]) => [kebabCaseToCamelCase(key), value]))
+	return _.fromPairs(
+		_.toPairs(style).map(([key, value]) => [
+			key,
+			_.fromPairs(_.toPairs(value).map(([key, value]) => [kebabCaseToCamelCase(key), value])),
+		])
+	)
 }

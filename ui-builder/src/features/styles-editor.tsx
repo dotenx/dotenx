@@ -150,7 +150,6 @@ function ShadowsEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 	const shadowBlur = shadowProperties?.[2]
 	const shadowSpread = shadowProperties?.[3]
 	const shadowColor = shadowProperties?.[4]
-	console.log(shadowProperties)
 
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2 gap-x-3">
