@@ -25,6 +25,7 @@ import UserGroupsPage from '../../pages/user-groups'
 import DomainsPage from '../../pages/domains'
 import UserManagementPage from '../../pages/user-management'
 import { Layout } from '../ui'
+import { useViewportSize } from '@mantine/hooks'
 
 const routes = [
 	{ path: '/builder/projects/:projectName/providers/:providerName', element: <ProviderPage /> },
@@ -69,23 +70,29 @@ const routes = [
 
 export function Routes() {
 	const location = useLocation()
-
+	const { width } = useViewportSize()
 	useEffect(() => {
 		if (!IS_LOCAL) {
 			const token = Cookies.get('dotenx')
 			if (!token) window.location.replace(ADMIN_URL)
 		}
 	}, [location])
-
-	return (
-		<ReactRoutes>
-			{routes.map((route) => (
-				<Route
-					key={route.path}
-					path={route.path}
-					element={<Layout>{route.element}</Layout>}
-				/>
-			))}
-		</ReactRoutes>
-	)
+	if (width < 600) {
+		return (
+			<div className="w-full px-20 text-center pt-10 ">
+				Dotenx is not designed for mobile use, please come back with a bigger screen.
+			</div>
+		)
+	} else
+		return (
+			<ReactRoutes>
+				{routes.map((route) => (
+					<Route
+						key={route.path}
+						path={route.path}
+						element={<Layout>{route.element}</Layout>}
+					/>
+				))}
+			</ReactRoutes>
+		)
 }
