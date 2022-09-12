@@ -1,6 +1,7 @@
 package crudService
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -52,8 +53,13 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name, projectName s
 		fields := make([]string, 0)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
-			strVal := fmt.Sprintf("%v", value)
-			if strVal == "" { // if value is empty means that we must get it when we want to create from template
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(value)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				fields = append(fields, key)
 			}
 		}
@@ -94,8 +100,13 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 	for taskName, task := range emptyTasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
-			val := fmt.Sprintf("%v", v)
-			if val == "" {
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(v)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]
 					if ok {
