@@ -94,6 +94,7 @@ export function Canvas() {
 									transition: 'all 150ms',
 									backgroundColor: 'white',
 									maxWidth,
+									overflow: 'auto',
 								}}
 							>
 								<RenderComponents components={components} state={{}} />

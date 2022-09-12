@@ -43,11 +43,14 @@ import {
 	Component,
 	ComponentEvent,
 	ComponentKind,
+	DividerComponent,
 	EventKind,
 	FormComponent,
 	ImageComponent,
 	InputComponent,
+	LinkComponent,
 	SelectComponent,
+	StackComponent,
 	SubmitButtonComponent,
 	TextareaComponent,
 	TextComponent,
@@ -71,6 +74,8 @@ import {
 	CollapseLine,
 	EditStyle,
 	getStyleNumber,
+	InputWithUnit,
+	SizeEditor,
 	SpacingEditor,
 	StylesEditor,
 	TypographyEditor,
@@ -163,7 +168,13 @@ function ComponentSettingsShaper({
 				<BoxComponentSettings component={component} editStyle={editStyle} styles={styles} />
 			)
 		case ComponentKind.Image:
-			return <ImageComponentSettings component={component} />
+			return (
+				<ImageComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Button:
 			return <ButtonComponentSettings component={component} />
 		case ComponentKind.Columns:
@@ -184,6 +195,24 @@ function ComponentSettingsShaper({
 			return <SubmitButtonComponentSettings component={component} />
 		case ComponentKind.Form:
 			return <FormComponentSettings component={component} />
+		case ComponentKind.Link:
+			return <LinkComponentSettings component={component} />
+		case ComponentKind.Stack:
+			return (
+				<StackComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
+		case ComponentKind.Divider:
+			return (
+				<DividerComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		default:
 			return null
 	}
@@ -214,9 +243,35 @@ function TextComponentSettings({
 			<CollapseLine label="Typography">
 				<TypographyEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
 		</div>
 	)
 }
+
+const shadows = [
+	{
+		label: 'extra small',
+		value: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+	},
+	{
+		label: 'small',
+		value: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+	},
+	{
+		label: 'medium',
+		value: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);',
+	},
+	{
+		label: 'large',
+		value: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+	},
+	{
+		label: 'extra large',
+		value: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+	},
+]
 
 function BoxComponentSettings({
 	component,
@@ -237,6 +292,7 @@ function BoxComponentSettings({
 			<div>
 				<p className="mb-1 font-medium">Background</p>
 				<ColorPicker
+					size="xs"
 					format="hsla"
 					fullWidth
 					value={backgroundColor}
@@ -248,12 +304,23 @@ function BoxComponentSettings({
 					}
 				/>
 			</div>
-			<CollapseLine label="Borders">
-				<BordersEditor styles={styles} editStyle={editStyle} />
+			<CollapseLine label="Size">
+				<SizeEditor simple styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 			<CollapseLine label="Spacing">
 				<SpacingEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
+			<CollapseLine label="Borders">
+				<BordersEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<Select
+				size="xs"
+				label="Shadow"
+				data={shadows}
+				allowDeselect
+				value={styles.boxShadow}
+				onChange={(value) => editStyle('boxShadow', value ?? '')}
+			/>
 		</div>
 	)
 }
@@ -279,6 +346,7 @@ function ButtonComponentSettings({ component }: { component: ButtonComponent }) 
 			<div>
 				<p className="mb-1 font-medium">Background</p>
 				<ColorPicker
+					size="xs"
 					format="hsla"
 					fullWidth
 					value={backgroundColor}
@@ -294,7 +362,15 @@ function ButtonComponentSettings({ component }: { component: ButtonComponent }) 
 	)
 }
 
-function ImageComponentSettings({ component }: { component: ImageComponent }) {
+function ImageComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: ImageComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const selector = useAtomValue(selectedSelectorAtom)
 	const viewport = useViewportStore((store) => store.device)
 	const projectTag = useAtomValue(projectTagAtom)
@@ -306,7 +382,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 	const bgPosition =
 		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
-	const editStyle = useEditStyle(component)
+	const editStyles = useEditStyle(component)
 
 	const imagePart = src ? (
 		<div>
@@ -363,6 +439,18 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 					})
 				}
 			/>
+			<SizeEditor simple styles={styles} editStyle={editStyle} />
+
+			<div className="grid grid-cols-12 items-center gap-y-2">
+				<p className="col-span-3">Radius</p>
+				<div className="col-span-9">
+					<InputWithUnit
+						value={styles.borderRadius?.toString()}
+						onChange={(value) => editStyle('borderRadius', value)}
+					/>
+				</div>
+			</div>
+
 			<Select
 				size="xs"
 				label="Background size"
@@ -372,7 +460,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				]}
 				value={bgSize}
 				onChange={(value) =>
-					editStyle({
+					editStyles({
 						...component.data.style[viewport][selector],
 						backgroundSize: value ?? undefined,
 					})
@@ -394,7 +482,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				]}
 				value={bgPosition}
 				onChange={(value) =>
-					editStyle({
+					editStyles({
 						...component.data.style[viewport][selector],
 						backgroundPosition: value ?? undefined,
 					})
@@ -496,6 +584,7 @@ function ColumnsComponentSettings({
 			<div>
 				<p className="mb-1 font-medium">Background</p>
 				<ColorPicker
+					size="xs"
 					format="hsla"
 					fullWidth
 					value={backgroundColor}
@@ -751,6 +840,7 @@ function SubmitButtonComponentSettings({ component }: { component: SubmitButtonC
 			<div>
 				<p className="mb-1 font-medium">Background</p>
 				<ColorPicker
+					size="xs"
 					format="hsla"
 					fullWidth
 					value={backgroundColor}
@@ -1007,6 +1097,94 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 					))}
 				</Menu.Dropdown>
 			</Menu>
+		</div>
+	)
+}
+
+function LinkComponentSettings({ component }: { component: LinkComponent }) {
+	const editData = useCanvasStore((store) => store.editComponent)
+
+	return (
+		<div className="space-y-6">
+			<TextInput
+				size="xs"
+				label="Link URL"
+				value={component.data.href}
+				onChange={(event) =>
+					editData(
+						component.id,
+						produce(component.data, (draft) => {
+							draft.href = event.target.value
+						})
+					)
+				}
+			/>
+			<Switch
+				size="xs"
+				label="Open in new tab"
+				checked={component.data.openInNewTab}
+				onChange={(event) =>
+					editData(
+						component.id,
+						produce(component.data, (draft) => {
+							draft.openInNewTab = event.currentTarget.checked
+						})
+					)
+				}
+			/>
+		</div>
+	)
+}
+
+function StackComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: StackComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
+	return (
+		<div className="space-y-6">
+			<InputWithUnit
+				value={styles.gap?.toString()}
+				onChange={(value) => editStyle('gap', value)}
+				label="Gap"
+			/>
+			<CollapseLine label="Spacing">
+				<SpacingEditor editStyle={editStyle} styles={styles} />
+			</CollapseLine>
+		</div>
+	)
+}
+
+function DividerComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: DividerComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
+	return (
+		<div className="space-y-6">
+			<InputWithUnit
+				value={styles.height?.toString()}
+				onChange={(value) => editStyle('height', value)}
+				label="Thickness"
+			/>
+			<div>
+				<p className="mb-1 font-medium">Color</p>
+				<ColorPicker
+					size="xs"
+					format="hsla"
+					fullWidth
+					value={styles.backgroundColor}
+					onChange={(newColor) => editStyle('backgroundColor', newColor)}
+				/>
+			</div>
 		</div>
 	)
 }

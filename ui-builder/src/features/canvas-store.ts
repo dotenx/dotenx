@@ -372,6 +372,9 @@ export enum ComponentKind {
 	Textarea = 'Textarea',
 	SubmitButton = 'Submit',
 	Form = 'Form',
+	Link = 'Link',
+	Stack = 'Stack',
+	Divider = 'Divider',
 }
 
 export const basicComponents = [
@@ -380,6 +383,9 @@ export const basicComponents = [
 	ComponentKind.Button,
 	ComponentKind.Columns,
 	ComponentKind.Image,
+	ComponentKind.Link,
+	ComponentKind.Stack,
+	ComponentKind.Divider,
 ]
 
 export const formComponents = [
@@ -418,6 +424,9 @@ export type Component =
 	| TextareaComponent
 	| SubmitButtonComponent
 	| FormComponent
+	| LinkComponent
+	| StackComponent
+	| DividerComponent
 
 export interface TextComponent extends BaseComponent {
 	kind: ComponentKind.Text
@@ -469,6 +478,21 @@ export interface FormComponent extends BaseComponent {
 	data: FormComponentData
 }
 
+export interface LinkComponent extends BaseComponent {
+	kind: ComponentKind.Link
+	data: LinkComponentData
+}
+
+export interface StackComponent extends BaseComponent {
+	kind: ComponentKind.Stack
+	data: StackComponentData
+}
+
+export interface DividerComponent extends BaseComponent {
+	kind: ComponentKind.Divider
+	data: DividerComponentData
+}
+
 export interface Style {
 	desktop: SelectorStyle
 	tablet: SelectorStyle
@@ -501,7 +525,7 @@ export interface ButtonComponentData {
 
 export interface ColumnsComponentData {
 	style: Style
-	columnWidths: {id: string, value: number}[]
+	columnWidths: { id: string; value: number }[]
 }
 
 export interface ImageComponentData {
@@ -548,6 +572,20 @@ export interface FormComponentData {
 	dataSourceName: string
 }
 
+export interface LinkComponentData {
+	style: Style
+	href: string
+	openInNewTab: boolean
+}
+
+export interface StackComponentData {
+	style: Style
+}
+
+export interface DividerComponentData {
+	style: Style
+}
+
 export type ComponentData =
 	| TextComponentData
 	| BoxComponentData
@@ -559,6 +597,9 @@ export type ComponentData =
 	| TextareaComponentData
 	| SubmitButtonComponentData
 	| FormComponentData
+	| LinkComponentData
+	| StackComponentData
+	| DividerComponentData
 
 export interface ComponentEvent {
 	id: string

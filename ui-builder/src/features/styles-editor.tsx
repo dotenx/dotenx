@@ -526,7 +526,7 @@ export function BordersEditor({
 
 			<p className="col-span-3">Style</p>
 			<SegmentedControl
-				value={styles.borderStyle ?? 'solid'}
+				value={styles.borderStyle ?? 'none'}
 				onChange={(value) => editStyle('borderStyle', value)}
 				data={borderStyles}
 				className="col-span-9"
@@ -755,25 +755,51 @@ const overflows = [
 	{ label: <p className="leading-none text-xs">Auto</p>, title: 'Auto', value: 'auto' },
 ].map(toCenter)
 
-function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+export function SizeEditor({
+	styles,
+	editStyle,
+	simple,
+}: {
+	styles: CSSProperties
+	editStyle: EditStyle
+	simple?: boolean
+}) {
+	const widthInput = (
+		<>
+			<p className="col-span-3">Width</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.width?.toString()}
+					onChange={(value) => editStyle('width', value)}
+				/>
+			</div>
+		</>
+	)
+	const heightInput = (
+		<>
+			<p className="col-span-3">Height</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.height?.toString()}
+					onChange={(value) => editStyle('height', value)}
+				/>
+			</div>
+		</>
+	)
+
+	if (simple)
+		return (
+			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
+				{widthInput}
+				{heightInput}
+			</div>
+		)
+
 	return (
 		<div>
 			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
-				<p className="col-span-3">Width</p>
-				<div className="col-span-3">
-					<InputWithUnit
-						value={styles.width?.toString()}
-						onChange={(value) => editStyle('width', value)}
-					/>
-				</div>
-
-				<p className="col-span-3">Height</p>
-				<div className="col-span-3">
-					<InputWithUnit
-						value={styles.height?.toString()}
-						onChange={(value) => editStyle('height', value)}
-					/>
-				</div>
+				{widthInput}
+				{heightInput}
 				<p className="col-span-3">Min W</p>
 				<div className="col-span-3">
 					<InputWithUnit
@@ -835,7 +861,7 @@ function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: E
 const units = ['px', 'rem', 'em', '%', 'vw', 'vh', 'auto'] as const
 type Unit = typeof units[number]
 
-function InputWithUnit({
+export function InputWithUnit({
 	label,
 	value,
 	onChange,
