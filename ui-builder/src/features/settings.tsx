@@ -16,11 +16,11 @@ import {
 	TextInput,
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { useDidUpdate } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation } from '@tanstack/react-query'
+import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { CSSProperties, useState } from 'react'
+import { CSSProperties } from 'react'
 import {
 	TbDatabase,
 	TbDroplet,
@@ -43,11 +43,14 @@ import {
 	Component,
 	ComponentEvent,
 	ComponentKind,
+	DividerComponent,
 	EventKind,
 	FormComponent,
 	ImageComponent,
 	InputComponent,
+	LinkComponent,
 	SelectComponent,
+	StackComponent,
 	SubmitButtonComponent,
 	TextareaComponent,
 	TextComponent,
@@ -66,7 +69,17 @@ import {
 import { DataSourceForm } from './data-source-form'
 import { useDataSourceStore } from './data-source-store'
 import { projectTagAtom } from './project-atom'
-import { StylesEditor } from './styles-editor'
+import {
+	BordersEditor,
+	CollapseLine,
+	EditStyle,
+	getStyleNumber,
+	InputWithUnit,
+	SizeEditor,
+	SpacingEditor,
+	StylesEditor,
+	TypographyEditor,
+} from './styles-editor'
 import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore } from './viewport-store'
 
@@ -82,14 +95,18 @@ export function Settings() {
 	const selector = useAtomValue(selectedSelectorAtom)
 
 	if (!selectedComponent) return <UnselectedMessage />
-	const styles = selectedClassName
-		? classNames[selectedClassName][viewport][selector]
-		: selectedComponent.data.style[viewport][selector]
+	const styles =
+		(selectedClassName
+			? classNames[selectedClassName][viewport][selector]
+			: selectedComponent.data.style[viewport][selector]) ?? {}
 	const editClassStyle = (styles: CSSProperties) => {
 		if (selectedClassName) editClassName(selectedClassName, viewport, selector, styles)
 		else console.error("Can't edit class style without selected class name")
 	}
 	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editStyle
+	const editStyles: EditStyle = (style, value) => {
+		editClassOrComponentStyle({ ...styles, [style]: value })
+	}
 
 	return (
 		<div className="text-xs">
@@ -107,10 +124,14 @@ export function Settings() {
 				</Tabs.List>
 
 				<Tabs.Panel value="options" pt="xs">
-					<ComponentSettingsShaper component={selectedComponent} />
+					<ComponentSettingsShaper
+						component={selectedComponent}
+						styles={styles}
+						editStyle={editStyles}
+					/>
 				</Tabs.Panel>
 				<Tabs.Panel value="styles" pt="xs">
-					<StylesEditor styles={styles ?? {}} onChange={editClassOrComponentStyle} />
+					<StylesEditor styles={styles} onChange={editClassOrComponentStyle} />
 				</Tabs.Panel>
 				<Tabs.Panel value="data" pt="xs">
 					<DataEditor component={selectedComponent} />
@@ -124,18 +145,46 @@ function UnselectedMessage() {
 	return <p className="text-xs text-center">Select a component to edit its options</p>
 }
 
-function ComponentSettingsShaper({ component }: { component: Component }) {
+function ComponentSettingsShaper({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: Component
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	switch (component.kind) {
 		case ComponentKind.Text:
-			return <TextComponentSettings component={component} />
+			return (
+				<TextComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Box:
-			return <BoxComponentSettings component={component} />
+			return (
+				<BoxComponentSettings component={component} editStyle={editStyle} styles={styles} />
+			)
 		case ComponentKind.Image:
-			return <ImageComponentSettings component={component} />
+			return (
+				<ImageComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Button:
 			return <ButtonComponentSettings component={component} />
 		case ComponentKind.Columns:
-			return <ColumnsComponentSettings component={component} />
+			return (
+				<ColumnsComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Input:
 			return <InputComponentSettings component={component} />
 		case ComponentKind.Select:
@@ -146,53 +195,163 @@ function ComponentSettingsShaper({ component }: { component: Component }) {
 			return <SubmitButtonComponentSettings component={component} />
 		case ComponentKind.Form:
 			return <FormComponentSettings component={component} />
+		case ComponentKind.Link:
+			return <LinkComponentSettings component={component} />
+		case ComponentKind.Stack:
+			return (
+				<StackComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
+		case ComponentKind.Divider:
+			return (
+				<DividerComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		default:
 			return null
 	}
 }
 
-function TextComponentSettings({ component }: { component: TextComponent }) {
+function TextComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: TextComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const editComponent = useCanvasStore((store) => store.editComponent)
 	const value = component.data.text ?? ''
 
-	// These effects are to ensure that the component is updated when the value changes
-	// as rich text editor doesn't force value
-	const [hide, setHide] = useState(false)
-	useDidUpdate(() => {
-		setHide(true)
-	}, [component.id])
-	useDidUpdate(() => {
-		if (hide) setHide(false)
-	}, [hide])
-	if (hide) return null
-
 	return (
-		<TextInput
-			label="Text"
-			value={value}
-			onChange={(event) =>
-				editComponent(component.id, { ...component.data, text: event.target.value })
-			}
-		/>
+		<div className="space-y-6">
+			<TextInput
+				label="Text"
+				value={value}
+				size="xs"
+				onChange={(event) =>
+					editComponent(component.id, { ...component.data, text: event.target.value })
+				}
+			/>
+			<CollapseLine label="Typography">
+				<TypographyEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+		</div>
 	)
 }
 
-function BoxComponentSettings({ component }: { component: BoxComponent }) {
+const shadows = [
+	{
+		label: 'extra small',
+		value: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+	},
+	{
+		label: 'small',
+		value: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+	},
+	{
+		label: 'medium',
+		value: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);',
+	},
+	{
+		label: 'large',
+		value: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+	},
+	{
+		label: 'extra large',
+		value: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+	},
+]
+
+function BoxComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: BoxComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const viewport = useViewportStore((store) => store.device)
-	const editStyle = useEditStyle(component)
+	const editStyles = useEditStyle(component)
 	const selector = useAtomValue(selectedSelectorAtom)
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<p className="mb-1 text-base font-medium">Background</p>
+				<p className="mb-1 font-medium">Background</p>
 				<ColorPicker
-					format="hex"
+					size="xs"
+					format="hsla"
 					fullWidth
 					value={backgroundColor}
 					onChange={(newColor) =>
-						editStyle({
+						editStyles({
+							...component.data.style[viewport][selector],
+							backgroundColor: newColor,
+						})
+					}
+				/>
+			</div>
+			<CollapseLine label="Size">
+				<SizeEditor simple styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Borders">
+				<BordersEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<Select
+				size="xs"
+				label="Shadow"
+				data={shadows}
+				allowDeselect
+				value={styles.boxShadow}
+				onChange={(value) => editStyle('boxShadow', value ?? '')}
+			/>
+		</div>
+	)
+}
+
+function ButtonComponentSettings({ component }: { component: ButtonComponent }) {
+	const editComponent = useCanvasStore((store) => store.editComponent)
+	const value = component.data.text ?? ''
+	const viewport = useViewportStore((store) => store.device)
+	const editStyles = useEditStyle(component)
+	const selector = useAtomValue(selectedSelectorAtom)
+	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
+
+	return (
+		<div className="space-y-6">
+			<TextInput
+				label="Text"
+				size="xs"
+				value={value}
+				onChange={(event) =>
+					editComponent(component.id, { ...component.data, text: event.target.value })
+				}
+			/>
+			<div>
+				<p className="mb-1 font-medium">Background</p>
+				<ColorPicker
+					size="xs"
+					format="hsla"
+					fullWidth
+					value={backgroundColor}
+					onChange={(newColor) =>
+						editStyles({
 							...component.data.style[viewport][selector],
 							backgroundColor: newColor,
 						})
@@ -203,23 +362,15 @@ function BoxComponentSettings({ component }: { component: BoxComponent }) {
 	)
 }
 
-function ButtonComponentSettings({ component }: { component: ButtonComponent }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
-	const value = component.data.text ?? ''
-
-	return (
-		<TextInput
-			label="Text"
-			size="xs"
-			value={value}
-			onChange={(event) =>
-				editComponent(component.id, { ...component.data, text: event.target.value })
-			}
-		/>
-	)
-}
-
-function ImageComponentSettings({ component }: { component: ImageComponent }) {
+function ImageComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: ImageComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const selector = useAtomValue(selectedSelectorAtom)
 	const viewport = useViewportStore((store) => store.device)
 	const projectTag = useAtomValue(projectTagAtom)
@@ -231,7 +382,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 	const bgPosition =
 		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
-	const editStyle = useEditStyle(component)
+	const editStyles = useEditStyle(component)
 
 	const imagePart = src ? (
 		<div>
@@ -288,6 +439,18 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 					})
 				}
 			/>
+			<SizeEditor simple styles={styles} editStyle={editStyle} />
+
+			<div className="grid grid-cols-12 items-center gap-y-2">
+				<p className="col-span-3">Radius</p>
+				<div className="col-span-9">
+					<InputWithUnit
+						value={styles.borderRadius?.toString()}
+						onChange={(value) => editStyle('borderRadius', value)}
+					/>
+				</div>
+			</div>
+
 			<Select
 				size="xs"
 				label="Background size"
@@ -297,7 +460,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				]}
 				value={bgSize}
 				onChange={(value) =>
-					editStyle({
+					editStyles({
 						...component.data.style[viewport][selector],
 						backgroundSize: value ?? undefined,
 					})
@@ -319,7 +482,7 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 				]}
 				value={bgPosition}
 				onChange={(value) =>
-					editStyle({
+					editStyles({
 						...component.data.style[viewport][selector],
 						backgroundPosition: value ?? undefined,
 					})
@@ -340,22 +503,102 @@ function ImageComponentSettings({ component }: { component: ImageComponent }) {
 	)
 }
 
-function ColumnsComponentSettings({ component }: { component: ColumnsComponent }) {
+function ColumnsComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: ColumnsComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const viewport = useViewportStore((store) => store.device)
-	const editStyle = useEditStyle(component)
+	const editData = useCanvasStore((store) => store.editComponent)
+	const editStyles = useEditStyle(component)
 	const selector = useAtomValue(selectedSelectorAtom)
-	const space = component.data.style[viewport][selector]?.gap as number
+	const space = getStyleNumber(component.data.style[viewport][selector]?.gap?.toString())
+	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
 
 	return (
-		<div>
+		<div className="space-y-6">
 			<NumberInput
 				size="xs"
 				label="Space"
 				value={space}
 				onChange={(value) =>
-					editStyle({ ...component.data.style[viewport][selector], gap: value })
+					editStyles({ ...component.data.style[viewport][selector], gap: value + 'px' })
 				}
 			/>
+			<div>
+				<Button
+					mb="xs"
+					size="xs"
+					leftIcon={<TbPlus />}
+					onClick={() =>
+						editData(
+							component.id,
+							produce(component.data, (draft) => {
+								draft.columnWidths.push({ id: uuid(), value: 50 })
+							})
+						)
+					}
+				>
+					Column
+				</Button>
+				<div className="space-y-1">
+					{component.data.columnWidths?.map((col, index) => (
+						<div className="flex items-center gap-1" key={col.id}>
+							<NumberInput
+								size="xs"
+								placeholder="Width"
+								title="Width"
+								className="w-full"
+								value={col.value}
+								rightSection={<p>%</p>}
+								onChange={(value) =>
+									editData(
+										component.id,
+										produce(component.data, (draft) => {
+											draft.columnWidths[index].value = value ?? 50
+										})
+									)
+								}
+							/>
+							<CloseButton
+								size="xs"
+								onClick={() =>
+									editData(
+										component.id,
+										produce(component.data, (draft) => {
+											draft.columnWidths = draft.columnWidths.filter(
+												(c) => c.id !== col.id
+											)
+										})
+									)
+								}
+							/>
+						</div>
+					))}
+				</div>
+			</div>
+			<div>
+				<p className="mb-1 font-medium">Background</p>
+				<ColorPicker
+					size="xs"
+					format="hsla"
+					fullWidth
+					value={backgroundColor}
+					onChange={(newColor) =>
+						editStyles({
+							...component.data.style[viewport][selector],
+							backgroundColor: newColor,
+						})
+					}
+				/>
+			</div>
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
 		</div>
 	)
 }
@@ -579,16 +822,37 @@ function TextareaComponentSettings({ component }: { component: TextareaComponent
 function SubmitButtonComponentSettings({ component }: { component: SubmitButtonComponent }) {
 	const editComponent = useCanvasStore((store) => store.editComponent)
 	const value = component.data.text ?? ''
+	const viewport = useViewportStore((store) => store.device)
+	const editStyles = useEditStyle(component)
+	const selector = useAtomValue(selectedSelectorAtom)
+	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
 
 	return (
-		<TextInput
-			size="xs"
-			label="Text"
-			value={value}
-			onChange={(event) =>
-				editComponent(component.id, { ...component.data, text: event.target.value })
-			}
-		/>
+		<div className="space-y-6">
+			<TextInput
+				label="Text"
+				size="xs"
+				value={value}
+				onChange={(event) =>
+					editComponent(component.id, { ...component.data, text: event.target.value })
+				}
+			/>
+			<div>
+				<p className="mb-1 font-medium">Background</p>
+				<ColorPicker
+					size="xs"
+					format="hsla"
+					fullWidth
+					value={backgroundColor}
+					onChange={(newColor) =>
+						editStyles({
+							...component.data.style[viewport][selector],
+							backgroundColor: newColor,
+						})
+					}
+				/>
+			</div>
+		</div>
 	)
 }
 
@@ -833,6 +1097,94 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 					))}
 				</Menu.Dropdown>
 			</Menu>
+		</div>
+	)
+}
+
+function LinkComponentSettings({ component }: { component: LinkComponent }) {
+	const editData = useCanvasStore((store) => store.editComponent)
+
+	return (
+		<div className="space-y-6">
+			<TextInput
+				size="xs"
+				label="Link URL"
+				value={component.data.href}
+				onChange={(event) =>
+					editData(
+						component.id,
+						produce(component.data, (draft) => {
+							draft.href = event.target.value
+						})
+					)
+				}
+			/>
+			<Switch
+				size="xs"
+				label="Open in new tab"
+				checked={component.data.openInNewTab}
+				onChange={(event) =>
+					editData(
+						component.id,
+						produce(component.data, (draft) => {
+							draft.openInNewTab = event.currentTarget.checked
+						})
+					)
+				}
+			/>
+		</div>
+	)
+}
+
+function StackComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: StackComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
+	return (
+		<div className="space-y-6">
+			<InputWithUnit
+				value={styles.gap?.toString()}
+				onChange={(value) => editStyle('gap', value)}
+				label="Gap"
+			/>
+			<CollapseLine label="Spacing">
+				<SpacingEditor editStyle={editStyle} styles={styles} />
+			</CollapseLine>
+		</div>
+	)
+}
+
+function DividerComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: DividerComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
+	return (
+		<div className="space-y-6">
+			<InputWithUnit
+				value={styles.height?.toString()}
+				onChange={(value) => editStyle('height', value)}
+				label="Thickness"
+			/>
+			<div>
+				<p className="mb-1 font-medium">Color</p>
+				<ColorPicker
+					size="xs"
+					format="hsla"
+					fullWidth
+					value={styles.backgroundColor}
+					onChange={(newColor) => editStyle('backgroundColor', newColor)}
+				/>
+			</div>
 		</div>
 	)
 }

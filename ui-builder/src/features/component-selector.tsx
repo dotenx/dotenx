@@ -17,7 +17,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import produce from 'immer'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { BsFillFolderSymlinkFill } from 'react-icons/bs'
 import {
 	Tb3DCubeSphere,
 	TbChevronDown,
@@ -29,13 +30,17 @@ import {
 	TbForms,
 	TbLayersDifference,
 	TbLayoutColumns as IcColumns,
+	TbLink,
 	TbMessage2 as IcText,
+	TbMinus,
 	TbPackgeExport,
 	TbPhoto as IcImage,
 	TbPlus,
+	TbQuestionMark,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
+	TbStack,
 	TbTable,
 	TbTableExport,
 	TbTableImport,
@@ -54,6 +59,7 @@ import {
 	getMarketplaceItems,
 	importFromMarketplace,
 	QueryKey,
+	uploadProjectImage,
 } from '../api'
 import {
 	basicComponents,
@@ -113,7 +119,6 @@ function DesignSystems() {
 	const deleteMutation = useMutation(deleteDesignSystem, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.DesignSystems]),
 	})
-	const addToMarketplaceMutation = useMutation(addToMarketPlace)
 
 	return (
 		<div>
@@ -128,13 +133,16 @@ function DesignSystems() {
 									title="Add to marketplace"
 									size="xs"
 									onClick={() =>
-										addToMarketplaceMutation.mutate({
-											componentName: ds.name,
-											projectName,
-											category: 'uiDesignSystemItem',
+										openModal({
+											title: '',
+											children: (
+												<AddToMarketplaceDesignSystemForm
+													projectName={projectName}
+													ds={ds}
+												/>
+											),
 										})
 									}
-									loading={addToMarketplaceMutation.isLoading}
 								>
 									<TbTableExport className="text-xs" />
 								</ActionIcon>
@@ -172,7 +180,7 @@ function DesignSystems() {
 						openModal({
 							title: 'Marketplace',
 							children: <Marketplace />,
-							size: 'xl',
+							size: '2xl',
 						})
 					}
 					fullWidth
@@ -210,9 +218,10 @@ function Marketplace() {
 			</Tabs.List>
 
 			<Tabs.Panel value="components" pt="xs">
-				<div className="flex flex-wrap gap-6">
+				<div className="grid grid-cols-3 gap-2 h-[500px]  scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
 					{components.map((c) => (
 						<MarketplaceComponent
+							imageUrl={c.imageUrl}
 							key={c.id}
 							id={c.id}
 							title={c.title}
@@ -222,9 +231,10 @@ function Marketplace() {
 				</div>
 			</Tabs.Panel>
 			<Tabs.Panel value="design-systems" pt="xs">
-				<div className="flex flex-wrap gap-6">
+				<div className="grid grid-cols-3 gap-2  h-[500px]   scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
 					{designSystems.map((c) => (
 						<MarketplaceComponent
+							imageUrl={c.imageUrl}
 							key={c.id}
 							id={c.id}
 							title={c.title}
@@ -241,9 +251,11 @@ function MarketplaceComponent({
 	id,
 	title,
 	category,
+	imageUrl,
 }: {
 	id: number
 	title: string
+	imageUrl: string
 	category: string
 }) {
 	const queryClient = useQueryClient()
@@ -257,16 +269,21 @@ function MarketplaceComponent({
 	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
-		<Button
-			variant="default"
-			size="xl"
+		<div
+			className="p-2 w-full h-44  border rounded bg-white"
 			onClick={() =>
 				importComponentMutation.mutate({ projectTag, itemId: id, name: title, category })
 			}
-			loading={importComponentMutation.isLoading}
 		>
-			{title}
-		</Button>
+			<div className="flex w-full justify-center items-center  h-32 ">
+				{imageUrl ? (
+					<img src={imageUrl} className="max-h-full max-w-full" />
+				) : (
+					<Tb3DCubeSphere className="h-full w-full" />
+				)}
+			</div>
+			<div className="pt-1 pb-2 text-center text-base">{title}</div>
+		</div>
 	)
 }
 
@@ -313,7 +330,11 @@ function DesignSystemForm() {
 		<form
 			onSubmit={form.onSubmit((values) => {
 				const content = customComponents.filter((c) => values.components.includes(c.name))
-				createMutation.mutate({ projectTag, payload: { name: values.name, content } })
+
+				createMutation.mutate({
+					projectTag,
+					payload: { name: values.name, content },
+				})
 			})}
 			className="space-y-6"
 		>
@@ -328,12 +349,114 @@ function DesignSystemForm() {
 				data={customComponents.map((c) => c.name)}
 			/>
 			<Button fullWidth type="submit" loading={createMutation.isLoading}>
-				Create
+				{createMutation.isLoading ? 'Creating' : 'Create'}
 			</Button>
 		</form>
 	)
 }
 
+function AddToMarketplaceDesignSystemForm({ ds, projectName }: { ds: any; projectName: string }) {
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
+
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
+
+	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
+
+	const addToMarketplaceMutation = useMutation(addToMarketPlace, {
+		onSuccess: () => closeAllModals(),
+	})
+
+	useEffect(() => {
+		let fileReader: any
+		let isCancel = false
+		if (file) {
+			fileReader = new FileReader()
+			fileReader.onload = (e: any) => {
+				const { result } = e.target
+				if (result && !isCancel) {
+					setImgSrc(result)
+				}
+			}
+			fileReader.readAsDataURL(file)
+		}
+		return () => {
+			isCancel = true
+			if (fileReader && fileReader.readyState === 1) {
+				fileReader.abort()
+			}
+		}
+	}, [file])
+	return (
+		<form
+			onSubmit={form.onSubmit(() => {
+				const formData = new FormData()
+				formData.append('file', file ? file : '')
+				mutateUploadProjectImage(formData, {
+					onSuccess: (data: any) => {
+						addToMarketplaceMutation.mutate({
+							componentName: ds.name,
+							projectName,
+							category: 'uiDesignSystemItem',
+							imageUrl: data.data.url,
+						})
+					},
+				})
+			})}
+			className="space-y-6"
+		>
+			<div className="-mt-10 mb-5 font-semibold">
+				Add <span className="text-slate-500">{ds.name}</span> design system to the
+				Marketplace
+			</div>
+			<div>
+				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
+				<label
+					htmlFor="file"
+					className="flex items-center shadow-sm cursor-pointer  active:bg-slate-100 active:shadow-none hover:bg-slate-50 transition-all border justify-center  font-medium px-2 w-full py-1  rounded   form-input "
+				>
+					<span className="mr-2">browse</span>
+					<BsFillFolderSymlinkFill />
+				</label>
+				<input
+					name="file"
+					accept="image/*"
+					id="file"
+					className="hidden  appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					type="file"
+					required
+					onChange={(e) => {
+						setFile(e.target.files?.[0])
+					}}
+					value={undefined}
+				/>
+			</div>
+			{imgSrc ? (
+				<p className="img-preview-wrapper mt-2">
+					{
+						<img
+							src={imgSrc}
+							className="p-2 border border-dashed rounded"
+							alt="preview"
+						/>
+					}
+				</p>
+			) : null}
+			<Button
+				fullWidth
+				type="submit"
+				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
+			>
+				{loadingUploadimage
+					? 'Uploading image'
+					: addToMarketplaceMutation.isLoading
+					? 'Adding'
+					: 'Add'}
+			</Button>
+		</form>
+	)
+}
 const useCustomComponents = () => {
 	const projectTag = useAtomValue(projectTagAtom)
 	const query = useQuery(
@@ -352,9 +475,7 @@ function CustomComponentSelector() {
 	const deleteMutation = useMutation(deleteCustomComponent, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.CustomComponents]),
 	})
-	const addToMarketplaceMutation = useMutation(addToMarketPlace)
 	const { projectName = '' } = useParams()
-
 	return (
 		<div className="grid grid-cols-3 gap-2">
 			{customComponents.map((component) => (
@@ -368,13 +489,16 @@ function CustomComponentSelector() {
 								title="Add to marketplace"
 								size="xs"
 								onClick={() =>
-									addToMarketplaceMutation.mutate({
-										componentName: component.name,
-										projectName,
-										category: 'uiComponentItem',
+									openModal({
+										title: '',
+										children: (
+											<AddToMarketplaceCustomComponentForm
+												component={component}
+												projectName={projectName}
+											/>
+										),
 									})
 								}
-								loading={addToMarketplaceMutation.isLoading}
 							>
 								<TbTableExport className="text-xs" />
 							</ActionIcon>
@@ -518,6 +642,7 @@ type Schema = z.infer<typeof schema>
 
 function CustomComponentForm({ component }: { component: Component }) {
 	const form = useForm<Schema>({ initialValues: { name: '' }, validate: zodResolver(schema) })
+
 	const queryClient = useQueryClient()
 	const mutation = useMutation(createCustomComponent, {
 		onSuccess: () => {
@@ -539,7 +664,7 @@ function CustomComponentForm({ component }: { component: Component }) {
 
 	return (
 		<form
-			onSubmit={form.onSubmit((values) =>
+			onSubmit={form.onSubmit((values: any) => {
 				mutation.mutate({
 					projectTag,
 					payload: {
@@ -547,16 +672,123 @@ function CustomComponentForm({ component }: { component: Component }) {
 						content: newComponent,
 					},
 				})
-			)}
+			})}
 		>
 			<TextInput label="Name" placeholder="Component name" {...form.getInputProps('name')} />
+
 			<Button fullWidth mt="xl" type="submit" loading={mutation.isLoading}>
-				Create
+				{mutation.isLoading ? 'Creating' : 'Create'}
 			</Button>
 		</form>
 	)
 }
+function AddToMarketplaceCustomComponentForm({
+	component,
+	projectName,
+}: {
+	component: any
+	projectName: string
+}) {
+	const form = useForm<Schema>()
+	const [file, setFile] = useState<File>()
+	const [imgSrc, setImgSrc] = useState()
 
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+		useMutation(uploadProjectImage)
+	const addToMarketplaceMutation = useMutation(addToMarketPlace, {
+		onSuccess: () => {
+			closeAllModals()
+		},
+	})
+	useEffect(() => {
+		let fileReader: any
+		let isCancel = false
+		if (file) {
+			fileReader = new FileReader()
+			fileReader.onload = (e: any) => {
+				const { result } = e.target
+				if (result && !isCancel) {
+					setImgSrc(result)
+				}
+			}
+			fileReader.readAsDataURL(file)
+		}
+		return () => {
+			isCancel = true
+			if (fileReader && fileReader.readyState === 1) {
+				fileReader.abort()
+			}
+		}
+	}, [file])
+	return (
+		<form
+			onSubmit={form.onSubmit(() => {
+				const formData = new FormData()
+				formData.append('file', file ? file : '')
+				mutateUploadProjectImage(formData, {
+					onSuccess: (data: any) => {
+						addToMarketplaceMutation.mutate({
+							componentName: component.name,
+							projectName,
+							category: 'uiComponentItem',
+							imageUrl: data.data.url,
+						})
+					},
+				})
+			})}
+		>
+			<div className="-mt-10 mb-5 font-semibold">
+				Add <span className="text-slate-500">{component.name}</span> component to the
+				Marketplace
+			</div>
+			<div>
+				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
+				<label
+					htmlFor="file"
+					className="flex items-center shadow-sm cursor-pointer  active:bg-slate-100 active:shadow-none hover:bg-slate-50 transition-all border justify-center  font-medium px-2 w-full py-1  rounded   form-input "
+				>
+					<span className="mr-2">browse</span>
+					<BsFillFolderSymlinkFill />
+				</label>
+				<input
+					name="file"
+					accept="image/*"
+					id="file"
+					className="hidden  appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					type="file"
+					required
+					onChange={(e) => {
+						setFile(e.target.files?.[0])
+					}}
+					value={undefined}
+				/>
+			</div>
+			{imgSrc ? (
+				<p className="img-preview-wrapper mt-2">
+					{
+						<img
+							src={imgSrc}
+							className="p-2 border border-dashed rounded"
+							alt="preview"
+						/>
+					}
+				</p>
+			) : null}
+			<Button
+				fullWidth
+				mt="xl"
+				type="submit"
+				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
+			>
+				{loadingUploadimage
+					? 'Uploading image'
+					: addToMarketplaceMutation.isLoading
+					? 'Adding'
+					: 'Add'}
+			</Button>
+		</form>
+	)
+}
 export const getComponentIcon = (kind: ComponentKind) => {
 	switch (kind) {
 		case ComponentKind.Text:
@@ -577,8 +809,16 @@ export const getComponentIcon = (kind: ComponentKind) => {
 			return <IcTextarea />
 		case ComponentKind.SubmitButton:
 			return <IcSubmitButton />
-		default:
+		case ComponentKind.Form:
 			return <TbForms />
+		case ComponentKind.Link:
+			return <TbLink />
+		case ComponentKind.Stack:
+			return <TbStack />
+		case ComponentKind.Divider:
+			return <TbMinus />
+		default:
+			return <TbQuestionMark />
 	}
 }
 

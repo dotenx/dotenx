@@ -51,7 +51,13 @@ import {
 	TbX,
 } from 'react-icons/tb'
 import { uuid } from '../utils'
-import { ActionKind, AnimationAction, EventKind, useCanvasStore } from './canvas-store'
+import {
+	ActionKind,
+	AnimationAction,
+	ComponentKind,
+	EventKind,
+	useCanvasStore,
+} from './canvas-store'
 import { ClassEditor } from './class-editor'
 import { eventOptions } from './data-editor'
 import { useSelectedComponent } from './use-selected-component'
@@ -81,7 +87,7 @@ const layouts = [
 	{ label: <TbEyeOff />, title: 'None', value: 'none' },
 ].map(toCenter)
 
-type EditStyle = (style: keyof CSSProperties, value: string) => void
+export type EditStyle = (style: keyof CSSProperties, value: string) => void
 
 export function StylesEditor({
 	styles,
@@ -150,7 +156,6 @@ function ShadowsEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 	const shadowBlur = shadowProperties?.[2]
 	const shadowSpread = shadowProperties?.[3]
 	const shadowColor = shadowProperties?.[4]
-	console.log(shadowProperties)
 
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2 gap-x-3">
@@ -252,6 +257,10 @@ const cssAnimations = [
 	'wobble',
 	'jello',
 	'heartBeat',
+	'backInDown',
+	'backInLeft',
+	'backInRight',
+	'backInUp',
 ]
 
 function AnimationEditor() {
@@ -344,6 +353,7 @@ const flexJustifies = [
 
 function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	const isFlex = styles.display === 'flex'
+	const selectedComponent = useSelectedComponent()
 
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2">
@@ -355,6 +365,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 				size="xs"
 				value={styles.display ?? 'block'}
 				onChange={(value) => editStyle('display', value)}
+				disabled={selectedComponent?.kind === ComponentKind.Columns}
 			/>
 
 			{isFlex && (
@@ -468,7 +479,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 	)
 }
 
-function CollapseLine({ children, label }: { children: ReactNode; label: string }) {
+export function CollapseLine({ children, label }: { children: ReactNode; label: string }) {
 	const [opened, handlers] = useDisclosure(true)
 
 	return (
@@ -496,7 +507,13 @@ const borderStyles = [
 	{ label: <TbLineDotted />, title: 'Dotted', value: 'dotted' },
 ].map(toCenter)
 
-function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+export function BordersEditor({
+	styles,
+	editStyle,
+}: {
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Radius</p>
@@ -509,7 +526,7 @@ function BordersEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 
 			<p className="col-span-3">Style</p>
 			<SegmentedControl
-				value={styles.borderStyle ?? 'solid'}
+				value={styles.borderStyle ?? 'none'}
 				onChange={(value) => editStyle('borderStyle', value)}
 				data={borderStyles}
 				className="col-span-9"
@@ -595,7 +612,19 @@ const decorations = [
 	{ label: <TbUnderline />, title: 'Underline', value: 'underline' },
 ].map(toCenter)
 
-function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+export const getStyleNumber = (style?: string) => {
+	const unit = (style?.replace(/[0-9]/g, '') as Unit) ?? 'auto'
+	const number = (style ? _.parseInt(style.replace(unit, '')) : 0) || 0
+	return number
+}
+
+export function TypographyEditor({
+	styles,
+	editStyle,
+}: {
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	return (
 		<div className="grid grid-cols-12 items-center gap-y-2">
 			<p className="col-span-3">Font</p>
@@ -626,8 +655,8 @@ function TypographyEditor({ styles, editStyle }: { styles: CSSProperties; editSt
 			<p className="col-span-3 ml-3">Height</p>
 			<div className="col-span-3">
 				<InputWithUnit
-					value={styles.height?.toString()}
-					onChange={(value) => editStyle('height', value)}
+					value={styles.lineHeight?.toString()}
+					onChange={(value) => editStyle('lineHeight', value)}
 				/>
 			</div>
 
@@ -726,25 +755,51 @@ const overflows = [
 	{ label: <p className="leading-none text-xs">Auto</p>, title: 'Auto', value: 'auto' },
 ].map(toCenter)
 
-function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+export function SizeEditor({
+	styles,
+	editStyle,
+	simple,
+}: {
+	styles: CSSProperties
+	editStyle: EditStyle
+	simple?: boolean
+}) {
+	const widthInput = (
+		<>
+			<p className="col-span-3">Width</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.width?.toString()}
+					onChange={(value) => editStyle('width', value)}
+				/>
+			</div>
+		</>
+	)
+	const heightInput = (
+		<>
+			<p className="col-span-3">Height</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.height?.toString()}
+					onChange={(value) => editStyle('height', value)}
+				/>
+			</div>
+		</>
+	)
+
+	if (simple)
+		return (
+			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
+				{widthInput}
+				{heightInput}
+			</div>
+		)
+
 	return (
 		<div>
 			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
-				<p className="col-span-3">Width</p>
-				<div className="col-span-3">
-					<InputWithUnit
-						value={styles.width?.toString()}
-						onChange={(value) => editStyle('width', value)}
-					/>
-				</div>
-
-				<p className="col-span-3">Height</p>
-				<div className="col-span-3">
-					<InputWithUnit
-						value={styles.height?.toString()}
-						onChange={(value) => editStyle('height', value)}
-					/>
-				</div>
+				{widthInput}
+				{heightInput}
 				<p className="col-span-3">Min W</p>
 				<div className="col-span-3">
 					<InputWithUnit
@@ -806,7 +861,7 @@ function SizeEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: E
 const units = ['px', 'rem', 'em', '%', 'vw', 'vh', 'auto'] as const
 type Unit = typeof units[number]
 
-function InputWithUnit({
+export function InputWithUnit({
 	label,
 	value,
 	onChange,
@@ -819,8 +874,8 @@ function InputWithUnit({
 	title?: string
 	placeholder?: string
 }) {
-	const unit = (value?.replace(/[0-9]/g, '') as Unit) ?? 'auto'
-	const number = (value ? _.parseInt(value.replace(unit, '')) : 0) || 0
+	const unit = (value?.replace(/[0-9.]/g, '') as Unit) ?? 'auto'
+	const number = (value ? parseFloat(value.replace(unit, '')) : 0) || 0
 	const [opened, setOpened] = useState(false)
 
 	const unitSection = (
@@ -864,12 +919,20 @@ function InputWithUnit({
 				title={title}
 				placeholder={placeholder}
 				className="w-full"
+				precision={1}
+				step={0.1}
 			/>
 		</div>
 	)
 }
 
-function SpacingEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
+export function SpacingEditor({
+	styles,
+	editStyle,
+}: {
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	return (
 		<div className="border py-2 px-2 rounded flex flex-col font-mono relative gap-2">
 			<Text className="absolute top-1 left-2 uppercase" color="dimmed" size={8} weight="bold">

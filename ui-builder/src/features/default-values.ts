@@ -1,3 +1,4 @@
+import { uuid } from '../utils'
 import { Component, ComponentKind } from './canvas-store'
 
 export const getDefaultComponentState = (
@@ -47,6 +48,7 @@ export const getDefaultComponentState = (
 								paddingRight: '20px',
 								display: 'inline-block',
 								textAlign: 'center',
+								fontWeight: 600,
 							},
 						},
 						tablet: {},
@@ -67,10 +69,20 @@ export const getDefaultComponentState = (
 				parentId,
 				data: {
 					style: {
-						desktop: { default: { gap: '40px', flex: '1 1 0px', display: 'flex' } },
+						desktop: {
+							default: {
+								display: 'flex',
+								flexWrap: 'wrap',
+								gap: '20px',
+							},
+						},
 						tablet: {},
 						mobile: {},
 					},
+					columnWidths: [
+						{ id: uuid(), value: 50 },
+						{ id: uuid(), value: 50 },
+					],
 				},
 			}
 		case ComponentKind.Image:
@@ -165,6 +177,7 @@ export const getDefaultComponentState = (
 								paddingRight: '20px',
 								display: 'inline-block',
 								textAlign: 'center',
+								fontWeight: 600,
 							},
 						},
 						tablet: {},
@@ -183,7 +196,18 @@ export const getDefaultComponentState = (
 				events: [],
 				id,
 				parentId,
-				data: { style: { desktop: {}, tablet: {}, mobile: {} }, text: 'Text' },
+				data: {
+					style: {
+						desktop: {
+							default: {
+								fontSize: '1rem',
+							},
+						},
+						tablet: {},
+						mobile: {},
+					},
+					text: 'Text',
+				},
 			}
 		case ComponentKind.Textarea:
 			return {
@@ -221,6 +245,67 @@ export const getDefaultComponentState = (
 				data: {
 					style: { desktop: {}, tablet: {}, mobile: {} },
 					dataSourceName: '',
+				},
+			}
+		case ComponentKind.Link:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: { desktop: {}, tablet: {}, mobile: {} },
+					href: '',
+					openInNewTab: false,
+				},
+			}
+		case ComponentKind.Stack:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: { display: 'flex', flexDirection: 'column', gap: '10px' },
+						},
+						tablet: {},
+						mobile: {},
+					},
+				},
+			}
+		case ComponentKind.Divider:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: {
+								marginTop: '10px',
+								marginBottom: '10px',
+								height: '1px',
+								backgroundColor: '#999999',
+							},
+						},
+						tablet: {},
+						mobile: {},
+					},
 				},
 			}
 	}

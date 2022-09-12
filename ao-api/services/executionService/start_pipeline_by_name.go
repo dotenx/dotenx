@@ -45,7 +45,7 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 	}
 	if pipeline.IsInteraction {
 		execution.ThirdPartyAccountId = tpAccountId
-		hasPermission := false
+		hasPermission := tpAccountId == ""
 		if len(pipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
 			for _, ug := range pipeline.UserGroups {
 				if ug == userGroup {

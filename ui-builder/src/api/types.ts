@@ -107,14 +107,15 @@ export type GetDesignSystemsRequest = {
 
 export type GetDesignSystemsResponse =
 	| ({ name: string; content: CustomComponent[] } & {
-			category: 'uiComponentItem' | 'uiDesignSystemItem'
-	  })[]
+		category: 'uiComponentItem' | 'uiDesignSystemItem'
+	})[]
 	| null
 
 export type GetMarketplaceItemsResponse = {
 	category: 'uiComponentItem' | 'uiDesignSystemItem'
 	id: number
 	title: string
+	imageUrl: string
 }[]
 
 export type ImportCustomComponentRequest = {

@@ -17,13 +17,16 @@ import {
 	ComponentEvent,
 	ComponentKind,
 	CssSelector,
+	DividerComponent,
 	EventKind,
 	FetchAction,
 	FormComponent,
 	ImageComponent,
 	InputComponent,
+	LinkComponent,
 	SelectComponent,
 	SetStateAction,
+	StackComponent,
 	Style,
 	SubmitButtonComponent,
 	TextareaComponent,
@@ -87,11 +90,7 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const stateText = textBinding ? _.get(allStates, textBinding.fromStateName) ?? '' : ''
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
 
-	return (
-		<>
-			<div style={{ overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: text }} />
-		</>
-	)
+	return <div style={{ overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: text }} />
 }
 
 const getClasses = (component: Component) => {
@@ -101,11 +100,7 @@ const getClasses = (component: Component) => {
 const emptyContainerStyle = { minHeight: 100, minWidth: 100, border: '1px dashed black' }
 
 function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
-	return (
-		<>
-			<RenderComponents components={component.components} state={state} />
-		</>
-	)
+	return <RenderComponents components={component.components} state={state} />
 }
 
 function ButtonRenderer({ component }: { component: ButtonComponent }) {
@@ -113,9 +108,24 @@ function ButtonRenderer({ component }: { component: ButtonComponent }) {
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
+	const styles = useCombinedStyles(component)
+
 	return (
 		<>
-			<RenderComponents components={component.components} state={state} />
+			{component.components.map((innerComponent, index) => {
+				const width =
+					component.data.columnWidths[index % component.data.columnWidths.length].value
+				return (
+					<div
+						key={innerComponent.id}
+						style={{
+							width: `calc(${width}% - ${styles.gap})`,
+						}}
+					>
+						<RenderComponents components={[innerComponent]} state={state} />
+					</div>
+				)
+			})}
 		</>
 	)
 }
@@ -194,11 +204,19 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 }
 
 function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
-	return (
-		<>
-			<RenderComponents components={component.components} state={state} />
-		</>
-	)
+	return <RenderComponents components={component.components} state={state} />
+}
+
+function LinkRenderer({ component, state }: { component: LinkComponent; state: JsonMap }) {
+	return <RenderComponents components={component.components} state={state} />
+}
+
+function StackRenderer({ component, state }: { component: StackComponent; state: JsonMap }) {
+	return <RenderComponents components={component.components} state={state} />
+}
+
+function DividerRenderer({ component }: { component: DividerComponent }) {
+	return <></>
 }
 
 function ComponentShaper({ component, state }: { component: Component; state: JsonMap }) {
@@ -223,6 +241,12 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <SubmitButtonRenderer component={component} />
 		case ComponentKind.Form:
 			return <FormRenderer component={component} state={state} />
+		case ComponentKind.Link:
+			return <LinkRenderer component={component} state={state} />
+		case ComponentKind.Stack:
+			return <StackRenderer component={component} state={state} />
+		case ComponentKind.Divider:
+			return <DividerRenderer component={component} />
 		default:
 			return null
 	}
@@ -311,9 +335,29 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 	const isContainer =
 		component.kind === ComponentKind.Box ||
 		component.kind === ComponentKind.Columns ||
-		component.kind === ComponentKind.Form
-	const emptyStyle = isContainer && component.components.length === 0 ? emptyContainerStyle : {}
+		component.kind === ComponentKind.Form ||
+		component.kind === ComponentKind.Link ||
+		component.kind === ComponentKind.Stack
 	const styles = useCombinedStyles(component)
+	const emptyStyle =
+		isContainer && component.components.length === 0
+			? {
+					minHeight: !(styles.height || styles.minHeight)
+						? emptyContainerStyle.minHeight
+						: undefined,
+					minWidth: !(styles.width || styles.minWidth)
+						? emptyContainerStyle.minWidth
+						: undefined,
+					border: !(
+						styles.border ||
+						styles.borderWidth ||
+						styles.borderColor ||
+						styles.borderStyle
+					)
+						? emptyContainerStyle.border
+						: undefined,
+			  }
+			: {}
 
 	return (
 		<Draggable
@@ -332,7 +376,6 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 				position: 'relative',
 				outlineStyle: isHighlighted ? 'solid' : undefined,
 				outlineColor: '#fb7185',
-				borderRadius: styles.borderRadius ?? 2,
 			}}
 			onMouseOver={(event) => {
 				event.stopPropagation()
@@ -423,6 +466,11 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 						display: 'flex',
 						gap: 2,
 						alignItems: 'center',
+						fontSize: 12,
+						fontWeight: 600,
+						letterSpacing: 'normal',
+						lineHeight: 'normal',
+						left: 0,
 					}}
 				>
 					{getComponentIcon(component.kind)}
