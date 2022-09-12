@@ -59,7 +59,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			Manifest: p.PipelineDetailes.Manifest,
 		}
 
-		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId, p.ProjectName)
+		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId, p.ProjectName, int(p.PipelineDetailes.PipelineId))
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {

@@ -8,13 +8,11 @@ import (
 	"github.com/lib/pq"
 )
 
-func (ps *pipelineStore) GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error) {
+func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, accountId, project, name string) (pipelines []models.Pipeline, err error) {
 	res := make([]models.Pipeline, 0)
 	switch ps.db.Driver {
 	case db.Postgres:
-		conn := ps.db.Connection
-		stmt := get_all_pipelines
-		rows, err := conn.Queryx(stmt, accountId)
+		rows, err := ps.db.Connection.Queryx(get_all_child_pipelines, accountId, project, name)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +53,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 
 }
 
-const get_all_pipelines = `
+const get_all_child_pipelines = `
 SELECT * FROM pipelines
-WHERE account_id = $1
+WHERE account_id = $1 AND project_name = $2 AND name = $3
 `

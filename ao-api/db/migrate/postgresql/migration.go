@@ -243,6 +243,10 @@ var migrations = []struct {
 		name: "create-table-ui_custom_components",
 		stmt: createTableUICustomComponents,
 	},
+	{
+		name: "add-Parent-To-Pipelines",
+		stmt: addParentToPipelines,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -696,4 +700,9 @@ status										VARCHAR(16) CHECK(status IN ('published', 'modified')) DEFAULT '
 category									VARCHAR(64) DEFAULT 'custom_component',
 UNIQUE (account_id, name, project_tag)
 )
+`
+
+var addParentToPipelines = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS parent_id INT;
 `

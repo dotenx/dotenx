@@ -10,7 +10,7 @@ import (
 )
 
 // Store the pipeline
-func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string) error {
+func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string, parent_id int) error {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	switch j.db.Driver {
 	case db.Postgres:
@@ -27,7 +27,7 @@ func (j *pipelineStore) Create(context context.Context, base *models.Pipeline, p
 			return errors.New("pipeline already exists")
 		}
 		// Add the pipeline
-		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId, isTemplate, isInteraction, projectName).Scan(&pipelineId)
+		err = tx.QueryRow(create_pipeline, base.Name, base.AccountId, isTemplate, isInteraction, projectName, parent_id).Scan(&pipelineId)
 		if err != nil {
 			return err
 		}
@@ -79,8 +79,8 @@ WHERE account_id = $1 AND name = $2 AND project_name = $3
 // Insert queries
 
 const create_pipeline = `
-INSERT INTO pipelines (name, account_id, is_template, is_interaction, project_name)
-VALUES ($1, $2, $3, $4, $5) RETURNING id
+INSERT INTO pipelines (name, account_id, is_template, is_interaction, project_name, parent_id)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 `
 
 const create_task = `

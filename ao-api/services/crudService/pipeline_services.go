@@ -28,7 +28,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 		return err
 	}
 	// todo: return id here to avoid GetByName call
-	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction, projectName)
+	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction, projectName, 0)
 	if err != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return err
 	}
-	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction, p.ProjectName)
+	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction, p.ProjectName, p.ParentId)
 	if err != nil {
 		return errors.New("error in creating new version: " + err.Error())
 	}

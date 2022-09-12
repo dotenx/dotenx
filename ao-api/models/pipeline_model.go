@@ -40,6 +40,7 @@ type PipelineSummery struct {
 	IsPublic         bool
 	UserGroups       []string
 	ProjectName      string
+	ParentId         int
 }
 
 type Manifest struct {

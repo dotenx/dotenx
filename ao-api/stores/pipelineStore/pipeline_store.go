@@ -20,8 +20,9 @@ type PipelineStore interface {
 	DeletePipeline(context context.Context, accountId, name string) (err error)
 	GetPipelineId(context context.Context, accountId, name, projectId string) (id int, err error)
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
+	GetAllTemplateChildren(context context.Context, accountId, project, name string) (pipelines []models.Pipeline, err error)
 	// Create pipelineStore a new pipeline
-	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string) error // todo: return the endpoint
+	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string, parent_id int) error // todo: return the endpoint
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Get All pipelines of a project in the account
