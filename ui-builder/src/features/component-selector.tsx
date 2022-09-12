@@ -10,7 +10,6 @@ import {
 	Tabs,
 	TextInput,
 } from '@mantine/core'
-import { BsFillFolderSymlinkFill } from 'react-icons/bs'
 import { useForm, zodResolver } from '@mantine/form'
 import { useDisclosure } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
@@ -19,6 +18,7 @@ import produce from 'immer'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { ReactElement, useEffect, useState } from 'react'
+import { BsFillFolderSymlinkFill } from 'react-icons/bs'
 import {
 	Tb3DCubeSphere,
 	TbChevronDown,
@@ -30,13 +30,17 @@ import {
 	TbForms,
 	TbLayersDifference,
 	TbLayoutColumns as IcColumns,
+	TbLink,
 	TbMessage2 as IcText,
+	TbMinus,
 	TbPackgeExport,
 	TbPhoto as IcImage,
 	TbPlus,
+	TbQuestionMark,
 	TbSelect as IcSelect,
 	TbSquare as IcBox,
 	TbSquareCheck as IcSubmitButton,
+	TbStack,
 	TbTable,
 	TbTableExport,
 	TbTableImport,
@@ -46,7 +50,6 @@ import { z } from 'zod'
 import {
 	addToMarketPlace,
 	createCustomComponent,
-	uploadProjectImage,
 	createDesignSystem,
 	CustomComponent,
 	deleteCustomComponent,
@@ -56,6 +59,7 @@ import {
 	getMarketplaceItems,
 	importFromMarketplace,
 	QueryKey,
+	uploadProjectImage,
 } from '../api'
 import {
 	basicComponents,
@@ -488,7 +492,7 @@ function CustomComponentSelector() {
 									openModal({
 										title: '',
 										children: (
-											<AddtoMarketplaceCustomComponentForm
+											<AddToMarketplaceCustomComponentForm
 												component={component}
 												projectName={projectName}
 											/>
@@ -678,7 +682,7 @@ function CustomComponentForm({ component }: { component: Component }) {
 		</form>
 	)
 }
-function AddtoMarketplaceCustomComponentForm({
+function AddToMarketplaceCustomComponentForm({
 	component,
 	projectName,
 }: {
@@ -805,8 +809,16 @@ export const getComponentIcon = (kind: ComponentKind) => {
 			return <IcTextarea />
 		case ComponentKind.SubmitButton:
 			return <IcSubmitButton />
-		default:
+		case ComponentKind.Form:
 			return <TbForms />
+		case ComponentKind.Link:
+			return <TbLink />
+		case ComponentKind.Stack:
+			return <TbStack />
+		case ComponentKind.Divider:
+			return <TbMinus />
+		default:
+			return <TbQuestionMark />
 	}
 }
 

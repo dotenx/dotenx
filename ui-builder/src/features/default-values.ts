@@ -247,5 +247,66 @@ export const getDefaultComponentState = (
 					dataSourceName: '',
 				},
 			}
+		case ComponentKind.Link:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: { desktop: {}, tablet: {}, mobile: {} },
+					href: '',
+					openInNewTab: false,
+				},
+			}
+		case ComponentKind.Stack:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: { display: 'flex', flexDirection: 'column', gap: '10px' },
+						},
+						tablet: {},
+						mobile: {},
+					},
+				},
+			}
+		case ComponentKind.Divider:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: {
+								marginTop: '10px',
+								marginBottom: '10px',
+								height: '1px',
+								backgroundColor: '#999999',
+							},
+						},
+						tablet: {},
+						mobile: {},
+					},
+				},
+			}
 	}
 }
