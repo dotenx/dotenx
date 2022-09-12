@@ -176,7 +176,7 @@ function DesignSystems() {
 						openModal({
 							title: 'Marketplace',
 							children: <Marketplace />,
-							size: 'xl',
+							size: '2xl',
 						})
 					}
 					fullWidth
@@ -203,7 +203,7 @@ function Marketplace() {
 		)
 
 	return (
-		<Tabs defaultValue="components" className="h-96 scrollbar overflow-y-scroll">
+		<Tabs defaultValue="components">
 			<Tabs.List>
 				<Tabs.Tab value="components" icon={<TbComponents size={14} />}>
 					Components
@@ -214,7 +214,7 @@ function Marketplace() {
 			</Tabs.List>
 
 			<Tabs.Panel value="components" pt="xs">
-				<div className="grid grid-cols-3 gap-2">
+				<div className="grid grid-cols-3 gap-2 h-[500px]  scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
 					{components.map((c) => (
 						<MarketplaceComponent
 							imageUrl={c.imageUrl}
@@ -227,7 +227,7 @@ function Marketplace() {
 				</div>
 			</Tabs.Panel>
 			<Tabs.Panel value="design-systems" pt="xs">
-				<div className="grid grid-cols-3 gap-2 ">
+				<div className="grid grid-cols-3 gap-2  h-[500px]   scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
 					{designSystems.map((c) => (
 						<MarketplaceComponent
 							imageUrl={c.imageUrl}
@@ -265,27 +265,21 @@ function MarketplaceComponent({
 	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
-		<Button
-			className="!p-2 !h-fit"
-			variant="default"
-			size="xl"
+		<div
+			className="p-2 w-full h-44  border rounded bg-white"
 			onClick={() =>
 				importComponentMutation.mutate({ projectTag, itemId: id, name: title, category })
 			}
-			loading={importComponentMutation.isLoading}
 		>
-			<div>
+			<div className="flex w-full justify-center items-center  h-32 ">
 				{imageUrl ? (
-					<img src={imageUrl} className="w-50 h-40" />
+					<img src={imageUrl} className="max-h-full max-w-full" />
 				) : (
-					<div className="flex justify-center">
-						<Tb3DCubeSphere />
-					</div>
+					<Tb3DCubeSphere className="h-full w-full" />
 				)}
-
-				<div className="pt-1 pb-2 text-base">{title}</div>
 			</div>
-		</Button>
+			<div className="pt-1 pb-2 text-center text-base">{title}</div>
+		</div>
 	)
 }
 
