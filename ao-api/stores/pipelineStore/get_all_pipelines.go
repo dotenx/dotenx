@@ -32,6 +32,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				UserGroups    pq.StringArray `db:"user_groups"`
 				ProjectName   string         `db:"project_name"`
 				ParentId      int            `db:"parent_id"`
+				CreatedFor    string         `db:"created_for"`
 			}
 			rows.StructScan(&cur)
 			if err != nil {
@@ -48,6 +49,8 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				IsPublic:      cur.IsPublic,
 				UserGroups:    ([]string)(cur.UserGroups),
 				ProjectName:   cur.ProjectName,
+				ParentId:      cur.ParentId,
+				CreatedFor:    cur.CreatedFor,
 			})
 		}
 	}

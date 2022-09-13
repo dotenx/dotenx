@@ -21,7 +21,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 	case db.Postgres:
 		conn := p.db.Connection
 		var ug pq.StringArray
-		err = conn.QueryRow(select_pipeline, accountId, name, projectName).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug, &pipeline.ProjectName, pipeline.ParentId)
+		err = conn.QueryRow(select_pipeline, accountId, name, projectName).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug, &pipeline.ProjectName, &pipeline.ParentId, &pipeline.CreatedFor)
 		intId, _ := strconv.Atoi(pipeline.PipelineDetailes.Id)
 		pipeline.PipelineDetailes.PipelineId = int16(intId)
 		if err != nil {
@@ -86,7 +86,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 }
 
 var select_pipeline = `
-SELECT id , endpoint, is_active, is_template, is_interaction, user_groups, project_name, parent_id
+SELECT id , endpoint, is_active, is_template, is_interaction, user_groups, project_name, parent_id, created_for
 FROM pipelines p
 WHERE account_id = $1 AND name = $2 AND project_name = $3
 `

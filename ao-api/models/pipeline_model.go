@@ -17,6 +17,8 @@ type Pipeline struct {
 	IsPublic      bool     `db:"is_public" json:"is_public"`
 	UserGroups    []string `db:"user_groups" json:"user_groups"`
 	ProjectName   string   `db:"project_name" json:"project_name"`
+	ParentId      int      `db:"parent_id" json:"parent_id"`
+	CreatedFor    string   `db:"created_for" json:"created_for"`
 }
 
 type PipelineVersion struct {
@@ -41,6 +43,7 @@ type PipelineSummery struct {
 	UserGroups       []string
 	ProjectName      string
 	ParentId         int
+	CreatedFor       string
 }
 
 type Manifest struct {

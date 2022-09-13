@@ -22,7 +22,7 @@ type PipelineStore interface {
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
 	GetAllTemplateChildren(context context.Context, accountId, project, name string) (pipelines []models.Pipeline, err error)
 	// Create pipelineStore a new pipeline
-	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string, parent_id int) error // todo: return the endpoint
+	Create(context context.Context, base *models.Pipeline, pipeline *models.PipelineVersion, isTemplate bool, isInteraction bool, projectName string, parent_id int, createdFor string) error // todo: return the endpoint
 	// Get All pipelines for accountId
 	GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error)
 	// Get All pipelines of a project in the account

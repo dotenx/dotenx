@@ -17,7 +17,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 		return "", err
 	}
 	base.Name = base.Name + "_" + utils.GetNewUuid()
-	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName, parentId)
+	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName, parentId, tpAccountId)
 	if err != nil {
 		return
 	}

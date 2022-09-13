@@ -30,6 +30,7 @@ func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, account
 				UserGroups    pq.StringArray `db:"user_groups"`
 				ProjectName   string         `db:"project_name"`
 				ParentId      int            `db:"parent_id"`
+				CreatedFor    string         `db:"created_for"`
 			}
 			rows.StructScan(&cur)
 			if err != nil {
@@ -46,6 +47,8 @@ func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, account
 				IsPublic:      cur.IsPublic,
 				UserGroups:    ([]string)(cur.UserGroups),
 				ProjectName:   cur.ProjectName,
+				ParentId:      cur.ParentId,
+				CreatedFor:    cur.CreatedFor,
 			})
 		}
 	}
