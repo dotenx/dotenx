@@ -1,3 +1,4 @@
+import { useHotkeys } from '@mantine/hooks'
 import { useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { ReactNode, useContext, useEffect } from 'react'
@@ -33,6 +34,8 @@ export function Canvas() {
 	const viewport = useViewportStore((store) => store.device)
 	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '48rem' : '28rem'
 	const classNames = useClassNamesStore((store) => store.classNames)
+
+	useHotkeys([['Escape', deselectComponent]])
 
 	const desktopIds = generateCssIds(components, 'desktop')
 	const tabletIds = generateCssIds(components, 'tablet')
