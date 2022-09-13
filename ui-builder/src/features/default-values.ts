@@ -1,6 +1,7 @@
+import { uuid } from '../utils'
 import { Component, ComponentKind } from './canvas-store'
 
-export const getDefaultComponentState = (
+export const getDefaultComponent = (
 	kind: ComponentKind,
 	id: string,
 	parentId: string
@@ -59,7 +60,10 @@ export const getDefaultComponentState = (
 		case ComponentKind.Columns:
 			return {
 				kind,
-				components: [],
+				components: [
+					getDefaultComponent(ComponentKind.Box, uuid(), id),
+					getDefaultComponent(ComponentKind.Box, uuid(), id),
+				],
 				classNames: [],
 				repeatFrom: { name: '', iterator: '' },
 				bindings: {},
@@ -72,7 +76,7 @@ export const getDefaultComponentState = (
 							default: {
 								display: 'grid',
 								gridTemplateColumns: '1fr 1fr',
-								gap: "10px"
+								gap: '10px',
 							},
 						},
 						tablet: {},

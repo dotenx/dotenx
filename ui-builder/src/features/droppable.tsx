@@ -5,7 +5,7 @@ import { useDrop } from 'react-dnd'
 import { uuid } from '../utils'
 import { Component, useCanvasStore } from './canvas-store'
 import { selectedClassAtom } from './class-editor'
-import { getDefaultComponentState } from './default-values'
+import { getDefaultComponent } from './default-values'
 import { DraggableData, DraggableKinds, DraggableMode } from './draggable'
 import { useSelectionStore } from './selection-store'
 
@@ -60,7 +60,7 @@ export function Droppable({
 						switch (data.mode) {
 							case DroppableMode.InsertIn:
 								addComponent(
-									getDefaultComponentState(
+									getDefaultComponent(
 										item.kind,
 										newComponentId,
 										data.componentId
@@ -70,7 +70,7 @@ export function Droppable({
 								break
 							case DroppableMode.InsertBefore:
 								addComponentBefore(
-									getDefaultComponentState(
+									getDefaultComponent(
 										item.kind,
 										newComponentId,
 										data.componentId
@@ -80,7 +80,7 @@ export function Droppable({
 								break
 							case DroppableMode.InsertAfter:
 								addComponentAfter(
-									getDefaultComponentState(
+									getDefaultComponent(
 										item.kind,
 										newComponentId,
 										data.componentId
