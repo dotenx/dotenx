@@ -131,26 +131,10 @@ type automationDto struct {
 	DeleteRecord bool   `json:"delete_record"`
 }
 
-type insertDto struct {
-	Source string `json:"source"`
-	Key    string `json:"key"`
-}
-
 // checks trigger integration for templates and also convert trigger map to array of triggers
 func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger, pipelineName, endpoint, accountId string, isTemplate bool, projectName string) ([]*models.EventTrigger, error) {
 	arr := make([]*models.EventTrigger, 0)
 	for _, tr := range triggers {
-		// check integration provider if it is a template
-		if tr.Integration != "" && isTemplate {
-			integration, err := cm.IntegrationService.GetIntegrationByName(accountId, tr.Integration)
-			if err != nil {
-				return nil, err
-			}
-			if integration.Provider == "" {
-				return nil, errors.New("your integrations must have provider")
-
-			}
-		}
 		arr = append(arr, &models.EventTrigger{
 			Name:        tr.Name,
 			AccountId:   tr.AccountId,
@@ -170,15 +154,6 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 	preparedTasks := make(map[string]models.Task)
 	for tName, task := range tasks {
 		pTask := task
-		if task.Integration != "" && (isInteraction || isTemplate) {
-			integration, err := cm.IntegrationService.GetIntegrationByName(accountId, task.Integration)
-			if err != nil {
-				return nil, err
-			}
-			if integration.Provider == "" {
-				return nil, errors.New("your integrations must have provider")
-			}
-		}
 		if isInteraction {
 			body := task.Body.(models.TaskBodyMap)
 			for key, value := range body {
