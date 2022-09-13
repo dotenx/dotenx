@@ -6,7 +6,6 @@ import (
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/lib/pq"
-	"github.com/sirupsen/logrus"
 )
 
 func (ps *pipelineStore) GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error) {
@@ -39,7 +38,6 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 			if err != nil {
 				return nil, err
 			}
-			logrus.Println(cur)
 			res = append(res, models.Pipeline{
 				Id:            cur.Id,
 				Name:          cur.Name,
