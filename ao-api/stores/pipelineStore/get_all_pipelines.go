@@ -2,6 +2,7 @@ package pipelineStore
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -38,6 +39,9 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 			if err != nil {
 				return nil, err
 			}
+			fmt.Println("##############################################")
+			fmt.Println(cur)
+			fmt.Println("##############################################")
 			res = append(res, models.Pipeline{
 				Id:            cur.Id,
 				Name:          cur.Name,
