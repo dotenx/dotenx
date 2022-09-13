@@ -2,7 +2,7 @@ import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import axios from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { CSSProperties, ReactNode, useState } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { TbPhoto } from 'react-icons/tb'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import { animateCSS } from '../utils/animation'
@@ -108,24 +108,32 @@ function ButtonRenderer({ component }: { component: ButtonComponent }) {
 }
 
 function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
+	const { isHighlighted } = useIsHighlighted(component.id)
 	const styles = useCombinedStyles(component)
+	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
+	const emptyCols = cols.length - component.components.length
 
 	return (
 		<>
-			{component.components.map((innerComponent, index) => {
-				const width =
-					component.data.columnWidths[index % component.data.columnWidths.length].value
+			{component.components.map((innerComponent) => {
 				return (
 					<div
 						key={innerComponent.id}
-						style={{
-							width: `calc(${width}% - ${styles.gap})`,
-						}}
+						style={{ backgroundColor: isHighlighted ? '#fff1f2' : undefined }}
 					>
 						<RenderComponents components={[innerComponent]} state={state} />
 					</div>
 				)
 			})}
+			{isHighlighted &&
+				_.range(emptyCols).map((col) => {
+					return (
+						<div
+							key={col}
+							style={{ backgroundColor: isHighlighted ? '#fff1f2' : undefined }}
+						/>
+					)
+				})}
 		</>
 	)
 }
@@ -252,16 +260,29 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 	}
 }
 
-function ComponentWrapper({ children, component }: { children: ReactNode; component: Component }) {
-	const { setSelectedComponent, selectedComponentId, hoveredId } = useSelectionStore((store) => ({
-		setSelectedComponent: store.select,
+const useIsHighlighted = (componentId: string) => {
+	const { selectedComponentId, hoveredId } = useSelectionStore((store) => ({
 		selectedComponentId: store.selectedId,
 		hoveredId: store.hoveredId,
 	}))
+
+	const isHovered = hoveredId === componentId
+	const isSelected = componentId === selectedComponentId
+	const isHighlighted = isSelected || isHovered
+	return { isHighlighted, isHovered, isSelected }
+}
+
+function ComponentWrapper({ children, component }: { children: ReactNode; component: Component }) {
+	const { setSelectedComponent, selectedComponentId, setHovered, unsetHovered } =
+		useSelectionStore((store) => ({
+			setSelectedComponent: store.select,
+			selectedComponentId: store.selectedId,
+			setHovered: store.setHovered,
+			unsetHovered: store.unsetHovered,
+		}))
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
-	const [hovered, setHovered] = useState(false)
 	const handleDelete = () => {
 		if (selectedComponentId) deleteComponent(selectedComponentId)
 	}
@@ -271,9 +292,8 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 		toggleState: store.toggleState,
 		setState: store.setState,
 	}))
-	const isHovered = hovered || hoveredId === component.id
-	const isSelected = component.id === selectedComponentId
-	const isHighlighted = isSelected || isHovered
+
+	const { isHighlighted, isHovered, isSelected } = useIsHighlighted(component.id)
 
 	const handleEvents = (kind: EventKind) => {
 		evalCodes(component.events, kind)
@@ -379,12 +399,12 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			}}
 			onMouseOver={(event) => {
 				event.stopPropagation()
-				setHovered(true)
+				setHovered(component.id)
 				showHoverAnimations()
 			}}
 			onMouseOut={(event) => {
 				event.stopPropagation()
-				setHovered(false)
+				unsetHovered()
 			}}
 			onClick={(event) => {
 				event.stopPropagation()
