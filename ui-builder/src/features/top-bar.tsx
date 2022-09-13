@@ -1,4 +1,5 @@
 import {
+	ActionIcon,
 	Anchor,
 	Button,
 	Divider,
@@ -11,9 +12,10 @@ import {
 import { useForm, zodResolver } from '@mantine/form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { atom, useAtom, useAtomValue } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import {
+	TbArrowsMaximize,
 	TbDeviceDesktop,
 	TbDeviceFloppy,
 	TbDeviceMobile,
@@ -43,6 +45,7 @@ import { projectTagAtom } from './project-atom'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
 const selectedPageAtom = atom({ exists: false, route: '' })
+export const fullScreenAtom = atom({ isFullscreen: false })
 
 export function TopBar({ projectName }: { projectName: string }) {
 	const [projectTag, setProjectTag] = useAtom(projectTagAtom)
@@ -77,6 +80,7 @@ export function TopBar({ projectName }: { projectName: string }) {
 	)
 	const publishPageMutation = useMutation(publishPage)
 	const publishedUrl = publishPageMutation.data?.data.url
+	const setFullscreen = useSetAtom(fullScreenAtom)
 
 	return (
 		<div className="flex items-center justify-between h-full px-6">
@@ -88,6 +92,15 @@ export function TopBar({ projectName }: { projectName: string }) {
 				</Tooltip>
 				<PageSelection projectTag={projectTag} />
 				<DeviceSelection />
+				<ActionIcon
+					title="Fullscreen preview"
+					onClick={() => {
+						toggleFullScreen()
+						setFullscreen((prev) => ({ isFullscreen: !prev.isFullscreen }))
+					}}
+				>
+					<TbArrowsMaximize />
+				</ActionIcon>
 			</div>
 			<div className="flex gap-6 items-center">
 				{publishedUrl && (
@@ -307,4 +320,12 @@ function AddPageForm({ projectTag, onSuccess }: { projectTag: string; onSuccess:
 			</Button>
 		</form>
 	)
+}
+
+function toggleFullScreen() {
+	if (!document.fullscreenElement) {
+		document.documentElement.requestFullscreen()
+	} else if (document.exitFullscreen) {
+		document.exitFullscreen()
+	}
 }
