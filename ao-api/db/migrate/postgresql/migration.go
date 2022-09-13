@@ -247,6 +247,10 @@ var migrations = []struct {
 		name: "add-Parent-To-Pipelines",
 		stmt: addParentToPipelines,
 	},
+	{
+		name: "add-Created-for-To-Pipelines",
+		stmt: addCreatedForToPipelines,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -705,4 +709,8 @@ UNIQUE (account_id, name, project_tag)
 var addParentToPipelines = `
 ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS parent_id INT;
+`
+var addCreatedForToPipelines = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS created_for VARCHAR(64);
 `
