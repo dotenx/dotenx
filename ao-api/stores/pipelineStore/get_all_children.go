@@ -32,7 +32,7 @@ func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, account
 				ParentId      int            `db:"parent_id"`
 				CreatedFor    string         `db:"created_for"`
 			}
-			rows.StructScan(&cur)
+			err = rows.StructScan(&cur)
 			if err != nil {
 				return nil, err
 			}
@@ -58,5 +58,5 @@ func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, account
 
 const get_all_child_pipelines = `
 SELECT * FROM pipelines
-WHERE account_id = $1 AND project_name = $2 AND name = $3
+WHERE parent_id = (select id from pipelines where account_id = $1 and project_name = $2 and name = $3 limit 1)
 `
