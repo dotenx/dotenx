@@ -158,7 +158,7 @@ function ShadowsEditor({ styles, editStyle }: { styles: CSSProperties; editStyle
 	const shadowColor = shadowProperties?.[4]
 
 	return (
-		<div className="grid grid-cols-12 items-center gap-y-2 gap-x-3">
+		<div className="grid items-center grid-cols-12 gap-y-2 gap-x-3">
 			<p className="col-span-3">Color</p>
 			<div className="col-span-9">
 				<ColorInput
@@ -288,7 +288,7 @@ function AnimationEditor() {
 			.map((animation) => (
 				<div className="space-y-2" key={animation.id}>
 					<CloseButton ml="auto" onClick={() => removeAnimation(event.id)} size="xs" />
-					<div className="flex gap-2 items-center">
+					<div className="flex items-center gap-2">
 						<Text className="w-14">On</Text>
 						<Select
 							size="xs"
@@ -300,7 +300,7 @@ function AnimationEditor() {
 							}
 						/>
 					</div>
-					<div className="flex gap-2 items-center">
+					<div className="flex items-center gap-2">
 						<Text className="w-14">Animate</Text>
 						<Select
 							size="xs"
@@ -356,7 +356,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 	const selectedComponent = useSelectedComponent()
 
 	return (
-		<div className="grid grid-cols-12 items-center gap-y-2">
+		<div className="grid items-center grid-cols-12 gap-y-2">
 			<p className="col-span-3">Display</p>
 			<SegmentedControl
 				className="col-span-9"
@@ -371,7 +371,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 			{isFlex && (
 				<>
 					<p className="col-span-3">Direction</p>
-					<div className="col-span-9 flex items-center gap-1">
+					<div className="flex items-center col-span-9 gap-1">
 						<SegmentedControl
 							data={[
 								{ label: 'Horizontal', value: 'row' },
@@ -429,7 +429,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 					/>
 
 					<p className="col-span-3">Gap</p>
-					<div className="col-span-9 flex gap-3">
+					<div className="flex col-span-9 gap-3">
 						<InputWithUnit
 							placeholder="Columns"
 							title="Columns"
@@ -445,7 +445,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 					</div>
 
 					<p className="col-span-3">Children</p>
-					<div className="col-span-9 flex items-center gap-1">
+					<div className="flex items-center col-span-9 gap-1">
 						<SegmentedControl
 							data={[
 								{ label: "Dont' wrap", value: 'nowrap' },
@@ -486,12 +486,12 @@ export function CollapseLine({ children, label }: { children: ReactNode; label: 
 		<div>
 			<Divider
 				label={
-					<div className="flex gap-1 items-center">
+					<div className="flex items-center gap-1">
 						{opened ? <TbChevronUp /> : <TbChevronDown />}
 						{label}
 					</div>
 				}
-				className="cursor-pointer hover:bg-gray-50 rounded"
+				className="rounded cursor-pointer hover:bg-gray-50"
 				mb="xs"
 				onClick={handlers.toggle}
 			/>
@@ -515,7 +515,7 @@ export function BordersEditor({
 	editStyle: EditStyle
 }) {
 	return (
-		<div className="grid grid-cols-12 items-center gap-y-2">
+		<div className="grid items-center grid-cols-12 gap-y-2">
 			<p className="col-span-3">Radius</p>
 			<div className="col-span-9">
 				<InputWithUnit
@@ -564,7 +564,7 @@ const backgroundClippings = [
 
 function BackgroundsEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	return (
-		<div className="grid grid-cols-12 items-center gap-y-2">
+		<div className="grid items-center grid-cols-12 gap-y-2">
 			<p className="col-span-3">Color</p>
 			<ColorInput
 				value={styles.backgroundColor ?? ''}
@@ -618,6 +618,60 @@ export const getStyleNumber = (style?: string) => {
 	return number
 }
 
+const fonts = [
+	'Arial',
+	'Arial Black',
+	'Bahnschrift',
+	'Calibri',
+	'Cambria',
+	'Cambria Math',
+	'Candara',
+	'Comic Sans MS',
+	'Consolas',
+	'Constantia',
+	'Corbel',
+	'Courier New',
+	'Ebrima',
+	'Franklin Gothic Medium',
+	'Gabriola',
+	'Gadugi',
+	'Georgia',
+	'HoloLens MDL2 Assets',
+	'Impact',
+	'Ink Free',
+	'Javanese Text',
+	'Leelawadee UI',
+	'Lucida Console',
+	'Lucida Sans Unicode',
+	'Malgun Gothic',
+	'Microsoft Himalaya',
+	'Microsoft JhengHei',
+	'Microsoft New Tai Lue',
+	'Microsoft PhagsPa',
+	'Microsoft Sans Serif',
+	'Microsoft Tai Le',
+	'Microsoft YaHei',
+	'Microsoft Yi Baiti',
+	'MingLiU-ExtB',
+	'Mongolian Baiti',
+	'MS Gothic',
+	'MV Boli',
+	'Myanmar Text',
+	'Nirmala UI',
+	'Palatino Linotype',
+	'Segoe Print',
+	'Segoe Script',
+	'Segoe UI',
+	'SimSun',
+	'Sitka',
+	'Sylfaen',
+	'Tahoma',
+	'Times New Roman',
+	'Trebuchet MS',
+	'Verdana',
+	'Yu Gothic',
+]
+
 export function TypographyEditor({
 	styles,
 	editStyle,
@@ -626,12 +680,13 @@ export function TypographyEditor({
 	editStyle: EditStyle
 }) {
 	return (
-		<div className="grid grid-cols-12 items-center gap-y-2">
+		<div className="grid items-center grid-cols-12 gap-y-2">
 			<p className="col-span-3">Font</p>
-			<TextInput
+			<Select
 				value={styles.fontFamily ?? ''}
-				onChange={(event) => editStyle('fontFamily', event.target.value)}
+				onChange={(value) => editStyle('fontFamily', value ?? fonts[0])}
 				className="col-span-9"
+				data={fonts}
 				size="xs"
 			/>
 
@@ -680,7 +735,7 @@ export function TypographyEditor({
 			/>
 
 			<p className="col-span-3">Style</p>
-			<div className="col-span-9 flex gap-2 items-center">
+			<div className="flex items-center col-span-9 gap-2">
 				<SegmentedControl
 					value={styles.textDecoration?.toString() ?? ''}
 					onChange={(value) => editStyle('textDecoration', value)}
@@ -723,17 +778,17 @@ function PositionEditor({ styles, editStyle }: { styles: CSSProperties; editStyl
 				data={positions}
 				size="xs"
 			/>
-			<div className="border py-2 px-2 rounded bg-white flex flex-col gap-2 mt-2 font-mono">
+			<div className="flex flex-col gap-2 px-2 py-2 mt-2 font-mono bg-white border rounded">
 				<MarginPaddingInput
 					value={styles.top?.toString() ?? '0px'}
 					onChange={(value) => editStyle('top', value)}
 				/>
-				<div className="flex gap-2 items-center">
+				<div className="flex items-center gap-2">
 					<MarginPaddingInput
 						value={styles.left?.toString() ?? '0px'}
 						onChange={(value) => editStyle('left', value)}
 					/>
-					<div className="border h-4 bg-gray-200 rounded grow" />
+					<div className="h-4 bg-gray-200 border rounded grow" />
 					<MarginPaddingInput
 						value={styles.right?.toString() ?? '0px'}
 						onChange={(value) => editStyle('right', value)}
@@ -752,7 +807,7 @@ const overflows = [
 	{ label: <TbEye />, title: 'Visible', value: 'visible' },
 	{ label: <TbEyeOff />, title: 'Hidden', value: 'hidden' },
 	{ label: <TbArrowAutofitHeight />, title: 'Scroll', value: 'scroll' },
-	{ label: <p className="leading-none text-xs">Auto</p>, title: 'Auto', value: 'auto' },
+	{ label: <p className="text-xs leading-none">Auto</p>, title: 'Auto', value: 'auto' },
 ].map(toCenter)
 
 export function SizeEditor({
@@ -789,7 +844,7 @@ export function SizeEditor({
 
 	if (simple)
 		return (
-			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
+			<div className="grid items-center grid-cols-12 gap-x-3 gap-y-3">
 				{widthInput}
 				{heightInput}
 			</div>
@@ -797,7 +852,7 @@ export function SizeEditor({
 
 	return (
 		<div>
-			<div className="grid grid-cols-12 gap-x-3 gap-y-3 items-center">
+			<div className="grid items-center grid-cols-12 gap-x-3 gap-y-3">
 				{widthInput}
 				{heightInput}
 				<p className="col-span-3">Min W</p>
@@ -829,7 +884,7 @@ export function SizeEditor({
 					/>
 				</div>
 			</div>
-			<div className="grid grid-cols-4 gap-2 items-center mt-6">
+			<div className="grid items-center grid-cols-4 gap-2 mt-6">
 				<p className="whitespace-nowrap">Overflow</p>
 				<SegmentedControl
 					data={overflows}
@@ -906,7 +961,7 @@ export function InputWithUnit({
 	)
 
 	return (
-		<div className="flex gap-3 items-center">
+		<div className="flex items-center gap-3">
 			{label && <Text className="whitespace-nowrap">{label}</Text>}
 			<NumberInput
 				size="xs"
@@ -934,8 +989,8 @@ export function SpacingEditor({
 	editStyle: EditStyle
 }) {
 	return (
-		<div className="border py-2 px-2 rounded flex flex-col font-mono relative gap-2">
-			<Text className="absolute top-1 left-2 uppercase" color="dimmed" size={8} weight="bold">
+		<div className="relative flex flex-col gap-2 px-2 py-2 font-mono border rounded">
+			<Text className="absolute uppercase top-1 left-2" color="dimmed" size={8} weight="bold">
 				Margin
 			</Text>
 			<MarginPaddingInput
@@ -947,10 +1002,10 @@ export function SpacingEditor({
 					value={styles.marginLeft?.toString() ?? '0px'}
 					onChange={(value) => editStyle('marginLeft', value)}
 				/>
-				<div className="border py-1 px-1 rounded bg-gray-200 grow">
-					<div className="border py-2 px-2 rounded bg-white flex flex-col gap-2 relative">
+				<div className="px-1 py-1 bg-gray-200 border rounded grow">
+					<div className="relative flex flex-col gap-2 px-2 py-2 bg-white border rounded">
 						<Text
-							className="absolute top-1 left-2 uppercase"
+							className="absolute uppercase top-1 left-2"
 							color="dimmed"
 							size={8}
 							weight="bold"
@@ -961,12 +1016,12 @@ export function SpacingEditor({
 							value={styles.paddingTop?.toString() ?? '0px'}
 							onChange={(value) => editStyle('paddingTop', value)}
 						/>
-						<div className="flex gap-2 items-center">
+						<div className="flex items-center gap-2">
 							<MarginPaddingInput
 								value={styles.paddingLeft?.toString() ?? '0px'}
 								onChange={(value) => editStyle('paddingLeft', value)}
 							/>
-							<div className="border h-4 bg-gray-200 rounded grow" />
+							<div className="h-4 bg-gray-200 border rounded grow" />
 							<MarginPaddingInput
 								value={styles.paddingRight?.toString() ?? '0px'}
 								onChange={(value) => editStyle('paddingRight', value)}

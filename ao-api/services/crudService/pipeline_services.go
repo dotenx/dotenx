@@ -28,7 +28,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 		return err
 	}
 	// todo: return id here to avoid GetByName call
-	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction, projectName)
+	err = cm.Store.Create(noContext, base, pipeline, isTemplate, isInteraction, projectName, 0, "")
 	if err != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return err
 	}
-	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction, p.ProjectName)
+	err = cm.Store.Create(noContext, base, pipeline, p.IsTemplate, p.IsInteraction, p.ProjectName, p.ParentId, p.CreatedFor)
 	if err != nil {
 		return errors.New("error in creating new version: " + err.Error())
 	}
@@ -131,26 +131,10 @@ type automationDto struct {
 	DeleteRecord bool   `json:"delete_record"`
 }
 
-type insertDto struct {
-	Source string `json:"source"`
-	Key    string `json:"key"`
-}
-
 // checks trigger integration for templates and also convert trigger map to array of triggers
 func (cm *crudManager) getTriggersArray(triggers map[string]models.EventTrigger, pipelineName, endpoint, accountId string, isTemplate bool, projectName string) ([]*models.EventTrigger, error) {
 	arr := make([]*models.EventTrigger, 0)
 	for _, tr := range triggers {
-		// check integration provider if it is a template
-		if tr.Integration != "" && isTemplate {
-			integration, err := cm.IntegrationService.GetIntegrationByName(accountId, tr.Integration)
-			if err != nil {
-				return nil, err
-			}
-			if integration.Provider == "" {
-				return nil, errors.New("your integrations must have provider")
-
-			}
-		}
 		arr = append(arr, &models.EventTrigger{
 			Name:        tr.Name,
 			AccountId:   tr.AccountId,
@@ -170,15 +154,6 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 	preparedTasks := make(map[string]models.Task)
 	for tName, task := range tasks {
 		pTask := task
-		if task.Integration != "" && (isInteraction || isTemplate) {
-			integration, err := cm.IntegrationService.GetIntegrationByName(accountId, task.Integration)
-			if err != nil {
-				return nil, err
-			}
-			if integration.Provider == "" {
-				return nil, errors.New("your integrations must have provider")
-			}
-		}
 		if isInteraction {
 			body := task.Body.(models.TaskBodyMap)
 			for key, value := range body {

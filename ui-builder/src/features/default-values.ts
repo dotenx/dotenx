@@ -1,4 +1,3 @@
-import { uuid } from '../utils'
 import { Component, ComponentKind } from './canvas-store'
 
 export const getDefaultComponentState = (
@@ -71,18 +70,14 @@ export const getDefaultComponentState = (
 					style: {
 						desktop: {
 							default: {
-								display: 'flex',
-								flexWrap: 'wrap',
-								gap: '20px',
+								display: 'grid',
+								gridTemplateColumns: '1fr 1fr',
+								gap: "10px"
 							},
 						},
 						tablet: {},
 						mobile: {},
 					},
-					columnWidths: [
-						{ id: uuid(), value: 50 },
-						{ id: uuid(), value: 50 },
-					],
 				},
 			}
 		case ComponentKind.Image:

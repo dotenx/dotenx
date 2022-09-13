@@ -243,6 +243,22 @@ var migrations = []struct {
 		name: "create-table-ui_custom_components",
 		stmt: createTableUICustomComponents,
 	},
+	{
+		name: "add-Parent-To-Pipelines",
+		stmt: addParentToPipelines,
+	},
+	{
+		name: "set-default-Parent-To-Pipelines",
+		stmt: setDefaultParent,
+	},
+	{
+		name: "add-Created-for-To-Pipelines",
+		stmt: addCreatedForToPipelines,
+	},
+	{
+		name: "set-default-Created-for-To-Pipelines",
+		stmt: setDefaultCreatedFor,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -697,3 +713,16 @@ category									VARCHAR(64) DEFAULT 'custom_component',
 UNIQUE (account_id, name, project_tag)
 )
 `
+
+var addParentToPipelines = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS parent_id INT;
+`
+
+var setDefaultParent = `update pipelines set parent_id = 0 where parent_id is null;`
+
+var addCreatedForToPipelines = `
+ALTER TABLE pipelines
+ADD COLUMN IF NOT EXISTS created_for VARCHAR(64);
+`
+var setDefaultCreatedFor = `update pipelines set created_for = '' where created_for is null;`
