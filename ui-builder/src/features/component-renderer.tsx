@@ -273,13 +273,15 @@ const useIsHighlighted = (componentId: string) => {
 }
 
 function ComponentWrapper({ children, component }: { children: ReactNode; component: Component }) {
-	const { setSelectedComponent, selectedComponentId, setHovered, unsetHovered } =
+	const { setSelectedComponent, selectedComponentId, setHovered, unsetHovered, deselect } =
 		useSelectionStore((store) => ({
 			setSelectedComponent: store.select,
 			selectedComponentId: store.selectedId,
 			setHovered: store.setHovered,
 			unsetHovered: store.unsetHovered,
+			deselect: store.deselect,
 		}))
+
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
@@ -386,7 +388,10 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			tabIndex={0}
 			id={component.id}
 			onKeyDown={(event) => {
-				getHotkeyHandler([['Backspace', handleDelete]])(event)
+				getHotkeyHandler([
+					['Backspace', handleDelete],
+					[`Escape`, deselect],
+				])(event)
 				handleEvents(EventKind.KeyDown)
 			}}
 			style={{
