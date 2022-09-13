@@ -34,7 +34,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				ParentId      int            `db:"parent_id"`
 				CreatedFor    string         `db:"created_for"`
 			}
-			rows.StructScan(&cur)
+			err = rows.Scan(&cur.Id, &cur.Name, &cur.AccountId, &cur.Endpoint, &cur.IsActive, &cur.IsTemplate, &cur.IsInteraction, &cur.IsPublic, &cur.UserGroups, &cur.ProjectName, &cur.ParentId, &cur.CreatedFor)
 			if err != nil {
 				return nil, err
 			}
@@ -59,6 +59,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 }
 
 const get_all_pipelines = `
-SELECT * FROM pipelines
+SELECT id, name, account_id, endpoint, is_active, is_template, is_interaction, is_public, user_groups, project_name, parent_id, created_for
+FROM pipelines
 WHERE account_id = $1
 `
