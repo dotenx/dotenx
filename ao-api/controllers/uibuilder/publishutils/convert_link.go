@@ -1,0 +1,95 @@
+package publishutils
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"strings"
+	"text/template"
+)
+
+type Link struct {
+	Kind       string        `json:"kind"`
+	Id         string        `json:"id"`
+	Components []interface{} `json:"components"`
+	RepeatFrom struct {
+		Name     string
+		Iterator string
+	} `json:"repeatFrom"`
+	Events     []Event  `json:"events"`
+	ClassNames []string `json:"classNames"`
+	Data       struct {
+		Style struct {
+			Desktop StyleModes `json:"desktop"`
+			Tablet  StyleModes `json:"tablet"`
+			Mobile  StyleModes `json:"mobile"`
+		} `json:"style"`
+		Href         string `json:"href"`
+		OpenInNewTab bool   `json:"openInNewTab"`
+	} `json:"data"`
+}
+
+const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href={{.Href}} {{if .OpenInNewTab}}target="blank"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+
+func convertLink(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	fmt.Println("convertLink")
+	b, err := json.Marshal(component)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	var link Link
+	json.Unmarshal(b, &link)
+	tmpl, err := template.New("link").Parse(linkTemplate)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	var renderedChildren []string
+
+	for _, child := range link.Components {
+		renderedChild, err := convertComponentToHTML(child.(map[string]interface{}), styleStore, functionStore)
+		if err != nil {
+			fmt.Println(err)
+			return "", err
+		}
+		renderedChildren = append(renderedChildren, renderedChild)
+	}
+
+	params := struct {
+		RenderedChildren string
+		Id               string
+		RepeatFrom       struct {
+			Name     string
+			Iterator string
+		}
+		Events       []Event
+		ClassNames   []string
+		Href         string
+		OpenInNewTab bool
+	}{
+		RenderedChildren: strings.Join(renderedChildren, "\n"),
+		Id:               link.Id,
+		RepeatFrom:       link.RepeatFrom,
+		Events:           link.Events,
+		ClassNames:       link.ClassNames,
+		Href:             link.Data.Href,
+		OpenInNewTab:     link.Data.OpenInNewTab,
+	}
+
+	var out bytes.Buffer
+	err = tmpl.Execute(&out, params)
+	if err != nil {
+		fmt.Println("error: ", err.Error())
+		return "", err
+	}
+
+	// Add the events to the function store to be rendered later
+	functionStore.AddEvents(link.Events)
+
+	// Add the styles to the styleStore to be rendered later
+	styleStore.AddStyle(link.Id, link.Data.Style.Desktop, link.Data.Style.Tablet, link.Data.Style.Mobile)
+
+	return out.String(), nil
+}

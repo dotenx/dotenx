@@ -122,7 +122,13 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 	case "Form":
 		return convertForm(component, styleStore, functionStore)
 	case "Box":
+		fallthrough
+	case "Stack":
+		fallthrough
+	case "Divider":
 		return convertBox(component, styleStore, functionStore)
+	case "Link":
+		return convertLink(component, styleStore, functionStore)
 	case "Columns":
 		return convertColumns(component, styleStore, functionStore)
 	case "Input":
