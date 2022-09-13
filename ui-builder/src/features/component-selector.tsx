@@ -598,7 +598,7 @@ function Layer({ component }: { component: Component }) {
 	)
 
 	return (
-		<div>
+		<div className={clsx(selectedId === component.id && 'bg-gray-50 rounded')}>
 			<div
 				className="flex items-center py-1 border-b group"
 				onMouseOver={() => setHovered(component.id)}

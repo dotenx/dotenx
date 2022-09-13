@@ -176,7 +176,13 @@ function ComponentSettingsShaper({
 				/>
 			)
 		case ComponentKind.Button:
-			return <ButtonComponentSettings component={component} />
+			return (
+				<ButtonComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Columns:
 			return (
 				<ColumnsComponentSettings
@@ -192,7 +198,13 @@ function ComponentSettingsShaper({
 		case ComponentKind.Textarea:
 			return <TextareaComponentSettings component={component} />
 		case ComponentKind.SubmitButton:
-			return <SubmitButtonComponentSettings component={component} />
+			return (
+				<ButtonComponentSettings
+					component={component}
+					editStyle={editStyle}
+					styles={styles}
+				/>
+			)
 		case ComponentKind.Form:
 			return <FormComponentSettings component={component} />
 		case ComponentKind.Link:
@@ -325,7 +337,15 @@ function BoxComponentSettings({
 	)
 }
 
-function ButtonComponentSettings({ component }: { component: ButtonComponent }) {
+function ButtonComponentSettings({
+	component,
+	editStyle,
+	styles,
+}: {
+	component: ButtonComponent | SubmitButtonComponent
+	styles: CSSProperties
+	editStyle: EditStyle
+}) {
 	const editComponent = useCanvasStore((store) => store.editComponent)
 	const value = component.data.text ?? ''
 	const viewport = useViewportStore((store) => store.device)
@@ -358,6 +378,20 @@ function ButtonComponentSettings({ component }: { component: ButtonComponent }) 
 					}
 				/>
 			</div>
+			<CollapseLine label="Borders">
+				<BordersEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Size">
+				<SizeEditor simple styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<Select
+				size="xs"
+				label="Shadow"
+				data={shadows}
+				allowDeselect
+				value={styles.boxShadow}
+				onChange={(value) => editStyle('boxShadow', value ?? '')}
+			/>
 		</div>
 	)
 }
@@ -513,12 +547,12 @@ function ColumnsComponentSettings({
 	editStyle: EditStyle
 }) {
 	const viewport = useViewportStore((store) => store.device)
-	const editData = useCanvasStore((store) => store.editComponent)
 	const editStyles = useEditStyle(component)
 	const selector = useAtomValue(selectedSelectorAtom)
 	const space = getStyleNumber(component.data.style[viewport][selector]?.gap?.toString())
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
 
+	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
 	return (
 		<div className="space-y-6">
 			<NumberInput
@@ -535,50 +569,44 @@ function ColumnsComponentSettings({
 					size="xs"
 					leftIcon={<TbPlus />}
 					onClick={() =>
-						editData(
-							component.id,
-							produce(component.data, (draft) => {
-								draft.columnWidths.push({ id: uuid(), value: 50 })
-							})
-						)
+						editStyle('gridTemplateColumns', `${styles.gridTemplateColumns} 1fr`)
 					}
 				>
 					Column
 				</Button>
 				<div className="space-y-1">
-					{component.data.columnWidths?.map((col, index) => (
-						<div className="flex items-center gap-1" key={col.id}>
-							<NumberInput
-								size="xs"
-								placeholder="Width"
-								title="Width"
-								className="w-full"
-								value={col.value}
-								rightSection={<p>%</p>}
-								onChange={(value) =>
-									editData(
-										component.id,
-										produce(component.data, (draft) => {
-											draft.columnWidths[index].value = value ?? 50
-										})
-									)
-								}
-							/>
-							<CloseButton
-								size="xs"
-								onClick={() =>
-									editData(
-										component.id,
-										produce(component.data, (draft) => {
-											draft.columnWidths = draft.columnWidths.filter(
-												(c) => c.id !== col.id
-											)
-										})
-									)
-								}
-							/>
-						</div>
-					))}
+					{cols.map((col, index) => {
+						const colNumber = getStyleNumber(col)
+						return (
+							<div className="flex items-center gap-1" key={index}>
+								<NumberInput
+									size="xs"
+									placeholder="Width"
+									title="Width"
+									className="w-full"
+									value={colNumber}
+									rightSection={<p>fr</p>}
+									onChange={(value) =>
+										editStyle(
+											'gridTemplateColumns',
+											produce(cols, (draft) => {
+												draft[index] = value + 'fr'
+											}).join(' ')
+										)
+									}
+								/>
+								<CloseButton
+									size="xs"
+									onClick={() =>
+										editStyle(
+											'gridTemplateColumns',
+											cols.filter((_, i) => i !== index).join(' ')
+										)
+									}
+								/>
+							</div>
+						)
+					})}
 				</div>
 			</div>
 			<div>
@@ -815,43 +843,6 @@ function TextareaComponentSettings({ component }: { component: TextareaComponent
 				onChange={(event) => changeValue(event.target.value)}
 				size="xs"
 			/>
-		</div>
-	)
-}
-
-function SubmitButtonComponentSettings({ component }: { component: SubmitButtonComponent }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
-	const value = component.data.text ?? ''
-	const viewport = useViewportStore((store) => store.device)
-	const editStyles = useEditStyle(component)
-	const selector = useAtomValue(selectedSelectorAtom)
-	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
-
-	return (
-		<div className="space-y-6">
-			<TextInput
-				label="Text"
-				size="xs"
-				value={value}
-				onChange={(event) =>
-					editComponent(component.id, { ...component.data, text: event.target.value })
-				}
-			/>
-			<div>
-				<p className="mb-1 font-medium">Background</p>
-				<ColorPicker
-					size="xs"
-					format="hsla"
-					fullWidth
-					value={backgroundColor}
-					onChange={(newColor) =>
-						editStyles({
-							...component.data.style[viewport][selector],
-							backgroundColor: newColor,
-						})
-					}
-				/>
-			</div>
 		</div>
 	)
 }
