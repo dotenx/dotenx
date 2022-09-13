@@ -90,7 +90,7 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	const stateText = textBinding ? _.get(allStates, textBinding.fromStateName) ?? '' : ''
 	const text = (stateText.toString() || component.data.text) ?? '<br />'
 
-	return <div style={{ overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: text }} />
+	return <div dangerouslySetInnerHTML={{ __html: text }} />
 }
 
 const getClasses = (component: Component) => {

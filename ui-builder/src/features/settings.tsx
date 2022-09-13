@@ -3,16 +3,18 @@ import {
 	Button,
 	CloseButton,
 	Code,
-	ColorPicker,
+	ColorInput,
 	Divider,
 	Group,
 	Image,
 	Menu,
 	NumberInput,
+	SegmentedControl,
 	Select,
 	Switch,
 	Tabs,
 	Text,
+	Textarea,
 	TextInput,
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
@@ -22,9 +24,13 @@ import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import { CSSProperties } from 'react'
 import {
+	TbArrowsHorizontal,
 	TbDatabase,
 	TbDroplet,
 	TbEdit,
+	TbLayoutAlignCenter,
+	TbLayoutAlignLeft,
+	TbLayoutAlignRight,
 	TbPhoto,
 	TbPlus,
 	TbRuler,
@@ -68,6 +74,7 @@ import {
 } from './data-editor'
 import { DataSourceForm } from './data-source-form'
 import { useDataSourceStore } from './data-source-store'
+import { getDefaultComponent } from './default-values'
 import { projectTagAtom } from './project-atom'
 import {
 	BordersEditor,
@@ -78,6 +85,7 @@ import {
 	SizeEditor,
 	SpacingEditor,
 	StylesEditor,
+	toCenter,
 	TypographyEditor,
 } from './styles-editor'
 import { useSelectedComponent } from './use-selected-component'
@@ -244,16 +252,18 @@ function TextComponentSettings({
 
 	return (
 		<div className="space-y-6">
-			<TextInput
+			<Textarea
 				label="Text"
 				value={value}
 				size="xs"
 				onChange={(event) =>
 					editComponent(component.id, { ...component.data, text: event.target.value })
 				}
+				autosize
+				maxRows={10}
 			/>
 			<CollapseLine label="Typography">
-				<TypographyEditor styles={styles} editStyle={editStyle} />
+				<TypographyEditor simple styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 			<CollapseLine label="Spacing">
 				<SpacingEditor styles={styles} editStyle={editStyle} />
@@ -301,21 +311,18 @@ function BoxComponentSettings({
 
 	return (
 		<div className="space-y-6">
-			<div>
-				<p className="mb-1 font-medium">Background</p>
-				<ColorPicker
-					size="xs"
-					format="hsla"
-					fullWidth
-					value={backgroundColor}
-					onChange={(newColor) =>
-						editStyles({
-							...component.data.style[viewport][selector],
-							backgroundColor: newColor,
-						})
-					}
-				/>
-			</div>
+			<ColorInput
+				size="xs"
+				format="hsla"
+				label="Background"
+				value={backgroundColor}
+				onChange={(newColor) =>
+					editStyles({
+						...component.data.style[viewport][selector],
+						backgroundColor: newColor,
+					})
+				}
+			/>
 			<CollapseLine label="Size">
 				<SizeEditor simple styles={styles} editStyle={editStyle} />
 			</CollapseLine>
@@ -363,26 +370,26 @@ function ButtonComponentSettings({
 					editComponent(component.id, { ...component.data, text: event.target.value })
 				}
 			/>
-			<div>
-				<p className="mb-1 font-medium">Background</p>
-				<ColorPicker
-					size="xs"
-					format="hsla"
-					fullWidth
-					value={backgroundColor}
-					onChange={(newColor) =>
-						editStyles({
-							...component.data.style[viewport][selector],
-							backgroundColor: newColor,
-						})
-					}
-				/>
-			</div>
-			<CollapseLine label="Borders">
-				<BordersEditor styles={styles} editStyle={editStyle} />
-			</CollapseLine>
+			<ColorInput
+				size="xs"
+				format="hsla"
+				label="Background"
+				value={backgroundColor}
+				onChange={(newColor) =>
+					editStyles({
+						...component.data.style[viewport][selector],
+						backgroundColor: newColor,
+					})
+				}
+			/>
 			<CollapseLine label="Size">
 				<SizeEditor simple styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+			<CollapseLine label="Borders">
+				<BordersEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 			<Select
 				size="xs"
@@ -475,6 +482,10 @@ function ImageComponentSettings({
 			/>
 			<SizeEditor simple styles={styles} editStyle={editStyle} />
 
+			<CollapseLine label="Spacing">
+				<SpacingEditor styles={styles} editStyle={editStyle} />
+			</CollapseLine>
+
 			<div className="grid grid-cols-12 items-center gap-y-2">
 				<p className="col-span-3">Radius</p>
 				<div className="col-span-9">
@@ -551,6 +562,7 @@ function ColumnsComponentSettings({
 	const selector = useAtomValue(selectedSelectorAtom)
 	const space = getStyleNumber(component.data.style[viewport][selector]?.gap?.toString())
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
+	const addComponent = useCanvasStore((store) => store.addComponent)
 
 	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
 	return (
@@ -563,14 +575,42 @@ function ColumnsComponentSettings({
 					editStyles({ ...component.data.style[viewport][selector], gap: value + 'px' })
 				}
 			/>
+			<div className="grid grid-cols-12 items-center">
+				<p className="col-span-3">Align</p>
+				<SegmentedControl
+					className="col-span-9"
+					data={simpleFlexAligns}
+					fullWidth
+					size="xs"
+					value={styles.alignItems ?? ''}
+					onChange={(value) => editStyle('alignItems', value)}
+				/>
+			</div>
+
+			<div className="grid grid-cols-12 items-center">
+				<p className="col-span-3">Justify</p>
+				<SegmentedControl
+					className="col-span-9"
+					data={simpleFlexAligns}
+					fullWidth
+					size="xs"
+					value={styles.justifyItems ?? ''}
+					onChange={(value) => editStyle('justifyItems', value)}
+				/>
+			</div>
+
 			<div>
 				<Button
 					mb="xs"
 					size="xs"
 					leftIcon={<TbPlus />}
-					onClick={() =>
+					onClick={() => {
 						editStyle('gridTemplateColumns', `${styles.gridTemplateColumns} 1fr`)
-					}
+						addComponent(
+							getDefaultComponent(ComponentKind.Box, uuid(), component.id),
+							component.id
+						)
+					}}
 				>
 					Column
 				</Button>
@@ -609,21 +649,18 @@ function ColumnsComponentSettings({
 					})}
 				</div>
 			</div>
-			<div>
-				<p className="mb-1 font-medium">Background</p>
-				<ColorPicker
-					size="xs"
-					format="hsla"
-					fullWidth
-					value={backgroundColor}
-					onChange={(newColor) =>
-						editStyles({
-							...component.data.style[viewport][selector],
-							backgroundColor: newColor,
-						})
-					}
-				/>
-			</div>
+			<ColorInput
+				size="xs"
+				format="hsla"
+				label="Background"
+				value={backgroundColor}
+				onChange={(newColor) =>
+					editStyles({
+						...component.data.style[viewport][selector],
+						backgroundColor: newColor,
+					})
+				}
+			/>
 			<CollapseLine label="Spacing">
 				<SpacingEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
@@ -1127,8 +1164,14 @@ function LinkComponentSettings({ component }: { component: LinkComponent }) {
 	)
 }
 
+const simpleFlexAligns = [
+	{ label: <TbLayoutAlignLeft />, title: 'Start', value: 'flex-start' },
+	{ label: <TbLayoutAlignCenter />, title: 'Center', value: 'center' },
+	{ label: <TbLayoutAlignRight />, title: 'End', value: 'flex-end' },
+	{ label: <TbArrowsHorizontal />, title: 'Stretch', value: 'stretch' },
+].map(toCenter)
+
 function StackComponentSettings({
-	component,
 	editStyle,
 	styles,
 }: {
@@ -1143,15 +1186,33 @@ function StackComponentSettings({
 				onChange={(value) => editStyle('gap', value)}
 				label="Gap"
 			/>
+			<div className="flex gap-4 items-center">
+				<p>Align</p>
+				<SegmentedControl
+					data={simpleFlexAligns}
+					className="grow"
+					fullWidth
+					size="xs"
+					value={styles.alignItems ?? ''}
+					onChange={(value) => editStyle('alignItems', value)}
+				/>
+			</div>
 			<CollapseLine label="Spacing">
 				<SpacingEditor editStyle={editStyle} styles={styles} />
 			</CollapseLine>
+			<Select
+				size="xs"
+				label="Shadow"
+				data={shadows}
+				allowDeselect
+				value={styles.boxShadow}
+				onChange={(value) => editStyle('boxShadow', value ?? '')}
+			/>
 		</div>
 	)
 }
 
 function DividerComponentSettings({
-	component,
 	editStyle,
 	styles,
 }: {
@@ -1166,16 +1227,13 @@ function DividerComponentSettings({
 				onChange={(value) => editStyle('height', value)}
 				label="Thickness"
 			/>
-			<div>
-				<p className="mb-1 font-medium">Color</p>
-				<ColorPicker
-					size="xs"
-					format="hsla"
-					fullWidth
-					value={styles.backgroundColor}
-					onChange={(newColor) => editStyle('backgroundColor', newColor)}
-				/>
-			</div>
+			<ColorInput
+				size="xs"
+				format="hsla"
+				label="Color"
+				value={styles.backgroundColor}
+				onChange={(newColor) => editStyle('backgroundColor', newColor)}
+			/>
 		</div>
 	)
 }

@@ -25,6 +25,7 @@ import {
 	TbAlignLeft,
 	TbAlignRight,
 	TbArrowAutofitHeight,
+	TbArrowsHorizontal,
 	TbBaseline,
 	TbBoxModel,
 	TbBoxModel2,
@@ -69,7 +70,7 @@ const normalizedCssProperties = cssProperties.all.map((property) =>
 		.join('')
 )
 
-const toCenter = (layout: { label: ReactNode; title: string; value: string }) => ({
+export const toCenter = (layout: { label: ReactNode; title: string; value: string }) => ({
 	label: (
 		<Center className="text-sm" title={layout.title}>
 			{layout.label}
@@ -142,7 +143,7 @@ export function StylesEditor({
 				<ShadowsEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 
-			<CollapseLine label="CSS Properties">
+			<CollapseLine label="CSS Properties" defaultClosed>
 				<CssPropertiesEditor onChange={onChange} style={styles} />
 			</CollapseLine>
 		</div>
@@ -335,7 +336,7 @@ const flexAligns = [
 	{ label: <TbLayoutAlignLeft />, title: 'Start', value: 'flex-start' },
 	{ label: <TbLayoutAlignCenter />, title: 'Center', value: 'center' },
 	{ label: <TbLayoutAlignRight />, title: 'End', value: 'flex-end' },
-	{ label: <TbLayoutList className="rotate-90" />, title: 'Stretch', value: 'stretch' },
+	{ label: <TbArrowsHorizontal />, title: 'Stretch', value: 'stretch' },
 	{ label: <TbBaseline />, title: 'Baseline', value: 'baseline' },
 ].map(toCenter)
 
@@ -351,8 +352,16 @@ const flexJustifies = [
 	{ label: <TbLayoutDistributeVertical />, title: 'Space around', value: 'space-around' },
 ].map(toCenter)
 
+const justifyItems = [
+	{ label: <TbLayoutAlignLeft />, title: 'Start', value: 'start' },
+	{ label: <TbLayoutAlignCenter />, title: 'Center', value: 'center' },
+	{ label: <TbLayoutAlignRight />, title: 'End', value: 'end' },
+	{ label: <TbArrowsHorizontal />, title: 'Stretch', value: 'stretch' },
+].map(toCenter)
+
 function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	const isFlex = styles.display === 'flex'
+	const isGrid = styles.display === 'grid'
 	const selectedComponent = useSelectedComponent()
 
 	return (
@@ -367,6 +376,46 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 				onChange={(value) => editStyle('display', value)}
 				disabled={selectedComponent?.kind === ComponentKind.Columns}
 			/>
+
+			{isGrid && (
+				<>
+					<p className="col-span-3">Align</p>
+					<SegmentedControl
+						className="col-span-9"
+						data={flexAligns}
+						fullWidth
+						size="xs"
+						value={styles.alignItems ?? ''}
+						onChange={(value) => editStyle('alignItems', value)}
+					/>
+
+					<p className="col-span-3">Justify</p>
+					<SegmentedControl
+						className="col-span-9"
+						data={justifyItems}
+						fullWidth
+						size="xs"
+						value={styles.justifyItems ?? ''}
+						onChange={(value) => editStyle('justifyItems', value)}
+					/>
+
+					<p className="col-span-3">Gap</p>
+					<div className="flex col-span-9 gap-3">
+						<InputWithUnit
+							placeholder="Columns"
+							title="Columns"
+							value={styles.columnGap?.toString()}
+							onChange={(value) => editStyle('columnGap', value)}
+						/>
+						<InputWithUnit
+							placeholder="Rows"
+							title="Rows"
+							value={styles.rowGap?.toString()}
+							onChange={(value) => editStyle('rowGap', value)}
+						/>
+					</div>
+				</>
+			)}
 
 			{isFlex && (
 				<>
@@ -414,7 +463,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 						data={flexAligns}
 						fullWidth
 						size="xs"
-						value={styles.alignItems ?? 'flex-start'}
+						value={styles.alignItems ?? ''}
 						onChange={(value) => editStyle('alignItems', value)}
 					/>
 
@@ -424,7 +473,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 						data={flexJustifies}
 						fullWidth
 						size="xs"
-						value={styles.justifyContent ?? 'flex-start'}
+						value={styles.justifyContent ?? ''}
 						onChange={(value) => editStyle('justifyContent', value)}
 					/>
 
@@ -479,8 +528,16 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 	)
 }
 
-export function CollapseLine({ children, label }: { children: ReactNode; label: string }) {
-	const [opened, handlers] = useDisclosure(true)
+export function CollapseLine({
+	children,
+	label,
+	defaultClosed,
+}: {
+	children: ReactNode
+	label: string
+	defaultClosed?: boolean
+}) {
+	const [opened, handlers] = useDisclosure(!defaultClosed)
 
 	return (
 		<div>
@@ -672,13 +729,64 @@ const fonts = [
 	'Yu Gothic',
 ]
 
+const fontSizes = [
+	{ label: 'xs', value: '0.75rem' },
+	{ label: 'sm', value: '0.875rem' },
+	{ label: 'md', value: '1rem' },
+	{ label: 'lg', value: '1.125rem' },
+	{ label: 'xl', value: '1.25rem' },
+	{ label: '2xl', value: '1.5rem' },
+	{ label: '3xl', value: '1.875rem' },
+	{ label: '4xl', value: '2.25rem' },
+	{ label: '5xl', value: '3rem' },
+	{ label: '6xl', value: '3.75rem' },
+	{ label: '7xl', value: '4.5rem' },
+	{ label: '8xl', value: '6rem' },
+	{ label: '9xl', value: '8rem' },
+]
+
 export function TypographyEditor({
 	styles,
 	editStyle,
+	simple,
 }: {
 	styles: CSSProperties
 	editStyle: EditStyle
+	simple?: boolean
 }) {
+	const sizeAndHeight = (
+		<>
+			<p className="col-span-3">Size</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.fontSize?.toString()}
+					onChange={(value) => editStyle('fontSize', value)}
+				/>
+			</div>
+
+			<p className="col-span-3 ml-3">Height</p>
+			<div className="col-span-3">
+				<InputWithUnit
+					value={styles.lineHeight?.toString()}
+					onChange={(value) => editStyle('lineHeight', value)}
+				/>
+			</div>
+		</>
+	)
+
+	const simpleSize = (
+		<>
+			<p className="col-span-3">Size</p>
+			<div className="col-span-9">
+				<Select
+					value={styles.fontSize?.toString()}
+					onChange={(value) => editStyle('fontSize', value ?? '')}
+					data={fontSizes}
+				/>
+			</div>
+		</>
+	)
+
 	return (
 		<div className="grid items-center grid-cols-12 gap-y-2">
 			<p className="col-span-3">Font</p>
@@ -699,21 +807,8 @@ export function TypographyEditor({
 				size="xs"
 			/>
 
-			<p className="col-span-3">Size</p>
-			<div className="col-span-3">
-				<InputWithUnit
-					value={styles.fontSize?.toString()}
-					onChange={(value) => editStyle('fontSize', value)}
-				/>
-			</div>
-
-			<p className="col-span-3 ml-3">Height</p>
-			<div className="col-span-3">
-				<InputWithUnit
-					value={styles.lineHeight?.toString()}
-					onChange={(value) => editStyle('lineHeight', value)}
-				/>
-			</div>
+			{!simple && sizeAndHeight}
+			{simple && simpleSize}
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
@@ -1056,7 +1151,7 @@ function MarginPaddingInput({
 	const isZero = value === '0px'
 
 	return (
-		<Popover shadow="sm" withArrow position="left" withinPortal>
+		<Popover shadow="sm" withArrow position="left" withinPortal trapFocus>
 			<Popover.Target>
 				<button className="self-center w-[6ch] no-scrollbar overflow-auto">
 					{isZero ? 0 : value}
