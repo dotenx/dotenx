@@ -1,6 +1,7 @@
 package crudService
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -25,7 +26,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return
 	}
-	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, newPipeline.Endpoint, base.Name)
+	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, newPipeline.Endpoint, base.Name, projectName)
 	if err != nil {
 		return "", err
 	}
@@ -52,8 +53,13 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name, projectName s
 		fields := make([]string, 0)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
-			strVal := fmt.Sprintf("%v", value)
-			if strVal == "" { // if value is empty means that we must get it when we want to create from template
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(value)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				fields = append(fields, key)
 			}
 		}
@@ -94,8 +100,13 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 	for taskName, task := range emptyTasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
-			val := fmt.Sprintf("%v", v)
-			if val == "" {
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(v)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]
 					if ok {
@@ -133,7 +144,7 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 }
 
 // this function iterates over triggers and for each trigger field with empty value checks fields map for it and finally set triggers integration (based on third party account id)
-func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName string) ([]*models.EventTrigger, error) {
+func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName, projectname string) ([]*models.EventTrigger, error) {
 	triggers := make([]*models.EventTrigger, 0)
 	for triggerName, trigger := range emptyTriggers {
 		for k, v := range trigger.Credentials {
@@ -170,6 +181,7 @@ func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger
 			Integration: trigger.Integration,
 			Credentials: trigger.Credentials,
 			MetaData:    trigger.MetaData,
+			ProjectName: projectname,
 		})
 	}
 	return triggers, nil
