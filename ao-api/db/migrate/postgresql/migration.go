@@ -248,8 +248,16 @@ var migrations = []struct {
 		stmt: addParentToPipelines,
 	},
 	{
+		name: "set-default-Parent-To-Pipelines",
+		stmt: setDefaultParent,
+	},
+	{
 		name: "add-Created-for-To-Pipelines",
 		stmt: addCreatedForToPipelines,
+	},
+	{
+		name: "set-default-Created-for-To-Pipelines",
+		stmt: setDefaultCreatedFor,
 	},
 }
 
@@ -710,7 +718,11 @@ var addParentToPipelines = `
 ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS parent_id INT;
 `
+
+var setDefaultParent = `update pipelines set parent_id = 0 where parent_id is null;`
+
 var addCreatedForToPipelines = `
 ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS created_for VARCHAR(64);
 `
+var setDefaultCreatedFor = `update pipelines set created_for = '' where created_for is null;`
