@@ -525,7 +525,6 @@ export interface ButtonComponentData {
 
 export interface ColumnsComponentData {
 	style: Style
-	columnWidths: { id: string; value: number }[]
 }
 
 export interface ImageComponentData {
