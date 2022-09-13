@@ -264,6 +264,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	pipeline.GET("/project/:project_name", crudController.ListProjectPipelines())
 	pipeline.POST("/project/:project_name/template/name/:name", crudController.CreateFromTemplate())
 	pipeline.GET("/project/:project_name/template/name/:name", crudController.GetTemplateDetailes())
+	pipeline.GET("/project/:project_name/template/name/:name/children", crudController.GetTemplateChildren())
 	pipeline.GET("/project/:project_name/interaction/name/:name", crudController.GetInteractionDetailes())
 	pipeline.PUT("/project/:project_name", crudController.UpdatePipeline())
 	pipeline.GET("", crudController.GetPipelines())

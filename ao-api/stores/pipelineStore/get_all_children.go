@@ -8,13 +8,11 @@ import (
 	"github.com/lib/pq"
 )
 
-func (ps *pipelineStore) GetPipelines(context context.Context, accountId string) ([]models.Pipeline, error) {
+func (ps *pipelineStore) GetAllTemplateChildren(context context.Context, accountId, project, name string) (pipelines []models.Pipeline, err error) {
 	res := make([]models.Pipeline, 0)
 	switch ps.db.Driver {
 	case db.Postgres:
-		conn := ps.db.Connection
-		stmt := get_all_pipelines
-		rows, err := conn.Queryx(stmt, accountId)
+		rows, err := ps.db.Connection.Queryx(get_all_child_pipelines, accountId, project, name)
 		if err != nil {
 			return nil, err
 		}
@@ -34,7 +32,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 				ParentId      int            `db:"parent_id"`
 				CreatedFor    string         `db:"created_for"`
 			}
-			err = rows.Scan(&cur.Id, &cur.Name, &cur.AccountId, &cur.Endpoint, &cur.IsActive, &cur.IsTemplate, &cur.IsInteraction, &cur.IsPublic, &cur.UserGroups, &cur.ProjectName, &cur.ParentId, &cur.CreatedFor)
+			err = rows.StructScan(&cur)
 			if err != nil {
 				return nil, err
 			}
@@ -58,8 +56,7 @@ func (ps *pipelineStore) GetPipelines(context context.Context, accountId string)
 
 }
 
-const get_all_pipelines = `
-SELECT id, name, account_id, endpoint, is_active, is_template, is_interaction, is_public, user_groups, project_name, parent_id, created_for
-FROM pipelines
-WHERE account_id = $1
+const get_all_child_pipelines = `
+SELECT * FROM pipelines
+WHERE parent_id = (select id from pipelines where account_id = $1 and project_name = $2 and name = $3 limit 1)
 `

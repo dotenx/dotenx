@@ -11,13 +11,13 @@ import (
 )
 
 // this methods create an Automation from given base template and fields
-func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string) (name string, err error) {
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string, parentId int) (name string, err error) {
 	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
 	if err != nil {
 		return "", err
 	}
 	base.Name = base.Name + "_" + utils.GetNewUuid()
-	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName)
+	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName, parentId, tpAccountId)
 	if err != nil {
 		return
 	}
