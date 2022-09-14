@@ -2,8 +2,9 @@ import { format } from 'date-fns'
 import { useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
+import { IoArrowBack } from 'react-icons/io5'
 import { useQuery } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AutomationKind, getAutomation, getExecution, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
@@ -36,6 +37,7 @@ function Content({ kind }: { kind: AutomationKind }) {
 	)
 	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		if (automationName && automation)
@@ -56,6 +58,9 @@ function Content({ kind }: { kind: AutomationKind }) {
 
 	return (
 		<>
+			<div onClick={() => navigate(-1)} className="ml-52 mt-10 cursor-pointer">
+				<IoArrowBack />
+			</div>
 			<ExecutionDetails
 				kind={kind}
 				automationName={automationName}

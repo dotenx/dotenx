@@ -1,22 +1,26 @@
-import { ActionIcon, Anchor, Button, Checkbox, MultiSelect } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Checkbox, MultiSelect, Drawer } from '@mantine/core'
 import { useForm } from '@mantine/form'
+import { CellProps } from 'react-table'
+import { format } from 'date-fns'
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { IoAdd, IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
 	API_URL,
 	Automation,
 	AutomationKind,
 	EndpointFields,
+	Execution,
+	getAutomationExecutions,
 	getInteractionEndpointFields,
 	getProject,
 	getTemplateEndpointFields,
 	getUserGroups,
 	QueryKey,
 	setAccess,
-	setInteractionUserGroup
+	setInteractionUserGroup,
 } from '../../api'
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { Modals, useModal } from '../hooks'
@@ -29,12 +33,19 @@ interface AutomationListProps {
 	automations?: Automation[]
 	loading: boolean
 	title: string
-	kind: AutomationKind, 
+	subtitle?: string
+	kind: AutomationKind
 	helpDetails?: HelpDetails
 }
 
-
-export function AutomationList({ automations, loading, title, kind, helpDetails }: AutomationListProps) {
+export function AutomationList({
+	automations,
+	loading,
+	title,
+	subtitle,
+	kind,
+	helpDetails,
+}: AutomationListProps) {
 	const modal = useModal()
 	const client = useQueryClient()
 	const [rowData, setRowData] = useState({ value: false, name: '' })
@@ -45,6 +56,14 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 		setInteractionUserGroup,
 		{
 			onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
+		}
+	)
+	const { mutate: mutateAutomationHistory, isLoading: loadingAutomationHistory } = useMutation(
+		getAutomationExecutions,
+		{
+			onSuccess: (data) => {
+				setAutomationHistory(data.data), setOpenHistory(true)
+			},
 		}
 	)
 
@@ -61,6 +80,7 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 		},
 		enabled: !!projectTag,
 	})
+	const navigate = useNavigate()
 
 	const [defaultUserGroups, setDefaultUserGroups] = useState([])
 	const { onSubmit, ...form } = useForm()
@@ -68,14 +88,19 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 		form.setValues({ userGroups: defaultUserGroups })
 	}, [defaultUserGroups])
 
+	const [openHistory, setOpenHistory] = useState(false)
+	const [automationName, setAutomationName] = useState('')
+	const [automationHistory, setAutomationHistory] = useState<any>([])
+
 	return (
 		<>
 			<ContentWrapper>
 				<Table
 					title={title}
+					subtitle={subtitle}
 					helpDetails={helpDetails}
 					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
-					loading={loading}
+					loading={loading || loadingAutomationHistory}
 					actionBar={<NewAutomation kind={kind} />}
 					columns={(
 						[
@@ -85,6 +110,10 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 								Cell: ({ value }: { value: string }) => (
 									<AutomationLink automationName={value} />
 								),
+							},
+							{
+								Header: 'User account',
+								accessor: 'created_for',
 							},
 							{
 								Header: 'Status',
@@ -133,6 +162,42 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 								),
 							},
 							{
+								Header: 'Created automations',
+								id: 'Created automations',
+								accessor: 'name',
+								Cell: ({ value, row }: { value: string; row: any }) => (
+									<Button
+										onClick={() => navigate(`${value}/automations`)}
+										variant="subtle"
+										color="gray"
+										size="xs"
+									>
+										Show
+									</Button>
+								),
+							},
+							{
+								Header: 'History',
+								id: 'automation history',
+								accessor: 'name',
+								Cell: ({ value }: { value: string }) => (
+									<Button
+										onClick={() => {
+											mutateAutomationHistory({
+												name: value,
+												projectName,
+											}),
+												setAutomationName(value)
+										}}
+										variant="subtle"
+										color="gray"
+										size="xs"
+									>
+										Show
+									</Button>
+								),
+							},
+							{
 								Header: 'Action',
 								id: 'action',
 								accessor: 'name',
@@ -148,9 +213,16 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 						] as const
 					).filter(
 						(col) =>
-							(kind !== 'automation' ? col.Header !== 'Status' : true) &&
+							(!['automation', 'template_automations'].includes(kind)
+								? col.Header !== 'Status'
+								: true) &&
 							(kind !== 'interaction'
 								? !['Public', 'User groups'].includes(col.Header)
+								: true) &&
+							(kind !== 'template' ? col.Header !== 'Created automations' : true) &&
+							(kind === 'template_automations' ? col.Header !== 'Name' : true) &&
+							(kind !== 'template_automations'
+								? !['History', 'User account'].includes(col.Header)
 								: true)
 					)}
 					data={automations}
@@ -237,6 +309,48 @@ export function AutomationList({ automations, loading, title, kind, helpDetails 
 					</div>
 				)}
 			</Modal>
+
+			<Drawer
+				opened={openHistory}
+				onClose={() => setOpenHistory(false)}
+				title="Automation History"
+				padding="xl"
+				size="xl"
+				position="right"
+			>
+				<div className="overflow-y-auto h-full pb-20 ">
+					<Table
+						title=""
+						columns={[
+							{
+								Header: 'Date',
+								Cell: (props: CellProps<Execution>) => (
+									<Link
+										className="rounded hover:bg-slate-50"
+										to={`/builder/projects/${projectName}/automations/${automationName}/executions/${props.row.original.Id}`}
+									>
+										<span>
+											{format(
+												new Date(props.row.original.StartedAt),
+												'yyyy/MM/dd'
+											)}
+										</span>
+										<span className="ml-4 text-xs">
+											{format(
+												new Date(props.row.original.StartedAt),
+												'HH:mm:ss'
+											)}
+										</span>
+									</Link>
+								),
+							},
+							{ Header: 'ID', accessor: 'Id' },
+						]}
+						data={automationHistory}
+						emptyText={`This ${kind} has no execution history yet.`}
+					/>
+				</div>
+			</Drawer>
 		</>
 	)
 }
@@ -245,6 +359,7 @@ function NewAutomation({ kind }: { kind: AutomationKind }) {
 	const newAutomation = useNewAutomation('new')
 	const newButtonText = kind === 'template' ? 'Automation Template' : kind
 
+	if (kind === 'template_automations') return null
 	return (
 		<div className="flex gap-4">
 			{kind === 'automation' && (
@@ -286,7 +401,7 @@ function AutomationActions({ automationName, kind, endpoint, isPublic }: Automat
 
 	return (
 		<div className="flex items-center justify-end gap-4">
-			{kind !== 'automation' && (
+			{!['automation', 'template_automations'].includes(kind) && (
 				<Button
 					onClick={() =>
 						modal.open(Modals.TemplateEndpoint, { automationName, endpoint, isPublic })
