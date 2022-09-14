@@ -3,6 +3,7 @@ import { QueryBuilderValues } from "../features/database"
 export enum QueryKey {
 	GetUserManagementData = 'get-user-management-data',
 	GetAutomations = 'get-automation',
+	GetTemplateAutomations = 'get-template-automations',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetAutomation = 'get-automation',
@@ -106,6 +107,7 @@ export interface Automation {
 	endpoint: string
 	is_active: boolean
 	is_public?: boolean
+	created_for?: string
 	user_groups?: string[]
 	is_template?: boolean
 	is_interaction?: boolean
@@ -356,7 +358,7 @@ export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
 
-export type AutomationKind = 'automation' | 'template' | 'interaction'
+export type AutomationKind = 'automation' | 'template' | 'interaction' | 'template_automations'
 
 export type StartAutomationRequest =
 	| Record<string, never>

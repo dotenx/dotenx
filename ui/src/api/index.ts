@@ -88,7 +88,9 @@ export function updateAutomation({
 export function getAutomations(projectName: string) {
 	return api.get<GetAutomationsResponse>(`/pipeline/project/${projectName}`)
 }
-
+export function getTemplateAutomations(name: string, projectName: string) {
+	return api.get<GetAutomationsResponse>(`/pipeline/project/${projectName}/template/name/${name}/children`)
+}
 export function getAutomation({ name, projectName }: { projectName: string; name: string }) {
 	return api.get<GetAutomationResponse>(`/pipeline/project/${projectName}/name/${name}`)
 }
