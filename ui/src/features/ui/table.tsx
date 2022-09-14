@@ -10,6 +10,7 @@ import { HelpDetails, HelpPopover } from './help-popover'
 
 interface TableProps<D extends object = Record<string, string>> {
 	title: string
+	subtitle?: string
 	actionBar?: ReactNode
 	emptyText?: string
 	columns: Column<D>[]
@@ -20,6 +21,7 @@ interface TableProps<D extends object = Record<string, string>> {
 
 export function Table<D extends object = Record<string, string>>({
 	title,
+	subtitle,
 	actionBar,
 	emptyText,
 	columns,
@@ -48,14 +50,19 @@ export function Table<D extends object = Record<string, string>>({
 
 	return (
 		<div className="flex flex-col gap-10">
-			<div className="flex justify-between">
+			<div className="flex justify-between ">
 				<div className="flex justify-start">
 					<Title order={2} sx={{ display: 'inline-flex' }}>
 						{title}
 					</Title>
+
 					{helpDetails && <HelpPopover helpDetails={helpDetails} />}
 				</div>
+
 				{data.length !== 0 && <span>{actionBar}</span>}
+			</div>
+			<div className="flex justify-start bg-red-200">
+				<div className="text-sm -mt-8 font-medium">{subtitle}</div>
 			</div>
 			{loading && (
 				<div className="left-1/2 top-1/3 absolute">

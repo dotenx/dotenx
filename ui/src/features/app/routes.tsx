@@ -26,6 +26,7 @@ import DomainsPage from '../../pages/domains'
 import UserManagementPage from '../../pages/user-management'
 import { Layout } from '../ui'
 import { useViewportSize } from '@mantine/hooks'
+import TemplateAutomationsPage from '../../pages/template-automations'
 
 const routes = [
 	{ path: '/builder/projects/:projectName/providers/:providerName', element: <ProviderPage /> },
@@ -45,6 +46,10 @@ const routes = [
 	{ path: '/builder/projects/:projectName/interactions', element: <InteractionsPage /> },
 	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
+	{
+		path: '/builder/projects/:projectName/templates/:name/automations',
+		element: <TemplateAutomationsPage />,
+	},
 	{ path: '/builder/projects/:projectName/templates', element: <TemplatesPage /> },
 	{
 		path: '/builder/projects/:projectName/user-management/user-groups',
@@ -53,6 +58,10 @@ const routes = [
 	{ path: '/builder/projects/:projectName/user-management', element: <UserManagementPage /> },
 	{ path: '/builder/projects/:projectName/files', element: <Files /> },
 	{ path: '/builder/projects/:projectName/domains', element: <DomainsPage /> },
+	{
+		path: '/builder/projects/:projectName/automations/:name/executions/:id',
+		element: <ExecutionPage />,
+	},
 
 	{ path: '/try-out', element: <TryOutPage /> },
 	{ path: '/integrations/add', element: <OauthPage /> },
