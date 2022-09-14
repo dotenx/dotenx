@@ -26,11 +26,11 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return
 	}
-	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, newPipeline.Endpoint, base.Name, projectName)
+	filledTriggers, err := cm.fillTriggers(pipeline.Manifest.Triggers, fields, base.AccountId, tpAccountId, newPipeline.Endpoint, base.Name)
 	if err != nil {
 		return "", err
 	}
-	err = cm.TriggerService.AddTriggers(base.AccountId, base.ProjectName, filledTriggers, newPipeline.Endpoint)
+	err = cm.TriggerService.AddTriggers(base.AccountId, projectName, filledTriggers, newPipeline.Endpoint)
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -110,7 +110,10 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]
 					if ok {
-						body[k] = value
+						body[k] = models.TaskFieldDetailes{
+							Type:  models.DirectValueFieldType,
+							Value: value,
+						}
 					} else {
 						return nil, errors.New("there is no field named " + k + " in " + taskName + " body")
 					}
@@ -144,7 +147,7 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 }
 
 // this function iterates over triggers and for each trigger field with empty value checks fields map for it and finally set triggers integration (based on third party account id)
-func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName, projectname string) ([]*models.EventTrigger, error) {
+func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger, fields map[string]interface{}, accountId, tpAccountId, endpoint, pipelineName string) ([]*models.EventTrigger, error) {
 	triggers := make([]*models.EventTrigger, 0)
 	for triggerName, trigger := range emptyTriggers {
 		for k, v := range trigger.Credentials {
@@ -181,7 +184,6 @@ func (cm *crudManager) fillTriggers(emptyTriggers map[string]models.EventTrigger
 			Integration: trigger.Integration,
 			Credentials: trigger.Credentials,
 			MetaData:    trigger.MetaData,
-			ProjectName: projectname,
 		})
 	}
 	return triggers, nil

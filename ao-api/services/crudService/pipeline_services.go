@@ -102,6 +102,7 @@ func (cm *crudManager) GetPipelines(accountId string) ([]models.Pipeline, error)
 func (cm *crudManager) DeletePipeline(accountId, name, projectName string, deleteRecord bool) (err error) {
 	p, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
+		logrus.Println(err)
 		return
 	}
 	err = cm.deleteLambdaFunctions(p.PipelineDetailes.Manifest.Tasks)
@@ -111,6 +112,7 @@ func (cm *crudManager) DeletePipeline(accountId, name, projectName string, delet
 	if p.IsActive {
 		err = cm.DeActivatePipeline(accountId, p.PipelineDetailes.Id, deleteRecord)
 		if err != nil {
+			logrus.Println(err)
 			return
 		}
 	}
