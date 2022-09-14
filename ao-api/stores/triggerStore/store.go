@@ -10,6 +10,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/sirupsen/logrus"
 )
 
 type TriggerStore interface {
@@ -44,6 +45,7 @@ func (store *triggerStore) AddTrigger(ctx context.Context, accountId, projectNam
 		return fmt.Errorf("driver not supported")
 	}
 	js, _ := json.Marshal(trigger.Credentials)
+	logrus.Println(projectName)
 	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
 		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js, projectName)
 	if err != nil {

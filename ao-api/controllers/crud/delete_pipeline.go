@@ -1,11 +1,11 @@
 package crud
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func (mc *CRUDController) DeletePipeline() gin.HandlerFunc {
@@ -15,7 +15,7 @@ func (mc *CRUDController) DeletePipeline() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		err := mc.Service.DeletePipeline(accountId, name, projectName, false)
 		if err != nil {
-			log.Println(err.Error())
+			logrus.Println(err)
 			c.JSON(http.StatusInternalServerError, err)
 			return
 		}
