@@ -1,4 +1,4 @@
-// iamge: hojjat12/database-update-record:lambda4
+// iamge: hojjat12/database-update-record:lambda5
 package main
 
 import (
@@ -39,7 +39,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		dtxAccessToken := singleInput["dtx_access_token"].(string)
 		projectTag := singleInput["project_tag"].(string)
 		tableName := singleInput["table_name"].(string)
-		rowId := singleInput["row_id"].(string)
+		rowId := fmt.Sprint(singleInput["row_id"])
 		columnValues := fmt.Sprint(singleInput["column_values"])
 		url := fmt.Sprintf("https://api.dotenx.com/database/query/update/project/%s/table/%s/row/%s", projectTag, tableName, rowId)
 		headers := []Header{
