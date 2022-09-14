@@ -30,8 +30,8 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		const hotkeys = getHotkeyHandler([
-			['ctrl+z', undo],
-			['ctrl+shift+z', redo],
+			['mod+z', undo],
+			['mod+shift+z', redo],
 		])
 		window?.document.body.addEventListener('keydown', hotkeys)
 		return () => window?.document.body.removeEventListener('keydown', hotkeys)
@@ -54,8 +54,8 @@ export function Canvas() {
 
 	useHotkeys([
 		['Escape', deselectComponent],
-		['ctrl+z', undo],
-		['ctrl+shift+z', redo],
+		['mod+z', undo],
+		['mod+shift+z', redo],
 	])
 
 	const desktopIds = generateCssIds(components, 'desktop')
