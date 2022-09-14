@@ -22,7 +22,8 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation } from '@tanstack/react-query'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { CSSProperties } from 'react'
+import _ from 'lodash'
+import { CSSProperties, useMemo, useState } from 'react'
 import {
 	TbArrowsHorizontal,
 	TbDatabase,
@@ -204,7 +205,7 @@ function ComponentSettingsShaper({
 		case ComponentKind.Select:
 			return <SelectComponentSettings component={component} />
 		case ComponentKind.Textarea:
-			return <TextareaComponentSettings component={component} />
+			return <InputComponentSettings component={component} />
 		case ComponentKind.SubmitButton:
 			return (
 				<ButtonComponentSettings
@@ -247,18 +248,24 @@ function TextComponentSettings({
 	styles: CSSProperties
 	editStyle: EditStyle
 }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const value = component.data.text ?? ''
+	const [text, setText] = useState(value)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
 
 	return (
 		<div className="space-y-6">
 			<Textarea
 				label="Text"
-				value={value}
+				value={text}
 				size="xs"
-				onChange={(event) =>
+				onChange={(event) => {
+					setText(event.target.value)
 					editComponent(component.id, { ...component.data, text: event.target.value })
-				}
+				}}
 				autosize
 				maxRows={10}
 			/>
@@ -353,22 +360,28 @@ function ButtonComponentSettings({
 	styles: CSSProperties
 	editStyle: EditStyle
 }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
 	const value = component.data.text ?? ''
 	const viewport = useViewportStore((store) => store.device)
 	const editStyles = useEditStyle(component)
 	const selector = useAtomValue(selectedSelectorAtom)
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
+	const [text, setText] = useState(value)
 
 	return (
 		<div className="space-y-6">
 			<TextInput
 				label="Text"
 				size="xs"
-				value={value}
-				onChange={(event) =>
+				value={text}
+				onChange={(event) => {
+					setText(event.target.value)
 					editComponent(component.id, { ...component.data, text: event.target.value })
-				}
+				}}
 			/>
 			<ColorInput
 				size="xs"
@@ -416,14 +429,21 @@ function ImageComponentSettings({
 	const viewport = useViewportStore((store) => store.device)
 	const projectTag = useAtomValue(projectTagAtom)
 	const uploadImageMutation = useMutation(uploadImage)
-	const editComponent = useCanvasStore((store) => store.editComponent)
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
 	const src = component.data.src
-	const setImage = (src: string | null) => editComponent(component.id, { ...component.data, src })
+	const setImage = (src: string | null) =>
+		editComponentNoDebounce(component.id, { ...component.data, src })
 	const bgSize = component.data.style[viewport][selector]?.backgroundSize?.toString() ?? 'cover'
 	const bgPosition =
 		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
 	const editStyles = useEditStyle(component)
+	const [source, setSource] = useState(src ?? '')
+	const [alt, setAlt] = useState(altText)
 
 	const imagePart = src ? (
 		<div>
@@ -472,13 +492,14 @@ function ImageComponentSettings({
 			<TextInput
 				size="xs"
 				label="Source"
-				value={src ?? ''}
-				onChange={(event) =>
+				value={source}
+				onChange={(event) => {
+					setSource(source)
 					editComponent(component.id, {
 						...component.data,
 						src: event.target.value,
 					})
-				}
+				}}
 			/>
 			<SizeEditor simple styles={styles} editStyle={editStyle} />
 
@@ -486,7 +507,7 @@ function ImageComponentSettings({
 				<SpacingEditor styles={styles} editStyle={editStyle} />
 			</CollapseLine>
 
-			<div className="grid grid-cols-12 items-center gap-y-2">
+			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Radius</p>
 				<div className="col-span-9">
 					<InputWithUnit
@@ -536,13 +557,14 @@ function ImageComponentSettings({
 			<TextInput
 				size="xs"
 				label="Alt text"
-				value={altText}
-				onChange={(event) =>
+				value={alt}
+				onChange={(event) => {
+					setAlt(event.target.value)
 					editComponent(component.id, {
 						...component.data,
 						alt: event.target.value,
 					})
-				}
+				}}
 			/>
 		</div>
 	)
@@ -575,7 +597,7 @@ function ColumnsComponentSettings({
 					editStyles({ ...component.data.style[viewport][selector], gap: value + 'px' })
 				}
 			/>
-			<div className="grid grid-cols-12 items-center">
+			<div className="grid items-center grid-cols-12">
 				<p className="col-span-3">Align</p>
 				<SegmentedControl
 					className="col-span-9"
@@ -587,7 +609,7 @@ function ColumnsComponentSettings({
 				/>
 			</div>
 
-			<div className="grid grid-cols-12 items-center">
+			<div className="grid items-center grid-cols-12">
 				<p className="col-span-3">Justify</p>
 				<SegmentedControl
 					className="col-span-9"
@@ -668,47 +690,63 @@ function ColumnsComponentSettings({
 	)
 }
 
-function InputComponentSettings({ component }: { component: InputComponent }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
-	const { type, name, placeholder, defaultValue, required, value } = component.data
-	const changeType = (type: string) => editComponent(component.id, { ...component.data, type })
-	const changeName = (name: string) => editComponent(component.id, { ...component.data, name })
-	const changePlaceholder = (placeholder: string) =>
-		editComponent(component.id, { ...component.data, placeholder })
-	const changeDefaultValue = (defaultValue: string) =>
-		editComponent(component.id, { ...component.data, defaultValue })
+function InputComponentSettings({ component }: { component: InputComponent | TextareaComponent }) {
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
+	const changeType = (type: string) =>
+		editComponentNoDebounce(component.id, { ...component.data, type })
 	const changeRequired = (required: boolean) =>
-		editComponent(component.id, { ...component.data, required })
-	const changeValue = (value: string) => editComponent(component.id, { ...component.data, value })
+		editComponentNoDebounce(component.id, { ...component.data, required })
+
+	const [name, setName] = useState(component.data.name)
+	const [placeholder, setPlaceholder] = useState(component.data.placeholder)
+	const [defaultValue, setDefaultValue] = useState(component.data.value)
+	const changeName = (name: string) => {
+		setName(name)
+		editComponent(component.id, { ...component.data, name })
+	}
+	const changePlaceholder = (placeholder: string) => {
+		setPlaceholder(placeholder)
+		editComponent(component.id, { ...component.data, placeholder })
+	}
+	const changeDefaultValue = (defaultValue: string) => {
+		setDefaultValue(defaultValue)
+		editComponent(component.id, { ...component.data, defaultValue })
+	}
 
 	return (
 		<div className="space-y-6">
-			<Select
-				size="xs"
-				label="Type"
-				data={[
-					'text',
-					'number',
-					'email',
-					'url',
-					'checkbox',
-					'radio',
-					'range',
-					'date',
-					'datetime-local',
-					'search',
-					'tel',
-					'time',
-					'file',
-					'month',
-					'week',
-					'password',
-					'color',
-					'hidden',
-				]}
-				value={type}
-				onChange={(value) => changeType(value ?? 'text')}
-			/>
+			{component.kind === ComponentKind.Input && (
+				<Select
+					size="xs"
+					label="Type"
+					data={[
+						'text',
+						'number',
+						'email',
+						'url',
+						'checkbox',
+						'radio',
+						'range',
+						'date',
+						'datetime-local',
+						'search',
+						'tel',
+						'time',
+						'file',
+						'month',
+						'week',
+						'password',
+						'color',
+						'hidden',
+					]}
+					value={component.data.type}
+					onChange={(value) => changeType(value ?? 'text')}
+				/>
+			)}
 			<TextInput
 				size="xs"
 				label="Name"
@@ -730,30 +768,35 @@ function InputComponentSettings({ component }: { component: InputComponent }) {
 			<Switch
 				size="xs"
 				label="Required"
-				value={required.toString()}
-				onChange={(event) => changeRequired(Boolean(event.target.value))}
-			/>
-			<TextInput
-				size="xs"
-				label="Value"
-				value={value}
-				onChange={(event) => changeValue(event.target.value)}
+				checked={component.data.required}
+				onChange={(event) => changeRequired(event.currentTarget.checked)}
 			/>
 		</div>
 	)
 }
 
 function SelectComponentSettings({ component }: { component: SelectComponent }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
-	const { options, name, defaultValue, required, value } = component.data
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
+	const { options, required } = component.data
 	const changeOptions = (options: { label: string; value: string; key: string }[]) =>
-		editComponent(component.id, { ...component.data, options })
-	const changeName = (name: string) => editComponent(component.id, { ...component.data, name })
-	const changeDefaultValue = (defaultValue: string) =>
+		editComponentNoDebounce(component.id, { ...component.data, options })
+	const changeName = (name: string) => {
+		setName(name)
+		editComponent(component.id, { ...component.data, name })
+	}
+	const changeDefaultValue = (defaultValue: string) => {
+		setDefaultValue(defaultValue)
 		editComponent(component.id, { ...component.data, defaultValue })
+	}
 	const changeRequired = (required: boolean) =>
-		editComponent(component.id, { ...component.data, required })
-	const changeValue = (value: string) => editComponent(component.id, { ...component.data, value })
+		editComponentNoDebounce(component.id, { ...component.data, required })
+
+	const [name, setName] = useState(component.data.name)
+	const [defaultValue, setDefaultValue] = useState(component.data.defaultValue)
 
 	return (
 		<div className="space-y-6">
@@ -826,60 +869,6 @@ function SelectComponentSettings({ component }: { component: SelectComponent }) 
 				value={required.toString()}
 				onChange={(event) => changeRequired(Boolean(event.target.value))}
 			/>
-			<TextInput
-				size="xs"
-				label="Value"
-				value={value}
-				onChange={(event) => changeValue(event.target.value)}
-			/>
-		</div>
-	)
-}
-
-function TextareaComponentSettings({ component }: { component: TextareaComponent }) {
-	const editComponent = useCanvasStore((store) => store.editComponent)
-	const { name, placeholder, defaultValue, required, value } = component.data
-	const changeName = (name: string) => editComponent(component.id, { ...component.data, name })
-	const changePlaceholder = (placeholder: string) =>
-		editComponent(component.id, { ...component.data, placeholder })
-	const changeDefaultValue = (defaultValue: string) =>
-		editComponent(component.id, { ...component.data, defaultValue })
-	const changeRequired = (required: boolean) =>
-		editComponent(component.id, { ...component.data, required })
-	const changeValue = (value: string) => editComponent(component.id, { ...component.data, value })
-
-	return (
-		<div className="space-y-6">
-			<TextInput
-				label="Name"
-				value={name}
-				onChange={(event) => changeName(event.target.value)}
-				size="xs"
-			/>
-			<TextInput
-				label="Placeholder"
-				value={placeholder}
-				onChange={(event) => changePlaceholder(event.target.value)}
-				size="xs"
-			/>
-			<TextInput
-				label="Default value"
-				value={defaultValue}
-				onChange={(event) => changeDefaultValue(event.target.value)}
-				size="xs"
-			/>
-			<Switch
-				label="Required"
-				value={required.toString()}
-				onChange={(event) => changeRequired(Boolean(event.target.value))}
-				size="xs"
-			/>
-			<TextInput
-				label="Value"
-				value={value}
-				onChange={(event) => changeValue(event.target.value)}
-				size="xs"
-			/>
 		</div>
 	)
 }
@@ -947,14 +936,15 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 					children: (
 						<ToggleStateSettings
 							defaultValue={action.name}
-							onChange={(name) =>
+							onChange={(name) => {
 								changeOrAddEvent({
 									...submitEvent,
 									actions: submitActions.map((a) =>
 										a.id === action.id ? { ...a, name } : a
 									),
 								})
-							}
+								closeAllModals()
+							}}
 						/>
 					),
 				})
@@ -1130,29 +1120,35 @@ function FormComponentSettings({ component }: { component: FormComponent }) {
 }
 
 function LinkComponentSettings({ component }: { component: LinkComponent }) {
-	const editData = useCanvasStore((store) => store.editComponent)
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
+	const [url, setUrl] = useState(component.data.href)
 
 	return (
 		<div className="space-y-6">
 			<TextInput
 				size="xs"
 				label="Link URL"
-				value={component.data.href}
-				onChange={(event) =>
-					editData(
+				value={url}
+				onChange={(event) => {
+					setUrl(event.target.value)
+					editComponent(
 						component.id,
 						produce(component.data, (draft) => {
 							draft.href = event.target.value
 						})
 					)
-				}
+				}}
 			/>
 			<Switch
 				size="xs"
 				label="Open in new tab"
 				checked={component.data.openInNewTab}
 				onChange={(event) =>
-					editData(
+					editComponentNoDebounce(
 						component.id,
 						produce(component.data, (draft) => {
 							draft.openInNewTab = event.currentTarget.checked
@@ -1186,7 +1182,7 @@ function StackComponentSettings({
 				onChange={(value) => editStyle('gap', value)}
 				label="Gap"
 			/>
-			<div className="flex gap-4 items-center">
+			<div className="flex items-center gap-4">
 				<p>Align</p>
 				<SegmentedControl
 					data={simpleFlexAligns}
@@ -1239,9 +1235,14 @@ function DividerComponentSettings({
 }
 
 const useEditStyle = (component: Component | null) => {
-	const editComponent = useCanvasStore((store) => store.editComponent)
+	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const viewport = useViewportStore((store) => store.device)
 	const selector = useAtomValue(selectedSelectorAtom)
+
+	const editComponent = useMemo(
+		() => _.debounce(editComponentNoDebounce, 300),
+		[editComponentNoDebounce]
+	)
 
 	const editStyle = (style: CSSProperties) => {
 		if (!component) return
