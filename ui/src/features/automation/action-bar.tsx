@@ -13,7 +13,7 @@ import {
 	IoPlayOutline,
 	IoSaveOutline,
 	IoSwapVertical,
-	IoTrashOutline,
+	IoTrashOutline
 } from 'react-icons/io5'
 import { Link } from 'react-router-dom'
 import { AutomationKind } from '../../api'
@@ -120,13 +120,15 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 				>
 					<BsUiChecksGrid />
 				</div>
-				<div
-					className="p-2 text-2xl text-white transition bg-orange-600 rounded shadow-sm cursor-grab hover:shadow-md"
-					onDragStart={(event) => onDragStart(event, NodeType.Trigger)}
-					draggable
-				>
-					<BsFillCalendar3WeekFill />
-				</div>
+				{kind !== 'interaction' && (
+					<div
+						className="p-2 text-2xl text-white transition bg-orange-600 rounded shadow-sm cursor-grab hover:shadow-md"
+						onDragStart={(event) => onDragStart(event, NodeType.Trigger)}
+						draggable
+					>
+						<BsFillCalendar3WeekFill />
+					</div>
+				)}
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
 					{kind !== 'template' && (
 						<IconButton
