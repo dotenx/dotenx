@@ -7,6 +7,7 @@ interface CanvasState {
 	components: Component[]
 	history: Component[][]
 	historyIndex: number
+	saved: Component[]
 	set: (components: Component[]) => void
 	addComponent: (component: Component, parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
@@ -31,8 +32,10 @@ interface CanvasState {
 export const useCanvasStore = create<CanvasState>()((set) => ({
 	components: [],
 	history: [],
-	historyIndex: 0,
-	set: (components: Component[]) => set((state) => ({ ...state, components })),
+	historyIndex: -1,
+	saved: [],
+	set: (components: Component[]) =>
+		set((state) => ({ ...state, components, history: [], saved: components })),
 	addComponent: (component, parentId) => {
 		set((state) => {
 			const newComponents = addComponent(component, parentId, state.components)
@@ -221,7 +224,9 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 	},
 	undo: () => {
 		set((state) => {
-			if (state.historyIndex === 0) return state
+			if (state.historyIndex < 0) return state
+			if (state.historyIndex === 0)
+				return { ...state, components: state.saved, historyIndex: -1 }
 			return {
 				...state,
 				components: state.history[state.historyIndex - 1],
@@ -231,7 +236,7 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 	},
 	redo: () => {
 		set((state) => {
-			if (state.historyIndex === state.history.length - 1) return state
+			if (state.historyIndex >= state.history.length - 1) return state
 			return {
 				...state,
 				components: state.history[state.historyIndex + 1],
