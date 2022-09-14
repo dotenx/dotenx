@@ -1,4 +1,4 @@
-import { useHotkeys } from '@mantine/hooks'
+import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
 import { useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { ReactNode, useContext, useEffect } from 'react'
@@ -18,24 +18,45 @@ export const ROOT_ID = 'root'
 const DndFrame = ({ children }: { children: ReactNode }) => {
 	const { dragDropManager } = useContext(DndContext)
 	const { window } = useContext(FrameContext)
+	const { undo, redo } = useCanvasStore((store) => ({
+		undo: store.undo,
+		redo: store.redo,
+	}))
 
 	useEffect(() => {
 		const backend = dragDropManager?.getBackend() as any
 		backend.addEventListeners(window)
 	})
 
+	useEffect(() => {
+		const hotkeys = getHotkeyHandler([
+			['ctrl+z', undo],
+			['ctrl+shift+z', redo],
+		])
+		window?.document.body.addEventListener('keydown', hotkeys)
+		return () => window?.document.body.removeEventListener('keydown', hotkeys)
+	}, [redo, undo, window?.document.body])
+
 	return <>{children}</>
 }
 
 export function Canvas() {
-	const components = useCanvasStore((store) => store.components)
+	const { components, undo, redo } = useCanvasStore((store) => ({
+		components: store.components,
+		undo: store.undo,
+		redo: store.redo,
+	}))
 	const deselectComponent = useSelectionStore((store) => store.deselect)
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const viewport = useViewportStore((store) => store.device)
 	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '48rem' : '28rem'
 	const classNames = useClassNamesStore((store) => store.classNames)
 
-	useHotkeys([['Escape', deselectComponent]])
+	useHotkeys([
+		['Escape', deselectComponent],
+		['ctrl+z', undo],
+		['ctrl+shift+z', redo],
+	])
 
 	const desktopIds = generateCssIds(components, 'desktop')
 	const tabletIds = generateCssIds(components, 'tablet')
@@ -46,9 +67,9 @@ export function Canvas() {
 	const mobileClasses = generateCssClasses(classNames, 'mobile')
 
 	return (
-		<div className="h-full bg-gray-50 p-px">
+		<div className="h-full p-px bg-gray-50">
 			<Frame
-				className="h-full w-full"
+				className="w-full h-full"
 				head={
 					<>
 						<link

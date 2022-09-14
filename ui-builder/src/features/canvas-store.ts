@@ -5,6 +5,8 @@ import create from 'zustand'
 
 interface CanvasState {
 	components: Component[]
+	history: Component[][]
+	historyIndex: number
 	set: (components: Component[]) => void
 	addComponent: (component: Component, parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
@@ -22,120 +24,218 @@ interface CanvasState {
 	removeBinding: (componentId: string, bindingKind: BindingKind) => void
 	editRepeatFrom: (componentId: string, repeatFrom: RepeatFrom) => void
 	editClassNames: (componentId: string, classNames: string[]) => void
+	undo: () => void
+	redo: () => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
 	components: [],
+	history: [],
+	historyIndex: 0,
 	set: (components: Component[]) => set((state) => ({ ...state, components })),
 	addComponent: (component, parentId) => {
-		set((state) => ({
-			...state,
-			components: addComponent(component, parentId, state.components),
-		}))
+		set((state) => {
+			const newComponents = addComponent(component, parentId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	editComponent: (id, data) => {
-		set((state) => ({
-			...state,
-			components: editComponent(id, data, state.components),
-		}))
+		set((state) => {
+			const newComponents = editComponent(id, data, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	deleteComponent: (id) => {
-		set((state) => ({
-			...state,
-			components: deleteComponent(id, state.components),
-		}))
+		set((state) => {
+			const newComponents = deleteComponent(id, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	moveComponent: (id, toParentId) => {
-		set((state) => ({
-			...state,
-			components: moveComponent(id, toParentId, state.components),
-		}))
+		set((state) => {
+			const newComponents = moveComponent(id, toParentId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	addComponentBefore: (component, beforeId) => {
-		set((state) => ({
-			...state,
-			components: addComponentBefore(component, beforeId, state.components),
-		}))
+		set((state) => {
+			const newComponents = addComponentBefore(component, beforeId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	addComponentAfter: (component, afterId) => {
-		set((state) => ({
-			...state,
-			components: addComponentAfter(component, afterId, state.components),
-		}))
+		set((state) => {
+			const newComponents = addComponentAfter(component, afterId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	moveComponentBefore: (id, beforeId) => {
-		set((state) => ({
-			...state,
-			components: moveComponentBefore(id, beforeId, state.components),
-		}))
+		set((state) => {
+			const newComponents = moveComponentBefore(id, beforeId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	moveComponentAfter: (id, afterId) => {
-		set((state) => ({
-			...state,
-			components: moveComponentAfter(id, afterId, state.components),
-		}))
+		set((state) => {
+			const newComponents = moveComponentAfter(id, afterId, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
 	},
 	addComponentEvent: (componentId, event) => {
 		set((state) => {
+			const newComponents = addComponentEvent(componentId, event, state.components)
 			return {
 				...state,
-				components: addComponentEvent(componentId, event, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	editComponentEvent: (componentId, event) => {
 		set((state) => {
+			const newComponents = editComponentEvent(componentId, event, state.components)
 			return {
 				...state,
-				components: editComponentEvent(componentId, event, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	removeEvent: (componentId, eventId) => {
 		set((state) => {
+			const newComponents = deleteEvent(componentId, eventId, state.components)
 			return {
 				...state,
-				components: deleteEvent(componentId, eventId, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	addBinding: (componentId, bindingKind, binding) => {
 		set((state) => {
+			const newComponents = addOrEditBinding(
+				componentId,
+				bindingKind,
+				binding,
+				state.components
+			)
 			return {
 				...state,
-				components: addOrEditBinding(componentId, bindingKind, binding, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	editBinding: (componentId, bindingKind, binding) => {
 		set((state) => {
+			const newComponents = addOrEditBinding(
+				componentId,
+				bindingKind,
+				binding,
+				state.components
+			)
 			return {
 				...state,
-				components: addOrEditBinding(componentId, bindingKind, binding, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	removeBinding: (componentId, bindingKind) => {
 		set((state) => {
+			const newComponents = deleteBinding(componentId, bindingKind, state.components)
 			return {
 				...state,
-				components: deleteBinding(componentId, bindingKind, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	editRepeatFrom: (componentId, repeatFrom) => {
 		set((state) => {
+			const newComponents = editRepeatFrom(componentId, repeatFrom, state.components)
 			return {
 				...state,
-				components: editRepeatFrom(componentId, repeatFrom, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
 	editClassNames: (componentId, classNames) => {
 		set((state) => {
+			const newComponents = editClassNames(componentId, classNames, state.components)
 			return {
 				...state,
-				components: editClassNames(componentId, classNames, state.components),
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
+	},
+	undo: () => {
+		set((state) => {
+			if (state.historyIndex === 0) return state
+			return {
+				...state,
+				components: state.history[state.historyIndex - 1],
+				historyIndex: state.historyIndex - 1,
+			}
+		})
+	},
+	redo: () => {
+		set((state) => {
+			if (state.historyIndex === state.history.length - 1) return state
+			return {
+				...state,
+				components: state.history[state.historyIndex + 1],
+				historyIndex: state.historyIndex + 1,
 			}
 		})
 	},
