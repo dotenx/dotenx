@@ -10,6 +10,7 @@ specifiers:
   '@mantine/modals': ^5.3.2
   '@monaco-editor/react': ^4.4.5
   '@tanstack/react-query': ^4.3.4
+  '@types/js-cookie': ^3.0.2
   '@types/lodash': ^4.14.185
   '@types/react': ^18.0.20
   '@types/react-dom': ^18.0.6
@@ -24,6 +25,7 @@ specifiers:
   eslint-plugin-react-hooks: ^4.6.0
   immer: ^9.0.15
   jotai: ^1.8.3
+  js-cookie: ^3.0.1
   known-css-properties: ^0.25.0
   lodash: ^4.17.21
   monaco-editor: ^0.34.0
@@ -64,6 +66,7 @@ dependencies:
   eslint-plugin-react-hooks: 4.6.0_eslint@8.23.1
   immer: 9.0.15
   jotai: 1.8.3_bvxjlyzw3cs37gysd4oynzgxdi
+  js-cookie: 3.0.1
   known-css-properties: 0.25.0
   lodash: 4.17.21
   monaco-editor: 0.34.0
@@ -81,6 +84,7 @@ dependencies:
   zustand: 4.1.1_immer@9.0.15+react@18.2.0
 
 devDependencies:
+  '@types/js-cookie': 3.0.2
   '@types/react': 18.0.20
   '@types/react-dom': 18.0.6
   '@vitejs/plugin-react': 2.1.0_vite@3.1.1
@@ -837,6 +841,10 @@ packages:
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
+
+  /@types/js-cookie/3.0.2:
+    resolution: {integrity: sha512-6+0ekgfusHftJNYpihfkMu8BWdeHs9EOJuGcSofErjstGPfPGEu9yTu4t460lTzzAMl2cM5zngQJqPMHbbnvYA==}
+    dev: true
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -2269,6 +2277,11 @@ packages:
       '@babel/core': 7.19.1
       immer: 9.0.15
       react: 18.2.0
+    dev: false
+
+  /js-cookie/3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
     dev: false
 
   /js-sdsl/4.1.4:
