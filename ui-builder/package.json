@@ -31,6 +31,7 @@
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"immer": "^9.0.15",
 		"jotai": "^1.8.3",
+		"js-cookie": "^3.0.1",
 		"known-css-properties": "^0.25.0",
 		"lodash": "^4.17.21",
 		"monaco-editor": "^0.34.0",
@@ -48,6 +49,7 @@
 		"zustand": "^4.1.1"
 	},
 	"devDependencies": {
+		"@types/js-cookie": "^3.0.2",
 		"@types/react": "^18.0.20",
 		"@types/react-dom": "^18.0.6",
 		"@vitejs/plugin-react": "^2.1.0",
