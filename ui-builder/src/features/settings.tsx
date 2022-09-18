@@ -628,10 +628,11 @@ function ColumnsComponentSettings({
 					leftIcon={<TbPlus />}
 					onClick={() => {
 						editStyle('gridTemplateColumns', `${styles.gridTemplateColumns} 1fr`)
-						addComponent(
-							getDefaultComponent(ComponentKind.Box, uuid(), component.id),
-							component.id
-						)
+						if (component.components.length <= cols.length)
+							addComponent(
+								getDefaultComponent(ComponentKind.Box, uuid(), component.id),
+								component.id
+							)
 					}}
 				>
 					Column
@@ -1246,7 +1247,7 @@ const useEditStyle = (component: Component | null) => {
 
 	const editStyle = (style: CSSProperties) => {
 		if (!component) return
-		editComponent(component.id, {
+		editComponentNoDebounce(component.id, {
 			...component.data,
 			style: {
 				...component.data.style,
