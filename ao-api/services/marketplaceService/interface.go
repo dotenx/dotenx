@@ -1,6 +1,7 @@
 package marketplaceService
 
 import (
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
@@ -22,6 +23,10 @@ type MarketplaceService interface {
 	ExportProject(accountId string, projectName string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error)
 	GetProjectOfItem(id int) (projectDto models.ProjectDto, err error)
 	GetComponentOfItem(id int) (componentDto models.ExportableUIComponent, err error)
+	GetTemporaryCredential(useCase, accountId string) (credentials sts.Credentials, err error)
+	CreateFunction(function models.Function) error
+	UpdateFunction(function models.Function) error
+	GetFunction(name string) (models.Function, error)
 }
 
 func NewMarketplaceService(store marketplaceStore.MarketplaceStore, uiBuilderStore uibuilderStore.UIbuilderStore) MarketplaceService {
