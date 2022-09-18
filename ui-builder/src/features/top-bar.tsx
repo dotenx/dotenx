@@ -16,6 +16,8 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import {
 	TbArrowsMaximize,
+	TbCornerUpLeft,
+	TbCornerUpRight,
 	TbDeviceDesktop,
 	TbDeviceFloppy,
 	TbDeviceMobile,
@@ -54,7 +56,13 @@ export function TopBar({ projectName }: { projectName: string }) {
 		onSuccess: (data) => setProjectTag(data.data.tag),
 	})
 	const selectedPage = useAtomValue(selectedPageAtom)
-	const setComponents = useCanvasStore((store) => store.set)
+	const { setComponents, history, historyIndex, redo, undo } = useCanvasStore((store) => ({
+		setComponents: store.set,
+		historyIndex: store.historyIndex,
+		history: store.history,
+		undo: store.undo,
+		redo: store.redo,
+	}))
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
 	const setClassNames = useClassNamesStore((store) => store.set)
@@ -114,6 +122,28 @@ export function TopBar({ projectName }: { projectName: string }) {
 						View Published Page
 					</Anchor>
 				)}
+				<Button.Group>
+					<Button
+						onClick={undo}
+						size="xs"
+						fullWidth
+						styles={{ inner: { justifyContent: 'start' } }}
+						disabled={historyIndex === -1}
+						variant="default"
+					>
+						<TbCornerUpLeft className="text-sm" />
+					</Button>
+					<Button
+						onClick={redo}
+						size="xs"
+						fullWidth
+						styles={{ inner: { justifyContent: 'start' } }}
+						disabled={historyIndex >= history.length - 1}
+						variant="default"
+					>
+						<TbCornerUpRight className="text-sm" />
+					</Button>
+				</Button.Group>
 				<PageActions
 					projectTag={projectTag}
 					handlePublish={publishPageMutation.mutate}

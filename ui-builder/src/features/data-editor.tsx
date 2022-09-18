@@ -362,14 +362,15 @@ function EventInput({
 					children: (
 						<ToggleStateSettings
 							defaultValue={action.name}
-							onChange={(name) =>
+							onChange={(name) => {
 								changeEvent({
 									...event,
 									actions: event.actions.map((a) =>
 										a.id === action.id ? { ...a, name } : a
 									),
 								})
-							}
+								closeAllModals()
+							}}
 						/>
 					),
 				})
@@ -541,14 +542,28 @@ export function CodeEditor({
 	defaultValue: string
 	onChange: (value: string) => void
 }) {
+	const [code, setCode] = useState(defaultValue)
+
 	return (
-		<Editor
-			height="80vh"
-			defaultLanguage="javascript"
-			defaultValue={defaultValue}
-			onChange={(value) => onChange(value ?? '')}
-			options={{ fontFamily: 'monospace' }}
-		/>
+		<div>
+			<Editor
+				height="75vh"
+				defaultLanguage="javascript"
+				defaultValue={defaultValue}
+				onChange={(value) => setCode(value ?? '')}
+				options={{ fontFamily: 'monospace' }}
+			/>
+			<Button
+				fullWidth
+				mt="xs"
+				onClick={() => {
+					onChange(code)
+					closeAllModals()
+				}}
+			>
+				Save
+			</Button>
+		</div>
 	)
 }
 
@@ -559,21 +574,20 @@ export function ToggleStateSettings({
 	defaultValue: string
 	onChange: (value: string) => void
 }) {
+	const form = useForm({ initialValues: { stateName: defaultValue } })
+
 	return (
-		<div>
-			<TextInput
-				label="State name"
-				defaultValue={defaultValue}
-				onChange={(e) => onChange(e.target.value)}
-			/>
+		<form onSubmit={form.onSubmit((values) => onChange(values.stateName))}>
+			<TextInput label="State name" {...form.getInputProps('stateName')} />
 			<Text size="xs" mt="xs" color="dimmed">
 				The name to toggle a value for
 			</Text>
-		</div>
+			<Button type="submit" fullWidth mt="xs">
+				Save
+			</Button>
+		</form>
 	)
 }
-
-type ValueKind = 'text' | 'number' | 'yes/no'
 
 export function SetStateSettings({
 	defaultValue,
@@ -582,32 +596,28 @@ export function SetStateSettings({
 	defaultValue: { name: string; value: string | number | boolean }
 	onChange: ({ name, value }: { name: string; value: string | number | boolean }) => void
 }) {
-	const [valueKind, setValueKind] = useState<ValueKind>(
-		typeof defaultValue.value === 'string'
-			? 'text'
-			: typeof defaultValue.value === 'number'
-			? 'number'
-			: 'yes/no'
-	)
-	const [name, setName] = useState(defaultValue.name)
-	const [value, setValue] = useState(defaultValue.value)
-
-	const handleChangeValue = (newValue: string | number | boolean) => {
-		setValue(newValue)
-		onChange({ name, value: newValue })
-	}
+	const form = useForm({
+		initialValues: {
+			...defaultValue,
+			kind:
+				typeof defaultValue.value === 'string'
+					? 'text'
+					: typeof defaultValue.value === 'number'
+					? 'number'
+					: 'yes/no',
+		},
+	})
 
 	return (
-		<div className="space-y-4">
+		<form
+			onSubmit={form.onSubmit((values) => {
+				onChange({ name: values.name, value: values.value })
+				closeAllModals()
+			})}
+			className="space-y-4"
+		>
 			<div>
-				<TextInput
-					label="Set"
-					defaultValue={defaultValue.name}
-					onChange={(e) => {
-						setName(e.target.value)
-						onChange({ value, name: e.target.value })
-					}}
-				/>
+				<TextInput label="Set" {...form.getInputProps('name')} />
 				<Text size="xs" mt="xs" color="dimmed">
 					The name to set a value for
 				</Text>
@@ -617,40 +627,33 @@ export function SetStateSettings({
 					<Select
 						label="To"
 						className="w-28"
-						value={valueKind}
 						data={['text', 'number', 'yes/no']}
-						onChange={(value: ValueKind) => {
-							setValueKind(value)
-							setValue(value === 'text' ? '' : value === 'number' ? 0 : false)
-						}}
+						{...form.getInputProps('kind')}
 					/>
-					{valueKind === 'text' && (
+					{form.values.kind === 'text' && (
 						<TextInput
-							value={value as string}
 							className="grow"
 							placeholder="value"
-							onChange={(e) => handleChangeValue(e.target.value)}
+							{...form.getInputProps('value')}
 						/>
 					)}
-					{valueKind === 'number' && (
+					{form.values.kind === 'number' && (
 						<NumberInput
-							value={value as number}
 							className="grow"
 							placeholder="value"
-							onChange={(value) => handleChangeValue(value ?? 0)}
+							{...form.getInputProps('value')}
 						/>
 					)}
-					{valueKind === 'yes/no' && (
+					{form.values.kind === 'yes/no' && (
 						<Switch
-							checked={value as boolean}
 							className="self-center grow"
 							placeholder="value"
-							onChange={(e) => handleChangeValue(e.currentTarget.checked)}
 							ml="xs"
 							mt="xl"
 							onLabel="Yes"
 							offLabel="No"
 							size="xl"
+							{...form.getInputProps('value', { type: 'checkbox' })}
 						/>
 					)}
 				</div>
@@ -658,7 +661,10 @@ export function SetStateSettings({
 					The value to assign to the above state property name
 				</Text>
 			</div>
-		</div>
+			<Button fullWidth mt="xs" type="submit">
+				Save
+			</Button>
+		</form>
 	)
 }
 

@@ -3,7 +3,7 @@
 # # hojjat12/database-add-record:lambda5
 # # hojjat12/database-delete-record:lambda3
 # # hojjat12/database-get-records:lambda6
-# # hojjat12/database-update-record:lambda4
+# # hojjat12/database-update-record:lambda5
 # # hawwwdi/send-discord-message:lambda3
 # # awrmin/dotenx-http-call:lambda4
 # # hojjat12/facebook-publish-post:lambda3
@@ -47,7 +47,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-update-record"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="database-update-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')

@@ -1069,8 +1069,6 @@ export function InputWithUnit({
 				title={title}
 				placeholder={placeholder}
 				className="w-full"
-				precision={1}
-				step={0.1}
 			/>
 		</div>
 	)
