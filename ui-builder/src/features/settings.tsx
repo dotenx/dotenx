@@ -23,7 +23,7 @@ import { useMutation } from '@tanstack/react-query'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
-import { CSSProperties, useMemo, useState } from 'react'
+import { CSSProperties, useEffect, useMemo, useState } from 'react'
 import {
 	TbArrowsHorizontal,
 	TbDatabase,
@@ -250,7 +250,7 @@ function TextComponentSettings({
 }) {
 	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const value = component.data.text ?? ''
-	const [text, setText] = useState(value)
+	const [text, setText] = useStateFromProps(value)
 	const editComponent = useMemo(
 		() => _.debounce(editComponentNoDebounce, 300),
 		[editComponentNoDebounce]
@@ -370,7 +370,7 @@ function ButtonComponentSettings({
 	const editStyles = useEditStyle(component)
 	const selector = useAtomValue(selectedSelectorAtom)
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
-	const [text, setText] = useState(value)
+	const [text, setText] = useStateFromProps(value)
 
 	return (
 		<div className="space-y-6">
@@ -434,7 +434,7 @@ function ImageComponentSettings({
 		() => _.debounce(editComponentNoDebounce, 300),
 		[editComponentNoDebounce]
 	)
-	const src = component.data.src
+	const src = component.data.src ?? ''
 	const setImage = (src: string | null) =>
 		editComponentNoDebounce(component.id, { ...component.data, src })
 	const bgSize = component.data.style[viewport][selector]?.backgroundSize?.toString() ?? 'cover'
@@ -442,8 +442,8 @@ function ImageComponentSettings({
 		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
 	const editStyles = useEditStyle(component)
-	const [source, setSource] = useState(src ?? '')
-	const [alt, setAlt] = useState(altText)
+	const [source, setSource] = useStateFromProps(src)
+	const [alt, setAlt] = useStateFromProps(altText)
 
 	const imagePart = src ? (
 		<div>
@@ -701,9 +701,9 @@ function InputComponentSettings({ component }: { component: InputComponent | Tex
 	const changeRequired = (required: boolean) =>
 		editComponentNoDebounce(component.id, { ...component.data, required })
 
-	const [name, setName] = useState(component.data.name)
-	const [placeholder, setPlaceholder] = useState(component.data.placeholder)
-	const [defaultValue, setDefaultValue] = useState(component.data.value)
+	const [name, setName] = useStateFromProps(component.data.name)
+	const [placeholder, setPlaceholder] = useStateFromProps(component.data.placeholder)
+	const [defaultValue, setDefaultValue] = useStateFromProps(component.data.value)
 	const changeName = (name: string) => {
 		setName(name)
 		editComponent(component.id, { ...component.data, name })
@@ -795,8 +795,8 @@ function SelectComponentSettings({ component }: { component: SelectComponent }) 
 	const changeRequired = (required: boolean) =>
 		editComponentNoDebounce(component.id, { ...component.data, required })
 
-	const [name, setName] = useState(component.data.name)
-	const [defaultValue, setDefaultValue] = useState(component.data.defaultValue)
+	const [name, setName] = useStateFromProps(component.data.name)
+	const [defaultValue, setDefaultValue] = useStateFromProps(component.data.defaultValue)
 
 	return (
 		<div className="space-y-6">
@@ -1125,7 +1125,7 @@ function LinkComponentSettings({ component }: { component: LinkComponent }) {
 		() => _.debounce(editComponentNoDebounce, 300),
 		[editComponentNoDebounce]
 	)
-	const [url, setUrl] = useState(component.data.href)
+	const [url, setUrl] = useStateFromProps(component.data.href)
 
 	return (
 		<div className="space-y-6">
@@ -1256,4 +1256,14 @@ const useEditStyle = (component: Component | null) => {
 	}
 
 	return editStyle
+}
+
+function useStateFromProps<T>(value: T) {
+	const [state, setState] = useState(value)
+
+	useEffect(() => {
+		setState(value)
+	}, [value])
+
+	return [state, setState] as const
 }
