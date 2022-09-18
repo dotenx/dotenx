@@ -78,6 +78,7 @@ type (
 		EbayNotifToken         string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
 		SendGridToken          string `envconfig:"AOA_SEND_GRID_TOKEN"`
 		MarketPlaceAdminSecret string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
+		DeployFunctionRoleArn  string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
 	}
 
 	Upload struct {

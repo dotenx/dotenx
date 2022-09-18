@@ -259,6 +259,10 @@ var migrations = []struct {
 		name: "set-default-Created-for-To-Pipelines",
 		stmt: setDefaultCreatedFor,
 	},
+	{
+		name: "create-table-function",
+		stmt: createTableFunction,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -726,3 +730,13 @@ ALTER TABLE pipelines
 ADD COLUMN IF NOT EXISTS created_for VARCHAR(64);
 `
 var setDefaultCreatedFor = `update pipelines set created_for = '' where created_for is null;`
+
+var createTableFunction = `
+CREATE TABLE IF NOT EXISTS function (
+name                       VARCHAR(128) PRIMARY KEY,
+account_id                 VARCHAR(64) NOT NULL,
+enabled                    BOOLEAN DEFAULT FALSE,
+definition_file            VARCHAR(64),
+type                       VARCHAR(64) NOT NULL
+)
+`
