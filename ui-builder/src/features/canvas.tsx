@@ -49,7 +49,7 @@ export function Canvas() {
 	const deselectComponent = useSelectionStore((store) => store.deselect)
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const viewport = useViewportStore((store) => store.device)
-	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '48rem' : '28rem'
+	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '766px' : '477px'
 	const classNames = useClassNamesStore((store) => store.classNames)
 
 	useHotkeys([
@@ -68,19 +68,20 @@ export function Canvas() {
 
 	return (
 		<div className="h-full p-px bg-gray-50">
-			<Frame
-				className="w-full h-full"
-				head={
-					<>
-						<link
-							rel="stylesheet"
-							href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-						/>
-					</>
-				}
-			>
-				<DndFrame>
-					<style>{`
+			<div className="h-full mx-auto" style={{ maxWidth }}>
+				<Frame
+					className="w-full h-full"
+					head={
+						<>
+							<link
+								rel="stylesheet"
+								href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+							/>
+						</>
+					}
+				>
+					<DndFrame>
+						<style>{`
 						body { margin: 0; font-family: sans-serif; }
 						html {
 							box-sizing: border-box;
@@ -89,43 +90,43 @@ export function Canvas() {
 							box-sizing: inherit;
 						}
 					`}</style>
-					<style>
-						{desktopClasses}
-						{`@media (max-width: 767px) { ${tabletClasses} }`}
-						{`@media (max-width: 478px) { ${mobileClasses} }`}
-						{desktopIds}
-						{`@media (max-width: 767px) { ${tabletIds} }`}
-						{`@media (max-width: 478px) { ${mobileIds} }`}
-					</style>
-					<div
-						style={{
-							height: '100vh',
-							display: 'flex',
-							flexDirection: 'column',
-							justifyContent: 'start',
-						}}
-					>
-						<div style={{ padding: 2, flexGrow: 1 }}>
-							<Droppable
-								data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
-								onClick={() => {
-									deselectComponent()
-									setSelectedClass(null)
-								}}
-								style={{
-									minHeight: '100%',
-									margin: '0 auto',
-									transition: 'all 150ms',
-									backgroundColor: 'white',
-									maxWidth,
-								}}
-							>
-								<RenderComponents components={components} state={{}} />
-							</Droppable>
+						<style>
+							{desktopClasses}
+							{`@media (max-width: 767px) { ${tabletClasses} }`}
+							{`@media (max-width: 478px) { ${mobileClasses} }`}
+							{desktopIds}
+							{`@media (max-width: 767px) { ${tabletIds} }`}
+							{`@media (max-width: 478px) { ${mobileIds} }`}
+						</style>
+						<div
+							style={{
+								height: '100vh',
+								display: 'flex',
+								flexDirection: 'column',
+								justifyContent: 'start',
+							}}
+						>
+							<div style={{ padding: 2, flexGrow: 1 }}>
+								<Droppable
+									data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
+									onClick={() => {
+										deselectComponent()
+										setSelectedClass(null)
+									}}
+									style={{
+										minHeight: '100%',
+										margin: '0 auto',
+										backgroundColor: 'white',
+										maxWidth,
+									}}
+								>
+									<RenderComponents components={components} state={{}} />
+								</Droppable>
+							</div>
 						</div>
-					</div>
-				</DndFrame>
-			</Frame>
+					</DndFrame>
+				</Frame>
+			</div>
 		</div>
 	)
 }
