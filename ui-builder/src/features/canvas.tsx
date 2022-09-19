@@ -5,12 +5,21 @@ import { ReactNode, useContext, useEffect } from 'react'
 import { DndContext } from 'react-dnd'
 import Frame, { FrameContext } from 'react-frame-component'
 import { mapStyleToKebabCase } from '../api/mapper'
-import { Component, CssSelector, SelectorStyle, Style, useCanvasStore } from './canvas-store'
+import {
+	Component,
+	CssSelector,
+	isContainer,
+	SelectorStyle,
+	Style,
+	useCanvasStore,
+} from './canvas-store'
 import { selectedClassAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
+import { useClipboardStore } from './clipboard'
 import { RenderComponents } from './component-renderer'
-import { Droppable, DroppableMode } from './droppable'
+import { Droppable, DroppableMode, regenComponent } from './droppable'
 import { useSelectionStore } from './selection-store'
+import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
 export const ROOT_ID = 'root'
@@ -22,6 +31,7 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 		undo: store.undo,
 		redo: store.redo,
 	}))
+	const { copy, paste } = useCopyPaste()
 
 	useEffect(() => {
 		const backend = dragDropManager?.getBackend() as any
@@ -32,12 +42,36 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 		const hotkeys = getHotkeyHandler([
 			['mod+z', undo],
 			['mod+shift+z', redo],
+			['mod+c', copy],
+			['mod+v', paste],
 		])
 		window?.document.body.addEventListener('keydown', hotkeys)
 		return () => window?.document.body.removeEventListener('keydown', hotkeys)
-	}, [redo, undo, window?.document.body])
+	}, [copy, paste, redo, undo, window?.document.body])
 
 	return <>{children}</>
+}
+
+const useCopyPaste = () => {
+	const clipboard = useClipboardStore()
+	const selectedComponent = useSelectedComponent()
+	const addComponent = useCanvasStore((store) => store.addComponent)
+
+	const copy = () => {
+		if (selectedComponent) clipboard.copy(selectedComponent)
+	}
+
+	const paste = () => {
+		if (!clipboard.copiedComponent) return
+		const parentId =
+			selectedComponent && isContainer(selectedComponent.kind)
+				? selectedComponent.id
+				: ROOT_ID
+		const newComponent = regenComponent(clipboard.copiedComponent, parentId)
+		addComponent(newComponent, parentId)
+	}
+
+	return { copy, paste }
 }
 
 export function Canvas() {
@@ -51,11 +85,14 @@ export function Canvas() {
 	const viewport = useViewportStore((store) => store.device)
 	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '766px' : '477px'
 	const classNames = useClassNamesStore((store) => store.classNames)
+	const { copy, paste } = useCopyPaste()
 
 	useHotkeys([
 		['Escape', deselectComponent],
 		['mod+z', undo],
 		['mod+shift+z', redo],
+		['mod+c', copy],
+		['mod+v', paste],
 	])
 
 	const desktopIds = generateCssIds(components, 'desktop')
