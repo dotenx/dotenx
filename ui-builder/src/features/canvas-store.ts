@@ -482,6 +482,14 @@ export enum ComponentKind {
 	Divider = 'Divider',
 }
 
+export function isContainer(kind: ComponentKind) {
+	return kind === ComponentKind.Box ||
+		kind === ComponentKind.Columns ||
+		kind === ComponentKind.Form ||
+		kind === ComponentKind.Link ||
+		kind === ComponentKind.Stack
+}
+
 export const basicComponents = [
 	ComponentKind.Text,
 	ComponentKind.Box,
