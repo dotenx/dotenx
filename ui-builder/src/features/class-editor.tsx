@@ -4,7 +4,7 @@ import {
 	clsx,
 	MultiSelect,
 	MultiSelectValueProps,
-	SegmentedControl,
+	Select,
 } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { atom, useAtom } from 'jotai'
@@ -93,10 +93,9 @@ export function ClassEditor() {
 			>
 				All Classes
 			</Button>
-			<SegmentedControl
+			<Select
 				data={cssSelectors}
 				size="xs"
-				fullWidth
 				mt="xs"
 				value={selector}
 				onChange={(value: CssSelector) => setSelector(value)}
