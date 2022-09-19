@@ -719,6 +719,7 @@ export enum EventKind {
 	Change = 'change',
 	Submit = 'submit',
 	Onload = 'onload',
+	Intersection = 'intersection',
 }
 
 interface BaseAction {

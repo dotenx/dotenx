@@ -20,7 +20,7 @@
 		"@mantine/hooks": "^5.3.3",
 		"@mantine/modals": "^5.3.3",
 		"@monaco-editor/react": "^4.4.5",
-		"@tanstack/react-query": "^4.3.4",
+		"@tanstack/react-query": "^4.3.8",
 		"@types/lodash": "^4.14.185",
 		"@typescript-eslint/eslint-plugin": "^5.37.0",
 		"@typescript-eslint/parser": "^5.37.0",
