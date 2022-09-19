@@ -97,7 +97,11 @@ export const getDefaultComponent = (
 				data: {
 					style: {
 						desktop: {
-							default: { backgroundSize: 'cover', backgroundPosition: 'center' },
+							default: {
+								backgroundSize: 'cover',
+								backgroundPosition: 'center',
+								width: '100%',
+							},
 						},
 						tablet: {},
 						mobile: {},

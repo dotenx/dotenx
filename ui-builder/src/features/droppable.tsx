@@ -141,7 +141,7 @@ export function Droppable({
 	)
 }
 
-const regenComponent = (component: Component, parentId: string) => {
+export const regenComponent = (component: Component, parentId: string) => {
 	const newComponent = _.cloneDeep(component)
 	newComponent.id = uuid()
 	newComponent.parentId = parentId

@@ -1,3 +1,4 @@
+import { forwardRef, useCallback } from 'react'
 import { useDrag } from 'react-dnd'
 import { Component, ComponentKind } from './canvas-store'
 
@@ -20,8 +21,28 @@ interface DraggableProps extends React.HTMLAttributes<HTMLDivElement> {
 	data: DraggableData
 }
 
-export function Draggable({ data, ...rest }: DraggableProps) {
+export const Draggable = forwardRef<HTMLDivElement, DraggableProps>(({ data, ...rest }, ref) => {
 	const [, drag] = useDrag(() => ({ type: DraggableKinds.Component, item: data }))
 
-	return <div ref={drag} {...rest} />
-}
+	const refHandler = useCallback(
+		(node: HTMLDivElement) => {
+			try {
+				drag(node)
+				if (ref) {
+					if (typeof ref === 'function') {
+						ref(node)
+					} else {
+						ref.current = node
+					}
+				}
+			} catch (error) {
+				console.error(error)
+			}
+		},
+		[drag, ref]
+	)
+
+	return <div ref={refHandler} {...rest} />
+})
+
+Draggable.displayName = 'Draggable'

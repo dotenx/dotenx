@@ -482,6 +482,14 @@ export enum ComponentKind {
 	Divider = 'Divider',
 }
 
+export function isContainer(kind: ComponentKind) {
+	return kind === ComponentKind.Box ||
+		kind === ComponentKind.Columns ||
+		kind === ComponentKind.Form ||
+		kind === ComponentKind.Link ||
+		kind === ComponentKind.Stack
+}
+
 export const basicComponents = [
 	ComponentKind.Text,
 	ComponentKind.Box,
@@ -610,9 +618,19 @@ export enum CssSelector {
 	Default = 'default',
 	Hover = 'hover',
 	Focus = 'focus',
+	Disabled = 'disabled',
+	Active = 'active',
+	Visited = 'visited',
 }
 
-export const cssSelectors = [CssSelector.Default, CssSelector.Hover, CssSelector.Focus]
+export const cssSelectors = [
+	CssSelector.Default,
+	CssSelector.Hover,
+	CssSelector.Focus,
+	CssSelector.Disabled,
+	CssSelector.Active,
+	CssSelector.Visited,
+]
 
 export interface TextComponentData {
 	style: Style
@@ -719,6 +737,7 @@ export enum EventKind {
 	Change = 'change',
 	Submit = 'submit',
 	Onload = 'onload',
+	Intersection = 'intersection',
 }
 
 interface BaseAction {

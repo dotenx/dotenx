@@ -292,6 +292,7 @@ export const eventOptions = [
 	{ label: 'change', value: EventKind.Change },
 	{ label: 'submit', value: EventKind.Submit },
 	{ label: 'load', value: EventKind.Onload },
+	{ label: 'intersection', value: EventKind.Intersection },
 ]
 
 export const getActionDefaultValue = (kind: ActionKind) => {

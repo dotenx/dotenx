@@ -1,4 +1,4 @@
-import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
+import { getHotkeyHandler, useHotkeys, useIntersection } from '@mantine/hooks'
 import axios from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
@@ -23,6 +23,7 @@ import {
 	FormComponent,
 	ImageComponent,
 	InputComponent,
+	isContainer,
 	LinkComponent,
 	SelectComponent,
 	SetStateAction,
@@ -354,15 +355,10 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
 			.forEach((animation) => animateCSS(`.${component.id}`, animation.animationName))
 	}
-	const isContainer =
-		component.kind === ComponentKind.Box ||
-		component.kind === ComponentKind.Columns ||
-		component.kind === ComponentKind.Form ||
-		component.kind === ComponentKind.Link ||
-		component.kind === ComponentKind.Stack
+	const canContain = isContainer(component.kind)
 	const styles = useCombinedStyles(component)
 	const emptyStyle =
-		isContainer && component.components.length === 0
+		canContain && component.components.length === 0
 			? {
 					minHeight: !(styles.height || styles.minHeight)
 						? emptyContainerStyle.minHeight
@@ -381,9 +377,21 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			  }
 			: {}
 
+	const { ref, entry } = useIntersection()
+
+	const intersectionAnimation = entry?.isIntersecting
+		? 'animate__animated ' +
+		  component.events
+				.filter((event) => event.kind === EventKind.Intersection)
+				.flatMap((event) => event.actions)
+				.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+				.map((animation) => `animate__${animation.animationName}`)
+		: ''
+
 	return (
 		<Draggable
-			className={getClasses(component)}
+			ref={ref}
+			className={`${getClasses(component)} ${intersectionAnimation}`}
 			data={{ mode: DraggableMode.Move, componentId: component.id }}
 			tabIndex={0}
 			id={component.id}
@@ -423,7 +431,7 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			onChange={() => handleEvents(EventKind.Change)}
 			onSubmit={() => handleEvents(EventKind.Submit)}
 		>
-			{isContainer && (
+			{canContain && (
 				<Droppable
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
 					style={{
