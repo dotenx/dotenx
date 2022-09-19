@@ -9,7 +9,7 @@ specifiers:
   '@mantine/hooks': ^5.3.3
   '@mantine/modals': ^5.3.3
   '@monaco-editor/react': ^4.4.5
-  '@tanstack/react-query': ^4.3.4
+  '@tanstack/react-query': ^4.3.8
   '@types/js-cookie': ^3.0.2
   '@types/lodash': ^4.14.185
   '@types/react': ^18.0.20
@@ -55,7 +55,7 @@ dependencies:
   '@mantine/hooks': 5.3.3_react@18.2.0
   '@mantine/modals': 5.3.3_kf3fyxgaphdbmkg3vjncjrjyhy
   '@monaco-editor/react': 4.4.5_7payg3yaajmz2lehtpasnhysrm
-  '@tanstack/react-query': 4.3.4_biqbaboplfbrettd7655fr4n2y
+  '@tanstack/react-query': 4.3.8_biqbaboplfbrettd7655fr4n2y
   '@types/lodash': 4.14.185
   '@typescript-eslint/eslint-plugin': 5.37.0_22c5fnooleyfkzrkkgdmel5kmi
   '@typescript-eslint/parser': 5.37.0_irgkl5vooow2ydyo6aokmferha
@@ -820,12 +820,12 @@ packages:
     resolution: {integrity: sha512-/RVXdLvJxLg4QKvMoM5WlwNR9ViO9z8B/qPcc+C0Sa/teJY7QG7kJ441DwzOjMYEY7GmU4dj5EcGHIkKZiQZCA==}
     dev: false
 
-  /@tanstack/query-core/4.3.4:
-    resolution: {integrity: sha512-NLAe3j5Vk1yYEtoPP5fPGPjRzkZPx67KUM3f14L3InziJZJ0wVecCh7uKfgYkbRKJSeq6PlbND7iuCGdTplN6Q==}
+  /@tanstack/query-core/4.3.8:
+    resolution: {integrity: sha512-AEUWtCNBIImFZ9tMt/P8V86kIhMHpfoJqAI1auGOLR8Wzeq7Ymiue789PJG0rKYcyViUicBZeHjggMqyEQVMfQ==}
     dev: false
 
-  /@tanstack/react-query/4.3.4_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-IiAo+B8bxphEpO7xwLQaCptd2rY4Ef3pW1q9J3pT66G+J/st4QpGQ+cSm9iESp9ccRy1YNUk3klk/hQtWewl6g==}
+  /@tanstack/react-query/4.3.8_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-iR1mzhjD5nNhywW8o7FfT4Q4PjFSnfUQk2CRyOToojNiNygM82e22RcmPfLu1z+O+Pl6cMOD0D8NwdNpPZghnw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -836,7 +836,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@tanstack/query-core': 4.3.4
+      '@tanstack/query-core': 4.3.8
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0

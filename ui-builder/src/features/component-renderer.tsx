@@ -1,4 +1,4 @@
-import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
+import { getHotkeyHandler, useHotkeys, useIntersection } from '@mantine/hooks'
 import axios from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
@@ -381,9 +381,21 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			  }
 			: {}
 
+	const { ref, entry } = useIntersection()
+
+	const intersectionAnimation = entry?.isIntersecting
+		? 'animate__animated ' +
+		  component.events
+				.filter((event) => event.kind === EventKind.Intersection)
+				.flatMap((event) => event.actions)
+				.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+				.map((animation) => `animate__${animation.animationName}`)
+		: ''
+
 	return (
 		<Draggable
-			className={getClasses(component)}
+			ref={ref}
+			className={`${getClasses(component)} ${intersectionAnimation}`}
 			data={{ mode: DraggableMode.Move, componentId: component.id }}
 			tabIndex={0}
 			id={component.id}
