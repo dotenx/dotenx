@@ -610,9 +610,19 @@ export enum CssSelector {
 	Default = 'default',
 	Hover = 'hover',
 	Focus = 'focus',
+	Disabled = 'disabled',
+	Active = 'active',
+	Visited = 'visited',
 }
 
-export const cssSelectors = [CssSelector.Default, CssSelector.Hover, CssSelector.Focus]
+export const cssSelectors = [
+	CssSelector.Default,
+	CssSelector.Hover,
+	CssSelector.Focus,
+	CssSelector.Disabled,
+	CssSelector.Active,
+	CssSelector.Visited,
+]
 
 export interface TextComponentData {
 	style: Style
