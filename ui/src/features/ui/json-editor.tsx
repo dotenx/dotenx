@@ -39,8 +39,6 @@ export function JsonEditor<
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
-					console.log('v', value)
-
 					return (
 						<div className="p-2 mx-1 font-mono text-xs font-medium rounded cursor-default bg-gray-50">
 							<Object
@@ -139,8 +137,6 @@ function Object({
 			})
 		)
 	}
-
-	console.log(properties)
 
 	return (
 		<div className="group">

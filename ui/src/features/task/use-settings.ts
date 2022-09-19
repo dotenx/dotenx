@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useDidUpdate } from '@mantine/hooks'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
 import { useQueries, useQuery } from 'react-query'
@@ -33,7 +34,8 @@ const schema = z.object({
 	type: z.string().min(1),
 	integration: z.string().optional(),
 	others: z.record(complexValue.or(z.array(z.any())).optional()).optional(),
-	vars: z.array(z.object({ key: z.string(), value: complexValue })).optional(),
+	// vars: z.array(z.object({ key: z.string(), value: complexValue })).optional(),
+	vars: z.any(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
 
@@ -58,7 +60,6 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
-
 	const taskType = watch('type')
 	const taskName = watch('name')
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
@@ -154,10 +155,9 @@ export function useTaskSettings({
 		})
 	})
 
-	useEffect(() => {
+	useDidUpdate(() => {
 		if (taskType) unregister(['integration', 'others', 'vars', 'outputs'])
 	}, [taskType, unregister])
-
 	return {
 		onSubmit,
 		control,

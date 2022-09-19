@@ -1,7 +1,7 @@
 import { ActionIcon, Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
-import { isArray } from 'lodash'
+import _ from 'lodash'
 import { useEffect } from 'react'
 import { Control, FieldErrors, FieldPath, useFieldArray } from 'react-hook-form'
 import { IoAdd, IoArrowBack, IoClose } from 'react-icons/io5'
@@ -38,10 +38,15 @@ export function TaskSettingsWithIntegration({
 	const taskBuilderValues = taskForm.watch('others.tasks')
 
 	useEffect(() => {
+		if (defaultValues?.type === 'Run mini tasks') {
+			setTaskBuilder({ opened: true })
+		}
+	}, [defaultValues?.type])
+	useEffect(() => {
 		if (taskForm.taskType) {
 			setIsAddingIntegration(false)
 			setTaskCode({ isOpen: false })
-			setTaskBuilder({ opened: false })
+			// setTaskBuilder({ opened: false })
 		}
 	}, [setIsAddingIntegration, setTaskBuilder, setTaskCode, taskForm.taskType])
 
@@ -98,7 +103,7 @@ export function TaskSettingsWithIntegration({
 						<IoArrowBack />
 					</ActionIcon>
 					<TaskBuilder
-						defaultValues={isArray(taskBuilderValues) ? taskBuilderValues : undefined}
+						defaultValues={_.isArray(taskBuilderValues) ? taskBuilderValues : undefined}
 						onSubmit={(values) => {
 							taskForm.setValue(`others.tasks`, values.steps)
 							setTaskBuilder({ opened: false })
@@ -140,7 +145,7 @@ function TaskSettings({
 	} = taskForm
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
-
+	const taskBuilderValues = taskForm.watch('others.tasks')
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
@@ -162,6 +167,7 @@ function TaskSettings({
 					return getFieldComponent(
 						taskField.type,
 						{
+							taskBuilderValues,
 							key: `others.${taskField.key}`,
 							control: control,
 							errors: errors,
@@ -208,6 +214,7 @@ const getFieldComponent = (
 		...props
 	}: ComplexFieldProps<TaskSettingsSchema, FieldPath<TaskSettingsSchema>> & {
 		key: string
+		taskBuilderValues: any
 		onClick: () => void
 		description: string
 	} & { openBuilder: () => void },
@@ -215,8 +222,8 @@ const getFieldComponent = (
 ) => {
 	if (type === 'Run mini tasks' && props.label === 'tasks') {
 		return (
-			<Button key={props.key} type="button" onClick={props.openBuilder}>
-				Build A Task
+			<Button key={props.key} type="button" variant="default" onClick={props.openBuilder}>
+				{props.taskBuilderValues ? 'Edit Task' : 'Build A Task'}
 			</Button>
 		)
 	}
