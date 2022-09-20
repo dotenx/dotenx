@@ -6,7 +6,7 @@
   No-code platform for building APIs, web applications, websites, forms, and automations
 </h1>
 <p align="center">
-  With DoTenX you can build massively scalable and powerful backends with no-code which are extendable with custom code. You can also build automation with DoTenX.
+  With DoTenX you can build massively scalable and powerful APIs, websites, web applications, automations, forms, landing pages and more with no-code which are extendable with custom code.
 </p>
 
 ---
