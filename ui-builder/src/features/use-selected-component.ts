@@ -1,9 +1,9 @@
-import { findComponent, useCanvasStore } from './canvas-store'
+import { findComponents, useCanvasStore } from './canvas-store'
 import { useSelectionStore } from './selection-store'
 
 export const useSelectedComponent = () => {
 	const components = useCanvasStore((store) => store.components)
-	const selectedComponentId = useSelectionStore((store) => store.selectedId)
-	const selectedComponent = findComponent(selectedComponentId ?? '', components)
+	const selectedComponentIds = useSelectionStore((store) => store.selectedIds)
+	const selectedComponent = findComponents(selectedComponentIds, components)
 	return selectedComponent
 }

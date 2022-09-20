@@ -37,7 +37,7 @@ export const Droppable = forwardRef<
 		moveComponentBefore,
 		moveComponentAfter,
 	} = useCanvasStore((store) => ({
-		addComponent: store.addComponent,
+		addComponent: store.addComponents,
 		moveComponent: store.moveComponent,
 		addComponentBefore: store.addComponentBefore,
 		addComponentAfter: store.addComponentAfter,
@@ -58,11 +58,13 @@ export const Droppable = forwardRef<
 						switch (data.mode) {
 							case DroppableMode.InsertIn:
 								addComponent(
-									getDefaultComponent(
-										item.kind,
-										newComponentId,
-										data.componentId
-									),
+									[
+										getDefaultComponent(
+											item.kind,
+											newComponentId,
+											data.componentId
+										),
+									],
 									data.componentId
 								)
 								break
@@ -87,7 +89,7 @@ export const Droppable = forwardRef<
 								)
 								break
 						}
-						selectComponent(newComponentId)
+						selectComponent([newComponentId])
 						setSelectedClass(null)
 					}
 					break
@@ -110,7 +112,7 @@ export const Droppable = forwardRef<
 						const component = regenComponent(item.data, data.componentId)
 						switch (data.mode) {
 							case DroppableMode.InsertIn:
-								addComponent(component, data.componentId)
+								addComponent([component], data.componentId)
 								break
 							case DroppableMode.InsertBefore:
 								addComponentBefore(component, data.componentId)
@@ -119,7 +121,7 @@ export const Droppable = forwardRef<
 								addComponentAfter(component, data.componentId)
 								break
 						}
-						selectComponent(component.id)
+						selectComponent([component.id])
 						setSelectedClass(null)
 					}
 					break
@@ -158,4 +160,8 @@ export const regenComponent = (component: Component, parentId: string) => {
 	newComponent.parentId = parentId
 	newComponent.components = newComponent.components.map((c) => regenComponent(c, newComponent.id))
 	return newComponent
+}
+
+export const regenComponents = (components: Component[], parentId: string) => {
+	return components.map((c) => regenComponent(c, parentId))
 }

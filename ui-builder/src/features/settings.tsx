@@ -119,7 +119,8 @@ export const useEditStyles = (component: Component) => {
 
 export function Settings() {
 	const viewport = useViewportStore((store) => store.device)
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
 	const editStyle = useEditStyle(selectedComponent)
 	const selectedClassName = useAtomValue(selectedClassAtom)
 	const { classNames, editClassName } = useClassNamesStore((store) => ({
@@ -609,7 +610,7 @@ function ColumnsComponentSettings({
 	const selector = useAtomValue(selectedSelectorAtom)
 	const space = getStyleNumber(component.data.style[viewport][selector]?.gap?.toString())
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
-	const addComponent = useCanvasStore((store) => store.addComponent)
+	const addComponent = useCanvasStore((store) => store.addComponents)
 
 	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
 	return (
@@ -655,7 +656,7 @@ function ColumnsComponentSettings({
 						editStyle('gridTemplateColumns', `${styles.gridTemplateColumns} 1fr`)
 						if (component.components.length <= cols.length)
 							addComponent(
-								getDefaultComponent(ComponentKind.Box, uuid(), component.id),
+								[getDefaultComponent(ComponentKind.Box, uuid(), component.id)],
 								component.id
 							)
 					}}

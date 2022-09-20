@@ -61,7 +61,8 @@ export function ClassEditor() {
 		classNames: store.classNames,
 	}))
 	const classNameList = _.keys(classNames)
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
 	const editComponentClassNames = useCanvasStore((store) => store.editClassNames)
 	const [selector, setSelector] = useAtom(selectedSelectorAtom)
 	if (!selectedComponent) return null
