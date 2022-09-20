@@ -30,6 +30,7 @@ import {
 	TbForms,
 	TbLayersDifference,
 	TbLayoutColumns as IcColumns,
+	TbLayoutNavbar,
 	TbLink,
 	TbMessage2 as IcText,
 	TbMinus,
@@ -359,7 +360,7 @@ function AddToMarketplaceDesignSystemForm({ ds, projectName }: { ds: any; projec
 	const [file, setFile] = useState<File>()
 	const [imgSrc, setImgSrc] = useState()
 
-	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadImage } =
 		useMutation(uploadProjectImage)
 
 	const form = useForm<DesignSystemSchema>({ initialValues: { name: '', components: [] } })
@@ -446,9 +447,9 @@ function AddToMarketplaceDesignSystemForm({ ds, projectName }: { ds: any; projec
 			<Button
 				fullWidth
 				type="submit"
-				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
+				loading={addToMarketplaceMutation.isLoading || loadingUploadImage}
 			>
-				{loadingUploadimage
+				{loadingUploadImage
 					? 'Uploading image'
 					: addToMarketplaceMutation.isLoading
 					? 'Adding'
@@ -693,7 +694,7 @@ function AddToMarketplaceCustomComponentForm({
 	const [file, setFile] = useState<File>()
 	const [imgSrc, setImgSrc] = useState()
 
-	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadimage } =
+	const { mutate: mutateUploadProjectImage, isLoading: loadingUploadImage } =
 		useMutation(uploadProjectImage)
 	const addToMarketplaceMutation = useMutation(addToMarketPlace, {
 		onSuccess: () => {
@@ -778,9 +779,9 @@ function AddToMarketplaceCustomComponentForm({
 				fullWidth
 				mt="xl"
 				type="submit"
-				loading={addToMarketplaceMutation.isLoading || loadingUploadimage}
+				loading={addToMarketplaceMutation.isLoading || loadingUploadImage}
 			>
-				{loadingUploadimage
+				{loadingUploadImage
 					? 'Uploading image'
 					: addToMarketplaceMutation.isLoading
 					? 'Adding'
@@ -817,6 +818,8 @@ export const getComponentIcon = (kind: ComponentKind) => {
 			return <TbStack />
 		case ComponentKind.Divider:
 			return <TbMinus />
+		case ComponentKind.Navbar:
+			return <TbLayoutNavbar />
 		default:
 			return <TbQuestionMark />
 	}

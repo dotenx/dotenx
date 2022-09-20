@@ -480,14 +480,21 @@ export enum ComponentKind {
 	Link = 'Link',
 	Stack = 'Stack',
 	Divider = 'Divider',
+	Navbar = 'Navbar',
+	NavMenu = 'NavMenu',
+	MenuButton = 'MenuButton',
 }
 
 export function isContainer(kind: ComponentKind) {
-	return kind === ComponentKind.Box ||
+	return (
+		kind === ComponentKind.Box ||
 		kind === ComponentKind.Columns ||
 		kind === ComponentKind.Form ||
 		kind === ComponentKind.Link ||
-		kind === ComponentKind.Stack
+		kind === ComponentKind.Stack ||
+		kind === ComponentKind.NavMenu ||
+		kind === ComponentKind.Navbar
+	)
 }
 
 export const basicComponents = [
@@ -499,6 +506,7 @@ export const basicComponents = [
 	ComponentKind.Link,
 	ComponentKind.Stack,
 	ComponentKind.Divider,
+	ComponentKind.Navbar,
 ]
 
 export const formComponents = [
@@ -540,6 +548,9 @@ export type Component =
 	| LinkComponent
 	| StackComponent
 	| DividerComponent
+	| NavMenuComponent
+	| NavbarComponent
+	| MenuButtonComponent
 
 export interface TextComponent extends BaseComponent {
 	kind: ComponentKind.Text
@@ -604,6 +615,21 @@ export interface StackComponent extends BaseComponent {
 export interface DividerComponent extends BaseComponent {
 	kind: ComponentKind.Divider
 	data: DividerComponentData
+}
+
+export interface NavMenuComponent extends BaseComponent {
+	kind: ComponentKind.NavMenu
+	data: NavMenuComponentData
+}
+
+export interface NavbarComponent extends BaseComponent {
+	kind: ComponentKind.Navbar
+	data: NavbarComponentData
+}
+
+export interface MenuButtonComponent extends BaseComponent {
+	kind: ComponentKind.MenuButton
+	data: MenuButtonComponentData
 }
 
 export interface Style {
@@ -708,6 +734,20 @@ export interface DividerComponentData {
 	style: Style
 }
 
+export interface NavMenuComponentData {
+	style: Style
+}
+
+export interface NavbarComponentData {
+	style: Style
+}
+
+export interface MenuButtonComponentData {
+	style: Style
+	text: string
+	menuId: string
+}
+
 export type ComponentData =
 	| TextComponentData
 	| BoxComponentData
@@ -722,6 +762,9 @@ export type ComponentData =
 	| LinkComponentData
 	| StackComponentData
 	| DividerComponentData
+	| NavMenuComponentData
+	| NavbarComponentData
+	| MenuButtonComponentData
 
 export interface ComponentEvent {
 	id: string
