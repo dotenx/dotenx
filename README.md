@@ -3,7 +3,7 @@
 <img alt="BUILDER" src="https://app.dotenx.com/static/media/logo.678522740bc0af21222e.png" width="100" />
 </p>
 <h1 align="center">
-  No-code backend and automation builder
+  No-code platform for building APIs, web applications, websites, forms, and automations
 </h1>
 <p align="center">
   With DoTenX you can build massively scalable and powerful backends with no-code which are extendable with custom code. You can also build automation with DoTenX.
