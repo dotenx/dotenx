@@ -39,9 +39,11 @@ https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
 
 Previous stages:
 - pre-alpha
+- alpha
+- beta
 
 
-Current stage: closed-alpha
+Current stage: beta
 
 ---
 
