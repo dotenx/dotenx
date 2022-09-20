@@ -1,15 +1,19 @@
-import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
+import { useDidUpdate, useIntersection } from '@mantine/hooks'
+import { ModifierPhases, Placement } from '@popperjs/core'
 import axios from 'axios'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { CSSProperties, ReactNode } from 'react'
+import { CSSProperties, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import ReactDOM from 'react-dom'
+import { FrameContext } from 'react-frame-component'
 import { TbPhoto } from 'react-icons/tb'
+import { Modifier, usePopper } from 'react-popper'
 import { JsonArray, JsonMap, safeParseToHeaders, safeParseToJson } from '../utils'
 import { animateCSS } from '../utils/animation'
+import { ROOT_ID } from './canvas'
 import {
 	ActionKind,
 	AnimationAction,
-	BoxComponent,
 	ButtonComponent,
 	CodeAction,
 	ColumnsComponent,
@@ -20,10 +24,15 @@ import {
 	DividerComponent,
 	EventKind,
 	FetchAction,
+	findComponent,
 	FormComponent,
 	ImageComponent,
 	InputComponent,
+	isContainer,
 	LinkComponent,
+	MenuButtonComponent,
+	NavbarComponent,
+	NavMenuComponent,
 	SelectComponent,
 	SetStateAction,
 	StackComponent,
@@ -38,10 +47,11 @@ import { selectedClassAtom, selectedSelectorAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
 import { getComponentIcon } from './component-selector'
 import { useDataSourceStore } from './data-source-store'
-import { Draggable, DraggableMode } from './draggable'
-import { Droppable, DroppableMode } from './droppable'
+import { Draggable, DraggableMode, isDraggingAtom } from './draggable'
+import { Droppable, DroppableData, DroppableMode } from './droppable'
 import { usePageStates } from './page-states'
 import { useSelectionStore } from './selection-store'
+import { useEditStyles } from './settings'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
 export function RenderComponents({
@@ -99,7 +109,7 @@ const getClasses = (component: Component) => {
 
 const emptyContainerStyle = { minHeight: 100, minWidth: 100, border: '1px dashed black' }
 
-function BoxRenderer({ component, state }: { component: BoxComponent; state: JsonMap }) {
+function BoxRenderer({ component, state }: { component: Component; state: JsonMap }) {
 	return <RenderComponents components={component.components} state={state} />
 }
 
@@ -227,6 +237,18 @@ function DividerRenderer({ component }: { component: DividerComponent }) {
 	return <></>
 }
 
+function NavMenuRenderer({ component, state }: { component: NavMenuComponent; state: JsonMap }) {
+	return <RenderComponents components={component.components} state={state} />
+}
+
+function NavbarRenderer({ component, state }: { component: NavbarComponent; state: JsonMap }) {
+	return <RenderComponents components={component.components} state={state} />
+}
+
+function MenuButtonRenderer({ component }: { component: MenuButtonComponent }) {
+	return <>{component.data.text}</>
+}
+
 function ComponentShaper({ component, state }: { component: Component; state: JsonMap }) {
 	switch (component.kind) {
 		case ComponentKind.Text:
@@ -255,40 +277,50 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <StackRenderer component={component} state={state} />
 		case ComponentKind.Divider:
 			return <DividerRenderer component={component} />
+		case ComponentKind.NavMenu:
+			return <NavMenuRenderer component={component} state={state} />
+		case ComponentKind.Navbar:
+			return <NavbarRenderer component={component} state={state} />
+		case ComponentKind.MenuButton:
+			return <MenuButtonRenderer component={component} />
 		default:
 			return null
 	}
 }
 
-const useIsHighlighted = (componentId: string) => {
-	const { selectedComponentId, hoveredId } = useSelectionStore((store) => ({
-		selectedComponentId: store.selectedId,
+export const useIsHighlighted = (componentId: string) => {
+	const { selectedComponentIds, hoveredId } = useSelectionStore((store) => ({
+		selectedComponentIds: store.selectedIds,
 		hoveredId: store.hoveredId,
 	}))
 
 	const isHovered = hoveredId === componentId
-	const isSelected = componentId === selectedComponentId
+	const isSelected = selectedComponentIds.includes(componentId)
 	const isHighlighted = isSelected || isHovered
 	return { isHighlighted, isHovered, isSelected }
 }
 
 function ComponentWrapper({ children, component }: { children: ReactNode; component: Component }) {
-	const { setSelectedComponent, selectedComponentId, setHovered, unsetHovered, deselect } =
+	const { setSelectedComponent, selectedComponentIds, setHovered, unsetHovered } =
 		useSelectionStore((store) => ({
 			setSelectedComponent: store.select,
-			selectedComponentId: store.selectedId,
+			selectedComponentIds: store.selectedIds,
 			setHovered: store.setHovered,
 			unsetHovered: store.unsetHovered,
-			deselect: store.deselect,
 		}))
+
+	const { components } = useCanvasStore((store) => ({
+		components: store.components,
+		editComponent: store.editComponent,
+	}))
+	const menuComponent =
+		component.kind === ComponentKind.MenuButton
+			? findComponent(component.data.menuId, components)
+			: null
+	const { editStyles, styles: cStyles } = useEditStyles(menuComponent ?? component)
 
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const dataSources = useDataSourceStore((store) => store.sources)
-	const deleteComponent = useCanvasStore((store) => store.deleteComponent)
-	const handleDelete = () => {
-		if (selectedComponentId) deleteComponent(selectedComponentId)
-	}
-	useHotkeys([['Backspace', handleDelete]])
 	const { states, toggleState, setState } = usePageStates((store) => ({
 		states: store.states,
 		toggleState: store.toggleState,
@@ -354,15 +386,10 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
 			.forEach((animation) => animateCSS(`.${component.id}`, animation.animationName))
 	}
-	const isContainer =
-		component.kind === ComponentKind.Box ||
-		component.kind === ComponentKind.Columns ||
-		component.kind === ComponentKind.Form ||
-		component.kind === ComponentKind.Link ||
-		component.kind === ComponentKind.Stack
+	const canContain = isContainer(component.kind)
 	const styles = useCombinedStyles(component)
 	const emptyStyle =
-		isContainer && component.components.length === 0
+		canContain && component.components.length === 0
 			? {
 					minHeight: !(styles.height || styles.minHeight)
 						? emptyContainerStyle.minHeight
@@ -381,24 +408,48 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			  }
 			: {}
 
+	const { ref, entry } = useIntersection()
+
+	const intersectionAnimation = entry?.isIntersecting
+		? 'animate__animated ' +
+		  component.events
+				.filter((event) => event.kind === EventKind.Intersection)
+				.flatMap((event) => event.actions)
+				.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+				.map((animation) => `animate__${animation.animationName}`)
+		: ''
+
+	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
+	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
+	const { styles: popperStyles, attributes } = usePopper(referenceElement, popperElement)
+
+	const handleRef = useCallback(
+		(e: HTMLDivElement) => {
+			ref(e)
+			setReferenceElement(e)
+		},
+		[ref]
+	)
+
+	const { window } = useContext(FrameContext)
+
+	const handleClickMenuButton = () => {
+		if (component.kind !== ComponentKind.MenuButton || !window || !menuComponent) return
+		console.log(cStyles.display)
+		editStyles('display', cStyles.display === 'none' ? 'flex' : 'none')
+	}
+
 	return (
 		<Draggable
-			className={getClasses(component)}
+			ref={handleRef}
+			className={`${getClasses(component)} ${intersectionAnimation}`}
 			data={{ mode: DraggableMode.Move, componentId: component.id }}
 			tabIndex={0}
 			id={component.id}
-			onKeyDown={(event) => {
-				getHotkeyHandler([
-					['Backspace', handleDelete],
-					[`Escape`, deselect],
-				])(event)
-				handleEvents(EventKind.KeyDown)
-			}}
 			style={{
 				...emptyStyle,
 				outlineWidth: isHovered ? 2 : 1,
 				cursor: 'default',
-				position: 'relative',
 				outlineStyle: isHighlighted ? 'solid' : undefined,
 				outlineColor: '#fb7185',
 			}}
@@ -413,9 +464,12 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			}}
 			onClick={(event) => {
 				event.stopPropagation()
-				setSelectedComponent(component.id)
-				if (selectedComponentId !== component.id) setSelectedClass(null)
+				if (event.ctrlKey && !isSelected)
+					setSelectedComponent([...selectedComponentIds, component.id])
+				else setSelectedComponent([component.id])
+				if (!isSelected) setSelectedClass(null)
 				handleEvents(EventKind.Click)
+				handleClickMenuButton()
 			}}
 			hidden={!shouldShow && shouldHide}
 			onMouseEnter={() => handleEvents(EventKind.MouseEnter)}
@@ -423,86 +477,168 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			onChange={() => handleEvents(EventKind.Change)}
 			onSubmit={() => handleEvents(EventKind.Submit)}
 		>
-			{isContainer && (
-				<Droppable
+			{canContain && (
+				<DroppablePortal
+					referenceElement={referenceElement}
 					data={{ mode: DroppableMode.InsertIn, componentId: component.id }}
-					style={{
-						position: 'absolute',
-						top: 10,
-						bottom: 10,
-						left: 10,
-						right: 10,
-					}}
+					placement="bottom"
+					sameWidth
+					sameHeight
+					center
+					style={{}}
+					updateDeps={[component]}
 				/>
 			)}
-			<Droppable
+			<DroppablePortal
+				referenceElement={referenceElement}
 				data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-				style={{
-					position: 'absolute',
-					top: 0,
-					bottom: 0,
-					left: 0,
-					width: 10,
-				}}
+				style={{ height: '10px' }}
+				placement="top"
+				sameWidth
+				updateDeps={[component]}
 			/>
-			<Droppable
+			<DroppablePortal
+				referenceElement={referenceElement}
 				data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-				style={{
-					position: 'absolute',
-					top: 0,
-					bottom: 0,
-					right: 0,
-					width: 10,
-				}}
+				style={{ width: '10px' }}
+				placement="right"
+				sameHeight
+				updateDeps={[component]}
 			/>
-			<Droppable
+			<DroppablePortal
+				referenceElement={referenceElement}
+				data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
+				style={{ height: '10px' }}
+				placement="bottom"
+				sameWidth
+				updateDeps={[component]}
+			/>
+			<DroppablePortal
+				referenceElement={referenceElement}
 				data={{ mode: DroppableMode.InsertBefore, componentId: component.id }}
-				style={{
-					position: 'absolute',
-					top: 0,
-					left: 0,
-					right: 0,
-					height: 10,
-				}}
+				style={{ width: '10px' }}
+				placement="left"
+				sameHeight
+				updateDeps={[component]}
 			/>
-			<Droppable
-				data={{ mode: DroppableMode.InsertAfter, componentId: component.id }}
-				style={{
-					position: 'absolute',
-					bottom: 0,
-					left: 0,
-					right: 0,
-					height: 10,
-				}}
-			/>
+			{isSelected &&
+				ReactDOM.createPortal(
+					<div
+						ref={setPopperElement}
+						style={{
+							backgroundColor: isHovered ? '#f43f5e' : 'white',
+							fontFamily: 'monospace',
+							padding: '2px 6px',
+							color: isHovered ? 'white' : '#f43f5e',
+							borderRadius: 2,
+							zIndex: (isHovered ? 101 : 100) * 1000,
+							border: '1px solid #f43f5e',
+							display: 'flex',
+							gap: 2,
+							alignItems: 'center',
+							fontSize: 12,
+							fontWeight: 600,
+							letterSpacing: 'normal',
+							lineHeight: 'normal',
+							...popperStyles.popper,
+						}}
+						{...attributes.popper}
+					>
+						{getComponentIcon(component.kind)}
+						{component.kind}
+					</div>,
+					window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
+				)}
 			{children}
-			{isSelected && (
-				<div
-					style={{
-						position: 'absolute',
-						backgroundColor: isHovered ? '#f43f5e' : 'white',
-						fontFamily: 'monospace',
-						padding: '2px 6px',
-						bottom: -21,
-						color: isHovered ? 'white' : '#f43f5e',
-						borderRadius: 2,
-						zIndex: isHovered ? 101 : 100,
-						border: '1px solid #f43f5e',
-						display: 'flex',
-						gap: 2,
-						alignItems: 'center',
-						fontSize: 12,
-						fontWeight: 600,
-						letterSpacing: 'normal',
-						lineHeight: 'normal',
-						left: 0,
-					}}
-				>
-					{getComponentIcon(component.kind)}
-					{component.kind}
-				</div>
-			)}
 		</Draggable>
+	)
+}
+
+const sameWidthMod: Partial<Modifier<string, object>> = {
+	name: 'sameWidth',
+	enabled: true,
+	phase: 'beforeWrite' as ModifierPhases,
+	requires: ['computeStyles'],
+	fn({ state }) {
+		state.styles.popper.minWidth = `${state.rects.reference.width}px`
+	},
+	effect({ state }) {
+		state.elements.popper.style.minWidth = `${(state.elements.reference as any).offsetWidth}px`
+	},
+}
+
+const sameHeightMod: Partial<Modifier<string, object>> = {
+	name: 'sameHeight',
+	enabled: true,
+	phase: 'beforeWrite' as ModifierPhases,
+	requires: ['computeStyles'],
+	fn({ state }) {
+		state.styles.popper.minHeight = `${state.rects.reference.height}px`
+	},
+	effect({ state }) {
+		state.elements.popper.style.minHeight = `${
+			(state.elements.reference as any).offsetHeight
+		}px`
+	},
+}
+
+function DroppablePortal({
+	referenceElement,
+	data,
+	style,
+	placement,
+	sameWidth,
+	sameHeight,
+	center,
+	updateDeps,
+}: {
+	referenceElement: HTMLDivElement | null
+	data: DroppableData
+	style: CSSProperties
+	placement: Placement
+	sameWidth?: boolean
+	sameHeight?: boolean
+	center?: boolean
+	updateDeps: any[]
+}) {
+	const { window } = useContext(FrameContext)
+	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
+	const modifiers = useMemo<Partial<Modifier<string, object>>[]>(
+		() => [
+			{
+				name: 'offset',
+				options: {
+					offset: center
+						? ({ popper }: { popper: any }) => [0, -popper.height]
+						: [0, -10],
+				},
+			},
+			...(sameWidth ? [sameWidthMod] : []),
+			...(sameHeight ? [sameHeightMod] : []),
+		],
+		[center, sameHeight, sameWidth]
+	)
+	const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
+		placement,
+		modifiers,
+	})
+	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
+	const dragging = useAtomValue(isDraggingAtom)
+
+	useDidUpdate(() => {
+		if (update) update()
+	}, [update, ...updateDeps])
+
+	if (!dragging.isDragging) return null
+
+	return ReactDOM.createPortal(
+		<Droppable
+			ref={setPopperElement}
+			style={{ ...styles.popper, ...style }}
+			data={data}
+			{...attributes.popper}
+		/>,
+		targetElement
 	)
 }
 

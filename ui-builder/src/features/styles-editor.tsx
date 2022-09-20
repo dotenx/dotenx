@@ -265,7 +265,8 @@ const cssAnimations = [
 ]
 
 function AnimationEditor() {
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
 	const { editEvent, addEvent, removeEvent } = useCanvasStore((store) => ({
 		addEvent: store.addComponentEvent,
 		removeEvent: store.removeEvent,
@@ -362,7 +363,9 @@ const justifyItems = [
 function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle: EditStyle }) {
 	const isFlex = styles.display === 'flex'
 	const isGrid = styles.display === 'grid'
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
+	if (!selectedComponent) return null
 
 	return (
 		<div className="grid items-center grid-cols-12 gap-y-2">
@@ -374,7 +377,7 @@ function LayoutEditor({ styles, editStyle }: { styles: CSSProperties; editStyle:
 				size="xs"
 				value={styles.display ?? 'block'}
 				onChange={(value) => editStyle('display', value)}
-				disabled={selectedComponent?.kind === ComponentKind.Columns}
+				disabled={selectedComponent.kind === ComponentKind.Columns}
 			/>
 
 			{isGrid && (

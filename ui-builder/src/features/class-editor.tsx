@@ -4,7 +4,7 @@ import {
 	clsx,
 	MultiSelect,
 	MultiSelectValueProps,
-	SegmentedControl,
+	Select,
 } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { atom, useAtom } from 'jotai'
@@ -61,7 +61,8 @@ export function ClassEditor() {
 		classNames: store.classNames,
 	}))
 	const classNameList = _.keys(classNames)
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
 	const editComponentClassNames = useCanvasStore((store) => store.editClassNames)
 	const [selector, setSelector] = useAtom(selectedSelectorAtom)
 	if (!selectedComponent) return null
@@ -93,10 +94,9 @@ export function ClassEditor() {
 			>
 				All Classes
 			</Button>
-			<SegmentedControl
+			<Select
 				data={cssSelectors}
 				size="xs"
-				fullWidth
 				mt="xs"
 				value={selector}
 				onChange={(value: CssSelector) => setSelector(value)}

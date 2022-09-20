@@ -92,9 +92,35 @@ import {
 import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore } from './viewport-store'
 
+export const useEditStyles = (component: Component) => {
+	const viewport = useViewportStore((store) => store.device)
+	const editStyle = useEditStyle(component)
+	const selectedClassName = useAtomValue(selectedClassAtom)
+	const { classNames, editClassName } = useClassNamesStore((store) => ({
+		classNames: store.classNames,
+		editClassName: store.edit,
+	}))
+	const selector = useAtomValue(selectedSelectorAtom)
+	const styles =
+		(selectedClassName
+			? classNames[selectedClassName][viewport][selector]
+			: component.data.style[viewport][selector]) ?? {}
+	const editClassStyle = (styles: CSSProperties) => {
+		if (selectedClassName) editClassName(selectedClassName, viewport, selector, styles)
+		else console.error("Can't edit class style without selected class name")
+	}
+	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editStyle
+	const editStyles: EditStyle = (style, value) => {
+		editClassOrComponentStyle({ ...styles, [style]: value })
+	}
+
+	return { editStyles, styles }
+}
+
 export function Settings() {
 	const viewport = useViewportStore((store) => store.device)
-	const selectedComponent = useSelectedComponent()
+	const selectedComponents = useSelectedComponent()
+	const selectedComponent = selectedComponents.length === 1 ? selectedComponents[0] : null
 	const editStyle = useEditStyle(selectedComponent)
 	const selectedClassName = useAtomValue(selectedClassAtom)
 	const { classNames, editClassName } = useClassNamesStore((store) => ({
@@ -584,7 +610,7 @@ function ColumnsComponentSettings({
 	const selector = useAtomValue(selectedSelectorAtom)
 	const space = getStyleNumber(component.data.style[viewport][selector]?.gap?.toString())
 	const backgroundColor = component.data.style[viewport][selector]?.backgroundColor
-	const addComponent = useCanvasStore((store) => store.addComponent)
+	const addComponent = useCanvasStore((store) => store.addComponents)
 
 	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
 	return (
@@ -630,7 +656,7 @@ function ColumnsComponentSettings({
 						editStyle('gridTemplateColumns', `${styles.gridTemplateColumns} 1fr`)
 						if (component.components.length <= cols.length)
 							addComponent(
-								getDefaultComponent(ComponentKind.Box, uuid(), component.id),
+								[getDefaultComponent(ComponentKind.Box, uuid(), component.id)],
 								component.id
 							)
 					}}
@@ -1239,11 +1265,6 @@ const useEditStyle = (component: Component | null) => {
 	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const viewport = useViewportStore((store) => store.device)
 	const selector = useAtomValue(selectedSelectorAtom)
-
-	const editComponent = useMemo(
-		() => _.debounce(editComponentNoDebounce, 300),
-		[editComponentNoDebounce]
-	)
 
 	const editStyle = (style: CSSProperties) => {
 		if (!component) return

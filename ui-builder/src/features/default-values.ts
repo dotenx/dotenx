@@ -1,5 +1,5 @@
 import { uuid } from '../utils'
-import { Component, ComponentKind } from './canvas-store'
+import { Component, ComponentKind, MenuButtonComponent, TextComponent } from './canvas-store'
 
 export const getDefaultComponent = (
 	kind: ComponentKind,
@@ -311,5 +311,141 @@ export const getDefaultComponent = (
 					},
 				},
 			}
+		case ComponentKind.NavMenu:
+			return {
+				kind,
+				components: [
+					getNavMenuItem(id, 'Home'),
+					getNavMenuItem(id, 'About'),
+					getNavMenuItem(id, 'Contact'),
+				],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: {
+								display: 'flex',
+							},
+						},
+						tablet: {
+							default: {
+								display: 'none',
+								position: 'absolute',
+								top: '100%',
+								backgroundColor: '#eeeeee',
+								left: 0,
+								right: 0,
+								zIndex: 100,
+								flexDirection: 'column',
+							},
+						},
+						mobile: {},
+					},
+				},
+			}
+		case ComponentKind.Navbar:
+			return {
+				kind,
+				components: getNavbarChildren(id),
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: {
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+								position: 'relative',
+							},
+						},
+						tablet: {},
+						mobile: {},
+					},
+				},
+			}
+		case ComponentKind.MenuButton:
+			return {
+				kind,
+				components: [],
+				classNames: [],
+				repeatFrom: { name: '', iterator: '' },
+				bindings: {},
+				events: [],
+				id,
+				parentId,
+				data: {
+					style: {
+						desktop: {
+							default: {
+								display: 'none',
+								paddingTop: '20px',
+								paddingLeft: '20px',
+								paddingRight: '20px',
+								paddingBottom: '20px',
+							},
+						},
+						tablet: { default: { display: 'flex' } },
+						mobile: {},
+					},
+					text: 'Menu',
+					menuId: '',
+				},
+			}
 	}
+}
+
+const getNavbarChildren = (parentId: string) => {
+	const navMenu = getDefaultComponent(ComponentKind.NavMenu, uuid(), parentId)
+
+	return [
+		getDefaultComponent(ComponentKind.Box, uuid(), parentId),
+		navMenu,
+		getMenuButton(parentId, navMenu.id),
+	]
+}
+
+const getNavMenuItem = (parentId: string, text: string): Component => {
+	const id = uuid()
+	return {
+		...getDefaultComponent(ComponentKind.Link, id, parentId),
+		components: [
+			{
+				...(getDefaultComponent(ComponentKind.Text, uuid(), id) as TextComponent),
+				data: {
+					style: {
+						desktop: {
+							default: {
+								paddingTop: '20px',
+								paddingBottom: '20px',
+								paddingRight: '20px',
+								paddingLeft: '20px',
+							},
+						},
+						tablet: {},
+						mobile: {},
+					},
+					text,
+				},
+			},
+		],
+	}
+}
+
+const getMenuButton = (parentId: string, menuId: string) => {
+	const component = getDefaultComponent(
+		ComponentKind.MenuButton,
+		uuid(),
+		parentId
+	) as MenuButtonComponent
+	return { ...component, data: { ...component.data, menuId } }
 }

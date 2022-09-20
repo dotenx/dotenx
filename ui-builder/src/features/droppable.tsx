@@ -1,6 +1,6 @@
 import { useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { CSSProperties, ReactNode } from 'react'
+import { CSSProperties, forwardRef, ReactNode } from 'react'
 import { useDrop } from 'react-dnd'
 import { uuid } from '../utils'
 import { Component, useCanvasStore } from './canvas-store'
@@ -20,17 +20,15 @@ export enum DroppableMode {
 	InsertAfter = 'insert-after',
 }
 
-export function Droppable({
-	children,
-	onClick,
-	data,
-	style,
-}: {
-	children?: ReactNode
-	onClick?: () => void
-	data: DroppableData
-	style?: CSSProperties
-}) {
+export const Droppable = forwardRef<
+	HTMLDivElement,
+	{
+		children?: ReactNode
+		onClick?: () => void
+		data: DroppableData
+		style?: CSSProperties
+	}
+>(({ children, onClick, data, style }, ref) => {
 	const {
 		addComponent,
 		moveComponent,
@@ -39,7 +37,7 @@ export function Droppable({
 		moveComponentBefore,
 		moveComponentAfter,
 	} = useCanvasStore((store) => ({
-		addComponent: store.addComponent,
+		addComponent: store.addComponents,
 		moveComponent: store.moveComponent,
 		addComponentBefore: store.addComponentBefore,
 		addComponentAfter: store.addComponentAfter,
@@ -60,11 +58,13 @@ export function Droppable({
 						switch (data.mode) {
 							case DroppableMode.InsertIn:
 								addComponent(
-									getDefaultComponent(
-										item.kind,
-										newComponentId,
-										data.componentId
-									),
+									[
+										getDefaultComponent(
+											item.kind,
+											newComponentId,
+											data.componentId
+										),
+									],
 									data.componentId
 								)
 								break
@@ -89,7 +89,7 @@ export function Droppable({
 								)
 								break
 						}
-						selectComponent(newComponentId)
+						selectComponent([newComponentId])
 						setSelectedClass(null)
 					}
 					break
@@ -112,7 +112,7 @@ export function Droppable({
 						const component = regenComponent(item.data, data.componentId)
 						switch (data.mode) {
 							case DroppableMode.InsertIn:
-								addComponent(component, data.componentId)
+								addComponent([component], data.componentId)
 								break
 							case DroppableMode.InsertBefore:
 								addComponentBefore(component, data.componentId)
@@ -121,7 +121,7 @@ export function Droppable({
 								addComponentAfter(component, data.componentId)
 								break
 						}
-						selectComponent(component.id)
+						selectComponent([component.id])
 						setSelectedClass(null)
 					}
 					break
@@ -130,21 +130,38 @@ export function Droppable({
 		collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
 	}))
 
+	const handleRef = (element: HTMLDivElement) => {
+		drop(element)
+		if (ref) {
+			if (typeof ref === 'function') {
+				ref(element)
+			} else {
+				ref.current = element
+			}
+		}
+	}
+
 	return (
 		<div
-			ref={drop}
-			style={{ ...style, backgroundColor: isOver ? '#ffe4e6' : style?.backgroundColor }}
+			ref={handleRef}
+			style={{ ...style, backgroundColor: isOver ? '#ffe4e699' : style?.backgroundColor }}
 			onClick={onClick}
 		>
 			{children}
 		</div>
 	)
-}
+})
 
-const regenComponent = (component: Component, parentId: string) => {
+Droppable.displayName = 'Droppable'
+
+export const regenComponent = (component: Component, parentId: string) => {
 	const newComponent = _.cloneDeep(component)
 	newComponent.id = uuid()
 	newComponent.parentId = parentId
 	newComponent.components = newComponent.components.map((c) => regenComponent(c, newComponent.id))
 	return newComponent
+}
+
+export const regenComponents = (components: Component[], parentId: string) => {
+	return components.map((c) => regenComponent(c, parentId))
 }
