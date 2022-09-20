@@ -1,27 +1,27 @@
 import create from 'zustand'
 
 interface SelectionState {
-	selectedId: string | null
+	selectedIds: string[]
 	hoveredId: string | null
-	select: (componentId: string) => void
+	select: (componentIds: string[]) => void
 	setHovered: (componentId: string) => void
 	deselect: () => void
 	unsetHovered: () => void
 }
 
 export const useSelectionStore = create<SelectionState>()((set) => ({
-	selectedId: null,
+	selectedIds: [],
 	hoveredId: null,
-	select: (componentId) => {
+	select: (componentIds) => {
 		set((state) => ({
 			...state,
-			selectedId: componentId,
+			selectedIds: componentIds,
 		}))
 	},
 	deselect: () => {
 		set((state) => ({
 			...state,
-			selectedId: null,
+			selectedIds: [],
 		}))
 	},
 	setHovered: (componentId) => {

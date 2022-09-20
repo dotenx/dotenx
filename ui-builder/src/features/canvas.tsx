@@ -17,7 +17,7 @@ import { selectedClassAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
 import { useClipboardStore } from './clipboard'
 import { RenderComponents } from './component-renderer'
-import { Droppable, DroppableMode, regenComponent } from './droppable'
+import { Droppable, DroppableMode, regenComponents } from './droppable'
 import { useSelectionStore } from './selection-store'
 import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore, ViewportDevice } from './viewport-store'
@@ -45,37 +45,44 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 
 const useCopyPaste = () => {
 	const clipboard = useClipboardStore()
-	const selectedComponent = useSelectedComponent()
-	const addComponent = useCanvasStore((store) => store.addComponent)
+	const selectedComponents = useSelectedComponent()
+	const addComponent = useCanvasStore((store) => store.addComponents)
 
 	const copy = () => {
-		if (selectedComponent) clipboard.copy(selectedComponent)
+		if (selectedComponents.length > 0) clipboard.copy(selectedComponents)
 	}
 
 	const paste = () => {
-		if (!clipboard.copiedComponent) return
+		if (!clipboard.copiedComponents) return
 		const parentId =
-			selectedComponent && isContainer(selectedComponent.kind)
-				? selectedComponent.id
+			selectedComponents.length === 1 && isContainer(selectedComponents[0].kind)
+				? selectedComponents[0].id
 				: ROOT_ID
-		const newComponent = regenComponent(clipboard.copiedComponent, parentId)
-		addComponent(newComponent, parentId)
+		const newComponents = regenComponents(clipboard.copiedComponents, parentId)
+		addComponent(newComponents, parentId)
 	}
 
 	return { copy, paste }
 }
 
 const useCanvasHotkeys = (): HotkeyItem[] => {
-	const { undo, redo, remove } = useCanvasStore((store) => ({
+	const { undo, redo, remove, components } = useCanvasStore((store) => ({
 		undo: store.undo,
 		redo: store.redo,
-		remove: store.deleteComponent,
+		remove: store.deleteComponents,
+		components: store.components,
 	}))
 	const deselectComponent = useSelectionStore((store) => store.deselect)
 	const { copy, paste } = useCopyPaste()
-	const selectedComponentId = useSelectionStore((store) => store.selectedId)
+	const { selectedIds, select } = useSelectionStore((store) => ({
+		selectedIds: store.selectedIds,
+		select: store.select,
+	}))
 	const deleteComponent = () => {
-		if (selectedComponentId) remove(selectedComponentId)
+		remove(selectedIds)
+	}
+	const selectAll = () => {
+		select(components.map((c) => c.id))
 	}
 
 	return [
@@ -86,6 +93,7 @@ const useCanvasHotkeys = (): HotkeyItem[] => {
 		['mod+v', paste],
 		['Delete', deleteComponent],
 		['Backspace', deleteComponent],
+		['mod+a', selectAll],
 	]
 }
 

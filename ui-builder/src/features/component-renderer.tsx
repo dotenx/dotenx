@@ -288,26 +288,25 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 	}
 }
 
-const useIsHighlighted = (componentId: string) => {
-	const { selectedComponentId, hoveredId } = useSelectionStore((store) => ({
-		selectedComponentId: store.selectedId,
+export const useIsHighlighted = (componentId: string) => {
+	const { selectedComponentIds, hoveredId } = useSelectionStore((store) => ({
+		selectedComponentIds: store.selectedIds,
 		hoveredId: store.hoveredId,
 	}))
 
 	const isHovered = hoveredId === componentId
-	const isSelected = componentId === selectedComponentId
+	const isSelected = selectedComponentIds.includes(componentId)
 	const isHighlighted = isSelected || isHovered
 	return { isHighlighted, isHovered, isSelected }
 }
 
 function ComponentWrapper({ children, component }: { children: ReactNode; component: Component }) {
-	const { setSelectedComponent, selectedComponentId, setHovered, unsetHovered, deselect } =
+	const { setSelectedComponent, selectedComponentIds, setHovered, unsetHovered } =
 		useSelectionStore((store) => ({
 			setSelectedComponent: store.select,
-			selectedComponentId: store.selectedId,
+			selectedComponentIds: store.selectedIds,
 			setHovered: store.setHovered,
 			unsetHovered: store.unsetHovered,
-			deselect: store.deselect,
 		}))
 
 	const { components } = useCanvasStore((store) => ({
@@ -465,8 +464,10 @@ function ComponentWrapper({ children, component }: { children: ReactNode; compon
 			}}
 			onClick={(event) => {
 				event.stopPropagation()
-				setSelectedComponent(component.id)
-				if (selectedComponentId !== component.id) setSelectedClass(null)
+				if (event.ctrlKey && !isSelected)
+					setSelectedComponent([...selectedComponentIds, component.id])
+				else setSelectedComponent([component.id])
+				if (!isSelected) setSelectedClass(null)
 				handleEvents(EventKind.Click)
 				handleClickMenuButton()
 			}}

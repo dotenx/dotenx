@@ -9,9 +9,9 @@ interface CanvasState {
 	historyIndex: number
 	saved: Component[]
 	set: (components: Component[]) => void
-	addComponent: (component: Component, parentId: string) => void
+	addComponents: (components: Component[], parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
-	deleteComponent: (id: string) => void
+	deleteComponents: (ids: string[]) => void
 	moveComponent: (id: string, toParentId: string) => void
 	addComponentBefore: (component: Component, beforeId: string) => void
 	addComponentAfter: (component: Component, afterId: string) => void
@@ -36,9 +36,9 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 	saved: [],
 	set: (components: Component[]) =>
 		set((state) => ({ ...state, components, history: [], saved: components })),
-	addComponent: (component, parentId) => {
+	addComponents: (components, parentId) => {
 		set((state) => {
-			const newComponents = addComponent(component, parentId, state.components)
+			const newComponents = addComponents(components, parentId, state.components)
 			return {
 				...state,
 				components: newComponents,
@@ -58,9 +58,9 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 			}
 		})
 	},
-	deleteComponent: (id) => {
+	deleteComponents: (ids) => {
 		set((state) => {
-			const newComponents = deleteComponent(id, state.components)
+			const newComponents = deleteComponents(ids, state.components)
 			return {
 				...state,
 				components: newComponents,
@@ -265,6 +265,15 @@ export const findComponent = (id: string, components: Component[]): Component | 
 	return null
 }
 
+export const findComponents = (ids: string[], components: Component[]): Component[] => {
+	const foundComponents: Component[] = []
+	for (const id of ids) {
+		const foundComponent = findComponent(id, components)
+		if (foundComponent) foundComponents.push(foundComponent)
+	}
+	return foundComponents
+}
+
 export const getStateNames = (components: Component[]) => {
 	let states: string[] = []
 	for (const component of components) {
@@ -338,9 +347,12 @@ const deleteEvent = (componentId: string, eventId: string, components: Component
 	return newComponents
 }
 
-const addComponent = (componentToAdd: Component, parentId: string, components: Component[]) => {
+const addComponents = (componentsToAdd: Component[], parentId: string, components: Component[]) => {
 	const newComponents = _.cloneDeep(components)
-	return mutAddComponent(componentToAdd, parentId, newComponents)
+	for (const component of componentsToAdd) {
+		mutAddComponent(component, parentId, newComponents)
+	}
+	return newComponents
 }
 
 const mutAddComponent = (componentToAdd: Component, parentId: string, components: Component[]) => {
@@ -361,9 +373,12 @@ const mutEditComponent = (id: string, data: ComponentData, components: Component
 	return components
 }
 
-const deleteComponent = (id: string, components: Component[]) => {
-	const newComponents = _.cloneDeep(components)
-	return mutDeleteComponent(id, newComponents)
+const deleteComponents = (ids: string[], components: Component[]) => {
+	let newComponents = _.cloneDeep(components)
+	for (const id of ids) {
+		newComponents = mutDeleteComponent(id, newComponents)
+	}
+	return newComponents
 }
 
 const mutDeleteComponent = (id: string, components: Component[]) => {
@@ -381,8 +396,8 @@ const mutDeleteComponent = (id: string, components: Component[]) => {
 const moveComponent = (id: string, toParentId: string, components: Component[]) => {
 	const which = findComponent(id, components)
 	if (!which) return components
-	const deleted = deleteComponent(id, components)
-	const reAdded = addComponent({ ...which, parentId: toParentId }, toParentId, deleted)
+	const deleted = deleteComponents([id], components)
+	const reAdded = addComponents([{ ...which, parentId: toParentId }], toParentId, deleted)
 	return reAdded
 }
 
@@ -453,7 +468,7 @@ const mutAddComponentAfter = (
 function moveComponentBefore(id: string, beforeId: string, components: Component[]) {
 	const which = findComponent(id, components)
 	if (!which) return components
-	const deleted = deleteComponent(id, components)
+	const deleted = deleteComponents([id], components)
 	const reAdded = addComponentBefore({ ...which, parentId: beforeId }, beforeId, deleted)
 	return reAdded
 }
@@ -461,7 +476,7 @@ function moveComponentBefore(id: string, beforeId: string, components: Component
 function moveComponentAfter(id: string, afterId: string, components: Component[]) {
 	const which = findComponent(id, components)
 	if (!which) return components
-	const deleted = deleteComponent(id, components)
+	const deleted = deleteComponents([id], components)
 	const reAdded = addComponentAfter({ ...which, parentId: afterId }, afterId, deleted)
 	return reAdded
 }

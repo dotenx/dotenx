@@ -3,16 +3,16 @@ import { immer } from 'zustand/middleware/immer'
 import { Component } from './canvas-store'
 
 interface ClipboardState {
-	copiedComponent: Component | null
-	copy: (component: Component) => void
+	copiedComponents: Component[]
+	copy: (components: Component[]) => void
 }
 
 export const useClipboardStore = create<ClipboardState>()(
 	immer((set) => ({
-		copiedComponent: null,
-		copy: (component) => {
+		copiedComponents: [],
+		copy: (components) => {
 			set((state) => {
-				state.copiedComponent = component
+				state.copiedComponents = components
 			})
 		},
 	}))

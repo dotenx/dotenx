@@ -72,6 +72,7 @@ import {
 } from './canvas-store'
 import { selectedClassAtom } from './class-editor'
 import { useClassNamesStore } from './class-names-store'
+import { useIsHighlighted } from './component-renderer'
 import { Draggable, DraggableMode } from './draggable'
 import { projectTagAtom } from './project-atom'
 import { useSelectionStore } from './selection-store'
@@ -565,22 +566,18 @@ function Layers({ components }: { components: Component[] }) {
 }
 
 function Layer({ component }: { component: Component }) {
-	const { setHovered, unsetHovered, select, selectedId } = useSelectionStore((store) => ({
+	const { setHovered, unsetHovered, select, selectedIds } = useSelectionStore((store) => ({
 		setHovered: store.setHovered,
 		unsetHovered: store.unsetHovered,
 		select: store.select,
-		selectedId: store.selectedId,
+		selectedIds: store.selectedIds,
 	}))
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const [opened, disclosure] = useDisclosure(true)
 	const icon = getComponentIcon(component.kind)
 	const name = component.kind
 	const hasChildren = component.components.length > 0
-	const selectAndScrollToComponent = () => {
-		select(component.id)
-		if (selectedId !== component.id) setSelectedClass(null)
-		document.getElementById(component.id)?.scrollIntoView()
-	}
+	const { isSelected } = useIsHighlighted(component.id)
 
 	const disclosureButton = hasChildren && (
 		<ActionIcon
@@ -599,12 +596,17 @@ function Layer({ component }: { component: Component }) {
 	)
 
 	return (
-		<div className={clsx(selectedId === component.id && 'bg-gray-50 rounded')}>
+		<div className={clsx(isSelected && 'bg-gray-50 rounded')}>
 			<div
 				className="flex items-center py-1 border-b group"
 				onMouseOver={() => setHovered(component.id)}
 				onMouseOut={() => unsetHovered()}
-				onClick={selectAndScrollToComponent}
+				onClick={(event) => {
+					if (event.ctrlKey && !isSelected) select([...selectedIds, component.id])
+					else select([component.id])
+					if (!isSelected) setSelectedClass(null)
+					document.getElementById(component.id)?.scrollIntoView()
+				}}
 			>
 				<div>{disclosureButton}</div>
 				<span className={clsx('pl-1', !hasChildren && 'pl-[22px]')}>{icon}</span>
