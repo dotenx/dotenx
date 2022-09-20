@@ -1,4 +1,4 @@
-import { getHotkeyHandler, useHotkeys } from '@mantine/hooks'
+import { getHotkeyHandler, HotkeyItem, useHotkeys } from '@mantine/hooks'
 import { useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { ReactNode, useContext, useEffect } from 'react'
@@ -22,16 +22,12 @@ import { useSelectionStore } from './selection-store'
 import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore, ViewportDevice } from './viewport-store'
 
-export const ROOT_ID = 'root'
+export const ROOT_ID = 'CANVAS_ROOT'
 
 const DndFrame = ({ children }: { children: ReactNode }) => {
 	const { dragDropManager } = useContext(DndContext)
 	const { window } = useContext(FrameContext)
-	const { undo, redo } = useCanvasStore((store) => ({
-		undo: store.undo,
-		redo: store.redo,
-	}))
-	const { copy, paste } = useCopyPaste()
+	const hotkeys = useCanvasHotkeys()
 
 	useEffect(() => {
 		const backend = dragDropManager?.getBackend() as any
@@ -39,15 +35,10 @@ const DndFrame = ({ children }: { children: ReactNode }) => {
 	})
 
 	useEffect(() => {
-		const hotkeys = getHotkeyHandler([
-			['mod+z', undo],
-			['mod+shift+z', redo],
-			['mod+c', copy],
-			['mod+v', paste],
-		])
-		window?.document.body.addEventListener('keydown', hotkeys)
-		return () => window?.document.body.removeEventListener('keydown', hotkeys)
-	}, [copy, paste, redo, undo, window?.document.body])
+		const hotkeysEvent = getHotkeyHandler(hotkeys as any)
+		window?.document.body.addEventListener('keydown', hotkeysEvent)
+		return () => window?.document.body.removeEventListener('keydown', hotkeysEvent)
+	}, [hotkeys, window?.document.body])
 
 	return <>{children}</>
 }
@@ -74,26 +65,40 @@ const useCopyPaste = () => {
 	return { copy, paste }
 }
 
-export function Canvas() {
-	const { components, undo, redo } = useCanvasStore((store) => ({
-		components: store.components,
+const useCanvasHotkeys = (): HotkeyItem[] => {
+	const { undo, redo, remove } = useCanvasStore((store) => ({
 		undo: store.undo,
 		redo: store.redo,
+		remove: store.deleteComponent,
 	}))
 	const deselectComponent = useSelectionStore((store) => store.deselect)
-	const setSelectedClass = useSetAtom(selectedClassAtom)
-	const viewport = useViewportStore((store) => store.device)
-	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '766px' : '477px'
-	const classNames = useClassNamesStore((store) => store.classNames)
 	const { copy, paste } = useCopyPaste()
+	const selectedComponentId = useSelectionStore((store) => store.selectedId)
+	const deleteComponent = () => {
+		if (selectedComponentId) remove(selectedComponentId)
+	}
 
-	useHotkeys([
+	return [
 		['Escape', deselectComponent],
 		['mod+z', undo],
 		['mod+shift+z', redo],
 		['mod+c', copy],
 		['mod+v', paste],
-	])
+		['Delete', deleteComponent],
+		['Backspace', deleteComponent],
+	]
+}
+
+export function Canvas() {
+	const components = useCanvasStore((store) => store.components)
+	const deselectComponent = useSelectionStore((store) => store.deselect)
+	const setSelectedClass = useSetAtom(selectedClassAtom)
+	const viewport = useViewportStore((store) => store.device)
+	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '766px' : '477px'
+	const classNames = useClassNamesStore((store) => store.classNames)
+
+	const hotkeys = useCanvasHotkeys()
+	useHotkeys(hotkeys)
 
 	const desktopIds = generateCssIds(components, 'desktop')
 	const tabletIds = generateCssIds(components, 'tablet')
@@ -143,7 +148,7 @@ export function Canvas() {
 								justifyContent: 'start',
 							}}
 						>
-							<div style={{ padding: 2, flexGrow: 1 }}>
+							<div style={{ padding: 2, flexGrow: 1 }} id={ROOT_ID}>
 								<Droppable
 									data={{ mode: DroppableMode.InsertIn, componentId: ROOT_ID }}
 									onClick={() => {

@@ -1,4 +1,5 @@
-import { forwardRef, useCallback } from 'react'
+import { atom, useSetAtom } from 'jotai'
+import { forwardRef, useCallback, useEffect } from 'react'
 import { useDrag } from 'react-dnd'
 import { Component, ComponentKind } from './canvas-store'
 
@@ -17,12 +18,23 @@ export enum DraggableKinds {
 	Component = 'component',
 }
 
+export const isDraggingAtom = atom({ isDragging: false })
+
 interface DraggableProps extends React.HTMLAttributes<HTMLDivElement> {
 	data: DraggableData
 }
 
 export const Draggable = forwardRef<HTMLDivElement, DraggableProps>(({ data, ...rest }, ref) => {
-	const [, drag] = useDrag(() => ({ type: DraggableKinds.Component, item: data }))
+	const [{ isDragging }, drag] = useDrag(() => ({
+		type: DraggableKinds.Component,
+		item: data,
+		collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+	}))
+	const setDragging = useSetAtom(isDraggingAtom)
+
+	useEffect(() => {
+		setDragging({ isDragging })
+	}, [isDragging, setDragging])
 
 	const refHandler = useCallback(
 		(node: HTMLDivElement) => {

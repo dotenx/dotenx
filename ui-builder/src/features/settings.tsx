@@ -92,6 +92,31 @@ import {
 import { useSelectedComponent } from './use-selected-component'
 import { useViewportStore } from './viewport-store'
 
+export const useEditStyles = (component: Component) => {
+	const viewport = useViewportStore((store) => store.device)
+	const editStyle = useEditStyle(component)
+	const selectedClassName = useAtomValue(selectedClassAtom)
+	const { classNames, editClassName } = useClassNamesStore((store) => ({
+		classNames: store.classNames,
+		editClassName: store.edit,
+	}))
+	const selector = useAtomValue(selectedSelectorAtom)
+	const styles =
+		(selectedClassName
+			? classNames[selectedClassName][viewport][selector]
+			: component.data.style[viewport][selector]) ?? {}
+	const editClassStyle = (styles: CSSProperties) => {
+		if (selectedClassName) editClassName(selectedClassName, viewport, selector, styles)
+		else console.error("Can't edit class style without selected class name")
+	}
+	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editStyle
+	const editStyles: EditStyle = (style, value) => {
+		editClassOrComponentStyle({ ...styles, [style]: value })
+	}
+
+	return { editStyles, styles }
+}
+
 export function Settings() {
 	const viewport = useViewportStore((store) => store.device)
 	const selectedComponent = useSelectedComponent()
@@ -1239,11 +1264,6 @@ const useEditStyle = (component: Component | null) => {
 	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const viewport = useViewportStore((store) => store.device)
 	const selector = useAtomValue(selectedSelectorAtom)
-
-	const editComponent = useMemo(
-		() => _.debounce(editComponentNoDebounce, 300),
-		[editComponentNoDebounce]
-	)
 
 	const editStyle = (style: CSSProperties) => {
 		if (!component) return

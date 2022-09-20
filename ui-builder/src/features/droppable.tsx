@@ -1,6 +1,6 @@
 import { useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { CSSProperties, ReactNode } from 'react'
+import { CSSProperties, forwardRef, ReactNode } from 'react'
 import { useDrop } from 'react-dnd'
 import { uuid } from '../utils'
 import { Component, useCanvasStore } from './canvas-store'
@@ -20,17 +20,15 @@ export enum DroppableMode {
 	InsertAfter = 'insert-after',
 }
 
-export function Droppable({
-	children,
-	onClick,
-	data,
-	style,
-}: {
-	children?: ReactNode
-	onClick?: () => void
-	data: DroppableData
-	style?: CSSProperties
-}) {
+export const Droppable = forwardRef<
+	HTMLDivElement,
+	{
+		children?: ReactNode
+		onClick?: () => void
+		data: DroppableData
+		style?: CSSProperties
+	}
+>(({ children, onClick, data, style }, ref) => {
 	const {
 		addComponent,
 		moveComponent,
@@ -130,16 +128,29 @@ export function Droppable({
 		collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
 	}))
 
+	const handleRef = (element: HTMLDivElement) => {
+		drop(element)
+		if (ref) {
+			if (typeof ref === 'function') {
+				ref(element)
+			} else {
+				ref.current = element
+			}
+		}
+	}
+
 	return (
 		<div
-			ref={drop}
-			style={{ ...style, backgroundColor: isOver ? '#ffe4e6' : style?.backgroundColor }}
+			ref={handleRef}
+			style={{ ...style, backgroundColor: isOver ? '#ffe4e699' : style?.backgroundColor }}
 			onClick={onClick}
 		>
 			{children}
 		</div>
 	)
-}
+})
+
+Droppable.displayName = 'Droppable'
 
 export const regenComponent = (component: Component, parentId: string) => {
 	const newComponent = _.cloneDeep(component)
