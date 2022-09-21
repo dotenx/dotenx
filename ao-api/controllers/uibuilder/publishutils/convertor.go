@@ -29,6 +29,7 @@ var pageTemplate = `<!DOCTYPE html>
 	{{range .Head.Meta}}
 	<meta name="{{.Name}}" content="{{.Content}}">
 	{{end}}
+	<script  src="https://unpkg.com/alpinejs-intersect-class@1.x.x/dist/cdn.min.js"></script>
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">

@@ -27,7 +27,7 @@ type Button struct {
 	} `json:"data"`
 }
 
-const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
+const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -36,7 +36,7 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 		return "", err
 	}
 	var button Button
-	fmt.Println("events", component["events"])
+
 	json.Unmarshal(b, &button)
 	tmpl, err := template.New("button").Parse(buttonTemplate)
 	if err != nil {
@@ -44,8 +44,19 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 		return "", err
 	}
 
+	visibleAnimation, events := PullVisibleAnimation(button.Events)
+	button.Events = events
+
+	params := struct {
+		Button
+		VisibleAnimation VisibleAnimation
+	}{
+		button,
+		visibleAnimation,
+	}
+
 	var out bytes.Buffer
-	err = tmpl.Execute(&out, button)
+	err = tmpl.Execute(&out, params)
 	if err != nil {
 		fmt.Println("error: ", err.Error())
 		return "", err
