@@ -29,7 +29,7 @@ type Text struct {
 
 // TODO: id in templates rendered with RepeatFrom won't work! Do something about it
 
-const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html='` + "`{{.Data.Text}}`" + `'></div>{{if .RepeatFrom.Name}}</template>{{end}}`
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html='` + "`{{.Data.Text}}`" + `'></div>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -46,8 +46,19 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 		return "", err
 	}
 
+	visibleAnimation, events := PullVisibleAnimation(text.Events)
+	text.Events = events
+
+	params := struct {
+		Text
+		VisibleAnimation VisibleAnimation
+	}{
+		text,
+		visibleAnimation,
+	}
+
 	var out bytes.Buffer
-	err = tmpl.Execute(&out, text)
+	err = tmpl.Execute(&out, params)
 	if err != nil {
 		fmt.Println("error: ", err.Error())
 		return "", err

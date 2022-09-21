@@ -28,7 +28,7 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -43,6 +43,9 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		fmt.Println(err)
 		return "", err
 	}
+
+	visibleAnimation, events := PullVisibleAnimation(box.Events)
+	box.Events = events
 
 	var renderedChildren []string
 
@@ -64,12 +67,14 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		}
 		Events     []Event
 		ClassNames []string
+		VisibleAnimation
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
+		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer
@@ -86,4 +91,27 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 	styleStore.AddStyle(box.Id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
 
 	return out.String(), nil
+}
+
+type VisibleAnimation struct {
+	AnimationName string
+	Once          bool
+}
+
+func PullVisibleAnimation(events []Event) (VisibleAnimation, []Event) {
+	// Note: if user chooses visible and visibleOnce, one of them will be ignored (ideally UI should prevent this)
+	visibleAnimation := VisibleAnimation{}
+	var newEvents []Event
+	for _, event := range events {
+		if event.Kind == "visible" { // Important: Only for visible and visibleOnce events we accept one and only one action which is an animation too
+			visibleAnimation.AnimationName = event.Actions[0].AnimationName
+			visibleAnimation.Once = false
+		} else if event.Kind == "visibleOnce" {
+			visibleAnimation.AnimationName = event.Actions[0].AnimationName
+			visibleAnimation.Once = true
+		} else {
+			newEvents = append(newEvents, event)
+		}
+	}
+	return visibleAnimation, newEvents
 }
