@@ -111,6 +111,7 @@ interface ComplexFieldRawProps {
 	groups?: GroupData[]
 	placeholder?: string
 	valueKinds?: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
+	compact?: boolean
 }
 export function ComplexFieldRaw({
 	value,
@@ -120,6 +121,7 @@ export function ComplexFieldRaw({
 	label,
 	placeholder,
 	valueKinds = ['nested', 'formatted', 'input-or-select'],
+	compact,
 }: ComplexFieldRawProps) {
 	const [view, setView] = useState<
 		'input-or-select' | 'formatting' | 'formatted' | 'nested' | 'json' | 'json-array'
@@ -166,6 +168,7 @@ export function ComplexFieldRaw({
 					onClickJson={switchToJson}
 					onClickJsonArray={switchToJsonArray}
 					valueKinds={valueKinds}
+					compact={compact}
 				/>
 			)}
 			{view === 'formatting' && (
@@ -276,49 +279,50 @@ function Formatter({
 	return (
 		<div className="flex items-center gap-2">
 			<InputOrSelectRaw {...rest} />
-			{rest.value.type === InputOrSelectKind.Text && (
-				<Menu shadow="md" width={200}>
-					<Menu.Target>
-						<ActionIcon mt={rest.label ? 27 : 0}>
-							<IoEllipsisHorizontal type="button" />
-						</ActionIcon>
-					</Menu.Target>
+			{rest.value.type === InputOrSelectKind.Text &&
+				!(valueKinds.length === 1 && valueKinds[0] === 'input-or-select') && (
+					<Menu shadow="md" width={200}>
+						<Menu.Target>
+							<ActionIcon mt={rest.label ? 27 : 0}>
+								<IoEllipsisHorizontal type="button" />
+							</ActionIcon>
+						</Menu.Target>
 
-					<Menu.Dropdown>
-						{valueKinds.includes('formatted') && (
-							<Menu.Item icon={<IoText size={14} />} onClick={onClickFormatter}>
-								Formatter
-							</Menu.Item>
-						)}
-						{valueKinds.includes('nested') && (
-							<Menu.Item icon={<IoGitMerge size={14} />} onClick={onClickNested}>
-								Nested Value
-							</Menu.Item>
-						)}
-						{valueKinds.includes('json') && (
-							<Menu.Item icon={<IoCode size={14} />} onClick={onClickJson}>
-								JSON
-							</Menu.Item>
-						)}
-						{valueKinds.includes('json-array') && (
-							<Menu.Item
-								icon={<IoCodeWorking size={14} />}
-								onClick={onClickJsonArray}
-							>
-								JSON Array
-							</Menu.Item>
-						)}
-					</Menu.Dropdown>
-				</Menu>
+						<Menu.Dropdown>
+							{valueKinds.includes('formatted') && (
+								<Menu.Item icon={<IoText size={14} />} onClick={onClickFormatter}>
+									Formatter
+								</Menu.Item>
+							)}
+							{valueKinds.includes('nested') && (
+								<Menu.Item icon={<IoGitMerge size={14} />} onClick={onClickNested}>
+									Nested Value
+								</Menu.Item>
+							)}
+							{valueKinds.includes('json') && (
+								<Menu.Item icon={<IoCode size={14} />} onClick={onClickJson}>
+									JSON
+								</Menu.Item>
+							)}
+							{valueKinds.includes('json-array') && (
+								<Menu.Item
+									icon={<IoCodeWorking size={14} />}
+									onClick={onClickJsonArray}
+								>
+									JSON Array
+								</Menu.Item>
+							)}
+						</Menu.Dropdown>
+					</Menu>
 
-				// <button
-				// 	className="w-6 h-6 italic font-bold bg-gray-100 hover:bg-gray-200 transition rounded mt-[29px] shrink-0"
-				// 	type="button"
-				// 	onClick={onClickFormatter}
-				// >
-				// 	f
-				// </button>
-			)}
+					// <button
+					// 	className="w-6 h-6 italic font-bold bg-gray-100 hover:bg-gray-200 transition rounded mt-[29px] shrink-0"
+					// 	type="button"
+					// 	onClick={onClickFormatter}
+					// >
+					// 	f
+					// </button>
+				)}
 		</div>
 	)
 }

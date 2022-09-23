@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useDidUpdate } from '@mantine/hooks'
-import { useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useMemo } from 'react'
-import { isNode, Node } from 'react-flow-renderer'
 import { useForm } from 'react-hook-form'
-import { useQueries, useQuery } from 'react-query'
+import { useQuery } from 'react-query'
 import { z } from 'zod'
-import { getTaskFields, getTaskKinds, getTriggerDefinition, QueryKey, TriggerData } from '../../api'
-import { flowAtom } from '../atoms'
-import { TaskNodeData } from '../flow'
-import { NodeType } from '../flow/types'
+import { getTaskFields, getTaskKinds, QueryKey } from '../../api'
 import { GroupData } from '../ui'
 import { InputOrSelectKind } from '../ui/input-or-select'
+import { outputsAtom, PropertyKind } from './test-step'
 
 const textValue = { type: z.literal(InputOrSelectKind.Text), data: z.string() }
 const selectValue = z.object({
@@ -34,7 +31,6 @@ const schema = z.object({
 	type: z.string().min(1),
 	integration: z.string().optional(),
 	others: z.record(complexValue.or(z.array(z.any())).optional()).optional(),
-	// vars: z.array(z.object({ key: z.string(), value: complexValue })).optional(),
 	vars: z.any(),
 	outputs: z.array(z.object({ value: z.string() })).optional(),
 })
@@ -87,65 +83,21 @@ export function useTaskSettings({
 		() => taskFieldsQuery.data?.data?.fields ?? [],
 		[taskFieldsQuery.data?.data?.fields]
 	)
-	// const dynVariables = useMemo(
-	// 	() =>
-	// 		_.omit(
-	// 			defaultValues?.others,
-	// 			taskFields.map((field) => field.key)
-	// 		) as TaskOthers,
-	// 	[defaultValues?.others, taskFields]
-	// )
-
-	// useEffect(() => {
-	// 	setValue(
-	// 		'vars',
-	// 		_.toPairs(dynVariables).map(([key, value]) => ({
-	// 			key,
-	// 			value: value as ComplexFieldValue,
-	// 		}))
-	// 	)
-	// }, [dynVariables, setValue])
 
 	const integrationTypes = taskFieldsQuery.data?.data.integration_types
 	const selectedTaskType = _.values(tasks)
 		.flat()
 		.find((task) => task.type === taskType)
-	const [flowElements] = useAtom(flowAtom)
-	const nodes = (flowElements.filter(isNode) as Node<TaskNodeData | TriggerData>[])
-		.filter((node) => node.data?.name !== taskName)
-		.map((node) => ({
-			name: node.data?.name ?? '',
-			type: node.data?.type,
-			options:
-				node.data && 'outputs' in node.data
-					? node.data?.outputs?.map((output) => output.value) ?? []
-					: [],
-			nodeType: node.type as NodeType,
-			iconUrl: node.data?.iconUrl,
-		}))
 
-	const getTaskFieldsResults = useQueries(
-		nodes.map((node) => ({
-			queryKey: [QueryKey.GetTaskFields, node.name, node.type],
-			queryFn: async () => {
-				const response =
-					node.nodeType === NodeType.Task
-						? getTaskFields(node.type!)
-						: getTriggerDefinition(node.type!)
-				const outputs = (await response).data.outputs
-				return { ...node, options: outputs.map((output) => output.key) }
-			},
-			enabled: !!node.type,
+	const outputs = useAtomValue(outputsAtom)
+	const outputGroups: GroupData[] = _.toPairs(outputs)
+		.filter(([stepName]) => stepName !== taskName)
+		.map(([stepName, stepOutputs]) => ({
+			name: stepName,
+			options: stepOutputs
+				.filter((property) => property.kind !== PropertyKind.Array)
+				.map((output) => ({ name: output.path, value: JSON.stringify(output.value) })),
 		}))
-	)
-
-	const noneCodeOutputGroups = getTaskFieldsResults
-		.map((result) => result.data)
-		.filter((r) => !!r) as GroupData[]
-	const codeOutputGroups = nodes.filter(
-		(node) => node.type?.includes('code') || node.type?.includes('Get table records')
-	)
-	const outputGroups = [] ?? [...noneCodeOutputGroups, ...codeOutputGroups]
 
 	const onSubmit = handleSubmit(() => {
 		onSave({

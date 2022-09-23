@@ -13,6 +13,7 @@ import { Description, Field, Form, GroupData, GroupSelect, InputOrSelectKind, Lo
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { JsonEditor } from '../ui/json-editor'
 import { CodeField } from './code-field'
+import { TestTask } from './test-step'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
 interface TaskSettingsWithIntegrationProps {
@@ -146,6 +147,8 @@ function TaskSettings({
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
 	const taskBuilderValues = taskForm.watch('others.tasks')
+	const formData = taskForm.watch()
+
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
@@ -200,7 +203,8 @@ function TaskSettings({
 				)}
 			</div>
 
-			<Button type="submit" disabled={disableSubmit}>
+			<TestTask task={formData} />
+			<Button fullWidth type="submit" disabled={disableSubmit}>
 				Save
 			</Button>
 		</Form>
@@ -232,7 +236,7 @@ const getFieldComponent = (
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					<ComplexField {...props} />
+					<ComplexField {...props} valueKinds={['input-or-select']} />
 					<Description>{props.description}</Description>
 				</div>
 			)
