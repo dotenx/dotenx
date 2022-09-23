@@ -1,4 +1,4 @@
-// image: hawwwdi/send-discord-message:lambda3
+// image: hawwwdi/send-discord-message:lambda4
 package main
 
 import (
@@ -21,7 +21,7 @@ type DiscordBody struct {
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 type Response struct {
 	Successfull bool `json:"successfull"`
@@ -31,29 +31,29 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	lambdaResp := Response{}
 	lambdaResp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		webhookURL := singleInput["WEBHOOK_URL"].(string)
-		text := singleInput["TEXT"].(string)
-		discordBody := DiscordBody{
-			Content: text,
-		}
-		data, _ := json.Marshal(discordBody)
-		req, _ := http.NewRequest("POST", webhookURL, bytes.NewReader(data))
-		req.Header["Content-Type"] = []string{"application/json"}
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			fmt.Println(err)
-			lambdaResp.Successfull = false
-			continue
-		}
-		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-			bytes, _ := ioutil.ReadAll(resp.Body)
-			fmt.Printf("send message failed, status: %v, response: %v\n", resp.StatusCode, string(bytes))
-			lambdaResp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	webhookURL := singleInput["WEBHOOK_URL"].(string)
+	text := singleInput["TEXT"].(string)
+	discordBody := DiscordBody{
+		Content: text,
 	}
+	data, _ := json.Marshal(discordBody)
+	req, _ := http.NewRequest("POST", webhookURL, bytes.NewReader(data))
+	req.Header["Content-Type"] = []string{"application/json"}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		lambdaResp.Successfull = false
+		// continue
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		fmt.Printf("send message failed, status: %v, response: %v\n", resp.StatusCode, string(bytes))
+		lambdaResp.Successfull = false
+		// continue
+	}
+	// }
 	if lambdaResp.Successfull {
 		fmt.Println("All message(s) sended successfully")
 	}

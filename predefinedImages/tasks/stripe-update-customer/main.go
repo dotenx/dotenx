@@ -1,4 +1,4 @@
-// image: stripe/stripe-update-customer:lambda4
+// image: stripe/stripe-update-customer:lambda5
 package main
 
 import (
@@ -24,9 +24,9 @@ import (
 // }
 
 type Event struct {
-	Body           []map[string]interface{} `json:"body"`
-	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
-	Authorization  string                   `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -40,32 +40,34 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	outputCnt := 0
-	outputs := make([]map[string]interface{}, 0)
+	// outputs := make([]map[string]interface{}, 0)
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
-	for _, val := range event.Body {
-		singleInput := val
-		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
-		name := singleInput["CUS_NAME"].(string)
-		phone := singleInput["CUS_PHONE"].(string)
-		email := singleInput["CUS_EMAIL"].(string)
-		id := singleInput["CUS_ID"].(string)
-		sc := &client.API{}
-		sc.Init(secretKey, nil)
-		id, err := updateCustomer(sc, id, name, phone, email)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
-		outputs = append(outputs, map[string]interface{}{
-			"customer_id": id,
-		})
-		outputCnt++
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+	name := singleInput["CUS_NAME"].(string)
+	phone := singleInput["CUS_PHONE"].(string)
+	email := singleInput["CUS_EMAIL"].(string)
+	id := singleInput["CUS_ID"].(string)
+	sc := &client.API{}
+	sc.Init(secretKey, nil)
+	id, err := updateCustomer(sc, id, name, phone, email)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
 	}
+	// outputs = append(outputs, map[string]interface{}{
+	// 	"customer_id": id,
+	// })
+	outputCnt++
+	// }
 
 	resp.ReturnValue = map[string]interface{}{
-		"outputs": outputs,
+		"outputs": map[string]interface{}{
+			"customer_id": id,
+		},
 	}
 	if resp.Successfull {
 		resp.Status = "completed"

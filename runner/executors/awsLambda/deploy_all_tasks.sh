@@ -1,26 +1,26 @@
 #! /bin/bash
 
-# # hojjat12/database-add-record:lambda5
-# # hojjat12/database-delete-record:lambda3
-# # hojjat12/database-get-records:lambda6
-# # hojjat12/database-update-record:lambda5
-# # hawwwdi/send-discord-message:lambda3
-# # awrmin/dotenx-http-call:lambda4
-# # hojjat12/facebook-publish-post:lambda3
-# # hojjat12/google-send-email:lambda3
-# # awrmin/create-jira-ticket:lambda4
-# # awrmin/sendemail:lambda4
-# # awrmin/slack-send-message:lambda4
-# # hojjat12/starshipit-create-order:lambda2
-# # stripe/stripe-create-customer:lambda4
-# # stripe/stripe-find-customer:lambda4
-# # stripe/stripe-update-customer:lambda4
-# # hojjat12/twitter-send-tweet:lambda3
-# # hojjat12/youtube-upload-file:lambda3
+# # hojjat12/database-add-record:lambda6
+# # hojjat12/database-delete-record:lambda4
+# # hojjat12/database-get-records:lambda8
+# # hojjat12/database-update-record:lambda6
+# # hawwwdi/send-discord-message:lambda4
+# # awrmin/dotenx-http-call:lambda5
+# # hojjat12/facebook-publish-post:lambda4
+# # hojjat12/google-send-email:lambda4
+# # awrmin/create-jira-ticket:lambda5
+# # awrmin/sendemail:lambda5
+# # awrmin/slack-send-message:lambda5
+# # hojjat12/starshipit-create-order:lambda3
+# # stripe/stripe-create-customer:lambda5
+# # stripe/stripe-find-customer:lambda5
+# # stripe/stripe-update-customer:lambda5
+# # hojjat12/twitter-send-tweet:lambda4
+# # hojjat12/youtube-upload-file:lambda4
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="database-insert-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -29,7 +29,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-delete-record"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="database-delete-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -38,7 +38,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-get-records"
-# export tag="lambda6"
+# export tag="lambda8"
 # export directory_address="database-select-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -47,7 +47,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-update-record"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="database-update-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -56,7 +56,7 @@
 
 # export region="us-east-1"
 # export repository_name="hawwwdi/send-discord-message"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="discord-channel-message"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -65,7 +65,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/dotenx-http-call"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="http-call"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -74,7 +74,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/facebook-publish-post"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="facebook-publish-post"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -83,7 +83,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/google-send-email"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="google-send-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -92,7 +92,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/create-jira-ticket"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="create-jira-ticket"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -101,7 +101,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/sendemail"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="send-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -110,7 +110,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/slack-send-message"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="slack-message"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -119,7 +119,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/starshipit-create-order"
-# export tag="lambda2"
+# export tag="lambda3"
 # export directory_address="starshipit-create-order"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -128,7 +128,7 @@
 
 # export region="us-east-1"
 # export repository_name="stripe/stripe-create-customer"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="stripe-create-customer"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -137,7 +137,7 @@
 
 # export region="us-east-1"
 # export repository_name="stripe/stripe-find-customer"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="stripe-find-customer"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -146,7 +146,7 @@
 
 # export region="us-east-1"
 # export repository_name="stripe/stripe-update-customer"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="stripe-update-customer"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -155,7 +155,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/twitter-send-tweet"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="twitter-send-tweet"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -164,7 +164,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/youtube-upload-file"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="youtube-upload-file/awsLambda"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')

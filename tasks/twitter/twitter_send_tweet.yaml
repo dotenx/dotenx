@@ -1,6 +1,6 @@
 service: twitter
 type: Send tweet
-image: hojjat12/twitter-send-tweet:lambda3
+image: hojjat12/twitter-send-tweet:lambda4
 integrations: [twitter]
 fields:
     - key: text

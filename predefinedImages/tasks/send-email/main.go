@@ -1,4 +1,4 @@
-// image: awrmin/sendemail:lambda4
+// image: awrmin/sendemail:lambda5
 package main
 
 import (
@@ -17,7 +17,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -28,27 +28,27 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		sender := singleInput["sender"].(string)
-		target := singleInput["target"].(string)
-		text := singleInput["text"].(string)
-		apiKey := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		if apiKey == "" {
-			fmt.Println("no api key")
-			resp.Successfull = false
-			continue
-		}
-		err := SendGridEmail(apiKey, sender, target, text)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Printf("sending email to '%s' wasn't successful\n", target)
-			resp.Successfull = false
-			continue
-		} else {
-			fmt.Printf("sending email to '%s' was successful\n", target)
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	sender := singleInput["sender"].(string)
+	target := singleInput["target"].(string)
+	text := singleInput["text"].(string)
+	apiKey := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	if apiKey == "" {
+		fmt.Println("no api key")
+		resp.Successfull = false
+		// continue
 	}
+	err := SendGridEmail(apiKey, sender, target, text)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Printf("sending email to '%s' wasn't successful\n", target)
+		resp.Successfull = false
+		// continue
+	} else {
+		fmt.Printf("sending email to '%s' was successful\n", target)
+	}
+	// }
 	// sender := event.Sender
 	// target := event.Target
 	// text := event.Text

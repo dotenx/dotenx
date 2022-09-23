@@ -151,8 +151,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService()
-	TriggerServic := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
-	crudServices := crudService.NewCrudService(pipelineStore, TriggerServic, IntegrationService)
+	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
+	crudServices := crudService.NewCrudService(pipelineStore, TriggerService, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
@@ -164,12 +164,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 
 	// Controllers
-	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerServic}
+	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerService}
 	executionController := execution.ExecutionController{Service: executionServices}
 	predefinedController := predefinedtaskcontroller.New(predefinedService)
 	predefinedMiniTaskController := predefinedMiniTask.PredefinedMiniTaskController{}
 	IntegrationController := integrationController.IntegrationController{Service: IntegrationService, OauthService: OauthService}
-	TriggerController := trigger.TriggerController{Service: TriggerServic, CrudService: crudServices}
+	TriggerController := trigger.TriggerController{Service: TriggerService, CrudService: crudServices}
 	OauthController := oauthController.OauthController{Service: OauthService, IntegrationService: IntegrationService}
 	InternalController := internalController.InternalController{Service: InternalService}
 	projectController := project.ProjectController{Service: ProjectService}
@@ -281,9 +281,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// execution router
 	execution.GET("/id/:id/details", executionController.GetExecutionDetails())
 	execution.POST("/project/:project_name/name/:name/start", executionController.StartPipelineByName())
+	execution.POST("/type/:type/step/:step_name", executionController.RunInstantly(crudServices, TriggerService, IntegrationService))
 	execution.GET("/project/:project_name/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
 	execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
-	//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
+	// execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
 
 	execution.GET("/queue", executionController.GetExecution())
 	execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
@@ -407,8 +408,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// }
 	// fmt.Println(dt)
 
-	go TriggerServic.StartChecking(IntegrationStore)
-	go TriggerServic.StartScheduller()
+	go TriggerService.StartChecking(IntegrationStore)
+	go TriggerService.StartScheduller()
 	return r
 }
 

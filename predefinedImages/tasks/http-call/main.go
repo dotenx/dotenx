@@ -1,4 +1,4 @@
-// image: awrmin/dotenx-http-call:lambda4
+// image: awrmin/dotenx-http-call:lambda5
 package main
 
 import (
@@ -15,9 +15,9 @@ import (
 )
 
 type Event struct {
-	Body           []map[string]interface{} `json:"body"`
-	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
-	Authorization  string                   `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 // type Event struct {
@@ -40,57 +40,57 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp.Successfull = true
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
-	resultData := make([]interface{}, 0)
-	for _, val := range event.Body {
-		singleInput := val
-		method := singleInput["method"].(string)
-		url := singleInput["url"].(string)
-		body := fmt.Sprint(singleInput["body"])
-		var out []byte
-		var err error
-		var statusCode int
-		if body == "" {
-			out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
+	// resultData := make([]interface{}, 0)
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	method := singleInput["method"].(string)
+	url := singleInput["url"].(string)
+	body := fmt.Sprint(singleInput["body"])
+	var out []byte
+	var err error
+	var statusCode int
+	if body == "" {
+		out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
+	} else {
+		var jsonMap map[string]interface{}
+		myMap, ok := singleInput["body"].(map[string]interface{})
+		if ok {
+			jsonMap = myMap
 		} else {
-			var jsonMap map[string]interface{}
-			myMap, ok := singleInput["body"].(map[string]interface{})
-			if ok {
-				jsonMap = myMap
-			} else {
-				json.Unmarshal([]byte(body), &jsonMap)
-			}
-			jsonData, err := json.Marshal(jsonMap)
-			if err != nil {
-				fmt.Printf("Error: %s", err.Error())
-				resp.Successfull = false
-				continue
-			}
-			payload := bytes.NewBuffer(jsonData)
-			out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
-			if err != nil {
-				fmt.Printf("Error: %s", err.Error())
-				resp.Successfull = false
-				continue
-			}
+			json.Unmarshal([]byte(body), &jsonMap)
 		}
-
+		jsonData, err := json.Marshal(jsonMap)
 		if err != nil {
-			// We just log the error and don't handle handle it, send the result to the ao-api as Failed
 			fmt.Printf("Error: %s", err.Error())
 			resp.Successfull = false
-			continue
+			// continue
 		}
-
-		fmt.Println("Status code:", statusCode)
-		// if statusCode >= http.StatusOK && statusCode <= 299 {
-		var res interface{}
-		json.Unmarshal(out, &res)
-		resultData = append(resultData, res)
-		// }
+		payload := bytes.NewBuffer(jsonData)
+		out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			resp.Successfull = false
+			// continue
+		}
 	}
 
+	if err != nil {
+		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
+		fmt.Printf("Error: %s", err.Error())
+		resp.Successfull = false
+		// continue
+	}
+
+	fmt.Println("Status code:", statusCode)
+	// if statusCode >= http.StatusOK && statusCode <= 299 {
+	var res interface{}
+	json.Unmarshal(out, &res)
+	// resultData = append(resultData, res)
+	// }
+	// }
+
 	resp.ReturnValue = map[string]interface{}{
-		"outputs": resultData,
+		"outputs": res,
 	}
 	if resp.Successfull {
 		resp.Status = "completed"
