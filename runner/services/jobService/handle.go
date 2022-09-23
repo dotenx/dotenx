@@ -34,7 +34,7 @@ func (manager *JobManager) HandleJob(job models.Job, logHelper shared.LogHelper)
 		Name:           job.Data["name"].(string),
 		Type:           job.Data["type"].(string),
 		AwsLambda:      job.Data["aws_lambda"].(string),
-		Body:           job.Data["body"].([]interface{}),
+		Body:           job.Data["body"],
 		Image:          job.Data["image"].(string),
 		MetaData:       meta,
 		Timeout:        int(job.Data["timeout"].(float64)),

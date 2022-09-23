@@ -1,7 +1,6 @@
 package executionService
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -122,31 +121,32 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 }
 
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
-func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) ([]map[string]interface{}, error) {
-	finalTaskBody := make([]map[string]interface{}, 0)
-	returnValuesMap, err := manager.getReturnValuesMap(execId, accountId, taskName, taskBody)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("###################################################### return value map:")
-	fmt.Println(returnValuesMap)
-	fmt.Println("######################################################")
+func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) (map[string]interface{}, error) {
+	// finalTaskBody := make([]map[string]interface{}, 0)
+	// returnValuesMap, err := manager.getReturnValuesMap(execId, accountId, taskName, taskBody)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// fmt.Println("###################################################### return value map:")
+	// fmt.Println(returnValuesMap)
+	// fmt.Println("######################################################")
 	//  Cartesian product of returnVlauesMap sources
-	sourceDataArr, err := getSourceDataArray(returnValuesMap)
+	// sourceDataArr, err := getSourceDataArray(returnValuesMap)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// fmt.Println("###################################################### source data arr")
+	// fmt.Println(sourceDataArr)
+	// fmt.Println("######################################################")
+	// for each source we need a task body instance
+	// for _, currentSourceData := range sourceDataArr {
+	finalTaskBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, map[string]returnValues{})
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
-	fmt.Println("###################################################### source data arr")
-	fmt.Println(sourceDataArr)
-	fmt.Println("######################################################")
-	// for each source we need a task body instance
-	for _, currentSourceData := range sourceDataArr {
-		currentTaskBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, currentSourceData)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		finalTaskBody = append(finalTaskBody, currentTaskBody)
-	}
+	// finalTaskBody = append(finalTaskBody, currentTaskBody)
+	// }
+	logrus.Info("finalTaskBody:", finalTaskBody)
 	return finalTaskBody, nil
 }

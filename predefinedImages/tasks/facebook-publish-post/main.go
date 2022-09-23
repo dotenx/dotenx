@@ -1,4 +1,4 @@
-// image: hojjat12/facebook-publish-post:lambda3
+// image: hojjat12/facebook-publish-post:lambda4
 package main
 
 import (
@@ -22,7 +22,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -33,24 +33,24 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		text := singleInput["text"].(string)
-		pageId := singleInput["page_id"].(string)
-		pageAccessToken, err := getPageAccessToken(accessToken, pageId)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
-		_, err = publishPost(text, pageId, pageAccessToken)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	text := singleInput["text"].(string)
+	pageId := singleInput["page_id"].(string)
+	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
 	}
+	_, err = publishPost(text, pageId, pageAccessToken)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All post(s) successfully published")
 	}

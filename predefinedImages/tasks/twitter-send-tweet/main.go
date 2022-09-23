@@ -1,4 +1,4 @@
-// image: hojjat12/twitter-send-tweet:lambda3
+// image: hojjat12/twitter-send-tweet:lambda4
 package main
 
 import (
@@ -18,7 +18,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -29,20 +29,20 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		consumerKey := singleInput["INTEGRATION_CONSUMER_KEY"].(string)
-		consumerSecret := singleInput["INTEGRATION_CONSUMER_SECRET"].(string)
-		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		accessTokenSecret := singleInput["INTEGRATION_ACCESS_TOKEN_SECRET"].(string)
-		text := singleInput["text"].(string)
-		err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	consumerKey := singleInput["INTEGRATION_CONSUMER_KEY"].(string)
+	consumerSecret := singleInput["INTEGRATION_CONSUMER_SECRET"].(string)
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	accessTokenSecret := singleInput["INTEGRATION_ACCESS_TOKEN_SECRET"].(string)
+	text := singleInput["text"].(string)
+	err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
 	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All tweet(s) successfully published")
 	}

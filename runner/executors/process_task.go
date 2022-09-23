@@ -13,8 +13,8 @@ func ProcessTask(task *models.TaskDetails) (processedTask *models.Task) {
 	processedTask.IsPredifined = true
 	if task.Type == "Run image" {
 		processedTask.IsPredifined = false
-		processedTask.Details.Image = task.Body[0].(map[string]interface{})["image"].(string)
-		processedTask.Script = strings.Split(task.Body[0].(map[string]interface{})["script"].(string), " ")
+		processedTask.Details.Image = task.Body.(map[string]interface{})["image"].(string)
+		processedTask.Script = strings.Split(task.Body.(map[string]interface{})["script"].(string), " ")
 	} else {
 		// // Todo: Check why this is a slice instead of a string
 		// envs := make([]string, 0)

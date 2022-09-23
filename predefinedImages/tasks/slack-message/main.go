@@ -1,4 +1,4 @@
-// image: awrmin/slack-send-message:lambda4
+// image: awrmin/slack-send-message:lambda5
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 )
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -20,26 +20,26 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		target := singleInput["target_id"].(string)
-		text := singleInput["text"].(string)
-		access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		if access_token == "" {
-			fmt.Println("Error: There isn't access token, Please check your integration")
-			resp.Successfull = false
-			continue
-		}
-		err := SendSlackMessage(text, target, access_token)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Printf("sending message to '%s' wasn't successful\n", target)
-			resp.Successfull = false
-			continue
-		} else {
-			fmt.Printf("sending message to '%s' was successful\n", target)
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	target := singleInput["target_id"].(string)
+	text := singleInput["text"].(string)
+	access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	if access_token == "" {
+		fmt.Println("Error: There isn't access token, Please check your integration")
+		resp.Successfull = false
+		// continue
 	}
+	err := SendSlackMessage(text, target, access_token)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Printf("sending message to '%s' wasn't successful\n", target)
+		resp.Successfull = false
+		// continue
+	} else {
+		fmt.Printf("sending message to '%s' was successful\n", target)
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All message(s) was send successfully")
 	}

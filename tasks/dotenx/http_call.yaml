@@ -1,6 +1,6 @@
 service: dotenx
 type: Http request
-image: awrmin/dotenx-http-call:lambda4
+image: awrmin/dotenx-http-call:lambda5
 fields:
     - key: method
       type: text

@@ -1,4 +1,4 @@
-// image: hojjat12/database-delete-record:lambda3
+// image: hojjat12/database-delete-record:lambda4
 package main
 
 import (
@@ -20,7 +20,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -31,32 +31,32 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		dtxAccessToken := singleInput["dtx_access_token"].(string)
-		projectTag := singleInput["project_tag"].(string)
-		tableName := singleInput["table_name"].(string)
-		rowId := singleInput["row_id"].(string)
-		url := fmt.Sprintf("https://api.dotenx.com/database/query/delete/project/%s/table/%s/row/%s", projectTag, tableName, rowId)
-		headers := []Header{
-			{
-				Key:   "Content-Type",
-				Value: "application/json",
-			},
-			{
-				Key:   "DTX-auth",
-				Value: dtxAccessToken,
-			},
-		}
-		out, err, statusCode, _ := httpRequest(http.MethodDelete, url, nil, headers, 0)
-		fmt.Println("dotenx api status code:", statusCode)
-		fmt.Println("dotenx api response (delete a record):", string(out))
-		if err != nil || statusCode != http.StatusOK {
-			fmt.Printf("can't get correct response from dotenx api for row %s\n", rowId)
-			resp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	dtxAccessToken := singleInput["dtx_access_token"].(string)
+	projectTag := singleInput["project_tag"].(string)
+	tableName := singleInput["table_name"].(string)
+	rowId := singleInput["row_id"].(string)
+	url := fmt.Sprintf("https://api.dotenx.com/database/query/delete/project/%s/table/%s/row/%s", projectTag, tableName, rowId)
+	headers := []Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+		{
+			Key:   "DTX-auth",
+			Value: dtxAccessToken,
+		},
 	}
+	out, err, statusCode, _ := httpRequest(http.MethodDelete, url, nil, headers, 0)
+	fmt.Println("dotenx api status code:", statusCode)
+	fmt.Println("dotenx api response (delete a record):", string(out))
+	if err != nil || statusCode != http.StatusOK {
+		fmt.Printf("can't get correct response from dotenx api for row %s\n", rowId)
+		resp.Successfull = false
+		// continue
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All row(s) deleted successfully")
 	}

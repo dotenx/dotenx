@@ -13,7 +13,7 @@ type TaskDetails struct {
 	Workspace      string
 }
 
-type TaskBody []interface{}
+type TaskBody interface{}
 
 type TaskExecutionResult struct {
 	Name        string                 `json:"name"`
