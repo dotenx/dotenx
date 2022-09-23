@@ -41,6 +41,10 @@ import {
 	Provider,
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
+	TestTaskRequest,
+	TestTaskResponse,
+	TestTriggerRequest,
+	TestTriggerResponse,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
 } from './types'
@@ -89,7 +93,9 @@ export function getAutomations(projectName: string) {
 	return api.get<GetAutomationsResponse>(`/pipeline/project/${projectName}`)
 }
 export function getTemplateAutomations(name: string, projectName: string) {
-	return api.get<GetAutomationsResponse>(`/pipeline/project/${projectName}/template/name/${name}/children`)
+	return api.get<GetAutomationsResponse>(
+		`/pipeline/project/${projectName}/template/name/${name}/children`
+	)
 }
 export function getAutomation({ name, projectName }: { projectName: string; name: string }) {
 	return api.get<GetAutomationResponse>(`/pipeline/project/${projectName}/name/${name}`)
@@ -151,7 +157,7 @@ export function setAccess({
 	})
 }
 export function setFilesAccess({
-	rowData
+	rowData,
 }: {
 	rowData: {
 		projectTag: string
@@ -426,4 +432,18 @@ export function getUserGroup(projectTag: string, userGroupName: string) {
 	return api.get<GetUserGroupResponse>(
 		`/user/group/management/project/${projectTag}/userGroup?name=${userGroupName}`
 	)
+}
+
+export function testTask(payload: TestTaskRequest) {
+	return api.post<TestTaskResponse>(`/execution/type/task/step/task`, {
+		...payload,
+		flat: true,
+	})
+}
+
+export function testTrigger(payload: TestTriggerRequest) {
+	return api.post<TestTriggerResponse>(`/execution/type/trigger/step/trigger`, {
+		...payload,
+		flat: true,
+	})
 }

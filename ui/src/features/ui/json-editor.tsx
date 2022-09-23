@@ -206,11 +206,13 @@ function Property({
 					<div className="flex items-center">
 						<div>:</div>
 						<ComplexFieldRaw
+							compact
 							value={property.value}
 							onChange={(value) =>
 								changeProperty({ ...property, value: value as EditorInput })
 							}
 							groups={outputGroups}
+							valueKinds={['input-or-select']}
 						/>
 					</div>
 				)}
