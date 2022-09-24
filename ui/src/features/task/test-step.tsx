@@ -7,6 +7,8 @@ import { useMutation } from 'react-query'
 import { AnyJson, testTask, TestTaskRequest, testTrigger, TestTriggerRequest } from '../../api'
 import { TriggerSchema } from '../trigger/use-form'
 import { InputOrSelectKind, JsonCode } from '../ui'
+import { ComplexFieldValue } from '../ui/complex-field'
+import { EditorObjectValue } from '../ui/json-editor'
 import { TaskSettingsSchema } from './use-settings'
 
 type Outputs = Record<string, Property[]>
@@ -126,14 +128,21 @@ const mapTaskBodyToPrimitives = (
 	return _.fromPairs(
 		_.toPairs(taskBody).map(([fieldName, fieldValue]) => [
 			fieldName,
-			mapFieldValueToPrimitive(fieldValue, outputs),
+			mapFieldValueToPrimitive(
+				fieldValue as ComplexFieldValue | EditorObjectValue[],
+				outputs
+			),
 		])
 	)
 }
 
-const mapFieldValueToPrimitive = (fieldValue: any, outputs: Outputs): AnyJson => {
-	if (_.has(fieldValue, 'data')) {
-		if (_.has(fieldValue, 'type')) {
+const mapFieldValueToPrimitive = (
+	fieldValue: ComplexFieldValue | EditorObjectValue[],
+	outputs: Outputs
+): AnyJson => {
+	if (_.isArray(fieldValue)) return mapJsonEditorToJsonValue(fieldValue, outputs)
+	if (_.isObject(fieldValue) && 'data' in fieldValue) {
+		if ('type' in fieldValue) {
 			if (fieldValue.type === InputOrSelectKind.Option) {
 				const taskName = (fieldValue.data as string).split('.')[0]
 				const literalValue =
@@ -144,6 +153,19 @@ const mapFieldValueToPrimitive = (fieldValue: any, outputs: Outputs): AnyJson =>
 		return fieldValue.data
 	}
 	return ''
+}
+
+function mapJsonEditorToJsonValue(jsonEditorData: EditorObjectValue[], outputs: Outputs): AnyJson {
+	return _.fromPairs(
+		jsonEditorData.map((property) => [
+			property.name,
+			!_.isArray(property.value)
+				? mapFieldValueToPrimitive(property.value, outputs)
+				: typeof property.value[0] === 'string'
+				? (property.value as string[])
+				: mapJsonEditorToJsonValue(property.value as EditorObjectValue[], outputs),
+		])
+	)
 }
 
 const findPropertyPaths = (object: AnyJson, basePath: string): Property[] => {
