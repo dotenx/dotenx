@@ -20,7 +20,7 @@ const schema = z.object({
 	credentials: z.record(z.string()),
 })
 
-type Schema = z.infer<typeof schema>
+export type TriggerSchema = z.infer<typeof schema>
 
 export function useTriggerForm({
 	onSave,
@@ -36,7 +36,7 @@ export function useTriggerForm({
 		watch,
 		getValues,
 		setValue,
-	} = useForm<Schema>({
+	} = useForm<TriggerSchema>({
 		defaultValues: defaultValues,
 		resolver: zodResolver(schema),
 	})
@@ -88,6 +88,7 @@ export function useTriggerForm({
 		triggerType,
 		selectedTriggerIntegrationKind: triggerDefinitionQuery.data?.data.integrations[0],
 		triggerTypesQuery,
+		watch,
 	}
 }
 

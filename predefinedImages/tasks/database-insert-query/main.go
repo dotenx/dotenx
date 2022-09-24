@@ -1,4 +1,4 @@
-// image: hojjat12/database-add-record:lambda5
+// image: hojjat12/database-add-record:lambda6
 package main
 
 import (
@@ -22,7 +22,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -33,46 +33,46 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		dtxAccessToken := singleInput["dtx_access_token"].(string)
-		projectTag := singleInput["project_tag"].(string)
-		tableName := singleInput["table_name"].(string)
-		columnValues := fmt.Sprint(singleInput["column_values"])
-		url := fmt.Sprintf("https://api.dotenx.com/database/query/insert/project/%s/table/%s", projectTag, tableName)
-		headers := []Header{
-			{
-				Key:   "Content-Type",
-				Value: "application/json",
-			},
-			{
-				Key:   "DTX-auth",
-				Value: dtxAccessToken,
-			},
-		}
-		var jsonMap map[string]interface{}
-		myMap, ok := singleInput["column_values"].(map[string]interface{})
-		if ok {
-			jsonMap = myMap
-		} else {
-			json.Unmarshal([]byte(columnValues), &jsonMap)
-		}
-		jsonData, err := json.Marshal(jsonMap)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
-		payload := bytes.NewBuffer(jsonData)
-		out, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
-		fmt.Println("dotenx api status code:", statusCode)
-		fmt.Println("dotenx api response (add new records):", string(out))
-		if err != nil || statusCode != http.StatusOK {
-			fmt.Printf("can't get correct response from dotenx api")
-			resp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	dtxAccessToken := singleInput["dtx_access_token"].(string)
+	projectTag := singleInput["project_tag"].(string)
+	tableName := singleInput["table_name"].(string)
+	columnValues := fmt.Sprint(singleInput["column_values"])
+	url := fmt.Sprintf("https://api.dotenx.com/database/query/insert/project/%s/table/%s", projectTag, tableName)
+	headers := []Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+		{
+			Key:   "DTX-auth",
+			Value: dtxAccessToken,
+		},
 	}
+	var jsonMap map[string]interface{}
+	myMap, ok := singleInput["column_values"].(map[string]interface{})
+	if ok {
+		jsonMap = myMap
+	} else {
+		json.Unmarshal([]byte(columnValues), &jsonMap)
+	}
+	jsonData, err := json.Marshal(jsonMap)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
+	}
+	payload := bytes.NewBuffer(jsonData)
+	out, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
+	fmt.Println("dotenx api status code:", statusCode)
+	fmt.Println("dotenx api response (add new records):", string(out))
+	if err != nil || statusCode != http.StatusOK {
+		fmt.Printf("can't get correct response from dotenx api")
+		resp.Successfull = false
+		// continue
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All row(s) added successfully")
 	}

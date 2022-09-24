@@ -1,4 +1,4 @@
-// image: hojjat12/google-send-email:lambda3
+// image: hojjat12/google-send-email:lambda4
 package main
 
 import (
@@ -21,7 +21,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -32,21 +32,21 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
-		from := singleInput["from"].(string)
-		to := singleInput["to"].(string)
-		subject := singleInput["subject"].(string)
-		message := singleInput["message"].(string)
-		err := sendEmail(from, to, subject, message, accessToken, refreshToken)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
+	from := singleInput["from"].(string)
+	to := singleInput["to"].(string)
+	subject := singleInput["subject"].(string)
+	message := singleInput["message"].(string)
+	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
 	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All email(s) sended successfully")
 	}

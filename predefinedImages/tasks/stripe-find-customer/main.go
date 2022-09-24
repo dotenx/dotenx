@@ -1,4 +1,4 @@
-// image: stripe/stripe-find-customer:lambda4
+// image: stripe/stripe-find-customer:lambda5
 package main
 
 import (
@@ -23,9 +23,9 @@ import (
 // }
 
 type Event struct {
-	Body           []map[string]interface{} `json:"body"`
-	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
-	Authorization  string                   `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -39,28 +39,28 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	outputCnt := 0
-	outputs := make([]map[string]interface{}, 0)
+	// outputs := make([]map[string]interface{}, 0)
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
-	for _, val := range event.Body {
-		singleInput := val
-		secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
-		email := singleInput["CUS_EMAIL"].(string)
-		id := singleInput["CUS_ID"].(string)
-		sc := &client.API{}
-		sc.Init(secretKey, nil)
-		cus, err := findCustomer(sc, id, email)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
-		outputs = append(outputs, cus)
-		outputCnt++
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+	email := singleInput["CUS_EMAIL"].(string)
+	id := singleInput["CUS_ID"].(string)
+	sc := &client.API{}
+	sc.Init(secretKey, nil)
+	cus, err := findCustomer(sc, id, email)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
 	}
+	// outputs = append(outputs, cus)
+	outputCnt++
+	// }
 
 	resp.ReturnValue = map[string]interface{}{
-		"outputs": outputs,
+		"outputs": cus,
 	}
 	if resp.Successfull {
 		resp.Status = "completed"

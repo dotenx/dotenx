@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe find customer
-image: stripe/stripe-find-customer:lambda4
+image: stripe/stripe-find-customer:lambda5
 integrations: [stripe]
 fields:
     - key: CUS_EMAIL

@@ -11,7 +11,7 @@ RUN npm install
 # Copy all files from current directory to working dir in image
 COPY . .
 
-RUN cp ./.env.development ./.env.prod
+COPY ./.env.development ./.env.prod
 RUN cat .env.prod
 RUN ls -la
 

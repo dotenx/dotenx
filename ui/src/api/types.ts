@@ -1,4 +1,4 @@
-import { QueryBuilderValues } from "../features/database"
+import { QueryBuilderValues } from '../features/database'
 
 export enum QueryKey {
 	GetUserManagementData = 'get-user-management-data',
@@ -469,3 +469,42 @@ interface JsonMap {
 }
 
 type JsonArray = Array<AnyJson>
+
+export type TestTaskRequest = TestTaskData
+
+type TestTaskData = {
+	manifest: {
+		tasks: {
+			task: {
+				type: string
+				integration: string
+				body: Record<string, AnyJson>
+			}
+		}
+	}
+}
+
+export type TestTaskResponse = {
+	successfull: boolean
+	status: string
+	return_value: { outputs: AnyJson }
+}
+
+export type TestTriggerRequest = TestTriggerData
+
+type TestTriggerData = {
+	manifest: {
+		triggers: {
+			trigger: {
+				type: string
+				integration: string
+				credentials: Record<string, string>
+			}
+		}
+	}
+}
+
+export type TestTriggerResponse = {
+	triggered: boolean
+	return_value: AnyJson
+}

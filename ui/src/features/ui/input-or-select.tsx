@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import _ from 'lodash'
 import { useCallback, useRef, useState } from 'react'
 import {
 	Controller,
@@ -54,7 +55,7 @@ export enum InputOrSelectKind {
 
 export interface GroupData {
 	name: string
-	options: string[]
+	options: string[] | { name: string; value: string }[]
 	iconUrl?: string
 }
 
@@ -79,6 +80,7 @@ export interface InputOrSelectRawProps {
 	value: InputOrSelectValue
 	onChange: (value: InputOrSelectValue) => void
 	placeholder?: string
+	compact?: boolean
 }
 
 export function InputOrSelectRaw({
@@ -88,6 +90,7 @@ export function InputOrSelectRaw({
 	onChange,
 	label,
 	placeholder,
+	compact,
 }: InputOrSelectRawProps) {
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	const close = useCallback(() => setIsOpen(false), [])
@@ -104,6 +107,7 @@ export function InputOrSelectRaw({
 				)}
 				{value.type === InputOrSelectKind.Option && (
 					<InputValueBox
+						compact={compact}
 						value={value}
 						onClose={() =>
 							onChange({
@@ -116,7 +120,7 @@ export function InputOrSelectRaw({
 				{value.type === InputOrSelectKind.Text && (
 					<input
 						className={clsx(
-							'px-2 py-1 border rounded-lg border-slate-400 outline-rose-500',
+							'px-2 py-1 border rounded border-slate-400 outline-rose-500',
 							isOpen && 'outline-2 outline-offset-[-0.5px]'
 						)}
 						placeholder={placeholder}
@@ -134,7 +138,7 @@ export function InputOrSelectRaw({
 			{groups.length !== 0 && (
 				<div className="absolute left-0 right-0 z-10">
 					<Fade isOpen={isOpen}>
-						<div className="border border-slate-300 rounded-lg mt-1 p-2 flex flex-col gap-1.5 bg-white shadow-md select-none">
+						<div className="border border-slate-300 rounded mt-1 p-2 flex flex-col gap-1.5 bg-white shadow-md select-none overflow-x-auto">
 							{groups.map((group, index) => (
 								<Group
 									key={index}
@@ -162,7 +166,7 @@ export function InputOrSelectRaw({
 
 interface GroupProps {
 	name: string
-	options: string[]
+	options: string[] | { name: string; value: string }[]
 	onSelect: (value: string) => void
 	iconUrl?: string
 }
@@ -191,10 +195,17 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 					{options.map((option, index) => (
 						<div
 							key={index}
-							className="text-sm rounded-md py-0.5 px-1.5 cursor-pointer transition hover:bg-rose-50"
-							onClick={() => onSelect(option)}
+							className="text-sm rounded py-0.5 px-1.5 cursor-pointer transition hover:bg-rose-50"
+							onClick={() => onSelect(_.isString(option) ? option : option.name)}
 						>
-							{option}
+							{_.isString(option) ? (
+								option
+							) : (
+								<div className="flex gap-2">
+									<span>{option.name}</span>
+									<span className="text-slate-400">{option.value}</span>
+								</div>
+							)}
 						</div>
 					))}
 				</div>
@@ -206,17 +217,23 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 interface InputValueBoxProps {
 	value: SelectValue
 	onClose: () => void
+	compact?: boolean
 }
-function InputValueBox({ value, onClose }: InputValueBoxProps) {
+function InputValueBox({ value, onClose, compact }: InputValueBoxProps) {
 	return (
-		<div className="flex items-center justify-between p-1 border rounded-lg border-slate-400">
+		<div
+			className={clsx(
+				'flex items-center justify-between border rounded border-slate-400',
+				compact ? 'p-px' : 'p-1'
+			)}
+		>
 			<div className="bg-gray-50 px-1.5 flex items-center gap-2 rounded">
 				{value.iconUrl && <img className="w-4 h-4" src={value.iconUrl} alt="" />}
 				<span className="font-medium">{value.groupName}</span>
 				<span>{value.data}</span>
 			</div>
 			<button
-				className="p-0.5 text-lg transition rounded-md text-rose-500 hover:bg-rose-50"
+				className="p-0.5 text-lg transition rounded text-rose-500 hover:bg-rose-50"
 				onClick={onClose}
 			>
 				<IoClose />

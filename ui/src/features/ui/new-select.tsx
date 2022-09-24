@@ -111,7 +111,7 @@ function RawSelect({
 			<button
 				type="button"
 				className={clsx(
-					'flex items-center justify-between w-full px-2 py-1 border rounded-lg cursor-pointer border-slate-400 outline-rose-500',
+					'flex items-center justify-between w-full px-2 py-1 border rounded cursor-pointer border-slate-400 outline-rose-500',
 					isOpen && 'outline outline-2 outline-offset-[-1px]'
 				)}
 				onClick={() => setIsOpen((isOpen) => !isOpen)}
@@ -122,7 +122,7 @@ function RawSelect({
 			</button>
 			<div className="absolute inset-x-0 z-10">
 				<Fade isOpen={isOpen}>
-					<div className="p-1 overflow-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300">
+					<div className="p-1 overflow-auto bg-white border rounded shadow-md border-slate-300 max-h-96 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300">
 						{loading && <Loader className="py-4" />}
 						{!loading && options.length === 0 && (
 							<div className="p-1.5 text-xs font-thin text-center">No options</div>
@@ -130,7 +130,7 @@ function RawSelect({
 						{options.map((option) => (
 							<button
 								type="button"
-								className="w-full px-2 py-1 text-left transition rounded-md hover:bg-rose-50 focus:bg-rose-50 outline-rose-500"
+								className="w-full px-2 py-1 text-left transition rounded hover:bg-rose-50 focus:bg-rose-50 outline-rose-500"
 								key={option.label}
 								onClick={() => {
 									onChange(option)

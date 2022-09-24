@@ -96,11 +96,11 @@ func (dc dockerCleint) handleTrigger(execService executionService.ExecutionServi
 	for key, value := range trigger.Credentials {
 		envs = append(envs, key+"="+value.(string))
 	}
-	if config.Configs.App.RunLocally {
-		dc.checkTrigger(trigger.Name, img, envs)
-	} else {
-		dc.invokeAwsLambda(execService, trigger, img, envs)
-	}
+	// if config.Configs.App.RunLocally {
+	// 	dc.checkTrigger(trigger.Name, img, envs)
+	// } else {
+	dc.invokeAwsLambda(execService, trigger, img, envs)
+	// }
 }
 
 func (dc dockerCleint) checkTrigger(triggerName, img string, envs []string) {
@@ -240,11 +240,15 @@ func (dc dockerCleint) invokeAwsLambda(execService executionService.ExecutionSer
 	}
 
 	if lambdaResp.Triggered {
-		res, err := execService.StartPipelineByName(lambdaResp.ReturnValue, trigger.AccountId, trigger.Pipeline, "", "", trigger.ProjectName)
-		if err != nil {
-			log.Println("error while starting pipeline: " + err.Error())
-			return
+		for _, singleTrigger := range lambdaResp.ReturnValue[trigger.Name].([]interface{}) {
+			returnValue := lambdaResp.ReturnValue
+			returnValue[trigger.Name] = singleTrigger
+			res, err := execService.StartPipelineByName(returnValue, trigger.AccountId, trigger.Pipeline, "", "", trigger.ProjectName)
+			if err != nil {
+				log.Println("error while starting pipeline: " + err.Error())
+				return
+			}
+			log.Printf("pipeline started successfully: %v\n", res)
 		}
-		log.Printf("pipeline started successfully: %v\n", res)
 	}
 }

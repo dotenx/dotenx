@@ -18,7 +18,7 @@ import {
 	TaskFieldValue,
 	Tasks,
 	Trigger,
-	Triggers
+	Triggers,
 } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
@@ -142,9 +142,8 @@ function toBackendData(
 	} else if ('data' in fieldValue) {
 		if (fieldValue.type === 'option') {
 			return {
-				type: 'refrenced',
-				source: fieldValue.groupName,
-				key: fieldValue.data,
+				type: 'nested',
+				nestedKey: fieldValue.data,
 			}
 		} else {
 			return { type: 'directValue', value: fieldValue.data }

@@ -1,4 +1,4 @@
-// image: hojjat12/database-get-records:lambda6
+// image: hojjat12/database-get-records:lambda8
 package main
 
 import (
@@ -25,9 +25,9 @@ import (
 // }
 
 type Event struct {
-	Body           []map[string]interface{} `json:"body"`
-	ResultEndpoint string                   `json:"RESULT_ENDPOINT"`
-	Authorization  string                   `json:"AUTHORIZATION"`
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
 }
 
 type Response struct {
@@ -44,89 +44,89 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	outputs := make([]map[string]interface{}, 0)
 	// resultEndpoint := event.ResultEndpoint
 	// authorization := event.Authorization
-	for _, val := range event.Body {
-		singleInput := val
-		dtxAccessToken := singleInput["dtx_access_token"].(string)
-		projectTag := singleInput["project_tag"].(string)
-		tableName := singleInput["table_name"].(string)
-		pageStr := fmt.Sprint(singleInput["page"])
-		if pageStr != "" && pageStr != "<nil>" {
-			_, err := strconv.Atoi(pageStr)
-			if err != nil {
-				fmt.Println("page should be a number, error:", err)
-				resp.Successfull = false
-				continue
-			}
-		}
-		sizeStr := fmt.Sprint(singleInput["size"])
-		if sizeStr != "" && sizeStr != "<nil>" {
-			_, err := strconv.Atoi(sizeStr)
-			if err != nil {
-				fmt.Println("size should be a number, error:", err)
-				resp.Successfull = false
-				continue
-			}
-		}
-		body := fmt.Sprint(singleInput["body"])
-		url := fmt.Sprintf("https://api.dotenx.com/database/query/select/project/%s/table/%s", projectTag, tableName)
-		headers := []Header{
-			{
-				Key:   "Content-Type",
-				Value: "application/json",
-			},
-			{
-				Key:   "DTX-auth",
-				Value: dtxAccessToken,
-			},
-		}
-		if pageStr != "" && pageStr != "<nil>" {
-			headers = append(headers, Header{
-				Key:   "page",
-				Value: pageStr,
-			})
-		}
-		if sizeStr != "" && sizeStr != "<nil>" {
-			headers = append(headers, Header{
-				Key:   "size",
-				Value: sizeStr,
-			})
-		}
-		var jsonMap map[string]interface{}
-		myMap, ok := singleInput["body"].(map[string]interface{})
-		if ok {
-			jsonMap = myMap
-		} else {
-			json.Unmarshal([]byte(body), &jsonMap)
-		}
-		jsonData, err := json.Marshal(jsonMap)
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	dtxAccessToken := singleInput["dtx_access_token"].(string)
+	projectTag := singleInput["project_tag"].(string)
+	tableName := singleInput["table_name"].(string)
+	pageStr := fmt.Sprint(singleInput["page"])
+	if pageStr != "" && pageStr != "<nil>" {
+		_, err := strconv.Atoi(pageStr)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("page should be a number, error:", err)
 			resp.Successfull = false
-			continue
-		}
-		payload := bytes.NewBuffer(jsonData)
-		dtxRespBytes, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
-		fmt.Println("dotenx api status code:", statusCode)
-		fmt.Println("dotenx api response (select records):", string(dtxRespBytes))
-		if err != nil || statusCode != http.StatusOK {
-			fmt.Printf("can't get correct response from dotenx api")
-			resp.Successfull = false
-			continue
-		}
-
-		dtxResp := make([]map[string]interface{}, 0)
-		err = json.Unmarshal(dtxRespBytes, &dtxResp)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
-
-		for _, row := range dtxResp {
-			outputs = append(outputs, row)
-			outputCnt++
+			// continue
 		}
 	}
+	sizeStr := fmt.Sprint(singleInput["size"])
+	if sizeStr != "" && sizeStr != "<nil>" {
+		_, err := strconv.Atoi(sizeStr)
+		if err != nil {
+			fmt.Println("size should be a number, error:", err)
+			resp.Successfull = false
+			// continue
+		}
+	}
+	body := fmt.Sprint(singleInput["body"])
+	url := fmt.Sprintf("https://api.dotenx.com/database/query/select/project/%s/table/%s", projectTag, tableName)
+	headers := []Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+		{
+			Key:   "DTX-auth",
+			Value: dtxAccessToken,
+		},
+	}
+	if pageStr != "" && pageStr != "<nil>" {
+		headers = append(headers, Header{
+			Key:   "page",
+			Value: pageStr,
+		})
+	}
+	if sizeStr != "" && sizeStr != "<nil>" {
+		headers = append(headers, Header{
+			Key:   "size",
+			Value: sizeStr,
+		})
+	}
+	var jsonMap map[string]interface{}
+	myMap, ok := singleInput["body"].(map[string]interface{})
+	if ok {
+		jsonMap = myMap
+	} else {
+		json.Unmarshal([]byte(body), &jsonMap)
+	}
+	jsonData, err := json.Marshal(jsonMap)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
+	}
+	payload := bytes.NewBuffer(jsonData)
+	dtxRespBytes, err, statusCode, _ := httpRequest(http.MethodPost, url, payload, headers, 0)
+	fmt.Println("dotenx api status code:", statusCode)
+	fmt.Println("dotenx api response (select records):", string(dtxRespBytes))
+	if err != nil || statusCode != http.StatusOK {
+		fmt.Printf("can't get correct response from dotenx api")
+		resp.Successfull = false
+		// continue
+	}
+
+	dtxResp := make([]map[string]interface{}, 0)
+	err = json.Unmarshal(dtxRespBytes, &dtxResp)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
+	}
+
+	for _, row := range dtxResp {
+		outputs = append(outputs, row)
+		outputCnt++
+	}
+	// }
 
 	resp.ReturnValue = map[string]interface{}{
 		"outputs": outputs,

@@ -1,4 +1,4 @@
-// image: awrmin/create-jira-ticket:lambda4
+// image: awrmin/create-jira-ticket:lambda5
 package main
 
 import (
@@ -11,7 +11,7 @@ import (
 )
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 // type Event struct {
@@ -31,29 +31,29 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		project_key := singleInput["project_key"].(string)
-		issueType := singleInput["issue_type"].(string)
-		description := singleInput["description"].(string)
-		summery := singleInput["summery"].(string)
-		jiraUrl := singleInput["jira_url"].(string)
-		access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		if access_token == "" {
-			fmt.Println("Error: There isn't access token, Please check your integration")
-			resp.Successfull = false
-			continue
-		}
-		err := CreateTicket(project_key, issueType, description, summery, jiraUrl, access_token)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Printf("creating jira ticket wasn't successful\n")
-			resp.Successfull = false
-			continue
-		} else {
-			fmt.Printf("creating jira ticket was successful\n")
-		}
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	project_key := singleInput["project_key"].(string)
+	issueType := singleInput["issue_type"].(string)
+	description := singleInput["description"].(string)
+	summery := singleInput["summery"].(string)
+	jiraUrl := singleInput["jira_url"].(string)
+	access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	if access_token == "" {
+		fmt.Println("Error: There isn't access token, Please check your integration")
+		resp.Successfull = false
+		// continue
 	}
+	err := CreateTicket(project_key, issueType, description, summery, jiraUrl, access_token)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Printf("creating jira ticket wasn't successful\n")
+		resp.Successfull = false
+		// continue
+	} else {
+		fmt.Printf("creating jira ticket was successful\n")
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All ticket(s) created successfully")
 	}

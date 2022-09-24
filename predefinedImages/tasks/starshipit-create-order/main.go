@@ -1,4 +1,4 @@
-// iamge: hojjat12/starshipit-create-order:lambda2
+// iamge: hojjat12/starshipit-create-order:lambda3
 package main
 
 import (
@@ -23,7 +23,7 @@ import (
 // }
 
 type Event struct {
-	Body []map[string]interface{} `json:"body"`
+	Body map[string]interface{} `json:"body"`
 }
 
 type Response struct {
@@ -34,58 +34,58 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	fmt.Println("event.Body:", event.Body)
 	resp := Response{}
 	resp.Successfull = true
-	for _, val := range event.Body {
-		singleInput := val
-		// required fields
-		accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
-		subscriptionKey := os.Getenv("STARSHIPIT_SUBSCRIPTION_KEY")
-		orderNumber := singleInput["order_number"].(string)
-		destinationName := singleInput["destination_name"].(string)
-		destinationStreet := singleInput["destination_street"].(string)
-		destinationSuburb := singleInput["destination_suburb"].(string)
-		destinationState := singleInput["destination_state"].(string)
-		destinationCountry := singleInput["destination_country"].(string)
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	// required fields
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	subscriptionKey := os.Getenv("STARSHIPIT_SUBSCRIPTION_KEY")
+	orderNumber := singleInput["order_number"].(string)
+	destinationName := singleInput["destination_name"].(string)
+	destinationStreet := singleInput["destination_street"].(string)
+	destinationSuburb := singleInput["destination_suburb"].(string)
+	destinationState := singleInput["destination_state"].(string)
+	destinationCountry := singleInput["destination_country"].(string)
 
-		// optional fields
-		orderDate, _ := singleInput["order_date"].(string)
-		reference, _ := singleInput["reference"].(string)
-		shippingMethod, _ := singleInput["shipping_method"].(string)
-		signatureRequired, _ := singleInput["signature_required"].(bool)
+	// optional fields
+	orderDate, _ := singleInput["order_date"].(string)
+	reference, _ := singleInput["reference"].(string)
+	shippingMethod, _ := singleInput["shipping_method"].(string)
+	signatureRequired, _ := singleInput["signature_required"].(bool)
 
-		destinationPhone, _ := singleInput["destination_phone"].(string)
-		destinationPostCode, _ := singleInput["destination_post_code"].(string)
-		destinationDeliveryInstructions, _ := singleInput["destination_delivery_instructions"].(string)
+	destinationPhone, _ := singleInput["destination_phone"].(string)
+	destinationPostCode, _ := singleInput["destination_post_code"].(string)
+	destinationDeliveryInstructions, _ := singleInput["destination_delivery_instructions"].(string)
 
-		items, _ := singleInput["items"].([]map[string]interface{})
+	items, _ := singleInput["items"].([]map[string]interface{})
 
-		starshipitBody := map[string]interface{}{
-			"order": map[string]interface{}{
-				"order_date":         orderDate,
-				"order_number":       orderNumber,
-				"reference":          reference,
-				"shipping_method":    shippingMethod,
-				"signature_required": signatureRequired,
-				"destination": map[string]interface{}{
-					"name":                  destinationName,
-					"phone":                 destinationPhone,
-					"street":                destinationStreet,
-					"suburb":                destinationSuburb,
-					"state":                 destinationState,
-					"post_code":             destinationPostCode,
-					"country":               destinationCountry,
-					"delivery_instructions": destinationDeliveryInstructions,
-				},
-				"items": items,
+	starshipitBody := map[string]interface{}{
+		"order": map[string]interface{}{
+			"order_date":         orderDate,
+			"order_number":       orderNumber,
+			"reference":          reference,
+			"shipping_method":    shippingMethod,
+			"signature_required": signatureRequired,
+			"destination": map[string]interface{}{
+				"name":                  destinationName,
+				"phone":                 destinationPhone,
+				"street":                destinationStreet,
+				"suburb":                destinationSuburb,
+				"state":                 destinationState,
+				"post_code":             destinationPostCode,
+				"country":               destinationCountry,
+				"delivery_instructions": destinationDeliveryInstructions,
 			},
-		}
-
-		_, err := createOrder(starshipitBody, accessToken, subscriptionKey)
-		if err != nil {
-			fmt.Println(err)
-			resp.Successfull = false
-			continue
-		}
+			"items": items,
+		},
 	}
+
+	_, err := createOrder(starshipitBody, accessToken, subscriptionKey)
+	if err != nil {
+		fmt.Println(err)
+		resp.Successfull = false
+		// continue
+	}
+	// }
 	if resp.Successfull {
 		fmt.Println("All post(s) successfully published")
 	}

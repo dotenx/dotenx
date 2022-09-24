@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -307,10 +308,15 @@ func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
 	return tpAccountId, nil
 }
 
-func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{}, error) {
-	values := make([]interface{}, 0)
+func GetFromNestedJson(jsonBytes []byte, keys []string, index int) (interface{}, error) {
+	// var values interface{}
 	if index >= len(keys) {
 		return nil, errors.New("index out of range")
+	}
+	var data map[string]interface{}
+	err := json.Unmarshal(jsonBytes, &data)
+	if err != nil {
+		return nil, err
 	}
 	key := keys[index]
 	keyIndex := -2
@@ -327,14 +333,13 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 		} else {
 			return nil, errors.New("index is not defined correctly")
 		}
+	} else if _, ok := data[key].([]interface{}); ok {
+		keyIndex = -1
+		pureIndex = key
 	} else {
 		pureIndex = key
 	}
-	var data map[string]interface{}
-	err := json.Unmarshal(jsonBytes, &data)
-	if err != nil {
-		return nil, err
-	}
+
 	newValue, ok := data[pureIndex]
 	if !ok {
 		log.Println("#######################")
@@ -345,22 +350,21 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 	}
 	if index+1 >= len(keys) {
 		if keyIndex == -2 { // no index
-			values = append(values, newValue)
-			return values, nil
+			// values = append(values, newValue)
+			return newValue, nil
 		} else if keyIndex == -1 { // all index
 			// TODO handle panic scenario
-			for _, v := range newValue.([]interface{}) {
-				values = append(values, v)
-			}
-			return values, nil
+			tempValues := make([]interface{}, 0)
+			tempValues = append(tempValues, newValue.([]interface{})...)
+			return tempValues, nil
 		} else { // specific index
 			// TODO handle panic scenario
 			newValues := newValue.([]interface{})
 			if keyIndex >= len(newValues) {
 				return nil, errors.New("index out of range")
 			}
-			values = append(values, newValues[keyIndex])
-			return values, nil
+			// values = append(values, newValues[keyIndex])
+			return newValues[keyIndex], nil
 		}
 
 	} else {
@@ -372,6 +376,7 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 			return GetFromNestedJson(newJsonBytes, keys, index+1)
 		} else if keyIndex == -1 { // all index
 			// TODO handle panic scenario
+			tempValues := make([]interface{}, 0)
 			for _, v := range newValue.([]interface{}) {
 				newJsonBytes, err := json.Marshal(v)
 				if err != nil {
@@ -381,9 +386,9 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 				if err != nil {
 					return nil, err
 				}
-				values = append(values, returnedValues...)
+				tempValues = append(tempValues, returnedValues)
 			}
-			return values, nil
+			return tempValues, nil
 		} else { // specific index
 			// TODO handle panic scenario
 			newValues := newValue.([]interface{})
@@ -398,8 +403,91 @@ func GetFromNestedJson(jsonBytes []byte, keys []string, index int) ([]interface{
 			if err != nil {
 				return nil, err
 			}
-			values = append(values, returnedValues...)
-			return values, nil
+			// values = append(values, returnedValues...)
+			return returnedValues, nil
 		}
+	}
+}
+
+func GetFlatOfArray(values []interface{}) (interface{}, error) {
+	if len(values) == 0 {
+		return values, nil
+	}
+	// if len(values) == 1 {
+	// 	return values[0], nil
+	// }
+	valuesString := make([]string, 0)
+	for _, value := range values {
+		_, err := json.Marshal(value)
+		if _, ok := value.(map[string]interface{}); ok && err == nil {
+			valueBytes, _ := json.Marshal(removeNils(value.(map[string]interface{})))
+			valuesString = append(valuesString, string(valueBytes))
+		} else {
+			valuesString = append(valuesString, fmt.Sprint(value))
+		}
+	}
+	return strings.TrimSuffix(strings.Join(valuesString, ","), ","), nil
+}
+
+func removeNils(initialMap map[string]interface{}) map[string]interface{} {
+	withoutNils := map[string]interface{}{}
+	for key, value := range initialMap {
+		_, ok := value.(map[string]interface{})
+		if ok {
+			value = removeNils(value.(map[string]interface{}))
+			withoutNils[key] = value
+			continue
+		}
+		if value != nil {
+			withoutNils[key] = value
+		}
+	}
+	return withoutNils
+}
+
+func GetFlatOfInterface(values interface{}, ended *bool) interface{} {
+	var result interface{}
+	if jsonField, isJson := values.(map[string]interface{}); isJson {
+		result = make(map[string]interface{})
+		for key, val := range jsonField {
+			flatValue := GetFlatOfInterface(val, ended)
+			result.(map[string]interface{})[key] = flatValue
+		}
+		return result
+	} else if reflect.TypeOf(values) != nil && (reflect.TypeOf(values).Kind() == reflect.Array || reflect.TypeOf(values).Kind() == reflect.Slice) {
+		arrayField := values.([]interface{})
+		if len(arrayField) == 0 {
+			return ""
+		}
+		*ended = false
+		hasJsonField := false
+		for _, val := range arrayField {
+			if _, ok := val.(map[string]interface{}); ok {
+				hasJsonField = true
+				break
+			}
+		}
+
+		if hasJsonField {
+			result = make(map[string]interface{})
+			for _, val := range arrayField {
+				nestedJsonField, ok := val.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				for nestedKey, nestedValue := range nestedJsonField {
+					if result.(map[string]interface{})[nestedKey] == nil {
+						result.(map[string]interface{})[nestedKey] = make([]interface{}, 0)
+					}
+					flatValue := GetFlatOfInterface(nestedValue, ended)
+					result.(map[string]interface{})[nestedKey] = append(result.(map[string]interface{})[nestedKey].([]interface{}), flatValue)
+				}
+			}
+		} else {
+			result, _ = GetFlatOfArray(arrayField)
+		}
+		return result
+	} else {
+		return values
 	}
 }

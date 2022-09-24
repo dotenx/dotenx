@@ -2,9 +2,7 @@ package executionService
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"reflect"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/sirupsen/logrus"
@@ -39,7 +37,7 @@ output format:[
 		}
 ]
 */
-func (manage *executionManager) CheckReturnValues(executionId int, accountId, taskName string) (inputs []map[string]interface{}, err error) {
+func (manage *executionManager) CheckReturnValues(executionId int, accountId, taskName string) (inputs interface{}, err error) {
 	taskId, err := manage.GetTaskId(executionId, taskName)
 	if err != nil {
 		logrus.Println(err.Error() + " in getting task id for exec " + fmt.Sprintf("%d", executionId) + " and task " + taskName)
@@ -62,13 +60,13 @@ func (manage *executionManager) CheckReturnValues(executionId int, accountId, ta
 	}
 	json.Unmarshal(bytes, &result)
 	outputs := result.ReturnValue["outputs"]
-	var testType []interface{}
-	if !reflect.TypeOf(outputs).ConvertibleTo(reflect.TypeOf(testType)) {
-		return nil, errors.New("unsuported initial data")
-	}
-	finalRes := make([]map[string]interface{}, 0)
-	for _, output := range outputs.([]interface{}) {
-		finalRes = append(finalRes, output.(map[string]interface{}))
-	}
-	return finalRes, nil
+	// var testType []interface{}
+	// if !reflect.TypeOf(outputs).ConvertibleTo(reflect.TypeOf(testType)) {
+	// 	return nil, errors.New("unsuported initial data")
+	// }
+	// finalRes := make(map[string]interface{})
+	// for _, output := range outputs.([]interface{}) {
+	// 	finalRes = append(finalRes, output.(map[string]interface{}))
+	// }
+	return outputs, nil
 }

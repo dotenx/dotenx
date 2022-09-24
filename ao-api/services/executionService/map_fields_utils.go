@@ -11,6 +11,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/sirupsen/logrus"
@@ -20,45 +21,45 @@ type sourceData map[string]map[string]interface{}
 
 // sourceData map["source"] ==> map["key"] ==> value
 
-type returnValues []map[string]interface{}
+type returnValues map[string]interface{}
 
 // returnvalue[i] ==> map["key"] ==> value
 
 // return array of source datas from return values needed for different fields of task
-func getSourceDataArray(returnValuesMap map[string]returnValues) ([]sourceData, error) {
-	lens := make(map[string]int)
-	for sourceName, arr := range returnValuesMap {
-		lens[sourceName] = len(arr)
-	}
-	lensPrime := make(map[string]int)
-	counter := 0
-	for sourceName, _ := range lens {
-		temp := 1
-		for j := counter + 1; j < len(lens); j++ {
-			key := getKey(j, lens)
-			temp *= lens[key]
-		}
-		lensPrime[sourceName] = temp
-		counter += 1
-	}
-	totalLength := 1
-	for _, sourceMap := range returnValuesMap {
-		totalLength *= len(sourceMap)
-	}
-	sourceDataArr := make([]sourceData, 0)
-	for i := 0; i < totalLength; i++ {
-		sd := sourceData{}
-		for sourceName, lenOuts := range lens {
-			currentIndex := (i / lensPrime[sourceName]) % lenOuts
-			sd[sourceName] = returnValuesMap[sourceName][currentIndex]
-		}
-		sourceDataArr = append(sourceDataArr, sd)
-	}
-	return sourceDataArr, nil
-}
+// func getSourceDataArray(returnValuesMap map[string]returnValues) ([]sourceData, error) {
+// 	lens := make(map[string]int)
+// 	for sourceName, arr := range returnValuesMap {
+// 		lens[sourceName] = len(arr)
+// 	}
+// 	lensPrime := make(map[string]int)
+// 	counter := 0
+// 	for sourceName, _ := range lens {
+// 		temp := 1
+// 		for j := counter + 1; j < len(lens); j++ {
+// 			key := getKey(j, lens)
+// 			temp *= lens[key]
+// 		}
+// 		lensPrime[sourceName] = temp
+// 		counter += 1
+// 	}
+// 	totalLength := 1
+// 	for _, sourceMap := range returnValuesMap {
+// 		totalLength *= len(sourceMap)
+// 	}
+// 	sourceDataArr := make([]sourceData, 0)
+// 	for i := 0; i < totalLength; i++ {
+// 		sd := sourceData{}
+// 		for sourceName, lenOuts := range lens {
+// 			currentIndex := (i / lensPrime[sourceName]) % lenOuts
+// 			sd[sourceName] = returnValuesMap[sourceName][currentIndex]
+// 		}
+// 		sourceDataArr = append(sourceDataArr, sd)
+// 	}
+// 	return sourceDataArr, nil
+// }
 
 // check if return values are available for a task and then creates a map from them
-func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskName string, taskBody map[string]interface{}) (returnValuesMap map[string]returnValues, err error) {
+/*func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskName string, taskBody map[string]interface{}) (returnValuesMap map[string]returnValues, err error) {
 	returnValuesMap = make(map[string]returnValues)
 	for _, value := range taskBody {
 		var insertDt models.TaskFieldDetailes
@@ -75,7 +76,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 							return nil, errors.New("nested key is not in correct format1")
 						}
 						//source = strings.Split(arg.NestedKey, ".")[0]
-						returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
+						returnValueArr, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
 						if err != nil {
 							logrus.Println(err)
 							return nil, err
@@ -91,7 +92,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 				if len(keys) <= 1 && sourceType != models.FullObjectSourceType && sourceType != models.SpeceficFullObjectSourceType {
 					return nil, errors.New("nested key is not in correct format1")
 				}
-				returnValueArr, err := manager.getReturnArrayForSeource(execId, accountId, sourceName, taskName)
+				returnValueArr, err := manager.getReturnArrayForSource(execId, accountId, sourceName, taskName)
 				if err != nil {
 					logrus.Println(err)
 					return nil, err
@@ -117,7 +118,7 @@ func (manager *executionManager) getReturnValuesMap(execId int, accountId, taskN
 	}
 	logrus.Println(returnValuesMap)
 	return
-}
+}*/
 
 // getReturnValuesArray returns an array of body outputs
 // func getReturnValuesArray(body map[string]interface{}) (returnValues []map[string]interface{}, err error) {
@@ -151,7 +152,7 @@ func getKey(i int, m map[string]int) string {
 
 // get return value array for certain key from certain source of an a task or trigger (task name could be task or trigger name)
 
-func (manager *executionManager) getReturnArrayForSeource(execId int, accountId, source, taskName string) ([]map[string]interface{}, error) {
+func (manager *executionManager) getReturnArrayForSource(execId int, accountId, source, taskName string) (interface{}, error) {
 	bodies, err := manager.CheckExecutionInitialData(execId, accountId, source, taskName)
 	if err != nil {
 		logrus.Println(err)
@@ -169,7 +170,7 @@ func (manager *executionManager) getReturnArrayForSeource(execId int, accountId,
 }
 
 // first key in nested key is our source then we need to use getfromNestedJson utils to get array of values
-func (manager *executionManager) getFromNestedJson(keys []string, currentSourceData map[string]interface{}) ([]interface{}, error) {
+func (manager *executionManager) getFromNestedJson(keys []string, currentSourceData map[string]interface{}) (interface{}, error) {
 	jsonBytes, err := json.Marshal(currentSourceData)
 	if err != nil {
 		return nil, err
@@ -177,7 +178,7 @@ func (manager *executionManager) getFromNestedJson(keys []string, currentSourceD
 	return utils.GetFromNestedJson(jsonBytes, keys, 0)
 }
 
-func (manager *executionManager) getBodyFromSourceData(execId int, accountId string, taskName string, taskBody map[string]interface{}, currentSourceData sourceData) (map[string]interface{}, error) {
+func (manager *executionManager) getBodyFromSourceData(execId int, accountId string, taskName string, taskBody map[string]interface{}, currentSourceData map[string]returnValues) (map[string]interface{}, error) {
 	finalTaskBody := make(map[string]interface{})
 	for key, value := range taskBody {
 		var insertDt models.TaskFieldDetailes
@@ -192,38 +193,51 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 					if arg.Type == models.NestedFieldType {
 						keys := strings.Split(arg.NestedKey, ".")
 						source, index, sourceType := getSourceType(keys[0], len(keys))
-						var val []interface{}
+						var val interface{}
 						var err error
 						if sourceType == models.FullObjectSourceType || sourceType == models.SpeceficFullObjectSourceType {
 							return nil, errors.New("can't use source. in formatter")
-						} else if sourceType == models.ForeachSourceType {
-							selectedSourceData, ok := currentSourceData[source]
-							if !ok {
-								logrus.Println(source)
-								return nil, errors.New("no value for this field " + source + " in initial data or return values")
-							}
-							val, err = manager.getFromNestedJson(keys[1:], selectedSourceData)
+							// } else if sourceType == models.ForeachSourceType {
+							// 	selectedSourceData, ok := currentSourceData[source]
+							// 	if !ok {
+							// 		logrus.Println(source)
+							// 		return nil, errors.New("no value for this field " + source + " in initial data or return values")
+							// 	}
+							// 	val, err = manager.getFromNestedJson(keys[1:], selectedSourceData)
 						} else if sourceType == models.GetAllSourceType {
 							return nil, errors.New("can't use source[*] in formatter")
 						} else { // sourceType == specificIndex
-							values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
+							values, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
 							if err != nil {
 								return nil, err
 							}
-							if index >= len(values) {
-								logrus.Println(source)
-								return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+							if _, ok := values.([]map[string]interface{}); ok {
+								if index >= len(values.([]map[string]interface{})) {
+									logrus.Println(source)
+									return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+								}
 							}
-							val, err = manager.getFromNestedJson(keys[1:], values[index])
-							if err != nil {
-								return nil, err
+							if arrayValue, ok := values.([]map[string]interface{}); ok {
+								val = make([]interface{}, 0)
+								for _, singleValue := range arrayValue {
+									out, err := manager.getFromNestedJson(keys[1:], singleValue)
+									if err != nil {
+										return nil, err
+									}
+									val = append(val.([]interface{}), out)
+								}
+							} else {
+								val, err = manager.getFromNestedJson(keys[1:], values.(map[string]interface{}))
+								if err != nil {
+									return nil, err
+								}
 							}
 						}
 						if err != nil {
 							return nil, err
-						}
-						if len(val) == 1 {
-							values[argKey] = val[0]
+							// }
+							// if len(val) == 1 {
+							// 	values[argKey] = val[0]
 						} else {
 							values[argKey] = val
 						}
@@ -240,73 +254,104 @@ func (manager *executionManager) getBodyFromSourceData(execId int, accountId str
 			} else if insertDt.Type == models.NestedFieldType {
 				keys := strings.Split(insertDt.NestedKey, ".")
 				// if we dont have any [*] in our nested key, we will get only one value
-				itsArray := strings.Contains(insertDt.NestedKey, "[*]")
+				// itsArray := strings.Contains(insertDt.NestedKey, "[*]")
 				source, index, sourceType := getSourceType(keys[0], len(keys))
-				var val []interface{}
-				var err error
-				if sourceType == models.FullObjectSourceType { // source
-					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
+				var val interface{}
+				// var err error
+				if sourceType == models.FullObjectSourceType { // source.
+					values, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
 					if err != nil {
 						return nil, err
 					}
-					val = make([]interface{}, 0)
-					for _, v := range values {
-						val = append(val, v)
-					}
-				} else if sourceType == models.ForeachSourceType { // source(foreach).
-					selectedSourceData, ok := currentSourceData[source]
-					if !ok {
-						logrus.Println(source)
-						return nil, errors.New("no value for this field " + source + " in initial data or return values")
-					}
-					val, err = manager.getFromNestedJson(keys[1:], selectedSourceData)
-					if err != nil {
-						return nil, err
-					}
-				} else if sourceType == models.GetAllSourceType { // source[*].
-					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
-					if err != nil {
-						return nil, err
-					}
-					val = make([]interface{}, 0)
-					for _, selectedSource := range values {
-						newVal, err := manager.getFromNestedJson(keys[1:], selectedSource)
+					if source == config.Configs.App.InteractionBodyKey {
+						if arrayValue, ok := values.([]map[string]interface{}); ok {
+							val = make([]interface{}, 0)
+							for _, singleValue := range arrayValue {
+								out, err := manager.getFromNestedJson(keys[1:], singleValue)
+								if err != nil {
+									return nil, err
+								}
+								val = append(val.([]interface{}), out)
+							}
+						} else {
+							val, err = manager.getFromNestedJson(keys[1:], values.(map[string]interface{}))
+							if err != nil {
+								return nil, err
+							}
+						}
+					} else {
+						flatValue := values
+						ended := false
+						for !ended {
+							ended = true
+							flatValue = utils.GetFlatOfInterface(flatValue, &ended)
+						}
+						val, err = manager.getFromNestedJson(keys[1:], flatValue.(map[string]interface{}))
 						if err != nil {
 							return nil, err
 						}
-						val = append(val, newVal...)
 					}
-				} else if sourceType == models.SpecificIndexSourceType { // source[index].
-					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
-					if err != nil {
-						return nil, err
-					}
-					if index >= len(values) {
-						logrus.Println(source)
-						return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
-					}
-					val, err = manager.getFromNestedJson(keys[1:], values[index])
-					if err != nil {
-						return nil, err
-					}
+					// val = make([]interface{}, 0)
+					// for _, v := range values {
+					// 	val = append(val, v)
+					// }
+					// } else if sourceType == models.ForeachSourceType { // source(foreach).
+					// 	selectedSourceData, ok := currentSourceData[source]
+					// 	if !ok {
+					// 		logrus.Println(source)
+					// 		return nil, errors.New("no value for this field " + source + " in initial data or return values")
+					// 	}
+					// 	val, err = manager.getFromNestedJson(keys[1:], selectedSourceData)
+					// 	if err != nil {
+					// 		return nil, err
+					// 	}
+					// } else if sourceType == models.GetAllSourceType { // source[*].
+					// 	values, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
+					// 	if err != nil {
+					// 		return nil, err
+					// 	}
+					// 	val = make([]interface{}, 0)
+					// 	// for _, selectedSource := range values {
+					// 	newVal, err := manager.getFromNestedJson(keys[1:], values)
+					// 	if err != nil {
+					// 		return nil, err
+					// 	}
+					// 	val = append(val, newVal...)
+					// 	// }
+					// } else if sourceType == models.SpecificIndexSourceType { // source[index].
+					// 	values, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
+					// 	if err != nil {
+					// 		return nil, err
+					// 	}
+					// 	if index >= len(values) {
+					// 		logrus.Println(source)
+					// 		return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+					// 	}
+					// 	val, err = manager.getFromNestedJson(keys[1:], values)
+					// 	if err != nil {
+					// 		return nil, err
+					// 	}
 				} else { // models.SpeceficFullObjectSourceType
-					values, err := manager.getReturnArrayForSeource(execId, accountId, source, taskName)
+					values, err := manager.getReturnArrayForSource(execId, accountId, source, taskName)
 					if err != nil {
 						return nil, err
 					}
-					if index >= len(values) {
-						logrus.Println(source)
-						return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+					if _, ok := values.([]map[string]interface{}); ok {
+						if index >= len(values.([]map[string]interface{})) {
+							logrus.Println(source)
+							return nil, errors.New("no value for this field " + source + " in return values with index " + fmt.Sprintf("%d", index))
+						}
 					}
-					val = make([]interface{}, 0)
-					val = append(val, values[index])
+					val = values
+					// val = make([]interface{}, 0)
+					// val = append(val, values)
 				}
 				if sourceType == models.SpeceficFullObjectSourceType {
-					finalTaskBody[key] = val[0]
-				} else if itsArray || sourceType == models.FullObjectSourceType {
+					finalTaskBody[key] = val
+				} else if /*itsArray ||*/ sourceType == models.FullObjectSourceType {
 					finalTaskBody[key] = val
 				} else {
-					finalTaskBody[key] = val[0]
+					finalTaskBody[key] = val
 				}
 			} else if insertDt.Type == models.JsonFieldType || insertDt.Type == models.JsonArrayFieldType {
 				jBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, insertDt.Value.(map[string]interface{}), currentSourceData)
