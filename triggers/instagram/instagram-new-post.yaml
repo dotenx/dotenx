@@ -2,6 +2,7 @@ service: instagram
 type: Instagram new post
 integrations: [instagram]
 image: alirezaheydar/instagram-new-post
+on_test_stage: true
 credentials:
 outputs:
     - key: created_at

@@ -13,6 +13,6 @@ fields:
       description: A json format field to declare inputs of your code. You can access to this inputs in code in this fromat -> inputs.YOUR_JSON_KEY
 
 author: mohsen
-icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
+icon: https://app.dotenx.com/favicon.png
 node_color: 2ECC71
 description: runs your node code
