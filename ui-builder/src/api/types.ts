@@ -30,6 +30,7 @@ export type AddPageRequest = {
 	components: Component[]
 	dataSources: DataSource[]
 	classNames: Record<string, Style>
+	mode: LayoutMode
 }
 
 export type PublishPageRequest = {
@@ -41,12 +42,15 @@ export type PublishPageResponse = {
 	url: string
 }
 
+type LayoutMode = 'simple' | 'advanced'
+
 interface PageDetails {
 	name: string
 	content: {
 		layout: Component[]
 		dataSources: DataSource[]
 		classNames: Record<string, BackendStyle>
+		mode: LayoutMode
 	}
 }
 
@@ -107,8 +111,8 @@ export type GetDesignSystemsRequest = {
 
 export type GetDesignSystemsResponse =
 	| ({ name: string; content: CustomComponent[] } & {
-		category: 'uiComponentItem' | 'uiDesignSystemItem'
-	})[]
+			category: 'uiComponentItem' | 'uiDesignSystemItem'
+	  })[]
 	| null
 
 export type GetMarketplaceItemsResponse = {

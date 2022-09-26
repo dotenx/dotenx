@@ -2,6 +2,7 @@ import produce from 'immer'
 import _ from 'lodash'
 import { CSSProperties } from 'react'
 import create from 'zustand'
+import { Controller } from './controllers/controller'
 
 interface CanvasState {
 	components: Component[]
@@ -9,6 +10,7 @@ interface CanvasState {
 	historyIndex: number
 	saved: Component[]
 	set: (components: Component[]) => void
+	edit: (id: string, component: Component) => void
 	addComponents: (components: Component[], parentId: string) => void
 	editComponent: (id: string, data: ComponentData) => void
 	deleteComponents: (ids: string[]) => void
@@ -27,6 +29,8 @@ interface CanvasState {
 	editClassNames: (componentId: string, classNames: string[]) => void
 	undo: () => void
 	redo: () => void
+	moveUp: (id: string) => void
+	moveDown: (id: string) => void
 }
 
 export const useCanvasStore = create<CanvasState>()((set) => ({
@@ -34,8 +38,22 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 	history: [],
 	historyIndex: -1,
 	saved: [],
-	set: (components: Component[]) =>
-		set((state) => ({ ...state, components, history: [], saved: components })),
+	set: (components) => {
+		set((state) => ({ ...state, components, history: [], saved: components }))
+	},
+	edit: (id, component) => {
+		set((state) => {
+			const newComponents = _.cloneDeep(state.components)
+			const found = findComponent(id, newComponents)
+			if (found) _.assign(found, component)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
+	},
 	addComponents: (components, parentId) => {
 		set((state) => {
 			const newComponents = addComponents(components, parentId, state.components)
@@ -244,11 +262,53 @@ export const useCanvasStore = create<CanvasState>()((set) => ({
 			}
 		})
 	},
+	moveUp: (id) => {
+		set((state) => {
+			const newComponents = moveUp(id, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
+	},
+	moveDown: (id) => {
+		set((state) => {
+			const newComponents = moveDown(id, state.components)
+			return {
+				...state,
+				components: newComponents,
+				history: [...state.history.slice(0, state.historyIndex + 1), newComponents],
+				historyIndex: state.historyIndex + 1,
+			}
+		})
+	},
 }))
+
+const moveUp = (id: string, components: Component[]) => {
+	const componentIndex = components.findIndex((c) => c.id === id)
+	if (componentIndex === 0) return components
+	const newComponents = _.cloneDeep(components)
+	const component = newComponents[componentIndex]
+	newComponents[componentIndex] = newComponents[componentIndex - 1]
+	newComponents[componentIndex - 1] = component
+	return newComponents
+}
+
+const moveDown = (id: string, components: Component[]) => {
+	const componentIndex = components.findIndex((c) => c.id === id)
+	if (componentIndex === components.length - 1) return components
+	const newComponents = _.cloneDeep(components)
+	const component = newComponents[componentIndex]
+	newComponents[componentIndex] = newComponents[componentIndex + 1]
+	newComponents[componentIndex + 1] = component
+	return newComponents
+}
 
 const editClassNames = (componentId: string, classNames: string[], components: Component[]) => {
 	return produce(components, (draft) => {
-		const found = findComponent(componentId, draft)
+		const found = findComponent(componentId, draft as Component[])
 		if (found) found.classNames = classNames
 	})
 }
@@ -547,6 +607,7 @@ export interface BaseComponent {
 	bindings: Partial<Record<BindingKind, Binding | null>>
 	repeatFrom: RepeatFrom
 	classNames: string[]
+	controller?: Controller
 }
 
 export type Component =
