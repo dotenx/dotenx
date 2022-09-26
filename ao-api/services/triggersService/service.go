@@ -68,6 +68,9 @@ func (manager *TriggerManager) StopScheduler(accId, pipelineName, triggerName st
 func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
 	triggers := make(map[string][]triggerSummery)
 	for _, integ := range models.AvaliableTriggers {
+		if integ.OnTestStage {
+			continue
+		}
 		if _, ok := triggers[integ.Service]; ok {
 			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 		} else {

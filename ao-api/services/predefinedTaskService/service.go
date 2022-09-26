@@ -29,6 +29,9 @@ func NewPredefinedTaskService() PredifinedTaskService {
 func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
 	types := make(map[string][]taskDetail, 0)
 	for _, t := range models.AvaliableTasks {
+		if t.OnTestStage {
+			continue
+		}
 		if _, ok := types[t.Service]; ok {
 			types[t.Service] = append(types[t.Service], taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})
 		} else {

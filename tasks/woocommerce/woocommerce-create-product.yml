@@ -1,6 +1,7 @@
 service: woocommerce
 type: WooCommerce create product
 image: hawwwdi/woocommerce-create-product:latest
+on_test_stage: true
 integrations: [woocommerce]
 fields:
     - key: PRODUCT_NAME

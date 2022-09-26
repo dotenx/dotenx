@@ -1,6 +1,7 @@
 service: dotenx
 type: Test task
 image: awrmin/dummy-lambda:lambda
+on_test_stage: true
 fields:
     - key: target
       type: text
@@ -10,7 +11,7 @@ outputs:
       type: text
       description: target 
 author: Armingodiz
-icon: https://cdn4.vectorstock.com/i/1000x1000/81/83/document-file-logo-vector-25068183.jpg
+icon: https://app.dotenx.com/favicon.png
 node_color: A04000
 description: test Task
 
