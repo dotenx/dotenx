@@ -2,6 +2,7 @@ service: woocommerce
 type: woocommerce new order created
 integrations: [woocommerce]
 image: hawwwdi/woocommerce-new-order
+on_test_stage: true
 credentials:
     - key: passed_seconds
       type: text

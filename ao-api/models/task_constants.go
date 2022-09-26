@@ -18,6 +18,7 @@ type TaskDefinition struct {
 	Description         string      `json:"description" yaml:"description"`
 	Outputs             []TaskField `json:"outputs" yaml:"outputs"`
 	HasDynamicVariables bool        `json:"has_dynamic_variables" yaml:"has_dynamic_variables"`
+	OnTestStage         bool        `json:"on_test_stage" yaml:"on_test_stage"`
 }
 
 var AvaliableTasks map[string]TaskDefinition

@@ -10,6 +10,6 @@ fields:
     - key: outputs
       type: custom-outputs
 author: mohsen
-icon: https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.png
+icon: https://app.dotenx.com/favicon.png
 node_color: 2ECC71
 description: runs your mini tasks
