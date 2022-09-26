@@ -20,7 +20,7 @@ import { RenderComponents } from './component-renderer'
 import { Droppable, DroppableMode, regenComponents } from './droppable'
 import { useSelectionStore } from './selection-store'
 import { useSelectedComponent } from './use-selected-component'
-import { useViewportStore, ViewportDevice } from './viewport-store'
+import { useMaxWidth, ViewportDevice } from './viewport-store'
 
 export const ROOT_ID = 'CANVAS_ROOT'
 
@@ -65,7 +65,7 @@ const useCopyPaste = () => {
 	return { copy, paste }
 }
 
-const useCanvasHotkeys = (): HotkeyItem[] => {
+export const useCanvasHotkeys = (withoutCopyPaste?: boolean): HotkeyItem[] => {
 	const { undo, redo, remove, components } = useCanvasStore((store) => ({
 		undo: store.undo,
 		redo: store.redo,
@@ -85,6 +85,16 @@ const useCanvasHotkeys = (): HotkeyItem[] => {
 		select(components.map((c) => c.id))
 	}
 
+	if (withoutCopyPaste)
+		return [
+			['Escape', deselectComponent],
+			['mod+z', undo],
+			['mod+shift+z', redo],
+			['Delete', deleteComponent],
+			['Backspace', deleteComponent],
+			['mod+a', selectAll],
+		]
+
 	return [
 		['Escape', deselectComponent],
 		['mod+z', undo],
@@ -97,16 +107,16 @@ const useCanvasHotkeys = (): HotkeyItem[] => {
 	]
 }
 
-export function Canvas() {
-	const components = useCanvasStore((store) => store.components)
-	const deselectComponent = useSelectionStore((store) => store.deselect)
-	const setSelectedClass = useSetAtom(selectedClassAtom)
-	const viewport = useViewportStore((store) => store.device)
-	const maxWidth = viewport === 'desktop' ? '100%' : viewport === 'tablet' ? '766px' : '477px'
-	const classNames = useClassNamesStore((store) => store.classNames)
+const globalPageStyles = `
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+body { margin: 0; font-family: 'Roboto', sans-serif; }
+html { box-sizing: border-box; }
+*, *:before, *:after { box-sizing: inherit; }
+`
 
-	const hotkeys = useCanvasHotkeys()
-	useHotkeys(hotkeys)
+export const useGenerateStyles = () => {
+	const components = useCanvasStore((store) => store.components)
+	const classNames = useClassNamesStore((store) => store.classNames)
 
 	const desktopIds = generateCssIds(components, 'desktop')
 	const tabletIds = generateCssIds(components, 'tablet')
@@ -115,6 +125,28 @@ export function Canvas() {
 	const desktopClasses = generateCssClasses(classNames, 'desktop')
 	const tabletClasses = generateCssClasses(classNames, 'tablet')
 	const mobileClasses = generateCssClasses(classNames, 'mobile')
+
+	const generatedStyles = `
+		${globalPageStyles}
+		${desktopClasses}
+		@media (max-width: 767px) { ${tabletClasses} }
+		@media (max-width: 478px) { ${mobileClasses} }
+		${desktopIds}
+		@media (max-width: 767px) { ${tabletIds} }
+		@media (max-width: 478px) { ${mobileIds} }
+	`
+
+	return generatedStyles
+}
+
+export function Canvas() {
+	const components = useCanvasStore((store) => store.components)
+	const deselectComponent = useSelectionStore((store) => store.deselect)
+	const setSelectedClass = useSetAtom(selectedClassAtom)
+	const maxWidth = useMaxWidth()
+	const generatedStyles = useGenerateStyles()
+	const hotkeys = useCanvasHotkeys()
+	useHotkeys(hotkeys)
 
 	return (
 		<div className="h-full p-px bg-gray-50">
@@ -127,27 +159,11 @@ export function Canvas() {
 								rel="stylesheet"
 								href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
 							/>
+							<style>{generatedStyles}</style>
 						</>
 					}
 				>
 					<DndFrame>
-						<style>{`
-						body { margin: 0; font-family: sans-serif; }
-						html {
-							box-sizing: border-box;
-						}
-						*, *:before, *:after {
-							box-sizing: inherit;
-						}
-					`}</style>
-						<style>
-							{desktopClasses}
-							{`@media (max-width: 767px) { ${tabletClasses} }`}
-							{`@media (max-width: 478px) { ${mobileClasses} }`}
-							{desktopIds}
-							{`@media (max-width: 767px) { ${tabletIds} }`}
-							{`@media (max-width: 478px) { ${mobileIds} }`}
-						</style>
 						<div
 							style={{
 								height: '100vh',

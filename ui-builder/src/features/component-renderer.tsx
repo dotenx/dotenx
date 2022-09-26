@@ -21,21 +21,15 @@ import {
 	ComponentEvent,
 	ComponentKind,
 	CssSelector,
-	DividerComponent,
 	EventKind,
 	FetchAction,
 	findComponent,
-	FormComponent,
 	ImageComponent,
 	InputComponent,
 	isContainer,
-	LinkComponent,
 	MenuButtonComponent,
-	NavbarComponent,
-	NavMenuComponent,
 	SelectComponent,
 	SetStateAction,
-	StackComponent,
 	Style,
 	SubmitButtonComponent,
 	TextareaComponent,
@@ -53,6 +47,8 @@ import { usePageStates } from './page-states'
 import { useSelectionStore } from './selection-store'
 import { useEditStyles } from './settings'
 import { useViewportStore, ViewportDevice } from './viewport-store'
+
+type RenderFn = (components: Component[], state: JsonMap) => ReactNode
 
 export function RenderComponents({
 	components,
@@ -103,47 +99,46 @@ function TextRenderer({ component, state }: { component: TextComponent; state: J
 	return <div dangerouslySetInnerHTML={{ __html: text }} />
 }
 
-const getClasses = (component: Component) => {
+export const getClasses = (component: Component) => {
 	return `${component.classNames.join(' ')} ${component.id}`
 }
 
 const emptyContainerStyle = { minHeight: 100, minWidth: 100, border: '1px dashed black' }
 
-function BoxRenderer({ component, state }: { component: Component; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
+function BoxRenderer({
+	component,
+	state,
+	renderFn,
+}: {
+	component: Component
+	state: JsonMap
+	renderFn: RenderFn
+}) {
+	return <>{renderFn(component.components, state)}</>
 }
 
-function ButtonRenderer({ component }: { component: ButtonComponent }) {
+function ButtonRenderer({
+	component,
+}: {
+	component: ButtonComponent | SubmitButtonComponent | MenuButtonComponent
+}) {
 	return <>{component.data.text}</>
 }
 
-function ColumnsRenderer({ component, state }: { component: ColumnsComponent; state: JsonMap }) {
-	const { isHighlighted } = useIsHighlighted(component.id)
-	const styles = useCombinedStyles(component)
-	const cols = styles.gridTemplateColumns?.toString().split(' ') ?? []
-	const emptyCols = cols.length - component.components.length
-
+function ColumnsRenderer({
+	component,
+	state,
+	renderFn,
+}: {
+	component: ColumnsComponent
+	state: JsonMap
+	renderFn: RenderFn
+}) {
 	return (
 		<>
 			{component.components.map((innerComponent) => {
-				return (
-					<div
-						key={innerComponent.id}
-						style={{ backgroundColor: isHighlighted ? '#fff1f2' : undefined }}
-					>
-						<RenderComponents components={[innerComponent]} state={state} />
-					</div>
-				)
+				return <div key={innerComponent.id}>{renderFn([innerComponent], state)}</div>
 			})}
-			{isHighlighted &&
-				_.range(emptyCols).map((col) => {
-					return (
-						<div
-							key={col}
-							style={{ backgroundColor: isHighlighted ? '#fff1f2' : undefined }}
-						/>
-					)
-				})}
 		</>
 	)
 }
@@ -221,44 +216,36 @@ export function SubmitButtonRenderer({ component }: { component: SubmitButtonCom
 	return <>{component.data.text}</>
 }
 
-function FormRenderer({ component, state }: { component: FormComponent; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
-}
+const defaultRenderFn: RenderFn = (components, state) => (
+	<RenderComponents components={components} state={state} />
+)
 
-function LinkRenderer({ component, state }: { component: LinkComponent; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
-}
-
-function StackRenderer({ component, state }: { component: StackComponent; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
-}
-
-function DividerRenderer({ component }: { component: DividerComponent }) {
-	return <></>
-}
-
-function NavMenuRenderer({ component, state }: { component: NavMenuComponent; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
-}
-
-function NavbarRenderer({ component, state }: { component: NavbarComponent; state: JsonMap }) {
-	return <RenderComponents components={component.components} state={state} />
-}
-
-function MenuButtonRenderer({ component }: { component: MenuButtonComponent }) {
-	return <>{component.data.text}</>
-}
-
-function ComponentShaper({ component, state }: { component: Component; state: JsonMap }) {
+export function ComponentShaper({
+	component,
+	state = {},
+	renderFn = defaultRenderFn,
+}: {
+	component: Component
+	state?: JsonMap
+	renderFn?: RenderFn
+}) {
 	switch (component.kind) {
 		case ComponentKind.Text:
 			return <TextRenderer component={component} state={state} />
 		case ComponentKind.Box:
-			return <BoxRenderer component={component} state={state} />
+		case ComponentKind.Form:
+		case ComponentKind.Link:
+		case ComponentKind.Stack:
+		case ComponentKind.Divider:
+		case ComponentKind.NavMenu:
+		case ComponentKind.Navbar:
+			return <BoxRenderer component={component} state={state} renderFn={renderFn} />
 		case ComponentKind.Button:
+		case ComponentKind.SubmitButton:
+		case ComponentKind.MenuButton:
 			return <ButtonRenderer component={component} />
 		case ComponentKind.Columns:
-			return <ColumnsRenderer component={component} state={state} />
+			return <ColumnsRenderer component={component} state={state} renderFn={renderFn} />
 		case ComponentKind.Image:
 			return <ImageRenderer component={component} />
 		case ComponentKind.Input:
@@ -267,22 +254,6 @@ function ComponentShaper({ component, state }: { component: Component; state: Js
 			return <SelectRenderer component={component} />
 		case ComponentKind.Textarea:
 			return <TextareaRenderer component={component} />
-		case ComponentKind.SubmitButton:
-			return <SubmitButtonRenderer component={component} />
-		case ComponentKind.Form:
-			return <FormRenderer component={component} state={state} />
-		case ComponentKind.Link:
-			return <LinkRenderer component={component} state={state} />
-		case ComponentKind.Stack:
-			return <StackRenderer component={component} state={state} />
-		case ComponentKind.Divider:
-			return <DividerRenderer component={component} />
-		case ComponentKind.NavMenu:
-			return <NavMenuRenderer component={component} state={state} />
-		case ComponentKind.Navbar:
-			return <NavbarRenderer component={component} state={state} />
-		case ComponentKind.MenuButton:
-			return <MenuButtonRenderer component={component} />
 		default:
 			return null
 	}
