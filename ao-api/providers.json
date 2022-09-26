@@ -11,9 +11,9 @@
     },
     {
         "name": "facebook",
-        "secret": "204efd1fa2379b65be3cf334b5d0b9f4",
-        "key": "431879378741523",
-        "scopes": ["email", "public_profile", "pages_manage_posts", "pages_read_engagement", "publish_to_groups", "ads_management", "business_management", "instagram_basic", "instagram_content_publish", "pages_read_engagement"]
+        "secret": "5d3d549a4992e3f33fefd7fec85ec10d",
+        "key": "1468058090364475",
+        "scopes": ["email", "public_profile", "pages_show_list", "pages_read_engagement", "pages_manage_posts", "publish_to_groups", "instagram_basic", "instagram_content_publish"]
     },
     {
         "name": "instagram",
