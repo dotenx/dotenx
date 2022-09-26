@@ -60,7 +60,7 @@ export function TestTrigger({ trigger }: { trigger: TriggerSchema }) {
 	const handleTestTrigger = () => {
 		testTriggerMutation.mutate(mapTriggerValuesToPrimitives(trigger), {
 			onSuccess: (data) => {
-				const triggerOutputs = findPropertyPaths(data.data.return_value, trigger.name)
+				const triggerOutputs = findPropertyPaths(data.data.return_value.trigger, trigger.name)
 				setOutputs((outputs) => ({ ...outputs, [trigger.name]: triggerOutputs }))
 			},
 		})
