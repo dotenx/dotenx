@@ -1,5 +1,6 @@
 import axios from 'axios'
 import _ from 'lodash'
+import { addControllers, removeControllers } from '../utils/controller-utils'
 import {
 	mapSelectorStyleToKebabCase,
 	mapStylesToCamelCase,
@@ -75,7 +76,11 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 		...res,
 		data: {
 			...res.data,
-			content: { ...res.data.content, layout: components, classNames: classNames },
+			content: {
+				...res.data.content,
+				layout: addControllers(components),
+				classNames: classNames,
+			},
 		},
 	}
 }
@@ -86,6 +91,7 @@ export const addPage = ({
 	components,
 	dataSources,
 	classNames,
+	mode,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -97,13 +103,14 @@ export const addPage = ({
 			},
 		])
 	)
-
+	const kebabComponents = mapStylesToKebabCase(components)
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
-			layout: mapStylesToKebabCase(components),
+			layout: removeControllers(kebabComponents),
 			dataSources,
 			classNames: kebabClasses,
+			mode,
 		},
 	})
 }

@@ -543,7 +543,7 @@ function DraggableComponent({ kind }: { kind: ComponentKind }) {
 	)
 }
 
-function ComponentCard({ label, icon }: { label: string; icon: ReactElement }) {
+export function ComponentCard({ label, icon }: { label: string; icon: ReactElement }) {
 	return (
 		<div className="flex flex-col items-center gap-2 p-2 rounded bg-gray-50 cursor-grab text-slate-600 hover:text-slate-900">
 			<div className="pt-1 text-2xl">{icon}</div>

@@ -506,5 +506,5 @@ type TestTriggerData = {
 
 export type TestTriggerResponse = {
 	triggered: boolean
-	return_value: AnyJson
+	return_value: { trigger: AnyJson }
 }

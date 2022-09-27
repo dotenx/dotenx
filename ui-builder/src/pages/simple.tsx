@@ -1,24 +1,21 @@
 import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
-import { useAtomValue } from 'jotai'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useClickOutside } from '@mantine/hooks'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useParams } from 'react-router-dom'
-import { Canvas } from '../features/canvas'
-import { ComponentSelectorAndLayers } from '../features/component-selector'
-import { Settings } from '../features/settings'
+import { ComponentInserter } from '../features/component-inserter'
+import { insertingAtom, SimpleCanvas } from '../features/simple-canvas'
+import { SimpleOptions } from '../features/simple-options'
 import { fullScreenAtom, TopBar } from '../features/top-bar'
 
-export function HomePage() {
+export function SimplePage() {
 	const { projectName = '' } = useParams()
 	const { isFullscreen } = useAtomValue(fullScreenAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
 
 	return (
-		<DndProvider backend={HTML5Backend}>
-			<AppShell header={<AppHeader projectName={projectName} />} {...sidebars} padding={0}>
-				<Canvas />
-			</AppShell>
-		</DndProvider>
+		<AppShell header={<AppHeader projectName={projectName} />} {...sidebars} padding={0}>
+			<SimpleCanvas />
+		</AppShell>
 	)
 }
 
@@ -31,8 +28,11 @@ function AppHeader({ projectName }: { projectName: string }) {
 }
 
 function AppLeftSideBar() {
+	const setInserting = useSetAtom(insertingAtom)
+	const outsideClickRef = useClickOutside(() => setInserting(null))
+
 	return (
-		<Navbar width={{ base: 310 }}>
+		<Navbar width={{ base: 310 }} ref={outsideClickRef}>
 			<Navbar.Section
 				component={ScrollArea}
 				grow
@@ -41,7 +41,7 @@ function AppLeftSideBar() {
 				offsetScrollbars
 			>
 				<div className="py-2 px-4">
-					<ComponentSelectorAndLayers />
+					<ComponentInserter />
 				</div>
 			</Navbar.Section>
 		</Navbar>
@@ -61,7 +61,7 @@ function AppRightSideBar() {
 				px="xl"
 			>
 				<div className="py-2 px-1">
-					<Settings />
+					<SimpleOptions />
 				</div>
 			</Aside.Section>
 		</Aside>

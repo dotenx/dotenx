@@ -5,8 +5,6 @@ import {
 	Code,
 	ColorInput,
 	Divider,
-	Group,
-	Image,
 	Menu,
 	NumberInput,
 	SegmentedControl,
@@ -17,9 +15,7 @@ import {
 	Textarea,
 	TextInput,
 } from '@mantine/core'
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { closeAllModals, openModal } from '@mantine/modals'
-import { useMutation } from '@tanstack/react-query'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
@@ -32,13 +28,9 @@ import {
 	TbLayoutAlignCenter,
 	TbLayoutAlignLeft,
 	TbLayoutAlignRight,
-	TbPhoto,
 	TbPlus,
 	TbRuler,
-	TbUpload,
-	TbX,
 } from 'react-icons/tb'
-import { uploadImage } from '../api'
 import { uuid } from '../utils'
 import {
 	Action,
@@ -76,7 +68,7 @@ import {
 import { DataSourceForm } from './data-source-form'
 import { useDataSourceStore } from './data-source-store'
 import { getDefaultComponent } from './default-values'
-import { projectTagAtom } from './project-atom'
+import { ImageDrop } from './image-drop'
 import {
 	BordersEditor,
 	CollapseLine,
@@ -453,8 +445,6 @@ function ImageComponentSettings({
 }) {
 	const selector = useAtomValue(selectedSelectorAtom)
 	const viewport = useViewportStore((store) => store.device)
-	const projectTag = useAtomValue(projectTagAtom)
-	const uploadImageMutation = useMutation(uploadImage)
 	const editComponentNoDebounce = useCanvasStore((store) => store.editComponent)
 	const editComponent = useMemo(
 		() => _.debounce(editComponentNoDebounce, 300),
@@ -468,65 +458,11 @@ function ImageComponentSettings({
 		component.data.style[viewport][selector]?.backgroundPosition?.toString() ?? 'cover'
 	const altText = component.data.alt
 	const editStyles = useEditStyle(component)
-	const [source, setSource] = useStateFromProps(src)
 	const [alt, setAlt] = useStateFromProps(altText)
-
-	const imagePart = src ? (
-		<div>
-			<CloseButton
-				onClick={() => setImage(null)}
-				mb="xs"
-				size="xs"
-				ml="auto"
-				title="Clear image"
-			/>
-			<Image radius="xs" src={src} />
-		</div>
-	) : (
-		<Dropzone
-			onDrop={(files) =>
-				uploadImageMutation.mutate(
-					{ projectTag, image: files[0] },
-					{ onSuccess: (data) => setImage(data.data.url) }
-				)
-			}
-			accept={IMAGE_MIME_TYPE}
-			loading={uploadImageMutation.isLoading}
-		>
-			<Group position="center" spacing="xl" py="xl" style={{ pointerEvents: 'none' }}>
-				<Dropzone.Accept>
-					<TbUpload />
-				</Dropzone.Accept>
-				<Dropzone.Reject>
-					<TbX />
-				</Dropzone.Reject>
-				{!uploadImageMutation.isLoading && (
-					<Dropzone.Idle>
-						<TbPhoto size={50} />
-					</Dropzone.Idle>
-				)}
-				{!uploadImageMutation.isLoading && (
-					<p className="text-center">Drag an image here or click to select</p>
-				)}
-			</Group>
-		</Dropzone>
-	)
 
 	return (
 		<div className="space-y-6">
-			{imagePart}
-			<TextInput
-				size="xs"
-				label="Source"
-				value={source}
-				onChange={(event) => {
-					setSource(source)
-					editComponent(component.id, {
-						...component.data,
-						src: event.target.value,
-					})
-				}}
-			/>
+			<ImageDrop src={src} onChange={setImage} />
 			<SizeEditor simple styles={styles} editStyle={editStyle} />
 
 			<CollapseLine label="Spacing">

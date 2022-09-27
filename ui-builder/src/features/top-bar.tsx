@@ -10,11 +10,13 @@ import {
 	Tooltip,
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
+import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import {
+	TbArrowRampLeft3,
 	TbArrowsMaximize,
 	TbCornerUpLeft,
 	TbCornerUpRight,
@@ -25,6 +27,7 @@ import {
 	TbTrash,
 	TbWorldUpload,
 } from 'react-icons/tb'
+import { useMatch, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { PublishPageRequest } from '../api'
 import {
@@ -66,6 +69,8 @@ export function TopBar({ projectName }: { projectName: string }) {
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
 	const setClassNames = useClassNamesStore((store) => store.set)
+	const navigate = useNavigate()
+	const isSimple = useMatch('/projects/:projectName/simple')
 
 	useQuery(
 		[QueryKey.PageDetails, projectTag, selectedPage],
@@ -82,6 +87,10 @@ export function TopBar({ projectName }: { projectName: string }) {
 						.get<AnyJson>(source.url)
 						.then((data) => setPageState(source.stateName, data.data))
 				)
+				if (content.mode === 'simple' && !isSimple)
+					navigate(`/projects/${projectName}/simple`)
+				else if (content.mode === 'advanced' && isSimple)
+					navigate(`/projects/${projectName}`)
 			},
 			enabled: !!projectTag && !!selectedPage.route,
 		}
@@ -89,6 +98,22 @@ export function TopBar({ projectName }: { projectName: string }) {
 	const publishPageMutation = useMutation(publishPage)
 	const publishedUrl = publishPageMutation.data?.data.url
 	const setFullscreen = useSetAtom(fullScreenAtom)
+	const components = useCanvasStore((store) => store.components)
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const classNames = useClassNamesStore((store) => store.classNames)
+	const queryClient = useQueryClient()
+	const savePageMutation = useMutation(updatePage, {
+		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
+	})
+	const saveAdvanced = () =>
+		savePageMutation.mutate({
+			projectTag,
+			pageName: selectedPage.route,
+			components,
+			dataSources,
+			classNames,
+			mode: 'advanced',
+		})
 
 	return (
 		<div className="flex items-center justify-between h-full px-6">
@@ -98,7 +123,7 @@ export function TopBar({ projectName }: { projectName: string }) {
 						<img src={logoUrl} className="w-8" alt="logo" />
 					</Anchor>
 				</Tooltip>
-				<PageSelection projectTag={projectTag} />
+				<PageSelection projectTag={projectTag} projectName={projectName} />
 				<DeviceSelection />
 				<ActionIcon
 					title="Fullscreen preview"
@@ -109,6 +134,25 @@ export function TopBar({ projectName }: { projectName: string }) {
 				>
 					<TbArrowsMaximize />
 				</ActionIcon>
+				{isSimple && (
+					<ActionIcon
+						title="Toggle advance mode"
+						onClick={() =>
+							openConfirmModal({
+								title: 'Please confirm your action',
+								children: (
+									<Text size="sm">
+										This action is irreversible. It will toggle advanced mode.
+									</Text>
+								),
+								labels: { confirm: 'Confirm', cancel: 'Cancel' },
+								onConfirm: () => saveAdvanced(),
+							})
+						}
+					>
+						<TbArrowRampLeft3 />
+					</ActionIcon>
+				)}
 			</div>
 			<div className="flex gap-6 items-center">
 				{publishedUrl && (
@@ -154,14 +198,17 @@ export function TopBar({ projectName }: { projectName: string }) {
 	)
 }
 
-function PageSelection({ projectTag }: { projectTag: string }) {
+function PageSelection({ projectTag, projectName }: { projectTag: string; projectName: string }) {
 	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
 	const [menuOpened, setMenuOpened] = useState(false)
+	const navigate = useNavigate()
+	const isSimple = useMatch('/projects/:projectName/simple')
 	const pagesQuery = useQuery([QueryKey.Pages, projectTag], () => getPages({ projectTag }), {
 		onSuccess: (data) => {
 			const pages = data.data ?? []
 			const firstPage = pages[0] ?? 'index'
 			setSelectedPage({ exists: !!pages[0], route: firstPage })
+			if (pages.length === 0 && !isSimple) navigate(`/projects/${projectName}/simple`)
 		},
 		enabled: !!projectTag,
 	})
@@ -242,12 +289,19 @@ function PageActions({
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
 	})
+	const { components, set } = useCanvasStore((store) => ({
+		components: store.components,
+		set: store.set,
+	}))
 	const deletePageMutation = useMutation(deletePage, {
-		onSuccess: () => queryClient.invalidateQueries([QueryKey.Pages]),
+		onSuccess: () => {
+			queryClient.invalidateQueries([QueryKey.Pages])
+			set([])
+		},
 	})
-	const components = useCanvasStore((store) => store.components)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const classNames = useClassNamesStore((store) => store.classNames)
+	const isSimple = useMatch('/projects/:projectName/simple')
 
 	const save = () =>
 		savePageMutation.mutate({
@@ -256,6 +310,7 @@ function PageActions({
 			components,
 			dataSources,
 			classNames,
+			mode: isSimple ? 'simple' : 'advanced',
 		})
 	const publish = () => handlePublish({ projectTag, pageName: selectedPage.route })
 	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
@@ -339,6 +394,7 @@ function AddPageForm({ projectTag, onSuccess }: { projectTag: string; onSuccess:
 			components: [],
 			dataSources: [],
 			classNames: {},
+			mode: 'simple',
 		})
 	})
 
