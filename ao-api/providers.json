@@ -29,8 +29,8 @@
     },
     {
         "name": "dropbox",
-        "secret": "phhpxepagdkb3l2",
-        "key": "8mwek47s34krny7"
+        "secret": "ameghcdq55frcc6",
+        "key": "76r0igd1lpkaw52"
     },
     {
         "name": "discord",
@@ -52,8 +52,8 @@
     },
     {
         "name": "google",
-        "secret": "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",
-        "key": "202712498600-gjd4vtp1727j1ucpsjucv52tqg8r0da9.apps.googleusercontent.com",
-        "scopes": ["email", "https://mail.google.com/", "https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/spreadsheets"]
+        "secret": "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",
+        "key": "330994762737-r7lv7409ntfmbr8eqk5n7rcebd0p2jdj.apps.googleusercontent.com",
+        "scopes": ["email", "https://mail.google.com/", "https://www.googleapis.com/auth/youtube.upload"]
     }
 ]

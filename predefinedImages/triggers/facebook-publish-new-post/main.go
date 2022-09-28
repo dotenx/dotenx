@@ -1,4 +1,4 @@
-// image: hojjat12/facebook-publish-new-post:lambda4
+// image: hojjat12/facebook-publish-new-post:lambda5
 package main
 
 import (
@@ -48,7 +48,12 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 	selectedUnix := time.Now().Unix() - (int64(seconds))
-	posts, err := getPostsList(pageId, accessToken)
+	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return resp, err
+	}
+	posts, err := getPostsList(pageId, pageAccessToken)
 	if err != nil {
 		fmt.Println(err)
 		return resp, err
@@ -149,6 +154,29 @@ func getPostsList(pageId, accessToken string) (posts []Post, err error) {
 		return
 	}
 	posts = resp.Data
+	return
+}
+
+func getPageAccessToken(accessToken, pageId string) (pageAccessToken string, err error) {
+	url := "https://graph.facebook.com/" + pageId + "?fields=access_token&access_token=" + accessToken
+	out, err, statusCode, _ := httpRequest(http.MethodGet, url, nil, nil, 0)
+	if err != nil || statusCode != http.StatusOK {
+		fmt.Println("facebook response (get page access token request):", string(out))
+		if statusCode != http.StatusOK {
+			err = errors.New("can't get correct response from facebook")
+		}
+		return
+	}
+	var resp struct {
+		PageAccessToken string `json:"access_token"`
+		Id              string `json:"id"`
+	}
+	err = json.Unmarshal(out, &resp)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	pageAccessToken = resp.PageAccessToken
 	return
 }
 

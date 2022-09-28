@@ -57,7 +57,7 @@ func (e *ExecutionController) RunInstantly(cService crudService.CrudService, tSe
 			targetTrigger := dto.Manifest.Triggers[stepName]
 			integration, err := iService.GetIntegrationByName(accountId, targetTrigger.Integration)
 			if err != nil {
-				logrus.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", targetTrigger.Name, targetTrigger.Integration)
+				logrus.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", stepName, targetTrigger.Integration)
 				logrus.Error(err.Error())
 				return
 			}
@@ -65,7 +65,7 @@ func (e *ExecutionController) RunInstantly(cService crudService.CrudService, tSe
 			pipelineUrl := fmt.Sprintf("%s/public/execution/ep/%s/start", config.Configs.Endpoints.AoApiLocal, targetTrigger.Endpoint)
 			envs := map[string]interface{}{
 				"PIPELINE_ENDPOINT": pipelineUrl,
-				"TRIGGER_NAME":      targetTrigger.Name,
+				"TRIGGER_NAME":      stepName,
 				"WORKSPACE":         utils.GetNewUuid(),
 				"ACCOUNT_ID":        accountId,
 			}
