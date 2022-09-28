@@ -3,7 +3,7 @@
 # # awrmin/google-new-email:lambda4
 # # hojjat12/dropbox-upload-new-file:lambda4
 # # hojjat12/ebay-new-order:lambda3
-# # hojjat12/facebook-publish-new-post:lambda4
+# # hojjat12/facebook-publish-new-post:lambda5
 # # awrmin/slack-new-message:lambda4
 # # awrmin/stripe-new-invoice:lambda4
 # # awrmin/stripe-payment-completed:lambda4
@@ -39,7 +39,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/facebook-publish-new-post"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="facebook-publish-new-post"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
