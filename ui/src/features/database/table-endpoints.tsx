@@ -55,8 +55,9 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 			/>
 			<Endpoint
 				label="Delete a record by ID"
-				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}/row/:id`}
+				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}`}
 				method="DELETE"
+				code={{ rowId: "<id>" }}
 			/>
 		</div>
 	)

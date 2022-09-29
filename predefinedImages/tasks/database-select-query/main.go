@@ -1,4 +1,4 @@
-// image: hojjat12/database-get-records:lambda8
+// image: hojjat12/database-get-records:lambda9
 package main
 
 import (
@@ -114,7 +114,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		// continue
 	}
 
-	dtxResp := make([]map[string]interface{}, 0)
+	dtxResp := make(map[string]interface{})
 	err = json.Unmarshal(dtxRespBytes, &dtxResp)
 	if err != nil {
 		fmt.Println(err)
@@ -122,7 +122,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		// continue
 	}
 
-	for _, row := range dtxResp {
+	for _, row := range dtxResp["rows"].([]map[string]interface{}) {
 		outputs = append(outputs, row)
 		outputCnt++
 	}

@@ -21,8 +21,8 @@ type DatabaseStore interface {
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, row map[string]interface{}) error
-	DeleteRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int) error
-	SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, filters ConditionGroup, offset int, size int) ([]map[string]interface{}, error)
+	DeleteRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, filters ConditionGroup) error
+	SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, functions []Function, filters ConditionGroup, offset int, size int) (map[string]interface{}, error)
 }
 
 type databaseStore struct {
