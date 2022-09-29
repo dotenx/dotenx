@@ -122,8 +122,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		// continue
 	}
 
-	for _, row := range dtxResp["rows"].([]map[string]interface{}) {
-		outputs = append(outputs, row)
+	for _, row := range dtxResp["rows"].([]interface{}) {
+		outputs = append(outputs, row.(map[string]interface{}))
 		outputCnt++
 	}
 	// }
