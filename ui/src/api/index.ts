@@ -386,7 +386,11 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
 	return api.delete<void>(
-		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
+		`/database/query/delete/project/${projectTag}/table/${tableName}`, {
+			data: {
+				rowId,
+			},
+		}
 	)
 }
 

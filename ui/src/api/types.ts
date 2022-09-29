@@ -321,12 +321,14 @@ export type CreateProjectRequest = Project
 export type GetProjectsResponse = Project[] | null
 
 export type GetUserManagementDataResponse = {
-	account_id: string
-	created_at: string
-	email: string
-	fullname: string
-	user_group: string
-}[]
+	rows: {
+		account_id: string
+		created_at: string
+		email: string
+		fullname: string
+		user_group: string
+	}[]
+}
 
 export type GetFilesDataResponse = any
 
@@ -378,7 +380,9 @@ export type TableRecord = Record<
 	string | string[] | boolean | boolean[] | number | number[]
 >
 
-export type GetRecordsResponse = TableRecord[] | null
+export type GetRecordsResponse = {
+	rows: TableRecord[]
+} | null
 
 export type AddRecordRequest = TableRecord
 

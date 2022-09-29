@@ -25,7 +25,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 		() => getUserManagementData(projectTag),
 		{ enabled: !!projectTag }
 	)
-	const tableData = usersData?.data ?? []
+	const tableData = usersData?.data?.rows ?? []
 
 	const helpDetails = {
 		title: 'You can add manage the users of your application and control their access',
