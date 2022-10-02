@@ -3,10 +3,10 @@ import { useAtomValue } from 'jotai'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useParams } from 'react-router-dom'
-import { Canvas } from '../features/canvas'
-import { ComponentSelectorAndLayers } from '../features/component-selector'
-import { Settings } from '../features/settings'
-import { fullScreenAtom, TopBar } from '../features/top-bar'
+import { AdvancedCanvas } from '../features/advanced/canvas'
+import { ElementDraggerAndLayers } from '../features/advanced/element-dragger-layer'
+import { ElementAdvancedSettings } from '../features/advanced/settings'
+import { fullScreenAtom, TopBar } from '../features/page/top-bar'
 
 export function HomePage() {
 	const { projectName = '' } = useParams()
@@ -16,7 +16,7 @@ export function HomePage() {
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<AppShell header={<AppHeader projectName={projectName} />} {...sidebars} padding={0}>
-				<Canvas />
+				<AdvancedCanvas />
 			</AppShell>
 		</DndProvider>
 	)
@@ -41,7 +41,7 @@ function AppLeftSideBar() {
 				offsetScrollbars
 			>
 				<div className="py-2 px-4">
-					<ComponentSelectorAndLayers />
+					<ElementDraggerAndLayers />
 				</div>
 			</Navbar.Section>
 		</Navbar>
@@ -61,7 +61,7 @@ function AppRightSideBar() {
 				px="xl"
 			>
 				<div className="py-2 px-1">
-					<Settings />
+					<ElementAdvancedSettings />
 				</div>
 			</Aside.Section>
 		</Aside>

@@ -1,26 +1,23 @@
-import { Component } from '../features/canvas-store'
+import produce from 'immer'
 import { controllers } from '../features/controllers'
+import { Element } from '../features/elements/element'
 
-const allControllers = controllers.flatMap((section) => section.items)
-
-export function removeControllers(components: Component[]) {
-	return components.map((component) => ({
-		...component,
-		controller: component.controller
-			? { name: component.controller.constructor.name }
-			: undefined,
+export function removeControllers(elements: Element[]) {
+	return elements.map((element) => ({
+		...element,
+		controller: element.controller ? { name: element.controller.constructor.name } : undefined,
 	}))
 }
 
-export function addControllers(components: Component[]): Component[] {
-	return components.map((component) => {
-		const Controller = allControllers.find(
-			(controller) => controller.name === component.controller?.name
-		)
-
-		return {
-			...component,
-			controller: Controller ? new Controller() : undefined,
+export function addControllers(elements: Element[]): Element[] {
+	return produce(elements, (draft) => {
+		for (const element of draft) {
+			if (element.controller) {
+				const Controller = controllers
+					.flatMap((section) => section.items)
+					.find((c) => c.name === element.controller?.name)
+				if (Controller) element.controller = new Controller()
+			}
 		}
 	})
 }
