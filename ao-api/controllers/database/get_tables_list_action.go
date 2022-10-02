@@ -20,7 +20,17 @@ func (dc *DatabaseController) GetTablesList() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(200, gin.H{"tables": tables})
+		// we should filter default tables
+		defaultTables := []string{"user_group", "user_info", "security_code"}
+		filteredTables := make([]string, 0)
+		for _, t := range tables {
+			if utils.ContainsString(defaultTables, t) {
+				continue
+			}
+			filteredTables = append(filteredTables, t)
+		}
+
+		c.JSON(200, gin.H{"tables": filteredTables})
 
 	}
 }
