@@ -2,19 +2,21 @@ import { Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero.png'
-import { Component, ComponentKind, ImageComponent, TextComponent } from '../canvas-store'
-import { ImageDrop } from '../image-drop'
-import { ComponentOptions, Controller } from './controller'
+import { deserializeElement } from '../../utils/deserialize'
+import { ImageElement } from '../elements/extensions/image'
+import { TextElement } from '../elements/extensions/text'
+import { ImageDrop } from '../ui/image-drop'
+import { Controller, ElementOptions } from './controller'
 
 export class Hero extends Controller {
 	name = 'Hero'
 	image = imageUrl
-	defaultData = defaultData
+	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ComponentOptions): ReactNode {
-		const titleComponent = options.component.components[0].components[0] as TextComponent
-		const descriptionComponent = options.component.components[0].components[1] as TextComponent
-		const imageComponent = options.component.components[1].components[0] as ImageComponent
+	renderOptions(options: ElementOptions): ReactNode {
+		const titleComponent = options.element.children?.[0].children?.[0] as TextElement
+		const descriptionComponent = options.element.children?.[0].children?.[1] as TextElement
+		const imageComponent = options.element.children?.[1].children?.[0] as ImageElement
 
 		return (
 			<div className="space-y-6">
@@ -25,7 +27,6 @@ export class Hero extends Controller {
 					value={titleComponent.data.text}
 					onChange={(event) =>
 						options.set(
-							titleComponent.id,
 							produce(titleComponent, (draft) => {
 								draft.data.text = event.target.value
 							})
@@ -41,7 +42,6 @@ export class Hero extends Controller {
 					value={descriptionComponent.data.text}
 					onChange={(event) =>
 						options.set(
-							descriptionComponent.id,
 							produce(descriptionComponent, (draft) => {
 								draft.data.text = event.target.value
 							})
@@ -51,7 +51,6 @@ export class Hero extends Controller {
 				<ImageDrop
 					onChange={(src) =>
 						options.set(
-							imageComponent.id,
 							produce(imageComponent, (draft) => {
 								draft.data.src = src
 							})
@@ -64,14 +63,14 @@ export class Hero extends Controller {
 	}
 }
 
-const defaultData: Component = {
-	kind: ComponentKind.Columns,
+const defaultData = {
+	kind: 'Columns',
 	components: [
 		{
-			kind: ComponentKind.Box,
+			kind: 'Box',
 			components: [
 				{
-					kind: ComponentKind.Text,
+					kind: 'Text',
 					components: [],
 					classNames: [],
 					repeatFrom: { name: '', iterator: '' },
@@ -96,7 +95,7 @@ const defaultData: Component = {
 					},
 				},
 				{
-					kind: ComponentKind.Text,
+					kind: 'Text',
 					components: [],
 					classNames: [],
 					repeatFrom: { name: '', iterator: '' },
@@ -129,10 +128,10 @@ const defaultData: Component = {
 			data: { style: { desktop: {}, tablet: {}, mobile: {} } },
 		},
 		{
-			kind: ComponentKind.Box,
+			kind: 'Box',
 			components: [
 				{
-					kind: ComponentKind.Image,
+					kind: 'Image',
 					components: [],
 					classNames: [],
 					repeatFrom: { name: '', iterator: '' },

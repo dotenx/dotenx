@@ -1,68 +1,74 @@
+import produce from 'immer'
 import _ from 'lodash'
 import { CSSProperties } from 'react'
-import { Component, SelectorStyle } from '../features/canvas-store'
+import { Element } from '../features/elements/element'
+import { SelectorStyle, Style } from '../features/elements/style'
 import { camelCaseToKebabCase, kebabCaseToCamelCase } from '../utils'
 import { BackendSelectorStyle } from './types'
 
-export const mapStylesToKebabCase = (components: Component[]): any[] => {
-	return components.map((component) => ({
-		...mapComponentStyleToKebab(component),
-		components: mapStylesToKebabCase(component.components),
-	}))
+export const mapStylesToKebabCase = (elements: Element[]): Element[] => {
+	return elements.map(mapElementStyleToKebab)
 }
-
-const mapComponentStyleToKebab = (component: Component) => {
-	const style = component.data.style
-
-	return {
-		...component,
-		data: {
-			...component.data,
-			style: {
-				desktop: mapSelectorStyleToKebabCase(style.desktop),
-				tablet: mapSelectorStyleToKebabCase(style.tablet),
-				mobile: mapSelectorStyleToKebabCase(style.mobile),
-			},
-		},
-	}
+const mapElementStyleToKebab = (element: Element): Element => {
+	return produce(element, (draft) => {
+		draft.style = {
+			desktop: element.style.desktop && mapSelectorStyleToKebabCase(element.style.desktop),
+			tablet: element.style.tablet && mapSelectorStyleToKebabCase(element.style.tablet),
+			mobile: element.style.mobile && mapSelectorStyleToKebabCase(element.style.mobile),
+		}
+		if (element.children) draft.children = mapStylesToKebabCase(element.children)
+	})
 }
-
-export const mapSelectorStyleToKebabCase = (selectorStyle: SelectorStyle) => {
+export const mapSelectorStyleToKebabCase = (
+	selectorStyle: SelectorStyle
+): Record<string, Record<string, string>> => {
 	return _.fromPairs(
 		_.toPairs(selectorStyle).map(([selector, style]) => [selector, mapStyleToKebabCase(style)])
 	)
 }
-
 export const mapStyleToKebabCase = (style: CSSProperties): Record<string, string> => {
 	return _.fromPairs(_.toPairs(style).map(([key, value]) => [camelCaseToKebabCase(key), value]))
 }
-
-export const mapStylesToCamelCase = (components: any[]): Component[] => {
-	return components.map((component) => ({
-		...mapComponentStyleToCamelCase(component),
-		components: mapStylesToCamelCase(component.components),
-	}))
-}
-
-const mapComponentStyleToCamelCase = (component: any) => {
+export const mapStyleToKebabCaseStyle = (style: Style) => {
 	return {
-		...component,
-		data: {
-			...component.data,
-			style: {
-				desktop: mapStyleToCamelCase(component.data.style.desktop),
-				tablet: mapStyleToCamelCase(component.data.style.tablet),
-				mobile: mapStyleToCamelCase(component.data.style.mobile),
-			},
-		},
+		desktop: style.desktop && mapSelectorStyleToKebabCase(style.desktop),
+		tablet: style.tablet && mapSelectorStyleToKebabCase(style.tablet),
+		mobile: style.mobile && mapSelectorStyleToKebabCase(style.mobile),
 	}
 }
 
-export const mapStyleToCamelCase = (style: BackendSelectorStyle): SelectorStyle => {
+export const mapStylesToCamelCase = (elements: Element[]): Element[] => {
+	return elements.map(mapElementStyleToCamel)
+}
+const mapElementStyleToCamel = (element: Element): Element => {
+	return produce(element, (draft) => {
+		draft.style = {
+			desktop:
+				element.style.desktop &&
+				mapSelectorStyleToCamelCase(element.style.desktop as BackendSelectorStyle),
+			tablet:
+				element.style.tablet &&
+				mapSelectorStyleToCamelCase(element.style.tablet as BackendSelectorStyle),
+			mobile:
+				element.style.mobile &&
+				mapSelectorStyleToCamelCase(element.style.mobile as BackendSelectorStyle),
+		}
+		if (element.children) draft.children = mapStylesToCamelCase(element.children)
+	})
+}
+export const mapSelectorStyleToCamelCase = (style: BackendSelectorStyle): SelectorStyle => {
 	return _.fromPairs(
 		_.toPairs(style).map(([key, value]) => [
 			key,
 			_.fromPairs(_.toPairs(value).map(([key, value]) => [kebabCaseToCamelCase(key), value])),
 		])
 	)
+}
+export const mapStyleToCamelCaseStyle = (style: Style) => {
+	return {
+		desktop:
+			style.desktop && mapSelectorStyleToCamelCase(style.desktop as BackendSelectorStyle),
+		tablet: style.tablet && mapSelectorStyleToCamelCase(style.tablet as BackendSelectorStyle),
+		mobile: style.mobile && mapSelectorStyleToCamelCase(style.mobile as BackendSelectorStyle),
+	}
 }

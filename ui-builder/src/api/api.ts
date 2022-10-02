@@ -1,20 +1,17 @@
 import axios from 'axios'
+import produce from 'immer'
 import _ from 'lodash'
-import { addControllers, removeControllers } from '../utils/controller-utils'
-import {
-	mapSelectorStyleToKebabCase,
-	mapStylesToCamelCase,
-	mapStylesToKebabCase,
-	mapStyleToCamelCase,
-} from './mapper'
+import { addControllers } from '../utils/controller-utils'
+import { deserializeElement } from '../utils/deserialize'
+import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
 	AddPageRequest,
-	CreateCustomComponentRequest,
+	CreateComponentRequest,
 	CreateDesignSystemRequest,
-	DeleteCustomComponentRequest,
+	DeleteComponentRequest,
 	DeletePageRequest,
-	GetCustomComponentsRequest,
-	GetCustomComponentsResponse,
+	GetComponentsRequest,
+	GetComponentsResponse,
 	GetDesignSystemsRequest,
 	GetDesignSystemsResponse,
 	GetMarketplaceItemsResponse,
@@ -24,7 +21,7 @@ import {
 	GetPagesResponse,
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
-	ImportCustomComponentRequest,
+	ImportComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
 	UploadImageRequest,
@@ -42,7 +39,7 @@ export enum QueryKey {
 	ProjectDetails = 'project-details',
 	Pages = 'pages',
 	PageDetails = 'page-details',
-	CustomComponents = 'custom-components',
+	Components = 'components',
 	DesignSystems = 'design-systems',
 	MarketplaceItems = 'marketplace-items',
 }
@@ -61,14 +58,14 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 	const res = await api.get<GetPageDetailsResponse>(
 		`/uibuilder/project/${projectTag}/page/${pageName}`
 	)
-	const components = mapStylesToCamelCase(res.data.content.layout)
+	const elements = res.data.content.layout.map(deserializeElement)
 	const classNames = _.fromPairs(
 		_.toPairs(res.data.content.classNames).map(([className, styles]) => [
 			className,
 			{
-				desktop: mapStyleToCamelCase(styles.desktop),
-				tablet: mapStyleToCamelCase(styles.tablet),
-				mobile: mapStyleToCamelCase(styles.mobile),
+				desktop: mapSelectorStyleToCamelCase(styles.desktop),
+				tablet: mapSelectorStyleToCamelCase(styles.tablet),
+				mobile: mapSelectorStyleToCamelCase(styles.mobile),
 			},
 		])
 	)
@@ -78,7 +75,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			...res.data,
 			content: {
 				...res.data.content,
-				layout: addControllers(components),
+				layout: addControllers(elements),
 				classNames: classNames,
 			},
 		},
@@ -88,7 +85,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 export const addPage = ({
 	projectTag,
 	pageName,
-	components,
+	elements,
 	dataSources,
 	classNames,
 	mode,
@@ -97,17 +94,16 @@ export const addPage = ({
 		_.toPairs(classNames).map(([className, styles]) => [
 			className,
 			{
-				desktop: mapSelectorStyleToKebabCase(styles.desktop),
-				tablet: mapSelectorStyleToKebabCase(styles.tablet),
-				mobile: mapSelectorStyleToKebabCase(styles.mobile),
+				desktop: styles.desktop && mapSelectorStyleToKebabCase(styles.desktop),
+				tablet: styles.tablet && mapSelectorStyleToKebabCase(styles.tablet),
+				mobile: styles.mobile && mapSelectorStyleToKebabCase(styles.mobile),
 			},
 		])
 	)
-	const kebabComponents = mapStylesToKebabCase(components)
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
-			layout: removeControllers(kebabComponents),
+			layout: elements.map((element) => element.serialize()),
 			dataSources,
 			classNames: kebabClasses,
 			mode,
@@ -136,9 +132,10 @@ export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	})
 }
 
-export const createCustomComponent = ({ projectTag, payload }: CreateCustomComponentRequest) => {
+export const createComponent = ({ projectTag, payload }: CreateComponentRequest) => {
 	return api.post(`/uibuilder/project/${projectTag}/component`, {
-		...payload,
+		name: payload.name,
+		content: payload.content.serialize(),
 		category: 'uiComponentItem',
 	})
 }
@@ -148,18 +145,27 @@ export const importFromMarketplace = ({
 	itemId,
 	name,
 	category,
-}: ImportCustomComponentRequest) => {
+}: ImportComponentRequest) => {
 	return api.post(`/uibuilder/project/${projectTag}/component`, { itemId, name, category })
 }
 
-export const deleteCustomComponent = ({ projectTag, name }: DeleteCustomComponentRequest) => {
+export const deleteComponent = ({ projectTag, name }: DeleteComponentRequest) => {
 	return api.delete(`/uibuilder/project/${projectTag}/component/${name}`)
 }
 
-export const deleteDesignSystem = deleteCustomComponent
+export const deleteDesignSystem = deleteComponent
 
-export const getCustomComponents = ({ projectTag }: GetCustomComponentsRequest) => {
-	return api.get<GetCustomComponentsResponse>(`/uibuilder/project/${projectTag}/component`)
+export const getComponents = async ({ projectTag }: GetComponentsRequest) => {
+	const response = await api.get<GetComponentsResponse>(
+		`/uibuilder/project/${projectTag}/component`
+	)
+	return produce(response, (draft) => {
+		draft.data =
+			draft.data?.map((element) => ({
+				...element,
+				content: deserializeElement(element.content),
+			})) ?? []
+	})
 }
 
 export const createDesignSystem = ({ projectTag, payload }: CreateDesignSystemRequest) => {

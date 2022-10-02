@@ -1,5 +1,6 @@
-import { Component, CssSelector, Style } from '../features/canvas-store'
-import { DataSource } from '../features/data-source-store'
+import { DataSource } from '../features/data-bindings/data-source-store'
+import { Element } from '../features/elements/element'
+import { CssSelector, Style } from '../features/elements/style'
 
 export type GetProjectDetailsRequest = {
 	projectName: string
@@ -27,7 +28,7 @@ export type GetPageDetailsResponse = PageDetails
 export type AddPageRequest = {
 	projectTag: string
 	pageName: string
-	components: Component[]
+	elements: Element[]
 	dataSources: DataSource[]
 	classNames: Record<string, Style>
 	mode: LayoutMode
@@ -47,7 +48,7 @@ type LayoutMode = 'simple' | 'advanced'
 interface PageDetails {
 	name: string
 	content: {
-		layout: Component[]
+		layout: Element[]
 		dataSources: DataSource[]
 		classNames: Record<string, BackendStyle>
 		mode: LayoutMode
@@ -77,43 +78,46 @@ export type UploadImageResponse = {
 	url: string
 }
 
-export type CreateCustomComponentRequest = {
+export type CreateComponentRequest = {
 	projectTag: string
-	payload: CustomComponent
+	payload: Component
 }
 
-export type DeleteCustomComponentRequest = {
+export type DeleteComponentRequest = {
 	projectTag: string
 	name: string
 }
 
-export type GetCustomComponentsRequest = {
+export type GetComponentsRequest = {
 	projectTag: string
 }
 
-export type GetCustomComponentsResponse =
-	| (CustomComponent & { category: 'uiComponentItem' | 'uiDesignSystemItem' })[]
+export type GetComponentsResponse =
+	| (Component & { category: 'uiComponentItem' | 'uiDesignSystemItem' })[]
 	| null
 
-export type CustomComponent = {
+export type Component = {
 	name: string
-	content: Component
+	content: Element
 }
 
 export type CreateDesignSystemRequest = {
 	projectTag: string
-	payload: { name: string; content: CustomComponent[] }
+	payload: { name: string; content: Component[] }
 }
 
 export type GetDesignSystemsRequest = {
 	projectTag: string
 }
 
-export type GetDesignSystemsResponse =
-	| ({ name: string; content: CustomComponent[] } & {
-			category: 'uiComponentItem' | 'uiDesignSystemItem'
-	  })[]
-	| null
+export type DesignSystem = {
+	name: string
+	content: Component[]
+} & {
+	category: 'uiComponentItem' | 'uiDesignSystemItem'
+}
+
+export type GetDesignSystemsResponse = DesignSystem[] | null
 
 export type GetMarketplaceItemsResponse = {
 	category: 'uiComponentItem' | 'uiDesignSystemItem'
@@ -122,7 +126,7 @@ export type GetMarketplaceItemsResponse = {
 	imageUrl: string
 }[]
 
-export type ImportCustomComponentRequest = {
+export type ImportComponentRequest = {
 	projectTag: string
 	itemId: number
 	name: string
