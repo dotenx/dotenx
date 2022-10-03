@@ -48,7 +48,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data?.rows.map((record) =>
+	const records = (recordsQuery.data?.data?.rows||[]).map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === 'boolean'
@@ -105,7 +105,6 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					data={records}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
-					emptyText="There's no record yet"
 				/>
 			</ContentWrapper>
 			<NewModal kind={Modals.NewColumn} title="New Column">

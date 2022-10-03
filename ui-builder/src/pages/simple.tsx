@@ -2,10 +2,10 @@ import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
 import { useClickOutside } from '@mantine/hooks'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useParams } from 'react-router-dom'
-import { ComponentInserter } from '../features/component-inserter'
-import { insertingAtom, SimpleCanvas } from '../features/simple-canvas'
-import { SimpleOptions } from '../features/simple-options'
-import { fullScreenAtom, TopBar } from '../features/top-bar'
+import { fullScreenAtom, TopBar } from '../features/page/top-bar'
+import { ComponentInserter } from '../features/simple/component-inserter'
+import { insertingAtom, SimpleCanvas } from '../features/simple/simple-canvas'
+import { SimpleOptions } from '../features/simple/simple-options'
 
 export function SimplePage() {
 	const { projectName = '' } = useParams()

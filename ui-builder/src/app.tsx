@@ -57,7 +57,6 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
-				{/* WARNING: do not change this route without checking other files which uses it */}
 				<Route path="/projects/:projectName/simple" element={<SimplePage />} />
 				<Route path="/projects/:projectName" element={<HomePage />} />
 				<Route path="/*" element={<NotFoundPage />} />

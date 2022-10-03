@@ -76,7 +76,7 @@ export function Table<D extends object = Record<string, string>>({
 					{/* <EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" /> */}
 				</div>
 			)}
-			{data.length !== 0 && (
+			{(data.length !== 0 || !emptyText) && (
 				<div className="flex flex-col gap-6">
 					<TextInput
 						icon={<IoSearch className="text-xl" />}
