@@ -1,18 +1,18 @@
 #! /bin/bash
 
-# # awrmin/google-new-email:lambda4
+# # awrmin/google-new-email:lambda5
 # # hojjat12/dropbox-upload-new-file:lambda4
-# # hojjat12/ebay-new-order:lambda3
+# # hojjat12/ebay-new-order:lambda4
 # # hojjat12/facebook-publish-new-post:lambda5
-# # awrmin/slack-new-message:lambda4
+# # awrmin/slack-new-message:lambda5
 # # awrmin/stripe-new-invoice:lambda4
 # # awrmin/stripe-payment-completed:lambda4
-# # hojjat12/twitter-new-tweet:lambda4
-# # hojjat12/typeform-new-response:lambda4
+# # hojjat12/twitter-new-tweet:lambda5
+# # hojjat12/typeform-new-response:lambda5
 
 # export region="us-east-1"
 # export repository_name="awrmin/google-new-email"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="google-new-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -30,7 +30,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/ebay-new-order"
-# export tag="lambda3"
+# export tag="lambda4"
 # export directory_address="ebay-new-order"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -48,7 +48,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/slack-new-message"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="slack-new-message"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -75,7 +75,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/twitter-new-tweet"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="twitter-new-tweet"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -84,7 +84,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/typeform-new-response"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="typeform-new-response"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')

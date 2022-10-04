@@ -1,4 +1,4 @@
-// image: hojjat12/typeform-new-response:lambda4
+// image: hojjat12/typeform-new-response:lambda5
 package main
 
 import (
@@ -85,7 +85,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			answers, _ := json.Marshal(myAnswer)
 			output := make(map[string]interface{})
 			output["submitted_at"] = resp.SubmittedAt
-			output["response_id"] = resp.ResponseId
+			output["id"] = resp.ResponseId
 			output["answers"] = string(answers)
 			innerBody = append(innerBody, output)
 		}

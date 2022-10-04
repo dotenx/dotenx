@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -21,6 +23,7 @@ import (
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/sirupsen/logrus"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -28,6 +31,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 )
 
 type dockerCleint struct {
@@ -69,14 +73,14 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore) er
 			continue
 		}
 		if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
-			go dc.handleTrigger(manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
+			go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(execService executionService.ExecutionService, service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
+func (dc dockerCleint) handleTrigger(triggerStore triggerStore.TriggerStore, execService executionService.ExecutionService, service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
 	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
 		log.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", trigger.Name, trigger.Integration)
@@ -99,7 +103,7 @@ func (dc dockerCleint) handleTrigger(execService executionService.ExecutionServi
 	// if config.Configs.App.RunLocally {
 	// 	dc.checkTrigger(trigger.Name, img, envs)
 	// } else {
-	dc.invokeAwsLambda(execService, trigger, img, envs)
+	dc.invokeAwsLambda(triggerStore, execService, trigger, img, envs)
 	// }
 }
 
@@ -173,7 +177,7 @@ func (dc dockerCleint) GetLogs(containerId string) (string, error) {
 	return logs, err
 }
 
-func (dc dockerCleint) invokeAwsLambda(execService executionService.ExecutionService, trigger models.EventTrigger, img string, envs []string) {
+func (dc dockerCleint) invokeAwsLambda(triggerStore triggerStore.TriggerStore, execService executionService.ExecutionService, trigger models.EventTrigger, img string, envs []string) {
 	awsRegion := config.Configs.Secrets.AwsRegion
 	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
 	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
@@ -240,15 +244,170 @@ func (dc dockerCleint) invokeAwsLambda(execService executionService.ExecutionSer
 	}
 
 	if lambdaResp.Triggered {
-		for _, singleTrigger := range lambdaResp.ReturnValue[trigger.Name].([]interface{}) {
+		filteredValues, err := filterTriggersByStrategy(triggerStore, lambdaResp.ReturnValue[trigger.Name].([]interface{}), trigger.AccountId, trigger.ProjectName, trigger.Pipeline, trigger.Name, trigger.MetaData.Strategy)
+		if err != nil {
+			logrus.Error("error while filtering return values of pipeline:", err.Error())
+			return
+		}
+		for _, singleTrigger := range filteredValues {
 			returnValue := lambdaResp.ReturnValue
 			returnValue[trigger.Name] = singleTrigger
 			res, err := execService.StartPipelineByName(returnValue, trigger.AccountId, trigger.Pipeline, "", "", trigger.ProjectName)
 			if err != nil {
-				log.Println("error while starting pipeline: " + err.Error())
+				logrus.Println("error while starting pipeline: " + err.Error())
 				return
 			}
-			log.Printf("pipeline started successfully: %v\n", res)
+			logrus.Printf("pipeline started successfully: %v\n", res)
 		}
+	}
+}
+
+func filterTriggersByStrategy(tStore triggerStore.TriggerStore, returnValues []interface{}, accountId, projectName, pipelineName, triggerName, strategy string) (filteredValues []interface{}, err error) {
+	filteredValues = make([]interface{}, 0)
+	if strategy == "" || strategy == "compare_with_list" {
+		oldlist, err := tStore.GetTriggerObjectListByTriggerName(context.Background(), accountId, projectName, pipelineName, triggerName)
+		if (err != nil && err.Error() == "trigger object list not found") || oldlist == nil {
+			// TODO (nice to have): check that newList length has bounded to 100
+			newList := make(models.TriggerObjectList)
+			for _, singleValue := range returnValues {
+				newList[fmt.Sprint(singleValue.(map[string]interface{})["id"])] = time.Now().UnixNano()
+				filteredValues = append(filteredValues, singleValue)
+			}
+			insertErr := tStore.AddTriggerObjectList(context.Background(), models.TriggerChecker{
+				AccountId:    accountId,
+				ProjectName:  projectName,
+				PipelineName: pipelineName,
+				TriggerName:  triggerName,
+				List:         newList,
+			})
+			if insertErr != nil {
+				return nil, insertErr
+			}
+		} else if err == nil {
+			keys := make([]string, 0)
+			for key := range oldlist {
+				keys = append(keys, key)
+			}
+			sort.SliceStable(keys, func(i, j int) bool {
+				return oldlist[keys[i]].(float64) < oldlist[keys[j]].(float64)
+			})
+			newList := oldlist
+			deletedInd := 0
+			for _, singleValue := range returnValues {
+				id := fmt.Sprint(singleValue.(map[string]interface{})["id"])
+				if newList[id] != nil {
+					continue
+				}
+				if len(newList) >= 100 {
+					delete(newList, keys[deletedInd])
+					deletedInd++
+				}
+				newList[id] = time.Now().UnixNano()
+				filteredValues = append(filteredValues, singleValue)
+			}
+			updateErr := tStore.UpdateTriggerObjectListByTriggerName(context.Background(), models.TriggerChecker{
+				AccountId:    accountId,
+				ProjectName:  projectName,
+				PipelineName: pipelineName,
+				TriggerName:  triggerName,
+				List:         newList,
+			})
+			if updateErr != nil {
+				return nil, updateErr
+			}
+		} else {
+			return nil, err
+		}
+		return filteredValues, nil
+	} else if strategy == "compare_with_last" {
+		oldlist, err := tStore.GetTriggerObjectListByTriggerName(context.Background(), accountId, projectName, pipelineName, triggerName)
+		if (err != nil && err.Error() == "trigger object list not found") || oldlist == nil {
+			newList := make(models.TriggerObjectList)
+			var latestId interface{} = nil
+			for _, singleValue := range returnValues {
+				idStr := fmt.Sprint(singleValue.(map[string]interface{})["id"])
+				idInt, convErr := strconv.ParseFloat(idStr, 64)
+				if convErr == nil {
+					if latestId == nil {
+						latestId = 0
+					}
+					if idInt > latestId.(float64) {
+						latestId = idInt
+					}
+				} else {
+					if latestId == nil {
+						latestId = ""
+					}
+					if idStr > fmt.Sprint(latestId) {
+						latestId = idStr
+					}
+				}
+				filteredValues = append(filteredValues, singleValue)
+			}
+			newList[fmt.Sprint(latestId)] = time.Now().UnixNano()
+			insertErr := tStore.AddTriggerObjectList(context.Background(), models.TriggerChecker{
+				AccountId:    accountId,
+				ProjectName:  projectName,
+				PipelineName: pipelineName,
+				TriggerName:  triggerName,
+				List:         newList,
+			})
+			if insertErr != nil {
+				return nil, insertErr
+			}
+		} else if err == nil {
+			keys := make([]string, 0)
+			for key := range oldlist {
+				keys = append(keys, key)
+			}
+			sort.SliceStable(keys, func(i, j int) bool {
+				idIntI, convErrI := strconv.ParseFloat(keys[i], 64)
+				idIntJ, convErrJ := strconv.ParseFloat(keys[j], 64)
+				if convErrI == nil && convErrJ == nil {
+					return idIntI < idIntJ
+				}
+				return keys[i] < keys[j]
+			})
+			newList := make(models.TriggerObjectList)
+			oldLatestId := keys[len(keys)-1]
+			var latestId interface{} = keys[len(keys)-1]
+			for _, singleValue := range returnValues {
+				idStr := fmt.Sprint(singleValue.(map[string]interface{})["id"])
+				cIdInt, convErr1 := strconv.ParseFloat(idStr, 64)
+				oldIdInt, convErr2 := strconv.ParseFloat(oldLatestId, 64)
+				if convErr1 == nil && convErr2 == nil {
+					if cIdInt > oldIdInt {
+						filteredValues = append(filteredValues, singleValue)
+					}
+					lIdInt, _ := strconv.ParseFloat(fmt.Sprint(latestId), 64)
+					if cIdInt > lIdInt {
+						latestId = cIdInt
+					}
+				} else {
+					if idStr > oldLatestId {
+						filteredValues = append(filteredValues, singleValue)
+					}
+					if idStr > fmt.Sprint(latestId) {
+						latestId = idStr
+					}
+				}
+			}
+			newList[fmt.Sprint(latestId)] = time.Now().UnixNano()
+			updateErr := tStore.UpdateTriggerObjectListByTriggerName(context.Background(), models.TriggerChecker{
+				AccountId:    accountId,
+				ProjectName:  projectName,
+				PipelineName: pipelineName,
+				TriggerName:  triggerName,
+				List:         newList,
+			})
+			if updateErr != nil {
+				return nil, updateErr
+			}
+		} else {
+			return nil, err
+		}
+		return filteredValues, nil
+	} else {
+		return nil, errors.New("unsupported strategy")
 	}
 }

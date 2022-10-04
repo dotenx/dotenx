@@ -116,7 +116,7 @@ func (cm *crudManager) DeletePipeline(accountId, name, projectName string, delet
 			return
 		}
 	}
-	return cm.Store.DeletePipeline(noContext, accountId, name)
+	return cm.Store.DeletePipeline(noContext, accountId, name, projectName)
 }
 
 func (cm *crudManager) GetAllExecutions(accountId string, name, projectName string) ([]models.Execution, error) {

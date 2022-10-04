@@ -1,4 +1,4 @@
-// image: hojjat12/twitter-new-tweet:lambda4
+// image: hojjat12/twitter-new-tweet:lambda5
 package main
 
 import (
@@ -82,6 +82,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		output := make(map[string]interface{})
 		output["created_at"] = tweet.CreatedAt
 		output["text"] = tweet.Text
+		output["id"] = tweet.IDStr
 		innerBody = append(innerBody, output)
 	}
 	fmt.Println("innerBody:", innerBody)

@@ -21,6 +21,10 @@ type TriggerStore interface {
 	GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error)
 	GetAllTriggersForAccount(ctx context.Context, accountId string) ([]models.EventTrigger, error)
 	GetAllTriggersForPipelineByEndpoint(ctx context.Context, endpoint string) ([]models.EventTrigger, error)
+	AddTriggerObjectList(ctx context.Context, triggerChecker models.TriggerChecker) error
+	GetTriggerObjectListByTriggerName(ctx context.Context, accountId, projectName, pipelineName, triggerName string) (models.TriggerObjectList, error)
+	DeleteTriggerObjectListByTriggerName(ctx context.Context, accountId, projectName, pipelineName, triggerName string) error
+	UpdateTriggerObjectListByTriggerName(ctx context.Context, triggerChecker models.TriggerChecker) error
 }
 
 type triggerStore struct {

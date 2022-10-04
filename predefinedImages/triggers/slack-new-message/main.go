@@ -1,4 +1,4 @@
-// image: awrmin/slack-new-message:lambda4
+// image: awrmin/slack-new-message:lambda5
 package main
 
 import (
@@ -74,6 +74,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			body["workspace"] = workspace
 			innerInnerBody["text"] = res.Messages[0].Msg.Text
 			innerInnerBody["timestamp"] = res.Messages[0].Timestamp
+			innerInnerBody["id"] = res.Messages[0].Timestamp
 			innerBody = append(innerBody, innerInnerBody)
 			body[triggerName] = innerBody
 			resp.ReturnValue = body

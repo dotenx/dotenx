@@ -9,14 +9,15 @@ import (
 
 type (
 	Config struct {
-		App         App
-		Database    Database
-		Secrets     Secrets
-		Endpoints   Endpoints
-		Queue       Queue
-		Redis       Redis
-		Upload      Upload
-		Marketplace Marketplace
+		App            App
+		Database       Database
+		Secrets        Secrets
+		Endpoints      Endpoints
+		Queue          Queue
+		Redis          Redis
+		Upload         Upload
+		Marketplace    Marketplace
+		TaskAndTrigger TaskAndTrigger
 	}
 
 	App struct {
@@ -92,6 +93,10 @@ type (
 	Marketplace struct {
 		S3Bucket    string `envconfig:"AOA_MARKETPLACE_S3_BUCKET"`
 		MaxFileSize int    `envconfig:"AOA_MARKETPLACE_MAX_FILE_SIZE"`
+	}
+
+	TaskAndTrigger struct {
+		S3Bucket string `envconfig:"AOA_TASKS_AND_TRIGGERS_S3_BUCKET"`
 	}
 )
 

@@ -1,4 +1,4 @@
-// image: hojjat12/ebay-new-order:lambda3
+// image: hojjat12/ebay-new-order:lambda4
 package main
 
 import (
@@ -59,6 +59,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 
 	if len(orders) > 0 {
 		for _, order := range orders {
+			order.(map[string]interface{})["id"] = order.(map[string]interface{})["orderId"]
 			innerBody = append(innerBody, order.(map[string]interface{}))
 		}
 	} else {
