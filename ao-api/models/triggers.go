@@ -22,6 +22,7 @@ type TriggerDefinition struct {
 	NodeColor        string       `json:"node_color" yaml:"node_color"`
 	Description      string       `json:"description" yaml:"description"`
 	OnTestStage      bool         `json:"on_test_stage" yaml:"on_test_stage"`
+	Strategy         string       `json:"deduplication_method" yaml:"deduplication_method"`
 }
 
 type Credential struct {

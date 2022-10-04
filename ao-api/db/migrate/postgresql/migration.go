@@ -263,6 +263,10 @@ var migrations = []struct {
 		name: "create-table-function",
 		stmt: createTableFunction,
 	},
+	{
+		name: "create-trigger-checker-table",
+		stmt: createTriggerCheckerTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -738,5 +742,15 @@ account_id                 VARCHAR(64) NOT NULL,
 enabled                    BOOLEAN DEFAULT FALSE,
 definition_file            VARCHAR(64),
 type                       VARCHAR(64) NOT NULL
+)
+`
+
+var createTriggerCheckerTable = `
+CREATE TABLE IF NOT EXISTS trigger_checker (
+account_id                 VARCHAR(64) NOT NULL,
+project_name 		       VARCHAR(128) NOT NULL,
+pipeline_name              VARCHAR(128) NOT NULL,
+trigger_name               VARCHAR(64) NOT NULL,
+list                       JSONB
 )
 `

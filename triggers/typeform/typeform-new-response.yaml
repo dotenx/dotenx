@@ -1,7 +1,8 @@
 service: typeform
 type: Typeform new response
 integrations: [typeform]
-image: hojjat12/typeform-new-response:lambda4
+image: hojjat12/typeform-new-response:lambda5
+deduplication_method: compare_with_list
 credentials:
     - key: form_id
       type: text
@@ -16,7 +17,7 @@ outputs:
     - key: submitted_at
       type: text
       description: when the latest response was submitted
-    - key: response_id
+    - key: id
       type: text
       description: the id of the last response
 author: Hojjat-1
