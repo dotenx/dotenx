@@ -174,9 +174,9 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				}
 			}
 		}
-		if task.Type == "Run node code" || task.Type == "Run mini tasks" {
+		if task.Type == "Run node code" || task.Type == "Custom task" {
 			var code, dependency string
-			if task.Type == "Run mini tasks" {
+			if task.Type == "Custom task" {
 				importStore := miniTasks.NewImportStore()
 				body := make(map[string]models.TaskFieldDetailes)
 				bodyVal, _ := task.Body.Value()

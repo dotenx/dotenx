@@ -35,6 +35,12 @@ export function StepsSummary({ steps, prefixNumber }: { steps: Step[]; prefixNum
 								))}
 							</div>
 						)}
+						{step.type === 'execute_task' && (
+							<div>
+								<span className="italic">execute task</span>{' '}
+								<Code>{step.params.body.manifest.tasks.task.type}</Code>{' '}
+							</div>
+						)}
 						{step.type === 'output' && (
 							<div>
 								<span className="italic">output</span>{' '}
