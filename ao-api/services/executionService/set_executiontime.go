@@ -14,6 +14,11 @@ import (
 )
 
 func (manager *executionManager) SetExecutionTime(executionId int, seconds int) error {
+	// zero value for seconds will cause an error from dotenx-admin
+	// can solve this in dotenx-admin too
+	if seconds == 0 {
+		seconds = 1
+	}
 	err := manager.Store.SetExecutionTime(executionId, seconds)
 	if err != nil {
 		return err

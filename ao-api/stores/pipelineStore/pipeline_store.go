@@ -17,7 +17,7 @@ type PipelineStore interface {
 	// pipelines
 	GetById(context context.Context, id int) (pipeline models.PipelineSummery, err error)
 	DeleteExecution(context context.Context, id int) (err error)
-	DeletePipeline(context context.Context, accountId, name string) (err error)
+	DeletePipeline(context context.Context, accountId, name, projectName string) (err error)
 	GetPipelineId(context context.Context, accountId, name, projectId string) (id int, err error)
 	GetPipelineIdByExecution(context context.Context, executionId int) (id int, err error)
 	GetAllTemplateChildren(context context.Context, accountId, project, name string) (pipelines []models.Pipeline, err error)
