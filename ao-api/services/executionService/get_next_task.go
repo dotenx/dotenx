@@ -102,8 +102,8 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 				}
 			}
 		}
-		// convert 'Run mini tasks' to 'Run node code'
-		if task.Type == "Run mini tasks" {
+		// convert 'Custom task' to 'Run node code'
+		if task.Type == "Custom task" {
 			jobDTO.PrepRunMiniTasks()
 		}
 		if task.Type == "Run node code" {

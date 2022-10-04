@@ -121,7 +121,7 @@ const mapTaskValuesToPrimitives = (task: TaskSettingsSchema, outputs: Outputs): 
 	}
 }
 
-const mapTaskBodyToPrimitives = (
+export const mapTaskBodyToPrimitives = (
 	taskBody: TaskSettingsSchema['others'],
 	outputs: Outputs
 ): Record<string, AnyJson> => {
