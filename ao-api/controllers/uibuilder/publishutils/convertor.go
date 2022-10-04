@@ -34,6 +34,7 @@ var pageTemplate = `<!DOCTYPE html>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 	<link rel="stylesheet" href="./{{.Name}}.css">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<head>
   <link
     rel="stylesheet"
