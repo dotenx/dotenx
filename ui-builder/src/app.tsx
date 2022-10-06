@@ -1,5 +1,6 @@
 import { createEmotionCache, MantineProvider, MantineThemeOverride } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
+import { NotificationsProvider } from '@mantine/notifications'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
@@ -35,24 +36,26 @@ const theme: MantineThemeOverride = {
 export function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
-			<MantineProvider emotionCache={emotionCache} theme={theme}>
-				<ModalsProvider>
-					<BrowserRouter>
-						<Router />
-					</BrowserRouter>
-				</ModalsProvider>
+			<MantineProvider
+				withNormalizeCSS
+				withGlobalStyles
+				emotionCache={emotionCache}
+				theme={theme}
+			>
+				<NotificationsProvider>
+					<ModalsProvider>
+						<BrowserRouter>
+							<Router />
+						</BrowserRouter>
+					</ModalsProvider>
+				</NotificationsProvider>
 			</MantineProvider>
 		</QueryClientProvider>
 	)
 }
 
 function Router() {
-	const location = useLocation()
-	useEffect(() => {
-		if (import.meta.env.VITE_ADMIN_IS_LOCAL === 'true') return
-		const token = Cookies.get('dotenx')
-		if (!token) window.location.replace(import.meta.env.VITE_ADMIN_PANEL_URL)
-	}, [location])
+	useCheckAuth()
 
 	return (
 		<Layout>
@@ -63,6 +66,15 @@ function Router() {
 			</Routes>
 		</Layout>
 	)
+}
+
+const useCheckAuth = () => {
+	const location = useLocation()
+	useEffect(() => {
+		if (import.meta.env.VITE_ADMIN_IS_LOCAL === 'true') return
+		const token = Cookies.get('dotenx')
+		if (!token) window.location.replace(import.meta.env.VITE_ADMIN_PANEL_URL)
+	}, [location])
 }
 
 function Layout({ children }: { children: ReactNode }) {

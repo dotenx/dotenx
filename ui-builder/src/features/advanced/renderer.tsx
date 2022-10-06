@@ -1,5 +1,6 @@
 import { useIntersection } from '@mantine/hooks'
-import { MouseEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react'
+import { useAtomValue } from 'jotai'
+import { Fragment, MouseEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { usePopper } from 'react-popper'
@@ -11,9 +12,26 @@ import { DroppablePortal } from '../dnd/droppable-portal'
 import { Element } from '../elements/element'
 import { ActionKind, AnimationAction, EventKind } from '../elements/event'
 import { ROOT_ID } from '../frame/canvas'
+import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 
 export function RenderElements({ elements }: { elements: Element[] }) {
+	const { isFullscreen } = useAtomValue(previewAtom)
+
+	if (isFullscreen) {
+		return (
+			<>
+				{elements.map((element) => (
+					<Fragment key={element.id}>
+						{element.renderPreview((element) => (
+							<RenderElements elements={element.children ?? []} />
+						))}
+					</Fragment>
+				))}
+			</>
+		)
+	}
+
 	return (
 		<>
 			{elements.map((element) => (
@@ -28,6 +46,7 @@ export function RenderElements({ elements }: { elements: Element[] }) {
 }
 
 function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+	const { isFullscreen } = useAtomValue(previewAtom)
 	const { selectElements, selectedElements, setHovered, unsetHovered } = useSelectionStore(
 		(store) => ({
 			selectElements: store.select,
@@ -72,7 +91,7 @@ function ElementOverlay({ children, element }: { children: ReactNode; element: E
 	}
 	const handleMouseOver = (event: MouseEvent) => {
 		event.stopPropagation()
-		setHovered(element.id)
+		if (!isFullscreen) setHovered(element.id)
 		showHoverAnimations()
 	}
 	const handleMouseOut = (event: MouseEvent) => {
@@ -81,6 +100,7 @@ function ElementOverlay({ children, element }: { children: ReactNode; element: E
 	}
 	const handleClick = (event: MouseEvent) => {
 		event.stopPropagation()
+		if (isFullscreen) return
 		if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
 		else selectElements(element.id)
 	}

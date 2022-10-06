@@ -2,30 +2,28 @@ import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
 import { useAtomValue } from 'jotai'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useParams } from 'react-router-dom'
 import { AdvancedCanvas } from '../features/advanced/canvas'
 import { ElementDraggerAndLayers } from '../features/advanced/element-dragger-layer'
 import { ElementAdvancedSettings } from '../features/advanced/settings'
-import { fullScreenAtom, TopBar } from '../features/page/top-bar'
+import { previewAtom, TopBar } from '../features/page/top-bar'
 
 export function HomePage() {
-	const { projectName = '' } = useParams()
-	const { isFullscreen } = useAtomValue(fullScreenAtom)
+	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
 
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<AppShell header={<AppHeader projectName={projectName} />} {...sidebars} padding={0}>
+			<AppShell header={<AppHeader />} {...sidebars} padding={0}>
 				<AdvancedCanvas />
 			</AppShell>
 		</DndProvider>
 	)
 }
 
-function AppHeader({ projectName }: { projectName: string }) {
+function AppHeader() {
 	return (
 		<Header height={60} sx={{ zIndex: 110 }}>
-			<TopBar projectName={projectName} />
+			<TopBar />
 		</Header>
 	)
 }

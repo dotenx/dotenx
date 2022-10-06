@@ -1,32 +1,16 @@
 import { Button, Divider, Menu } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useState } from 'react'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { getPages, QueryKey } from '../../api'
 import { AddPageForm } from './add-page-form'
-import { selectedPageAtom } from './top-bar'
+import { projectTagAtom, selectedPageAtom } from './top-bar'
 
-export function PageSelection({
-	projectTag,
-	projectName,
-}: {
-	projectTag: string
-	projectName: string
-}) {
+export function PageSelection() {
 	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
 	const [menuOpened, setMenuOpened] = useState(false)
-	const navigate = useNavigate()
-	const isSimple = useMatch('/projects/:projectName/simple')
-	const pagesQuery = useQuery([QueryKey.Pages, projectTag], () => getPages({ projectTag }), {
-		onSuccess: (data) => {
-			const pages = data.data ?? []
-			const firstPage = pages[0] ?? 'index'
-			setSelectedPage({ exists: !!pages[0], route: firstPage })
-			if (pages.length === 0 && !isSimple) navigate(`/projects/${projectName}/simple`)
-		},
-		enabled: !!projectTag,
-	})
+	const pagesQuery = usePagesQuery()
 	const pages = pagesQuery.data?.data ?? []
 	const closeMenu = () => setMenuOpened(false)
 
@@ -53,8 +37,25 @@ export function PageSelection({
 				<Menu.Label>Page</Menu.Label>
 				{pageList}
 				<Divider label="or add a new page" labelPosition="center" />
-				<AddPageForm projectTag={projectTag} onSuccess={closeMenu} />
+				<AddPageForm onSuccess={closeMenu} />
 			</Menu.Dropdown>
 		</Menu>
 	)
+}
+
+const usePagesQuery = () => {
+	const navigate = useNavigate()
+	const { projectName = '' } = useParams()
+	const isSimple = useMatch('/projects/:projectName/simple')
+	const projectTag = useAtomValue(projectTagAtom)
+
+	const pagesQuery = useQuery([QueryKey.Pages, projectTag], () => getPages({ projectTag }), {
+		onSuccess: (data) => {
+			const pages = data.data ?? []
+			if (pages.length === 0 && !isSimple) navigate(`/projects/${projectName}/simple`)
+		},
+		enabled: !!projectTag,
+	})
+
+	return pagesQuery
 }

@@ -26,6 +26,7 @@ export class SubmitElement extends Element {
 				display: 'inline-block',
 				textAlign: 'center',
 				fontWeight: 600,
+				cursor: 'pointer',
 			},
 		},
 	}
@@ -33,6 +34,14 @@ export class SubmitElement extends Element {
 
 	render(): ReactNode {
 		return <>{this.data.text}</>
+	}
+
+	renderPreview() {
+		return (
+			<button className={this.generateClasses()} type="submit">
+				{this.data.text}
+			</button>
+		)
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

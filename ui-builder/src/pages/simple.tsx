@@ -1,28 +1,26 @@
 import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
 import { useClickOutside } from '@mantine/hooks'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useParams } from 'react-router-dom'
-import { fullScreenAtom, TopBar } from '../features/page/top-bar'
-import { ComponentInserter } from '../features/simple/component-inserter'
+import { previewAtom, TopBar } from '../features/page/top-bar'
+import { SimpleElementSelect } from '../features/simple/element-select'
 import { insertingAtom, SimpleCanvas } from '../features/simple/simple-canvas'
 import { SimpleOptions } from '../features/simple/simple-options'
 
 export function SimplePage() {
-	const { projectName = '' } = useParams()
-	const { isFullscreen } = useAtomValue(fullScreenAtom)
+	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
 
 	return (
-		<AppShell header={<AppHeader projectName={projectName} />} {...sidebars} padding={0}>
+		<AppShell header={<AppHeader />} {...sidebars} padding={0}>
 			<SimpleCanvas />
 		</AppShell>
 	)
 }
 
-function AppHeader({ projectName }: { projectName: string }) {
+function AppHeader() {
 	return (
 		<Header height={60} sx={{ zIndex: 110 }}>
-			<TopBar projectName={projectName} />
+			<TopBar />
 		</Header>
 	)
 }
@@ -41,7 +39,7 @@ function AppLeftSideBar() {
 				offsetScrollbars
 			>
 				<div className="py-2 px-4">
-					<ComponentInserter />
+					<SimpleElementSelect />
 				</div>
 			</Navbar.Section>
 		</Navbar>

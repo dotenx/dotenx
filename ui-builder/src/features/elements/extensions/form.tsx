@@ -1,9 +1,11 @@
 import { ActionIcon, Button, CloseButton, Code, Divider, Menu, Text } from '@mantine/core'
 import { closeAllModals, openModal } from '@mantine/modals'
+import axios from 'axios'
 import produce from 'immer'
-import { ReactNode } from 'react'
+import { ReactNode, useContext } from 'react'
+import { FrameContext } from 'react-frame-component'
 import { TbEdit, TbForms, TbPlus } from 'react-icons/tb'
-import { uuid } from '../../../utils'
+import { AnyJson, uuid } from '../../../utils'
 import {
 	CodeEditor,
 	FetchSettings,
@@ -33,9 +35,45 @@ export class FormElement extends Element {
 		return renderFn(this)
 	}
 
+	renderPreview(renderFn: RenderFn) {
+		return <FormHandler element={this}>{renderFn(this)}</FormHandler>
+	}
+
 	renderOptions(): ReactNode {
 		return <FormOptions element={this} />
 	}
+}
+
+function FormHandler({ children, element }: { children: ReactNode; element: FormElement }) {
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const dataSource = dataSources.find(
+		(source) => source.stateName === element.data.dataSourceName
+	)
+	const { window } = useContext(FrameContext)
+
+	return (
+		<form
+			id={element.id}
+			className={element.generateClasses()}
+			onSubmit={(event) => {
+				event.preventDefault()
+				const form = window?.document.getElementById(element.id) as HTMLFormElement
+				if (!dataSource) return
+				const formValues: AnyJson = {}
+				new FormData(form).forEach((value, key) => {
+					formValues[key] = value.toString()
+					if (value.toString() === '') formValues[key] = true
+				})
+				axios.request({
+					method: dataSource.method,
+					url: dataSource.url,
+					data: formValues,
+				})
+			}}
+		>
+			{children}
+		</form>
+	)
 }
 
 function FormOptions({ element }: { element: FormElement }) {

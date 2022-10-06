@@ -1,43 +1,69 @@
-import { Button, Text, Tooltip } from '@mantine/core'
+import { Anchor, Button, Text, Tooltip } from '@mantine/core'
+import { showNotification } from '@mantine/notifications'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAtom } from 'jotai'
-import { TbDeviceFloppy, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { useAtom, useAtomValue } from 'jotai'
+import { TbCheck, TbDeviceFloppy, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useMatch } from 'react-router-dom'
-import { deletePage, PublishPageRequest, QueryKey, updatePage } from '../../api'
+import { deletePage, publishPage, QueryKey, updatePage } from '../../api'
 import { useDataSourceStore } from '../data-bindings/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
-import { selectedPageAtom } from './top-bar'
+import { projectTagAtom, selectedPageAtom } from './top-bar'
 
-export function PageActions({
-	projectTag,
-	handlePublish,
-	isPublishing,
-}: {
-	projectTag: string
-	handlePublish: (payload: PublishPageRequest) => void
-	isPublishing: boolean
-}) {
-	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
+export function PageActions() {
+	return (
+		<Button.Group>
+			<DeleteButton />
+			<SaveButton />
+			<PublishButton />
+		</Button.Group>
+	)
+}
+
+function DeleteButton() {
 	const queryClient = useQueryClient()
-	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
-	})
-	const { elements, resetCanvas } = useElementsStore((store) => ({
-		elements: store.elements,
-		resetCanvas: store.reset,
-	}))
+	const projectTag = useAtomValue(projectTagAtom)
+	const selectedPage = useAtomValue(selectedPageAtom)
+	const resetElements = useElementsStore((store) => store.reset)
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
 			queryClient.invalidateQueries([QueryKey.Pages])
-			resetCanvas()
+			resetElements()
 		},
 	})
+	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
+
+	return (
+		<Tooltip
+			withinPortal
+			withArrow
+			disabled={!selectedPage.exists}
+			label={<Text size="xs">Delete Page</Text>}
+		>
+			<Button
+				onClick={remove}
+				loading={deletePageMutation.isLoading}
+				size="xs"
+				disabled={!selectedPage.exists}
+				variant="default"
+			>
+				<TbTrash className="text-sm" />
+			</Button>
+		</Tooltip>
+	)
+}
+
+function SaveButton() {
+	const isSimple = useMatch('/projects/:projectName/simple')
+	const projectTag = useAtomValue(projectTagAtom)
+	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
+	const elements = useElementsStore((store) => store.elements)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const classNames = useClassesStore((store) => store.classes)
-	const isSimple = useMatch('/projects/:projectName/simple')
-
-	const save = () =>
+	const savePageMutation = useMutation(updatePage, {
+		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
+	})
+	const save = () => {
 		savePageMutation.mutate({
 			projectTag,
 			pageName: selectedPage.route,
@@ -46,58 +72,55 @@ export function PageActions({
 			classNames,
 			mode: isSimple ? 'simple' : 'advanced',
 		})
-	const publish = () => handlePublish({ projectTag, pageName: selectedPage.route })
-	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
+	}
 
 	return (
-		<Button.Group>
-			<Tooltip
-				withinPortal
-				withArrow
+		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
+			<Button onClick={save} loading={savePageMutation.isLoading} size="xs" variant="default">
+				<TbDeviceFloppy className="text-sm" />
+			</Button>
+		</Tooltip>
+	)
+}
+
+function PublishButton() {
+	const projectTag = useAtomValue(projectTagAtom)
+	const selectedPage = useAtomValue(selectedPageAtom)
+	const publishPageMutation = useMutation(publishPage, {
+		onSuccess: (data) => {
+			showNotification({
+				title: 'Page published',
+				message: <PublishedUrl url={data.data.url} />,
+				color: 'green',
+				icon: <TbCheck size={18} />,
+			})
+		},
+	})
+	const publish = () => publishPageMutation.mutate({ projectTag, pageName: selectedPage.route })
+
+	return (
+		<Tooltip
+			disabled={!selectedPage.exists}
+			withinPortal
+			withArrow
+			label={<Text size="xs">Publish Page</Text>}
+		>
+			<Button
+				onClick={publish}
+				loading={publishPageMutation.isLoading}
+				size="xs"
 				disabled={!selectedPage.exists}
-				label={<Text size="xs">Delete Page</Text>}
 			>
-				<Button
-					onClick={remove}
-					loading={deletePageMutation.isLoading}
-					size="xs"
-					fullWidth
-					styles={{ inner: { justifyContent: 'start' } }}
-					disabled={!selectedPage.exists}
-					variant="default"
-				>
-					<TbTrash className="text-sm" />
-				</Button>
-			</Tooltip>
-			<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
-				<Button
-					onClick={save}
-					loading={savePageMutation.isLoading}
-					size="xs"
-					fullWidth
-					styles={{ inner: { justifyContent: 'start' } }}
-					variant="default"
-				>
-					<TbDeviceFloppy className="text-sm" />
-				</Button>
-			</Tooltip>
-			<Tooltip
-				disabled={!selectedPage.exists}
-				withinPortal
-				withArrow
-				label={<Text size="xs">Publish Page</Text>}
-			>
-				<Button
-					onClick={publish}
-					loading={isPublishing}
-					size="xs"
-					fullWidth
-					styles={{ inner: { justifyContent: 'start' } }}
-					disabled={!selectedPage.exists}
-				>
-					<TbWorldUpload className="text-sm" />
-				</Button>
-			</Tooltip>
-		</Button.Group>
+				<TbWorldUpload className="text-sm" />
+			</Button>
+		</Tooltip>
+	)
+}
+
+function PublishedUrl({ url }: { url: string }) {
+	return (
+		<Anchor weight={500} target="_blank" size="xs" rel="noopener noreferrer" href={url}>
+			View
+		</Anchor>
 	)
 }
