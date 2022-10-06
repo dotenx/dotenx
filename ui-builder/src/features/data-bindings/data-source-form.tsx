@@ -30,7 +30,7 @@ export function DataSourceForm({
 	initialValues = {
 		stateName: '',
 		url: '',
-		method: HttpMethod.GET,
+		method: HttpMethod.Get,
 		headers: '',
 		body: '',
 		id: '',

@@ -11,14 +11,7 @@ import { NavMenuElement } from './nav-menu'
 export class NavbarElement extends Element {
 	name = 'Navbar'
 	icon = (<TbLayoutNavbar />)
-	children: Element[] = [
-		produce(new BoxElement(), (draft) => {
-			_.set(draft, 'style.desktop.default.width', '100px')
-			_.set(draft, 'style.desktop.default.height', '100px')
-		}),
-		new NavMenuElement(),
-		new MenuButtonElement(),
-	]
+	children: Element[] = this.getChildren()
 	style: Style = {
 		desktop: {
 			default: {
@@ -28,6 +21,21 @@ export class NavbarElement extends Element {
 				position: 'relative',
 			},
 		},
+	}
+
+	private getChildren(): Element[] {
+		const navMenu = new NavMenuElement()
+
+		return [
+			produce(new BoxElement(), (draft) => {
+				_.set(draft, 'style.desktop.default.width', '100px')
+				_.set(draft, 'style.desktop.default.height', '100px')
+			}),
+			navMenu,
+			produce(new MenuButtonElement(), (draft) => {
+				draft.data.menuId = navMenu.id
+			}),
+		]
 	}
 
 	render(renderFn: RenderFn): ReactNode {

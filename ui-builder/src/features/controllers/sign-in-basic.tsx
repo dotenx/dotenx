@@ -1,19 +1,18 @@
-import { Textarea, TextInput } from '@mantine/core'
+import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
-import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 
-import roundInputWithLabel from './basic-components/round-input-with-label'
-import roundButton from './basic-components/round-button'
-import { elementBase } from './basic-components/base'
 import { LinkElement } from '../elements/extensions/link'
+import { elementBase } from './basic-components/base'
+import roundButton from './basic-components/round-button'
+import roundInputWithLabel from './basic-components/round-input-with-label'
 
 export class SignInBasic extends Controller {
 	name = 'Sign In Basic'
@@ -21,14 +20,11 @@ export class SignInBasic extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		console.log(options.element.children?.[0].children?.[0].children?.[6].children?.[1])
-		const titleComponent = options.element.children?.[0].children?.[0]
-			.children?.[0] as TextElement
-		const mainBoxComponent = options.element as BoxElement
+		const title = options.element.children?.[0].children?.[0].children?.[0] as TextElement
+		const mainBox = options.element as BoxElement
 		const mainButton = options.element.children?.[0].children?.[0].children?.[5]
 			.children?.[0] as ButtonElement
-
-		const signupLink = options.element.children?.[0].children?.[0].children?.[6]
+		const signUpLink = options.element.children?.[0].children?.[0].children?.[6]
 			.children?.[1] as LinkElement
 
 		return (
@@ -37,21 +33,19 @@ export class SignInBasic extends Controller {
 					label="Title"
 					name="title"
 					size="xs"
-					value={titleComponent.data.text}
+					value={title.data.text}
 					onChange={(event) =>
 						options.set(
-							produce(titleComponent, (draft) => {
+							produce(title, (draft) => {
 								draft.data.text = event.target.value
 							})
 						)
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Button Text"
 					name="buttonText"
 					size="xs"
-					autosize
-					maxRows={10}
 					value={mainButton.data.text}
 					onChange={(event) =>
 						options.set(
@@ -64,7 +58,7 @@ export class SignInBasic extends Controller {
 				<ImageDrop
 					onChange={(src) =>
 						options.set(
-							produce(mainBoxComponent, (draft) => {
+							produce(mainBox, (draft) => {
 								draft.style.desktop = {
 									default: {
 										...draft.style.desktop?.default,
@@ -75,25 +69,22 @@ export class SignInBasic extends Controller {
 						)
 					}
 					src={
-						mainBoxComponent.style.desktop?.default?.backgroundImage
-							? mainBoxComponent.style.desktop?.default?.backgroundImage.substring(
+						mainBox.style.desktop?.default?.backgroundImage
+							? mainBox.style.desktop?.default?.backgroundImage.substring(
 									4,
-									mainBoxComponent.style.desktop?.default?.backgroundImage
-										.length - 1
+									mainBox.style.desktop?.default?.backgroundImage.length - 1
 							  )
 							: ''
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Sign-up link"
 					name="signUpLink"
 					size="xs"
-					autosize
-					maxRows={10}
-					value={signupLink.data.href}
+					value={signUpLink.data.href}
 					onChange={(event) =>
 						options.set(
-							produce(signupLink, (draft) => {
+							produce(signUpLink, (draft) => {
 								draft.data.href = event.target.value
 							})
 						)
@@ -248,6 +239,7 @@ const defaultData = {
 									},
 								},
 							},
+							submit: true,
 						}),
 						{
 							kind: 'Box',

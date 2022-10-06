@@ -50,6 +50,10 @@ export abstract class Element {
 	generateClasses() {
 		return `${this.classes.join(' ')} ${this.id}`
 	}
+
+	renderPreview(renderFn: RenderFn) {
+		return <div className={this.generateClasses()}>{this.render(renderFn)}</div>
+	}
 }
 
 export interface RenderOptions {

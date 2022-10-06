@@ -16,6 +16,7 @@ export class TextareaElement extends Element {
 				className={this.generateClasses()}
 				placeholder={this.data.placeholder}
 				defaultValue={this.data.defaultValue}
+				name={this.data.name}
 			/>
 		)
 	}

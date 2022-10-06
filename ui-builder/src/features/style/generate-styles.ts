@@ -49,9 +49,9 @@ export const useGenerateStyles = (elements: Element[]) => {
 	const generatedStyles = `
 		${globalPageStyles}
 		${desktopClasses}
+		${desktopIds}
 		@media (max-width: 767px) { ${tabletClasses} }
 		@media (max-width: 478px) { ${mobileClasses} }
-		${desktopIds}
 		@media (max-width: 767px) { ${tabletIds} }
 		@media (max-width: 478px) { ${mobileIds} }
 	`

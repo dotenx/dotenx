@@ -71,19 +71,19 @@ export interface DataSource {
 }
 
 export enum HttpMethod {
-	GET = 'GET',
-	POST = 'POST',
-	PUT = 'PUT',
-	PATCH = 'PATCH',
-	DELETE = 'DELETE',
+	Get = 'GET',
+	Post = 'POST',
+	Put = 'PUT',
+	Patch = 'PATCH',
+	Delete = 'DELETE',
 }
 
 export const httpMethods = [
-	HttpMethod.GET,
-	HttpMethod.POST,
-	HttpMethod.PUT,
-	HttpMethod.PATCH,
-	HttpMethod.DELETE,
+	HttpMethod.Get,
+	HttpMethod.Post,
+	HttpMethod.Put,
+	HttpMethod.Patch,
+	HttpMethod.Delete,
 ]
 
 export interface Property {

@@ -1,13 +1,12 @@
-import { Style } from "../../elements/style"
 import _ from 'lodash'
-import { elementBase } from "./base"
+import { Style } from '../../elements/style'
+import { elementBase } from './base'
 
 type basicRoundButtonProp = {
-	buttonStyle?: Style,
-	label: string,
+	buttonStyle?: Style
+	label: string
+	submit?: boolean
 }
-
-
 
 const defaultButtonStyle: Style = {
 	desktop: {
@@ -51,7 +50,7 @@ const defaultButtonStyle: Style = {
 			color: 'rgb(255, 255, 255)',
 			columnRule: '0px none rgb(255, 255, 255)',
 			columnRuleColor: 'rgb(255, 255, 255)',
-			cursor: 'default',
+			cursor: 'pointer',
 			display: 'flex',
 			font: '16px / 19.2px',
 			height: '60px',
@@ -93,54 +92,58 @@ const defaultButtonStyle: Style = {
 	mobile: {},
 }
 
-const element = ({buttonStyle, label}: basicRoundButtonProp) => ([{
-	kind: 'Box',
-	...elementBase,
-	data: {
-		style: {
-			desktop: {
-				default: {
-					display: 'flex',
-					flexFlow: 'row wrap',
-					flexWrap: 'wrap',
-					height: '60px',
-					inlineSize: '460px',
-					margin: '17px 0px 0px',
-					marginBlock: '17px 0px',
-					marginBlockStart: '17px',
-					marginTop: '17px',
-					minBlockSize: 'auto',
-					minHeight: 'auto',
-					minInlineSize: 'auto',
-					minWidth: 'auto',
-					perspectiveOrigin: '230px 30px',
-					transformOrigin: '230px 30px',
-					width: '100%',
+const element = ({ buttonStyle, label, submit }: basicRoundButtonProp) => [
+	{
+		kind: 'Box',
+		...elementBase,
+		data: {
+			style: {
+				desktop: {
+					default: {
+						display: 'flex',
+						flexFlow: 'row wrap',
+						flexWrap: 'wrap',
+						height: '60px',
+						inlineSize: '460px',
+						margin: '17px 0px 0px',
+						marginBlock: '17px 0px',
+						marginBlockStart: '17px',
+						marginTop: '17px',
+						minBlockSize: 'auto',
+						minHeight: 'auto',
+						minInlineSize: 'auto',
+						minWidth: 'auto',
+						perspectiveOrigin: '230px 30px',
+						transformOrigin: '230px 30px',
+						width: '100%',
+					},
 				},
+				tablet: {},
+				mobile: {},
 			},
-			tablet: {},
-			mobile: {},
 		},
+		components: [
+			{
+				kind: submit ? 'Submit' : 'Button',
+				classNames: [],
+				bindings: {},
+				events: [],
+				id: '',
+				parentId: '',
+				repeatFrom: {
+					iterator: '',
+					name: '',
+				},
+				data: {
+					style: buttonStyle
+						? _.merge(defaultButtonStyle, buttonStyle)
+						: defaultButtonStyle,
+					text: label,
+				},
+				components: [],
+			},
+		],
 	},
-	components: [
-		{
-			kind: 'Button',
-			classNames: [],
-			bindings: {},
-			events: [],
-			id: '',
-			parentId: '',
-			repeatFrom: {
-				iterator: '',
-				name: '',
-			},
-			data: {
-				style: buttonStyle ? _.merge(defaultButtonStyle, buttonStyle) : defaultButtonStyle,
-				text: label,
-			},
-			components: [],
-		},
-	],
-}])
+]
 
 export default element

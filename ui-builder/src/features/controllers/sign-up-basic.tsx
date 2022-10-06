@@ -1,33 +1,29 @@
-import { Textarea, TextInput } from '@mantine/core'
+import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
-import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 
-import roundInputWithLabel from './basic-components/round-input-with-label'
-import roundButton from './basic-components/round-button'
-import { elementBase } from './basic-components/base'
 import { LinkElement } from '../elements/extensions/link'
+import { elementBase } from './basic-components/base'
+import roundButton from './basic-components/round-button'
+import roundInputWithLabel from './basic-components/round-input-with-label'
 
 export class SignUpBasic extends Controller {
-	name = 'Sign up Basic'
+	name = 'Sign Up Basic'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		console.log(options.element.children?.[0].children?.[0].children?.[6].children?.[1])
-		const titleComponent = options.element.children?.[0].children?.[0]
-			.children?.[0] as TextElement
-		const mainBoxComponent = options.element as BoxElement
+		const title = options.element.children?.[0].children?.[0].children?.[0] as TextElement
+		const mainBox = options.element as BoxElement
 		const mainButton = options.element.children?.[0].children?.[0].children?.[5]
 			.children?.[0] as ButtonElement
-
 		const tcLink = options.element.children?.[0].children?.[0].children?.[6]
 			.children?.[1] as LinkElement
 		const ppLink = options.element.children?.[0].children?.[0].children?.[6]
@@ -41,21 +37,19 @@ export class SignUpBasic extends Controller {
 					label="Title"
 					name="title"
 					size="xs"
-					value={titleComponent.data.text}
+					value={title.data.text}
 					onChange={(event) =>
 						options.set(
-							produce(titleComponent, (draft) => {
+							produce(title, (draft) => {
 								draft.data.text = event.target.value
 							})
 						)
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Button Text"
 					name="buttonText"
 					size="xs"
-					autosize
-					maxRows={10}
 					value={mainButton.data.text}
 					onChange={(event) =>
 						options.set(
@@ -68,7 +62,7 @@ export class SignUpBasic extends Controller {
 				<ImageDrop
 					onChange={(src) =>
 						options.set(
-							produce(mainBoxComponent, (draft) => {
+							produce(mainBox, (draft) => {
 								draft.style.desktop = {
 									default: {
 										...draft.style.desktop?.default,
@@ -79,21 +73,18 @@ export class SignUpBasic extends Controller {
 						)
 					}
 					src={
-						mainBoxComponent.style.desktop?.default?.backgroundImage
-							? mainBoxComponent.style.desktop?.default?.backgroundImage.substring(
+						mainBox.style.desktop?.default?.backgroundImage
+							? mainBox.style.desktop?.default?.backgroundImage.substring(
 									4,
-									mainBoxComponent.style.desktop?.default?.backgroundImage
-										.length - 1
+									mainBox.style.desktop?.default?.backgroundImage.length - 1
 							  )
 							: ''
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Terms of service link"
 					name="tcLink"
 					size="xs"
-					autosize
-					maxRows={10}
 					value={tcLink.data.href}
 					onChange={(event) =>
 						options.set(
@@ -103,12 +94,10 @@ export class SignUpBasic extends Controller {
 						)
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Privacy policy link"
 					name="ppLink"
 					size="xs"
-					autosize
-					maxRows={10}
 					value={ppLink.data.href}
 					onChange={(event) =>
 						options.set(
@@ -118,12 +107,10 @@ export class SignUpBasic extends Controller {
 						)
 					}
 				/>
-				<Textarea
+				<TextInput
 					label="Sign-in link"
 					name="signInLink"
 					size="xs"
-					autosize
-					maxRows={10}
 					value={signInLink.data.href}
 					onChange={(event) =>
 						options.set(
@@ -282,6 +269,7 @@ const defaultData = {
 									},
 								},
 							},
+							submit: true,
 						}),
 						{
 							kind: 'Box',

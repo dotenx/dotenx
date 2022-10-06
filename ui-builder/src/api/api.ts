@@ -55,12 +55,12 @@ export const uploadProjectImage = (data: FormData) => {
 	return api.post('/marketplace/upload', data)
 }
 export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsRequest) => {
-	const res = await api.get<GetPageDetailsResponse>(
+	const response = await api.get<GetPageDetailsResponse>(
 		`/uibuilder/project/${projectTag}/page/${pageName}`
 	)
-	const elements = res.data.content.layout.map(deserializeElement)
+	const elements = response.data.content.layout.map(deserializeElement)
 	const classNames = _.fromPairs(
-		_.toPairs(res.data.content.classNames).map(([className, styles]) => [
+		_.toPairs(response.data.content.classNames).map(([className, styles]) => [
 			className,
 			{
 				desktop: mapSelectorStyleToCamelCase(styles.desktop),
@@ -69,12 +69,13 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			},
 		])
 	)
+
 	return {
-		...res,
+		...response,
 		data: {
-			...res.data,
+			...response.data,
 			content: {
-				...res.data.content,
+				...response.data.content,
 				layout: addControllers(elements),
 				classNames: classNames,
 			},

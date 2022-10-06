@@ -1,51 +1,71 @@
-import { ActionIcon, Anchor, Button, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Group, Text, Tooltip } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { TbArrowRampLeft3, TbArrowsMaximize, TbCornerUpLeft, TbCornerUpRight } from 'react-icons/tb'
-import { useMatch, useNavigate } from 'react-router-dom'
-import { getPageDetails, getProjectDetails, publishPage, QueryKey, updatePage } from '../../api'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { TbAffiliate, TbArrowsMaximize, TbCornerUpLeft, TbCornerUpRight } from 'react-icons/tb'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
+import { getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
+import { ADMIN_PANEL_URL } from '../../utils/constants'
 import { toggleFullScreen } from '../../utils/toggle-fullscreen'
 import { useDataSourceStore } from '../data-bindings/data-source-store'
 import { usePageStates } from '../data-bindings/page-states'
 import { useElementsStore } from '../elements/elements-store'
+import { useSelectionStore } from '../selection/selection-store'
 import { useClassesStore } from '../style/classes-store'
-import { DeviceSelection } from '../viewport/device-selection'
+import { ViewportSelection } from '../viewport/viewport-selection'
 import { PageActions } from './actions'
 import { PageSelection } from './page-selection'
 
 export const selectedPageAtom = atom({ exists: false, route: '' })
-export const fullScreenAtom = atom({ isFullscreen: false })
+export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
 
-export function TopBar({ projectName }: { projectName: string }) {
-	const [projectTag, setProjectTag] = useAtom(projectTagAtom)
-	useQuery([QueryKey.ProjectDetails, projectName], () => getProjectDetails({ projectName }), {
-		enabled: !!projectName,
-		onSuccess: (data) => setProjectTag(data.data.tag),
-	})
-	const selectedPage = useAtomValue(selectedPageAtom)
-	const { elements, resetCanvas, history, historyIndex, redo, undo } = useElementsStore(
-		(store) => ({
-			elements: store.elements,
-			resetCanvas: store.reset,
-			history: store.history,
-			historyIndex: store.historyIndex,
-			undo: store.undo,
-			redo: store.redo,
-		})
+export function TopBar() {
+	useFetchProjectTag()
+	useFetchPage()
+
+	return (
+		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
+			<Group align="center" spacing="xl">
+				<Logo />
+				<PageSelection />
+				<ViewportSelection />
+				<PreviewButton />
+				<AdvancedModeButton />
+			</Group>
+			<Group align="center" spacing="xl">
+				<UndoRedo />
+				<PageActions />
+			</Group>
+		</Group>
 	)
+}
+
+const useFetchProjectTag = () => {
+	const { projectName = '' } = useParams()
+	const setProjectTag = useSetAtom(projectTagAtom)
+	useQuery([QueryKey.ProjectDetails, projectName], () => getProjectDetails({ projectName }), {
+		onSuccess: (data) => setProjectTag(data.data.tag),
+		enabled: !!projectName,
+	})
+}
+
+const useFetchPage = () => {
+	const navigate = useNavigate()
+	const { projectName = '' } = useParams()
+	const isSimple = useMatch('/projects/:projectName/simple')
+	const projectTag = useAtomValue(projectTagAtom)
+	const selectedPage = useAtomValue(selectedPageAtom)
+	const resetCanvas = useElementsStore((store) => store.reset)
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
 	const setClassNames = useClassesStore((store) => store.set)
-	const navigate = useNavigate()
-	const isSimple = useMatch('/projects/:projectName/simple')
 
 	useQuery(
-		[QueryKey.PageDetails, projectTag, selectedPage],
+		[QueryKey.PageDetails, projectTag, selectedPage.route],
 		() => getPageDetails({ projectTag, pageName: selectedPage.route }),
 		{
 			onSuccess: (data) => {
@@ -63,107 +83,100 @@ export function TopBar({ projectName }: { projectName: string }) {
 				else if (content.mode === 'advanced' && isSimple)
 					navigate(`/projects/${projectName}`)
 			},
-			enabled: !!projectTag && !!selectedPage.route,
+			enabled: !!projectTag && selectedPage.exists,
 		}
 	)
-	const publishPageMutation = useMutation(publishPage)
-	const publishedUrl = publishPageMutation.data?.data.url
-	const setFullscreen = useSetAtom(fullScreenAtom)
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const classNames = useClassesStore((store) => store.classes)
+}
+
+function Logo() {
+	return (
+		<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
+			<Anchor href={ADMIN_PANEL_URL}>
+				<img src={logoUrl} className="w-8" alt="dotenx logo" />
+			</Anchor>
+		</Tooltip>
+	)
+}
+
+function PreviewButton() {
+	const setPreview = useSetAtom(previewAtom)
+	const deselect = useSelectionStore((store) => store.deselect)
+	const handleClick = () => {
+		toggleFullScreen()
+		setPreview((prev) => ({ isFullscreen: !prev.isFullscreen }))
+		deselect()
+	}
+
+	return (
+		<Tooltip withArrow label={<Text size="xs">Preview</Text>} offset={10}>
+			<ActionIcon onClick={handleClick}>
+				<TbArrowsMaximize />
+			</ActionIcon>
+		</Tooltip>
+	)
+}
+
+function AdvancedModeButton() {
 	const queryClient = useQueryClient()
+	const isSimple = useMatch('/projects/:projectName/simple')
+	const projectTag = useAtomValue(projectTagAtom)
+	const selectedPage = useAtomValue(selectedPageAtom)
+	const elements = useElementsStore((state) => state.elements)
+	const dataSources = useDataSourceStore((state) => state.sources)
+	const classes = useClassesStore((state) => state.classes)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
-	const saveAdvanced = () =>
+	const saveAdvanced = () => {
 		savePageMutation.mutate({
 			projectTag,
 			pageName: selectedPage.route,
 			elements,
 			dataSources,
-			classNames,
+			classNames: classes,
 			mode: 'advanced',
 		})
+	}
+	const handleClick = () => {
+		openConfirmModal({
+			title: 'Please confirm your action',
+			children: (
+				<Text size="sm">This action is irreversible. It will toggle advanced mode.</Text>
+			),
+			labels: { confirm: 'Confirm', cancel: 'Cancel' },
+			onConfirm: saveAdvanced,
+		})
+	}
+
+	if (!isSimple) return null
 
 	return (
-		<div className="flex items-center justify-between h-full px-6">
-			<div className="flex items-center gap-6">
-				<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
-					<Anchor href={import.meta.env.VITE_ADMIN_PANEL_URL}>
-						<img src={logoUrl} className="w-8" alt="logo" />
-					</Anchor>
-				</Tooltip>
-				<PageSelection projectTag={projectTag} projectName={projectName} />
-				<DeviceSelection />
-				<ActionIcon
-					title="Fullscreen preview"
-					onClick={() => {
-						toggleFullScreen()
-						setFullscreen((prev) => ({ isFullscreen: !prev.isFullscreen }))
-					}}
-				>
-					<TbArrowsMaximize />
-				</ActionIcon>
-				{isSimple && (
-					<ActionIcon
-						title="Toggle advance mode"
-						onClick={() =>
-							openConfirmModal({
-								title: 'Please confirm your action',
-								children: (
-									<Text size="sm">
-										This action is irreversible. It will toggle advanced mode.
-									</Text>
-								),
-								labels: { confirm: 'Confirm', cancel: 'Cancel' },
-								onConfirm: () => saveAdvanced(),
-							})
-						}
-					>
-						<TbArrowRampLeft3 />
-					</ActionIcon>
-				)}
-			</div>
-			<div className="flex gap-6 items-center">
-				{publishedUrl && (
-					<Anchor
-						weight={500}
-						target="_blank"
-						size="xs"
-						rel="noopener noreferrer"
-						href={publishedUrl}
-					>
-						View Published Page
-					</Anchor>
-				)}
-				<Button.Group>
-					<Button
-						onClick={undo}
-						size="xs"
-						fullWidth
-						styles={{ inner: { justifyContent: 'start' } }}
-						disabled={historyIndex === -1}
-						variant="default"
-					>
-						<TbCornerUpLeft className="text-sm" />
-					</Button>
-					<Button
-						onClick={redo}
-						size="xs"
-						fullWidth
-						styles={{ inner: { justifyContent: 'start' } }}
-						disabled={historyIndex === history.length - 1}
-						variant="default"
-					>
-						<TbCornerUpRight className="text-sm" />
-					</Button>
-				</Button.Group>
-				<PageActions
-					projectTag={projectTag}
-					handlePublish={publishPageMutation.mutate}
-					isPublishing={publishPageMutation.isLoading}
-				/>
-			</div>
-		</div>
+		<Tooltip withArrow label={<Text size="xs">Advanced mode</Text>} offset={10}>
+			<ActionIcon onClick={handleClick}>
+				<TbAffiliate />
+			</ActionIcon>
+		</Tooltip>
+	)
+}
+
+function UndoRedo() {
+	const { history, historyIndex, redo, undo } = useElementsStore((store) => ({
+		history: store.history,
+		historyIndex: store.historyIndex,
+		undo: store.undo,
+		redo: store.redo,
+	}))
+	const disableUndo = historyIndex === -1
+	const disableRedo = historyIndex === history.length - 1
+
+	return (
+		<Button.Group>
+			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default">
+				<TbCornerUpLeft className="text-sm" />
+			</Button>
+			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default">
+				<TbCornerUpRight className="text-sm" />
+			</Button>
+		</Button.Group>
 	)
 }

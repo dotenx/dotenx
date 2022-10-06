@@ -1,8 +1,10 @@
 import { Button, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAtomValue } from 'jotai'
 import { z } from 'zod'
 import { addPage, QueryKey } from '../../api'
+import { projectTagAtom } from './top-bar'
 
 const schema = z.object({
 	pageName: z
@@ -14,21 +16,16 @@ const schema = z.object({
 		}),
 })
 
-export function AddPageForm({
-	projectTag,
-	onSuccess,
-}: {
-	projectTag: string
-	onSuccess: () => void
-}) {
+export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 	const queryClient = useQueryClient()
+	const form = useForm({ initialValues: { pageName: '' }, validate: zodResolver(schema) })
+	const projectTag = useAtomValue(projectTagAtom)
 	const addPageMutation = useMutation(addPage, {
 		onSuccess: () => {
 			queryClient.invalidateQueries([QueryKey.Pages])
 			onSuccess()
 		},
 	})
-	const form = useForm({ initialValues: { pageName: '' }, validate: zodResolver(schema) })
 	const onSubmit = form.onSubmit((values) => {
 		addPageMutation.mutate({
 			projectTag,
