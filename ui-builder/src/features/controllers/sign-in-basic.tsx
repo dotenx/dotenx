@@ -5,14 +5,13 @@ import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
+import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
-import { Controller, ElementOptions } from './controller'
-
-import { LinkElement } from '../elements/extensions/link'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
+import { Controller, ElementOptions } from './controller'
 
 export class SignInBasic extends Controller {
 	name = 'Sign In Basic'

@@ -24,7 +24,7 @@ const shadows = [
 	},
 ]
 
-export function ShadowsEditor() {
+export function SimpleShadowsEditor() {
 	const { style: styles, editStyle } = useEditStyle()
 
 	return (

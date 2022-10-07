@@ -1,7 +1,7 @@
 import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
-import { Fragment, ReactNode, useContext, useState } from 'react'
+import { ReactNode, useContext, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { TbArrowDown, TbArrowUp, TbTrash } from 'react-icons/tb'
@@ -14,48 +14,14 @@ import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 import { AddElementButton } from './simple-canvas'
 
-export function RenderElements({
-	elements,
-	isDirectRootChildren = false,
-}: {
-	elements: Element[]
-	isDirectRootChildren?: boolean
-}) {
-	const { isFullscreen } = useAtomValue(previewAtom)
-
-	if (isFullscreen) {
-		return (
-			<>
-				{elements.map((element) => (
-					<Fragment key={element.id}>
-						{element.renderPreview((element) => (
-							<RenderElements elements={element.children ?? []} />
-						))}
-					</Fragment>
-				))}
-			</>
-		)
-	}
-
-	return (
-		<>
-			{elements.map((element) => (
-				<RenderElement
-					key={element.id}
-					element={element}
-					isDirectRootChild={isDirectRootChildren}
-				/>
-			))}
-		</>
-	)
-}
-
-function RenderElement({
+export function ElementOverlay({
+	children,
 	element,
-	isDirectRootChild,
+	isDirectRootChildren,
 }: {
+	children: ReactNode
 	element: Element
-	isDirectRootChild: boolean
+	isDirectRootChildren?: boolean
 }) {
 	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
 		select: store.select,
@@ -75,7 +41,7 @@ function RenderElement({
 		showSettingsHandlers.open()
 	}
 	const handleClick = () => {
-		if (!isDirectRootChild || isFullscreen) return
+		if (!isDirectRootChildren || isFullscreen) return
 		select(element.id)
 	}
 
@@ -84,7 +50,7 @@ function RenderElement({
 			style={{
 				outlineWidth: isHovered ? 2 : 1,
 				cursor: 'default',
-				outlineStyle: isHighlighted && isDirectRootChild ? 'solid' : undefined,
+				outlineStyle: isHighlighted && isDirectRootChildren ? 'solid' : undefined,
 				outlineColor: '#fb7185',
 			}}
 			className={element.generateClasses()}
@@ -95,35 +61,33 @@ function RenderElement({
 			onMouseLeave={showSettingsHandlers.close}
 			onClick={handleClick}
 		>
-			{element.render((element) => (
-				<RenderElements elements={element.children ?? []} />
-			))}
-			{isDirectRootChild && showSettings && (
+			{children}
+			{isDirectRootChildren && showSettings && (
 				<>
-					<ElementOverlay
+					<ElementOverlayPiece
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="top"
 						offset={[0, -15]}
 					>
 						<AddElementButton insert={{ where: element.id, placement: 'before' }} />
-					</ElementOverlay>
-					<ElementOverlay
+					</ElementOverlayPiece>
+					<ElementOverlayPiece
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="bottom"
 						offset={[0, -15]}
 					>
 						<AddElementButton insert={{ where: element.id, placement: 'after' }} />
-					</ElementOverlay>
-					<ElementOverlay
+					</ElementOverlayPiece>
+					<ElementOverlayPiece
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="left-start"
 						offset={[8, -30]}
 					>
 						<ElementActions element={element} />
-					</ElementOverlay>
+					</ElementOverlayPiece>
 				</>
 			)}
 		</div>
@@ -187,7 +151,7 @@ const ActionButton = styled.button`
 	}
 `
 
-function ElementOverlay({
+function ElementOverlayPiece({
 	referenceElement,
 	updateDeps,
 	placement,

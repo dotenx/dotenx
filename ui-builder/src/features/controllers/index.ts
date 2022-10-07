@@ -1,11 +1,11 @@
+import { CardList } from './card-list'
+import { CreateForm } from './create-form'
 import { Hero } from './hero'
+import { List } from './list'
 import { SignInBasic } from './sign-in-basic'
 import { SignUpBasic } from './sign-up-basic'
 
-// import { Test } from './test2'
-
 export const controllers = [
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
-	{ title: 'Base', items: [Hero] },
-	{ title: 'Others', items: [Hero] },
+	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 ] as const

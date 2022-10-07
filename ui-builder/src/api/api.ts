@@ -10,6 +10,7 @@ import {
 	CreateDesignSystemRequest,
 	DeleteComponentRequest,
 	DeletePageRequest,
+	GetColumnsResponse,
 	GetComponentsRequest,
 	GetComponentsResponse,
 	GetDesignSystemsRequest,
@@ -21,6 +22,7 @@ import {
 	GetPagesResponse,
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
+	GetTablesResponse,
 	ImportComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
@@ -42,6 +44,8 @@ export enum QueryKey {
 	Components = 'components',
 	DesignSystems = 'design-systems',
 	MarketplaceItems = 'marketplace-items',
+	Tables = 'tables',
+	Columns = 'columns',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -202,4 +206,12 @@ export const addToMarketPlace = ({
 
 export const getMarketplaceItems = () => {
 	return api.get<GetMarketplaceItemsResponse>(`/public/marketplace`)
+}
+
+export const getTables = ({ projectName }: { projectName: string }) => {
+	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
+}
+
+export function getColumns({ projectName, tableName }: { projectName: string; tableName: string }) {
+	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }

@@ -21,7 +21,7 @@ import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { JsonArray, uuid } from '../../utils'
 import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
-import { useElementsStore } from '../elements/elements-store'
+import { findParent, useElementsStore } from '../elements/elements-store'
 import {
 	Action,
 	ActionKind,
@@ -136,11 +136,11 @@ export function DataEditor() {
 			.map((source) =>
 				source.properties.map((property) => ({
 					kind: property.kind,
-					name: `$store.${source.stateName}${property.path}`,
+					name: `$store-${source.stateName}${property.path}`,
 				}))
 			)
 			.flat(),
-		...(element.repeatFrom?.name
+		...(element.repeatFrom
 			? repeatedProperties.map((property) => ({
 					kind: property.kind,
 					name: `${element.repeatFrom?.iterator}${property.path}`,
@@ -209,8 +209,8 @@ export function DataEditor() {
 				onChange={(value) =>
 					editRepeatFrom({
 						name: value,
-						iterator: value.replace('$store.', '')
-							? `${value.replace('$store.', '')}Item`
+						iterator: value.replace('$store-', '')
+							? `${value.replace('$store-', '')}Item`
 							: '',
 					})
 				}
@@ -264,7 +264,7 @@ function RepeatInput({
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
 						.map((state) => ({
-							label: state.name.replace('$store.', ''),
+							label: state.name.replace('$store-', ''),
 							value: state.name,
 						}))}
 					className="grow"
@@ -285,8 +285,11 @@ function RepeatInput({
 	)
 }
 
-const findRepeatedParent = (component: Element, components: Element[]): Element | null => {
-	return null
+const findRepeatedParent = (element: Element, elements: Element[]): Element | null => {
+	const parent = findParent(element.id, elements)
+	if (!parent) return null
+	if (parent.repeatFrom) return parent
+	return findRepeatedParent(parent, elements)
 }
 
 function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
@@ -744,7 +747,7 @@ function BindingInput({
 				<Select
 					size="xs"
 					data={stateNames.map((name) => ({
-						label: name.replace('$store.', ''),
+						label: name.replace('$store-', ''),
 						value: name,
 					}))}
 					className="grow"

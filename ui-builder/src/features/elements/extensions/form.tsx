@@ -26,7 +26,7 @@ export class FormElement extends Element {
 	children: Element[] = []
 	style: Style = {
 		desktop: {
-			default: { height: '150px' },
+			default: { minHeight: '150px' },
 		},
 	}
 	data = { dataSourceName: '' }
