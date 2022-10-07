@@ -132,3 +132,11 @@ export type ImportComponentRequest = {
 	name: string
 	category: string
 }
+
+export type GetTablesResponse = {
+	tables: string[]
+}
+
+export type GetColumnsResponse = {
+	columns: { name: string; type: string }[]
+}

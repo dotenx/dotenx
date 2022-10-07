@@ -2,10 +2,11 @@ import { useHotkeys } from '@mantine/hooks'
 import { atom, useSetAtom } from 'jotai'
 import { TbPlus } from 'react-icons/tb'
 import styled from 'styled-components'
+import { RenderElements } from '../advanced/renderer'
 import { useElementsStore } from '../elements/elements-store'
 import { CanvasFrame, ROOT_ID } from '../frame/canvas'
 import { useCanvasHotkeys } from '../hotkey/hotkeys'
-import { RenderElements } from './simple-renderer'
+import { ElementOverlay } from './simple-renderer'
 
 export const insertingAtom = atom<Inserting | null>(null)
 
@@ -28,7 +29,11 @@ export function SimpleCanvas() {
 
 	return (
 		<CanvasFrame>
-			{isEmpty ? prompt : <RenderElements elements={elements} isDirectRootChildren />}
+			{isEmpty ? (
+				prompt
+			) : (
+				<RenderElements elements={elements} isDirectRootChildren overlay={ElementOverlay} />
+			)}
 		</CanvasFrame>
 	)
 }

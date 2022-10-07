@@ -12,11 +12,9 @@ import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleElementSelect() {
-	const { addDataSource, dataSources } = useDataSourceStore((store) => ({
+	const { addDataSource } = useDataSourceStore((store) => ({
 		addDataSource: store.add,
-		dataSources: store.sources,
 	}))
-	console.log(dataSources)
 	const { addAfter, addBefore, add } = useElementsStore((store) => ({
 		add: store.add,
 		addBefore: store.add,

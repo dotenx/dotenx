@@ -4,7 +4,7 @@ import { useElementsStore } from '../elements/elements-store'
 import { CanvasFrame, ROOT_ID } from '../frame/canvas'
 import { FrameDnd } from '../frame/dnd'
 import { useCanvasHotkeys } from '../hotkey/hotkeys'
-import { RenderElements } from './renderer'
+import { ElementOverlay, RenderElements } from './renderer'
 
 export function AdvancedCanvas() {
 	const elements = useElementsStore((store) => store.elements)
@@ -18,7 +18,7 @@ export function AdvancedCanvas() {
 					data={{ mode: DroppableMode.InsertIn, elementId: ROOT_ID }}
 					style={{ minHeight: 'calc(100vh - 6px)' }}
 				>
-					<RenderElements elements={elements} />
+					<RenderElements elements={elements} overlay={ElementOverlay} />
 				</Droppable>
 			</FrameDnd>
 		</CanvasFrame>

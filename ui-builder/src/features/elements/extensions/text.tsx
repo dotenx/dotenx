@@ -35,7 +35,7 @@ export class TextElement extends Element {
 					onChange={(event) =>
 						set(
 							produce(this, (draft) => {
-								draft.data.text = event.currentTarget.value
+								draft.data.text = event.target.value
 							})
 						)
 					}

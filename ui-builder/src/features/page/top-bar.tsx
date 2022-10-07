@@ -75,8 +75,12 @@ const useFetchPage = () => {
 				setClassNames(content.classNames)
 				content.dataSources.map((source) =>
 					axios
-						.get<AnyJson>(source.url)
-						.then((data) => setPageState(source.stateName, data.data))
+						.request<AnyJson>({
+							url: source.url,
+							method: source.method,
+							data: source.body,
+						})
+						.then((data) => setPageState(`$store-${source.stateName}`, data.data))
 				)
 				if (content.mode === 'simple' && !isSimple)
 					navigate(`/projects/${projectName}/simple`)

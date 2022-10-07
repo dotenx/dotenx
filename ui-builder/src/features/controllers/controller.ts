@@ -8,6 +8,7 @@ export abstract class Controller {
 	abstract image: string
 	protected abstract defaultData?: Element
 	abstract renderOptions(options: ElementOptions): ReactNode
+	data: unknown
 
 	transform(): Element {
 		const newElement = regenElement(this.defaultData ?? new BoxElement())
@@ -17,7 +18,8 @@ export abstract class Controller {
 
 	serialize() {
 		return {
-			name: this.constructor.name,
+			name: this.name,
+			data: this.data,
 		}
 	}
 }
