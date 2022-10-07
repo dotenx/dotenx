@@ -40,10 +40,7 @@ const element = ({
 				events: [],
 				id: '',
 				parentId: '',
-				repeatFrom: {
-					iterator: '',
-					name: '',
-				},
+				repeatFrom: null,
 				data: {
 					style: {
 						desktop: {
@@ -122,10 +119,7 @@ const element = ({
 				events: [],
 				id: '',
 				parentId: '',
-				repeatFrom: {
-					iterator: '',
-					name: '',
-				},
+				repeatFrom: null,
 				data: {
 					style: {
 						desktop: {
