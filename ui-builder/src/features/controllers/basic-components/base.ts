@@ -4,8 +4,5 @@ export const elementBase = {
 	events: [],
 	id: '',
 	parentId: '',
-	repeatFrom: {
-		iterator: '',
-		name: '',
-	},
+	repeatFrom: null,
 }

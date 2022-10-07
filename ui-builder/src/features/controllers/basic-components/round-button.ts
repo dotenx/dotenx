@@ -130,10 +130,7 @@ const element = ({ buttonStyle, label, submit }: basicRoundButtonProp) => [
 				events: [],
 				id: '',
 				parentId: '',
-				repeatFrom: {
-					iterator: '',
-					name: '',
-				},
+				repeatFrom: null,
 				data: {
 					style: buttonStyle
 						? _.merge(defaultButtonStyle, buttonStyle)
