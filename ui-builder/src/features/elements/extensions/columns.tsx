@@ -20,7 +20,7 @@ export class ColumnsElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				height: '150px',
+				minHeight: '150px',
 				display: 'grid',
 				gridTemplateColumns: '1fr 1fr',
 				gap: '10px',
@@ -52,7 +52,7 @@ function ColumnsSettings() {
 	if (!element) return null
 
 	return (
-		<div>
+		<div className="space-y-6">
 			<NumberInput
 				size="xs"
 				label="Space"

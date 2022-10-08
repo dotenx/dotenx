@@ -106,7 +106,7 @@ func (job *Job) SetRunCodeFields() {
 
 func (job *Job) PrepRunMiniTasks() {
 	// for taskName, task := range manifest.Tasks {
-	// 	if task.Type == "Run mini tasks" {
+	// 	if task.Type == "Custom task" {
 	// 		task.Type = "Run node code"
 	// 	}
 	// 	manifest.Tasks[taskName] = task

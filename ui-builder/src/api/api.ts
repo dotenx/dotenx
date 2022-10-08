@@ -10,6 +10,7 @@ import {
 	CreateDesignSystemRequest,
 	DeleteComponentRequest,
 	DeletePageRequest,
+	GetColumnsResponse,
 	GetComponentsRequest,
 	GetComponentsResponse,
 	GetDesignSystemsRequest,
@@ -21,6 +22,7 @@ import {
 	GetPagesResponse,
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
+	GetTablesResponse,
 	ImportComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
@@ -42,6 +44,8 @@ export enum QueryKey {
 	Components = 'components',
 	DesignSystems = 'design-systems',
 	MarketplaceItems = 'marketplace-items',
+	Tables = 'tables',
+	Columns = 'columns',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -55,12 +59,12 @@ export const uploadProjectImage = (data: FormData) => {
 	return api.post('/marketplace/upload', data)
 }
 export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsRequest) => {
-	const res = await api.get<GetPageDetailsResponse>(
+	const response = await api.get<GetPageDetailsResponse>(
 		`/uibuilder/project/${projectTag}/page/${pageName}`
 	)
-	const elements = res.data.content.layout.map(deserializeElement)
+	const elements = response.data.content.layout.map(deserializeElement)
 	const classNames = _.fromPairs(
-		_.toPairs(res.data.content.classNames).map(([className, styles]) => [
+		_.toPairs(response.data.content.classNames).map(([className, styles]) => [
 			className,
 			{
 				desktop: mapSelectorStyleToCamelCase(styles.desktop),
@@ -69,12 +73,13 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			},
 		])
 	)
+
 	return {
-		...res,
+		...response,
 		data: {
-			...res.data,
+			...response.data,
 			content: {
-				...res.data.content,
+				...response.data.content,
 				layout: addControllers(elements),
 				classNames: classNames,
 			},
@@ -201,4 +206,12 @@ export const addToMarketPlace = ({
 
 export const getMarketplaceItems = () => {
 	return api.get<GetMarketplaceItemsResponse>(`/public/marketplace`)
+}
+
+export const getTables = ({ projectName }: { projectName: string }) => {
+	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
+}
+
+export function getColumns({ projectName, tableName }: { projectName: string; tableName: string }) {
+	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }

@@ -27,6 +27,7 @@ export class ButtonElement extends Element {
 				display: 'inline-block',
 				textAlign: 'center',
 				fontWeight: 600,
+				cursor: 'pointer',
 			},
 		},
 	}

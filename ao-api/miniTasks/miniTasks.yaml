@@ -154,6 +154,33 @@
      type: integer
      description:
 
+- type: http_request
+  description: This function makes an HTTP request to the specified URL and returns the response.
+  display_name: Date Now
+  number_of_params: 4
+  inputs:
+    - name: method
+      type: string
+      description: 
+    - name: headers
+      type: key_value_object
+      key:
+        - name: name
+          label: Name
+        - name: value
+          label: Value
+      description:
+    - name: body
+      type: object
+      description:
+    - name: url
+      type: string
+      description:
+  outputs:
+   - name: number of milliseconds elapsed
+     type: integer
+     description:
+
 - type: math_abs
   description: The Math.abs() function returns the absolute value of a number. That is, it returns x if x is positive or zero, and the negation of x if x is negative.
   display_name: Math Abs

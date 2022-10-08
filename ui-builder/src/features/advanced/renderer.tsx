@@ -1,33 +1,165 @@
 import { useIntersection } from '@mantine/hooks'
+import produce from 'immer'
+import { useAtomValue } from 'jotai'
+import _ from 'lodash'
 import { MouseEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { usePopper } from 'react-popper'
 import { CSSProperties } from 'styled-components'
+import { AnyJson, JsonArray } from '../../utils'
 import { animateCSS } from '../../utils/animation'
+import { usePageStates } from '../data-bindings/page-states'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { DroppableMode } from '../dnd/droppable'
 import { DroppablePortal } from '../dnd/droppable-portal'
 import { Element } from '../elements/element'
 import { ActionKind, AnimationAction, EventKind } from '../elements/event'
+import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
+import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 
-export function RenderElements({ elements }: { elements: Element[] }) {
+export function RenderElements({
+	elements,
+	states,
+	overlay,
+	isDirectRootChildren,
+}: {
+	elements: Element[]
+	states?: AnyJson
+	overlay: Overlay
+	isDirectRootChildren?: boolean
+}) {
 	return (
 		<>
 			{elements.map((element) => (
-				<ElementOverlay key={element.id} element={element}>
-					{element.render((element) => (
-						<RenderElements elements={element.children ?? []} />
-					))}
-				</ElementOverlay>
+				<RenderElement
+					key={element.id}
+					element={element}
+					states={states}
+					overlay={overlay}
+					isDirectRootChildren={isDirectRootChildren}
+				/>
 			))}
 		</>
 	)
 }
 
-function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+export type Overlay = (props: {
+	children: ReactNode
+	element: Element
+	isDirectRootChildren?: boolean
+}) => JSX.Element
+
+function RenderElement({
+	element,
+	states,
+	overlay,
+	isDirectRootChildren,
+}: {
+	element: Element
+	states?: AnyJson
+	overlay: Overlay
+	isDirectRootChildren?: boolean
+}) {
+	const { isFullscreen } = useAtomValue(previewAtom)
+
+	if (isFullscreen) {
+		return (
+			<RenderElementPreview
+				element={element}
+				states={states}
+				overlay={overlay}
+				isDirectRootChildren={isDirectRootChildren}
+			/>
+		)
+	}
+
+	const Overlay = overlay
+
+	return (
+		<Overlay element={element} isDirectRootChildren={isDirectRootChildren}>
+			<>
+				{element.render((element) => (
+					<RenderElements
+						elements={element.children ?? []}
+						states={states}
+						overlay={overlay}
+					/>
+				))}
+			</>
+		</Overlay>
+	)
+}
+
+function RenderElementPreview({
+	element,
+	states,
+	overlay,
+	isDirectRootChildren,
+}: {
+	element: Element
+	states?: AnyJson
+	overlay: Overlay
+	isDirectRootChildren?: boolean
+}) {
+	const pageStates = usePageStates((store) => store.states)
+
+	if (element.repeatFrom) {
+		const items = (_.get(pageStates, element.repeatFrom.name) as JsonArray) ?? []
+		return (
+			<>
+				{items.map((item, index) => (
+					<RenderElement
+						isDirectRootChildren={isDirectRootChildren}
+						key={index}
+						element={produce(element, (draft) => {
+							draft.repeatFrom = null
+						})}
+						states={item}
+						overlay={overlay}
+					/>
+				))}
+			</>
+		)
+	}
+
+	if (element instanceof TextElement && element.bindings.text) {
+		const splitPath = element.bindings.text.fromStateName.split('.')
+		const textValue = _.get(
+			states,
+			splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
+		)
+		const valuedElement = produce(element, (draft) => {
+			draft.data.text = textValue
+			draft.bindings.text = null
+		})
+		return (
+			<RenderElement
+				isDirectRootChildren={isDirectRootChildren}
+				key={element.id}
+				element={valuedElement}
+				overlay={overlay}
+			/>
+		)
+	}
+
+	return (
+		<>
+			{element.renderPreview((element) => (
+				<RenderElements
+					elements={element.children ?? []}
+					states={states}
+					overlay={overlay}
+				/>
+			))}
+		</>
+	)
+}
+
+export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+	const { isFullscreen } = useAtomValue(previewAtom)
 	const { selectElements, selectedElements, setHovered, unsetHovered } = useSelectionStore(
 		(store) => ({
 			selectElements: store.select,
@@ -72,7 +204,7 @@ function ElementOverlay({ children, element }: { children: ReactNode; element: E
 	}
 	const handleMouseOver = (event: MouseEvent) => {
 		event.stopPropagation()
-		setHovered(element.id)
+		if (!isFullscreen) setHovered(element.id)
 		showHoverAnimations()
 	}
 	const handleMouseOut = (event: MouseEvent) => {
@@ -81,6 +213,7 @@ function ElementOverlay({ children, element }: { children: ReactNode; element: E
 	}
 	const handleClick = (event: MouseEvent) => {
 		event.stopPropagation()
+		if (isFullscreen) return
 		if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
 		else selectElements(element.id)
 	}

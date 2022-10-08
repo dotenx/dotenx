@@ -25,12 +25,14 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
+type DataSourceFormMode = 'add' | 'edit' | 'simple-add' | 'simple-edit'
+
 export function DataSourceForm({
 	mode,
 	initialValues = {
 		stateName: '',
 		url: '',
-		method: HttpMethod.GET,
+		method: HttpMethod.Get,
 		headers: '',
 		body: '',
 		id: '',
@@ -39,52 +41,15 @@ export function DataSourceForm({
 	},
 	onSuccess,
 }: {
-	mode: 'add' | 'edit' | 'simple-add' | 'simple-edit'
+	mode: DataSourceFormMode
 	initialValues?: DataSource
 	onSuccess?: (values: Schema) => void
 }) {
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const isSimple = mode === 'simple-add' || mode === 'simple-edit'
-	const setPageState = usePageStates((store) => store.setState)
-	const { addSource, editSource } = useDataSourceStore((store) => ({
-		addSource: store.add,
-		editSource: store.edit,
-	}))
-	const mutation = useMutation((url: string) => axios.get<AnyJson>(url))
 	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
-	const handleSubmit = form.onSubmit((values) => {
-		mutation.mutate(values.url, {
-			onSuccess: (data) => {
-				const response = data.data
-				const properties = findPropertyPaths(response)
-				if (isAddMode) {
-					addSource({
-						...values,
-						id: uuid(),
-						properties: properties,
-					})
-				} else {
-					editSource(initialValues.id, { ...values, properties })
-				}
-				onSuccess?.(values)
-				setPageState(`$store.${values.stateName}`, response)
-				closeAllModals()
-			},
-			onError: () => {
-				if (isAddMode) {
-					addSource({
-						...values,
-						id: uuid(),
-						properties: [],
-					})
-				} else {
-					editSource(initialValues.id, { ...values, properties: [] })
-				}
-				onSuccess?.(values)
-				closeAllModals()
-			},
-		})
-	})
+	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess })
+	const handleSubmit = form.onSubmit(addDataSource)
 
 	const nameAndUrl = (
 		<>
@@ -179,4 +144,75 @@ export function DataSourceForm({
 			{submitButton}
 		</form>
 	)
+}
+
+export const useAddDataSource = ({
+	mode,
+	initialValues = {
+		stateName: '',
+		url: '',
+		method: HttpMethod.Get,
+		headers: '',
+		body: '',
+		id: '',
+		properties: [],
+		fetchOnload: true,
+	},
+	onSuccess,
+	onSubmit,
+}: {
+	mode: DataSourceFormMode
+	initialValues?: DataSource
+	onSuccess?: (values: Schema) => void
+	onSubmit?: (values: AnyJson) => void
+}) => {
+	const isAddMode = mode === 'add' || mode === 'simple-add'
+	const setPageState = usePageStates((store) => store.setState)
+	const { addSource, editSource } = useDataSourceStore((store) => ({
+		addSource: store.add,
+		editSource: store.edit,
+	}))
+	const mutation = useMutation(
+		({ body, method, url }: { url: string; method: HttpMethod; body: unknown }) =>
+			axios.request<AnyJson>({ url, method, data: body })
+	)
+	const addDataSource = (values: Schema) => {
+		mutation.mutate(
+			{ url: values.url, body: values.body, method: values.method },
+			{
+				onSuccess: (data) => {
+					const response = data.data
+					const properties = findPropertyPaths(response)
+					if (isAddMode) {
+						addSource({
+							...values,
+							id: uuid(),
+							properties,
+						})
+					} else {
+						editSource(initialValues.id, { ...values, properties })
+					}
+					onSuccess?.(values)
+					onSubmit?.(response)
+					setPageState(`$store-${values.stateName}`, response)
+					closeAllModals()
+				},
+				onError: () => {
+					if (isAddMode) {
+						addSource({
+							...values,
+							id: uuid(),
+							properties: [],
+						})
+					} else {
+						editSource(initialValues.id, { ...values, properties: [] })
+					}
+					onSuccess?.(values)
+					closeAllModals()
+				},
+			}
+		)
+	}
+
+	return { addDataSource, mutation }
 }

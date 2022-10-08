@@ -1,12 +1,19 @@
 import { ActionIcon, Button, Divider } from '@mantine/core'
 import { useToggle } from '@mantine/hooks'
 import clsx from 'clsx'
+import _ from 'lodash'
 import { nanoid } from 'nanoid'
 import { useEffect, useRef } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { FormProvider, useFieldArray, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from 'react-icons/io5'
 import { useQuery } from 'react-query'
+import { TestTaskRequest } from '../api'
+import { SlidingPanes, useSlidingPane } from '../features/hooks/use-sliding-pane'
+import { IntegrationForm } from '../features/integration'
+import { TaskSettings } from '../features/task'
+import { mapTaskBodyToPrimitives } from '../features/task/test-step'
+import { TaskSettingsSchema, useTaskSettings } from '../features/task/use-settings'
 import {
 	Description,
 	Form,
@@ -14,7 +21,9 @@ import {
 	InputOrSelect,
 	InputOrSelectKind,
 	InputOrSelectValue,
+	InputValue,
 	NewSelect,
+	SlidingPane
 } from '../features/ui'
 import { getTaskBuilderFunctions, InternalQueryKey } from './internal-api'
 import { StepsSummary } from './steps-summary'
@@ -55,6 +64,14 @@ interface VarDeclaration {
 	name: InputOrSelectValue
 }
 
+interface ExecuteTask {
+	accessToken: InputOrSelectValue
+	url: string
+	method: string
+	body: TestTaskRequest
+	output?: InputOrSelectValue
+}
+
 const stepTypes = [
 	'assignment',
 	'if',
@@ -63,6 +80,7 @@ const stepTypes = [
 	'function_call',
 	'output',
 	'var_declaration',
+	'execute_task',
 ] as const
 
 export type Step = { id: string; opened: boolean } & (
@@ -73,6 +91,7 @@ export type Step = { id: string; opened: boolean } & (
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
 	| { type: 'var_declaration'; params: VarDeclaration }
+	| { type: 'execute_task'; params: ExecuteTask }
 )
 
 export type TaskBuilderValues = {
@@ -90,6 +109,7 @@ const stepTypeOptions = [
 	{ label: 'Function Call', value: 'function_call' },
 	{ label: 'Output', value: 'output' },
 	{ label: 'Variable Declaration', value: 'var_declaration' },
+	{ label: 'Execute Task', value: 'execute_task' },
 ]
 
 const getStepTypeLabel = (type: typeof stepTypes[number]) =>
@@ -111,9 +131,10 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 	return result
 }
 
+// This component renders the custom task builder section
 export function TaskBuilder({
 	onSubmit,
-	defaultValues = [{ ...defaultStep, id: nanoid() }],
+	defaultValues,
 	otherTasksOutputs,
 }: {
 	onSubmit: (values: TaskBuilderValues) => void
@@ -121,9 +142,16 @@ export function TaskBuilder({
 	otherTasksOutputs: GroupData[]
 }) {
 	const form = useForm<TaskBuilderValues>({
-		defaultValues: { prop: 'value', steps: defaultValues },
+		// defaultValues: { prop: 'value', steps: defaultValues },
+		defaultValues: { prop: 'value', steps: [] },
 		shouldUnregister: false,
 	})
+	const reset = form.reset
+
+	useEffect(() => {
+		reset({ prop: 'value', steps: defaultValues ?? [{ ...defaultStep, id: nanoid() }] })
+	}, [defaultValues, reset])
+
 	const steps = form.watch().steps
 	const handleSubmit = form.handleSubmit((values) => onSubmit(values))
 	const [view, toggleView] = useToggle<'detailed' | 'summary'>(['detailed', 'summary'])
@@ -336,6 +364,9 @@ function Step({
 				)}
 				{step?.type === 'function_call' && (
 					<FunctionCallFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
+				)}
+				{step?.type === 'execute_task' && (
+					<ExecuteTaskFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
 				{step?.type === 'output' && (
 					<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
@@ -593,6 +624,106 @@ function FunctionCallFields({
 		</div>
 	)
 }
+function ExecuteTaskFields({
+	name,
+	otherTasksOutputs,
+}: {
+	name: string
+	otherTasksOutputs: GroupData[]
+}) {
+	const { control, getValues, setValue } = useFormContext()
+
+	const slidingPane = useSlidingPane()
+
+	const defaultValue = getValues(name)
+
+	const taskForm = useTaskSettings({
+		defaultValues: {
+			name: 'task',
+			type: defaultValue?.body?.manifest.tasks.task.type,
+			integration: defaultValue?.body?.manifest.tasks.task.integration,
+			others: mapObjectToComplexFields(defaultValue?.body?.manifest.tasks.task.body),
+		},
+		onSave: () => null,
+	})
+
+	useEffect(() => {
+		const subscription = taskForm.watch((value) => {
+			const formValues = getValues(name)
+			const modifiedValue = {
+				url: `${process.env.REACT_APP_API_URL}/execution/type/task/step/task`,
+				method: 'POST',
+				body: {
+					manifest: {
+						tasks: {
+							task: {
+								type: value.type,
+								integration: value.integration ?? '',
+								body: mapTaskBodyToPrimitives(
+									value.others as TaskSettingsSchema['others'],
+									{}
+								),
+							},
+						},
+					},
+				},
+			}
+			setValue(name, { ...formValues, ...modifiedValue })
+		})
+		return () => subscription.unsubscribe()
+	}, [getValues, name, setValue, taskForm, taskForm.watch])
+
+	return (
+		<div className="space-y-2">
+			<InputOrSelect
+				label="Access Token"
+				name={`${name}.accessToken`}
+				control={control}
+				groups={otherTasksOutputs}
+			/>
+			<TaskSettings
+				mode="custom_task"
+				taskForm={taskForm}
+				setIsAddingIntegration={() => {
+					slidingPane.open(SlidingPanes.Integration)
+				}}
+				disableSubmit={false}
+				withIntegration={true}
+			/>
+			<InputOrSelect
+				label="Assign result to new variable (optional)"
+				name={`${name}.output`}
+				control={control}
+				groups={otherTasksOutputs}
+			/>
+			<SlidingPane
+				title="Integration"
+				subTitle="Select an integration"
+				kind={SlidingPanes.Integration}
+				hideHeader
+			>
+				<div className="pl-10">
+					<IntegrationForm
+						onBack={() => slidingPane.close()}
+						integrationKind={taskForm.selectedTaskIntegrationKind}
+						onSuccess={(addedIntegrationName) => {
+							slidingPane.close()
+							taskForm.setValue('integration', addedIntegrationName)
+						}}
+					/>
+				</div>
+			</SlidingPane>
+		</div>
+	)
+}
+
+const mapObjectToComplexFields = (obj: Record<string, string>) =>
+	_.mapValues(obj, primitiveToComplexField)
+
+const primitiveToComplexField = (value: string): InputValue => ({
+	type: InputOrSelectKind.Text,
+	data: value,
+})
 
 function OutputFields({
 	name,

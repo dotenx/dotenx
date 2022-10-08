@@ -17,7 +17,7 @@ type FunctionCall struct {
 	} `json:"params"`
 }
 
-const functionCallTemplate = "{{if .Output}}var {{.Output}}= {{end}}{{.Name}}({{range $index, $element := .Arguments}}{{if $index}}, {{end}}{{$element}}{{end}});"
+const functionCallTemplate = "{{if .Output}}var {{.Output}}= {{end}}await{{.Name}}({{range $index, $element := .Arguments}}{{if $index}}, {{end}}{{$element}}{{end}});"
 
 func convertFunctionCall(step map[string]interface{}, importStore *ImportStore) (string, error) {
 	b, err := json.Marshal(step)

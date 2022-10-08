@@ -110,6 +110,7 @@ export function useTaskSettings({
 	useDidUpdate(() => {
 		if (taskType) unregister(['integration', 'others', 'vars', 'outputs'])
 	}, [taskType, unregister])
+
 	return {
 		onSubmit,
 		control,

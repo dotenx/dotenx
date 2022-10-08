@@ -9,7 +9,7 @@ export class LinkElement extends Element {
 	name = 'Link'
 	icon = (<TbLink />)
 	public children: Element[] = []
-	data = { url: '', openInNewTab: false }
+	data = { href: '', openInNewTab: false }
 	style: Style = {
 		desktop: {
 			default: {
@@ -28,11 +28,11 @@ export class LinkElement extends Element {
 				<TextInput
 					size="xs"
 					label="Link URL"
-					value={this.data.url}
+					value={this.data.href}
 					onChange={(event) =>
 						set(
 							produce(this, (draft) => {
-								draft.data.url = event.target.value
+								draft.data.href = event.target.value
 							})
 						)
 					}

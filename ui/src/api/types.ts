@@ -428,6 +428,16 @@ interface VarDeclaration {
 	name: string
 }
 
+interface ExecuteTask {
+	url: string,
+	method: string,
+	headers: {
+		'DTX-auth': string
+	},
+	body: TestTaskRequest,
+	output?: string
+}
+
 export type BuilderStep =
 	| { type: 'assignment'; params: Assignment }
 	| { type: 'if'; params: Conditional }
@@ -436,6 +446,7 @@ export type BuilderStep =
 	| { type: 'function_call'; params: FunctionCall }
 	| { type: 'output'; params: OutputParams }
 	| { type: 'var_declaration'; params: VarDeclaration }
+	| { type: 'execute_task'; params: ExecuteTask }
 
 export type TaskBuilder = {
 	prop: string

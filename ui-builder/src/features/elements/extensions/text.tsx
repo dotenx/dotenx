@@ -20,7 +20,7 @@ export class TextElement extends Element {
 	}
 
 	render(): ReactNode {
-		return <p dangerouslySetInnerHTML={{ __html: this.data.text }} />
+		return <span dangerouslySetInnerHTML={{ __html: this.data.text }} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
@@ -35,7 +35,7 @@ export class TextElement extends Element {
 					onChange={(event) =>
 						set(
 							produce(this, (draft) => {
-								draft.data.text = event.currentTarget.value
+								draft.data.text = event.target.value
 							})
 						)
 					}

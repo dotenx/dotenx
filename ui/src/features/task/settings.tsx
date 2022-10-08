@@ -9,7 +9,7 @@ import { FieldType } from '../../api'
 import { TaskBuilder } from '../../internal/task-builder'
 import { taskBuilderState, taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
-import { Description, Field, Form, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
+import { Description, Field, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
 import { JsonEditor } from '../ui/json-editor'
 import { CodeField } from './code-field'
@@ -22,14 +22,17 @@ interface TaskSettingsWithIntegrationProps {
 	isAddingIntegration: boolean
 	setIsAddingIntegration: (value: boolean) => void
 	withIntegration: boolean
+	mode?: string
 }
 
+// This component renders everything you see on Task settings modal
 export function TaskSettingsWithIntegration({
 	defaultValues,
 	isAddingIntegration,
 	onSave,
 	setIsAddingIntegration,
 	withIntegration,
+	mode,
 }: TaskSettingsWithIntegrationProps) {
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
@@ -38,8 +41,10 @@ export function TaskSettingsWithIntegration({
 	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
 	const taskBuilderValues = taskForm.watch('others.tasks')
 
+	// todo: filter out Custom task if mode is 'custom_task'
+
 	useEffect(() => {
-		if (defaultValues?.type === 'Run mini tasks') {
+		if (defaultValues?.type === 'Custom task') {
 			setTaskBuilder({ opened: true })
 		}
 	}, [defaultValues?.type])
@@ -55,6 +60,7 @@ export function TaskSettingsWithIntegration({
 		<div className={clsx('grid h-full', hasSecondPanel && 'grid-cols-2')}>
 			<div className={clsx(hasSecondPanel && 'pr-10')}>
 				<TaskSettings
+					mode={mode}
 					taskForm={taskForm}
 					setIsAddingIntegration={setIsAddingIntegration}
 					disableSubmit={hasSecondPanel}
@@ -122,13 +128,16 @@ interface TaskSettingsProps {
 	setIsAddingIntegration: (value: boolean) => void
 	disableSubmit: boolean
 	withIntegration: boolean
+	mode?: string
 }
 
-function TaskSettings({
+// This component is used directly in the Task settings modal and also in the Task builder `Execute Task` steps
+export function TaskSettings({
 	taskForm,
 	setIsAddingIntegration,
 	disableSubmit,
 	withIntegration,
+	mode,
 }: TaskSettingsProps) {
 	const {
 		control,
@@ -150,12 +159,28 @@ function TaskSettings({
 	const formData = taskForm.watch()
 
 	return (
-		<Form className="h-full" onSubmit={onSubmit}>
+		<div className="flex flex-col h-full gap-10">
 			<div className="flex flex-col gap-5 grow">
-				<Field label="Name" name="name" control={control} errors={errors} />
+				{/* If the component is used in a custom task, we use `task` as the name, so this field becomes redundant */}
+				{mode !== 'custom_task' && (
+					<Field label="Name" name="name" control={control} errors={errors} />
+				)}
 				<div>
+					{/* The dropdown for selecting the task */}
 					<GroupSelect
-						options={tasksOptions}
+						options={
+							mode === 'custom_task'
+								? tasksOptions.map((task) => {
+										return {
+											...task,
+											options: task.options.filter(
+												(option) => option.value !== 'Custom task'
+											),
+										}
+										// eslint-disable-next-line no-mixed-spaces-and-tabs
+								  })
+								: tasksOptions
+						}
 						control={control}
 						name="type"
 						errors={errors}
@@ -203,11 +228,15 @@ function TaskSettings({
 				)}
 			</div>
 
-			<TestTask task={formData} />
-			<Button fullWidth type="submit" disabled={disableSubmit}>
-				Save
-			</Button>
-		</Form>
+			{mode !== 'custom_task' && (
+				<>
+					<TestTask task={formData} />
+					<Button fullWidth disabled={disableSubmit} onClick={onSubmit}>
+						Save
+					</Button>
+				</>
+			)}
+		</div>
 	)
 }
 
@@ -224,7 +253,7 @@ const getFieldComponent = (
 	} & { openBuilder: () => void },
 	type: string
 ) => {
-	if (type === 'Run mini tasks' && props.label === 'tasks') {
+	if (type === 'Custom task' && props.label === 'tasks') {
 		return (
 			<Button key={props.key} type="button" variant="default" onClick={props.openBuilder}>
 				{props.taskBuilderValues ? 'Edit Task' : 'Build A Task'}

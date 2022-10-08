@@ -1,5 +1,5 @@
 service: dotenx
-type: Run mini tasks
+type: Custom task
 image: code/node:lambda
 fields:
     - key: tasks

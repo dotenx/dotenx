@@ -267,6 +267,19 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
 					},
 				}
+			case 'execute_task':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						url: step.params.url,
+						method: step.params.method,
+						body: step.params.body,
+						accessToken: { type: InputOrSelectKind.Text, data: step.params.headers['DTX-auth'] ?? '' },
+						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
+					},
+				}
 			case 'foreach':
 				return {
 					id: nanoid(),

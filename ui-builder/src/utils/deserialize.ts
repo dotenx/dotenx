@@ -26,7 +26,9 @@ export function deserializeElement(serialized: any): Element {
 function deserializeController(data: any): Controller {
 	const Constructor = controllers
 		.flatMap((controller) => controller.items)
-		.find((controller) => controller.name === data.name)
+		.find((controller) => new controller().name === data.name)
 	if (!Constructor) throw new Error(`Controller ${data.name} not found`)
-	return new Constructor()
+	const controller = new Constructor()
+	controller.data = data.data
+	return controller
 }

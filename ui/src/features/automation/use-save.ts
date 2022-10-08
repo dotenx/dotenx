@@ -241,6 +241,19 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 						output: step.params.output?.data || undefined,
 					},
 				}
+			case 'execute_task':
+				return {
+					type: step.type,
+					params: {
+						url: step.params.url,
+						method: step.params.method,
+						headers: {
+							'DTX-auth': step.params.accessToken.data,
+						},
+						body: step.params.body,
+						output: step.params.output?.data || undefined,
+					},
+				}
 			case 'foreach':
 				return {
 					type: step.type,
