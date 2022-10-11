@@ -1,7 +1,7 @@
 service: stripe
 type: Stripe payment completed
 integrations: [stripe]
-image: awrmin/stripe-payment-completed:lambda4
+image: awrmin/stripe-payment-completed:lambda6
 credentials:
     - key: PAYMENT_STATUS
       type: text

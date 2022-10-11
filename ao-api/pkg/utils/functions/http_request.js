@@ -38,10 +38,18 @@ module.exports = async function httpRequest(url, headers, body, method) {
       return new Promise((resolve, reject) => {
         var req = https.request(options, (res) => {
 
-          res.on('data', (d) => {
-            process.stdout.write(d);
-            resolve(d);
-          });
+          var str = '';
+          res.on('data', chunk => {
+            str += chunk
+          })
+      
+          res.on('end', () => {
+            try {
+              resolve(JSON.parse(str))
+            } catch (error) { // str might not be JSON
+              resolve()
+            }
+          })
         });
 
         req.on('error', (e) => {
