@@ -156,6 +156,23 @@ export function setAccess({
 		isPublic: !isPublic,
 	})
 }
+
+export function setTableAccess({
+	name,
+	projectName,
+	isPublic,
+}: {
+	projectName: string
+	name: string
+	isPublic: boolean
+}) {
+	return api.patch(`/database/project/${projectName}/table/${name}/access`, {
+		isPublic: !isPublic,
+	})
+}
+
+
+
 export function setFilesAccess({
 	rowData,
 }: {
@@ -387,10 +404,10 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
 	return api.delete<void>(
 		`/database/query/delete/project/${projectTag}/table/${tableName}`, {
-			data: {
-				rowId,
-			},
-		}
+		data: {
+			rowId,
+		},
+	}
 	)
 }
 
