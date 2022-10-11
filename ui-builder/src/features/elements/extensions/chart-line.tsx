@@ -74,7 +74,11 @@ const options = {
 export class LineChart extends Element {
 	name = 'Line'
 	icon = (<TbChartBar />)
-	data = { options, data }
+	data = {
+		text: '', // todo: remove this. this is only to suppress the error
+		options,
+		data,
+	}
 	style: Style = {
 		desktop: {
 			default: {

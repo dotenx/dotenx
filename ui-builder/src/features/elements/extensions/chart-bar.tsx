@@ -33,7 +33,7 @@ const data = {
 	],
 }
 const options = {
-  indexAxis: 'x' as const,
+	indexAxis: 'x' as const,
 	responsive: true,
 	plugins: {
 		legend: {
@@ -46,24 +46,28 @@ const options = {
 	},
 	scales: {
 		x: {
-      title: {
-        display: true,
-        text: 'Month'
-      }
-    },
+			title: {
+				display: true,
+				text: 'Month',
+			},
+		},
 		y: {
-      title: {
-        display: true,
-        text: 'Value'
-      }
-    }
+			title: {
+				display: true,
+				text: 'Value',
+			},
+		},
 	},
 }
 
 export class BarChart extends Element {
 	name = 'Bar'
 	icon = (<TbChartBar />)
-	data = { options, data }
+	data = {
+		text: '', // todo: remove this. this is only to suppress the error
+		options,
+		data,
+	}
 	style: Style = {
 		desktop: {
 			default: {
@@ -115,7 +119,6 @@ export class BarChart extends Element {
 						)
 					}
 				/>
-
 			</div>
 		)
 	}
