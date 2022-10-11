@@ -6,7 +6,7 @@
 # # hojjat12/facebook-publish-new-post:lambda5
 # # awrmin/slack-new-message:lambda5
 # # awrmin/stripe-new-invoice:lambda4
-# # awrmin/stripe-payment-completed:lambda4
+# # awrmin/stripe-payment-completed:lambda6
 # # hojjat12/twitter-new-tweet:lambda5
 # # hojjat12/typeform-new-response:lambda5
 
@@ -66,7 +66,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/stripe-payment-completed"
-# export tag="lambda4"
+# export tag="lambda6"
 # export directory_address="stripe-payment-completed"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')

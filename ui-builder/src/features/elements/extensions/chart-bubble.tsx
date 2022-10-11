@@ -4,22 +4,13 @@ import { Style } from '../style'
 // import faker from "faker";
 import { Element, RenderFn, RenderOptions } from '../element'
 
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bubble } from 'react-chartjs-2';
+import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from 'chart.js'
+import { Bubble } from 'react-chartjs-2'
 
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
-
-
+ChartJS.register(LinearScale, PointElement, Tooltip, Legend)
 
 import { TextInput } from '@mantine/core'
 import produce from 'immer'
-
 
 export const options = {
 	plugins: {
@@ -33,39 +24,43 @@ export const options = {
 	},
 	scales: {
 		x: {
-      title: {
-        display: true,
-        text: 'Month'
-      }
-    },
+			title: {
+				display: true,
+				text: 'Month',
+			},
+		},
 		y: {
 			beginAtZero: true,
-      title: {
-        display: true,
-        text: 'Value'
-      }
-    }
+			title: {
+				display: true,
+				text: 'Value',
+			},
+		},
 	},
-};
+}
 
 export const data = {
-  datasets: [
-    {
-      label: 'A dataset',
-      data: Array.from({ length: 100 }, () => ({
-        x: Math.ceil(Math.random() * 200 - 100),
-        y: Math.ceil(Math.random() * 200 - 100),
-        r: Math.ceil(Math.random() * 10 - 5),
-      })),
-      backgroundColor: 'rgba(255, 99, 132, 1)',
-    },
-  ],
-};
+	datasets: [
+		{
+			label: 'A dataset',
+			data: Array.from({ length: 100 }, () => ({
+				x: Math.ceil(Math.random() * 200 - 100),
+				y: Math.ceil(Math.random() * 200 - 100),
+				r: Math.ceil(Math.random() * 10 - 5),
+			})),
+			backgroundColor: 'rgba(255, 99, 132, 1)',
+		},
+	],
+}
 
 export class BubbleChart extends Element {
 	name = 'Bubble'
 	icon = (<TbChartBar />)
-	data = { options, data }
+	data = {
+		text: '', // todo: remove this. this is only to suppress the error
+		options,
+		data,
+	}
 	style: Style = {
 		desktop: {
 			default: {
@@ -117,7 +112,6 @@ export class BubbleChart extends Element {
 						)
 					}
 				/>
-
 			</div>
 		)
 	}

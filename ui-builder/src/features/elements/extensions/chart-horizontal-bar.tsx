@@ -33,7 +33,7 @@ const data = {
 	],
 }
 const options = {
-  indexAxis: 'y' as const, // This is the only difference from chart-bar
+	indexAxis: 'y' as const, // This is the only difference from chart-bar
 	responsive: true,
 	plugins: {
 		legend: {
@@ -46,24 +46,28 @@ const options = {
 	},
 	scales: {
 		x: {
-      title: {
-        display: true,
-        text: 'Month'
-      }
-    },
+			title: {
+				display: true,
+				text: 'Month',
+			},
+		},
 		y: {
-      title: {
-        display: true,
-        text: 'Value'
-      }
-    }
+			title: {
+				display: true,
+				text: 'Value',
+			},
+		},
 	},
 }
 
 export class HorizontalBarChart extends Element {
 	name = 'H-Bar'
 	icon = (<TbChartBar />)
-	data = { options, data }
+	data = {
+		text: '', // todo: remove this. this is only to suppress the error
+		options,
+		data,
+	}
 	style: Style = {
 		desktop: {
 			default: {
@@ -115,7 +119,6 @@ export class HorizontalBarChart extends Element {
 						)
 					}
 				/>
-
 			</div>
 		)
 	}

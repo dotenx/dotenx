@@ -17,6 +17,7 @@
 # # stripe/stripe-update-customer:lambda5
 # # hojjat12/twitter-send-tweet:lambda4
 # # hojjat12/youtube-upload-file:lambda4
+# # stripe/stripe-create-payment-link:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -166,6 +167,15 @@
 # export repository_name="hojjat12/youtube-upload-file"
 # export tag="lambda4"
 # export directory_address="youtube-upload-file/awsLambda"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="stripe/stripe-create-payment-link"
+# export tag="lambda"
+# export directory_address="stripe-create-payment-link"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name

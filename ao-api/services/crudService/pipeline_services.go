@@ -196,7 +196,7 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				// 	inputsArr = append(inputsArr, input)
 				// }
 				// inputsStr := strings.TrimSuffix(strings.Join(inputsArr, ","), ",")
-				code = fmt.Sprintf("module.exports = (inputs) => {\n%s\n}", gcode)
+				code = fmt.Sprintf("module.exports = async (inputs) => {\n%s\n}", gcode)
 				dependency = "{}"
 			} else {
 				body := make(map[string]models.TaskFieldDetailes)
@@ -297,21 +297,7 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 		// console.log("Function Arguments:", variables);
 
 		var args = {};
-		const keys = Object.keys(event.body);
-		for (let key of keys) {
-			const inputkeys = Object.keys(event.body[key].inputs);
-			console.log(inputkeys);
-			for (let inputkey of inputkeys) {
-				if (keys.length == 1) {
-					args[inputkey] = event.body[key].inputs[inputkey];
-				} else {
-					if (args[inputkey] == undefined) {
-						args[inputkey] = [];
-					}
-					args[inputkey].push(event.body[key].inputs[inputkey]);
-				}
-			}
-		}
+		args = event.body.inputs;
 
 		const f = require('entry.js');
 		const result = await f(args) || {};
