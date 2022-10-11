@@ -53,5 +53,13 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}) (string, error)
 	converted.WriteString(ds + "\n")
 	converted.WriteString(out.String())
 
+	mountSplider := `
+document.addEventListener( 'DOMContentLoaded', function() {
+	var splide = new Splide( '.splide' );
+	splide.mount();
+} );
+`
+	converted.WriteString("\n" + mountSplider) // TODO: mount splider only if there is a slider
+
 	return converted.String(), nil
 }
