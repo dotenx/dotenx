@@ -9,10 +9,30 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // this methods create an Automation from given base template and fields
-func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string, parentId int) (name string, err error) {
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string, userGroup string, parentId int) (name string, err error) {
+	templatePipeline, err := cm.GetPipelineByName(base.AccountId, base.Name, projectName)
+	if err != nil {
+		logrus.Error(err.Error())
+		return "", err
+	}
+	hasPermission := tpAccountId == ""
+	if len(templatePipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
+		for _, ug := range templatePipeline.UserGroups {
+			if ug == userGroup {
+				hasPermission = true
+				break
+			}
+		}
+	} else { // Having set no user groups for the pipeline means all the user groups have access to the pipeline
+		hasPermission = true
+	}
+	if !hasPermission {
+		return "", errors.New("you don't have permission to create automation from this template")
+	}
 	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
 	if err != nil {
 		return "", err
