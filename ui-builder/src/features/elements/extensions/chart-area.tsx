@@ -74,7 +74,11 @@ const options = {
 export class AreaChart extends Element {
 	name = 'Area'
 	icon = (<TbChartBar />)
-	data = { options, data }
+	data = {
+		text: '', // todo: remove this. this is only to suppress the error
+		options,
+		data,
+	}
 	style: Style = {
 		desktop: {
 			default: {

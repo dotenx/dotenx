@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { TbMessage2 } from 'react-icons/tb'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
-import { Element, RenderOptions } from '../element'
+import { Element, RenderFn, RenderOptions } from '../element'
 import { Style } from '../style'
 
 export class TextElement extends Element {
@@ -19,7 +19,7 @@ export class TextElement extends Element {
 		},
 	}
 
-	render(): ReactNode {
+	render(renderFn: RenderFn): ReactNode {
 		return <span dangerouslySetInnerHTML={{ __html: this.data.text }} />
 	}
 
