@@ -340,7 +340,10 @@ export interface Project {
 }
 
 export type GetTablesResponse = {
-	tables: string[]
+	tables: {
+		name: string,
+		is_public: boolean
+	}[]
 }
 
 export interface Table {

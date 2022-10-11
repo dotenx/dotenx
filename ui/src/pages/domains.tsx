@@ -1,4 +1,4 @@
-import { Button, Loader, TextInput, Title } from '@mantine/core'
+import { Button, Loader, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useClipboard } from '@mantine/hooks'
 import { useState } from 'react'
@@ -11,7 +11,6 @@ import { useGetProjectTag } from '../features/ui/hooks/use-get-project-tag'
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from '../internal/internal-api'
 import { z } from 'zod'
 import { toast } from 'react-toastify'
-import { HelpPopover } from '../features/ui/help-popover'
 import { PageTitle } from '../features/ui/page-title'
 
 export default function DomainsPage() {

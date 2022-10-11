@@ -226,7 +226,7 @@ function FieldsWrapper({
 
 				if ('filterSet' in filterSetValue) {
 					return (
-						<div className="flex gap-4">
+						<div key={index} className="flex gap-4">
 							<div className="shrink-0">
 								{index === 0 && <p className="pl-2 whitespace-nowrap">Where</p>}
 								{index === 1 && (
