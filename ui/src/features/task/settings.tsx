@@ -11,7 +11,7 @@ import { taskBuilderState, taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
 import { Description, Field, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
-import { JsonEditor } from '../ui/json-editor'
+import { JsonEditorInput } from '../ui/json-editor-input'
 import { CodeField } from './code-field'
 import { TestTask } from './test-step'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
@@ -278,7 +278,7 @@ const getFieldComponent = (
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<JsonEditor {...props} />
+					<JsonEditorInput {...props} />
 					<Description>{props.description}</Description>
 				</div>
 			)
