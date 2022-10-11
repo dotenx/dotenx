@@ -40,7 +40,7 @@ export function JsonEditor<
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
 					return (
-						<div className="p-2 mx-1 font-mono text-xs font-medium rounded cursor-default bg-gray-50">
+						<div className="p-2 mx-1 font-mono text-xs font-medium border border-gray-400 rounded cursor-default bg-gray-50">
 							<Object
 								properties={
 									!_.isArray(value)
@@ -85,7 +85,7 @@ export interface EditorObjectValue {
 
 export type JsonEditorFieldValue = EditorInput | EditorObjectValue[] | string[]
 
-function Object({
+export function Object({
 	properties,
 	changeProperties,
 	outputGroups,
@@ -185,7 +185,7 @@ function Property({
 	outputGroups: GroupData[]
 }) {
 	return (
-		<div className={clsx('flex items-start group', kind === PropertyKind.Object && 'flex-col')}>
+		<div className={clsx('flex group', kind === PropertyKind.Object && 'flex-col')}>
 			<div className="flex items-center">
 				<Actions
 					onClickText={() => changeKind(PropertyKind.String)}
@@ -201,19 +201,21 @@ function Property({
 				/>
 			</div>
 
-			<div>
+			<div className="grow">
 				{!_.isArray(property.value) && (
 					<div className="flex items-center">
 						<div>:</div>
-						<ComplexFieldRaw
-							compact
-							value={property.value}
-							onChange={(value) =>
-								changeProperty({ ...property, value: value as EditorInput })
-							}
-							groups={outputGroups}
-							valueKinds={['input-or-select']}
-						/>
+						<div className="grow">
+							<ComplexFieldRaw
+								compact
+								value={property.value}
+								onChange={(value) =>
+									changeProperty({ ...property, value: value as EditorInput })
+								}
+								groups={outputGroups}
+								valueKinds={['input-or-select']}
+							/>
+						</div>
 					</div>
 				)}
 				{_.isArray(property.value) && typeof property.value[0] !== 'string' && (
