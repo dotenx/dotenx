@@ -33,6 +33,8 @@ var pageTemplate = `<!DOCTYPE html>
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.17/dist/css/splide.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.17/dist/js/splide.min.js"></script>
 	<link rel="stylesheet" href="./{{.Name}}.css">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<head>
@@ -147,6 +149,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertImage(component, styleStore, functionStore)
 	case "Select":
 		return convertSelect(component, styleStore, functionStore)
+	case "Slider":
+		return convertSlider(component, styleStore, functionStore)
 	default:
 		return "", fmt.Errorf("Unknown component type: %s", component["kind"])
 	}

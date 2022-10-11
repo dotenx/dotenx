@@ -3,7 +3,13 @@ import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { TbAffiliate, TbArrowsMaximize, TbCornerUpLeft, TbCornerUpRight } from 'react-icons/tb'
+import {
+	TbAffiliate,
+	TbArrowsMaximize,
+	TbArrowsMinimize,
+	TbCornerUpLeft,
+	TbCornerUpRight,
+} from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
@@ -111,10 +117,16 @@ function PreviewButton() {
 		deselect()
 	}
 
+	const { isFullscreen } = useAtomValue(previewAtom)
+
 	return (
-		<Tooltip withArrow label={<Text size="xs">Preview</Text>} offset={10}>
+		<Tooltip
+			withArrow
+			label={<Text size="xs">{isFullscreen ? 'Edit' : 'Preview'}</Text>}
+			offset={10}
+		>
 			<ActionIcon onClick={handleClick}>
-				<TbArrowsMaximize />
+				{isFullscreen ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
 			</ActionIcon>
 		</Tooltip>
 	)
@@ -145,7 +157,10 @@ function AdvancedModeButton() {
 		openConfirmModal({
 			title: 'Please confirm your action',
 			children: (
-				<Text size="sm">This action is irreversible. It will toggle advanced mode.</Text>
+				<Text size="sm">
+					This action is irreversible. Once you switch to advanced mode, you cannot use
+					simple mode with this page anymore.
+				</Text>
 			),
 			labels: { confirm: 'Confirm', cancel: 'Cancel' },
 			onConfirm: saveAdvanced,
