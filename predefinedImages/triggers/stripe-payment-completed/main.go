@@ -1,4 +1,4 @@
-// image: awrmin/stripe-payment-completed:lambda4
+// image: awrmin/stripe-payment-completed:lambda6
 package main
 
 import (
@@ -71,6 +71,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			"customer_email": p.CustomerEmail,
 			"description":    p.Description,
 			"status":         p.Status,
+			"items":          p.Items,
 		})
 	}
 	returnValue := map[string]interface{}{
@@ -79,20 +80,23 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		"accountId": accId,
 	}
 	resp.ReturnValue = returnValue
-	resp.Triggered = true
+	if len(innerOut) > 0 {
+		resp.Triggered = true
+	}
 	fmt.Println("trigger successfully ended")
 	return resp, nil
 }
 
 type payment struct {
-	ID            string `json:"id"`
-	Amount        int64  `json:"amount"`
-	Currency      string `json:"currency"`
-	Created       string `json:"created"`
-	CustomerId    string `json:"customer_id"`
-	CustomerEmail string `json:"customer_email"`
-	Description   string `json:"description"`
-	Status        string `json:"status"`
+	ID            string      `json:"id"`
+	Amount        int64       `json:"amount"`
+	Currency      string      `json:"currency"`
+	Created       string      `json:"created"`
+	CustomerId    string      `json:"customer_id"`
+	CustomerEmail string      `json:"customer_email"`
+	Description   string      `json:"description"`
+	Status        string      `json:"status"`
+	Items         interface{} `json:"items"`
 }
 
 func main() {
@@ -110,6 +114,18 @@ func retrivePayments(sc *client.API, status string, interval int) ([]payment, er
 	for payments.Next() {
 		current := payments.PaymentIntent()
 		if string(current.Status) == status {
+			checkoutSessParams := &stripe.CheckoutSessionListParams{
+				PaymentIntent: &current.ID,
+			}
+			items := make([]stripe.LineItem, 0)
+			checkoutSessions := sc.CheckoutSessions.List(checkoutSessParams)
+			for checkoutSessions.Next() {
+				checkoutSession := checkoutSessions.CheckoutSession()
+				lineItems := sc.CheckoutSessions.ListLineItems(checkoutSession.ID, nil)
+				for lineItems.Next() {
+					items = append(items, *lineItems.LineItem())
+				}
+			}
 			res = append(res, payment{
 				ID:            current.ID,
 				Amount:        current.Amount,
@@ -119,6 +135,7 @@ func retrivePayments(sc *client.API, status string, interval int) ([]payment, er
 				CustomerEmail: current.Customer.Email,
 				Description:   current.Description,
 				Status:        string(current.Status),
+				Items:         items,
 			})
 		}
 	}

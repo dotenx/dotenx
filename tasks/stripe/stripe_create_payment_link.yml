@@ -1,0 +1,26 @@
+service: stripe
+type: Stripe create payment link
+image: stripe/stripe-create-payment-link:lambda
+integrations: [stripe]
+fields:
+    - key: CUS_ID
+      type: text
+      description: customer's Stripe id (e.g cus_asdfg8234sad)
+      display_name: customer id
+    - key: UI_URL
+      type: text
+      description: address of your website (e.g example.web.dotenx.com)
+      display_name: ui url
+    - key: SHOPPING_BAG
+      type: object
+      description: "a json format field that keys are price IDs and values are quantities (e.g { \"price_esl4sdcx5\": 2})"
+      display_name: shopping bag
+outputs:
+    - key: payment_url
+      type: text
+      description: payment url
+      display_name: payment url
+author: Hojjat-1
+icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
+node_color: FBFB11
+description: create payment link for checkout basket in Stripe
