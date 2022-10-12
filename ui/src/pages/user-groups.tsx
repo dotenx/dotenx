@@ -1,4 +1,4 @@
-import { Button, Title } from '@mantine/core'
+import { Button } from '@mantine/core'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'

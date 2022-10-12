@@ -216,8 +216,9 @@ export function AutomationList({
 							(!['automation', 'template_automations'].includes(kind)
 								? col.Header !== 'Status'
 								: true) &&
-							(kind !== 'interaction'
-								? !['Public', 'User groups'].includes(col.Header)
+							(kind !== 'interaction' ? !['Public'].includes(col.Header) : true) &&
+							(!['interaction', 'template'].includes(kind)
+								? !['User groups'].includes(col.Header)
 								: true) &&
 							(kind !== 'template' ? col.Header !== 'Created automations' : true) &&
 							(kind === 'template_automations' ? col.Header !== 'Name' : true) &&
@@ -279,7 +280,7 @@ export function AutomationList({
 			<Modal fluid kind={Modals.InteractionUserGroup} title="User groups" size="md">
 				{(data: { name: string; userGroup: string[] }) => (
 					<div className="flex flex-col">
-						<p className="my-6">Select which user groups can access this interaction</p>
+						<p className="my-6">Select which user groups can access this {kind}</p>
 						<Form
 							className="h-full"
 							onSubmit={onSubmit((values) =>
