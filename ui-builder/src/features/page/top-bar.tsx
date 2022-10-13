@@ -28,6 +28,7 @@ import { PageSelection } from './page-selection'
 export const selectedPageAtom = atom({ exists: false, route: '' })
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
+export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
 	useFetchProjectTag()
@@ -69,6 +70,7 @@ const useFetchPage = () => {
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStates((store) => store.setState)
 	const setClassNames = useClassesStore((store) => store.set)
+	const setPageParams = useSetAtom(pageParamsAtom)
 
 	useQuery(
 		[QueryKey.PageDetails, projectTag, selectedPage.route],
@@ -79,6 +81,7 @@ const useFetchPage = () => {
 				resetCanvas(content.layout)
 				setDataSources(content.dataSources)
 				setClassNames(content.classNames)
+				setPageParams(content.pageParams)
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
@@ -151,6 +154,7 @@ function AdvancedModeButton() {
 			dataSources,
 			classNames: classes,
 			mode: 'advanced',
+			pageParams: [],
 		})
 	}
 	const handleClick = () => {

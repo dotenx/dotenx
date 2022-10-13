@@ -34,6 +34,7 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 			dataSources: [],
 			classNames: {},
 			mode: 'simple',
+			pageParams: [],
 		})
 	})
 

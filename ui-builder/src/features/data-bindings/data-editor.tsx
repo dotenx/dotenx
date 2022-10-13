@@ -19,9 +19,9 @@ import produce from 'immer'
 import _ from 'lodash'
 import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
-import { JsonArray, uuid } from '../../utils'
+import { uuid } from '../../utils'
 import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
-import { findParent, useElementsStore } from '../elements/elements-store'
+import { useElementsStore } from '../elements/elements-store'
 import {
 	Action,
 	ActionKind,
@@ -33,14 +33,10 @@ import {
 	ToggleStateAction,
 } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { IntelinputText } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
-import {
-	DataSource,
-	findPropertyPaths,
-	PropertyKind,
-	useDataSourceStore,
-} from './data-source-store'
-import { usePageStates } from './page-states'
+import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
+import { useGetStates } from './use-get-states'
 
 export function DataEditor() {
 	const element = useSelectedElement()
@@ -48,11 +44,10 @@ export function DataEditor() {
 		dataSources: store.sources,
 		addDataSource: store.add,
 	}))
-	const { set, elements } = useElementsStore((store) => ({
+	const { set } = useElementsStore((store) => ({
 		set: store.set,
-		elements: store.elements,
 	}))
-	const pageStates = usePageStates((store) => store.states)
+	const states = useGetStates()
 	if (!element) return null
 
 	const handleAddEvent = () => {
@@ -110,44 +105,6 @@ export function DataEditor() {
 			})
 		)
 	}
-
-	const repeatedState = element.repeatFrom?.name
-		? _.get(pageStates, element.repeatFrom.name)
-		: null
-	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
-	const repeatedProperties = findPropertyPaths(repeatedSample)
-
-	const repeatedParent = findRepeatedParent(element, elements)
-	let passedProperties: { kind: PropertyKind; name: string }[] = []
-	if (repeatedParent && repeatedParent.repeatFrom?.name) {
-		const parentState = _.get(pageStates, repeatedParent.repeatFrom.name) as JsonArray
-		passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
-			kind: property.kind,
-			name: `${repeatedParent.repeatFrom?.iterator}${property.path}`,
-		}))
-	}
-
-	const states = [
-		...getStateNames(elements).map((stateName) => ({
-			kind: PropertyKind.Unknown,
-			name: stateName,
-		})),
-		...dataSources
-			.map((source) =>
-				source.properties.map((property) => ({
-					kind: property.kind,
-					name: `$store-${source.stateName}${property.path}`,
-				}))
-			)
-			.flat(),
-		...(element.repeatFrom
-			? repeatedProperties.map((property) => ({
-					kind: property.kind,
-					name: `${element.repeatFrom?.iterator}${property.path}`,
-			  }))
-			: []),
-		...passedProperties,
-	]
 
 	const events = element.events.map((event) => (
 		<EventInput
@@ -283,13 +240,6 @@ function RepeatInput({
 			)}
 		</div>
 	)
-}
-
-const findRepeatedParent = (element: Element, elements: Element[]): Element | null => {
-	const parent = findParent(element.id, elements)
-	if (!parent) return null
-	if (parent.repeatFrom) return parent
-	return findRepeatedParent(parent, elements)
 }
 
 function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
@@ -667,7 +617,7 @@ export function SetStateSettings({
 			className="space-y-4"
 		>
 			<div>
-				<TextInput label="Set" {...form.getInputProps('name')} />
+				<IntelinputText label="Set" {...form.getInputProps('name')} />
 				<Text size="xs" mt="xs" color="dimmed">
 					The name to set a value for
 				</Text>
