@@ -1,20 +1,28 @@
-import { ReactNode } from 'react'
-import { TbChartBar } from 'react-icons/tb'
-import { Style } from '../style'
-import { Element, RenderFn, RenderOptions } from '../element'
-
 import {
-	Chart as ChartJS,
 	CategoryScale,
-	LinearScale,
-	PointElement,
-	LineElement,
-	Title,
-	Tooltip,
+	Chart as ChartJS,
+	ChartData,
 	Filler,
 	Legend,
+	LinearScale,
+	LineElement,
+	PointElement,
+	Title,
+	Tooltip,
 } from 'chart.js'
-
+import { ReactNode } from 'react'
+import { Line } from 'react-chartjs-2'
+import { TbChartBar } from 'react-icons/tb'
+import { Element, RenderOptions } from '../element'
+import { Style } from '../style'
+import { AreaChart } from './chart-area'
+import {
+	ChartOptions,
+	defaultAxisFrom,
+	defaultChartData,
+	defaultChartLabels,
+	useGetAxisFrom,
+} from './chart-bar'
 ChartJS.register(
 	CategoryScale,
 	LinearScale,
@@ -26,19 +34,13 @@ ChartJS.register(
 	Legend
 )
 
-import { Line } from 'react-chartjs-2'
-import { TextInput } from '@mantine/core'
-import produce from 'immer'
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
-
 const data = {
-	labels,
+	labels: defaultChartLabels,
 	datasets: [
 		{
 			fill: false, // This is the only difference from chart-area
 			label: 'Dataset',
-			data: labels.map(() => Math.ceil(Math.random() * 1000)),
+			data: defaultChartData,
 			borderColor: 'rgb(53, 162, 235)',
 			backgroundColor: 'rgba(53, 162, 235, 0.5)',
 		},
@@ -78,6 +80,7 @@ export class LineChart extends Element {
 		text: '', // todo: remove this. this is only to suppress the error
 		options,
 		data,
+		axisFrom: defaultAxisFrom,
 	}
 	style: Style = {
 		desktop: {
@@ -92,45 +95,15 @@ export class LineChart extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return (
-			<div className="space-y-6">
-				<TextInput
-					label="Title"
-					size="xs"
-					value={this.data.options.plugins.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.plugins.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="X-axis title"
-					size="xs"
-					value={this.data.options.scales.x.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.x.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="Y-axis title"
-					size="xs"
-					value={this.data.options.scales.y.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.y.title.text = event.target.value
-							})
-						)
-					}
-				/>
-			</div>
-		)
+		return <ChartOptions element={this} set={set} />
 	}
+
+	renderPreview() {
+		return <ChartPreview element={this} />
+	}
+}
+
+function ChartPreview({ element }: { element: AreaChart }) {
+	const data = useGetAxisFrom(element) as ChartData<'line'>
+	return <Line options={element.data.options} data={data} />
 }

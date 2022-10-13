@@ -94,6 +94,7 @@ export const addPage = ({
 	dataSources,
 	classNames,
 	mode,
+	pageParams,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -112,6 +113,7 @@ export const addPage = ({
 			dataSources,
 			classNames: kebabClasses,
 			mode,
+			pageParams,
 		},
 	})
 }

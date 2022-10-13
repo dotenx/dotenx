@@ -1,16 +1,20 @@
+import {
+	Chart as ChartJS,
+	ChartData,
+	Legend,
+	LinearScale,
+	LineElement,
+	PointElement,
+	Tooltip,
+} from 'chart.js'
 import { ReactNode } from 'react'
-import { TbChartBar } from 'react-icons/tb'
-import { Style } from '../style'
-// import faker from "faker";
-import { Element, RenderFn, RenderOptions } from '../element'
-
-import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
 import { Scatter } from 'react-chartjs-2'
+import { TbChartBar } from 'react-icons/tb'
+import { Element, RenderOptions } from '../element'
+import { Style } from '../style'
+import { ChartOptions, defaultAxisFrom, useGetAxisFrom } from './chart-bar'
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
-
-import { TextInput } from '@mantine/core'
-import produce from 'immer'
 
 export const options = {
 	plugins: {
@@ -59,6 +63,7 @@ export class ScatterChart extends Element {
 		text: '', // todo: remove this. this is only to suppress the error
 		options,
 		data,
+		axisFrom: defaultAxisFrom,
 	}
 	style: Style = {
 		desktop: {
@@ -73,45 +78,15 @@ export class ScatterChart extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return (
-			<div className="space-y-6">
-				<TextInput
-					label="Title"
-					size="xs"
-					value={this.data.options.plugins.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.plugins.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="X-axis title"
-					size="xs"
-					value={this.data.options.scales.x.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.x.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="Y-axis title"
-					size="xs"
-					value={this.data.options.scales.y.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.y.title.text = event.target.value
-							})
-						)
-					}
-				/>
-			</div>
-		)
+		return <ChartOptions element={this} set={set} />
 	}
+
+	renderPreview() {
+		return <ChartPreview element={this} />
+	}
+}
+
+function ChartPreview({ element }: { element: ScatterChart }) {
+	const data = useGetAxisFrom(element) as ChartData<'scatter'>
+	return <Scatter options={element.data.options} data={data} />
 }

@@ -4,7 +4,6 @@ import { AreaChart } from './extensions/chart-area'
 import { BarChart } from './extensions/chart-bar'
 import { BubbleChart } from './extensions/chart-bubble'
 import { DoughnutChart } from './extensions/chart-doughnut'
-import { HorizontalBarChart } from './extensions/chart-horizontal-bar'
 import { LineChart } from './extensions/chart-line'
 import { PieChart } from './extensions/chart-pie'
 import { PolarAreaChart } from './extensions/chart-polar-area'
@@ -57,7 +56,6 @@ export const ElementSections = [
 		title: 'Charts',
 		items: [
 			BarChart,
-			HorizontalBarChart,
 			AreaChart,
 			LineChart,
 			PieChart,
