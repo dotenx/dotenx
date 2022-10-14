@@ -1,16 +1,12 @@
+import { Chart as ChartJS, ChartData, Legend, LinearScale, PointElement, Tooltip } from 'chart.js'
 import { ReactNode } from 'react'
-import { TbChartBar } from 'react-icons/tb'
-import { Style } from '../style'
-// import faker from "faker";
-import { Element, RenderFn, RenderOptions } from '../element'
-
-import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from 'chart.js'
 import { Bubble } from 'react-chartjs-2'
+import { TbChartBar } from 'react-icons/tb'
+import { Element, RenderOptions } from '../element'
+import { Style } from '../style'
+import { ChartOptions, defaultAxisFrom, useGetAxisFrom } from './chart-bar'
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend)
-
-import { TextInput } from '@mantine/core'
-import produce from 'immer'
 
 export const options = {
 	plugins: {
@@ -60,6 +56,7 @@ export class BubbleChart extends Element {
 		text: '', // todo: remove this. this is only to suppress the error
 		options,
 		data,
+		axisFrom: defaultAxisFrom,
 	}
 	style: Style = {
 		desktop: {
@@ -74,45 +71,15 @@ export class BubbleChart extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return (
-			<div className="space-y-6">
-				<TextInput
-					label="Title"
-					size="xs"
-					value={this.data.options.plugins.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.plugins.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="X-axis title"
-					size="xs"
-					value={this.data.options.scales.x.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.x.title.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TextInput
-					label="Y-axis title"
-					size="xs"
-					value={this.data.options.scales.y.title.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.options.scales.y.title.text = event.target.value
-							})
-						)
-					}
-				/>
-			</div>
-		)
+		return <ChartOptions element={this} set={set} />
 	}
+
+	renderPreview() {
+		return <ChartPreview element={this} />
+	}
+}
+
+function ChartPreview({ element }: { element: BubbleChart }) {
+	const data = useGetAxisFrom(element) as ChartData<'bubble'>
+	return <Bubble options={element.data.options} data={data} />
 }

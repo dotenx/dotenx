@@ -32,6 +32,7 @@ export type AddPageRequest = {
 	dataSources: DataSource[]
 	classNames: Record<string, Style>
 	mode: LayoutMode
+	pageParams: string[]
 }
 
 export type PublishPageRequest = {
@@ -52,6 +53,7 @@ interface PageDetails {
 		dataSources: DataSource[]
 		classNames: Record<string, BackendStyle>
 		mode: LayoutMode
+		pageParams: string[]
 	}
 }
 

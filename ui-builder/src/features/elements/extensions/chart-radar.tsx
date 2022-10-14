@@ -1,18 +1,19 @@
-import { ReactNode } from 'react'
-import { TbChartBar } from 'react-icons/tb'
-import { Style } from '../style'
-import { Element, RenderFn, RenderOptions } from '../element'
-
 import {
 	Chart as ChartJS,
-	RadialLinearScale,
-	PointElement,
-	LineElement,
+	ChartData,
 	Filler,
-	Tooltip,
 	Legend,
+	LineElement,
+	PointElement,
+	RadialLinearScale,
+	Tooltip,
 } from 'chart.js'
+import { ReactNode } from 'react'
 import { Radar } from 'react-chartjs-2'
+import { TbChartBar } from 'react-icons/tb'
+import { Element, RenderOptions } from '../element'
+import { Style } from '../style'
+import { ChartOptions, defaultAxisFrom, useGetAxisFrom } from './chart-bar'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
@@ -35,6 +36,7 @@ export class RadarChart extends Element {
 	data = {
 		text: '', // todo: remove this. this is only to suppress the error
 		data,
+		axisFrom: defaultAxisFrom,
 	}
 	style: Style = {
 		desktop: {
@@ -49,6 +51,15 @@ export class RadarChart extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return <div className="space-y-6"></div>
+		return <ChartOptions element={this} set={set} />
 	}
+
+	renderPreview() {
+		return <ChartPreview element={this} />
+	}
+}
+
+function ChartPreview({ element }: { element: RadarChart }) {
+	const data = useGetAxisFrom(element) as ChartData<'radar'>
+	return <Radar data={data} />
 }

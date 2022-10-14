@@ -1,10 +1,11 @@
-import { Textarea } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbMessage2 } from 'react-icons/tb'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
+import { IntelinputText } from '../../ui/intelinput'
 import { Element, RenderFn, RenderOptions } from '../element'
+import { useElementsStore } from '../elements-store'
 import { Style } from '../style'
 
 export class TextElement extends Element {
@@ -24,25 +25,28 @@ export class TextElement extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return (
-			<div className="space-y-6">
-				<Textarea
-					label="Text"
-					size="xs"
-					value={this.data.text}
-					autosize
-					maxRows={10}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.text = event.target.value
-							})
-						)
-					}
-				/>
-				<TypographyEditor simple />
-				<SpacingEditor />
-			</div>
-		)
+		return <TextOptions element={this} />
 	}
+}
+
+function TextOptions({ element }: { element: TextElement }) {
+	const set = useElementsStore((store) => store.set)
+
+	return (
+		<div className="space-y-6">
+			<IntelinputText
+				label="Text"
+				value={element.data.text}
+				onChange={(value) =>
+					set(
+						produce(element, (draft) => {
+							draft.data.text = value
+						})
+					)
+				}
+			/>
+			<TypographyEditor simple />
+			<SpacingEditor />
+		</div>
+	)
 }

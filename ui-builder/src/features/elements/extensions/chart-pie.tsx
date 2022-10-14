@@ -1,14 +1,13 @@
 import { ReactNode } from 'react'
 import { TbChartBar } from 'react-icons/tb'
+import { Element, RenderOptions } from '../element'
 import { Style } from '../style'
-import { Element, RenderFn, RenderOptions } from '../element'
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { ArcElement, Chart as ChartJS, ChartData, Legend, Tooltip } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-import { TextInput } from '@mantine/core'
-import produce from 'immer'
+import { ChartOptions, defaultAxisFrom, useGetAxisFrom } from './chart-bar'
 
 export const data = {
 	labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -43,6 +42,7 @@ export class PieChart extends Element {
 	data = {
 		text: '', // todo: remove this. this is only to suppress the error
 		data,
+		axisFrom: defaultAxisFrom,
 	}
 	style: Style = {
 		desktop: {
@@ -57,6 +57,15 @@ export class PieChart extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return <div className="space-y-6"></div>
+		return <ChartOptions element={this} set={set} />
 	}
+
+	renderPreview() {
+		return <ChartPreview element={this} />
+	}
+}
+
+function ChartPreview({ element }: { element: PieChart }) {
+	const data = useGetAxisFrom(element) as ChartData<'pie'>
+	return <Pie data={data} />
 }
