@@ -11,12 +11,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (ms *marketplaceService) ExportProject(accountId string, projectName string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error) {
+func (ms *marketplaceService) ExportProject(accountId string, projectName, projectTag string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error) {
 	projectDto = models.ProjectDto{}
 	projectDto.Name = projectName
 
 	// Get the list of all the tables of this project
-	projectDto.DataBaseTables, err = getTables(accountId, projectName, dbService)
+	projectDto.DataBaseTables, err = getTables(accountId, projectName, projectTag, dbService)
 	if err != nil {
 		log.Printf("Error getting project: %v", err)
 		return
@@ -39,7 +39,7 @@ func (ms *marketplaceService) ExportProject(accountId string, projectName string
 	return
 }
 
-func getTables(accountId, projectName string, dbService databaseService.DatabaseService) ([]models.DatabaseTable, error) {
+func getTables(accountId, projectName, projectTag string, dbService databaseService.DatabaseService) ([]models.DatabaseTable, error) {
 	tableNames, err := dbService.GetTablesList(accountId, projectName)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,12 @@ func getTables(accountId, projectName string, dbService databaseService.Database
 		if err != nil {
 			return nil, err
 		}
-		tables = append(tables, models.DatabaseTable{Name: tableName, Columns: columns})
+		isTablePublic, _ := dbService.IsTablePublic(projectTag, tableName)
+		tables = append(tables, models.DatabaseTable{
+			Name:     tableName,
+			Columns:  columns,
+			IsPublic: isTablePublic,
+		})
 	}
 	return tables, nil
 }

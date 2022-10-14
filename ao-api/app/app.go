@@ -344,14 +344,16 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 	database.DELETE("/project/:project_name/table/:table_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTable())
+	database.PATCH("/project/:project_name/table/:table_name/access", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.SetTableAccess())
 	database.POST("/table/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTableColumn())
 	database.DELETE("/project/:project_name/table/:table_name/column/:column_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTableColumn())
-	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList())
+	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList(ProjectService))
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.InsertRow())
 	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.UpdateRow())
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRows())
+	public.POST("/database/query/select/project/:project_tag/table/:table_name", databaseController.SelectRowsPublicly())
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
 	// user management router (with authentication)
@@ -388,7 +390,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.GetComponent())
 
 	// marketplace router
-	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices, uiComponentServi))
+	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices, uiComponentServi, ProjectService))
 	marketplace.POST("/upload", marketplaceController.Upload())
 	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
 	marketplace.PATCH("/item/:id/enable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.EnableItem())

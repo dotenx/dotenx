@@ -20,7 +20,7 @@ type MarketplaceService interface {
 	ListItemsByAccount(accountId int) ([]models.MarketplaceItem, error)
 	ListItemsByType(itemType string) ([]models.MarketplaceItem, error)
 	ListItems(accountId, category, itemType string, enable bool) ([]models.MarketplaceItem, error)
-	ExportProject(accountId string, projectName string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error)
+	ExportProject(accountId string, projectName, projectTag string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error)
 	GetProjectOfItem(id int) (projectDto models.ProjectDto, err error)
 	GetComponentOfItem(id int) (componentDto models.ExportableUIComponent, err error)
 	GetTemporaryCredential(useCase, accountId string) (credentials sts.Credentials, err error)
