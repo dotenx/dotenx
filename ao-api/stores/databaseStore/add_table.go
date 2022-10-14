@@ -15,7 +15,11 @@ CREATE TABLE IF NOT EXISTS %s (
 )
 `
 
-func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string) error {
+var addCommentToTable = `
+COMMENT ON TABLE %s IS %s
+`
+
+func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic bool) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 
 	defer fn(db.Connection)
@@ -27,6 +31,19 @@ func (ds *databaseStore) AddTable(ctx context.Context, accountId string, project
 	if err != nil {
 		log.Println("Error creating table:", err)
 		return err
+	}
+	if isPublic {
+		_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": true}'"))
+		if err != nil {
+			log.Println("Error creating table:", err)
+			return err
+		}
+	} else {
+		_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": false}'"))
+		if err != nil {
+			log.Println("Error creating table:", err)
+			return err
+		}
 	}
 	log.Println("Table created:", tableName)
 	return nil
