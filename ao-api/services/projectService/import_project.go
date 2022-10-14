@@ -24,10 +24,10 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 		return err
 	}
 	for _, table := range project.DataBaseTables {
-		if table.Name == "user_info" || table.Name == "user_group" {
+		if table.Name == "user_info" || table.Name == "user_group" || table.Name == "security_code" {
 			continue
 		}
-		err := dbService.AddTable(accountId, newProjectName, table.Name)
+		err := dbService.AddTable(accountId, newProjectName, table.Name, table.IsPublic)
 		if err != nil {
 			return err
 		}

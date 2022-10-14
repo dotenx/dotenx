@@ -12,8 +12,10 @@ func New(db *db.DB) DatabaseStore {
 }
 
 type DatabaseStore interface {
-	AddTable(ctx context.Context, accountId string, projectName string, tableName string) error
+	AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic bool) error
 	DeleteTable(ctx context.Context, accountId string, projectName string, tableName string) error
+	IsTablePublic(ctx context.Context, projectTag string, tableName string) (bool, error)
+	SetTableAccess(ctx context.Context, accountId, projectName, tableName string, isPublic bool) error
 	AddTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)

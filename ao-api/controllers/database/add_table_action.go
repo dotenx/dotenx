@@ -29,7 +29,7 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
-		if err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName); err != nil {
+		if err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic); err != nil {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
@@ -42,4 +42,5 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 type addTableDTO struct {
 	ProjectName string `json:"projectName"`
 	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=2,max=20"`
+	IsPublic    bool   `json:"isPublic"`
 }
