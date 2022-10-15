@@ -1,5 +1,6 @@
 import { CardList } from './card-list'
 import { CreateForm } from './create-form'
+import { FaqBasic } from './faq-basic'
 import { FeatureCenterGrid } from './feature-center-grid'
 import { GalleryBasic } from './gallery-basic'
 import { Hero } from './hero'
@@ -11,5 +12,6 @@ export const controllers = [
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Gallery', items: [GalleryBasic] },
 	{ title: 'Features', items: [FeatureCenterGrid] },
+	{ title: 'FAQ', items: [FaqBasic] },
 	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 ] as const
