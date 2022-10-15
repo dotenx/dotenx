@@ -1,15 +1,16 @@
 import _ from 'lodash'
 import { useQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
 import { API_URL, getColumns, QueryKey } from '../../api'
 import { columnTypeKinds } from '../../constants'
 import { Endpoint, Loader } from '../ui'
 
 interface TableEndpointsProps {
 	projectTag: string
-	tableName: string
 }
 
-export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
+export function TableEndpoints({ projectTag }: TableEndpointsProps) {
+	const { tableName = '', isPublic } = useParams()
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
 	const columns = query.data?.data.columns ?? []
 	const body = _.fromPairs(
@@ -35,9 +36,17 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 
 	return (
 		<div className="space-y-8">
+			{isPublic === 'public' && (
+				<Endpoint
+					label="Public access"
+					url={`${API_URL}/public/database/query/select/project/${projectTag}/table/${tableName}`}
+					method="POST"
+					code={{ columns: columns.map((column) => column.name) }}
+				/>
+			)}
 			<Endpoint
 				label="Add a record"
-				url={`${API_URL}/database/query/insert/project/${projectTag}/table/${tableName}`}
+				url={`${API_URL}/database/query/insert/project//table/`}
 				method="POST"
 				code={body}
 			/>
@@ -57,7 +66,7 @@ export function TableEndpoints({ projectTag, tableName }: TableEndpointsProps) {
 				label="Delete a record by ID"
 				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}`}
 				method="DELETE"
-				code={{ rowId: "<id>" }}
+				code={{ rowId: '<id>' }}
 			/>
 		</div>
 	)
