@@ -62,7 +62,7 @@ function TableItem({
 		<div
 			className={`grid grid-cols-1 py-2  place-items-center w-40 h-32 transition rounded shadow-sm bg-rose-50 shadow-rose-50 text-rose-900 hover:bg-rose-100 hover:shadow hover:shadow-rose-100 outline-rose-400 `}
 		>
-			<Link to={name} className="text-xl font-medium">
+			<Link to={name + (isPublic ? '/public' : '')} className="text-xl font-medium">
 				{name}
 			</Link>
 			<div

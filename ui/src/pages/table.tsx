@@ -48,7 +48,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		() => getTableRecords(projectTag, tableName, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = (recordsQuery.data?.data?.rows||[]).map((record) =>
+	const records = (recordsQuery.data?.data?.rows || []).map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === 'boolean'
@@ -114,7 +114,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<RecordForm columns={formColumns} projectTag={projectTag} tableName={tableName} />
 			</NewModal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
-				<TableEndpoints projectTag={projectTag} tableName={tableName} />
+				<TableEndpoints projectTag={projectTag} />
 			</Drawer>
 			<NewModal kind={Modals.QueryBuilder} title="Query Builder" size="1100px">
 				<QueryTable
@@ -144,8 +144,9 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						defaultValues={_.fromPairs(
 							_.toPairs(
 								_.omit(
-									recordsQuery.data?.data?.rows.find((record) => record.id === id) ??
-										data,
+									recordsQuery.data?.data?.rows.find(
+										(record) => record.id === id
+									) ?? data,
 									['id', 'creator_id']
 								)
 							).map(([key, value]) => [

@@ -379,7 +379,7 @@ function Outputs({ control, errors }: OutputsProps) {
 			<button
 				type="button"
 				className="flex items-center justify-center w-8 h-8 mt-2 text-xl transition rounded-lg bg-gray-50 hover:bg-gray-100"
-				onClick={() => append({})}
+				onClick={() => append({} as any)}
 			>
 				<IoAdd />
 			</button>
