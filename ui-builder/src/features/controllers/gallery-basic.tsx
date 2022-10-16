@@ -1,12 +1,14 @@
 import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/gallery-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageDrop } from '../ui/image-drop'
+import { viewportAtom } from '../viewport/viewport-store'
 import { Controller, ElementOptions } from './controller'
-import { repeatObject } from './helpers'
+import { repeatObject, SimpleComponentOptionsProps } from './helpers'
 
 export class GalleryBasic extends Controller {
 	name = 'Basic Gallery'
@@ -20,23 +22,12 @@ export class GalleryBasic extends Controller {
 
 // =============  renderOptions =============
 
-type GalleryBasicOptionsProps = {
-	options: ElementOptions
-}
-
-function GalleryBasicOptions({ options }: GalleryBasicOptionsProps) {
+function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[0] as BoxElement
 	const getSelectedSimpleDiv = () => containerDiv.children?.[selectedTile] as BoxElement
-
-	const MARKS = [
-		{ value: 0, label: '1' },
-		{ value: 25, label: '2' },
-		{ value: 50, label: '3' },
-		{ value: 75, label: '4' },
-		{ value: 100, label: '5' },
-	]
+	const viewport = useAtomValue(viewportAtom)
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
@@ -51,71 +42,145 @@ function GalleryBasicOptions({ options }: GalleryBasicOptionsProps) {
 				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
 		}
 	}
+
 	return (
 		<div className="space-y-6">
-			<p>Desktop mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('desktop')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.desktop = {
-								default: {
-									...draft.style.desktop?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
-				}}
-			/>
-			<p>Tablet mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('tablet')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.tablet = {
-								default: {
-									...draft.style.tablet?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
-				}}
-			/>
-			<p>Mobile mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('mobile')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.mobile = {
-								default: {
-									...draft.style.mobile?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
-				}}
-			/>
+			{viewport === 'desktop' && (
+				<>
+					<p>Desktop mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('desktop')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.desktop = {
+										default: {
+											...draft.style.desktop?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.desktop = {
+										default: {
+											...draft.style.desktop?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
+			{viewport === 'tablet' && (
+				<>
+					<p>Tablet mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('tablet')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.tablet = {
+										default: {
+											...draft.style.tablet?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.tablet = {
+										default: {
+											...draft.style.tablet?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
+			{viewport === 'mobile' && (
+				<>
+					<p>Mobile mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('mobile')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.mobile = {
+										default: {
+											...draft.style.mobile?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={1}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.mobile = {
+										default: {
+											...draft.style.mobile?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
 
 			<Button
 				size="xs"

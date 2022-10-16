@@ -6,6 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
+import { SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasic extends Controller {
 	name = 'Basic FAQ'
@@ -19,11 +20,8 @@ export class FaqBasic extends Controller {
 
 // =============  renderOptions =============
 
-type GalleryBasicOptionsProps = {
-	options: ElementOptions
-}
 
-function GalleryBasicOptions({ options }: GalleryBasicOptionsProps) {
+function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement

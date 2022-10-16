@@ -267,6 +267,10 @@ var migrations = []struct {
 		name: "create-trigger-checker-table",
 		stmt: createTriggerCheckerTable,
 	},
+	{
+		name: "create-ui-builder-global-states-table",
+		stmt: createUIBuilderGlobalStatesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -752,5 +756,14 @@ project_name 		       VARCHAR(128) NOT NULL,
 pipeline_name              VARCHAR(128) NOT NULL,
 trigger_name               VARCHAR(64) NOT NULL,
 list                       JSONB
+)
+`
+
+var createUIBuilderGlobalStatesTable = `
+CREATE TABLE IF NOT EXISTS ui_builder_global_states (
+account_id                 VARCHAR(64) NOT NULL,
+project_name 		       VARCHAR(128) NOT NULL,
+states                     VARCHAR [] NOT NULL DEFAULT '{}',
+UNIQUE (account_id, project_name)
 )
 `
