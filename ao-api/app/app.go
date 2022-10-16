@@ -382,6 +382,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
+	uibuilder.POST("/project/name/:project_name/state/global", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.UpsertGlobalStates())
+	uibuilder.GET("/project/name/:project_name/state/global", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetGlobalStates())
 
 	// uicomponent router
 	uibuilder.POST("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.UpsertComponent(marketplaceService))
