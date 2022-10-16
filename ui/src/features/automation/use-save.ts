@@ -106,9 +106,9 @@ export function mapElementsToPayload(elements: Elements<TaskNodeData | EdgeData>
 			const fieldValue = taskFields[fieldName]
 			body[fieldName] = toBackendData(fieldValue)
 		}
-		node.data.vars?.forEach((variable) => {
-			body[variable.key] = toBackendData(variable.value)
-		})
+		// node.data.vars?.forEach((variable) => {
+		// 	body[variable.key] = toBackendData(variable.value)
+		// })
 		tasks[node.data.name] = {
 			type: node.data.type,
 			body,
@@ -230,14 +230,14 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 			case 'assignment':
 				return {
 					type: step.type,
-					params: { name: step.params.name.data, value: step.params.value.data },
+					params: { name: step.params.name?.data, value: step.params.value?.data },
 				}
 			case 'function_call':
 				return {
 					type: step.type,
 					params: {
 						name: step.params.fnName,
-						arguments: step.params.arguments.map((arg) => arg.data),
+						arguments: step.params.arguments.map((arg) => arg?.data),
 						output: step.params.output?.data || undefined,
 					},
 				}
@@ -248,7 +248,7 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 						url: step.params.url,
 						method: step.params.method,
 						headers: {
-							'DTX-auth': step.params.accessToken.data,
+							'DTX-auth': step.params.accessToken?.data,
 						},
 						body: step.params.body,
 						output: step.params.output?.data || undefined,
@@ -258,8 +258,8 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 				return {
 					type: step.type,
 					params: {
-						collection: step.params.collection.data,
-						iterator: step.params.iterator.data,
+						collection: step.params.collection?.data,
+						iterator: step.params.iterator?.data,
 						body: normalizeBuilderSteps(step.params.body),
 					},
 				}
@@ -268,7 +268,7 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 					type: step.type,
 					params: {
 						branches: step.params.branches.map((branch) => ({
-							condition: branch.condition.data,
+							condition: branch.condition?.data,
 							body: normalizeBuilderSteps(branch.body),
 						})),
 						elseBranch: normalizeBuilderSteps(step.params.elseBranch),
@@ -278,20 +278,20 @@ function normalizeBuilderSteps(steps: BuilderSteps): BuilderStep[] {
 				return {
 					type: step.type,
 					params: {
-						count: step.params.count.data,
-						iterator: step.params.iterator.data,
+						count: step.params.count?.data,
+						iterator: step.params.iterator?.data,
 						body: normalizeBuilderSteps(step.params.body),
 					},
 				}
 			case 'output':
 				return {
 					type: step.type,
-					params: { value: step.params.value.data },
+					params: { value: step.params.value?.data },
 				}
 			case 'var_declaration':
 				return {
 					type: step.type,
-					params: { name: step.params.name.data },
+					params: { name: step.params.name?.data },
 				}
 		}
 	})

@@ -201,7 +201,7 @@ export function TaskSettings({
 							errors: errors,
 							label: label,
 							name: `others.${taskField.key}`,
-							groups: outputGroups,
+							groups: mode !== 'custom_task' ? outputGroups : [],
 							description: taskField.description,
 							onClick: () =>
 								setTaskCode({
@@ -211,7 +211,8 @@ export function TaskSettings({
 								}),
 							openBuilder: () => setTaskBuilder({ opened: true }),
 						},
-						taskType
+						taskType,
+						mode
 					)
 				})}
 				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
@@ -224,7 +225,11 @@ export function TaskSettings({
 					/>
 				)}
 				{hasDynamicVariables && (
-					<Variables control={control} errors={errors} outputGroups={outputGroups} />
+					<Variables
+						control={control}
+						errors={errors}
+						outputGroups={mode !== 'custom_task' ? outputGroups : []}
+					/>
 				)}
 			</div>
 
@@ -251,7 +256,8 @@ const getFieldComponent = (
 		onClick: () => void
 		description: string
 	} & { openBuilder: () => void },
-	type: string
+	type: string,
+	mode?: string
 ) => {
 	if (type === 'Custom task' && props.label === 'tasks') {
 		return (
@@ -278,7 +284,7 @@ const getFieldComponent = (
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<JsonEditorInput {...props} />
+					<JsonEditorInput {...props} onlySimple={mode === 'custom_task'} />
 					<Description>{props.description}</Description>
 				</div>
 			)
