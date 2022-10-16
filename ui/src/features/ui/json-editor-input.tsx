@@ -9,7 +9,7 @@ import {
 	FieldPath,
 	FieldValues,
 	useController,
-	UseControllerProps
+	UseControllerProps,
 } from 'react-hook-form'
 import { IoSwapHorizontal } from 'react-icons/io5'
 import { FieldError } from './field'
@@ -23,19 +23,28 @@ export interface JsonEditorInputProps<
 	label?: string
 	errors?: FieldErrors<TFieldValues>
 	groups?: GroupData[]
+	onlySimple?: boolean
 }
 
 export function JsonEditorInput<
 	TFieldValues extends FieldValues,
 	TName extends FieldPath<TFieldValues>
->({ label, errors, control, groups = [], ...rest }: JsonEditorInputProps<TFieldValues, TName>) {
+>({
+	label,
+	errors,
+	control,
+	groups = [],
+	onlySimple,
+	...rest
+}: JsonEditorInputProps<TFieldValues, TName>) {
 	const {
 		field: { onChange, value },
 	} = useController({ control, name: rest.name })
-	const defaultMode =
-		_.isObject(value) && 'type' in value && value.type === InputOrSelectKind.Text
-			? 'input'
-			: 'editor'
+	const defaultMode = onlySimple
+		? 'input'
+		: _.isObject(value) && 'type' in value && value.type === InputOrSelectKind.Text
+		? 'input'
+		: 'editor'
 	const [mode, setMode] = useState<'editor' | 'input'>(defaultMode)
 
 	return (
@@ -45,18 +54,20 @@ export function JsonEditorInput<
 					<label htmlFor={rest.name} className="text-sm font-medium">
 						{label}
 					</label>
-					<ActionIcon
-						size="sm"
-						onClick={() => {
-							setMode((mode) => (mode === 'editor' ? 'input' : 'editor'))
-							onChange('')
-						}}
-					>
-						<IoSwapHorizontal
-							size={14}
-							title={mode === 'editor' ? 'Swap to input' : 'Swap to editor'}
-						/>
-					</ActionIcon>
+					{!onlySimple && (
+						<ActionIcon
+							size="sm"
+							onClick={() => {
+								setMode((mode) => (mode === 'editor' ? 'input' : 'editor'))
+								onChange('')
+							}}
+						>
+							<IoSwapHorizontal
+								size={14}
+								title={mode === 'editor' ? 'Swap to input' : 'Swap to editor'}
+							/>
+						</ActionIcon>
+					)}
 				</div>
 			)}
 			<Controller
@@ -70,7 +81,7 @@ export function JsonEditorInput<
 									onChange({ type: InputOrSelectKind.Text, data: value })
 								}
 								value={(value as any)?.data ?? ''}
-								validationError="Invalid json"
+								validationError={!onlySimple && 'Invalid json'}
 								formatOnBlur
 								autosize
 								minRows={4}
