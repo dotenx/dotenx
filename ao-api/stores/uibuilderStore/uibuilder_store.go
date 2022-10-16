@@ -22,6 +22,9 @@ type UIbuilderStore interface {
 	GetExportablePageByProjectName(ctx context.Context, accountId, projectName string) ([]models.ExportableUIPage, error)
 	// This function deletes all the pages of a project
 	DeleteAllPages(ctx context.Context, accountId, projectTag string) error
+
+	UpsertGlobalStates(ctx context.Context, globalState models.GlobalState) error
+	GetGlobalStates(ctx context.Context, accountId, projectName string) (globalState models.GlobalState, err error)
 }
 
 type uibuilderStore struct {
