@@ -92,6 +92,9 @@ func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, err
 			return nil, err
 		}
 	}
+	if cus == nil {
+		return nil, nil
+	}
 	res := make(map[string]interface{})
 	res["customer_id"] = cus.ID
 	res["customer_email"] = cus.Email
