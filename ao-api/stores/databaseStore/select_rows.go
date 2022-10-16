@@ -418,8 +418,6 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 		} else {
 			cond.Key = fmt.Sprintf("%s.%s", tableName, cond.Key)
 		}
-		log.Println("currentTableName:", currentTableName)
-		log.Println("columnName:", columnName)
 		var columnType string
 		err := db.Connection.QueryRowx(getColumnType, currentTableName, columnName).Scan(&columnType)
 		if err != nil {
@@ -429,7 +427,6 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 			log.Println("error:", err)
 			return []interface{}{}, "", err
 		}
-		log.Println("columnType:", columnType)
 		if columnType == "character varying" || columnType == "text" {
 			switch cond.Operator {
 			case "=", "!=":
@@ -455,6 +452,34 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 				*signCnt += 1
 				values = append(values, cond.Value)
 			} else {
+				err = errors.New("operator not supported in filtering")
+				return []interface{}{}, "", err
+			}
+		} else if columnType == "boolean" {
+			supportedOperator := []string{"=", "!="}
+			if utils.ContainsString(supportedOperator, cond.Operator) {
+				whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, *signCnt)
+				*signCnt += 1
+				values = append(values, cond.Value)
+			} else {
+				err = errors.New("operator not supported in filtering")
+				return []interface{}{}, "", err
+			}
+		} else if columnType == "ARRAY" {
+			switch cond.Operator {
+			case "=", "!=":
+				whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, *signCnt)
+				*signCnt += 1
+				values = append(values, pq.Array(cond.Value))
+			case "has":
+				whereCondition += fmt.Sprintf("$%d = ANY (%s)", *signCnt, cond.Key)
+				*signCnt += 1
+				values = append(values, cond.Value)
+			case "hasNot":
+				whereCondition += fmt.Sprintf("NOT ($%d = ANY (%s))", *signCnt, cond.Key)
+				*signCnt += 1
+				values = append(values, cond.Value)
+			default:
 				err = errors.New("operator not supported in filtering")
 				return []interface{}{}, "", err
 			}
