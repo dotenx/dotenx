@@ -351,6 +351,7 @@ func createLambdaFunction(code, dependency string) (functionName string, err err
 		Handler:      aws.String("index.handler"),
 		Role:         aws.String("arn:aws:iam::994147050565:role/lambda-ex"),
 		Runtime:      aws.String("nodejs16.x"),
+		Timeout:      aws.Int64(20),
 	}
 	svc := lambda.New(sess)
 	_, err = svc.CreateFunction(createArgs)
