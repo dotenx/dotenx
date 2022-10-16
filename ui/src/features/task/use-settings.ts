@@ -49,7 +49,6 @@ export function useTaskSettings({
 		formState: { errors },
 		handleSubmit,
 		watch,
-		getValues,
 		setValue,
 		unregister,
 	} = useForm<TaskSettingsSchema>({
@@ -99,9 +98,9 @@ export function useTaskSettings({
 				.map((output) => ({ name: output.path, value: JSON.stringify(output.value) })),
 		}))
 
-	const onSubmit = handleSubmit(() => {
+	const onSubmit = handleSubmit((values) => {
 		onSave({
-			...getValues(),
+			...values,
 			iconUrl: selectedTaskType?.icon_url,
 			color: selectedTaskType?.node_color,
 		})
