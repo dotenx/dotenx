@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/template"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -15,7 +16,7 @@ type ExecuteTask struct {
 	Params struct {
 		Output  string                 `json:"output"`
 		Url     string                 `json:"url"`
-		Headers map[string]string      `json:"headers"`
+		Headers map[string]interface{} `json:"headers"`
 		Body    map[string]interface{} `json:"body"`
 		Method  string                 `json:"method"`
 	} `json:"params"`
@@ -31,7 +32,7 @@ if (!{{if .Output}}{{.Output}}{{else}}{{.TempResult}}{{end}}.successfull){
 		}
 	}
 }
-{{if .Output}}{{.Output}}={{.Output}}.return_value.outputs;{{end}}
+{{if .Output}}{{.Output}}={{.Output}}.return_value?.outputs;{{end}}
 `
 
 func convertExecuteTask(step map[string]interface{}, importStore *ImportStore) (string, error) {
@@ -50,8 +51,8 @@ func convertExecuteTask(step map[string]interface{}, importStore *ImportStore) (
 		fmt.Println(err)
 		return "", err
 	}
-	headers, _ := json.Marshal(executeTask.Params.Headers)
-	body, _ := json.Marshal(executeTask.Params.Body)
+	// headers, _ := json.Marshal(executeTask.Params.Headers)
+	// body, _ := json.Marshal(executeTask.Params.Body)
 	params := struct {
 		Output     string `json:"output"`
 		Url        string `json:"url"`
@@ -62,8 +63,8 @@ func convertExecuteTask(step map[string]interface{}, importStore *ImportStore) (
 	}{
 		Output:     executeTask.Params.Output,
 		Url:        executeTask.Params.Url,
-		Headers:    string(headers),
-		Body:       string(body),
+		Headers:    addEvalToBodyValues(executeTask.Params.Headers),
+		Body:       addEvalToBodyValues(executeTask.Params.Body),
 		Method:     executeTask.Params.Method,
 		TempResult: "a" + utils.RandStringRunes(9, utils.FullRunes),
 	}
@@ -75,4 +76,32 @@ func convertExecuteTask(step map[string]interface{}, importStore *ImportStore) (
 	}
 	fmt.Println(out.String())
 	return out.String(), nil
+}
+
+func addEvalToBodyValues(body map[string]interface{}) string {
+	pairs := make([]string, 0)
+	for key, val := range body {
+		res := ""
+		// TODO: we should add eval just for body of tasks not 'integration' and 'type' fields
+		// so in future we can change condition below or ui to add \" for 'integration' and 'type' fields
+		if valStr, ok := val.(string); ok && valStr != "" && key != "integration" && key != "type" {
+			if strings.Index(valStr, "\"") == 0 {
+				bare := strings.TrimPrefix(valStr, "\"")
+				bare = strings.TrimSuffix(bare, "\"")
+				res = fmt.Sprintf("\"%s\":eval(\"\\\"%s\\\"\")", key, bare)
+			} else {
+				res = fmt.Sprintf("\"%s\":eval(\"%s\")", key, valStr)
+			}
+		} else if valMap, ok := val.(map[string]interface{}); ok {
+			res = fmt.Sprintf("\"%s\":%s", key, addEvalToBodyValues(valMap))
+		} else {
+			valBytes, _ := json.Marshal(val)
+			res = fmt.Sprintf("\"%s\":%s", key, string(valBytes))
+		}
+		pairs = append(pairs, res)
+	}
+	result := strings.Join(pairs, ",")
+	result = strings.TrimSuffix(result, ",")
+	result = fmt.Sprintf("{%s}", result)
+	return result
 }
