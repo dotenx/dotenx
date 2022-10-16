@@ -8,6 +8,7 @@ import { Hero } from './hero'
 import { List } from './list'
 import { SignInBasic } from './sign-in-basic'
 import { SignUpBasic } from './sign-up-basic'
+import { TeamCenterGrid } from './team-center-grid'
 
 export const controllers = [
 	{ title: 'Customers', items: [CustomersGrid] },
@@ -16,4 +17,5 @@ export const controllers = [
 	{ title: 'Gallery', items: [GalleryBasic] },
 	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
+	{ title: 'Team', items: [TeamCenterGrid] },
 ] as const
