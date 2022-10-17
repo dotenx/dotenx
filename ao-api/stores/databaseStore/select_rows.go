@@ -54,11 +54,23 @@ FROM   %s
 LIMIT $1 OFFSET $2;
 `
 
+var countSelectRows = `
+SELECT COUNT(*) 
+FROM   %s 
+%s;
+`
+
 var conditionalSelectRows = `
 SELECT %s 
 FROM   %s 
 WHERE  (%s) %s
 LIMIT %s OFFSET %s;
+`
+
+var countConditionalSelectRows = `
+SELECT COUNT(*) 
+FROM   %s 
+WHERE  (%s) %s;
 `
 
 var getFunctionResultStmt = `
@@ -205,14 +217,20 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 
 	checkSecurityStmt := ""
 	var result, functionResults *sql.Rows
+	var totalRows = 0
 	if len(filters.FilterSet) == 0 {
 		if cl != "" {
 			if useRowLevelSecurity && tpAccountId != "" {
 				checkSecurityStmt = fmt.Sprintf("WHERE creator_id = '%s'", tpAccountId)
 			}
 			stmt := fmt.Sprintf(selectRows, cl, tableNameStmt, checkSecurityStmt)
+			countStmt := fmt.Sprintf(countSelectRows, tableNameStmt, checkSecurityStmt)
 			log.Println("stmt:", stmt)
 			result, err = db.Connection.Query(stmt, limit, offset)
+			if err != nil {
+				return nil, err
+			}
+			err = db.Connection.QueryRow(countStmt).Scan(&totalRows)
 			if err != nil {
 				return nil, err
 			}
@@ -236,6 +254,11 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 			}
 			stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, checkSecurityStmt, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
 			log.Println("stmt:", stmt)
+			countStmt := fmt.Sprintf(countConditionalSelectRows, tableNameStmt, whereCondition, checkSecurityStmt)
+			err = db.Connection.QueryRow(countStmt, values...).Scan(&totalRows)
+			if err != nil {
+				return nil, err
+			}
 			values = append(values, limit)
 			values = append(values, offset)
 			log.Println("values:", values)
@@ -261,10 +284,13 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 		return nil, err
 	}
 
-	return SelectScan(result, functionResults)
+	// we know 'limit' is equal to 'size' and also we have this formula for offset:
+	// offset = (page - 1) * size
+	// so => page = (offset / limit) + 1
+	return SelectScan(result, functionResults, (offset/limit)+1, limit, totalRows)
 }
 
-func SelectScan(rows, functionResults *sql.Rows) (map[string]interface{}, error) {
+func SelectScan(rows, functionResults *sql.Rows, page, size, totalRows int) (map[string]interface{}, error) {
 	var results []map[string]interface{}
 	if rows != nil {
 		defer rows.Close()
@@ -378,6 +404,9 @@ func SelectScan(rows, functionResults *sql.Rows) (map[string]interface{}, error)
 
 	finalResults := map[string]interface{}{
 		"rows":      results,
+		"page":      page,
+		"size":      size,
+		"totalRows": totalRows,
 		"functions": funcDest,
 	}
 
