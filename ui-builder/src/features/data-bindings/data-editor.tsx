@@ -1,39 +1,15 @@
-import {
-	ActionIcon,
-	Button,
-	CloseButton,
-	Code,
-	Divider,
-	JsonInput,
-	Menu,
-	NumberInput,
-	Select,
-	Switch,
-	Text,
-	TextInput,
-} from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { closeAllModals, openModal } from '@mantine/modals'
-import Editor from '@monaco-editor/react'
+import { ActionIcon, Button, CloseButton, Code, Divider, Menu, Select, Text } from '@mantine/core'
+import { openModal } from '@mantine/modals'
 import produce from 'immer'
 import _ from 'lodash'
-import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
+import { Action, actions, SetStateAction, ToggleStateAction } from '../elements/action'
 import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
-import {
-	Action,
-	ActionKind,
-	actionKinds,
-	ElementEvent,
-	EventKind,
-	FetchAction,
-	SetStateAction,
-	ToggleStateAction,
-} from '../elements/event'
+import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { IntelinputText } from '../ui/intelinput'
+import { IntelinputValue } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
 import { useGetStates } from './use-get-states'
@@ -166,8 +142,8 @@ export function DataEditor() {
 				onChange={(value) =>
 					editRepeatFrom({
 						name: value,
-						iterator: value.replace('$store-', '')
-							? `${value.replace('$store-', '')}Item`
+						iterator: value.replace('$store.', '')
+							? `${value.replace('$store.', '')}Item`
 							: '',
 					})
 				}
@@ -182,21 +158,17 @@ export function DataEditor() {
 	)
 }
 
-export const getStateNames = (components: Element[]) => {
+export const getStateNames = (elements: Element[]) => {
 	let states: string[] = []
-	for (const component of components) {
+	for (const element of elements) {
 		states = [
 			...states,
-			...component.events
+			...element.events
 				.flatMap((event) => event.actions)
-				.filter(
-					(action): action is ToggleStateAction | SetStateAction =>
-						action.kind === ActionKind.ToggleState ||
-						action.kind === ActionKind.SetState
-				)
-				.map((action) => action.name),
+				.filter((a): a is Action & { stateName: IntelinputValue } => 'stateName' in a)
+				.map((action) => action.stateName.data),
 		]
-		states = [...states, ...getStateNames(component.children ?? [])]
+		states = [...states, ...getStateNames(element.children ?? [])]
 	}
 	return states
 }
@@ -221,7 +193,7 @@ function RepeatInput({
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
 						.map((state) => ({
-							label: state.name.replace('$store-', ''),
+							label: state.name.replace('$store.', ''),
 							value: state.name,
 						}))}
 					className="grow"
@@ -294,21 +266,6 @@ export const eventOptions = [
 	{ label: 'intersection', value: EventKind.Intersection },
 ]
 
-export const getActionDefaultValue = (kind: ActionKind) => {
-	switch (kind) {
-		case ActionKind.Code:
-			return { id: uuid(), kind, code: '' }
-		case ActionKind.ToggleState:
-			return { id: uuid(), kind, name: '' }
-		case ActionKind.SetState:
-			return { id: uuid(), kind, name: '', valueToSet: '' }
-		case ActionKind.Fetch:
-			return { id: uuid(), kind, dataSourceName: '', body: '', params: '' }
-		case ActionKind.Animation:
-			return { id: uuid(), kind, animationName: '' }
-	}
-}
-
 function EventInput({
 	event,
 	changeEvent,
@@ -318,116 +275,6 @@ function EventInput({
 	changeEvent: (newEvent: ElementEvent) => void
 	removeEvent: () => void
 }) {
-	const addAction = (kind: ActionKind) => {
-		const action = getActionDefaultValue(kind)
-		switch (kind) {
-			case ActionKind.Code:
-				changeEvent({ ...event, actions: [...event.actions, action] })
-				break
-			case ActionKind.ToggleState:
-				changeEvent({ ...event, actions: [...event.actions, action] })
-				break
-			case ActionKind.SetState:
-				changeEvent({ ...event, actions: [...event.actions, action] })
-				break
-			case ActionKind.Fetch:
-				changeEvent({ ...event, actions: [...event.actions, action] })
-				break
-		}
-	}
-	const openActionSettings = (action: Action) => {
-		switch (action.kind) {
-			case ActionKind.Code:
-				openModal({
-					children: (
-						<CodeEditor
-							defaultValue={action.code}
-							onChange={(code) =>
-								changeEvent({
-									...event,
-									actions: event.actions.map((a) =>
-										a.id === action.id ? { ...a, code } : a
-									),
-								})
-							}
-						/>
-					),
-					size: 'xl',
-					closeOnEscape: false,
-				})
-				break
-			case ActionKind.ToggleState:
-				openModal({
-					title: 'Toggle State',
-					children: (
-						<ToggleStateSettings
-							defaultValue={action.name}
-							onChange={(name) => {
-								changeEvent({
-									...event,
-									actions: event.actions.map((a) =>
-										a.id === action.id ? { ...a, name } : a
-									),
-								})
-								closeAllModals()
-							}}
-						/>
-					),
-				})
-				break
-			case ActionKind.SetState:
-				openModal({
-					title: 'Set State',
-					children: (
-						<SetStateSettings
-							defaultValue={{ name: action.name, value: action.valueToSet }}
-							onChange={({
-								name,
-								value,
-							}: {
-								name: string
-								value: string | number | boolean
-							}) =>
-								changeEvent({
-									...event,
-									actions: event.actions.map((a) =>
-										a.id === action.id
-											? {
-													...a,
-													kind: ActionKind.SetState,
-													name,
-													valueToSet: value,
-											  }
-											: a
-									),
-								})
-							}
-						/>
-					),
-				})
-				break
-			case ActionKind.Fetch:
-				openModal({
-					title: 'Fetch',
-					children: (
-						<FetchSettings
-							initialValues={action}
-							onSave={(values) => {
-								changeEvent({
-									...event,
-									actions: event.actions.map((a) =>
-										a.id === action.id ? values : a
-									),
-								})
-								closeAllModals()
-							}}
-						/>
-					),
-				})
-				break
-		}
-	}
-
 	return (
 		<div className="flex items-center gap-2">
 			<Text size="xs" color="dimmed">
@@ -454,8 +301,18 @@ function EventInput({
 					<Menu.Label>Edit actions</Menu.Label>
 					{event.actions.map((action) => (
 						<div key={action.id} className="flex items-center gap-2 px-2 py-1">
-							<Menu.Item onClick={() => openActionSettings(action)}>
-								{action.kind}
+							<Menu.Item
+								onClick={() =>
+									openModal({
+										title: action.name,
+										children: action.renderSettings({
+											event: event.id,
+											action: action.id,
+										}),
+									})
+								}
+							>
+								{action.name}
 							</Menu.Item>
 							<CloseButton
 								size="xs"
@@ -478,11 +335,29 @@ function EventInput({
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								{actionKinds.map((kind) => (
-									<Menu.Item key={kind} onClick={() => addAction(kind)}>
-										{kind}
-									</Menu.Item>
-								))}
+								{actions.map((Action) => {
+									const action = new Action()
+									return (
+										<Menu.Item
+											key={action.name}
+											onClick={() => {
+												openModal({
+													title: action.name,
+													children: action.renderSettings({
+														event: event.id,
+														action: action.id,
+													}),
+												})
+												changeEvent({
+													...event,
+													actions: [...event.actions, action],
+												})
+											}}
+										>
+											{action.name}
+										</Menu.Item>
+									)
+								})}
 							</Menu.Dropdown>
 						</Menu>
 					</div>
@@ -490,181 +365,6 @@ function EventInput({
 			</Menu>
 			<CloseButton size="xs" onClick={removeEvent} />
 		</div>
-	)
-}
-
-export function FetchSettings({
-	initialValues,
-	onSave,
-}: {
-	initialValues: FetchAction
-	onSave: (values: FetchAction) => void
-}) {
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const form = useForm({ initialValues })
-
-	return (
-		<form onSubmit={form.onSubmit(onSave)}>
-			<Select
-				label="Data source"
-				description="Fetch request of"
-				data={dataSources.map((source) => source.stateName)}
-				{...form.getInputProps('dataSourceName')}
-			/>
-			<TextInput
-				label="Query parameters"
-				description="Search params"
-				mt="xl"
-				{...form.getInputProps('params')}
-			/>
-			<JsonInput
-				label="Body"
-				description="Data passed to the request"
-				placeholder="JSON object"
-				validationError="Invalid JSON"
-				formatOnBlur
-				autosize
-				mt="xl"
-				minRows={3}
-				{...form.getInputProps('body')}
-			/>
-			<Button fullWidth mt="xl" type="submit">
-				Save
-			</Button>
-		</form>
-	)
-}
-
-export function CodeEditor({
-	defaultValue,
-	onChange,
-}: {
-	defaultValue: string
-	onChange: (value: string) => void
-}) {
-	const [code, setCode] = useState(defaultValue)
-
-	return (
-		<div>
-			<Editor
-				height="75vh"
-				defaultLanguage="javascript"
-				defaultValue={defaultValue}
-				onChange={(value) => setCode(value ?? '')}
-				options={{ fontFamily: 'monospace' }}
-			/>
-			<Button
-				fullWidth
-				mt="xs"
-				onClick={() => {
-					onChange(code)
-					closeAllModals()
-				}}
-			>
-				Save
-			</Button>
-		</div>
-	)
-}
-
-export function ToggleStateSettings({
-	defaultValue,
-	onChange,
-}: {
-	defaultValue: string
-	onChange: (value: string) => void
-}) {
-	const form = useForm({ initialValues: { stateName: defaultValue } })
-
-	return (
-		<form onSubmit={form.onSubmit((values) => onChange(values.stateName))}>
-			<TextInput label="State name" {...form.getInputProps('stateName')} />
-			<Text size="xs" mt="xs" color="dimmed">
-				The name to toggle a value for
-			</Text>
-			<Button type="submit" fullWidth mt="xs">
-				Save
-			</Button>
-		</form>
-	)
-}
-
-export function SetStateSettings({
-	defaultValue,
-	onChange,
-}: {
-	defaultValue: { name: string; value: string | number | boolean }
-	onChange: ({ name, value }: { name: string; value: string | number | boolean }) => void
-}) {
-	const form = useForm({
-		initialValues: {
-			...defaultValue,
-			kind:
-				typeof defaultValue.value === 'string'
-					? 'text'
-					: typeof defaultValue.value === 'number'
-					? 'number'
-					: 'yes/no',
-		},
-	})
-
-	return (
-		<form
-			onSubmit={form.onSubmit((values) => {
-				onChange({ name: values.name, value: values.value })
-				closeAllModals()
-			})}
-			className="space-y-4"
-		>
-			<div>
-				<IntelinputText label="Set" {...form.getInputProps('name')} />
-				<Text size="xs" mt="xs" color="dimmed">
-					The name to set a value for
-				</Text>
-			</div>
-			<div>
-				<div className="flex items-end gap-2">
-					<Select
-						label="To"
-						className="w-28"
-						data={['text', 'number', 'yes/no']}
-						{...form.getInputProps('kind')}
-					/>
-					{form.values.kind === 'text' && (
-						<TextInput
-							className="grow"
-							placeholder="value"
-							{...form.getInputProps('value')}
-						/>
-					)}
-					{form.values.kind === 'number' && (
-						<NumberInput
-							className="grow"
-							placeholder="value"
-							{...form.getInputProps('value')}
-						/>
-					)}
-					{form.values.kind === 'yes/no' && (
-						<Switch
-							className="self-center grow"
-							placeholder="value"
-							ml="xs"
-							mt="xl"
-							onLabel="Yes"
-							offLabel="No"
-							size="xl"
-							{...form.getInputProps('value', { type: 'checkbox' })}
-						/>
-					)}
-				</div>
-				<Text size="xs" mt="xs" color="dimmed">
-					The value to assign to the above state property name
-				</Text>
-			</div>
-			<Button fullWidth mt="xs" type="submit">
-				Save
-			</Button>
-		</form>
 	)
 }
 
@@ -697,7 +397,7 @@ function BindingInput({
 				<Select
 					size="xs"
 					data={stateNames.map((name) => ({
-						label: name.replace('$store-', ''),
+						label: name.replace('$store.', ''),
 						value: name,
 					}))}
 					className="grow"

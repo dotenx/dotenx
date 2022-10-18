@@ -23,9 +23,11 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	GetTablesResponse,
+	GlobalStates,
 	ImportComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
+	SetGlobalStatesRequest,
 	UploadImageRequest,
 	UploadImageResponse,
 } from './types'
@@ -46,6 +48,7 @@ export enum QueryKey {
 	MarketplaceItems = 'marketplace-items',
 	Tables = 'tables',
 	Columns = 'columns',
+	GlobalStates = 'global-states',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -216,4 +219,12 @@ export const getTables = ({ projectName }: { projectName: string }) => {
 
 export function getColumns({ projectName, tableName }: { projectName: string; tableName: string }) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
+}
+
+export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequest) {
+	return api.post(`/uibuilder/project/name/${projectName}/state/global`, payload)
+}
+
+export function getGlobalStates({ projectName }: { projectName: string }) {
+	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
 }

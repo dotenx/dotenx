@@ -1,16 +1,35 @@
-import { Anchor, Button, CloseButton, Divider, Text, TextInput, Tooltip } from '@mantine/core'
+import {
+	Anchor,
+	Button,
+	CloseButton,
+	Divider,
+	Loader,
+	Text,
+	TextInput,
+	Tooltip,
+} from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { closeAllModals, openModal } from '@mantine/modals'
+import { openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAtom, useAtomValue } from 'jotai'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { atom, useAtom, useAtomValue } from 'jotai'
 import { TbCheck, TbDeviceFloppy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
-import { useMatch } from 'react-router-dom'
-import { deletePage, publishPage, QueryKey, updatePage } from '../../api'
+import { useMatch, useParams } from 'react-router-dom'
+import {
+	deletePage,
+	getGlobalStates,
+	GlobalStates,
+	publishPage,
+	QueryKey,
+	changeGlobalStates,
+	updatePage,
+} from '../../api'
 import { useDataSourceStore } from '../data-bindings/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
 import { pageParamsAtom, projectTagAtom, selectedPageAtom } from './top-bar'
+
+export const globalStatesAtom = atom<string[]>([])
 
 export function PageActions() {
 	const isSimple = useMatch('/projects/:projectName/simple')
@@ -27,6 +46,7 @@ export function PageActions() {
 
 function PageSettingsButton() {
 	const selectedPage = useAtomValue(selectedPageAtom)
+	const { projectName = '' } = useParams()
 
 	return (
 		<Tooltip
@@ -39,7 +59,7 @@ function PageSettingsButton() {
 				onClick={() =>
 					openModal({
 						title: 'Page Settings',
-						children: <PageSettings />,
+						children: <PageSettings projectName={projectName} />,
 					})
 				}
 				size="xs"
@@ -52,31 +72,47 @@ function PageSettingsButton() {
 	)
 }
 
-function PageSettings() {
+function PageSettings({ projectName }: { projectName: string }) {
 	return (
 		<div>
 			<Divider label="URL params" mb="xl" />
 			<QueryParamsForm />
 			<Divider label="Persisted states" my="xl" />
-			<PersistedStatesForm />
+			<PersistedStatesForm projectName={projectName} />
 		</div>
 	)
 }
 
-function PersistedStatesForm() {
-	const form = useForm<{ states: string[] }>({ initialValues: { states: [] } })
-	const mutation = useMutation(async (values: { states: string[] }) => values)
+function PersistedStatesForm({ projectName }: { projectName: string }) {
+	const globalStates = useAtomValue(globalStatesAtom)
+	const form = useForm<GlobalStates>({ initialValues: { states: globalStates } })
+	const globalStatesQuery = useQuery(
+		[QueryKey.GlobalStates, projectName],
+		() => getGlobalStates({ projectName }),
+		{
+			enabled: !!projectName,
+			onSuccess: (data) => {
+				form.setValues(data.data)
+			},
+		}
+	)
+	const queryClient = useQueryClient()
+	const mutation = useMutation(changeGlobalStates, {
+		onSuccess: () => queryClient.invalidateQueries([QueryKey.GlobalStates]),
+	})
+	const onSubmit = form.onSubmit((values) => mutation.mutate({ projectName, payload: values }))
+	const fields = form.values.states.map((_, index) => (
+		<div key={index} className="flex items-center gap-2">
+			<TextInput {...form.getInputProps(`states.${index}`)} className="w-full" />
+			<CloseButton onClick={() => form.removeListItem('states', index)} />
+		</div>
+	))
+
+	if (globalStatesQuery.isLoading) return <Loader mx="auto" size="xs" />
 
 	return (
-		<form className="space-y-6" onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
-			<div className="space-y-4">
-				{form.values.states.map((_, index) => (
-					<div key={index} className="flex items-center gap-2">
-						<TextInput {...form.getInputProps(`states.${index}`)} className="w-full" />
-						<CloseButton onClick={() => form.removeListItem('states', index)} />
-					</div>
-				))}
-			</div>
+		<form className="space-y-6" onSubmit={onSubmit}>
+			<div className="space-y-4">{fields}</div>
 			<Button
 				leftIcon={<TbPlus />}
 				variant="outline"
@@ -101,10 +137,7 @@ function QueryParamsForm() {
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
 	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.PageDetails])
-			closeAllModals()
-		},
+		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
 
 	return (

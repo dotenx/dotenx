@@ -23,7 +23,7 @@ export function IntelinputText({
 			value={value
 				.split(' ')
 				.map((word) =>
-					word.startsWith('$store-')
+					word.startsWith('$store.')
 						? { kind: IntelinputValueKind.Option, data: word }
 						: { kind: IntelinputValueKind.Text, data: word }
 				)
@@ -67,7 +67,7 @@ export function Intelinput({
 			<label className="font-medium">{label}</label>
 			<div
 				className="relative border border-gray-300 min-w-0 w-full rounded px-2.5 py-2 
-                focus-within:border-rose-500 group"
+                focus-within:border-rose-500 group font-mono"
 			>
 				<div className="flex gap-1 flex-wrap">
 					{value.map((inteliValue, index) => {
@@ -80,7 +80,7 @@ export function Intelinput({
 											event.stopPropagation()
 										}}
 										ref={index === value.length - 1 ? lastInputRef : undefined}
-										className="outline-none w-full py-1"
+										className="outline-none w-full py-1 font-mono"
 										style={{ width: `${inteliValue.data.length || 1}ch` }}
 										value={inteliValue.data}
 										onChange={(event) =>
@@ -96,7 +96,7 @@ export function Intelinput({
 								return (
 									<div
 										key={index}
-										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center"
+										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center border"
 									>
 										{inteliValue.data}
 										<CloseButton
@@ -116,7 +116,7 @@ export function Intelinput({
 					{_.last(value)?.kind !== IntelinputValueKind.Text && (
 						<input
 							ref={lastInputRef}
-							className="outline-none w-full py-1"
+							className="outline-none w-full py-1 font-mono"
 							style={{ width: `${newValue.length || 1}ch` }}
 							value={newValue}
 							onChange={setNewValue}
@@ -144,7 +144,7 @@ export function Intelinput({
 							<button
 								type="button"
 								key={option}
-								className="hover:bg-gray-200 p-2 rounded text-left"
+								className="hover:bg-gray-200 p-2 rounded text-left font-mono"
 								onClick={() =>
 									onChange(
 										produce(value, (draft) => {
@@ -174,4 +174,28 @@ export type IntelinputValue = {
 export enum IntelinputValueKind {
 	Text = 'text',
 	Option = 'option',
+}
+
+export function SingleIntelinput({
+	label,
+	value,
+	onChange,
+	options,
+}: {
+	label: string
+	value?: IntelinputValue
+	onChange: (value: IntelinputValue) => void
+	options: string[]
+}) {
+	return (
+		<Intelinput
+			label={label}
+			value={value ? [value] : []}
+			onChange={(value) => {
+				if (_.isEmpty(value)) onChange({ kind: IntelinputValueKind.Text, data: '' })
+				else onChange(_.last(value)!)
+			}}
+			options={options}
+		/>
+	)
 }

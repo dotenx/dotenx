@@ -142,3 +142,12 @@ export type GetTablesResponse = {
 export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
+
+export type GlobalStates = {
+	states: string[]
+}
+
+export type SetGlobalStatesRequest = {
+	projectName: string
+	payload: GlobalStates
+}

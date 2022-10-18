@@ -109,7 +109,7 @@ function createCard({
 }) {
 	return produce(regenElement(deserializeElement(card)), (draft) => {
 		draft.repeatFrom = {
-			name: `$store-${dataSourceName}.rows`,
+			name: `$store.${dataSourceName}.rows`,
 			iterator: `${dataSourceName}.rowsItem`,
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
