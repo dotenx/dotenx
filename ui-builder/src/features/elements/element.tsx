@@ -40,7 +40,10 @@ export abstract class Element {
 			components: this.children?.map((child) => child.serialize()),
 			classNames: this.classes,
 			repeatFrom: this.repeatFrom,
-			events: this.events,
+			events: this.events.map((event) => ({
+				...event,
+				actions: event.actions.map((action) => action.serialize()),
+			})),
 			bindings: this.bindings,
 			controller: this.controller?.serialize(),
 			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style) },

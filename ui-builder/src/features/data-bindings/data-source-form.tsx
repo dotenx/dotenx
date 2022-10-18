@@ -194,7 +194,7 @@ export const useAddDataSource = ({
 					}
 					onSuccess?.(values)
 					onSubmit?.(response)
-					setPageState(`$store-${values.stateName}`, response)
+					setPageState(`$store.${values.stateName}`, response)
 					closeAllModals()
 				},
 				onError: () => {
