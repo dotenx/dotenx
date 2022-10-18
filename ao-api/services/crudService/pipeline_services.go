@@ -165,7 +165,13 @@ func (cm *crudManager) prepareTasks(tasks map[string]models.Task, accountId stri
 				if err != nil {
 					return nil, err
 				}
-				if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
+				hasEmptyJson := false
+				if insertDt.Type == models.JsonFieldType {
+					if _, ok := insertDt.Value.(map[string]interface{})[""]; ok && len(insertDt.Value.(map[string]interface{})) == 1 {
+						hasEmptyJson = true
+					}
+				}
+				if (insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "") || hasEmptyJson {
 					val := models.TaskFieldDetailes{
 						Type:      models.NestedFieldType,
 						NestedKey: fmt.Sprintf("%s.%s", config.Configs.App.InteractionBodyKey, key),
