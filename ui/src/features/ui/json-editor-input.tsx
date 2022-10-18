@@ -74,13 +74,15 @@ export function JsonEditorInput<
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
+					const valueData = (value as any)?.data ?? '' 
+					const jsonInputValue = _.isString(valueData) ? valueData : JSON.stringify(valueData) 
 					if (mode === 'input')
 						return (
 							<JsonInput
 								onChange={(value) =>
 									onChange({ type: InputOrSelectKind.Text, data: value })
 								}
-								value={(value as any)?.data ?? ''}
+								value={jsonInputValue}
 								validationError={!onlySimple && 'Invalid json'}
 								formatOnBlur
 								autosize
