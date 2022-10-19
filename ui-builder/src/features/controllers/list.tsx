@@ -53,7 +53,7 @@ function ListOptions({ controller }: { controller: List }) {
 			set(
 				produce(boxElement, (draft) => {
 					draft.repeatFrom = {
-						name: `$store-${dataSourceName}.rows`,
+						name: `$store.${dataSourceName}.rows`,
 						iterator: `${dataSourceName}.rowsItem`,
 					}
 					draft.children = columns.map((col) => {

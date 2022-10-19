@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { AnyJson, JsonArray } from '../../utils'
 import { Element } from '../elements/element'
 import { findParent, useElementsStore } from '../elements/elements-store'
+import { globalStatesAtom } from '../page/actions'
 import { pageParamsAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { getStateNames } from './data-editor'
@@ -34,19 +35,15 @@ export const useGetStates = () => {
 		}))
 	}
 	const pageParams = useAtomValue(pageParamsAtom)
+	const mutableStates = useGetMutableStates()
 
 	const states = [
-		...getStateNames(elements)
-			.filter((stateName) => !!stateName)
-			.map((stateName) => ({
-				kind: PropertyKind.Unknown,
-				name: stateName,
-			})),
+		...mutableStates,
 		...dataSources
 			.map((source) =>
 				source.properties.map((property) => ({
 					kind: property.kind,
-					name: `$store-${source.stateName}${property.path}`,
+					name: `$store.${source.stateName}${property.path}`,
 				}))
 			)
 			.flat(),
@@ -57,10 +54,24 @@ export const useGetStates = () => {
 			  }))
 			: []),
 		...passedProperties,
-		...pageParams.map((param) => ({ kind: PropertyKind.String, name: `$store-url.${param}` })),
+		...pageParams.map((param) => ({ kind: PropertyKind.String, name: `$store.url.${param}` })),
 	]
 
 	return states
+}
+
+export const useGetMutableStates = () => {
+	const elements = useElementsStore((store) => store.elements)
+	const globalStates = useAtomValue(globalStatesAtom)
+
+	return _.uniq(
+		getStateNames(elements)
+			.filter((stateName) => !!stateName)
+			.concat(globalStates.map((state) => `$store.global.${state}`))
+	).map((stateName) => ({
+		kind: PropertyKind.Unknown,
+		name: stateName,
+	}))
 }
 
 const findRepeatedParent = (element: Element, elements: Element[]): Element | null => {
