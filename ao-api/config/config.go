@@ -96,7 +96,8 @@ type (
 	}
 
 	TaskAndTrigger struct {
-		S3Bucket string `envconfig:"AOA_TASKS_AND_TRIGGERS_S3_BUCKET"`
+		S3Bucket      string `envconfig:"AOA_TASKS_AND_TRIGGERS_S3_BUCKET"`
+		FrequencyList string `envconfig:"AOA_TRIGGER_FREQUENCY_LIST"`
 	}
 )
 

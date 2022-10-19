@@ -34,6 +34,21 @@ func (c *InternalController) CheckAccess(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (c *InternalController) GetCurrentPlan(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"plan":                    "pro",
+		"plan_execution_minutes":  50000,
+		"plan_active_automations": 30,
+		"plan_databases":          10,
+		"plan_domains":            10,
+		"plan_trigger_frequency":  90,
+		"plan_projects":           150,
+		"plan_tp_users":           1500,
+		"plan_file_bandwidth":     "100GB",
+		"plan_has_user_group":     true,
+	})
+}
+
 func (c *InternalController) ListProjects(ctx *gin.Context) {
 	type body struct {
 		AccountId string `json:"accountId"`
