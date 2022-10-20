@@ -15,4 +15,5 @@ export enum EventKind {
 	Submit = 'submit',
 	Onload = 'onload',
 	Intersection = 'intersection',
+	SubmitSuccess = 'submitSuccess',
 }

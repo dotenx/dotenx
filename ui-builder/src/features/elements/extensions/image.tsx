@@ -7,21 +7,11 @@ import { SizeEditor } from '../../style/size-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { ImageDrop } from '../../ui/image-drop'
 import { Element, RenderOptions } from '../element'
-import { Style } from '../style'
 
 export class ImageElement extends Element {
 	name = 'Image'
 	icon = (<TbPhoto />)
 	data = { src: '', alt: '' }
-	style: Style = {
-		desktop: {
-			default: {
-				backgroundSize: 'cover',
-				backgroundPosition: 'center',
-				width: '100%',
-			},
-		},
-	}
 
 	render(): ReactNode {
 		if (!this.data.src) {
@@ -40,7 +30,7 @@ export class ImageElement extends Element {
 			)
 		}
 
-		return <img src={this.data.src} alt={this.data.alt} />
+		return <img src={this.data.src} alt={this.data.alt} style={{ opacity: 0 }} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

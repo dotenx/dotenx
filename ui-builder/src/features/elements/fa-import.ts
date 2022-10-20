@@ -22,7 +22,6 @@ const solidIconList = Object.keys(SolidIcons)
 
 export const solidIconNames = solidIconList.map((i: any) => i.iconName)
 
-
 const regularIconList = Object.keys(RegularIcons)
 	.filter((key) => key !== 'far' && key !== 'prefix')
 	.map((icon) => (RegularIcons as ImportedIcons)[icon])
