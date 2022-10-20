@@ -16,6 +16,7 @@ import { DroppablePortal } from '../dnd/droppable-portal'
 import { AnimationAction } from '../elements/action'
 import { Element } from '../elements/element'
 import { EventKind } from '../elements/event'
+import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
@@ -219,6 +220,17 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		else selectElements(element.id)
 	}
 
+	let backgroundUrl = ''
+	if (element instanceof ImageElement) backgroundUrl = element.data.src
+	const backgroundImage = backgroundUrl
+		? {
+				backgroundImage: `url(${backgroundUrl})`,
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+		  }
+		: {}
+
 	return (
 		<Draggable
 			data={{ mode: DraggableMode.Move, elementId: element.id }}
@@ -226,7 +238,10 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			className={classes}
 			tabIndex={0}
 			id={element.id}
-			style={style}
+			style={{
+				...style,
+				...backgroundImage,
+			}}
 			onMouseOver={handleMouseOver}
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}

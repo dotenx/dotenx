@@ -1,4 +1,4 @@
-import { ElementOptions } from "./controller"
+import { ElementOptions } from './controller'
 
 export function repeatObject<T>(source: T, times: number): T[] {
 	const result = []
@@ -7,7 +7,6 @@ export function repeatObject<T>(source: T, times: number): T[] {
 	}
 	return result
 }
-
 
 export type SimpleComponentOptionsProps = {
 	options: ElementOptions

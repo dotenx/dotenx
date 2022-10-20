@@ -7,7 +7,7 @@ import { uuid } from '../../utils'
 import { useGetMutableStates, useGetStates } from '../data-bindings/use-get-states'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { AnimationEditor } from '../style/animation-editor'
-import { IntelinputValue, IntelinputValueKind, SingleIntelinput } from '../ui/intelinput'
+import { defaultInteliState, IntelinputText, InteliState } from '../ui/intelinput'
 import { Element } from './element'
 import { useElementsStore } from './elements-store'
 
@@ -26,88 +26,88 @@ export abstract class Action {
 }
 export class ToggleStateAction extends Action {
 	name = 'Toggle State'
-	stateName = defaultInteliValue()
+	stateName = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <ToggleStateSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, stateName: serializeInteliValue(this.stateName) }
+		return { kind: this.name, stateName: this.stateName }
 	}
 }
 
 export class SetStateAction extends Action {
 	name = 'Set State'
-	stateName = defaultInteliValue()
-	key = defaultInteliValue()
-	value = defaultInteliValue()
+	stateName = defaultInteliState()
+	key = defaultInteliState()
+	value = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <SetStateSettings ids={ids} />
 	}
 	serialize() {
 		return {
 			kind: this.name,
-			stateName: serializeInteliValue(this.stateName),
-			key: serializeInteliValue(this.key),
-			value: serializeInteliValue(this.value),
+			stateName: this.stateName,
+			key: this.key,
+			value: this.value,
 		}
 	}
 }
 
 export class PushStateAction extends Action {
 	name = 'Push State'
-	stateName = defaultInteliValue()
-	value = defaultInteliValue()
+	stateName = defaultInteliState()
+	value = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <PushStateSettings ids={ids} />
 	}
 	serialize() {
 		return {
 			kind: this.name,
-			stateName: serializeInteliValue(this.stateName),
-			value: serializeInteliValue(this.value),
+			stateName: this.stateName,
+			value: this.value,
 		}
 	}
 }
 
 export class RemoveItemAction extends Action {
 	name = 'Remove Item'
-	stateName = defaultInteliValue()
+	stateName = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <RemoveItemSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, stateName: serializeInteliValue(this.stateName) }
+		return { kind: this.name, stateName: this.stateName }
 	}
 }
 
 export class IncrementStateAction extends Action {
 	name = 'Increment State'
-	stateName = defaultInteliValue()
-	key = defaultInteliValue()
+	stateName = defaultInteliState()
+	key = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <IncrementStateSettings ids={ids} />
 	}
 	serialize() {
 		return {
 			kind: this.name,
-			stateName: serializeInteliValue(this.stateName),
-			key: serializeInteliValue(this.key),
+			stateName: this.stateName,
+			key: this.key,
 		}
 	}
 }
 
 export class DecrementStateAction extends Action {
 	name = 'Decrement State'
-	stateName = defaultInteliValue()
-	key = defaultInteliValue()
+	stateName = defaultInteliState()
+	key = defaultInteliState()
 	renderSettings(ids: Ids) {
 		return <DecrementStateSettings ids={ids} />
 	}
 	serialize() {
 		return {
 			kind: this.name,
-			stateName: serializeInteliValue(this.stateName),
-			key: serializeInteliValue(this.key),
+			stateName: this.stateName,
+			key: this.key,
 		}
 	}
 }
@@ -125,6 +125,17 @@ export class AnimationAction extends Action {
 	}
 }
 
+export class NavigateAction extends Action {
+	name = 'Navigate'
+	to = ''
+	renderSettings(ids: Ids) {
+		return <NavigateSettings ids={ids} />
+	}
+	serialize() {
+		return { kind: this.name, to: this.to }
+	}
+}
+
 export const actions = [
 	ToggleStateAction,
 	SetStateAction,
@@ -132,6 +143,7 @@ export const actions = [
 	RemoveItemAction,
 	IncrementStateAction,
 	DecrementStateAction,
+	NavigateAction,
 ]
 
 function ToggleStateSettings({ ids }: { ids: Ids }) {
@@ -148,7 +160,7 @@ function ToggleStateSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
@@ -177,17 +189,17 @@ function SetStateSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={mutableStates.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
 			/>
-			<SingleIntelinput
+			<InteliState
 				label="Key"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('key')}
 			/>
-			<SingleIntelinput
+			<InteliState
 				label="To"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('value')}
@@ -214,12 +226,12 @@ function PushStateSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={mutableStates.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
 			/>
-			<SingleIntelinput
+			<InteliState
 				label="Item"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('value')}
@@ -245,7 +257,7 @@ function RemoveItemSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={mutableStates.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
@@ -272,12 +284,12 @@ function IncrementStateSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={mutableStates.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
 			/>
-			<SingleIntelinput
+			<InteliState
 				label="Key"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('key')}
@@ -304,15 +316,41 @@ function DecrementStateSettings({ ids }: { ids: Ids }) {
 
 	return (
 		<form className="space-y-6" onSubmit={onSubmit}>
-			<SingleIntelinput
+			<InteliState
 				label="Name"
 				options={mutableStates.map((state) => state.name)}
 				{...form.getInputProps('stateName')}
 			/>
-			<SingleIntelinput
+			<InteliState
 				label="Key"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('key')}
+			/>
+			<Button type="submit" fullWidth>
+				Save
+			</Button>
+		</form>
+	)
+}
+
+function NavigateSettings({ ids }: { ids: Ids }) {
+	const action = useFindAction(ids) as NavigateAction | undefined
+	const form = useForm({ initialValues: { to: action?.to } })
+	const update = useUpdateAction(ids)
+	const states = useGetStates()
+
+	const onSubmit = form.onSubmit((values) => {
+		const action = new NavigateAction()
+		_.assign(action, values)
+		update(action)
+	})
+
+	return (
+		<form className="space-y-6" onSubmit={onSubmit}>
+			<IntelinputText
+				label="To"
+				options={states.map((s) => s.name)}
+				{...form.getInputProps('to')}
 			/>
 			<Button type="submit" fullWidth>
 				Save
@@ -349,12 +387,4 @@ function useFindAction(ids: Ids) {
 	return element?.events
 		.find((event) => event.id === ids.event)
 		?.actions.find((action) => action.id === ids.action)
-}
-
-function defaultInteliValue(): IntelinputValue {
-	return { kind: IntelinputValueKind.Text, data: '' }
-}
-
-function serializeInteliValue(value: IntelinputValue) {
-	return { isState: value.kind === IntelinputValueKind.Option, value: value.data }
 }

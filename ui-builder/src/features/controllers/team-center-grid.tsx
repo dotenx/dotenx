@@ -395,7 +395,7 @@ const tileIcon = produce(new ImageElement(), (draft) => {
 			width: '50%',
 			borderRadius: '50%',
 			marginBottom: '10px',
-			transform: "translateY(-10px)"
+			transform: 'translateY(-10px)',
 		},
 	}
 	draft.data.src = 'https://cdn.iconscout.com/icon/free/png-256/like-1648810-1401300.png'
