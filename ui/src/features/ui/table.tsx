@@ -17,17 +17,25 @@ interface TableProps<D extends object = Record<string, string>> {
 	data: D[] | undefined
 	loading?: boolean
 	helpDetails?: HelpDetails
+	withPagination?: boolean
+	currentPage?: number
+	nPages?: number
+	setCurrentPage?: any
 }
 
 export function Table<D extends object = Record<string, string>>({
 	title,
 	subtitle,
+	currentPage,
+	setCurrentPage,
+	nPages,
 	actionBar,
 	emptyText,
 	columns,
 	data = [],
 	loading,
 	helpDetails,
+	withPagination,
 }: TableProps<D>) {
 	const [search, setSearch] = useState('')
 	const fuzzySearch = useMemo(
@@ -134,6 +142,66 @@ export function Table<D extends object = Record<string, string>>({
 					</div>
 				</div>
 			)}
+			{withPagination && (
+				<Pagination
+					currentPage={currentPage || 1}
+					nPages={nPages || 1}
+					setCurrentPage={setCurrentPage}
+				/>
+			)}
+		</div>
+	)
+}
+
+const Pagination = ({
+	currentPage,
+	setCurrentPage,
+	nPages,
+}: {
+	currentPage: number
+	nPages: number
+	setCurrentPage?: any
+}) => {
+	const pageNumbers = [...Array(nPages + 1).keys()].slice(1)
+
+	const nextPage = () => {
+		setCurrentPage(currentPage + 1)
+	}
+	const prevPage = () => {
+		setCurrentPage(currentPage - 1)
+	}
+	if (nPages === 1) return null
+	return (
+		<div className="w-full  flex justify-end select-none">
+			<ul className="flex items-center space-x-2 font-medium">
+				<li
+					onClick={prevPage}
+					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
+						currentPage === 1 && 'pointer-events-none opacity-70'
+					}`}
+				>
+					Previous
+				</li>
+				{pageNumbers.map((pgNumber) => (
+					<li
+						onClick={() => setCurrentPage(pgNumber)}
+						key={pgNumber}
+						className={`bg-slate-50 p-1 px-2 rounded  cursor-pointer active:bg-slate-100 ${
+							currentPage == pgNumber ? 'bg-slate-200' : ''
+						} `}
+					>
+						{pgNumber}
+					</li>
+				))}
+				<li
+					onClick={nextPage}
+					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
+						currentPage === nPages && 'pointer-events-none opacity-70'
+					}`}
+				>
+					Next
+				</li>
+			</ul>
 		</div>
 	)
 }

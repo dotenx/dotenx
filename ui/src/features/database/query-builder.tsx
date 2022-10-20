@@ -4,7 +4,7 @@ import { Control, useFieldArray } from 'react-hook-form'
 import { IoAdd, IoTrash } from 'react-icons/io5'
 import { z } from 'zod'
 import { chainedConditionOptions, columnTypeKinds, operatorOptions } from '../../constants'
-import { Field, NewSelect, Option } from '../ui'
+import { CreatableSelect, Field, NewSelect, Option } from '../ui'
 
 const schema = z.object({
 	conjunction: z.string(),
@@ -106,7 +106,9 @@ function ConditionRow({
 	conjunction,
 	columnType,
 	name = '',
+	form,
 }: {
+	form?: any
 	name: string
 	index: number
 	control: Control<QueryBuilderValues>
@@ -118,7 +120,7 @@ function ConditionRow({
 }) {
 	const colKind = columnTypeKinds.find((kind) => kind.types.includes(columnType))?.kind ?? 'none'
 	const colOperatorOptions = operatorOptions[colKind]
-
+	const operatorValue = form.watch(`${name}filterSet.${index}.operator`)
 	return (
 		<div className="grid items-center grid-cols-12 gap-2 px-4">
 			<div className="shrink-0">
@@ -151,11 +153,29 @@ function ConditionRow({
 			</div>
 			<div className="flex items-center col-span-5 gap-2">
 				<div className="grow">
-					<Field
-						name={`${name}filterSet.${index}.value` as any}
-						placeholder="value"
-						control={control}
-					/>
+					{colKind === 'boolean' ? (
+						<NewSelect
+							name={`${name}filterSet.${index}.value` as any}
+							placeholder="value"
+							options={[
+								{ label: 'true', value: 'true' },
+								{ label: 'false', value: 'false' },
+							]}
+							control={control}
+						/>
+					) : ['has', 'hasNot'].includes(operatorValue) ? (
+						<CreatableSelect
+							name={`${name}filterSet.${index}.value` as any}
+							control={control}
+							placeholder="Type something and press enter..."
+						/>
+					) : (
+						<Field
+							name={`${name}filterSet.${index}.value` as any}
+							placeholder="value"
+							control={control}
+						/>
+					)}
 				</div>
 				<DeleteButton onClick={onDelete} />
 			</div>
@@ -277,6 +297,7 @@ function FieldsWrapper({
 							control={form.control}
 							index={index}
 							loading={isLoading}
+							form={form}
 							onDelete={() => fieldArray.remove(index)}
 						/>
 					)

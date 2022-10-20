@@ -1,5 +1,6 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
 import { IoReload } from 'react-icons/io5'
 import { useQuery, useQueryClient } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -15,17 +16,29 @@ export default function UserManagementPage() {
 }
 
 function UMTableContent({ projectName }: { projectName: string }) {
+	const [currentPage, setCurrentPage] = useState(1)
+
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
 		() => getProject(projectName)
 	)
 	const projectTag = projectDetails?.data.tag ?? ''
-	const { data: usersData, isLoading: usersDataLoading } = useQuery(
+	const {
+		data: usersData,
+		isLoading: usersDataLoading,
+		refetch,
+	} = useQuery(
 		QueryKey.GetUserManagementData,
-		() => getUserManagementData(projectTag),
+		() => getUserManagementData(projectTag, currentPage),
 		{ enabled: !!projectTag }
 	)
 	const tableData = usersData?.data?.rows ?? []
+
+	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
+
+	useEffect(() => {
+		refetch()
+	}, [currentPage])
 
 	const helpDetails = {
 		title: 'You can add manage the users of your application and control their access',
@@ -38,6 +51,10 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	return (
 		<ContentWrapper>
 			<Table
+				withPagination
+				currentPage={currentPage}
+				nPages={nPages}
+				setCurrentPage={setCurrentPage}
 				helpDetails={helpDetails}
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
