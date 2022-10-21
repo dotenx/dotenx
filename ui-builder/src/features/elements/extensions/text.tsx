@@ -1,6 +1,7 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbMessage2 } from 'react-icons/tb'
+import { useGetStates } from '../../data-bindings/use-get-states'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
 import { IntelinputText } from '../../ui/intelinput'
@@ -31,6 +32,7 @@ export class TextElement extends Element {
 
 function TextOptions({ element }: { element: TextElement }) {
 	const set = useElementsStore((store) => store.set)
+	const states = useGetStates()
 
 	return (
 		<div className="space-y-6">
@@ -44,6 +46,7 @@ function TextOptions({ element }: { element: TextElement }) {
 						})
 					)
 				}
+				options={states.map((s) => s.name)}
 			/>
 			<TypographyEditor simple />
 			<SpacingEditor />

@@ -42,40 +42,67 @@ type dockerCleint struct {
 This function (currently) finds all the triggers and check if they have to start the pipelines they belong to
 */
 func (manager *TriggerManager) StartChecking(store integrationStore.IntegrationStore) error {
-	freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
-	if err != nil {
-		return err
+	// freq, err := strconv.Atoi(config.Configs.App.CheckTrigger)
+	// if err != nil {
+	// 	return err
+	// }
+	frequencyListStr := strings.Split(config.Configs.TaskAndTrigger.FrequencyList, ",")
+	var frequencyList = make([]int, 0)
+	for _, fStr := range frequencyListStr {
+		f, _ := strconv.Atoi(fStr)
+		frequencyList = append(frequencyList, f)
 	}
-	for {
-		// todo: handle error
-		// TODO: handle this more efficiently and cater for different trigger intervals
-		go manager.check(store)
-		time.Sleep(time.Duration(freq) * time.Second)
+	for _, f := range frequencyList {
+		go manager.check(store, f)
 	}
+	// for {
+	// todo: handle error
+	// TODO: handle this more efficiently and cater for different trigger intervals
+	// time.Sleep(time.Duration(freq) * time.Second)
+	// }
+	return nil
 }
-func (manager *TriggerManager) check(store integrationStore.IntegrationStore) error {
-	// TODO: replace this with GetActiveTriggers which returns the triggers corresponding to a pipeline with (pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction)
-	triggers, err := manager.GetAllTriggers()
-	if err != nil {
-		return err
-	}
-	cli, err := client.NewClientWithOpts()
-	if err != nil {
-		fmt.Println("Unable to create docker client")
-		return err
-	}
-	dc := dockerCleint{cli: cli}
 
-	for _, trigger := range triggers {
-		pipeline, err := manager.PipelineStore.GetPipelineByEndpoint(context.Background(), trigger.Endpoint)
-		if err != nil {
-			fmt.Println("Unable to start checking this trigger:", err.Error())
+func (manager *TriggerManager) check(store integrationStore.IntegrationStore, frequency int) error {
+	for {
+		triggers := make([]models.EventTrigger, 0)
+		redisKey := "ao-api-trigger-frequency-" + fmt.Sprint(frequency)
+		exist, pipelineEndpoints, err := manager.RedisStore.GetRedisSortedSet(redisKey)
+		if err != nil || !exist {
+			if err != nil {
+				logrus.Error(err.Error())
+			}
+			time.Sleep(time.Duration(frequency) * time.Second)
 			continue
 		}
-		if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
-			go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
-			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
+		for _, endpoint := range pipelineEndpoints {
+			t, err := manager.GetAllTriggersForPipelineByEndpoint(endpoint)
+			if err != nil {
+				logrus.Error(err.Error())
+				continue
+			}
+			triggers = append(triggers, t...)
 		}
+		cli, err := client.NewClientWithOpts()
+		if err != nil {
+			fmt.Println("Unable to create docker client")
+			time.Sleep(time.Duration(frequency) * time.Second)
+			continue
+		}
+		dc := dockerCleint{cli: cli}
+
+		for _, trigger := range triggers {
+			pipeline, err := manager.PipelineStore.GetPipelineByEndpoint(context.Background(), trigger.Endpoint)
+			if err != nil {
+				fmt.Println("Unable to start checking this trigger:", err.Error())
+				continue
+			}
+			if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
+				go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
+				manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
+			}
+		}
+		time.Sleep(time.Duration(frequency) * time.Second)
 	}
 	return nil
 }

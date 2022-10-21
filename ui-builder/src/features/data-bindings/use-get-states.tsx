@@ -67,6 +67,9 @@ export const useGetMutableStates = () => {
 	return _.uniq(
 		getStateNames(elements)
 			.filter((stateName) => !!stateName)
+			.map((stateName) =>
+				stateName.includes('$store.') ? stateName : `$store.page.${stateName}`
+			)
 			.concat(globalStates.map((state) => `$store.global.${state}`))
 	).map((stateName) => ({
 		kind: PropertyKind.Unknown,

@@ -223,7 +223,7 @@ const Card: FC<CardProps> = ({
 						width: '10%',
 						backgroundColor: card,
 					}}
-					className="cursor-pointer h-full" 
+					className="cursor-pointer h-full"
 				></div>
 				<div
 					style={{
@@ -242,10 +242,7 @@ const Card: FC<CardProps> = ({
 					>
 						<TbArrowNarrowUp className="cursor-pointer" />
 					</ActionIcon>
-					<ActionIcon
-						onClick={() => removeCard(index)}
-						variant="transparent"
-					>
+					<ActionIcon onClick={() => removeCard(index)} variant="transparent">
 						<TbTrash className="mx-2 cursor-pointer text-red-500" />
 					</ActionIcon>
 					<ActionIcon

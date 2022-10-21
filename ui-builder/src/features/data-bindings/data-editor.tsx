@@ -9,7 +9,7 @@ import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elem
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { IntelinputValue } from '../ui/intelinput'
+import { IntelinputValue, InteliStateValue } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
 import { useGetStates } from './use-get-states'
@@ -165,8 +165,8 @@ export const getStateNames = (elements: Element[]) => {
 			...states,
 			...element.events
 				.flatMap((event) => event.actions)
-				.filter((a): a is Action & { stateName: IntelinputValue } => 'stateName' in a)
-				.map((action) => action.stateName.data),
+				.filter((a): a is Action & { stateName: InteliStateValue } => 'stateName' in a)
+				.map((action) => action.stateName.value),
 		]
 		states = [...states, ...getStateNames(element.children ?? [])]
 	}
@@ -264,6 +264,7 @@ export const eventOptions = [
 	{ label: 'submit', value: EventKind.Submit },
 	{ label: 'load', value: EventKind.Onload },
 	{ label: 'intersection', value: EventKind.Intersection },
+	{ label: 'submit success', value: EventKind.SubmitSuccess },
 ]
 
 function EventInput({

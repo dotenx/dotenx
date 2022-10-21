@@ -2,6 +2,7 @@ package publishutils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"text/template"
@@ -94,7 +95,22 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		return "", "", "", err
 	}
 
-	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}))
+	fmt.Println(page)
+
+	// convert page["globals"] to []string
+
+	b, err := json.Marshal(page["globals"])
+	if err != nil {
+		fmt.Println(err)
+		return "", "", "", err
+	}
+
+	var globals []string
+	err = json.Unmarshal(b, &globals)
+
+	fmt.Println(globals)
+
+	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals)
 	if err != nil {
 		return "", "", "", err
 	}

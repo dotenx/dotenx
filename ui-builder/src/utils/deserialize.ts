@@ -43,16 +43,7 @@ function deserializeAction(data: any) {
 	const Constructor = actions.find((action) => new action().name === data.kind)
 	if (!Constructor) throw new Error(`Action ${data.name} not found`)
 	const action = new Constructor() as Action
-	const deserialized = _.fromPairs(
-		_.map(_.omit(data, 'kind'), (value, key) => [
-			key,
-			{
-				kind: value.isState ? IntelinputValueKind.Option : IntelinputValueKind.Text,
-				data: value.value,
-			},
-		])
-	)
+	const deserialized = _.omit(data, 'kind')
 	_.assign(action, deserialized)
-	console.log(deserialized, action)
 	return action
 }
