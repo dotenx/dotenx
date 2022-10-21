@@ -136,6 +136,7 @@ function QueryParamsForm() {
 	const elements = useElementsStore((state) => state.elements)
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
+	const globals = useAtomValue(globalStatesAtom)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
@@ -152,6 +153,7 @@ function QueryParamsForm() {
 					classNames: classes,
 					pageParams: values.params,
 					mode: 'advanced',
+					globals,
 				})
 			)}
 		>
@@ -218,6 +220,7 @@ function SaveButton() {
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const classNames = useClassesStore((store) => store.classes)
 	const pageParams = useAtomValue(pageParamsAtom)
+	const globals = useAtomValue(globalStatesAtom)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
 	})
@@ -230,6 +233,7 @@ function SaveButton() {
 			classNames,
 			mode: isSimple ? 'simple' : 'advanced',
 			pageParams,
+			globals,
 		})
 	}
 

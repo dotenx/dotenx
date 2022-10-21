@@ -215,7 +215,7 @@ export function InteliState({
 					onChange({
 						value: last.data,
 						isState: last.kind === IntelinputValueKind.Option,
-						mode: 'page',
+						mode: getMode(last.data),
 					})
 				}
 			}}
@@ -224,12 +224,34 @@ export function InteliState({
 	)
 }
 
+function getMode(value: string): InteliStateMode {
+	if (value.startsWith('$store.page.')) return 'page'
+	if (value.startsWith('$store.global.')) return 'global'
+	if (value.startsWith('$store.url.')) return 'url'
+	if (value.startsWith('$store.response.')) return 'response'
+	return 'page'
+}
+
+type InteliStateMode = 'page' | 'url' | 'global' | 'response'
+
 export type InteliStateValue = {
 	value: string
 	isState: boolean
-	mode: 'page' | 'url' | 'global'
+	mode: InteliStateMode
 }
 
 export function defaultInteliState(): InteliStateValue {
 	return { value: '', isState: false, mode: 'page' }
+}
+
+export function serializeInteliState(data: InteliStateValue): InteliStateValue | undefined {
+	if (!_.isObject(data)) return undefined
+	return {
+		...data,
+		value: data.value
+			.replace('$store.page.', '')
+			.replace('$store.global.', '')
+			.replace('$store.url.', '')
+			.replace('$store.response.', ''),
+	}
 }
