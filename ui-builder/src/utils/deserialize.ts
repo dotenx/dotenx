@@ -3,9 +3,9 @@ import { mapStyleToCamelCaseStyle } from '../api/mapper'
 import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
-import { Action, actions } from '../features/elements/action'
+import { ACTIONS } from '../features/elements/actions'
+import { Action } from '../features/elements/actions/action'
 import { Element } from '../features/elements/element'
-import { IntelinputValueKind } from '../features/ui/intelinput'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
@@ -39,11 +39,25 @@ function deserializeController(data: any): Controller {
 	return controller
 }
 
-function deserializeAction(data: any) {
-	const Constructor = actions.find((action) => new action().name === data.kind)
+export function deserializeAction(data: any) {
+	const Constructor = ACTIONS.find((action) => new action().name === data.kind)
 	if (!Constructor) throw new Error(`Action ${data.name} not found`)
 	const action = new Constructor() as Action
-	const deserialized = _.omit(data, 'kind')
+	const deserialized = _.fromPairs(
+		_.map(_.omit(data, 'kind'), (data, key) => {
+			if ((_.isObject(data) && 'value' in data, 'isState' in data, 'mode' in data)) {
+				return [
+					key,
+					{
+						...data,
+						isState: !!data.value,
+						value: data.value ? `$store.${data.mode}.${data.value}` : '',
+					},
+				]
+			}
+			return [key, data]
+		})
+	)
 	_.assign(action, deserialized)
 	return action
 }

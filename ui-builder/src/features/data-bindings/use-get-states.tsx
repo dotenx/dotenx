@@ -1,11 +1,13 @@
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { AnyJson, JsonArray } from '../../utils'
+import { Action } from '../elements/actions/action'
 import { Element } from '../elements/element'
 import { findParent, useElementsStore } from '../elements/elements-store'
 import { globalStatesAtom } from '../page/actions'
 import { pageParamsAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { InteliStateValue } from '../ui/intelinput'
 import { getStateNames } from './data-editor'
 import { findPropertyPaths, Property, PropertyKind, useDataSourceStore } from './data-source-store'
 import { usePageStates } from './page-states'
@@ -63,10 +65,16 @@ export const useGetStates = () => {
 export const useGetMutableStates = () => {
 	const elements = useElementsStore((store) => store.elements)
 	const globalStates = useAtomValue(globalStatesAtom)
-
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const sourceStates = dataSources
+		.flatMap((source) => source.onSuccess ?? [])
+		.filter((a): a is Action & { stateName: InteliStateValue } => 'stateName' in a)
+		.map((action) => action.stateName.value)
+		.filter((stateName) => !!stateName)
 	return _.uniq(
 		getStateNames(elements)
 			.filter((stateName) => !!stateName)
+			.concat(sourceStates)
 			.map((stateName) =>
 				stateName.includes('$store.') ? stateName : `$store.page.${stateName}`
 			)

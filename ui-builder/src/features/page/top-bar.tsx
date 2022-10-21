@@ -165,6 +165,7 @@ function AdvancedModeButton() {
 			classNames: classes,
 			mode: 'advanced',
 			pageParams: [],
+			globals: [],
 		})
 	}
 	const handleClick = () => {

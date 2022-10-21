@@ -33,6 +33,7 @@ export type AddPageRequest = {
 	classNames: Record<string, Style>
 	mode: LayoutMode
 	pageParams: string[]
+	globals: string[]
 }
 
 export type PublishPageRequest = {

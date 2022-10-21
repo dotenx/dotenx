@@ -4,12 +4,13 @@ import produce from 'immer'
 import _ from 'lodash'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
-import { Action, actions, SetStateAction, ToggleStateAction } from '../elements/action'
+import { ACTIONS } from '../elements/actions'
+import { Action } from '../elements/actions/action'
 import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { IntelinputValue, InteliStateValue } from '../ui/intelinput'
+import { InteliStateValue } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
 import { useGetStates } from './use-get-states'
@@ -264,7 +265,6 @@ export const eventOptions = [
 	{ label: 'submit', value: EventKind.Submit },
 	{ label: 'load', value: EventKind.Onload },
 	{ label: 'intersection', value: EventKind.Intersection },
-	{ label: 'submit success', value: EventKind.SubmitSuccess },
 ]
 
 function EventInput({
@@ -336,7 +336,7 @@ function EventInput({
 								</Button>
 							</Menu.Target>
 							<Menu.Dropdown>
-								{actions.map((Action) => {
+								{ACTIONS.map((Action) => {
 									const action = new Action()
 									return (
 										<Menu.Item
