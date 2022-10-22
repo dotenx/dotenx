@@ -154,7 +154,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore, RedisStore)
 	crudServices := crudService.NewCrudService(pipelineStore, RedisStore, TriggerService, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
@@ -221,7 +221,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// TODO: add sessions middleware to needed endpoints
+	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
@@ -246,6 +246,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/project/list", middlewares.InternalMiddleware(), InternalController.ListProjects)
 	internal.POST("/db_project/list", middlewares.InternalMiddleware(), InternalController.ListDBProjects)
 	internal.POST("/tp_user/list", middlewares.InternalMiddleware(), InternalController.ListTpUsers)
+	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
 
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)
