@@ -33,9 +33,15 @@ var pageTemplate = `<!DOCTYPE html>
 	<script  src="https://unpkg.com/alpinejs-intersect-class@1.x.x/dist/cdn.min.js"></script>
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
+
 	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.17/dist/css/splide.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.17/dist/js/splide.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 	<link rel="stylesheet" href="./{{.Name}}.css">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<head>
@@ -167,6 +173,24 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertSelect(component, styleStore, functionStore)
 	case "Slider":
 		return convertSlider(component, styleStore, functionStore)
+	case "Bar":
+		return convertChartBar(component, styleStore, functionStore)
+	case "Area":
+		return convertChartArea(component, styleStore, functionStore)
+	case "Line":
+		return convertChartLine(component, styleStore, functionStore)
+	case "Pie":
+		return convertChartPie(component, styleStore, functionStore)
+	case "Doughnut":
+		return convertChartDoughnut(component, styleStore, functionStore)
+	case "Polar Area":
+		return convertChartPolarArea(component, styleStore, functionStore)
+	case "Radar":
+		return convertChartRadar(component, styleStore, functionStore)
+	case "Scatter":
+		return convertChartScatter(component, styleStore, functionStore)
+	case "Bubble":
+		return convertChartBubble(component, styleStore, functionStore)
 	default:
 		return "", fmt.Errorf("Unknown component type: %s", component["kind"])
 	}
