@@ -96,7 +96,6 @@ export function InputOrSelectRaw({
 	const close = useCallback(() => setIsOpen(false), [])
 	useOutsideClick(wrapperRef, close)
 	const [isOpen, setIsOpen] = useState(false)
-
 	return (
 		<div className="relative grow" ref={wrapperRef}>
 			<div className="flex flex-col gap-1">

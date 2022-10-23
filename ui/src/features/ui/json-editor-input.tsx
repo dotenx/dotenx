@@ -24,6 +24,7 @@ export interface JsonEditorInputProps<
 	errors?: FieldErrors<TFieldValues>
 	groups?: GroupData[]
 	onlySimple?: boolean
+	simpleInput?: boolean
 }
 
 export function JsonEditorInput<
@@ -35,18 +36,19 @@ export function JsonEditorInput<
 	control,
 	groups = [],
 	onlySimple,
+	simpleInput,
 	...rest
 }: JsonEditorInputProps<TFieldValues, TName>) {
 	const {
 		field: { onChange, value },
 	} = useController({ control, name: rest.name })
-	const defaultMode = onlySimple
-		? 'input'
-		: _.isObject(value) && 'type' in value && value.type === InputOrSelectKind.Text
-		? 'input'
-		: 'editor'
+	const defaultMode =
+		onlySimple || simpleInput
+			? 'input'
+			: _.isObject(value) && 'type' in value && value.type === InputOrSelectKind.Text
+			? 'input'
+			: 'editor'
 	const [mode, setMode] = useState<'editor' | 'input'>(defaultMode)
-
 	return (
 		<div className="flex flex-col gap-1">
 			{label && (
@@ -54,7 +56,7 @@ export function JsonEditorInput<
 					<label htmlFor={rest.name} className="text-sm font-medium">
 						{label}
 					</label>
-					{!onlySimple && (
+					{!onlySimple && !simpleInput && (
 						<ActionIcon
 							size="sm"
 							onClick={() => {
@@ -74,7 +76,24 @@ export function JsonEditorInput<
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
-					if (mode === 'input')
+					if (mode === 'input') {
+						if (simpleInput)
+							return (
+								<JsonInput
+									onChange={(value) =>
+										onChange({ type: 'column_values', data: value })
+									}
+									placeholder={'{"x":"y"}'}
+									value={(value as any)?.data ?? ''}
+									validationError={!onlySimple && 'Invalid json'}
+									formatOnBlur
+									autosize
+									minRows={4}
+									styles={(theme) => ({
+										input: { backgroundColor: theme.colors.gray[0] },
+									})}
+								/>
+							)
 						return (
 							<JsonInput
 								onChange={(value) =>
@@ -90,6 +109,7 @@ export function JsonEditorInput<
 								})}
 							/>
 						)
+					}
 
 					return (
 						<div className="p-2 font-mono text-xs font-medium border border-gray-300 rounded cursor-default bg-gray-50">

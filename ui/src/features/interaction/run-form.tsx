@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core'
+import { Button, TextInput } from '@mantine/core'
 import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
@@ -32,38 +32,29 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 	)
 	const onSubmit = form.handleSubmit((values) => {
 		Object.keys(values).forEach(function (key) {
-			if (values[key as keyof typeof values] === undefined) {
-				switch (key) {
-					case 'column_values':
-						values[key as keyof typeof values] = {}
-						break
-					case 'text':
-						values[key as keyof typeof values] = ''
-						break
-					default:
-						break
-				}
-			}
+			const newObj = values[key as keyof typeof values]
+			Object.keys(newObj).forEach(function (key) {
+				if (newObj[key as keyof typeof newObj] === undefined) {
+					switch (key) {
+						case 'column_values':
+							newObj[key as keyof typeof newObj] = {}
+							break
+						case 'text':
+							newObj[key as keyof typeof newObj] = ''
+							break
+						default:
+							break
+					}
+				} else newObj[key as keyof typeof newObj] = newObj[key as keyof typeof newObj].data
+			})
 		})
-		// console.log(values, 'values')
+
 		mutation.mutate({ interactionRunTime: values })
 	})
 	if (query.isLoading) return <Loader />
 	const fields = _.toPairs(query.data?.data).flatMap(([taskName, fields]) =>
 		fields.map((field) => ({ name: `${taskName}.${field.key}`, value: field }))
 	)
-	const obj = {
-		country: 'ali' as any,
-		city: undefined as any,
-		address: ['hey'] as any,
-	}
-
-	Object.keys(obj).forEach(function (key) {
-		if (obj[key as keyof typeof obj] === undefined) {
-			obj[key as keyof typeof obj] = []
-		}
-		// obj[key as keyof typeof obj] = ''
-	})
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
@@ -74,7 +65,7 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 						control: form.control,
 						errors: form.formState.errors,
 						label: field.name,
-						name: field.value.key,
+						name: field.name,
 					})
 				})}
 			</div>
@@ -93,38 +84,14 @@ const getFieldComponentRun = (props: any) => {
 					<ComplexField {...props} valueKinds={['input-or-select']} />
 				</div>
 			)
-		// case FieldType.Code:
-		// 	return (
-		// 		<Button key={index} type="button" onClick={onClick}>
-		// 			Add {label}
-		// 		</Button>
-		// 	)
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<JsonEditorInput
-						{...props}
-						// onlySimple={mode === 'custom_task'}
-					/>
+					<JsonEditorInput simpleInput {...props} />
 				</div>
 			)
-		// case FieldType.CustomOutputs:
-		// 	return (
-		// 		<Outputs
-		// 			key={props.key}
-		// 			control={props.control as any}
-		// 			errors={props.errors as any}
-		// 		/>
-		// 	)
+
 		default:
 			return null
 	}
 }
-
-// <Field
-// 	key={field.name}
-// 	name={field.name}
-// 	label={field.name}
-// 	control={form.control}
-// 	errors={form.formState.errors}
-// />
