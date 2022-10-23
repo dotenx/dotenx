@@ -11,3 +11,8 @@ export function repeatObject<T>(source: T, times: number): T[] {
 export type SimpleComponentOptionsProps = {
 	options: ElementOptions
 }
+
+export function extractUrl(url: string) : string {
+	// extract the string inside ulr()
+	return url.match(/^url\(([^)]*)\)$/)?.[1] ?? ""
+}
