@@ -321,6 +321,7 @@ export type CreateProjectRequest = Project
 export type GetProjectsResponse = Project[] | null
 
 export type GetUserManagementDataResponse = {
+	totalRows: number,
 	rows: {
 		account_id: string
 		created_at: string
@@ -376,7 +377,10 @@ export interface RecordsFilters {
 
 export type GetTableRecordsRequest = RecordsFilters
 
-export type EndpointFields = Record<string, string[]>
+export type EndpointFields = Record<string, {
+	key: string,
+	type: string
+}[]>
 
 export type TableRecord = Record<
 	string,
@@ -385,6 +389,7 @@ export type TableRecord = Record<
 
 export type GetRecordsResponse = {
 	rows: TableRecord[]
+	totalRows: number
 } | null
 
 export type AddRecordRequest = TableRecord

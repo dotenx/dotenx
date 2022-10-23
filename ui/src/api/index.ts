@@ -350,11 +350,18 @@ export function deleteColumn(projectName: string, tableName: string, columnName:
 export function getTableRecords(
 	projectTag: string,
 	tableName: string,
+	page: number,
 	payload: GetTableRecordsRequest
 ) {
 	return api.post<GetRecordsResponse>(
 		`/database/query/select/project/${projectTag}/table/${tableName}`,
-		payload
+		payload,
+		{
+			headers: {
+				'page': page,
+				'size': 10
+			},
+		}
 	)
 }
 
@@ -362,10 +369,16 @@ export function getColumns(projectName: string, tableName: string) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }
 
-export function getUserManagementData(projectTag: string) {
+export function getUserManagementData(projectTag: string, page: number) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
-		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] }
+		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] },
+		{
+			headers: {
+				'page': page,
+				'size': 10
+			},
+		}
 	)
 }
 export function getFiles(projectTag: string) {

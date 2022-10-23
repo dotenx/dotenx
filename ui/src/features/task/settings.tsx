@@ -157,7 +157,6 @@ export function TaskSettings({
 	const setTaskBuilder = useSetAtom(taskBuilderState)
 	const taskBuilderValues = taskForm.watch('others.tasks')
 	const formData = taskForm.watch()
-
 	return (
 		<div className="flex flex-col h-full gap-10">
 			<div className="flex flex-col gap-5 grow">
