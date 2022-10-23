@@ -10,15 +10,14 @@ import (
 )
 
 type DataSource struct {
-	StateName string
-	Url       string
-	Method    string
-	// Headers     map[string]string
-	// Body        map[string]interface{}
-	Headers     string
-	Body        string
-	Id          string
-	FetchOnload bool
+	StateName   string `json:"stateName"`
+	Url         string `json:"url"`
+	Method      string `json:"method"`
+	Headers     string `json:"headers"`
+	Body        string `json:"body"`
+	Id          string `json:"id"`
+	FetchOnload bool   `json:"fetchOnload"`
+	IsPrivate   bool   `json:"isPrivate"`
 }
 
 func convertDataSources(dataSources []interface{}) (string, error) {
@@ -32,7 +31,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			url = '{{.Url}}';
 			fetch(url, {
 				method: '{{.Method}}',
-				{{if .Headers}}headers: {{.Headers}},{{end}}
+				{{if .Headers}}headers: {{if .IsPrivate}}(...{{.Headers}}, ...{Authorization: 'Bearer ' + App.store('global').token } ){{else}}{{.Headers}},{{end}}{{else}}{{if .IsPrivate}}headers: {Authorization: 'Bearer ' + App.store('global').token },{{end}}{{end}}
 				...(body? {body: JSON.stringify(body)} : {})
 			})
 				.then(response => response.json())
@@ -54,7 +53,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	}
 	var ds []DataSource
 	json.Unmarshal(b, &ds)
-
+	fmt.Println(ds)
 	tmpl, err := template.New("dataSources").Parse(dataSourcesTemplate)
 	if err != nil {
 		fmt.Println(err)
