@@ -7,10 +7,16 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 )
 
-func NewCrudService(store pipelineStore.PipelineStore, trService triggerService.TriggerService, integrationService integrationService.IntegrationService) CrudService {
-	return &crudManager{Store: store, TriggerService: trService, IntegrationService: integrationService}
+func NewCrudService(store pipelineStore.PipelineStore, rStore redisStore.RedisStore, trService triggerService.TriggerService, integrationService integrationService.IntegrationService) CrudService {
+	return &crudManager{
+		Store:              store,
+		RedisStore:         rStore,
+		TriggerService:     trService,
+		IntegrationService: integrationService,
+	}
 }
 
 type CrudService interface {
@@ -38,6 +44,7 @@ type CrudService interface {
 
 type crudManager struct {
 	Store              pipelineStore.PipelineStore
+	RedisStore         redisStore.RedisStore
 	TriggerService     triggerService.TriggerService
 	IntegrationService integrationService.IntegrationService
 }

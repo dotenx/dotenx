@@ -217,7 +217,6 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) => {
 					options.set(
 						produce(getSelectedSimpleDiv(), (draft) => {
-							console.log('here ', selectedTile, src)
 							draft.style.desktop = {
 								default: {
 									...draft.style.desktop?.default,

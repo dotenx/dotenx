@@ -50,6 +50,18 @@ func convertEvent(event Event) (string, error) {
 }
 
 func convertAction(action EventAction) (string, error) {
+
+	funcMap := template.FuncMap{
+		// The name "title" is what the function will be called in the template text.
+		"renderValueSource": func(valueSource ValueSource) string {
+			if valueSource.IsState {
+				return fmt.Sprintf("$store.%s.%s", valueSource.Mode, valueSource.Value)
+			} else {
+				return fmt.Sprintf(`"%s"`, valueSource.Value)
+			}
+		},
+	}
+
 	const codeTemplate = `function {{.Id}}(dtx_event){
 		{{.Code}}
 	}
@@ -57,11 +69,23 @@ func convertAction(action EventAction) (string, error) {
 `
 
 	const toggleStateTemplate = `
-	Alpine.store('{{.Name}}', !Alpine.store('{{.Name}}'))
+	Alpine.store('{{.StateName.Mode}}').toggle("{{.StateName.Value}}")
 	`
 
 	const setStateTemplate = `
-	Alpine.store('{{.Name}}', "{{.ValueToSet}}")
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Value}}, {{renderValueSource .Key}})
+	`
+
+	const pushStateTemplate = `
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Value}})
+	`
+
+	const incStateTemplate = `
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Key}})
+	`
+
+	const decStateTemplate = `
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Key}})
 	`
 
 	const fetchTemplate = `
@@ -95,6 +119,12 @@ func convertAction(action EventAction) (string, error) {
 		actionTemplate = toggleStateTemplate
 	case "Set State":
 		actionTemplate = setStateTemplate
+	case "Push State":
+		actionTemplate = pushStateTemplate
+	case "Inc State":
+		actionTemplate = incStateTemplate
+	case "Dec State":
+		actionTemplate = decStateTemplate
 	case "Code":
 		actionTemplate = codeTemplate
 	case "Fetch":
@@ -103,7 +133,7 @@ func convertAction(action EventAction) (string, error) {
 		actionTemplate = animateTemplate
 	}
 
-	tmpl, err := template.New("action").Parse(actionTemplate)
+	tmpl, err := template.New("action").Funcs(funcMap).Parse(actionTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

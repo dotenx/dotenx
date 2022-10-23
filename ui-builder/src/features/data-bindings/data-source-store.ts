@@ -2,6 +2,7 @@ import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { AnyJson } from '../../utils'
+import { Action } from '../elements/actions/action'
 
 type EditDataSource = Omit<DataSource, 'id'>
 
@@ -68,6 +69,7 @@ export interface DataSource {
 	body: string
 	fetchOnload: boolean
 	properties: Property[]
+	onSuccess?: Action[]
 }
 
 export enum HttpMethod {

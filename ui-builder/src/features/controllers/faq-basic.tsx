@@ -20,7 +20,6 @@ export class FaqBasic extends Controller {
 
 // =============  renderOptions =============
 
-
 function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
@@ -239,7 +238,6 @@ const title = produce(new TextElement(), (draft) => {
 	draft.data.text = 'Frequently asked questions'
 }).serialize()
 
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -248,7 +246,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			fontWeight: 'bold',
 		},
 	}
-	draft.data.text = 'Question title goes here' 
+	draft.data.text = 'Question title goes here'
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
@@ -257,7 +255,8 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			fontSize: '14px',
 		},
 	}
-	draft.data.text = 'You can add a description here. This is a great place to add more information about your product.'
+	draft.data.text =
+		'You can add a description here. This is a great place to add more information about your product.'
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -282,15 +281,18 @@ function createTile({ title, description }: { title: string; description: string
 const tiles = [
 	createTile({
 		title: 'Can I install it myself?',
-		description: 'Yes, you can install it yourself. We provide a detailed installation guide and video.',
+		description:
+			'Yes, you can install it yourself. We provide a detailed installation guide and video.',
 	}),
 	createTile({
 		title: 'How long does it take to install?',
-		description: 'It takes about 2 hours to install. We provide a detailed installation guide and video.',
+		description:
+			'It takes about 2 hours to install. We provide a detailed installation guide and video.',
 	}),
 	createTile({
 		title: 'Do you offer a warranty?',
-		description: 'Yes, we offer a 1-year warranty. You can read more about it in our warranty policy.',
+		description:
+			'Yes, we offer a 1-year warranty. You can read more about it in our warranty policy.',
 	}),
 	createTile({
 		title: 'How can I pay?',
@@ -298,13 +300,13 @@ const tiles = [
 	}),
 	createTile({
 		title: 'How long does it take to ship?',
-		description: 'We ship within 1-2 business days. You can read more about it in our shipping policy.',
+		description:
+			'We ship within 1-2 business days. You can read more about it in our shipping policy.',
 	}),
 	createTile({
 		title: 'Do you ship internationally?',
 		description: 'Yes, we ship internationally. We also offer international financing options.',
 	}),
-
 ]
 
 const grid = produce(new BoxElement(), (draft) => {

@@ -13,8 +13,10 @@ import { usePageStates } from '../data-bindings/page-states'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { DroppableMode } from '../dnd/droppable'
 import { DroppablePortal } from '../dnd/droppable-portal'
+import { AnimationAction } from '../elements/actions/action'
 import { Element } from '../elements/element'
-import { ActionKind, AnimationAction, EventKind } from '../elements/event'
+import { EventKind } from '../elements/event'
+import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
@@ -184,7 +186,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		element.events
 			.filter((event) => event.kind === EventKind.MouseEnter)
 			.flatMap((event) => event.actions)
-			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+			.filter((action): action is AnimationAction => action instanceof AnimationAction)
 			.forEach((animation) => animateCSS(`.${element.id}`, animation.animationName))
 	}
 	const intersectionAnimation = intersection.entry?.isIntersecting
@@ -192,7 +194,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		  element.events
 				.filter((event) => event.kind === EventKind.Intersection)
 				.flatMap((event) => event.actions)
-				.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+				.filter((action): action is AnimationAction => action instanceof AnimationAction)
 				.map((animation) => `animate__${animation.animationName}`)
 		: ''
 	const classes = `${element.generateClasses()} ${intersectionAnimation}`
@@ -218,6 +220,17 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		else selectElements(element.id)
 	}
 
+	let backgroundUrl = ''
+	if (element instanceof ImageElement) backgroundUrl = element.data.src
+	const backgroundImage = backgroundUrl
+		? {
+				backgroundImage: `url(${backgroundUrl})`,
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+		  }
+		: {}
+
 	return (
 		<Draggable
 			data={{ mode: DraggableMode.Move, elementId: element.id }}
@@ -225,7 +238,10 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			className={classes}
 			tabIndex={0}
 			id={element.id}
-			style={style}
+			style={{
+				...style,
+				...backgroundImage,
+			}}
 			onMouseOver={handleMouseOver}
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}

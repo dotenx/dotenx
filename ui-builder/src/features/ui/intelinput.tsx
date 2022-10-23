@@ -3,43 +3,55 @@ import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import _ from 'lodash'
 import { useRef } from 'react'
-import { useGetStates } from '../data-bindings/use-get-states'
 
 export function IntelinputText({
 	value,
 	onChange,
 	label,
+	options,
 }: {
-	value: string
+	value?: string
 	onChange: (value: string) => void
 	label: string
+	options: string[]
 }) {
-	const states = useGetStates()
-
 	return (
 		<Intelinput
 			label={label}
-			options={states.map((state) => state.name)}
-			value={value
-				.split(' ')
-				.map((word) =>
-					word.startsWith('$store-')
-						? { kind: IntelinputValueKind.Option, data: word }
-						: { kind: IntelinputValueKind.Text, data: word }
+			options={options}
+			value={
+				value
+					?.split(' ')
+					.map((word) =>
+						word.startsWith('$store.')
+							? { kind: IntelinputValueKind.Option, data: word }
+							: { kind: IntelinputValueKind.Text, data: word }
+					)
+					.reduce<IntelinputValue[]>((acc, curr) => {
+						if (
+							_.last(acc)?.kind === IntelinputValueKind.Text &&
+							curr.kind === IntelinputValueKind.Text
+						) {
+							return produce(acc, (draft) => {
+								const last = _.last(draft)
+								if (last) last.data = `${last.data} ${curr.data}`
+							})
+						}
+						return [...acc, curr]
+					}, []) ?? []
+			}
+			onChange={(value) =>
+				onChange(
+					value
+						.map((v) =>
+							v.kind === IntelinputValueKind.Option && !v.data.includes('$store.')
+								? `$store.page.${v.data}`
+								: v.data
+						)
+						.filter((v) => !!v)
+						.join(' ')
 				)
-				.reduce<IntelinputValue[]>((acc, curr) => {
-					if (
-						_.last(acc)?.kind === IntelinputValueKind.Text &&
-						curr.kind === IntelinputValueKind.Text
-					) {
-						return produce(acc, (draft) => {
-							const last = _.last(draft)
-							if (last) last.data = `${last.data} ${curr.data}`
-						})
-					}
-					return [...acc, curr]
-				}, [])}
-			onChange={(value) => onChange(value.map((v) => v.data).join(' '))}
+			}
 		/>
 	)
 }
@@ -67,7 +79,7 @@ export function Intelinput({
 			<label className="font-medium">{label}</label>
 			<div
 				className="relative border border-gray-300 min-w-0 w-full rounded px-2.5 py-2 
-                focus-within:border-rose-500 group"
+                focus-within:border-rose-500 group font-mono"
 			>
 				<div className="flex gap-1 flex-wrap">
 					{value.map((inteliValue, index) => {
@@ -80,7 +92,7 @@ export function Intelinput({
 											event.stopPropagation()
 										}}
 										ref={index === value.length - 1 ? lastInputRef : undefined}
-										className="outline-none w-full py-1"
+										className="outline-none w-full py-1 font-mono"
 										style={{ width: `${inteliValue.data.length || 1}ch` }}
 										value={inteliValue.data}
 										onChange={(event) =>
@@ -96,7 +108,7 @@ export function Intelinput({
 								return (
 									<div
 										key={index}
-										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center"
+										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center border"
 									>
 										{inteliValue.data}
 										<CloseButton
@@ -116,7 +128,7 @@ export function Intelinput({
 					{_.last(value)?.kind !== IntelinputValueKind.Text && (
 						<input
 							ref={lastInputRef}
-							className="outline-none w-full py-1"
+							className="outline-none w-full py-1 font-mono"
 							style={{ width: `${newValue.length || 1}ch` }}
 							value={newValue}
 							onChange={setNewValue}
@@ -144,7 +156,7 @@ export function Intelinput({
 							<button
 								type="button"
 								key={option}
-								className="hover:bg-gray-200 p-2 rounded text-left"
+								className="hover:bg-gray-200 p-2 rounded text-left font-mono"
 								onClick={() =>
 									onChange(
 										produce(value, (draft) => {
@@ -174,4 +186,72 @@ export type IntelinputValue = {
 export enum IntelinputValueKind {
 	Text = 'text',
 	Option = 'option',
+}
+
+export function InteliState({
+	label,
+	value,
+	onChange,
+	options,
+}: {
+	label: string
+	value?: InteliStateValue
+	onChange: (value: InteliStateValue) => void
+	options: string[]
+}) {
+	const inputValue: IntelinputValue = {
+		kind: value?.isState ? IntelinputValueKind.Option : IntelinputValueKind.Text,
+		data: value ? value.value : '',
+	}
+
+	return (
+		<Intelinput
+			label={label}
+			value={[inputValue]}
+			onChange={(newValue) => {
+				if (_.isEmpty(newValue)) onChange(defaultInteliState())
+				else {
+					const last = _.last(newValue)!
+					onChange({
+						value: last.data,
+						isState: last.kind === IntelinputValueKind.Option,
+						mode: getMode(last.data),
+					})
+				}
+			}}
+			options={options}
+		/>
+	)
+}
+
+function getMode(value: string): InteliStateMode {
+	if (value.startsWith('$store.page.')) return 'page'
+	if (value.startsWith('$store.global.')) return 'global'
+	if (value.startsWith('$store.url.')) return 'url'
+	if (value.startsWith('$store.response.')) return 'response'
+	return 'page'
+}
+
+type InteliStateMode = 'page' | 'url' | 'global' | 'response'
+
+export type InteliStateValue = {
+	value: string
+	isState: boolean
+	mode: InteliStateMode
+}
+
+export function defaultInteliState(): InteliStateValue {
+	return { value: '', isState: false, mode: 'page' }
+}
+
+export function serializeInteliState(data: InteliStateValue): InteliStateValue | undefined {
+	if (!_.isObject(data)) return undefined
+	return {
+		...data,
+		value: data.value
+			.replace('$store.page.', '')
+			.replace('$store.global.', '')
+			.replace('$store.url.', '')
+			.replace('$store.response.', ''),
+	}
 }

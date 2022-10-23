@@ -3,8 +3,9 @@ import produce from 'immer'
 import { TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
 import { eventOptions } from '../data-bindings/data-editor'
+import { AnimationAction } from '../elements/actions/action'
 import { useElementsStore } from '../elements/elements-store'
-import { ActionKind, AnimationAction, EventKind } from '../elements/event'
+import { EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { CollapseLine } from '../ui/collapse-line'
 
@@ -38,9 +39,7 @@ export function AnimationEditor() {
 				draft.events.push({
 					id: uuid(),
 					kind: EventKind.Intersection,
-					actions: [
-						{ id: uuid(), kind: ActionKind.Animation, animationName: cssAnimations[0] },
-					],
+					actions: [new AnimationAction(cssAnimations[0])],
 				})
 			})
 		)
@@ -74,7 +73,7 @@ export function AnimationEditor() {
 
 	const animations = selectedElement.events.map((event) =>
 		event.actions
-			.filter((action): action is AnimationAction => action.kind === ActionKind.Animation)
+			.filter((action): action is AnimationAction => action instanceof AnimationAction)
 			.map((animation) => (
 				<div className="space-y-2" key={animation.id}>
 					<CloseButton ml="auto" onClick={() => removeAnimation(event.id)} size="xs" />
@@ -96,10 +95,13 @@ export function AnimationEditor() {
 							className="grow"
 							value={animation.animationName}
 							onChange={(value) =>
-								editAnimation(event.id, animation.id, {
-									...animation,
-									animationName: value ?? '',
-								})
+								editAnimation(
+									event.id,
+									animation.id,
+									produce(animation, (draft) => {
+										draft.animationName = value ?? ''
+									})
+								)
 							}
 						/>
 					</div>

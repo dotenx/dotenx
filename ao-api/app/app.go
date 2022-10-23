@@ -151,10 +151,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService()
-	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore)
-	crudServices := crudService.NewCrudService(pipelineStore, TriggerService, IntegrationService)
+	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore, RedisStore)
+	crudServices := crudService.NewCrudService(pipelineStore, RedisStore, TriggerService, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices)
 	ProjectService := projectService.NewProjectService(ProjectStore, UserManagementStore)
 	UserManagementService := userManagementService.NewUserManagementService(UserManagementStore, ProjectStore)
 	DatabaseService := databaseService.NewDatabaseService(DatabaseStore, UserManagementService)
@@ -221,7 +221,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// TODO: add sessions middleware to needed endpoints
+	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
@@ -242,9 +242,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
 	internal.POST("/execution/submit", InternalController.SubmitExecution)
 	internal.POST("/user/access/:resource", InternalController.CheckAccess)
+	internal.POST("/user/plan/current", InternalController.GetCurrentPlan)
 	internal.POST("/project/list", middlewares.InternalMiddleware(), InternalController.ListProjects)
 	internal.POST("/db_project/list", middlewares.InternalMiddleware(), InternalController.ListDBProjects)
 	internal.POST("/tp_user/list", middlewares.InternalMiddleware(), InternalController.ListTpUsers)
+	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
 
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)

@@ -11,7 +11,7 @@ import {
 	TbCornerUpRight,
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
-import { getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
+import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
@@ -22,7 +22,7 @@ import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
 import { useClassesStore } from '../style/classes-store'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { PageActions } from './actions'
+import { globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 
 export const selectedPageAtom = atom({ exists: false, route: '' })
@@ -33,6 +33,7 @@ export const pageParamsAtom = atom<string[]>([])
 export function TopBar() {
 	useFetchProjectTag()
 	useFetchPage()
+	useFetchGlobalStates()
 
 	return (
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
@@ -89,7 +90,7 @@ const useFetchPage = () => {
 							method: source.method,
 							data: source.body,
 						})
-						.then((data) => setPageState(`$store-${source.stateName}`, data.data))
+						.then((data) => setPageState(`$store.${source.stateName}`, data.data))
 				)
 				if (content.mode === 'simple' && !isSimple)
 					navigate(`/projects/${projectName}/simple`)
@@ -99,6 +100,15 @@ const useFetchPage = () => {
 			enabled: !!projectTag && selectedPage.exists,
 		}
 	)
+}
+
+const useFetchGlobalStates = () => {
+	const { projectName = '' } = useParams()
+	const setGlobalStates = useSetAtom(globalStatesAtom)
+	useQuery([QueryKey.GlobalStates, projectName], () => getGlobalStates({ projectName }), {
+		onSuccess: (data) => setGlobalStates(data.data.states),
+		enabled: !!projectName,
+	})
 }
 
 function Logo() {
@@ -155,6 +165,7 @@ function AdvancedModeButton() {
 			classNames: classes,
 			mode: 'advanced',
 			pageParams: [],
+			globals: [],
 		})
 	}
 	const handleClick = () => {

@@ -249,7 +249,6 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) => {
 					options.set(
 						produce(getSelectedTileDiv(), (draft) => {
-							console.log('here ', selectedTile, src)
 							draft.style.desktop = {
 								default: {
 									...draft.style.desktop?.default,
