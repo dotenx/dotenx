@@ -1,4 +1,5 @@
 import { Divider, Image } from '@mantine/core'
+import produce from 'immer'
 import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { uuid } from '../../utils'
@@ -6,6 +7,8 @@ import { controllers } from '../controllers'
 import { SignInBasic } from '../controllers/sign-in-basic'
 import { SignUpBasic } from '../controllers/sign-up-basic'
 import { HttpMethod, useDataSourceStore } from '../data-bindings/data-source-store'
+import { NavigateAction } from '../elements/actions/navigate'
+import { SetStateAction } from '../elements/actions/set-state'
 import { useElementsStore } from '../elements/elements-store'
 import { FormElement } from '../elements/extensions/form'
 import { projectTagAtom } from '../page/top-bar'
@@ -49,6 +52,8 @@ export function SimpleElementSelect() {
 										const id = uuid()
 										const url = `https://api.dotenx.com/user/management/project/${projectTag}/register`
 										const dataSourceName = `${controller.name}_${id}`
+										const navigateAction = new NavigateAction()
+										navigateAction.to = '/login'
 										addDataSource({
 											id,
 											stateName: dataSourceName,
@@ -58,6 +63,7 @@ export function SimpleElementSelect() {
 											body: '',
 											headers: '',
 											properties: [],
+											onSuccess: [navigateAction],
 										})
 										const formElement = newElement.children?.[0]
 											.children?.[0] as FormElement
@@ -67,6 +73,19 @@ export function SimpleElementSelect() {
 										const id = uuid()
 										const url = `https://api.dotenx.com/user/management/project/${projectTag}/login`
 										const dataSourceName = `${controller.name}_${id}`
+										const navigateAction = new NavigateAction()
+										navigateAction.to = '/login'
+										const setTokenAction = new SetStateAction()
+										setTokenAction.stateName = {
+											isState: true,
+											mode: 'global',
+											value: 'token',
+										}
+										setTokenAction.value = {
+											isState: true,
+											mode: 'response',
+											value: 'accessToken',
+										}
 										addDataSource({
 											id,
 											stateName: dataSourceName,
@@ -76,6 +95,7 @@ export function SimpleElementSelect() {
 											body: '',
 											headers: '',
 											properties: [],
+											onSuccess: [setTokenAction, navigateAction],
 										})
 										const formElement = newElement.children?.[0]
 											.children?.[0] as FormElement

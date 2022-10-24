@@ -45,13 +45,14 @@ export function deserializeAction(data: any) {
 	const action = new Constructor() as Action
 	const deserialized = _.fromPairs(
 		_.map(_.omit(data, 'kind'), (data, key) => {
-			if ((_.isObject(data) && 'value' in data, 'isState' in data, 'mode' in data)) {
+			if (_.isObject(data) && 'value' in data && 'isState' in data && 'mode' in data) {
+				const { value, mode } = data as any
 				return [
 					key,
 					{
 						...data,
-						isState: !!data.value,
-						value: data.value ? `$store.${data.mode}.${data.value}` : '',
+						isState: !!value,
+						value: value ? `$store.${mode}.${value}` : '',
 					},
 				]
 			}

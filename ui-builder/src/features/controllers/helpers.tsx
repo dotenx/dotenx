@@ -12,9 +12,9 @@ export type SimpleComponentOptionsProps = {
 	options: ElementOptions
 }
 
-export function extractUrl(url: string) : string {
+export function extractUrl(url: string): string {
 	// extract the string inside ulr()
-	return url.match(/^url\(([^)]*)\)$/)?.[1] ?? ""
+	return url.match(/^url\(([^)]*)\)$/)?.[1] ?? ''
 }
 
 export const Divider = ({ title }: { title: string }) => {

@@ -1,7 +1,7 @@
-import { DragTabList, ExtraButton, Panel, PanelList, Tab, Tabs } from "@react-tabtab-next/tabtab";
-import produce from "immer";
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { BoxElement } from "../../elements/extensions/box";
+import { DragTabList, ExtraButton, Panel, PanelList, Tab, Tabs } from '@react-tabtab-next/tabtab'
+import produce from 'immer'
+import { ReactNode, useCallback, useMemo, useState } from 'react'
+import { BoxElement } from '../../elements/extensions/box'
 
 type TabsOptionsProps = {
 	set: (element: BoxElement) => void
@@ -10,7 +10,12 @@ type TabsOptionsProps = {
 	addNewTab: () => void
 }
 
-export default function TabsOptions({ set, containerDiv, tabs, addNewTab }: TabsOptionsProps): JSX.Element {
+export default function TabsOptions({
+	set,
+	containerDiv,
+	tabs,
+	addNewTab,
+}: TabsOptionsProps): JSX.Element {
 	console.log('taboptions rendered')
 	const [activeTab, setActiveTab] = useState(0)
 

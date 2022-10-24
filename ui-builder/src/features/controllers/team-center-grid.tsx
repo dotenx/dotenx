@@ -1,11 +1,4 @@
-import {
-	Button,
-	Select,
-	SelectItem,
-	Slider,
-	Textarea,
-	TextInput,
-} from '@mantine/core'
+import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/team-center-grid.png'

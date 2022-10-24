@@ -35,6 +35,7 @@ const schema = z.object({
 	body: z.string(),
 	fetchOnload: z.boolean(),
 	onSuccess: z.array(z.any()).optional(),
+	isPrivate: z.boolean().optional(),
 })
 
 type Schema = z.infer<typeof schema>
@@ -52,6 +53,7 @@ export function DataSourceForm({
 		id: '',
 		properties: [],
 		fetchOnload: true,
+		isPrivate: false,
 	},
 	onSuccess,
 }: {
@@ -139,6 +141,10 @@ export function DataSourceForm({
 				<Switch
 					label="Fetch on page load"
 					{...form.getInputProps('fetchOnload', { type: 'checkbox' })}
+				/>
+				<Switch
+					label="Requires authentication"
+					{...form.getInputProps('isPrivate', { type: 'checkbox' })}
 				/>
 				{mode === 'edit' && (
 					<>

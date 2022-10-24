@@ -70,6 +70,7 @@ export interface DataSource {
 	fetchOnload: boolean
 	properties: Property[]
 	onSuccess?: Action[]
+	isPrivate?: boolean
 }
 
 export enum HttpMethod {

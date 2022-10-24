@@ -33,15 +33,15 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps) {
 	return (
 		<div className="space-y-6">
 			<ImageDrop
-					onChange={(src) =>
-						options.set(
-							produce(wrapper, (draft) => {
-								draft.style.desktop!.default!.backgroundImage = `url(${src})`
-							})
-						)
-					}
-					src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
-				/>
+				onChange={(src) =>
+					options.set(
+						produce(wrapper, (draft) => {
+							draft.style.desktop!.default!.backgroundImage = `url(${src})`
+						})
+					)
+				}
+				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
+			/>
 			<TextInput
 				label="Title"
 				name="title"
@@ -208,8 +208,8 @@ const cta = produce(new LinkElement(), (draft) => {
 			fontSize: '24px',
 			fontWeight: 'bold',
 			textAlign: 'center',
-      textDecoration: 'none',
-      cursor: 'pointer',
+			textDecoration: 'none',
+			cursor: 'pointer',
 		},
 	}
 
@@ -227,8 +227,8 @@ const cta = produce(new LinkElement(), (draft) => {
 	const element = new TextElement()
 	element.data.text = 'Get Started'
 
-  draft.data.href = '#'
-  draft.data.openInNewTab = false
+	draft.data.href = '#'
+	draft.data.openInNewTab = false
 
 	draft.children = [element]
 }).serialize()
