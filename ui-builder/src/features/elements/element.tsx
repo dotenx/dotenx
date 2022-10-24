@@ -78,7 +78,7 @@ export enum BindingKind {
 	Link = 'link',
 }
 
-export const bindingKinds = [BindingKind.Text, BindingKind.Hide, BindingKind.Show, BindingKind.Link]
+export const bindingKinds = [BindingKind.Hide, BindingKind.Show]
 
 export interface RepeatFrom {
 	name: string

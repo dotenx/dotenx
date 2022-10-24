@@ -11,14 +11,7 @@ import { extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
-import {
-	Tabs,
-	Panel,
-	DragTabList,
-	PanelList,
-	Tab,
-	ExtraButton,
-} from '@react-tabtab-next/tabtab'
+import { Tabs, Panel, DragTabList, PanelList, Tab, ExtraButton } from '@react-tabtab-next/tabtab'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'

@@ -18,7 +18,6 @@ import {
 import { ReactNode } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 
-
 export type VerticalSortableProps = {
 	onDragEnd: (event: DragEndEvent) => void
 	items: (
