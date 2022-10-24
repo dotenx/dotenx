@@ -84,11 +84,9 @@ export function JsonEditorInput<
 						if (simpleInput)
 							return (
 								<JsonInput
-									onChange={(value) =>
-										onChange({ type: 'column_values', data: value })
-									}
+									onChange={onChange}
 									placeholder={'{"x":"y"}'}
-									value={(value as any)?.data ?? ''}
+									value={(value as any) ?? ''}
 									validationError={!onlySimple && 'Invalid json'}
 									formatOnBlur
 									autosize
