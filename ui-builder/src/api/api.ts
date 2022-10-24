@@ -2,7 +2,7 @@ import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
 import { addControllers } from '../utils/controller-utils'
-import { deserializeElement } from '../utils/deserialize'
+import { deserializeAction, deserializeElement } from '../utils/deserialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
 	AddPageRequest,
@@ -85,6 +85,10 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 				...response.data.content,
 				layout: addControllers(elements),
 				classNames: classNames,
+				dataSources: response.data.content.dataSources.map((source) => ({
+					...source,
+					onSuccess: source.onSuccess?.map(deserializeAction),
+				})),
 			},
 		},
 	}
@@ -98,6 +102,7 @@ export const addPage = ({
 	classNames,
 	mode,
 	pageParams,
+	globals,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -113,10 +118,14 @@ export const addPage = ({
 		name: pageName,
 		content: {
 			layout: elements.map((element) => element.serialize()),
-			dataSources,
+			dataSources: dataSources.map((source) => ({
+				...source,
+				onSuccess: source.onSuccess?.map((a) => a.serialize()),
+			})),
 			classNames: kebabClasses,
 			mode,
 			pageParams,
+			globals,
 		},
 	})
 }

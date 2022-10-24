@@ -1,4 +1,4 @@
-import { Action } from './action'
+import { Action } from './actions/action'
 
 export interface ElementEvent {
 	id: string
@@ -15,5 +15,4 @@ export enum EventKind {
 	Submit = 'submit',
 	Onload = 'onload',
 	Intersection = 'intersection',
-	SubmitSuccess = 'submitSuccess',
 }

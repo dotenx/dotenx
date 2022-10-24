@@ -1,17 +1,7 @@
-import {
-	Button,
-	ColorInput,
-	Select,
-	SelectItem,
-	Slider,
-	Tabs,
-	Textarea,
-	TextInput,
-	Tooltip,
-} from '@mantine/core'
+import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
-import imageUrl from '../../assets/components/feature-center-grid.png'
+import imageUrl from '../../assets/components/team-center-grid.png'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'

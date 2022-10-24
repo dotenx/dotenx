@@ -1,7 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, Button } from '@mantine/core'
 import _ from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
@@ -38,6 +38,8 @@ export default function TablePage() {
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const [currentPage, setCurrentPage] = useState(1)
+
 	const modal = useModal()
 	const [filters, setFilters] = useState<GetTableRecordsRequest>({ columns: [] })
 	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
@@ -45,9 +47,16 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
 		[QueryKey.GetTableRecords, projectTag, tableName, filters],
-		() => getTableRecords(projectTag, tableName, filters),
+		() => getTableRecords(projectTag, tableName, currentPage, filters),
 		{ enabled: !!projectTag }
 	)
+
+	const nPages = Math.ceil((recordsQuery.data?.data?.totalRows as number) / 10)
+
+	useEffect(() => {
+		recordsQuery.refetch()
+	}, [currentPage])
+
 	const records = (recordsQuery.data?.data?.rows || []).map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
@@ -99,6 +108,10 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		<>
 			<ContentWrapper>
 				<Table
+					withPagination
+					currentPage={currentPage}
+					nPages={nPages}
+					setCurrentPage={setCurrentPage}
 					helpDetails={helpDetails}
 					title={`Table ${tableName}`}
 					columns={tableHeaders}

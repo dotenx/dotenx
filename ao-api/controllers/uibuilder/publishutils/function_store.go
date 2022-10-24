@@ -10,14 +10,26 @@ import (
 
 func NewFunctionStore() FunctionStore {
 	return FunctionStore{
-		Events: []Event{},
-		lock:   new(sync.RWMutex),
+		lock:       new(sync.RWMutex),
+		Events:     []Event{},
+		Script:     make([]string, 0),
+		ChartTypes: make(map[string]bool),
 	}
 }
 
 type FunctionStore struct {
-	lock   *sync.RWMutex
-	Events []Event
+	lock       *sync.RWMutex
+	Events     []Event
+	Script     []string        // These are scripts that run inside a document.AddEventListener('alpine:init', function() { ... })
+	ChartTypes map[string]bool // These are the chart types that are used in the page. We use this to know which renderChart functions to include
+}
+
+func (i *FunctionStore) AddChart(ChartType string, Effect string) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	i.ChartTypes[ChartType] = true
+	i.Script = append(i.Script, Effect)
 }
 
 // Add the functionality to add new imports to the import store
@@ -71,10 +83,19 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 		fmt.Println("error: ", err.Error())
 		return "", err
 	}
-	converted.WriteString(buf.String() + "\n")
+	converted.WriteString("\n" + buf.String())
 
-	converted.WriteString(ds + "\n")
-	converted.WriteString(out.String())
+	converted.WriteString("\n" + ds)
+	converted.WriteString("\n" + out.String())
+
+	converted.WriteString("\n" + renderCharts(i.ChartTypes))
+
+	convertedScripts, err := convertEffects(i.Script)
+	if err != nil {
+		fmt.Println("error: ", err.Error())
+		return "", err
+	}
+	converted.WriteString("\n" + convertedScripts)
 
 	mountSplider := `
 document.addEventListener( 'DOMContentLoaded', function() {

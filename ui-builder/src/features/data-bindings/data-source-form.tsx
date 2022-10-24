@@ -1,10 +1,23 @@
-import { Button, JsonInput, SegmentedControl, Switch, Text, TextInput } from '@mantine/core'
+import {
+	Button,
+	CloseButton,
+	Divider,
+	JsonInput,
+	Menu,
+	SegmentedControl,
+	Switch,
+	Text,
+	TextInput,
+} from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import { closeAllModals } from '@mantine/modals'
+import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
+import produce from 'immer'
+import { TbPlus } from 'react-icons/tb'
 import { z } from 'zod'
 import { AnyJson, uuid } from '../../utils'
+import { ACTIONS } from '../elements/actions'
 import {
 	DataSource,
 	findPropertyPaths,
@@ -21,6 +34,8 @@ const schema = z.object({
 	headers: z.string(),
 	body: z.string(),
 	fetchOnload: z.boolean(),
+	onSuccess: z.array(z.any()).optional(),
+	isPrivate: z.boolean().optional(),
 })
 
 type Schema = z.infer<typeof schema>
@@ -38,6 +53,7 @@ export function DataSourceForm({
 		id: '',
 		properties: [],
 		fetchOnload: true,
+		isPrivate: false,
 	},
 	onSuccess,
 }: {
@@ -126,6 +142,16 @@ export function DataSourceForm({
 					label="Fetch on page load"
 					{...form.getInputProps('fetchOnload', { type: 'checkbox' })}
 				/>
+				<Switch
+					label="Requires authentication"
+					{...form.getInputProps('isPrivate', { type: 'checkbox' })}
+				/>
+				{mode === 'edit' && (
+					<>
+						<Divider label="On success" my="sm" />
+						<DataSourceSuccessActions dataSourceId={initialValues.id} />
+					</>
+				)}
 			</div>
 			<div className="space-y-6">
 				{methods}
@@ -143,6 +169,71 @@ export function DataSourceForm({
 			</div>
 			{submitButton}
 		</form>
+	)
+}
+
+function DataSourceSuccessActions({ dataSourceId }: { dataSourceId: string }) {
+	const { edit, sources } = useDataSourceStore((store) => ({
+		edit: store.edit,
+		sources: store.sources,
+	}))
+	const source = sources.find((source) => source.id === dataSourceId)!
+	const actions = source.onSuccess ?? []
+
+	return (
+		<div className="space-y-4">
+			{actions.map((action) => (
+				<div key={action.id} className="flex items-center gap-2">
+					<Button
+						size="xs"
+						variant="light"
+						fullWidth
+						onClick={() =>
+							openModal({
+								title: action.name,
+								children: action.renderDataSourceSettings(dataSourceId),
+							})
+						}
+					>
+						{action.name}
+					</Button>
+					<CloseButton
+						size="xs"
+						onClick={() => {
+							const newSource = produce(source, (draft) => {
+								draft.onSuccess = draft.onSuccess?.filter((a) => a.id !== action.id)
+							})
+							edit(dataSourceId, newSource)
+						}}
+					/>
+				</div>
+			))}
+			<Menu width={200} withinPortal position="left-start" shadow="md">
+				<Menu.Target>
+					<Button size="xs" fullWidth leftIcon={<TbPlus />}>
+						Action
+					</Button>
+				</Menu.Target>
+				<Menu.Dropdown>
+					{ACTIONS.map((Action) => {
+						const action = new Action()
+						return (
+							<Menu.Item
+								key={action.name}
+								onClick={() =>
+									openModal({
+										title: action.name,
+										children: action.renderDataSourceSettings(dataSourceId),
+									})
+								}
+							>
+								{action.name}
+							</Menu.Item>
+						)
+					})}
+				</Menu.Dropdown>
+			</Menu>
+		</div>
 	)
 }
 

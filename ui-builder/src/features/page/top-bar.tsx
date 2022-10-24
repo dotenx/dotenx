@@ -97,7 +97,7 @@ const useFetchPage = () => {
 				else if (content.mode === 'advanced' && isSimple)
 					navigate(`/projects/${projectName}`)
 			},
-			enabled: !!projectTag && selectedPage.exists,
+			enabled: !!projectTag && selectedPage.exists && !!selectedPage.route,
 		}
 	)
 }
@@ -165,6 +165,7 @@ function AdvancedModeButton() {
 			classNames: classes,
 			mode: 'advanced',
 			pageParams: [],
+			globals: [],
 		})
 	}
 	const handleClick = () => {

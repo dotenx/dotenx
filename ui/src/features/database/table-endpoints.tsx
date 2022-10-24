@@ -35,7 +35,7 @@ export function TableEndpoints({ projectTag }: TableEndpointsProps) {
 	if (query.isLoading) return <Loader />
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-8 ">
 			{isPublic === 'public' && (
 				<Endpoint
 					label="Public access"

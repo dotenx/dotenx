@@ -35,6 +35,7 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 			classNames: {},
 			mode: 'simple',
 			pageParams: [],
+			globals: [],
 		})
 	})
 
