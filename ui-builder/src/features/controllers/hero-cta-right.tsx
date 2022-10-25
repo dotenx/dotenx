@@ -17,13 +17,13 @@ export class HeroCtaRight extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FooterGridOptions options={options} />
+		return <HeroCtaRightOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function FooterGridOptions({ options }: SimpleComponentOptionsProps) {
+function HeroCtaRightOptions({ options }: SimpleComponentOptionsProps) {
 	const wrapper = options.element as BoxElement
 	const title = options.element.children?.[0].children?.[0] as TextElement
 	const subTitle = options.element.children?.[0].children?.[1] as TextElement
