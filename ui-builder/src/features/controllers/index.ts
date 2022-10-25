@@ -1,6 +1,7 @@
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
 import { CardList } from './card-list'
+import { ComparisonTableSimple } from './comparison-table-simple'
 import { CreateForm } from './create-form'
 import { CustomersGrid } from './customers-grid'
 import { FaqBasic } from './faq-basic'
@@ -19,6 +20,7 @@ import { TeamCenterGrid } from './team-center-grid'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
+	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'Customers', items: [CustomersGrid] },
 	{ title: 'FAQ', items: [FaqBasic] },
 	{ title: 'Features', items: [FeatureCenterGrid] },
