@@ -16,7 +16,6 @@ export default function TabsOptions({
 	tabs,
 	addNewTab,
 }: TabsOptionsProps): JSX.Element {
-	console.log('taboptions rendered')
 	const [activeTab, setActiveTab] = useState(0)
 
 	const handleOnTabSequenceChange = useCallback(
