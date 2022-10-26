@@ -3,12 +3,14 @@ package triggerService
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/marketplaceStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
@@ -44,6 +46,7 @@ type TriggerManager struct {
 	ExecutionService   executionService.ExecutionService
 	IntegrationService integrationService.IntegrationService
 	PipelineStore      pipelineStore.PipelineStore
+	MarketplaceStore   marketplaceStore.MarketplaceStore
 	RedisStore         redisStore.RedisStore
 }
 
@@ -54,13 +57,14 @@ type triggerSummery struct {
 	Description string `json:"description"`
 }
 
-func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService, pipeStore pipelineStore.PipelineStore, rStore redisStore.RedisStore) TriggerService {
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService, pipeStore pipelineStore.PipelineStore, mStore marketplaceStore.MarketplaceStore, rStore redisStore.RedisStore) TriggerService {
 	return &TriggerManager{
 		Store:              store,
 		UtopiopsService:    service,
 		ExecutionService:   execService,
 		IntegrationService: intService,
 		PipelineStore:      pipeStore,
+		MarketplaceStore:   mStore,
 		RedisStore:         rStore,
 	}
 }
@@ -79,6 +83,17 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 	for _, integ := range models.AvaliableTriggers {
 		if integ.OnTestStage {
 			continue
+		}
+		lambdaName := strings.ReplaceAll(integ.Image, ":", "-")
+		lambdaName = strings.ReplaceAll(lambdaName, "/", "-")
+		function, err := manager.MarketplaceStore.GetFunction(context.Background(), lambdaName)
+		if err != nil && err.Error() != "function not found" {
+			continue
+		}
+		if err == nil {
+			if !function.Enabled {
+				continue
+			}
 		}
 		if _, ok := triggers[integ.Service]; ok {
 			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
