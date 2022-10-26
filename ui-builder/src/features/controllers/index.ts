@@ -22,6 +22,7 @@ import { PricingSimple } from './pricing-simple'
 import { SignInBasic } from './sign-in-basic'
 import { SignUpBasic } from './sign-up-basic'
 import { TeamCenterGrid } from './team-center-grid'
+import { TeamRoundCenter } from './team-round-center'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
@@ -38,5 +39,5 @@ export const controllers = [
 	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
-	{ title: 'Team', items: [TeamCenterGrid] },
+	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter] },
 ] as const

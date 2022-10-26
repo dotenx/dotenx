@@ -347,16 +347,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const divFlex = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			width: '100%',
-		},
-	}
-}).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
