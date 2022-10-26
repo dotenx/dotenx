@@ -9,6 +9,7 @@ import { usePopper } from 'react-popper'
 import styled from 'styled-components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { ImageElement } from '../elements/extensions/image'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -45,6 +46,17 @@ export function ElementOverlay({
 		select(element.id)
 	}
 
+	let backgroundUrl = ''
+	if (element instanceof ImageElement) backgroundUrl = element.data.src
+	const backgroundImage = backgroundUrl
+		? {
+				backgroundImage: `url(${backgroundUrl})`,
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+		  }
+		: {}
+
 	return (
 		<div
 			style={{
@@ -52,6 +64,7 @@ export function ElementOverlay({
 				cursor: 'default',
 				outlineStyle: isHighlighted && isDirectRootChildren ? 'solid' : undefined,
 				outlineColor: '#fb7185',
+				...backgroundImage,
 			}}
 			className={element.generateClasses()}
 			ref={setReferenceElement}
