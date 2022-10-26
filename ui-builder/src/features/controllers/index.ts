@@ -23,6 +23,7 @@ import { SignInBasic } from './sign-in-basic'
 import { SignUpBasic } from './sign-up-basic'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
+import { TeamRoundLeft } from './team-round-left'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
@@ -34,10 +35,9 @@ export const controllers = [
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight] },
-	{ title: 'Gallery', items: [GalleryBasic] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
 	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
-	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter] },
+	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 ] as const
