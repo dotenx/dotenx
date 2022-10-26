@@ -1,5 +1,5 @@
 import { immerable } from 'immer'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
 import { Controller } from '../controllers/controller'
@@ -54,8 +54,8 @@ export abstract class Element {
 		return `${this.classes.join(' ')} ${this.id}`
 	}
 
-	renderPreview(renderFn: RenderFn) {
-		return <div className={this.generateClasses()}>{this.render(renderFn)}</div>
+	renderPreview(renderFn: RenderFn, style: CSSProperties = {}) {
+		return <div style={style} className={this.generateClasses()}>{this.render(renderFn)}</div>
 	}
 }
 

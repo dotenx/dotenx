@@ -147,6 +147,17 @@ function RenderElementPreview({
 		)
 	}
 
+	let backgroundUrl = ''
+	if (element instanceof ImageElement) {backgroundUrl = element.data.src}
+	const style = backgroundUrl
+		? {
+				backgroundImage: `url(${backgroundUrl})`,
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+		  }
+		: {}
+
 	return (
 		<>
 			{element.renderPreview((element) => (
@@ -155,7 +166,7 @@ function RenderElementPreview({
 					states={states}
 					overlay={overlay}
 				/>
-			))}
+			), style)}
 		</>
 	)
 }
