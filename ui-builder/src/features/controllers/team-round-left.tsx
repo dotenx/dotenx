@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode, useMemo } from 'react'
-import imageUrl from '../../assets/components/team-round-center.png'
+import imageUrl from '../../assets/components/team-round-left.png'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'
@@ -15,19 +15,19 @@ import Bio from './basic-components/bio'
 import TabsOptions from './helpers/tabs-options'
 import { ImageDrop } from '../ui/image-drop'
 
-export class TeamRoundCenter extends Controller {
-	name = 'Team with round profiles centered'
+export class TeamRoundLeft extends Controller {
+	name = 'Team with round profile image on left'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <TeamRoundCenterOptions options={options} />
+		return <TeamRoundLeftOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
+function TeamRoundLeftOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element as BoxElement
 
 	const tabsList = useMemo(() => {
@@ -134,11 +134,10 @@ const createBioWithImage = ({
 		draft.style.desktop = {
 			default: {
 				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
+				alignItems: 'flex-start',
 				justifyContent: 'center',
-				paddingLeft: '10%',
-				paddingRight: '10%',
+				// paddingLeft: '10%',
+				// paddingRight: '10%',
 				paddingTop: '20px',
 				paddingBottom: '20px',
 				gap: '10px',
@@ -156,7 +155,7 @@ const createBioWithImage = ({
 			draft.data.src = image
 		})
 
-		draft.children = [imageElement, Bio.getComponent(name, description, 'center')]
+		draft.children = [imageElement, Bio.getComponent(name, description, 'left')]
 	})
 
 const defaultData = {

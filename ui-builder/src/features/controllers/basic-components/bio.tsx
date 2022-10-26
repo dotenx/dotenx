@@ -1,11 +1,12 @@
 import { TextInput } from '@mantine/core'
 import produce from 'immer'
+import { WritableDraft } from 'immer/dist/internal'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
 import ProfessionalSocials from './professional-socials'
 
-const createLayout = (name: string, description: string) =>
+const createLayout = (name: string, description: string, align: 'left' | 'center') =>
 	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
@@ -18,6 +19,12 @@ const createLayout = (name: string, description: string) =>
 				paddingBottom: '20px',
 				gap: '10px',
 			},
+		}
+
+		if (align === 'left') {
+			draft.style.desktop!.default!.alignItems = 'flex-start'
+			draft.style.desktop!.default!.paddingLeft = '0px'
+			draft.style.desktop!.default!.paddingRight = '0px'
 		}
 
 		const nameText = produce(new TextElement(), (draft) => {
@@ -97,7 +104,11 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 }
 
 export default class Bio {
-	getComponent = (name: string, description: string) => createLayout(name, description)
+	static getComponent = (
+		name: string,
+		description: string,
+		align: 'left' | 'center' = 'center'
+	) => createLayout(name, description, align)
 	static getOptions = ({ set, root }: { set: (element: Element) => void; root: BoxElement }) => (
 		<Options set={set} root={root} />
 	)
