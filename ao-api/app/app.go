@@ -150,8 +150,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
 	IntegrationService := integrationService.NewIntegrationService(IntegrationStore, RedisStore, OauthStore)
 	executionServices := executionService.NewExecutionService(pipelineStore, queue, IntegrationService, UtopiopsService)
-	predefinedService := predfinedTaskService.NewPredefinedTaskService()
-	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore, RedisStore)
+	TriggerService := triggerService.NewTriggerService(TriggerStore, UtopiopsService, executionServices, IntegrationService, pipelineStore, marketplaceStore, RedisStore)
 	crudServices := crudService.NewCrudService(pipelineStore, RedisStore, TriggerService, IntegrationService)
 	OauthService := oauthService.NewOauthService(OauthStore, RedisStore)
 	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices)
@@ -162,6 +161,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
 	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore, uibuilderStore)
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
+	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 
 	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerService}
