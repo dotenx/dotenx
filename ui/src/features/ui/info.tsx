@@ -1,4 +1,4 @@
-export function Info({message}:{message:string}) {
+export function Info({ message }: { message: string }) {
 	return (
 		<div
 			className="flex items-center bg-blue-500 text-white text-md font-bold px-4 py-3 mb-3 rounded-lg"

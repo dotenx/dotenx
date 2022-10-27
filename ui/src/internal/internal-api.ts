@@ -42,13 +42,12 @@ export function getDomains(projectTag: string) {
 	return api.get<GetDomainResponse>(`/project/tag/${projectTag}/domain`)
 }
 
-export function addDomain({ projectTag, domainName }: { projectTag: string, domainName: any }) {
+export function addDomain({ projectTag, domainName }: { projectTag: string; domainName: any }) {
 	return api.post<void>(`/project/${projectTag}/domain`, domainName)
 }
 export function verifyDomain({ projectTag }: { projectTag: string }) {
 	return api.post(`/project/${projectTag}/domain/verify`)
 }
-
 
 export interface TaskBuilderFunctionsResponse {
 	mini_tasks: MiniTask[]

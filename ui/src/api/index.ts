@@ -171,8 +171,6 @@ export function setTableAccess({
 	})
 }
 
-
-
 export function setFilesAccess({
 	rowData,
 }: {
@@ -415,13 +413,11 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 }
 
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
-	return api.delete<void>(
-		`/database/query/delete/project/${projectTag}/table/${tableName}`, {
+	return api.delete<void>(`/database/query/delete/project/${projectTag}/table/${tableName}`, {
 		data: {
 			rowId,
 		},
-	}
-	)
+	})
 }
 
 export function updateRecord(
