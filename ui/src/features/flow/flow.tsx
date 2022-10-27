@@ -22,7 +22,7 @@ const edgeTypes = {
 	default: PipeEdge,
 }
 
-export function Flow({ isEditable = true, kind }: { isEditable?: boolean; kind: AutomationKind }) {
+export function Flow({ isEditable = true }: { isEditable?: boolean; kind: AutomationKind }) {
 	const withIntegration = true
 	const {
 		reactFlowWrapper,

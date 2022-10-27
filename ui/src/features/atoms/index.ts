@@ -25,7 +25,11 @@ export const modalAtom = atom<{ isOpen: boolean; kind: Modals | null; data: unkn
 	kind: null,
 	data: null,
 })
-export const slidingPaneAtom = atom<{ isOpen: boolean; kind: SlidingPanes | null; data: unknown | null }>({
+export const slidingPaneAtom = atom<{
+	isOpen: boolean
+	kind: SlidingPanes | null
+	data: unknown | null
+}>({
 	isOpen: false,
 	kind: null,
 	data: null,

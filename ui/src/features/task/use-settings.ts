@@ -12,7 +12,10 @@ import { GroupData } from '../ui'
 import { InputOrSelectKind } from '../ui/input-or-select'
 import { outputsAtom, PropertyKind } from './test-step'
 
-const textValue = { type: z.literal(InputOrSelectKind.Text), data: z.string() }
+const textValue = {
+	type: z.literal(InputOrSelectKind.Text),
+	data: z.string().or(z.any()),
+}
 const selectValue = z.object({
 	type: z.literal(InputOrSelectKind.Option),
 	data: z.string(),

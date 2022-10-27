@@ -342,7 +342,7 @@ export interface Project {
 
 export type GetTablesResponse = {
 	tables: {
-		name: string,
+		name: string
 		is_public: boolean
 	}[]
 }
@@ -437,12 +437,12 @@ interface VarDeclaration {
 }
 
 interface ExecuteTask {
-	url: string,
-	method: string,
+	url: string
+	method: string
 	headers: {
 		'DTX-auth': string
-	},
-	body: TestTaskRequest,
+	}
+	body: TestTaskRequest
 	output?: string
 }
 
