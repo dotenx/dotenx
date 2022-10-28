@@ -6,12 +6,16 @@ import { CreateForm } from './create-form'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { FaqBasic } from './faq-basic'
+import { FaqBasicStyled } from './faq-basic-styled'
 import { FeatureCenterGrid } from './feature-center-grid'
 import { FeatureCenterCards } from './feature-center-cards'
+import { FeatureDetailsLeft } from './feature-details-left'
+import { FeatureDetailsRight } from './feature-details-right'
 import { FooterGrid } from './footer-grid'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { Hero } from './hero'
+import { DividerSimpleTitle } from './divider-simple-title'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
@@ -29,12 +33,11 @@ export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
-	{ title: 'Customers', items: [CustomersGrid] },
-	{ title: 'FAQ', items: [FaqBasic] },
-	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards] },
+	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
+	{ title: 'Divider', items: [DividerSimpleTitle] },
+	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight] },
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
-	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
 	{ title: 'Misc', items: [Hero, CreateForm, List, CardList] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },

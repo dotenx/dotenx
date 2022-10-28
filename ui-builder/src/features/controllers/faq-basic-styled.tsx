@@ -1,26 +1,26 @@
 import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
-import imageUrl from '../../assets/components/faq-basic.png'
+import imageUrl from '../../assets/components/faq-basic-styled.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
 import { SimpleComponentOptionsProps } from './helpers'
 
-export class FaqBasic extends Controller {
-	name = 'Basic FAQ'
+export class FaqBasicStyled extends Controller {
+	name = 'Basic styled FAQ'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryBasicOptions options={options} />
+		return <FaqBasicStyledOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
+function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
@@ -212,8 +212,10 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 const topDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			textAlign: 'center',
-			marginBottom: '38px',
+			paddingLeft: '18%',
+			width: '100%',
+			textAlign: 'left',
+			marginBottom: '25px',
 		},
 	}
 }).serialize()
@@ -232,42 +234,53 @@ const divFlex = produce(new BoxElement(), (draft) => {
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '32px',
+			fontSize: '52px',
 			fontWeight: '700',
 		},
 	}
-	draft.data.text = 'Frequently asked questions'
+	draft.data.text = "FAQ's"
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '16px',
-			marginBottom: '18px',
+			marginBottom: '5px',
 			fontWeight: '600',
+			height: 'max-content',
+			minHeight: '30px',
 		},
 	}
 	draft.data.text = 'Question title goes here'
 })
-
+{
+	;<div className="whitespace-pre-line"></div>
+}
 const tileDetails = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			wordBreak: 'break-all',
 			fontWeight: '400',
 			fontSize: '14px',
+			height: 'max-content',
+			minHeight: '50px',
 		},
 	}
 	draft.data.text =
 		'You can add a description here. This is a great place to add more information about your product.'
 })
+
 const tile = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			background: 'rgb(248 250 252)',
+			borderRadius: '15px',
+			padding: '20px',
 			height: 'max-content',
+			minHeight: '150px',
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'center',
+			paddingTop: '20px',
 			alignItems: 'start',
 		},
 	}
