@@ -347,7 +347,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {

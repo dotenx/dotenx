@@ -55,7 +55,11 @@ export abstract class Element {
 	}
 
 	renderPreview(renderFn: RenderFn, style: CSSProperties = {}) {
-		return <div style={style} className={this.generateClasses()}>{this.render(renderFn)}</div>
+		return (
+			<div style={style} className={this.generateClasses()}>
+				{this.render(renderFn)}
+			</div>
+		)
 	}
 }
 

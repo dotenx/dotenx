@@ -97,8 +97,6 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 
 	const handleOnTabSequenceChange = useCallback(
 		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
-
 			options.set(
 				produce(featureLinesWrapper, (draft) => {
 					const temp = draft.children![oldIndex]
@@ -112,7 +110,6 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 	)
 
 	const handleOnTabChange = useCallback((i: number) => {
-		console.log('select tab', i)
 		setActiveTab(i)
 	}, [])
 

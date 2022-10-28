@@ -109,7 +109,8 @@ function RenderElementPreview({
 	const pageStates = usePageStates((store) => store.states)
 
 	if (element.repeatFrom) {
-		const items = (_.get(pageStates, element.repeatFrom.name) as JsonArray) ?? []
+		const items =
+			(_.get(pageStates, element.repeatFrom.name.replace('$store.', '')) as JsonArray) ?? []
 		return (
 			<>
 				{items.map((item, index) => (
@@ -127,15 +128,13 @@ function RenderElementPreview({
 		)
 	}
 
-	if (element instanceof TextElement && element.bindings.text) {
-		const splitPath = element.bindings.text.fromStateName.split('.')
-		const textValue = _.get(
-			states,
-			splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
-		)
+	if (element instanceof TextElement && element.data.text.startsWith('$store.')) {
+		const splitPath = element.data.text.split('.')
+		const textValue =
+			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
+			_.get(pageStates, element.data.text.replace('$store.', ''))
 		const valuedElement = produce(element, (draft) => {
 			draft.data.text = textValue
-			draft.bindings.text = null
 		})
 		return (
 			<RenderElement
@@ -148,7 +147,9 @@ function RenderElementPreview({
 	}
 
 	let backgroundUrl = ''
-	if (element instanceof ImageElement) {backgroundUrl = element.data.src}
+	if (element instanceof ImageElement) {
+		backgroundUrl = element.data.src
+	}
 	const style = backgroundUrl
 		? {
 				backgroundImage: `url(${backgroundUrl})`,
@@ -160,13 +161,16 @@ function RenderElementPreview({
 
 	return (
 		<>
-			{element.renderPreview((element) => (
-				<RenderElements
-					elements={element.children ?? []}
-					states={states}
-					overlay={overlay}
-				/>
-			), style)}
+			{element.renderPreview(
+				(element) => (
+					<RenderElements
+						elements={element.children ?? []}
+						states={states}
+						overlay={overlay}
+					/>
+				),
+				style
+			)}
 		</>
 	)
 }

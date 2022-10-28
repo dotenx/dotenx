@@ -58,9 +58,7 @@ function ListOptions({ controller }: { controller: List }) {
 					}
 					draft.children = columns.map((col) => {
 						const text = new TextElement()
-						text.bindings.text = {
-							fromStateName: `${dataSourceName}.rowsItem.${col.name}`,
-						}
+						text.data.text = `${dataSourceName}.rowsItem.${col.name}`
 						return text
 					})
 				})

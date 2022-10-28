@@ -29,7 +29,7 @@ const layout = produce(new BoxElement(), (draft) => {
 
 	const subTitle = produce(new TextElement(), (draft) => {
 		draft.data.text =
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor, nisl eget luctus lacinia, nunc nisl aliquam nunc, eget aliquam nunc nisl eget nunc."
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor, nisl eget luctus lacinia, nunc nisl aliquam nunc, eget aliquam nunc nisl eget nunc.'
 		draft.style.desktop = {
 			default: {
 				fontSize: '28px',
@@ -67,7 +67,6 @@ type OptionsProps = {
 }
 
 function Options({ set, root }: OptionsProps): JSX.Element {
-
 	const title = root.children[0] as TextElement
 	const subtitle = root.children[1] as TextElement
 	const ctaLink = root.children[2] as LinkElement
@@ -142,5 +141,7 @@ export default class TitleSubtitleCta {
 	getCtaLink = () => layout.children[2] as LinkElement
 	getCtaText = () => this.getCtaLink().children[0] as TextElement
 	getComponent = () => layout
-	getOptions = ({ set, root }: { set: (element: Element) => void, root: BoxElement }) => <Options set={set} root={root} />
+	getOptions = ({ set, root }: { set: (element: Element) => void; root: BoxElement }) => (
+		<Options set={set} root={root} />
+	)
 }

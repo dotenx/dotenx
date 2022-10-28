@@ -18,6 +18,7 @@ import { TbPlus } from 'react-icons/tb'
 import { z } from 'zod'
 import { AnyJson, uuid } from '../../utils'
 import { ACTIONS } from '../elements/actions'
+import { IntelinputText } from '../ui/intelinput'
 import {
 	DataSource,
 	findPropertyPaths,
@@ -26,6 +27,7 @@ import {
 	useDataSourceStore,
 } from './data-source-store'
 import { usePageStates } from './page-states'
+import { useGetStates } from './use-get-states'
 
 const schema = z.object({
 	stateName: z.string().min(1),
@@ -66,6 +68,7 @@ export function DataSourceForm({
 	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
 	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess })
 	const handleSubmit = form.onSubmit(addDataSource)
+	const states = useGetStates()
 
 	const nameAndUrl = (
 		<>
@@ -76,11 +79,9 @@ export function DataSourceForm({
 				name="stateName"
 				{...form.getInputProps('stateName')}
 			/>
-			<TextInput
-				description="JSON API endpoint to fetch data from"
+			<IntelinputText
 				label="URL"
-				required
-				name="url"
+				options={states.map((state) => state.name)}
 				{...form.getInputProps('url')}
 			/>
 		</>
@@ -268,8 +269,9 @@ export const useAddDataSource = ({
 			axios.request<AnyJson>({ url, method, data: body })
 	)
 	const addDataSource = (values: Schema) => {
+		const evaluatedUrl = evaluateState(values.url)
 		mutation.mutate(
-			{ url: values.url, body: values.body, method: values.method },
+			{ url: evaluatedUrl, body: values.body, method: values.method },
 			{
 				onSuccess: (data) => {
 					const response = data.data
@@ -285,7 +287,7 @@ export const useAddDataSource = ({
 					}
 					onSuccess?.(values)
 					onSubmit?.(response)
-					setPageState(`$store.${values.stateName}`, response)
+					setPageState(values.stateName, response)
 					closeAllModals()
 				},
 				onError: () => {
@@ -306,4 +308,11 @@ export const useAddDataSource = ({
 	}
 
 	return { addDataSource, mutation }
+}
+
+export function evaluateState(state: string) {
+	return state
+		.split(' ')
+		.map((part) => (part.startsWith('$store.') ? '1' : part))
+		.join('')
 }

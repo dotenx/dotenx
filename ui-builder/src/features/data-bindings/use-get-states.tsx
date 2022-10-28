@@ -16,7 +16,7 @@ export const useGetStates = () => {
 	const element = useSelectedElement()!
 	const pageStates = usePageStates((store) => store.states)
 	const repeatedState = element.repeatFrom?.name
-		? _.get(pageStates, element.repeatFrom.name)
+		? _.get(pageStates, element.repeatFrom.name.replace('$store.', ''))
 		: null
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
 	const { elements } = useElementsStore((store) => ({
@@ -30,11 +30,16 @@ export const useGetStates = () => {
 	const repeatedProperties = findPropertyPaths(repeatedSample)
 	let passedProperties: { kind: PropertyKind; name: string }[] = []
 	if (repeatedParent && repeatedParent.repeatFrom?.name) {
-		const parentState = _.get(pageStates, repeatedParent.repeatFrom.name) as JsonArray
-		passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
-			kind: property.kind,
-			name: `${repeatedParent.repeatFrom?.iterator}${property.path}`,
-		}))
+		const parentState = _.get(
+			pageStates,
+			repeatedParent.repeatFrom.name.replace('$store.', '')
+		) as JsonArray
+		if (parentState) {
+			passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
+				kind: property.kind,
+				name: `${repeatedParent.repeatFrom?.iterator}${property.path}`,
+			}))
+		}
 	}
 	const pageParams = useAtomValue(pageParamsAtom)
 	const mutableStates = useGetMutableStates()
@@ -59,7 +64,7 @@ export const useGetStates = () => {
 		...pageParams.map((param) => ({ kind: PropertyKind.String, name: `$store.url.${param}` })),
 	]
 
-	return states
+	return states.filter((state) => !!state.name)
 }
 
 export const useGetMutableStates = () => {

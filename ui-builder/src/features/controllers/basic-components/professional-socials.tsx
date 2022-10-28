@@ -179,7 +179,17 @@ export default class ProfessionalSocials {
 }
 
 export class Socials {
-	static getComponent = () => createLayout(['facebook','twitter','instagram','linkedin','youtube','discord','vimeo','whatsapp'] as SocialIcon[])
+	static getComponent = () =>
+		createLayout([
+			'facebook',
+			'twitter',
+			'instagram',
+			'linkedin',
+			'youtube',
+			'discord',
+			'vimeo',
+			'whatsapp',
+		] as SocialIcon[])
 	static getOptions = ({ set, root }: { set: (element: Element) => void; root: BoxElement }) => (
 		<Options set={set} root={root} />
 	)

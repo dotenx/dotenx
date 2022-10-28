@@ -28,6 +28,7 @@ import { SignUpBasic } from './sign-up-basic'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
+import { Details } from './dynamics/details'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
@@ -35,7 +36,10 @@ export const controllers = [
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
 	{ title: 'Divider', items: [DividerSimpleTitle] },
-	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight] },
+	{
+		title: 'Features',
+		items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight],
+	},
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
@@ -43,4 +47,5 @@ export const controllers = [
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
+	{ title: 'Dynamic', items: [CreateForm, List, CardList, Details] },
 ] as const

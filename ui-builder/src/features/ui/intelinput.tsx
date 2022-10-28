@@ -3,6 +3,7 @@ import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import _ from 'lodash'
 import { useRef } from 'react'
+import { z } from 'zod'
 
 export function IntelinputText({
 	value,
@@ -24,7 +25,7 @@ export function IntelinputText({
 					?.split(' ')
 					.map((word) =>
 						word.startsWith('$store.')
-							? { kind: IntelinputValueKind.Option, data: word }
+							? { kind: IntelinputValueKind.State, data: word }
 							: { kind: IntelinputValueKind.Text, data: word }
 					)
 					.reduce<IntelinputValue[]>((acc, curr) => {
@@ -44,7 +45,7 @@ export function IntelinputText({
 				onChange(
 					value
 						.map((v) =>
-							v.kind === IntelinputValueKind.Option && !v.data.includes('$store.')
+							v.kind === IntelinputValueKind.State && !v.data.includes('$store.')
 								? `$store.page.${v.data}`
 								: v.data
 						)
@@ -104,7 +105,7 @@ export function Intelinput({
 										}
 									/>
 								)
-							case IntelinputValueKind.Option:
+							case IntelinputValueKind.State:
 								return (
 									<div
 										key={index}
@@ -161,7 +162,7 @@ export function Intelinput({
 									onChange(
 										produce(value, (draft) => {
 											draft.push({
-												kind: IntelinputValueKind.Option,
+												kind: IntelinputValueKind.State,
 												data: option,
 											})
 										})
@@ -185,8 +186,12 @@ export type IntelinputValue = {
 
 export enum IntelinputValueKind {
 	Text = 'text',
-	Option = 'option',
+	State = 'state',
 }
+
+export const intelinputSchema = z.array(
+	z.object({ kind: z.nativeEnum(IntelinputValueKind), data: z.string() })
+)
 
 export function InteliState({
 	label,
@@ -200,7 +205,7 @@ export function InteliState({
 	options: string[]
 }) {
 	const inputValue: IntelinputValue = {
-		kind: value?.isState ? IntelinputValueKind.Option : IntelinputValueKind.Text,
+		kind: value?.isState ? IntelinputValueKind.State : IntelinputValueKind.Text,
 		data: value ? value.value : '',
 	}
 
@@ -214,7 +219,7 @@ export function InteliState({
 					const last = _.last(newValue)!
 					onChange({
 						value: last.data,
-						isState: last.kind === IntelinputValueKind.Option,
+						isState: last.kind === IntelinputValueKind.State,
 						mode: getMode(last.data),
 					})
 				}
