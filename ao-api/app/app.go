@@ -353,9 +353,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.InsertRow())
 	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.UpdateRow())
+	database.GET("/query/select/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRowById())
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRows())
 	public.POST("/database/query/select/project/:project_tag/table/:table_name", databaseController.SelectRowsPublicly())
+	public.GET("/database/query/select/project/:project_tag/table/:table_name/row/:id", databaseController.SelectRowByIdPublicly())
 	database.POST("/userGroup", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 
 	// user management router (with authentication)
