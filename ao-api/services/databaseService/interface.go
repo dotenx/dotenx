@@ -22,6 +22,7 @@ type DatabaseService interface {
 	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(tpAccountId string, projectTag string, tableName string, id int, filters databaseStore.ConditionGroup) error
 	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, page int, size int) (map[string]interface{}, error)
+	SelectRowById(tpAccountId string, projectTag string, tableName string, id int) (map[string]interface{}, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore, userMgService userManagementService.UserManagementService) DatabaseService {

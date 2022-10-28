@@ -16,6 +16,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//TODO: Any comments for God's sake
+
 // type condition struct {
 // 	Key         string      `json:"key"`
 // 	Operator    string      `json:"operator"`
