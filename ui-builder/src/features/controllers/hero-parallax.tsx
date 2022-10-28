@@ -23,13 +23,16 @@ export class HeroParallax extends Controller {
 // =============  renderOptions =============
 
 function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
-
 	const wrapper = options.element as BoxElement
 
-	const titleSubtitleCtaOptions = titleSubtitleCta.getOptions({ set: options.set, root: wrapper.children![0] as BoxElement })
+	const titleSubtitleCtaOptions = titleSubtitleCta.getOptions({
+		set: options.set,
+		root: wrapper.children![0] as BoxElement,
+	})
 
-	return <div className="space-y-6">
-		<ImageDrop
+	return (
+		<div className="space-y-6">
+			<ImageDrop
 				onChange={(src) =>
 					options.set(
 						produce(wrapper, (draft) => {
@@ -39,8 +42,9 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-		{titleSubtitleCtaOptions}
+			{titleSubtitleCtaOptions}
 		</div>
+	)
 }
 
 // #region defaultData
@@ -69,7 +73,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 }).serialize()
 
 const titleSubtitleCta = new TitleSubtitleCta()
-
 
 const defaultData = {
 	...wrapperDiv,

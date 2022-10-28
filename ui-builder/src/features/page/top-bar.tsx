@@ -16,6 +16,7 @@ import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
 import { toggleFullScreen } from '../../utils/toggle-fullscreen'
+import { evaluateState } from '../data-bindings/data-source-form'
 import { useDataSourceStore } from '../data-bindings/data-source-store'
 import { usePageStates } from '../data-bindings/page-states'
 import { useElementsStore } from '../elements/elements-store'
@@ -86,11 +87,11 @@ const useFetchPage = () => {
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
-							url: source.url,
+							url: evaluateState(source.url),
 							method: source.method,
 							data: source.body,
 						})
-						.then((data) => setPageState(`$store.${source.stateName}`, data.data))
+						.then((data) => setPageState(source.stateName, data.data))
 				)
 				if (content.mode === 'simple' && !isSimple)
 					navigate(`/projects/${projectName}/simple`)

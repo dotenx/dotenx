@@ -321,7 +321,6 @@ function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 
 	const handleOnTabSequenceChange = useCallback(
 		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
 			setActiveTab(newIndex)
 			options.set(
 				produce(rightDiv, (draft) => {

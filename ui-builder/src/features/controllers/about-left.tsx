@@ -97,8 +97,6 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 
 	const handleOnTabSequenceChange = useCallback(
 		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
-
 			options.set(
 				produce(featureLinesWrapper, (draft) => {
 					const temp = draft.children![oldIndex]

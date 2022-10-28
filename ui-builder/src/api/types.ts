@@ -137,7 +137,7 @@ export type ImportComponentRequest = {
 }
 
 export type GetTablesResponse = {
-	tables: string[]
+	tables: { name: string; is_public: boolean }[]
 }
 
 export type GetColumnsResponse = {

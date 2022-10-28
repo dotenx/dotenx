@@ -154,7 +154,7 @@ export function TableSelect({
 			label="Table"
 			description={description}
 			size="xs"
-			data={tables}
+			data={tables.map((table) => table.name)}
 			value={value}
 			onChange={onChange}
 		/>

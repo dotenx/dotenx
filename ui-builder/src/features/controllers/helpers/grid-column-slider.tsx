@@ -1,54 +1,62 @@
-import { Slider } from "@mantine/core"
-import produce from "immer"
-import { useAtomValue } from "jotai"
-import { memo, useCallback } from "react"
-import { BoxElement } from "../../elements/extensions/box"
-import { viewportAtom } from "../../viewport/viewport-store"
+import { Slider } from '@mantine/core'
+import produce from 'immer'
+import { useAtomValue } from 'jotai'
+import { memo, useCallback } from 'react'
+import { BoxElement } from '../../elements/extensions/box'
+import { viewportAtom } from '../../viewport/viewport-store'
 
 type GridColumnSliderProps = {
-  containerDiv: BoxElement
-  set: (element: BoxElement) => void
+	containerDiv: BoxElement
+	set: (element: BoxElement) => void
 
-  columnLimit?: {
-    desktop?: {
-      min: number
-      max: number
-    },
-    tablet?: {
-      min: number
-      max: number
-    },
-    mobile?: {
-      min: number
-      max: number
-    },
-  }
+	columnLimit?: {
+		desktop?: {
+			min: number
+			max: number
+		}
+		tablet?: {
+			min: number
+			max: number
+		}
+		mobile?: {
+			min: number
+			max: number
+		}
+	}
 
-  gapLimits?: {
-    desktop?: {
-      min: number
-      max: number
-    },
-    tablet?: {
-      min: number
-      max: number
-    },
-    mobile?: {
-      min: number
-      max: number
-    },
-  }
+	gapLimits?: {
+		desktop?: {
+			min: number
+			max: number
+		}
+		tablet?: {
+			min: number
+			max: number
+		}
+		mobile?: {
+			min: number
+			max: number
+		}
+	}
 }
 
-function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridColumnSliderProps): JSX.Element {
-
-  const viewport = useAtomValue(viewportAtom)
-	const countGridTemplateColumns = useCallback((mode: 'desktop' | 'tablet' | 'mobile') => {
-		return (
-			(containerDiv.style[mode]?.default?.gridTemplateColumns?.toString() || '').split('1fr')
-				.length - 1
-		)
-	}, [containerDiv.style])
+function GridColumnSlider({
+	set,
+	containerDiv,
+	gapLimits,
+	columnLimit,
+}: GridColumnSliderProps): JSX.Element {
+	const viewport = useAtomValue(viewportAtom)
+	const countGridTemplateColumns = useCallback(
+		(mode: 'desktop' | 'tablet' | 'mobile') => {
+			return (
+				(containerDiv.style[mode]?.default?.gridTemplateColumns?.toString() || '').split(
+					'1fr'
+				).length - 1
+			)
+		},
+		[containerDiv.style]
+	)
 
 	return (
 		<>
@@ -57,12 +65,11 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 					<p>Desktop mode columns</p>
 					<Slider
 						step={1}
-						min={columnLimit?.desktop?.min??1}
-						max={columnLimit?.desktop?.max?? 10}
+						min={columnLimit?.desktop?.min ?? 1}
+						max={columnLimit?.desktop?.max ?? 10}
 						styles={{ markLabel: { display: 'none' } }}
 						value={countGridTemplateColumns('desktop')}
 						onChange={(val) => {
-              console.log(val)
 							set(
 								produce(containerDiv, (draft) => {
 									draft.style.desktop = {
@@ -79,7 +86,7 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 					<p>Gap</p>
 					<Slider
 						label={(val) => val + 'px'}
-            min={gapLimits?.desktop?.min || 0}
+						min={gapLimits?.desktop?.min || 0}
 						max={gapLimits?.desktop?.max || 100}
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
@@ -105,7 +112,7 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 					<Slider
 						step={1}
 						min={columnLimit?.tablet?.min || 1}
-						max={ columnLimit?.tablet?.max || 10}
+						max={columnLimit?.tablet?.max || 10}
 						styles={{ markLabel: { display: 'none' } }}
 						value={countGridTemplateColumns('tablet')}
 						onChange={(val) => {
@@ -126,7 +133,7 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 					<Slider
 						label={(val) => val + 'px'}
 						min={gapLimits?.tablet?.min || 0}
-            max={gapLimits?.tablet?.max || 20}
+						max={gapLimits?.tablet?.max || 20}
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						onChange={(val) => {
@@ -155,7 +162,6 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 						styles={{ markLabel: { display: 'none' } }}
 						value={countGridTemplateColumns('mobile')}
 						onChange={(val) => {
-              console.log(val)
 							set(
 								produce(containerDiv, (draft) => {
 									draft.style.mobile = {
@@ -173,7 +179,7 @@ function GridColumnSlider({ set, containerDiv, gapLimits, columnLimit }: GridCol
 					<Slider
 						label={(val) => val + 'px'}
 						min={gapLimits?.mobile?.min || 0}
-            max={gapLimits?.mobile?.max || 20}
+						max={gapLimits?.mobile?.max || 20}
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={1}
