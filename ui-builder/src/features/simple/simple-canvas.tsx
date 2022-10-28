@@ -1,6 +1,6 @@
 import { useHotkeys } from '@mantine/hooks'
 import { atom, useSetAtom } from 'jotai'
-import { TbPlus } from 'react-icons/tb'
+import { FaPlus } from 'react-icons/fa'
 import styled from 'styled-components'
 import { RenderElements } from '../advanced/renderer'
 import { useElementsStore } from '../elements/elements-store'
@@ -54,7 +54,7 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 				setInserting(insert)
 			}}
 		>
-			<TbPlus />
+			<FaPlus />
 			Section
 		</AddButton>
 	)
@@ -75,4 +75,10 @@ const AddButton = styled.button`
 	:hover {
 		background-color: #e11d48;
 	}
+	:active {
+		background-color: #9b1633;
+	}
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 100ms;
 `
