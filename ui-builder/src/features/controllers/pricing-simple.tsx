@@ -12,10 +12,10 @@ import { useAtomValue } from 'jotai'
 import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
 import { LinkElement } from '../elements/extensions/link'
 import { IconElement } from '../elements/extensions/icon'
-import TabsOptions from './helpers/tabs-options'
 import { Element } from '../elements/element'
 import VerticalOptions from './helpers/vertical-options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class PricingSimple extends Controller {
 	name = 'Simple pricing'
@@ -33,15 +33,22 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	const viewport = useAtomValue(viewportAtom)
 	const gridDiv = options.element.children?.[0] as BoxElement
 
-	const tabsList = useMemo(() => {
+	const tabsList: DraggableTab[] = useMemo(() => {
 		return gridDiv.children.map((column, index) => {
 			return {
-				title: index + 1 + '',
+				id: column.id,
 				content: (
 					<div className="flex flex-col justify-stretch">
 						<MemTabOptions set={options.set} tileDiv={column as BoxElement} />
 					</div>
 				),
+				onTabDelete: () => {
+					options.set(
+						produce(gridDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
 			}
 		})
 	}, [gridDiv.children, options.set])
@@ -50,11 +57,22 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 		<div className="space-y-6">
 			<MemGridOptions set={options.set} viewport={viewport} containerDiv={gridDiv} />
 			<Divider title="Price columns" />
-			<TabsOptions
-				set={options.set}
-				containerDiv={gridDiv}
-				tabs={tabsList}
-				addNewTab={() => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(gridDiv, (draft) => {
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
+							})
+						)
+					}
+				}}
+				onAddNewTab={() => {
 					const newTile = createTile({
 						title: 'Starter',
 						yearlyPrice: '$9.99',
@@ -67,6 +85,7 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 						})
 					)
 				}}
+				tabs={tabsList}
 			/>
 		</div>
 	)
@@ -347,7 +366,7 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const tileTitle = produce(new TextElement(), (draft) => {
+const createTileTitle = () => produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			textAlign: 'center',
@@ -359,7 +378,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 	draft.data.text = 'Standard'
 })
 
-const featureLine = produce(new BoxElement(), (draft) => {
+const createFeatureLine = () => produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'flex',
@@ -413,7 +432,7 @@ const featureLine = produce(new BoxElement(), (draft) => {
 })
 
 const createLine = (text: string) => {
-	return produce(featureLine, (draft) => {
+	return produce(createFeatureLine(), (draft) => {
 		;(draft.children[1]! as TextElement).data.text = text
 	})
 }
@@ -559,7 +578,7 @@ const tileCta = produce(new LinkElement(), (draft) => {
 	draft.children = [text]
 })
 
-const tile = produce(new BoxElement(), (draft) => {
+const newTile = () => produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'flex',
@@ -572,7 +591,7 @@ const tile = produce(new BoxElement(), (draft) => {
 			paddingBottom: '30px',
 		},
 	}
-	draft.children = [tileTitle, tileDetailsPrice, featureLinesWrapper, tileCta]
+	draft.children = [createTileTitle(), tileDetailsPrice, featureLinesWrapper, tileCta]
 })
 
 function createTile({
@@ -586,7 +605,7 @@ function createTile({
 	monthlyPrice: string
 	lines: string[]
 }) {
-	return produce(tile, (draft) => {
+	return produce(newTile(), (draft) => {
 		const featureLines = lines.map((line) => createLine(line))
 		;(draft.children[0]! as BoxElement).data!.text = title
 		;(draft.children[1]! as BoxElement).children![0].children![0].data!.text = yearlyPrice

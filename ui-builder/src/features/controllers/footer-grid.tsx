@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Collapse, Select, TextInput } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
 
 import { deserializeElement } from '../../utils/deserialize'
@@ -19,8 +19,8 @@ import { arrayMove } from '@dnd-kit/sortable'
 
 import { TbPlus, TbX } from 'react-icons/tb'
 import { SortableItem, VerticalSortable } from './vertical-sortable'
-import { DragTabList, ExtraButton, Panel, PanelList, Tab, Tabs } from '@react-tabtab-next/tabtab'
 import { DragEndEvent } from '@dnd-kit/core'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class FooterGrid extends Controller {
 	name = 'Footer grid'
@@ -269,17 +269,15 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 }
 
 function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
-	const [activeTab, setActiveTab] = useState(0)
-	const [tabs, setTabs] = useState<{ title: string; content: ReactNode }[]>([])
 	const rightDiv = options.element.children?.[0].children?.[1] as BoxElement
 
-	useEffect(() => {
-		const tabsList = rightDiv.children.map((column, index) => {
+	// const tabsList =
+	const tabsList: DraggableTab[] = useMemo(() => {
+		return rightDiv.children.map((column, index) => {
 			const columnLines = column.children
 			const title = columnLines?.[0] as TextElement
-
 			return {
-				title: index + 1 + '',
+				id: column.id,
 				content: (
 					<div className="flex flex-col justify-stretch">
 						<TextInput
@@ -314,83 +312,51 @@ function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 						</Button>
 					</div>
 				),
-			}
-		})
-		setTabs(tabsList)
-	}, [rightDiv, options])
-
-	const handleOnTabSequenceChange = useCallback(
-		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			setActiveTab(newIndex)
-			options.set(
-				produce(rightDiv, (draft) => {
-					const temp = draft.children![oldIndex]
-					draft.children![oldIndex] = draft.children![newIndex]
-					draft.children![newIndex] = temp
-				})
-			)
-		},
-		[rightDiv, options]
-	)
-
-	const tabItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return (
-				<Tab closable key={index}>
-					{tab.title}
-				</Tab>
-			)
-		})
-	}, [tabs])
-
-	const panelItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return <Panel key={index}>{tab.content}</Panel>
-		})
-	}, [tabs])
-
-	return (
-		<div style={{ maxWidth: '250px' }}>
-			<Tabs
-				onTabClose={(i: number) => {
-					setTabs((tabs) => tabs.splice(i, 1))
+				onTabDelete: () => {
 					options.set(
 						produce(rightDiv, (draft) => {
-							draft.children.splice(i, 1)
+							draft.children.splice(index, 1)
 						})
 					)
-				}}
-				showModalButton={false}
-				activeIndex={activeTab}
-				onTabChange={(i: number) => setActiveTab(i)}
-				onTabSequenceChange={handleOnTabSequenceChange}
-				ExtraButton={
-					<ExtraButton
-						onClick={() => {
-							const columnLines = [
-								createColumnLine('About us', ''),
-								createColumnLine('Our services', ''),
-								createColumnLine('Our products', ''),
-								createColumnLine('Contact us', ''),
-							]
-							const b = new BoxElement()
-							b.children = [createColumnTitle('Column title'), ...columnLines]
+				},
+			}
+		})
+	}, [rightDiv])
 
-							options.set(
-								produce(rightDiv, () => {
-									rightDiv.children?.push(b)
-								})
-							)
-						}}
-					>
-						+
-					</ExtraButton>
+	return (
+		<DraggableTabs
+			onDragEnd={(event) => {
+				const { active, over } = event
+				if (active.id !== over?.id) {
+					const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+					const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+					options.set(
+						produce(rightDiv, (draft) => {
+							const temp = draft.children![oldIndex]
+							draft.children![oldIndex] = draft.children![newIndex]
+							draft.children![newIndex] = temp
+						})
+					)
 				}
-			>
-				<DragTabList>{tabItems}</DragTabList>
-				<PanelList>{panelItems}</PanelList>
-			</Tabs>
-		</div>
+			}}
+			onAddNewTab={() => {
+				const columnLines = [
+					createColumnLine('About us', ''),
+					createColumnLine('Our services', ''),
+					createColumnLine('Our products', ''),
+					createColumnLine('Contact us', ''),
+				]
+				const b = new BoxElement()
+				b.children = [createColumnTitle('Column title'), ...columnLines]
+
+				options.set(
+					produce(rightDiv, (draft) => {
+						draft.children!.push(b)
+					})
+				)
+			}}
+			tabs={tabsList}
+		/>
 	)
 }
 
@@ -658,19 +624,13 @@ const logoText = produce(new TextElement(), (draft) => {
 	draft.data.text = 'Company name'
 }).serialize()
 
-const leftTextLine = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {},
-	}
-
-	draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod,'
-})
-
-const createLeftTextLine = (text: string) => {
-	return produce(leftTextLine, (draft) => {
+const createLeftTextLine = (text: string) =>
+	produce(new TextElement(), (draft) => {
+		draft.style.desktop = {
+			default: {},
+		}
 		draft.data.text = text
 	})
-}
 
 const leftTextLines = [
 	createLeftTextLine('We do this and that').serialize(),
@@ -702,42 +662,30 @@ const column = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const columnTitle = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: 'large',
-			fontWeight: 'bold',
-		},
-	}
-
-	draft.data.text = 'Column title'
-})
-
-const createColumnTitle = (text: string) => {
-	return produce(columnTitle, (draft) => {
+const createColumnTitle = (text: string) =>
+	produce(new TextElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				fontSize: 'large',
+				fontWeight: 'bold',
+			},
+		}
 		draft.data.text = text
 	})
-}
 
-const columnLine = produce(new LinkElement(), (draft) => {
-	draft.style.desktop = {
-		default: { marginTop: '15px' },
-	}
+const createColumnLine = (text: string, href: string) =>
+	produce(new LinkElement(), (draft) => {
+		draft.style.desktop = {
+			default: { marginTop: '15px' },
+		}
 
-	const element = produce(new TextElement(), (draft) => {
-		draft.data.text = 'About us'
-	})
+		const element = produce(new TextElement(), (draft) => {
+			draft.data.text = text
+		})
 
-	draft.data.href = ''
-	draft.children = [element]
-})
-
-const createColumnLine = (text: string, href: string) => {
-	return produce(columnLine, (draft) => {
 		draft.data.href = href
-		draft.children[0].data!.text = text
+		draft.children = [element]
 	})
-}
 
 const columnLines = [
 	createColumnLine('About us', ''),

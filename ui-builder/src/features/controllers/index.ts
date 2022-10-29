@@ -28,10 +28,12 @@ import { SignUpBasic } from './sign-up-basic'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
+import { ChartBar } from './chart-bar'
 import { Details } from './dynamics/details'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
+	{ title: 'Charts', items: [ChartBar] },
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },

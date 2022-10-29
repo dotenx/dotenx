@@ -1,4 +1,3 @@
-import { DragTabList, ExtraButton, Panel, PanelList, Tab, Tabs } from '@react-tabtab-next/tabtab'
 import produce from 'immer'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { BoxElement } from '../../elements/extensions/box'
@@ -18,6 +17,7 @@ export default function TabsOptions({
 }: TabsOptionsProps): JSX.Element {
 	const [activeTab, setActiveTab] = useState(0)
 
+	// todo: reuse this part
 	const handleOnTabSequenceChange = useCallback(
 		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
 			setActiveTab(newIndex)
