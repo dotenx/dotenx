@@ -12,8 +12,8 @@ import { Controller, ElementOptions } from './controller'
 import { SimpleComponentOptionsProps } from './helpers'
 
 import Bio from './basic-components/bio'
-import TabsOptions from './helpers/tabs-options'
 import { ImageDrop } from '../ui/image-drop'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class TeamRoundCenter extends Controller {
 	name = 'Team with round profiles centered'
@@ -30,14 +30,14 @@ export class TeamRoundCenter extends Controller {
 function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element as BoxElement
 
-	const tabsList = useMemo(() => {
+	const tabsList: DraggableTab[] = useMemo(() => {
 		return containerDiv.children.map((column, index) => {
 			const image = column.children![0] as ImageElement
 			const bioRoot = column.children![1] as BoxElement
 			return {
-				title: index + 1 + '',
+				id: column.id,
 				content: (
-					<div className="flex flex-col justify-stretch gap-y-4">
+					<div className="flex flex-col justify-stretch gap-y-4 pt-4">
 						<ImageDrop
 							src={image.data.src}
 							onChange={(value) =>
@@ -51,6 +51,13 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 						{Bio.getOptions({ set: options.set, root: bioRoot })}
 					</div>
 				),
+				onTabDelete: () => {
+					options.set(
+						produce(containerDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
 			}
 		})
 	}, [containerDiv.children, options.set])
@@ -67,11 +74,21 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 					mobile: { min: 1, max: 2 },
 				}}
 			/> */}
-			<TabsOptions
-				set={options.set}
-				containerDiv={containerDiv}
-				tabs={tabsList}
-				addNewTab={() => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(containerDiv, (draft) => {
+								const [removed] = draft.children.splice(oldIndex, 1)
+								draft.children.splice(newIndex, 0, removed)
+							})
+						)
+					}
+				}}
+				onAddNewTab={() => {
 					const newItem = createBioWithImage({
 						image: profile4Url,
 						name: 'Alex Smith',
@@ -83,6 +100,7 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 						})
 					)
 				}}
+				tabs={tabsList}
 			/>
 		</div>
 	)
@@ -95,8 +113,8 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr',
-			marginLeft: '10%',
-			marginRight: '10%',
+			paddingLeft: '10%',
+			paddingRight: '10%',
 		},
 	}
 }).serialize()

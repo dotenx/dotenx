@@ -1,6 +1,6 @@
 import { ColorInput, TextInput } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
 
 import { deserializeElement } from '../../utils/deserialize'
@@ -11,7 +11,7 @@ import { extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
-import { Tabs, Panel, DragTabList, PanelList, Tab, ExtraButton } from '@react-tabtab-next/tabtab'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'
@@ -37,12 +37,12 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 	const [activeTab, setActiveTab] = useState(0)
 	const [tabs, setTabs] = useState<{ title: string; content: ReactNode }[]>([])
 
-	useEffect(() => {
-		const tabsList = featureLines.map((featureLine, index) => {
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return featureLines.map((featureLine, index) => {
 			const icon = featureLine.children?.[0] as IconElement
 			const text = featureLine.children?.[1] as TextElement
 			return {
-				title: index + 1 + '',
+				id: featureLine.id,
 				content: (
 					<div key={index}>
 						<TextInput
@@ -74,44 +74,16 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 						/>
 					</div>
 				),
+				onTabDelete: () => {
+					options.set(
+						produce(featureLinesWrapper, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
 			}
 		})
-		setTabs(tabsList)
-	}, [featureLines, options])
-
-	const tabItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return (
-				<Tab closable key={index}>
-					{tab.title}
-				</Tab>
-			)
-		})
-	}, [tabs])
-
-	const panelItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return <Panel key={index}>{tab.content}</Panel>
-		})
-	}, [tabs])
-
-	const handleOnTabSequenceChange = useCallback(
-		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			options.set(
-				produce(featureLinesWrapper, (draft) => {
-					const temp = draft.children![oldIndex]
-					draft.children![oldIndex] = draft.children![newIndex]
-					draft.children![newIndex] = temp
-				})
-			)
-			setActiveTab(newIndex)
-		},
-		[featureLinesWrapper, options]
-	)
-
-	const handleOnTabChange = useCallback((i: number) => {
-		setActiveTab(i)
-	}, [])
+	}, [featureLines])
 
 	return (
 		<div className="space-y-6">
@@ -177,39 +149,30 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<div style={{ maxWidth: '250px' }}>
-				<Tabs
-					onTabClose={(i: number) => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
 						options.set(
 							produce(featureLinesWrapper, (draft) => {
-								draft.children.splice(i, 1)
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
 							})
 						)
-					}}
-					showModalButton={false}
-					activeIndex={activeTab}
-					onTabChange={handleOnTabChange}
-					onTabSequenceChange={handleOnTabSequenceChange}
-					ExtraButton={
-						<ExtraButton
-							onClick={(e) => {
-								options.set(
-									produce(featureLinesWrapper, (draft) => {
-										draft.children.push(
-											createLine('Lorem ipsum dolor sit amet')
-										)
-									})
-								)
-							}}
-						>
-							+
-						</ExtraButton>
 					}
-				>
-					<DragTabList>{tabItems}</DragTabList>
-					<PanelList>{panelItems}</PanelList>
-				</Tabs>
-			</div>
+				}}
+				onAddNewTab={() => {
+					options.set(
+						produce(featureLinesWrapper, (draft) => {
+							draft.children.push(createLine('Lorem ipsum dolor sit amet'))
+						})
+					)
+				}}
+				tabs={tabsList}
+			/>
 		</div>
 	)
 }
@@ -328,61 +291,62 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const featureLine = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			alignItems: 'center',
-			marginTop: '10px',
-			marginBottom: '10px',
-			marginLeft: '0px',
-			marginRight: '0px',
-		},
-	}
-
-	const icon = produce(new IconElement(), (draft) => {
+const createFeatureLine = () =>
+	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				flex: '0 0 auto',
-				width: '16px',
-				height: '16px',
-				marginRight: '10px',
-				color: '#6aa512',
+				display: 'flex',
+				alignItems: 'center',
+				marginTop: '10px',
+				marginBottom: '10px',
+				marginLeft: '0px',
+				marginRight: '0px',
 			},
 		}
-		draft.style.tablet = {
-			default: {
-				width: '12px',
-				height: '12px',
-				marginRight: '8px',
-			},
-		}
-		draft.style.mobile = {
-			default: {
-				width: '8px',
-				height: '8px',
-				marginRight: '4px',
-			},
-		}
-		draft.data.name = 'check'
-		draft.data.type = 'fas'
-	})
 
-	const text = produce(new TextElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				marginLeft: '8px',
-				color: '#717171',
-			},
-		}
-		draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-	})
+		const icon = produce(new IconElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					flex: '0 0 auto',
+					width: '16px',
+					height: '16px',
+					marginRight: '10px',
+					color: '#6aa512',
+				},
+			}
+			draft.style.tablet = {
+				default: {
+					width: '12px',
+					height: '12px',
+					marginRight: '8px',
+				},
+			}
+			draft.style.mobile = {
+				default: {
+					width: '8px',
+					height: '8px',
+					marginRight: '4px',
+				},
+			}
+			draft.data.name = 'check'
+			draft.data.type = 'fas'
+		})
 
-	draft.children = [icon, text]
-})
+		const text = produce(new TextElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					marginLeft: '8px',
+					color: '#717171',
+				},
+			}
+			draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+		})
+
+		draft.children = [icon, text]
+	})
 
 const createLine = (text: string) => {
-	return produce(featureLine, (draft) => {
+	return produce(createFeatureLine(), (draft) => {
 		;(draft.children[1]! as TextElement).data.text = text
 	})
 }

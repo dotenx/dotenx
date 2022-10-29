@@ -1,6 +1,6 @@
 import { TextInput, Checkbox } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/feature-details-left.png'
 
 import { deserializeElement } from '../../utils/deserialize'
@@ -9,11 +9,11 @@ import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
 import { Divider, SimpleComponentOptionsProps } from './helpers'
 import { ImageDrop } from '../ui/image-drop'
-import { Tabs, Panel, DragTabList, PanelList, Tab, ExtraButton } from '@react-tabtab-next/tabtab'
 import { ImageElement } from '../elements/extensions/image'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class FeatureDetailsLeft extends Controller {
-	name = 'Feature with details on the left'
+	name = 'Features with details on the left'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -30,15 +30,12 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 	const featureRowsWrapper = options.element.children?.[0].children?.[0] as BoxElement
 	const featureRows = featureRowsWrapper.children as BoxElement[]
 
-	const [activeTab, setActiveTab] = useState(0)
-	const [tabs, setTabs] = useState<{ title: string; content: ReactNode }[]>([])
-
-	useEffect(() => {
-		const tabsList = featureRows.map((featureRow, index) => {
+	const tabsList: DraggableTab[] = useMemo(() => {
+		return featureRows.map((featureRow, index) => {
 			const title = featureRow.children?.[0] as TextElement
 			const details = featureRow.children?.[1] as TextElement
 			return {
-				title: index + 1 + '',
+				id: featureRow.id,
 				content: (
 					<div key={index}>
 						<TextInput
@@ -69,46 +66,16 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 						/>
 					</div>
 				),
+				onTabDelete: () => {
+					options.set(
+						produce(featureRowsWrapper, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
 			}
 		})
-		setTabs(tabsList)
-	}, [featureRows, options])
-
-	const tabItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return (
-				<Tab closable key={index}>
-					{tab.title}
-				</Tab>
-			)
-		})
-	}, [tabs])
-
-	const panelItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return <Panel key={index}>{tab.content}</Panel>
-		})
-	}, [tabs])
-
-	const handleOnTabSequenceChange = useCallback(
-		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
-
-			options.set(
-				produce(featureRowsWrapper, (draft) => {
-					const temp = draft.children![oldIndex]
-					draft.children![oldIndex] = draft.children![newIndex]
-					draft.children![newIndex] = temp
-				})
-			)
-			setActiveTab(newIndex)
-		},
-		[featureRowsWrapper, options]
-	)
-
-	const handleOnTabChange = useCallback((i: number) => {
-		setActiveTab(i)
-	}, [])
+	}, [featureRows])
 
 	return (
 		<div className="space-y-6">
@@ -139,42 +106,34 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 							})
 						)
 				}}
+				checked={imageDiv.style.desktop?.default?.borderRadius === '10px'}
 			/>
 			<Divider title="Rows" />
 
-			<div style={{ maxWidth: '250px' }}>
-				<Tabs
-					onTabClose={(i: number) => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
 						options.set(
 							produce(featureRowsWrapper, (draft) => {
-								draft.children.splice(i, 1)
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
 							})
 						)
-					}}
-					showModalButton={false}
-					activeIndex={activeTab}
-					onTabChange={handleOnTabChange}
-					onTabSequenceChange={handleOnTabSequenceChange}
-					ExtraButton={
-						<ExtraButton
-							onClick={(e) => {
-								options.set(
-									produce(featureRowsWrapper, (draft) => {
-										draft.children.push(
-											createRow('title', 'Lorem ipsum dolor sit amet')
-										)
-									})
-								)
-							}}
-						>
-							+
-						</ExtraButton>
 					}
-				>
-					<DragTabList>{tabItems}</DragTabList>
-					<PanelList>{panelItems}</PanelList>
-				</Tabs>
-			</div>
+				}}
+				onAddNewTab={() => {
+					options.set(
+						produce(featureRowsWrapper, (draft) => {
+							draft.children.push(createRow('title', 'Lorem ipsum dolor sit amet'))
+						})
+					)
+				}}
+				tabs={tabsList}
+			/>
 		</div>
 	)
 }
@@ -261,42 +220,43 @@ const featureRowsWrapper = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const featureRow = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			alignItems: 'center',
-			marginTop: '15px',
-			marginBottom: '15px',
-			marginLeft: '0px',
-			marginRight: '0px',
-		},
-	}
-	const title = produce(new TextElement(), (draft) => {
+const createFeatureRow = () =>
+	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				fontSize: '26px',
-				fontWeight: '600',
-				color: 'rgb(17, 24, 39)',
+				alignItems: 'center',
+				marginTop: '15px',
+				marginBottom: '15px',
+				marginLeft: '0px',
+				marginRight: '0px',
 			},
 		}
-		draft.data.text = 'title'
-	})
-	const details = produce(new TextElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				color: 'rgb(55, 65, 81)',
-				fontSize: '16px',
-				fontWeight: '400',
-			},
-		}
-		draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-	})
+		const title = produce(new TextElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					fontSize: '26px',
+					fontWeight: '600',
+					color: 'rgb(17, 24, 39)',
+				},
+			}
+			draft.data.text = 'title'
+		})
+		const details = produce(new TextElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					color: 'rgb(55, 65, 81)',
+					fontSize: '16px',
+					fontWeight: '400',
+				},
+			}
+			draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+		})
 
-	draft.children = [title, details]
-})
+		draft.children = [title, details]
+	})
 
 const createRow = (title: string, details: string) => {
-	return produce(featureRow, (draft) => {
+	return produce(createFeatureRow(), (draft) => {
 		;(draft.children[0]! as TextElement).data.text = title
 		;(draft.children[1]! as TextElement).data.text = details
 	})
