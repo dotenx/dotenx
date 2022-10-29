@@ -7,7 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 
@@ -32,6 +32,7 @@ function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Hero with CTA on the left" />
 			<ImageDrop
 				onChange={(src) =>
 					options.set(

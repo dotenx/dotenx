@@ -11,6 +11,7 @@ import { FeatureCenterGrid } from './feature-center-grid'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
+import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
@@ -38,10 +39,7 @@ export const controllers = [
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
 	{ title: 'Divider', items: [DividerSimpleTitle] },
-	{
-		title: 'Features',
-		items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight],
-	},
+	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight, FeatureGridImages] },
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },

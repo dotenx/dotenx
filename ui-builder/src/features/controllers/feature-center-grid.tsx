@@ -17,7 +17,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { IconElement } from '../elements/extensions/icon'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -31,14 +31,14 @@ export class FeatureCenterGrid extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryBasicOptions options={options} />
+		return <FeatureCenterGridOptions options={options} />
 		// return <div></div>
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
+function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
@@ -99,6 +99,8 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	}, areEqual)
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Feature Center Grid" />
+
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>

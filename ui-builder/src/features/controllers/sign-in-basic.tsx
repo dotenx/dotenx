@@ -12,6 +12,7 @@ import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
 import { Controller, ElementOptions } from './controller'
+import { ComponentName } from './helpers'
 
 export class SignInBasic extends Controller {
 	name = 'Sign In Basic'
@@ -28,6 +29,7 @@ export class SignInBasic extends Controller {
 
 		return (
 			<div className="space-y-6">
+				<ComponentName name="Sign In Basic" />
 				<TextInput
 					label="Title"
 					name="title"

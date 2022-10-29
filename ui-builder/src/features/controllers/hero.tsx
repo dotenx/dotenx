@@ -7,6 +7,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
+import { ComponentName } from './helpers'
 
 export class Hero extends Controller {
 	name = 'Hero'
@@ -20,6 +21,7 @@ export class Hero extends Controller {
 
 		return (
 			<div className="space-y-6">
+				<ComponentName name="Hero" />
 				<TextInput
 					label="Title"
 					name="title"

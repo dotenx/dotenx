@@ -15,7 +15,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 export class CustomersGrid extends Controller {
 	name = 'Customers grid'
@@ -54,6 +54,7 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 	}
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Customers grid" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>

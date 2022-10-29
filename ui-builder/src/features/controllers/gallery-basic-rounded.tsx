@@ -8,7 +8,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { ImageDrop } from '../ui/image-drop'
 import { viewportAtom } from '../viewport/viewport-store'
 import { Controller, ElementOptions } from './controller'
-import { repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
 
 export class GalleryBasicRounded extends Controller {
 	name = 'Basic Gallery rounded'
@@ -45,6 +45,8 @@ function GalleryBasicRoundedOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Basic Gallery rounded" />
+
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>

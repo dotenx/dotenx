@@ -6,7 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 
 export class DividerSimpleTitle extends Controller {
 	name = 'Divider simple title'
@@ -26,6 +26,7 @@ function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Divider simple title" />
 			<Divider title="Text" />
 			<TextInput
 				label="Title"

@@ -6,7 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasicStyled extends Controller {
 	name = 'Basic styled FAQ'
@@ -49,6 +49,7 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 	}
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Basic styled FAQ" />
 			<p>Desktop mode columns</p>
 			<Slider
 				label={(val) => MARKS.find((mark) => mark.value == val)?.label}

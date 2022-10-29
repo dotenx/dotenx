@@ -4,7 +4,7 @@ import imageUrl from '../../assets/components/hero-parallax.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { Controller, ElementOptions } from './controller'
-import { extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 
 import TitleSubtitleCta from './basic-components/title-subtitle-cta'
 import { ImageDrop } from '../ui/image-drop'
@@ -32,6 +32,7 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Hero with parallax" />
 			<ImageDrop
 				onChange={(src) =>
 					options.set(

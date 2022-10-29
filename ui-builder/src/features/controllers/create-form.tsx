@@ -19,6 +19,7 @@ import { SubmitElement } from '../elements/extensions/submit'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Controller } from './controller'
+import { ComponentName } from './helpers'
 
 export class CreateForm extends Controller {
 	name = 'Create Form'
@@ -77,6 +78,8 @@ function CreateFormOptions({ controller }: { controller: CreateForm }) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Create Form" />
+
 			<TableSelect
 				description="The table you want to create form for"
 				value={selectedTable}

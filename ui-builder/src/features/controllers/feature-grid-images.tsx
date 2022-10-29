@@ -1,43 +1,30 @@
-import {
-	Button,
-	ColorInput,
-	Select,
-	SelectItem,
-	Slider,
-	Tabs,
-	Textarea,
-	TextInput,
-	Tooltip,
-} from '@mantine/core'
+import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
-import { memo, ReactNode, useState } from 'react'
-import imageUrl from '../../assets/components/feature-center-cards.jpg'
+import { ReactNode, useState } from 'react'
+import imageUrl from '../../assets/components/feature-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import { IconElement } from '../elements/extensions/icon'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
-import { areEqual, FixedSizeGrid as Grid } from 'react-window'
-import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
+import { ImageDrop } from '../ui/image-drop'
+import { ImageElement } from '../elements/extensions/image'
 
-export class FeatureCenterCards extends Controller {
-	name = 'Feature Center Cards'
+export class FeatureGridImages extends Controller {
+	name = 'Feature Grid with images'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FeatureCenterOptions options={options} />
+		return <FeatureGridImagesOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
+function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
@@ -60,45 +47,10 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
-	const [searchValue, setSearchValue] = useState('')
-	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
-	const [iconType, setIconType] = useState('far')
-	const Row = memo((r: any) => {
-		const { data: iconNames, columnIndex, rowIndex, style } = r
-		const singleColumnIndex = columnIndex + rowIndex * 3
-		const icon = iconNames[singleColumnIndex]
-		if (!icon) return null
-		return (
-			<Tooltip openDelay={700} withinPortal withArrow label={icon} key={singleColumnIndex}>
-				<div style={style}>
-					<button
-						onClick={() =>
-							options.set(
-								produce(
-									getSelectedTileDiv().children?.[0] as IconElement,
-									(draft) => {
-										draft.data.type = iconType
-										draft.data.name = icon
-										draft.style.desktop!.default!.color = iconColor
-										draft.style.desktop!.default!.color = iconColor
-									}
-								)
-							)
-						}
-						className="active:animate-pulse text-xl  active:scale-100 hover:z-50 active:bg-gray-100  p-1 w-16  rounded border bg-gray-50 hover:bg-white transition-all hover:scale-125"
-					>
-						<FontAwesomeIcon
-							className="text-xl "
-							icon={[iconType as IconPrefix, icon as IconName]}
-						/>
-					</button>
-				</div>
-			</Tooltip>
-		)
-	}, areEqual)
+	const selectedTileImage = getSelectedTileDiv().children?.[0] as ImageElement
 	return (
 		<div className="space-y-6">
-			<ComponentName name="Feature Center Cards" />
+			<ComponentName name="Feature Grid with images" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>
@@ -322,86 +274,16 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<Tabs
-				onTabChange={(name) => setIconType(name as string)}
-				variant="pills"
-				defaultValue="far"
-			>
-				<p className="mb-2 mt-3 flex items-center">
-					Icon <hr className="w-full pl-2" />
-				</p>
-				<TextInput
-					placeholder="Search"
-					name="search"
-					size="xs"
-					value={searchValue}
-					onChange={(e) => setSearchValue(e.target.value)}
-				/>
-				<p className="mb-1 mt-2">Color</p>
-				<ColorInput
-					value={iconColor}
-					onChange={(value) => setIconColor(value)}
-					className="col-span-9"
-					size="xs"
-					format="hsla"
-				/>
-				<Tabs.List className="mt-5">
-					<Tabs.Tab className="active:animate-ping " value="far">
-						Regular
-					</Tabs.Tab>
-					<Tabs.Tab className="active:animate-ping " value="fas">
-						Solid
-					</Tabs.Tab>
-					<Tabs.Tab className="active:animate-ping " value="fab">
-						Brand
-					</Tabs.Tab>
-				</Tabs.List>
-
-				<Tabs.Panel value="far" pt="xs">
-					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
-						columnCount={3}
-						columnWidth={75}
-						height={400}
-						rowCount={handleSearch(regularIconNames, searchValue).length / 3}
-						rowHeight={35}
-						width={260}
-						itemData={handleSearch(regularIconNames, searchValue)}
-					>
-						{Row}
-					</Grid>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="fas" pt="xs">
-					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
-						columnCount={3}
-						columnWidth={75}
-						height={400}
-						rowCount={handleSearch(solidIconNames, searchValue).length / 3}
-						rowHeight={35}
-						width={260}
-						itemData={handleSearch(solidIconNames, searchValue)}
-					>
-						{Row}
-					</Grid>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="fab" pt="xs">
-					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
-						columnCount={3}
-						columnWidth={75}
-						height={400}
-						rowCount={handleSearch(brandIconNames, searchValue).length / 3}
-						rowHeight={35}
-						width={260}
-						itemData={handleSearch(brandIconNames, searchValue)}
-					>
-						{Row}
-					</Grid>
-				</Tabs.Panel>
-			</Tabs>
+			<ImageDrop
+				onChange={(src) =>
+					options.set(
+						produce(selectedTileImage as ImageElement, (draft) => {
+							draft.data.src = src
+						})
+					)
+				}
+				src={selectedTileImage.data.src as string}
+			/>
 			<Button
 				disabled={containerDiv.children?.length === 1}
 				size="xs"
@@ -470,21 +352,16 @@ const title = produce(new TextElement(), (draft) => {
 const subTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontWeight: '200',
 			fontSize: '24px',
 			marginBottom: '12px',
 		},
 	}
 	draft.data.text = 'With our platform you can do this and that'
 }).serialize()
-{
-	;<div className="tex"> </div>
-}
+
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			color: 'rgb(41 37 36 )',
-			fontWeight: '600',
 			fontSize: '16px',
 			marginBottom: '18px',
 		},
@@ -496,32 +373,30 @@ const tileDetails = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '14px',
-			fontWeight: '300',
 		},
 	}
 	draft.data.text = 'Feature description goes here'
 })
 
-const tileIcon = produce(new IconElement(), (draft) => {
+const tileImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			width: '20px',
-			height: '20px',
-			color: '#ff0000',
-			marginBottom: '10px',
+			width: '100%',
+			maxHeight: '400px',
+			height: 'auto',
+			objectFit: 'cover',
+			objectPosition: 'center center',
 		},
 	}
-	draft.data.name = 'bell'
-	draft.data.type = 'fas'
+
+	draft.data.src = 'https://i.ibb.co/GHCF717/Marketing-bro.png'
 })
 
 const tile = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			padding: '10px',
-			backgroundColor: 'rgb(248 250 252)',
 			textAlign: 'center',
-			boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
 			borderRadius: '8px',
 			display: 'flex',
 			flexDirection: 'column',
@@ -529,57 +404,55 @@ const tile = produce(new BoxElement(), (draft) => {
 			alignItems: 'center',
 		},
 	}
-	draft.children = [tileIcon, tileTitle, tileDetails]
+	draft.children = [tileImage, tileTitle, tileDetails]
 })
 
 function createTile({
-	icon,
+	src,
 	title,
 	description,
 }: {
-	icon: { color: string; name: string; type: string }
+	src: string
 	title: string
 	description: string
 }) {
 	return produce(tile, (draft) => {
-		const iconElement = draft.children?.[0] as IconElement
-		iconElement.data.name = icon.name
-		iconElement.data.type = icon.type
-		iconElement.style.desktop!.default!.color = icon.color
+		const iconElement = draft.children?.[0] as ImageElement
+		iconElement.data.src = src
 		;(draft.children?.[1] as TextElement).data.text = title
 		;(draft.children?.[2] as TextElement).data.text = description
 	})
 }
 const tiles = [
 	createTile({
-		icon: { name: 'code', type: 'fas', color: 'rgb(225 29 72)' },
+		src: 'https://i.ibb.co/GHCF717/Marketing-bro.png',
 		title: 'Customizable',
 		description: 'Change the content and style and make it your own.',
 	}),
 	createTile({
-		icon: { name: 'rocket', type: 'fas', color: 'rgb(225 29 72)' },
+		src: 'https://i.ibb.co/Jmrc06m/Construction-costs-amico.png',
 		title: 'Fast',
 		description: 'Fast load times and lag free interaction, my highest priority.',
 	}),
 	createTile({
-		icon: { name: 'heart', type: 'fas', color: 'rgb(225 29 72)' },
+		src: 'https://i.ibb.co/CWRLMwY/Marketing-cuate.png',
 		title: 'Made with Love',
 		description: 'Increase sales by showing true dedication to your customers.',
 	}),
 	createTile({
-		icon: { name: 'cog', type: 'fas', color: 'rgb(225 29 72)' },
+		src: 'https://i.ibb.co/Jmrc06m/Construction-costs-amico.png',
 		title: 'Easy to Use',
 		description: 'Ready to use with your own content, or customize the source files!',
 	}),
 	createTile({
-		icon: { name: 'bolt', type: 'fas', color: ' rgb(225 29 72)' },
-		title: 'Instant Setup',
-		description: 'Get your projects up and running in no time using the theme documentation.',
-	}),
-	createTile({
-		icon: { name: 'cloud', type: 'fas', color: 'rgb(225 29 72)' },
+		src: 'https://i.ibb.co/CWRLMwY/Marketing-cuate.png',
 		title: 'Cloud Storage',
 		description: 'Access your documents anywhere and share them with others.',
+	}),
+	createTile({
+		src: 'https://i.ibb.co/GHCF717/Marketing-bro.png',
+		title: 'Instant Setup',
+		description: 'Get your projects up and running in no time using the theme documentation.',
 	}),
 ]
 
@@ -621,9 +494,4 @@ const defaultData = {
 			],
 		},
 	],
-}
-const handleSearch = (IconNames: string[], searchValue: string) => {
-	return IconNames.filter((name) => name.includes(searchValue)).length > 0
-		? IconNames.filter((name) => name.includes(searchValue))
-		: IconNames
 }

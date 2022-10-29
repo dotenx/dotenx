@@ -24,3 +24,7 @@ export const Divider = ({ title }: { title: string }) => {
 		</div>
 	)
 }
+
+export const ComponentName = ({ name }: { name: string }) => (
+	<div className="p-2 my-1 rounded-md bg-slate-50 font-medium">{name}</div>
+)

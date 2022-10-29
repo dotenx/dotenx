@@ -15,6 +15,7 @@ import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { Controller } from '../controller'
 import { useColumnsQuery, TableSelect } from '../create-form'
+import { ComponentName } from '../helpers'
 
 export class Details extends Controller {
 	name = 'Details'
@@ -57,6 +58,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 	const descriptionFrom = _.last(descriptionElement.data.text.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Details" />
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}

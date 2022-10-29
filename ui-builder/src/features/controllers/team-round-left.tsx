@@ -9,7 +9,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 import Bio from './basic-components/bio'
 import { ImageDrop } from '../ui/image-drop'
@@ -64,6 +64,8 @@ function TeamRoundLeftOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Team with round profile image on left" />
+
 			{/* todo: add this after it's fixed */}
 			{/* <GridColumnSlider
 				set={options.set}

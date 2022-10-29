@@ -7,7 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
@@ -79,6 +79,7 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Feature with details on the left" />
 			<Divider title="Image" />
 			<ImageDrop
 				onChange={(src) =>

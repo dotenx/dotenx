@@ -8,7 +8,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { IconElement } from '../elements/extensions/icon'
@@ -91,6 +91,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 	return (
 		<>
 			<div className="mt-2 flex items-center">
+				<ComponentName name="Footer grid" />
 				<span className="whitespace-nowrap mr-1">Logo column</span>{' '}
 				<hr className=" w-full" />
 			</div>
