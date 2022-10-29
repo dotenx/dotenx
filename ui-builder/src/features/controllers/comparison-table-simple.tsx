@@ -6,7 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { Divider, repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, repeatObject, SimpleComponentOptionsProps } from './helpers'
 
 import { Element } from '../elements/element'
 import { useAtomValue } from 'jotai'
@@ -59,6 +59,7 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Simple comparison table" />
 			<Divider title="Layout" />
 			<Switch
 				size="lg"

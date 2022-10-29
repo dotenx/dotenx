@@ -11,7 +11,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageElement } from '../elements/extensions/image'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
@@ -58,6 +58,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Team Center Grid" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>

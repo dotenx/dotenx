@@ -16,6 +16,7 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
+import { ComponentName } from './helpers'
 
 export class CardList extends Controller {
 	name = 'Card List'
@@ -58,6 +59,7 @@ function CardListOptions({ controller }: { controller: CardList }) {
 	const nameFrom = _.last(nameElement.data.text.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Card List" />
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}

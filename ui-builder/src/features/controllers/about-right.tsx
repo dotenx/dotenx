@@ -7,7 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
@@ -87,6 +87,7 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="About us with details on the right" />
 			<ImageDrop
 				onChange={(src) =>
 					options.set(

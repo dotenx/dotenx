@@ -6,21 +6,20 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasic extends Controller {
 	name = 'Basic FAQ'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
-
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryBasicOptions options={options} />
+		return <FaqBasicBasicOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
+function FaqBasicBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
@@ -49,6 +48,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	}
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Basic FAQ" />
 			<p>Desktop mode columns</p>
 			<Slider
 				label={(val) => MARKS.find((mark) => mark.value == val)?.label}

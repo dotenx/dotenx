@@ -14,6 +14,7 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
+import { ComponentName } from './helpers'
 
 export class List extends Controller {
 	name = 'List'
@@ -68,6 +69,8 @@ function ListOptions({ controller }: { controller: List }) {
 
 	return (
 		<div>
+			<ComponentName name="List" />
+
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}

@@ -6,7 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 
 import { useAtomValue } from 'jotai'
 import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
@@ -55,6 +55,8 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Simple pricing" />
+
 			<MemGridOptions set={options.set} viewport={viewport} containerDiv={gridDiv} />
 			<Divider title="Price columns" />
 			<DraggableTabs
