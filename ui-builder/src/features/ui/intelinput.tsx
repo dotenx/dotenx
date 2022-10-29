@@ -67,6 +67,11 @@ export function Intelinput({
 	options?: string[]
 	value: IntelinputValue[]
 	onChange: (value: IntelinputValue[]) => void
+	name?: string
+	size?: 'xs'
+	placeholder?: string
+	autosize?: boolean
+	maxRows?: number
 }) {
 	const [newValue, setNewValue] = useInputState('')
 	const lastInputRef = useRef<HTMLInputElement>(null)
@@ -79,7 +84,7 @@ export function Intelinput({
 		>
 			<label className="font-medium">{label}</label>
 			<div
-				className="relative border border-gray-300 min-w-0 w-full rounded px-2.5 py-2 
+				className="relative border border-gray-300 min-w-0 w-full rounded px-2.5 py-1  
                 focus-within:border-rose-500 group font-mono"
 			>
 				<div className="flex gap-1 flex-wrap">
@@ -182,6 +187,14 @@ export function Intelinput({
 export type IntelinputValue = {
 	kind: IntelinputValueKind
 	data: string
+}
+
+export function inteliText(value: string) {
+	return [{ kind: IntelinputValueKind.Text, data: value }]
+}
+
+export function inteliState(state: string) {
+	return [{ kind: IntelinputValueKind.State, data: state }]
 }
 
 export enum IntelinputValueKind {

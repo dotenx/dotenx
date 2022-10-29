@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class FeatureCenterCards extends Controller {
 	name = 'Feature Center Cards'
@@ -73,6 +74,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 				<div style={style}>
 					<button
 						onClick={() =>
+							// eslint-disable-next-line react/prop-types
 							options.set(
 								produce(
 									getSelectedTileDiv().children?.[0] as IconElement,
@@ -96,6 +98,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 			</Tooltip>
 		)
 	}, areEqual)
+	Row.displayName = 'Row'
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Feature Center Cards" />
@@ -235,28 +238,28 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					/>
 				</>
 			)}
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={titleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(titleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Subtitle"
 				name="title"
 				size="xs"
 				value={subtitleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subtitleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -294,30 +297,30 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 				}}
 				value={selectedTile + ''}
 			/>
-			<TextInput
+			<Intelinput
 				label="Feature title"
 				name="title"
 				size="xs"
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<Textarea
+			<Intelinput
 				label="Feature description"
 				name="description"
 				size="xs"
 				autosize
 				maxRows={10}
 				value={(getSelectedTileDiv().children?.[2] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -464,7 +467,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = 'Features'
+	draft.data.text = inteliText('Features')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -475,7 +478,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = 'With our platform you can do this and that'
+	draft.data.text = inteliText('With our platform you can do this and that')
 }).serialize()
 {
 	;<div className="tex"> </div>
@@ -489,7 +492,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '18px',
 		},
 	}
-	draft.data.text = 'Feature'
+	draft.data.text = inteliText('Feature')
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
@@ -499,7 +502,7 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			fontWeight: '300',
 		},
 	}
-	draft.data.text = 'Feature description goes here'
+	draft.data.text = inteliText('Feature description goes here')
 })
 
 const tileIcon = produce(new IconElement(), (draft) => {
@@ -546,8 +549,8 @@ function createTile({
 		iconElement.data.name = icon.name
 		iconElement.data.type = icon.type
 		iconElement.style.desktop!.default!.color = icon.color
-		;(draft.children?.[1] as TextElement).data.text = title
-		;(draft.children?.[2] as TextElement).data.text = description
+		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
+		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
 	})
 }
 const tiles = [

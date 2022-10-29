@@ -16,6 +16,7 @@ import { Element } from '../elements/element'
 import VerticalOptions from './helpers/vertical-options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class PricingSimple2 extends Controller {
 	name = 'Simple pricing 2'
@@ -263,16 +264,16 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 	const featureLinesWrapper = tileDiv.children[2] as BoxElement
 	return (
 		<div className="flex flex-col items-stretch gap-y-2">
-			<TextInput
+			<Intelinput
 				label="Title"
 				placeholder="Title"
 				name="title"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -287,15 +288,15 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 					return {
 						id: child.id,
 						content: (
-							<TextInput
-								placeholder="Title"
+							<Intelinput
+								label="Title"
 								name="title"
 								size="xs"
 								value={text.data.text}
-								onChange={(event) =>
+								onChange={(value) =>
 									set(
 										produce(text, (draft) => {
-											draft.data.text = event.target.value
+											draft.data.text = value
 										})
 									)
 								}
@@ -318,16 +319,16 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 				<FontAwesomeIcon icon={['fas', 'plus']} /> Add feature
 			</Button>
 			<Divider title="CTA" />
-			<TextInput
+			<Intelinput
 				placeholder="CTA"
 				label="CTA"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(ctaText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -368,75 +369,76 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-
-const createTileTitle = () => produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			textAlign: 'center',
-			padding: '20px',
-			fontSize: '28px',
-			fontWeight: 'bold',
-		},
-	}
-	draft.data.text = 'Standard'
-})
-
-const createFeatureLine = () => produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			alignItems: 'center',
-			marginTop: '10px',
-			marginBottom: '10px',
-			marginLeft: '0px',
-			marginRight: '0px',
-		},
-	}
-
-	const icon = produce(new IconElement(), (draft) => {
+const createTileTitle = () =>
+	produce(new TextElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				flex: '0 0 auto',
-				width: '16px',
-				height: '16px',
-				marginRight: '10px',
-				color: '#6aa512',
+				textAlign: 'center',
+				padding: '20px',
+				fontSize: '28px',
+				fontWeight: 'bold',
 			},
 		}
-		draft.style.tablet = {
-			default: {
-				width: '12px',
-				height: '12px',
-				marginRight: '8px',
-			},
-		}
-		draft.style.mobile = {
-			default: {
-				width: '8px',
-				height: '8px',
-				marginRight: '4px',
-			},
-		}
-		draft.data.name = 'check'
-		draft.data.type = 'fas'
+		draft.data.text = inteliText('Standard')
 	})
 
-	const text = produce(new TextElement(), (draft) => {
+const createFeatureLine = () =>
+	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				marginLeft: '8px',
-				color: '#717171',
+				display: 'flex',
+				alignItems: 'center',
+				marginTop: '10px',
+				marginBottom: '10px',
+				marginLeft: '0px',
+				marginRight: '0px',
 			},
 		}
-		draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-	})
 
-	draft.children = [icon, text]
-})
+		const icon = produce(new IconElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					flex: '0 0 auto',
+					width: '16px',
+					height: '16px',
+					marginRight: '10px',
+					color: '#6aa512',
+				},
+			}
+			draft.style.tablet = {
+				default: {
+					width: '12px',
+					height: '12px',
+					marginRight: '8px',
+				},
+			}
+			draft.style.mobile = {
+				default: {
+					width: '8px',
+					height: '8px',
+					marginRight: '4px',
+				},
+			}
+			draft.data.name = 'check'
+			draft.data.type = 'fas'
+		})
+
+		const text = produce(new TextElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					marginLeft: '8px',
+					color: '#717171',
+				},
+			}
+			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+		})
+
+		draft.children = [icon, text]
+	})
 
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
-		;(draft.children[1]! as TextElement).data.text = text
+		;(draft.children[1]! as TextElement).data.text = inteliText(text)
 	})
 }
 
@@ -477,7 +479,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = '$9.99'
+		draft.data.text = inteliText('$9.99')
 	})
 
 	const termLarge = produce(new TextElement(), (draft) => {
@@ -489,7 +491,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = '/mo'
+		draft.data.text = inteliText('/mo')
 	})
 
 	const largePriceWrapper = produce(new BoxElement(), (draft) => {
@@ -512,7 +514,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = '$10'
+		draft.data.text = inteliText('$10')
 	})
 
 	const termSmall = produce(new TextElement(), (draft) => {
@@ -524,7 +526,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = 'monthly'
+		draft.data.text = inteliText('monthly')
 	})
 
 	const smallPriceWrapper = produce(new BoxElement(), (draft) => {
@@ -567,7 +569,7 @@ const tileCta = produce(new LinkElement(), (draft) => {
 	}
 
 	const text = produce(new TextElement(), (draft) => {
-		draft.data.text = 'Learn more'
+		draft.data.text = inteliText('Learn more')
 	})
 
 	draft.data.href = '#'
@@ -575,22 +577,23 @@ const tileCta = produce(new LinkElement(), (draft) => {
 	draft.children = [text]
 })
 
-const newTile = () =>produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			paddingLeft: '10%',
-			paddingRight: '10%',
-			height: ' max-content',
-			boxShadow:
-				'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
-			borderRadius: '10px',
-			paddingBottom: '30px',
-		},
-	}
-	draft.children = [createTileTitle(), tileDetailsPrice, featureLinesWrapper, tileCta]
-})
+const newTile = () =>
+	produce(new BoxElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				display: 'flex',
+				flexDirection: 'column',
+				paddingLeft: '10%',
+				paddingRight: '10%',
+				height: ' max-content',
+				boxShadow:
+					'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
+				borderRadius: '10px',
+				paddingBottom: '30px',
+			},
+		}
+		draft.children = [createTileTitle(), tileDetailsPrice, featureLinesWrapper, tileCta]
+	})
 
 function createTile({
 	title,

@@ -16,6 +16,7 @@ import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { inteliText } from '../ui/intelinput'
 
 export class CustomersLogoGrid extends Controller {
 	name = 'Customers logo grid'
@@ -306,7 +307,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = 'We’re proud to work with the world’s best brands'
+	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
 }).serialize()
 
 const tile = produce(new BoxElement(), (draft) => {

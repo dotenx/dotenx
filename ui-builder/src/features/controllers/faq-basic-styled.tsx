@@ -5,6 +5,7 @@ import imageUrl from '../../assets/components/faq-basic-styled.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
+import { Intelinput, inteliText } from '../ui/intelinput'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
@@ -146,30 +147,30 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 				}}
 				value={selectedTile + ''}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={(getSelectedTileDiv().children?.[0] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[0] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<Textarea
+			<Intelinput
 				label="Description"
 				name="description"
 				size="xs"
 				autosize
 				maxRows={10}
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -239,7 +240,7 @@ const title = produce(new TextElement(), (draft) => {
 			fontWeight: '700',
 		},
 	}
-	draft.data.text = "FAQ's"
+	draft.data.text = inteliText("FAQ's")
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
@@ -252,7 +253,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			minHeight: '30px',
 		},
 	}
-	draft.data.text = 'Question title goes here'
+	draft.data.text = inteliText('Question title goes here')
 })
 {
 	;<div className="whitespace-pre-line"></div>
@@ -267,8 +268,9 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			minHeight: '50px',
 		},
 	}
-	draft.data.text =
+	draft.data.text = inteliText(
 		'You can add a description here. This is a great place to add more information about your product.'
+	)
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -290,8 +292,8 @@ const tile = produce(new BoxElement(), (draft) => {
 
 function createTile({ title, description }: { title: string; description: string }) {
 	return produce(tile, (draft) => {
-		;(draft.children?.[0] as TextElement).data.text = title
-		;(draft.children?.[1] as TextElement).data.text = description
+		;(draft.children?.[0] as TextElement).data.text = inteliText(title)
+		;(draft.children?.[1] as TextElement).data.text = inteliText(description)
 	})
 }
 

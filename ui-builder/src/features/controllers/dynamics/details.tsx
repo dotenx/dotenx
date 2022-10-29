@@ -13,6 +13,7 @@ import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
 import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
+import { inteliState } from '../../ui/intelinput'
 import { Controller } from '../controller'
 import { useColumnsQuery, TableSelect } from '../create-form'
 import { ComponentName } from '../helpers'
@@ -54,8 +55,8 @@ function DetailsOptions({ controller }: { controller: Details }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last(titleElement.data.text.split('.')) ?? ''
-	const descriptionFrom = _.last(descriptionElement.data.text.split('.')) ?? ''
+	const titleFrom = _.last(titleElement.data.text[0].data.split('.')) ?? ''
+	const descriptionFrom = _.last(descriptionElement.data.text[0].data.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Details" />
@@ -74,7 +75,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 					set(
 						produce(root, (draft) => {
 							const title = draft.children?.[1] as TextElement
-							title.data.text = `$store.${dataSourceName}.${value}`
+							title.data.text = inteliState(`$store.${dataSourceName}.${value}`)
 						})
 					)
 				}}
@@ -89,7 +90,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 					set(
 						produce(root, (draft) => {
 							const description = draft.children?.[2] as TextElement
-							description.data.text = `$store.${dataSourceName}.${value}`
+							description.data.text = inteliState(`$store.${dataSourceName}.${value}`)
 						})
 					)
 				}}

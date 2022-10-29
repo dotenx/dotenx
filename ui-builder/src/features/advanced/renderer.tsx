@@ -21,6 +21,7 @@ import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
+import { IntelinputValueKind, inteliText } from '../ui/intelinput'
 
 export function RenderElements({
 	elements,
@@ -128,13 +129,13 @@ function RenderElementPreview({
 		)
 	}
 
-	if (element instanceof TextElement && element.data.text.startsWith('$store.')) {
-		const splitPath = element.data.text.split('.')
+	if (element instanceof TextElement && element.data.text[0].kind === IntelinputValueKind.State) {
+		const splitPath = element.data.text[0].data.split('.')
 		const textValue =
 			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
-			_.get(pageStates, element.data.text.replace('$store.', ''))
+			_.get(pageStates, element.data.text[0].data.replace('$store.', ''))
 		const valuedElement = produce(element, (draft) => {
-			draft.data.text = textValue
+			draft.data.text = inteliText(textValue)
 		})
 		return (
 			<RenderElement
