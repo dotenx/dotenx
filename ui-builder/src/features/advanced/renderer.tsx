@@ -21,6 +21,7 @@ import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
+import { IntelinputValueKind, inteliText } from '../ui/intelinput'
 
 export function RenderElements({
 	elements,
@@ -109,7 +110,8 @@ function RenderElementPreview({
 	const pageStates = usePageStates((store) => store.states)
 
 	if (element.repeatFrom) {
-		const items = (_.get(pageStates, element.repeatFrom.name) as JsonArray) ?? []
+		const items =
+			(_.get(pageStates, element.repeatFrom.name.replace('$store.', '')) as JsonArray) ?? []
 		return (
 			<>
 				{items.map((item, index) => (
@@ -127,15 +129,13 @@ function RenderElementPreview({
 		)
 	}
 
-	if (element instanceof TextElement && element.bindings.text) {
-		const splitPath = element.bindings.text.fromStateName.split('.')
-		const textValue = _.get(
-			states,
-			splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
-		)
+	if (element instanceof TextElement && element.data.text[0].kind === IntelinputValueKind.State) {
+		const splitPath = element.data.text[0].data.split('.')
+		const textValue =
+			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
+			_.get(pageStates, element.data.text[0].data.replace('$store.', ''))
 		const valuedElement = produce(element, (draft) => {
-			draft.data.text = textValue
-			draft.bindings.text = null
+			draft.data.text = inteliText(textValue)
 		})
 		return (
 			<RenderElement
@@ -147,15 +147,31 @@ function RenderElementPreview({
 		)
 	}
 
+	let backgroundUrl = ''
+	if (element instanceof ImageElement) {
+		backgroundUrl = element.data.src
+	}
+	const style = backgroundUrl
+		? {
+				backgroundImage: `url(${backgroundUrl})`,
+				backgroundSize: 'contain',
+				backgroundRepeat: 'no-repeat',
+				backgroundPosition: 'center',
+		  }
+		: {}
+
 	return (
 		<>
-			{element.renderPreview((element) => (
-				<RenderElements
-					elements={element.children ?? []}
-					states={states}
-					overlay={overlay}
-				/>
-			))}
+			{element.renderPreview(
+				(element) => (
+					<RenderElements
+						elements={element.children ?? []}
+						states={states}
+						overlay={overlay}
+					/>
+				),
+				style
+			)}
 		</>
 	)
 }

@@ -239,7 +239,7 @@ function SingleIntelinput({
 	return (
 		<Intelinput
 			label={label}
-			value={value.listName ? [{ data: inputValue, kind: IntelinputValueKind.Option }] : []}
+			value={value.listName ? [{ data: inputValue, kind: IntelinputValueKind.State }] : []}
 			onChange={(value) => {
 				if (_.isEmpty(value)) {
 					onChange({ listName: '', propName: '' })

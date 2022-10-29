@@ -13,6 +13,8 @@ import { LinkElement } from '../elements/extensions/link'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
+import { ComponentName } from './helpers'
+import { Intelinput } from '../ui/intelinput'
 
 export class SignUpBasic extends Controller {
 	name = 'Sign Up Basic'
@@ -33,15 +35,16 @@ export class SignUpBasic extends Controller {
 
 		return (
 			<div className="space-y-6">
-				<TextInput
+				<ComponentName name="Sign Up Basic" />
+				<Intelinput
 					label="Title"
 					name="title"
 					size="xs"
 					value={title.data.text}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(title, (draft) => {
-								draft.data.text = event.target.value
+								draft.data.text = value
 							})
 						)
 					}

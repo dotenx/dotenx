@@ -12,8 +12,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { inteliState } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
+import { ComponentName } from './helpers'
 
 export class List extends Controller {
 	name = 'List'
@@ -58,9 +60,7 @@ function ListOptions({ controller }: { controller: List }) {
 					}
 					draft.children = columns.map((col) => {
 						const text = new TextElement()
-						text.bindings.text = {
-							fromStateName: `${dataSourceName}.rowsItem.${col.name}`,
-						}
+						text.data.text = inteliState(`${dataSourceName}.rowsItem.${col.name}`)
 						return text
 					})
 				})
@@ -70,6 +70,8 @@ function ListOptions({ controller }: { controller: List }) {
 
 	return (
 		<div>
+			<ComponentName name="List" />
+
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}

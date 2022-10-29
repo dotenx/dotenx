@@ -5,7 +5,7 @@ import { BordersEditor } from '../../style/border-editor'
 import { SimpleShadowsEditor } from '../../style/shadows-editor'
 import { SizeEditor } from '../../style/size-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
-import { Element, RenderFn } from '../element'
+import { Element, RenderFn, RenderOptions } from '../element'
 import { Style } from '../style'
 
 export class BoxElement extends Element {
@@ -22,7 +22,7 @@ export class BoxElement extends Element {
 		return renderFn(this)
 	}
 
-	renderOptions(): ReactNode {
+	renderOptions(options: RenderOptions): ReactNode {
 		return (
 			<div className="space-y-6">
 				<BackgroundsEditor simple />

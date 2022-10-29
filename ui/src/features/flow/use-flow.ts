@@ -11,7 +11,7 @@ import {
 	FlowElement,
 	OnLoadFunc,
 	OnLoadParams,
-	removeElements
+	removeElements,
 } from 'react-flow-renderer'
 import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from '../../api'
 import { BuilderSteps } from '../../internal/task-builder'
@@ -33,6 +33,7 @@ export function useFlow() {
 	useEffect(() => {
 		if (!automation) return
 		const elements = mapAutomationToElements(automation)
+		console.log(elements)
 		const triggers = mapTriggersToElements(automation.manifest.triggers)
 		const layout = getLaidOutElements([...elements, ...triggers], 'TB', NODE_WIDTH, NODE_HEIGHT)
 		setElements(layout)
@@ -146,6 +147,10 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
+function isTaskBuilder(value: any) {
+	return _.isObject(value) && 'steps' in value && _.isArray((value as any).steps)
+}
+
 function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	if (!fieldValue) return ['', '']
 
@@ -162,8 +167,8 @@ function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	switch (fieldValue.type) {
 		case 'directValue':
 			if (_.isArray(fieldValue.value)) normalized = fieldValue.value
-			else if (_.isString(fieldValue.value))
-				normalized = { type: InputOrSelectKind.Text, data: fieldValue.value }
+			else if (_.isString(fieldValue.value) || !isTaskBuilder(fieldValue.value))
+				normalized = { type: InputOrSelectKind.Text, data: fieldValue.value as any }
 			else normalized = mapToUiTaskBuilder(fieldValue.value.steps)
 			break
 		case 'refrenced':
@@ -276,7 +281,10 @@ function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
 						url: step.params.url,
 						method: step.params.method,
 						body: step.params.body,
-						accessToken: { type: InputOrSelectKind.Text, data: step.params.headers['DTX-auth'] ?? '' },
+						accessToken: {
+							type: InputOrSelectKind.Text,
+							data: step.params.headers['DTX-auth'] ?? '',
+						},
 						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
 					},
 				}

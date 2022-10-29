@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Collapse, Select, TextInput } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
 
 import { deserializeElement } from '../../utils/deserialize'
@@ -8,7 +8,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { IconElement } from '../elements/extensions/icon'
@@ -19,8 +19,9 @@ import { arrayMove } from '@dnd-kit/sortable'
 
 import { TbPlus, TbX } from 'react-icons/tb'
 import { SortableItem, VerticalSortable } from './vertical-sortable'
-import { DragTabList, ExtraButton, Panel, PanelList, Tab, Tabs } from '@react-tabtab-next/tabtab'
 import { DragEndEvent } from '@dnd-kit/core'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class FooterGrid extends Controller {
 	name = 'Footer grid'
@@ -91,6 +92,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 	return (
 		<>
 			<div className="mt-2 flex items-center">
+				<ComponentName name="Footer grid" />
 				<span className="whitespace-nowrap mr-1">Logo column</span>{' '}
 				<hr className=" w-full" />
 			</div>
@@ -108,15 +110,15 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 				<span className="whitespace-nowrap mr-1">Secondary footer</span>{' '}
 				<hr className=" w-full" />
 			</div>
-			<TextInput
+			<Intelinput
 				label="text"
 				name="text"
 				size="xs"
 				value={secondFooterTextComponent.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(secondFooterTextComponent, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -235,20 +237,19 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				}
 				src={logo.data.src}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				placeholder="Text"
 				name="text"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
-				className="mb-2"
 			/>
 			<LogoColumnLines column={column as BoxElement} options={options} />
 			<Button
@@ -269,34 +270,31 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 }
 
 function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
-	const [activeTab, setActiveTab] = useState(0)
-	const [tabs, setTabs] = useState<{ title: string; content: ReactNode }[]>([])
 	const rightDiv = options.element.children?.[0].children?.[1] as BoxElement
 
-	useEffect(() => {
-		const tabsList = rightDiv.children.map((column, index) => {
+	// const tabsList =
+	const tabsList: DraggableTab[] = useMemo(() => {
+		return rightDiv.children.map((column, index) => {
 			const columnLines = column.children
 			const title = columnLines?.[0] as TextElement
-
 			return {
-				title: index + 1 + '',
+				id: column.id,
 				content: (
 					<div className="flex flex-col justify-stretch">
-						<TextInput
+						<Intelinput
 							key={index}
 							label="Title"
 							placeholder="Text"
 							name="text"
 							size="xs"
 							value={title.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(title, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
-							className="mb-2"
 						/>
 						<ColumnLines column={column as BoxElement} options={options} />
 						<Button
@@ -314,84 +312,51 @@ function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 						</Button>
 					</div>
 				),
-			}
-		})
-		setTabs(tabsList)
-	}, [rightDiv, options])
-
-	const handleOnTabSequenceChange = useCallback(
-		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
-			setActiveTab(newIndex)
-			options.set(
-				produce(rightDiv, (draft) => {
-					const temp = draft.children![oldIndex]
-					draft.children![oldIndex] = draft.children![newIndex]
-					draft.children![newIndex] = temp
-				})
-			)
-		},
-		[rightDiv, options]
-	)
-
-	const tabItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return (
-				<Tab closable key={index}>
-					{tab.title}
-				</Tab>
-			)
-		})
-	}, [tabs])
-
-	const panelItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return <Panel key={index}>{tab.content}</Panel>
-		})
-	}, [tabs])
-
-	return (
-		<div style={{ maxWidth: '250px' }}>
-			<Tabs
-				onTabClose={(i: number) => {
-					setTabs((tabs) => tabs.splice(i, 1))
+				onTabDelete: () => {
 					options.set(
 						produce(rightDiv, (draft) => {
-							draft.children.splice(i, 1)
+							draft.children.splice(index, 1)
 						})
 					)
-				}}
-				showModalButton={false}
-				activeIndex={activeTab}
-				onTabChange={(i: number) => setActiveTab(i)}
-				onTabSequenceChange={handleOnTabSequenceChange}
-				ExtraButton={
-					<ExtraButton
-						onClick={() => {
-							const columnLines = [
-								createColumnLine('About us', ''),
-								createColumnLine('Our services', ''),
-								createColumnLine('Our products', ''),
-								createColumnLine('Contact us', ''),
-							]
-							const b = new BoxElement()
-							b.children = [createColumnTitle('Column title'), ...columnLines]
+				},
+			}
+		})
+	}, [rightDiv])
 
-							options.set(
-								produce(rightDiv, () => {
-									rightDiv.children?.push(b)
-								})
-							)
-						}}
-					>
-						+
-					</ExtraButton>
+	return (
+		<DraggableTabs
+			onDragEnd={(event) => {
+				const { active, over } = event
+				if (active.id !== over?.id) {
+					const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+					const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+					options.set(
+						produce(rightDiv, (draft) => {
+							const temp = draft.children![oldIndex]
+							draft.children![oldIndex] = draft.children![newIndex]
+							draft.children![newIndex] = temp
+						})
+					)
 				}
-			>
-				<DragTabList>{tabItems}</DragTabList>
-				<PanelList>{panelItems}</PanelList>
-			</Tabs>
-		</div>
+			}}
+			onAddNewTab={() => {
+				const columnLines = [
+					createColumnLine('About us', ''),
+					createColumnLine('Our services', ''),
+					createColumnLine('Our products', ''),
+					createColumnLine('Contact us', ''),
+				]
+				const b = new BoxElement()
+				b.children = [createColumnTitle('Column title'), ...columnLines]
+
+				options.set(
+					produce(rightDiv, (draft) => {
+						draft.children!.push(b)
+					})
+				)
+			}}
+			tabs={tabsList}
+		/>
 	)
 }
 
@@ -459,15 +424,15 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 									</span>
 								</div>
 
-								<TextInput
-									placeholder="Text"
+								<Intelinput
+									label="Text"
 									name="text"
 									size="xs"
 									value={label.data.text}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(label, (draft) => {
-												draft.data.text = event.target.value
+												draft.data.text = value
 											})
 										)
 									}
@@ -552,15 +517,15 @@ function LogoColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 									</span>
 								</div>
 
-								<TextInput
-									placeholder="Text"
+								<Intelinput
+									label="Text"
 									name="text"
 									size="xs"
 									value={item.data.text}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(item, (draft) => {
-												draft.data.text = event.target.value
+												draft.data.text = value
 											})
 										)
 									}
@@ -656,22 +621,16 @@ const logoText = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = 'Company name'
+	draft.data.text = inteliText('Company name')
 }).serialize()
 
-const leftTextLine = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {},
-	}
-
-	draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod,'
-})
-
-const createLeftTextLine = (text: string) => {
-	return produce(leftTextLine, (draft) => {
-		draft.data.text = text
+const createLeftTextLine = (text: string) =>
+	produce(new TextElement(), (draft) => {
+		draft.style.desktop = {
+			default: {},
+		}
+		draft.data.text = inteliText(text)
 	})
-}
 
 const leftTextLines = [
 	createLeftTextLine('We do this and that').serialize(),
@@ -703,42 +662,30 @@ const column = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const columnTitle = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: 'large',
-			fontWeight: 'bold',
-		},
-	}
-
-	draft.data.text = 'Column title'
-})
-
-const createColumnTitle = (text: string) => {
-	return produce(columnTitle, (draft) => {
-		draft.data.text = text
-	})
-}
-
-const columnLine = produce(new LinkElement(), (draft) => {
-	draft.style.desktop = {
-		default: { marginTop: '15px' },
-	}
-
-	const element = produce(new TextElement(), (draft) => {
-		draft.data.text = 'About us'
+const createColumnTitle = (text: string) =>
+	produce(new TextElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				fontSize: 'large',
+				fontWeight: 'bold',
+			},
+		}
+		draft.data.text = inteliText(text)
 	})
 
-	draft.data.href = ''
-	draft.children = [element]
-})
+const createColumnLine = (text: string, href: string) =>
+	produce(new LinkElement(), (draft) => {
+		draft.style.desktop = {
+			default: { marginTop: '15px' },
+		}
 
-const createColumnLine = (text: string, href: string) => {
-	return produce(columnLine, (draft) => {
+		const element = produce(new TextElement(), (draft) => {
+			draft.data.text = inteliText(text)
+		})
+
 		draft.data.href = href
-		draft.children[0].data!.text = text
+		draft.children = [element]
 	})
-}
 
 const columnLines = [
 	createColumnLine('About us', ''),
@@ -765,7 +712,7 @@ const secondaryFooterLeft = produce(new TextElement(), (draft) => {
 			fontSize: 'small',
 		},
 	}
-	draft.data.text = '©2030 Company name. All rights reserved.'
+	draft.data.text = inteliText('©2030 Company name. All rights reserved.')
 }).serialize()
 
 const socials = produce(new BoxElement(), (draft) => {

@@ -15,7 +15,8 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class CustomersGrid extends Controller {
 	name = 'Customers grid'
@@ -54,6 +55,7 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 	}
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Customers grid" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>
@@ -190,28 +192,28 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 					/>
 				</>
 			)}
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={titleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(titleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Subtitle"
 				name="title"
 				size="xs"
 				value={subtitleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subtitleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -332,7 +334,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = 'Trusted by the world’s best'
+	draft.data.text = inteliText('Trusted by the world’s best')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -342,7 +344,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = 'We’re proud to work with the world’s best brands'
+	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
 }).serialize()
 
 const tile = produce(new BoxElement(), (draft) => {

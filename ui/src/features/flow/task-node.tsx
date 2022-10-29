@@ -25,7 +25,7 @@ export interface TaskNodeData {
 	outputs?: { value: string }[]
 }
 
-export type TaskOthers = Record<string, ComplexFieldValue | BuilderSteps>
+export type TaskOthers = Record<string, ComplexFieldValue | BuilderSteps> | any
 
 export interface TaskEntity {
 	id: string

@@ -2,8 +2,10 @@ package predifinedTaskService
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 )
 
 type taskDetail struct {
@@ -20,10 +22,13 @@ type PredifinedTaskService interface {
 
 type predifinedTaskService struct {
 	//	store runnerstore.RunnerStore
+	MarketplaceService marketplaceService.MarketplaceService
 }
 
-func NewPredefinedTaskService() PredifinedTaskService {
-	return &predifinedTaskService{}
+func NewPredefinedTaskService(mService marketplaceService.MarketplaceService) PredifinedTaskService {
+	return &predifinedTaskService{
+		MarketplaceService: mService,
+	}
 }
 
 func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
@@ -31,6 +36,17 @@ func (r *predifinedTaskService) GetTasks() (map[string][]taskDetail, error) {
 	for _, t := range models.AvaliableTasks {
 		if t.OnTestStage {
 			continue
+		}
+		lambdaName := strings.ReplaceAll(t.Image, ":", "-")
+		lambdaName = strings.ReplaceAll(lambdaName, "/", "-")
+		function, err := r.MarketplaceService.GetFunction(lambdaName)
+		if err != nil && err.Error() != "function not found" {
+			continue
+		}
+		if err == nil {
+			if !function.Enabled {
+				continue
+			}
 		}
 		if _, ok := types[t.Service]; ok {
 			types[t.Service] = append(types[t.Service], taskDetail{Type: t.Type, IconUrl: t.Icon, Description: t.Description})

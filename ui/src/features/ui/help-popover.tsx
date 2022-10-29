@@ -81,13 +81,7 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 						</Box>
 					) : null}
 					{/* Description */}
-					<Text
-						className={
-							helpDetails.videoUrl
-								? ''
-								: 'border-t-1 border-black pt-3'
-						}
-					>
+					<Text className={helpDetails.videoUrl ? '' : 'border-t-1 border-black pt-3'}>
 						{helpDetails.description}
 					</Text>
 				</Stack>

@@ -5,22 +5,22 @@ import imageUrl from '../../assets/components/faq-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
+import { Intelinput, inteliText } from '../ui/intelinput'
 import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasic extends Controller {
 	name = 'Basic FAQ'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
-
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryBasicOptions options={options} />
+		return <FaqBasicBasicOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
+function FaqBasicBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
@@ -49,6 +49,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	}
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Basic FAQ" />
 			<p>Desktop mode columns</p>
 			<Slider
 				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
@@ -145,30 +146,30 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				}}
 				value={selectedTile + ''}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={(getSelectedTileDiv().children?.[0] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[0] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<Textarea
+			<Intelinput
 				label="Description"
 				name="description"
 				size="xs"
 				autosize
 				maxRows={10}
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -233,9 +234,10 @@ const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '32px',
+			fontWeight: '700',
 		},
 	}
-	draft.data.text = 'Frequently asked questions'
+	draft.data.text = inteliText('Frequently asked questions')
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
@@ -243,25 +245,28 @@ const tileTitle = produce(new TextElement(), (draft) => {
 		default: {
 			fontSize: '16px',
 			marginBottom: '18px',
-			fontWeight: 'bold',
+			fontWeight: '600',
 		},
 	}
-	draft.data.text = 'Question title goes here'
+	draft.data.text = inteliText('Question title goes here')
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			wordBreak: 'break-all',
+			fontWeight: '400',
 			fontSize: '14px',
 		},
 	}
-	draft.data.text =
+	draft.data.text = inteliText(
 		'You can add a description here. This is a great place to add more information about your product.'
+	)
 })
-
 const tile = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			height: 'max-content',
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'center',
@@ -273,8 +278,8 @@ const tile = produce(new BoxElement(), (draft) => {
 
 function createTile({ title, description }: { title: string; description: string }) {
 	return produce(tile, (draft) => {
-		;(draft.children?.[0] as TextElement).data.text = title
-		;(draft.children?.[1] as TextElement).data.text = description
+		;(draft.children?.[0] as TextElement).data.text = inteliText(title)
+		;(draft.children?.[1] as TextElement).data.text = inteliText(description)
 	})
 }
 

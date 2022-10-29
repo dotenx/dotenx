@@ -1,5 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, JsonInput } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
 import _ from 'lodash'
 import { nanoid } from 'nanoid'
 import { useState } from 'react'
@@ -12,8 +13,9 @@ import {
 	UseControllerProps,
 } from 'react-hook-form'
 import { IoSwapHorizontal } from 'react-icons/io5'
+import { AnyJson } from '../../api'
 import { FieldError } from './field'
-import { GroupData, InputOrSelectKind } from './input-or-select'
+import { GroupData, InputOrSelectKind, InputOrSelectValue } from './input-or-select'
 import { Object } from './json-editor'
 
 export interface JsonEditorInputProps<
@@ -32,10 +34,10 @@ export function JsonEditorInput<
 	TName extends FieldPath<TFieldValues>
 >({
 	label,
-	errors,
 	control,
 	groups = [],
 	onlySimple,
+	errors,
 	simpleInput,
 	...rest
 }: JsonEditorInputProps<TFieldValues, TName>) {
@@ -76,41 +78,14 @@ export function JsonEditorInput<
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
-					const valueData = (value as any)?.data ?? ''
-					const jsonInputValue = _.isString(valueData)
-						? valueData
-						: JSON.stringify(valueData)
 					if (mode === 'input') {
-						if (simpleInput)
-							return (
-								<JsonInput
-									onChange={(value) =>
-										onChange({ type: 'column_values', data: value })
-									}
-									placeholder={'{"x":"y"}'}
-									value={(value as any)?.data ?? ''}
-									validationError={!onlySimple && 'Invalid json'}
-									formatOnBlur
-									autosize
-									minRows={4}
-									styles={(theme) => ({
-										input: { backgroundColor: theme.colors.gray[0] },
-									})}
-								/>
-							)
+						const valueData = (value as InputOrSelectValue)?.data ?? undefined
 						return (
-							<JsonInput
-								onChange={(value) =>
+							<JsonInputReal
+								onChange={(value) => {
 									onChange({ type: InputOrSelectKind.Text, data: value })
-								}
-								value={jsonInputValue}
-								validationError={!onlySimple && 'Invalid json'}
-								formatOnBlur
-								autosize
-								minRows={4}
-								styles={(theme) => ({
-									input: { backgroundColor: theme.colors.gray[0] },
-								})}
+								}}
+								value={valueData}
 							/>
 						)
 					}
@@ -142,4 +117,34 @@ export function JsonEditorInput<
 			{rest.name && errors && <FieldError errors={errors} name={rest.name} />}
 		</div>
 	)
+}
+
+function JsonInputReal({
+	value,
+	onChange,
+}: {
+	value: AnyJson
+	onChange: (value?: AnyJson) => void
+}) {
+	return (
+		<JsonInput
+			onChange={(value) => onChange(safeParseJson(value))}
+			value={_.isString(value) ? value : JSON.stringify(value, null, 2)}
+			validationError="Invalid json"
+			formatOnBlur
+			autosize
+			minRows={4}
+			styles={(theme) => ({
+				input: { backgroundColor: theme.colors.gray[0] },
+			})}
+		/>
+	)
+}
+
+const safeParseJson = (value: string): AnyJson | undefined => {
+	try {
+		return JSON.parse(value)
+	} catch (error) {
+		return value
+	}
 }

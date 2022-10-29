@@ -17,7 +17,7 @@
 		"jsx": "react-jsx",
 		"strictNullChecks": true
 	},
-	"include": ["src"],
+	"include": ["src", "src/features/controllers/.tsx"],
 	"references": [
 		{
 			"path": "./tsconfig.node.json"

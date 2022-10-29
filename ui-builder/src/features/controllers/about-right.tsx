@@ -1,17 +1,18 @@
 import { ColorInput, TextInput } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
 
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
-import { Tabs, Panel, DragTabList, PanelList, Tab, ExtraButton } from '@react-tabtab-next/tabtab'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'
@@ -37,23 +38,23 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 	const [activeTab, setActiveTab] = useState(0)
 	const [tabs, setTabs] = useState<{ title: string; content: ReactNode }[]>([])
 
-	useEffect(() => {
-		const tabsList = featureLines.map((featureLine, index) => {
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return featureLines.map((featureLine, index) => {
 			const icon = featureLine.children?.[0] as IconElement
 			const text = featureLine.children?.[1] as TextElement
 			return {
-				title: index + 1 + '',
+				id: featureLine.id,
 				content: (
 					<div key={index}>
-						<TextInput
+						<Intelinput
 							label="Title"
 							name="title"
 							size="xs"
 							value={text.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(text, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
@@ -74,50 +75,20 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 						/>
 					</div>
 				),
+				onTabDelete: () => {
+					options.set(
+						produce(featureLinesWrapper, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
 			}
 		})
-		setTabs(tabsList)
-	}, [featureLines, options])
-
-	const tabItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return (
-				<Tab closable key={index}>
-					{tab.title}
-				</Tab>
-			)
-		})
-	}, [tabs])
-
-	const panelItems = useMemo(() => {
-		return tabs.map((tab, index) => {
-			return <Panel key={index}>{tab.content}</Panel>
-		})
-	}, [tabs])
-
-	const handleOnTabSequenceChange = useCallback(
-		({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
-			console.log({ oldIndex, newIndex })
-
-			options.set(
-				produce(featureLinesWrapper, (draft) => {
-					const temp = draft.children![oldIndex]
-					draft.children![oldIndex] = draft.children![newIndex]
-					draft.children![newIndex] = temp
-				})
-			)
-			setActiveTab(newIndex)
-		},
-		[featureLinesWrapper, options]
-	)
-
-	const handleOnTabChange = useCallback((i: number) => {
-		console.log('select tab', i)
-		setActiveTab(i)
-	}, [])
+	}, [featureLines])
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="About us with details on the right" />
 			<ImageDrop
 				onChange={(src) =>
 					options.set(
@@ -128,41 +99,41 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Sub-title"
 				name="subtitle"
 				size="xs"
 				value={subTitle.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subTitle, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(ctaText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -180,39 +151,30 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<div style={{ maxWidth: '250px' }}>
-				<Tabs
-					onTabClose={(i: number) => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
 						options.set(
 							produce(featureLinesWrapper, (draft) => {
-								draft.children.splice(i, 1)
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
 							})
 						)
-					}}
-					showModalButton={false}
-					activeIndex={activeTab}
-					onTabChange={handleOnTabChange}
-					onTabSequenceChange={handleOnTabSequenceChange}
-					ExtraButton={
-						<ExtraButton
-							onClick={(e) => {
-								options.set(
-									produce(featureLinesWrapper, (draft) => {
-										draft.children.push(
-											createLine('Lorem ipsum dolor sit amet')
-										)
-									})
-								)
-							}}
-						>
-							+
-						</ExtraButton>
 					}
-				>
-					<DragTabList>{tabItems}</DragTabList>
-					<PanelList>{panelItems}</PanelList>
-				</Tabs>
-			</div>
+				}}
+				onAddNewTab={() => {
+					options.set(
+						produce(featureLinesWrapper, (draft) => {
+							draft.children.push(createLine('Lorem ipsum dolor sit amet'))
+						})
+					)
+				}}
+				tabs={tabsList}
+			/>
 		</div>
 	)
 }
@@ -293,7 +255,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = 'Simplify your business'
+	draft.data.text = inteliText('Simplify your business')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -310,8 +272,9 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '20px',
 		},
 	}
-	draft.data.text =
+	draft.data.text = inteliText(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
+	)
 }).serialize()
 
 const featureLinesWrapper = produce(new BoxElement(), (draft) => {
@@ -331,62 +294,63 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const featureLine = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			alignItems: 'center',
-			marginTop: '10px',
-			marginBottom: '10px',
-			marginLeft: '0px',
-			marginRight: '0px',
-		},
-	}
-
-	const icon = produce(new IconElement(), (draft) => {
+const createFeatureLine = () =>
+	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				flex: '0 0 auto',
-				width: '16px',
-				height: '16px',
-				marginRight: '10px',
-				color: '#6aa512',
+				display: 'flex',
+				alignItems: 'center',
+				marginTop: '10px',
+				marginBottom: '10px',
+				marginLeft: '0px',
+				marginRight: '0px',
 			},
 		}
-		draft.style.tablet = {
-			default: {
-				width: '12px',
-				height: '12px',
-				marginRight: '8px',
-			},
-		}
-		draft.style.mobile = {
-			default: {
-				width: '8px',
-				height: '8px',
-				marginRight: '4px',
-			},
-		}
-		draft.data.name = 'check'
-		draft.data.type = 'fas'
-	})
 
-	const text = produce(new TextElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				marginLeft: '8px',
-				color: '#717171',
-			},
-		}
-		draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-	})
+		const icon = produce(new IconElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					flex: '0 0 auto',
+					width: '16px',
+					height: '16px',
+					marginRight: '10px',
+					color: '#6aa512',
+				},
+			}
+			draft.style.tablet = {
+				default: {
+					width: '12px',
+					height: '12px',
+					marginRight: '8px',
+				},
+			}
+			draft.style.mobile = {
+				default: {
+					width: '8px',
+					height: '8px',
+					marginRight: '4px',
+				},
+			}
+			draft.data.name = 'check'
+			draft.data.type = 'fas'
+		})
 
-	draft.children = [icon, text]
-})
+		const text = produce(new TextElement(), (draft) => {
+			draft.style.desktop = {
+				default: {
+					marginLeft: '8px',
+					color: '#717171',
+				},
+			}
+			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+		})
+
+		draft.children = [icon, text]
+	})
 
 const createLine = (text: string) => {
-	return produce(featureLine, (draft) => {
-		;(draft.children[1]! as TextElement).data.text = text
+	return produce(createFeatureLine(), (draft) => {
+		;(draft.children[1]! as TextElement).data.text = inteliText(text)
 	})
 }
 
@@ -427,7 +391,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = 'Get Started'
+	element.data.text = inteliText('Get Started')
 
 	draft.data.href = '#'
 	draft.data.openInNewTab = false

@@ -10,11 +10,14 @@ import { useAddDataSource } from '../data-bindings/data-source-form'
 import { HttpMethod } from '../data-bindings/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { ColumnsElement } from '../elements/extensions/columns'
+import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
+import { ComponentName } from './helpers'
 
 export class CardList extends Controller {
 	name = 'Card List'
@@ -34,7 +37,7 @@ function CardListOptions({ controller }: { controller: CardList }) {
 	const nameElement = columnsElement.children?.[0].children?.[1] as TextElement
 	const set = useElementsStore((store) => store.set)
 	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
-	const dataSourceName = `card_list_${selectedTable}`
+	const dataSourceName = `${selectedTable}s`
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
 	const projectTag = useAtomValue(projectTagAtom)
 	const columnsQuery = useColumnsQuery({
@@ -53,10 +56,11 @@ function CardListOptions({ controller }: { controller: CardList }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last(titleElement.bindings.text?.fromStateName.split('.')) ?? ''
-	const nameFrom = _.last(nameElement.bindings.text?.fromStateName.split('.')) ?? ''
+	const titleFrom = _.last(titleElement.data.text[0].data.split('.')) ?? ''
+	const nameFrom = _.last(nameElement.data.text[0].data.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Card List" />
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}
@@ -107,21 +111,16 @@ function createCard({
 	titleFrom: string
 	nameFrom: string
 }) {
-	return produce(regenElement(deserializeElement(card)), (draft) => {
+	return produce(regenElement(deserializeElement(card)) as LinkElement, (draft) => {
 		draft.repeatFrom = {
 			name: `$store.${dataSourceName}.rows`,
 			iterator: `${dataSourceName}.rowsItem`,
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
 		const name = draft.children?.[1] as TextElement
-		title.data.text = titleFrom
-		name.data.text = nameFrom
-		title.bindings.text = {
-			fromStateName: `${dataSourceName}.rowsItem.${titleFrom}`,
-		}
-		name.bindings.text = {
-			fromStateName: `${dataSourceName}.rowsItem.${nameFrom}`,
-		}
+		title.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${titleFrom}`)
+		name.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${nameFrom}`)
+		draft.data.href = `/details?id=$store.page.${dataSourceName}.rowsItem.id`
 	})
 }
 
@@ -695,8 +694,10 @@ const card = {
 				default: { width: '260px', 'min-height': '150px' },
 			},
 		},
+		href: '',
+		openInNewTab: false,
 	},
-	kind: 'Box',
+	kind: 'Link',
 	events: [],
 	bindings: {},
 	classNames: [],

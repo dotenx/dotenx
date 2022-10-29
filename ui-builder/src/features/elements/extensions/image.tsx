@@ -30,7 +30,13 @@ export class ImageElement extends Element {
 			)
 		}
 
-		return <img src={this.data.src} alt={this.data.alt} style={{ opacity: 0 }} />
+		return (
+			<img
+				src={this.data.src}
+				alt={this.data.alt}
+				style={{ opacity: 0, position: 'relative', zIndex: -10 }}
+			/>
+		)
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

@@ -23,7 +23,7 @@ import {
 	InputOrSelectValue,
 	InputValue,
 	NewSelect,
-	SlidingPane
+	SlidingPane,
 } from '../features/ui'
 import { getTaskBuilderFunctions, InternalQueryKey } from './internal-api'
 import { StepsSummary } from './steps-summary'

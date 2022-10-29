@@ -1,6 +1,6 @@
 import { Button, TextInput } from '@mantine/core'
 import _ from 'lodash'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import {
@@ -30,31 +30,64 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 		() => getInteractionEndpointFields({ interactionName, projectName }),
 		{ enabled: !!interactionName }
 	)
-	const onSubmit = form.handleSubmit((values) => {
-		Object.keys(values).forEach(function (key) {
-			const newObj = values[key as keyof typeof values]
-			Object.keys(newObj).forEach(function (key) {
-				if (newObj[key as keyof typeof newObj] === undefined) {
-					switch (key) {
-						case 'column_values':
-							newObj[key as keyof typeof newObj] = {}
-							break
-						case 'text':
-							newObj[key as keyof typeof newObj] = ''
-							break
-						default:
-							break
-					}
-				} else newObj[key as keyof typeof newObj] = newObj[key as keyof typeof newObj].data
-			})
-		})
 
-		mutation.mutate({ interactionRunTime: values })
-	})
 	if (query.isLoading) return <Loader />
 	const fields = _.toPairs(query.data?.data).flatMap(([taskName, fields]) =>
 		fields.map((field) => ({ name: `${taskName}.${field.key}`, value: field }))
 	)
+	const onSubmit = form.handleSubmit((values) => {
+		const types = query.data?.data || {}
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		function compactObject(data: any) {
+			if (typeof data !== 'object') {
+				return data as any
+			}
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			return Object.keys(data).reduce(function (accumulator, key) {
+				const isObject = typeof data[key] === ('object' as string)
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				const value = isObject ? compactObject(data[key]) : data[key]
+				const isEmptyObject = isObject && !Object.keys(value).length
+				if (value === undefined || isEmptyObject || '') {
+					return accumulator
+				}
+				return Object.assign(accumulator, { [key]: value })
+			}, {})
+		}
+
+		const toSendWithoutUndefined = compactObject(values)
+
+		const defaults = {} as any
+
+		Object.keys(types).map((key) => {
+			defaults[key] = types[key].reduce((acc, { key, type }) => {
+				if (type === 'text') {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					acc[key] = ''
+				} else if (type === 'object') {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					acc[key] = {}
+				}
+				return acc
+			}, {})
+		})
+
+		const merged = Object.keys(defaults).reduce((acc, key) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			acc[key] = { ...defaults[key], ...toSendWithoutUndefined[key] }
+
+			return acc
+		}, {})
+
+		mutation.mutate({ interactionRunTime: merged })
+	})
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
@@ -81,7 +114,13 @@ const getFieldComponentRun = (props: any) => {
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					<ComplexField {...props} valueKinds={['input-or-select']} />
+					<Controller
+						control={props.control}
+						name={props.name}
+						render={({ field: { onChange, value } }) => (
+							<TextInput value={value ?? ''} {...props} onChange={onChange} />
+						)}
+					/>
 				</div>
 			)
 		case FieldType.Object:
