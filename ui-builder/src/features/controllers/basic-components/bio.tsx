@@ -4,6 +4,7 @@ import { WritableDraft } from 'immer/dist/internal'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
+import { Intelinput, inteliText } from '../../ui/intelinput'
 import ProfessionalSocials from './professional-socials'
 
 const createLayout = (name: string, description: string, align: 'left' | 'center') =>
@@ -35,7 +36,7 @@ const createLayout = (name: string, description: string, align: 'left' | 'center
 					marginTop: '10px',
 				},
 			}
-			draft.data.text = name
+			draft.data.text = inteliText(name)
 		})
 
 		const descriptionText = produce(new TextElement(), (draft) => {
@@ -46,7 +47,7 @@ const createLayout = (name: string, description: string, align: 'left' | 'center
 					marginBottom: '20px',
 				},
 			}
-			draft.data.text = description
+			draft.data.text = inteliText(description)
 		})
 
 		const socialsWrapper = produce(new BoxElement(), (draft) => {
@@ -72,28 +73,28 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 	const socialsRoot = root.children[2] as BoxElement
 	return (
 		<>
-			<TextInput
-				placeholder="Name"
+			<Intelinput
+				label="Name"
 				name="name"
 				size="xs"
 				value={nameText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(nameText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
-				placeholder="Description"
+			<Intelinput
+				label="Description"
 				name="description"
 				size="xs"
 				value={descriptionText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(descriptionText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}

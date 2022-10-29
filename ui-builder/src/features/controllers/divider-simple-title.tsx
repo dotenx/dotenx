@@ -5,6 +5,7 @@ import imageUrl from '../../assets/components/divider-simple-title.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
+import { Intelinput, inteliText } from '../ui/intelinput'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 
@@ -28,28 +29,28 @@ function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
 		<div className="space-y-6">
 			<ComponentName name="Divider simple title" />
 			<Divider title="Text" />
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={titleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(titleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Subtitle"
 				name="title"
 				size="xs"
 				value={subtitleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subtitleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -89,7 +90,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = 'Trusted by the world’s best'
+	draft.data.text = inteliText('Trusted by the world’s best')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -100,7 +101,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = 'We’re proud to work with the world’s best brands'
+	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
 }).serialize()
 
 const defaultData = {

@@ -6,6 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
+import { Intelinput } from '../ui/intelinput'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 
@@ -22,30 +23,30 @@ export class Hero extends Controller {
 		return (
 			<div className="space-y-6">
 				<ComponentName name="Hero" />
-				<TextInput
+				<Intelinput
 					label="Title"
 					name="title"
 					size="xs"
 					value={titleComponent.data.text}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(titleComponent, (draft) => {
-								draft.data.text = event.target.value
+								draft.data.text = value
 							})
 						)
 					}
 				/>
-				<Textarea
+				<Intelinput
 					label="Description"
 					name="description"
 					size="xs"
 					autosize
 					maxRows={10}
 					value={descriptionComponent.data.text}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(descriptionComponent, (draft) => {
-								draft.data.text = event.target.value
+								draft.data.text = value
 							})
 						)
 					}

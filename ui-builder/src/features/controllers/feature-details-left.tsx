@@ -11,6 +11,7 @@ import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class FeatureDetailsLeft extends Controller {
 	name = 'Features with details on the left'
@@ -38,28 +39,28 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 				id: featureRow.id,
 				content: (
 					<div key={index}>
-						<TextInput
+						<Intelinput
 							label="Title"
 							name="title"
 							size="xs"
 							value={title.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(title, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
 						/>
-						<TextInput
+						<Intelinput
 							label="Details"
 							name="details"
 							size="xs"
 							value={details.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(details, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
@@ -240,7 +241,7 @@ const createFeatureRow = () =>
 					color: 'rgb(17, 24, 39)',
 				},
 			}
-			draft.data.text = 'title'
+			draft.data.text = inteliText('title')
 		})
 		const details = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
@@ -250,7 +251,7 @@ const createFeatureRow = () =>
 					fontWeight: '400',
 				},
 			}
-			draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 		})
 
 		draft.children = [title, details]
@@ -258,8 +259,8 @@ const createFeatureRow = () =>
 
 const createRow = (title: string, details: string) => {
 	return produce(createFeatureRow(), (draft) => {
-		;(draft.children[0]! as TextElement).data.text = title
-		;(draft.children[1]! as TextElement).data.text = details
+		;(draft.children[0]! as TextElement).data.text = inteliText(title)
+		;(draft.children[1]! as TextElement).data.text = inteliText(details)
 	})
 }
 

@@ -6,6 +6,7 @@ import { ELEMENTS } from '../features/elements'
 import { ACTIONS } from '../features/elements/actions'
 import { Action } from '../features/elements/actions/action'
 import { Element } from '../features/elements/element'
+import { inteliText } from '../features/ui/intelinput'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
@@ -26,6 +27,14 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data
+	if (serialized?.data?.text)
+		_.set(
+			element,
+			'data.text',
+			_.isString(serialized.data.text)
+				? inteliText(serialized.data.text)
+				: serialized.data.text
+		)
 	return element
 }
 

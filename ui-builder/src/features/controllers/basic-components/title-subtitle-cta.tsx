@@ -4,6 +4,7 @@ import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
+import { Intelinput, inteliText } from '../../ui/intelinput'
 
 const layout = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -18,7 +19,7 @@ const layout = produce(new BoxElement(), (draft) => {
 	}
 
 	const title = produce(new TextElement(), (draft) => {
-		draft.data.text = 'Invest in best ideas'
+		draft.data.text = inteliText('Invest in best ideas')
 		draft.style.desktop = {
 			default: {
 				fontSize: '48px',
@@ -28,8 +29,9 @@ const layout = produce(new BoxElement(), (draft) => {
 	})
 
 	const subTitle = produce(new TextElement(), (draft) => {
-		draft.data.text =
+		draft.data.text = inteliText(
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor, nisl eget luctus lacinia, nunc nisl aliquam nunc, eget aliquam nunc nisl eget nunc.'
+		)
 		draft.style.desktop = {
 			default: {
 				fontSize: '28px',
@@ -51,7 +53,7 @@ const layout = produce(new BoxElement(), (draft) => {
 		}
 
 		const text = produce(new TextElement(), (draft) => {
-			draft.data.text = 'Click here'
+			draft.data.text = inteliText('Click here')
 		})
 		draft.children = [text]
 		draft.data.href = '#'
@@ -74,30 +76,30 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 
 	return (
 		<>
-			<TextInput
+			<Intelinput
 				label="Title"
 				placeholder="Title"
 				name="title"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Subtitle"
 				placeholder="Subtitle"
 				name="subtitle"
 				size="xs"
 				value={subtitle.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(subtitle, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -116,16 +118,16 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA Text"
 				placeholder="CTA text"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(ctaText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}

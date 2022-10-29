@@ -11,6 +11,7 @@ import { ComponentName, Divider, repeatObject, SimpleComponentOptionsProps } fro
 import { Element } from '../elements/element'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class ComparisonTableSimple extends Controller {
 	name = 'Simple comparison table'
@@ -187,17 +188,15 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 				/>
 			</div>
 
-			<TextInput
+			<Intelinput
 				label="Cell content"
 				placeholder="Cell content"
-				min={1}
-				max={gridDiv.children?.length}
-				onChange={(event) => {
+				onChange={(value) => {
 					options.set(
 						produce(
 							gridDiv.children?.[selectedTile]?.children?.[0] as TextElement,
 							(draft) => {
-								draft.data.text = event.target.value
+								draft.data.text = value
 							}
 						)
 					)
@@ -249,7 +248,7 @@ const newElement = (element: BoxElement): BoxElement =>
 		}
 
 		const text = produce(new TextElement(), (draft) => {
-			draft.data.text = 'Feature'
+			draft.data.text = inteliText('Feature')
 		})
 		draft.children = [text]
 	})
@@ -266,12 +265,12 @@ const title = produce(newElement(new BoxElement()), (draft) => {
 
 const createTitle = (text: string) =>
 	produce(title, (draft) => {
-		;(draft.children[0] as TextElement).data.text = text
+		;(draft.children[0] as TextElement).data.text = inteliText(text)
 	})
 
 const createElement = (text: string) =>
 	produce(newElement(new BoxElement()), (draft) => {
-		;(draft.children[0] as TextElement).data.text = text
+		;(draft.children[0] as TextElement).data.text = inteliText(text)
 	})
 
 const titleRow = [

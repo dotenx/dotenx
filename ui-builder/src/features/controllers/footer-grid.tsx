@@ -21,6 +21,7 @@ import { TbPlus, TbX } from 'react-icons/tb'
 import { SortableItem, VerticalSortable } from './vertical-sortable'
 import { DragEndEvent } from '@dnd-kit/core'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class FooterGrid extends Controller {
 	name = 'Footer grid'
@@ -109,15 +110,15 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 				<span className="whitespace-nowrap mr-1">Secondary footer</span>{' '}
 				<hr className=" w-full" />
 			</div>
-			<TextInput
+			<Intelinput
 				label="text"
 				name="text"
 				size="xs"
 				value={secondFooterTextComponent.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(secondFooterTextComponent, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -236,20 +237,19 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				}
 				src={logo.data.src}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				placeholder="Text"
 				name="text"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
-				className="mb-2"
 			/>
 			<LogoColumnLines column={column as BoxElement} options={options} />
 			<Button
@@ -281,21 +281,20 @@ function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 				id: column.id,
 				content: (
 					<div className="flex flex-col justify-stretch">
-						<TextInput
+						<Intelinput
 							key={index}
 							label="Title"
 							placeholder="Text"
 							name="text"
 							size="xs"
 							value={title.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(title, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
-							className="mb-2"
 						/>
 						<ColumnLines column={column as BoxElement} options={options} />
 						<Button
@@ -425,15 +424,15 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 									</span>
 								</div>
 
-								<TextInput
-									placeholder="Text"
+								<Intelinput
+									label="Text"
 									name="text"
 									size="xs"
 									value={label.data.text}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(label, (draft) => {
-												draft.data.text = event.target.value
+												draft.data.text = value
 											})
 										)
 									}
@@ -518,15 +517,15 @@ function LogoColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 									</span>
 								</div>
 
-								<TextInput
-									placeholder="Text"
+								<Intelinput
+									label="Text"
 									name="text"
 									size="xs"
 									value={item.data.text}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(item, (draft) => {
-												draft.data.text = event.target.value
+												draft.data.text = value
 											})
 										)
 									}
@@ -622,7 +621,7 @@ const logoText = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = 'Company name'
+	draft.data.text = inteliText('Company name')
 }).serialize()
 
 const createLeftTextLine = (text: string) =>
@@ -630,7 +629,7 @@ const createLeftTextLine = (text: string) =>
 		draft.style.desktop = {
 			default: {},
 		}
-		draft.data.text = text
+		draft.data.text = inteliText(text)
 	})
 
 const leftTextLines = [
@@ -671,7 +670,7 @@ const createColumnTitle = (text: string) =>
 				fontWeight: 'bold',
 			},
 		}
-		draft.data.text = text
+		draft.data.text = inteliText(text)
 	})
 
 const createColumnLine = (text: string, href: string) =>
@@ -681,7 +680,7 @@ const createColumnLine = (text: string, href: string) =>
 		}
 
 		const element = produce(new TextElement(), (draft) => {
-			draft.data.text = text
+			draft.data.text = inteliText(text)
 		})
 
 		draft.data.href = href
@@ -713,7 +712,7 @@ const secondaryFooterLeft = produce(new TextElement(), (draft) => {
 			fontSize: 'small',
 		},
 	}
-	draft.data.text = '©2030 Company name. All rights reserved.'
+	draft.data.text = inteliText('©2030 Company name. All rights reserved.')
 }).serialize()
 
 const socials = produce(new BoxElement(), (draft) => {

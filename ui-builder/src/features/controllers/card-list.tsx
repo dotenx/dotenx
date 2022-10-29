@@ -14,6 +14,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
@@ -55,8 +56,8 @@ function CardListOptions({ controller }: { controller: CardList }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last(titleElement.data.text.split('.')) ?? ''
-	const nameFrom = _.last(nameElement.data.text.split('.')) ?? ''
+	const titleFrom = _.last(titleElement.data.text[0].data.split('.')) ?? ''
+	const nameFrom = _.last(nameElement.data.text[0].data.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Card List" />
@@ -117,10 +118,8 @@ function createCard({
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
 		const name = draft.children?.[1] as TextElement
-		title.data.text = titleFrom
-		name.data.text = nameFrom
-		title.data.text = `$store.page.${dataSourceName}.rowsItem.${titleFrom}`
-		name.data.text = `$store.page.${dataSourceName}.rowsItem.${nameFrom}`
+		title.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${titleFrom}`)
+		name.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${nameFrom}`)
 		draft.data.href = `/details?id=$store.page.${dataSourceName}.rowsItem.id`
 	})
 }

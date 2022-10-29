@@ -11,6 +11,7 @@ import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
 import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class FeatureGridImages extends Controller {
 	name = 'Feature Grid with images'
@@ -187,28 +188,28 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 					/>
 				</>
 			)}
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={titleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(titleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Subtitle"
 				name="title"
 				size="xs"
 				value={subtitleText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subtitleText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -246,30 +247,30 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 				}}
 				value={selectedTile + ''}
 			/>
-			<TextInput
+			<Intelinput
 				label="Feature title"
 				name="title"
 				size="xs"
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<Textarea
+			<Intelinput
 				label="Feature description"
 				name="description"
 				size="xs"
 				autosize
 				maxRows={10}
 				value={(getSelectedTileDiv().children?.[2] as TextElement).data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -346,7 +347,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = 'Features'
+	draft.data.text = inteliText('Features')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -356,7 +357,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = 'With our platform you can do this and that'
+	draft.data.text = inteliText('With our platform you can do this and that')
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
@@ -366,7 +367,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '18px',
 		},
 	}
-	draft.data.text = 'Feature'
+	draft.data.text = inteliText('Feature')
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
@@ -375,7 +376,7 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			fontSize: '14px',
 		},
 	}
-	draft.data.text = 'Feature description goes here'
+	draft.data.text = inteliText('Feature description goes here')
 })
 
 const tileImage = produce(new ImageElement(), (draft) => {
@@ -419,8 +420,8 @@ function createTile({
 	return produce(tile, (draft) => {
 		const iconElement = draft.children?.[0] as ImageElement
 		iconElement.data.src = src
-		;(draft.children?.[1] as TextElement).data.text = title
-		;(draft.children?.[2] as TextElement).data.text = description
+		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
+		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
 	})
 }
 const tiles = [

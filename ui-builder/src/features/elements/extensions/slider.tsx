@@ -42,7 +42,6 @@ export class SliderElement extends Element {
 	}
 
 	data = {
-		text: '',
 		selected: 0,
 		move: { from: '', position: 'before', to: '' },
 		slides: colors.slice(0, 3),

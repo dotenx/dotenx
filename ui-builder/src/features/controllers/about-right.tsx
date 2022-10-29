@@ -12,6 +12,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'
@@ -45,15 +46,15 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 				id: featureLine.id,
 				content: (
 					<div key={index}>
-						<TextInput
+						<Intelinput
 							label="Title"
 							name="title"
 							size="xs"
 							value={text.data.text}
-							onChange={(event) =>
+							onChange={(value) =>
 								options.set(
 									produce(text, (draft) => {
-										draft.data.text = event.target.value
+										draft.data.text = value
 									})
 								)
 							}
@@ -98,41 +99,41 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Sub-title"
 				name="subtitle"
 				size="xs"
 				value={subTitle.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subTitle, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(ctaText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -254,7 +255,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = 'Simplify your business'
+	draft.data.text = inteliText('Simplify your business')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -271,8 +272,9 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '20px',
 		},
 	}
-	draft.data.text =
+	draft.data.text = inteliText(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
+	)
 }).serialize()
 
 const featureLinesWrapper = produce(new BoxElement(), (draft) => {
@@ -340,7 +342,7 @@ const createFeatureLine = () =>
 					color: '#717171',
 				},
 			}
-			draft.data.text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 		})
 
 		draft.children = [icon, text]
@@ -348,7 +350,7 @@ const createFeatureLine = () =>
 
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
-		;(draft.children[1]! as TextElement).data.text = text
+		;(draft.children[1]! as TextElement).data.text = inteliText(text)
 	})
 }
 
@@ -389,7 +391,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = 'Get Started'
+	element.data.text = inteliText('Get Started')
 
 	draft.data.href = '#'
 	draft.data.openInNewTab = false

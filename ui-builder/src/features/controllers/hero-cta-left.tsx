@@ -10,6 +10,7 @@ import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
+import { Intelinput, inteliText } from '../ui/intelinput'
 
 export class HeroCtaLeft extends Controller {
 	name = 'Hero with CTA on the left'
@@ -43,41 +44,41 @@ function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<TextInput
+			<Intelinput
 				label="Title"
 				name="title"
 				size="xs"
 				value={title.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(title, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="Sub-title"
 				name="subtitle"
 				size="xs"
 				value={subTitle.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(subTitle, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(ctaText, (draft) => {
-							draft.data.text = event.target.value
+							draft.data.text = value
 						})
 					)
 				}
@@ -173,7 +174,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = 'Simplify your business'
+	draft.data.text = inteliText('Simplify your business')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -190,8 +191,9 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '20px',
 		},
 	}
-	draft.data.text =
+	draft.data.text = inteliText(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
+	)
 }).serialize()
 
 const cta = produce(new LinkElement(), (draft) => {
@@ -225,7 +227,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = 'Get Started'
+	element.data.text = inteliText('Get Started')
 
 	draft.data.href = '#'
 	draft.data.openInNewTab = false
