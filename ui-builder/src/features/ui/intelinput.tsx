@@ -63,7 +63,7 @@ export function Intelinput({
 	value,
 	onChange,
 }: {
-	label: string
+	label?: string
 	options?: string[]
 	value: IntelinputValue[]
 	onChange: (value: IntelinputValue[]) => void
@@ -82,7 +82,7 @@ export function Intelinput({
 			tabIndex={0}
 			onFocus={() => lastInputRef.current?.focus()}
 		>
-			<label className="font-medium">{label}</label>
+			{label && <label className="font-medium">{label}</label>}
 			<div
 				className="relative border border-gray-300 min-w-0 w-full rounded px-2.5 py-1  
                 focus-within:border-rose-500 group font-mono"
@@ -272,4 +272,8 @@ export function serializeInteliState(data: InteliStateValue): InteliStateValue |
 			.replace('$store.url.', '')
 			.replace('$store.response.', ''),
 	}
+}
+
+export function inteliToString(value: IntelinputValue[]) {
+	return value.map((part) => part.data).join('')
 }

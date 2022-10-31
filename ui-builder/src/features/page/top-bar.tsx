@@ -22,6 +22,7 @@ import { usePageStates } from '../data-bindings/page-states'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
 import { useClassesStore } from '../style/classes-store'
+import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
 import { globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
@@ -87,7 +88,7 @@ const useFetchPage = () => {
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
-							url: evaluateState(source.url),
+							url: inteliToString(evaluateState(source.url)),
 							method: source.method,
 							data: source.body,
 						})

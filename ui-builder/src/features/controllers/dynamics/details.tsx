@@ -13,7 +13,7 @@ import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
 import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { inteliState } from '../../ui/intelinput'
+import { IntelinputValueKind, inteliState, inteliText } from '../../ui/intelinput'
 import { Controller } from '../controller'
 import { useColumnsQuery, TableSelect } from '../create-form'
 import { ComponentName } from '../helpers'
@@ -48,7 +48,13 @@ function DetailsOptions({ controller }: { controller: Details }) {
 				headers: '',
 				method: HttpMethod.Get,
 				stateName: dataSourceName,
-				url: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/ $store.url.id`,
+				url: [
+					{
+						kind: IntelinputValueKind.Text,
+						data: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
+					},
+					{ kind: IntelinputValueKind.State, data: '$store.url.id' },
+				],
 				isPrivate: true,
 			})
 			controller.data.tableName = selectedTable

@@ -1,16 +1,25 @@
 import { ActionIcon, Button, CloseButton, Code, Divider, Menu, Select, Text } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import produce from 'immer'
-import _ from 'lodash'
+import _, { bind } from 'lodash'
+import { useState } from 'react'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
 import { ACTIONS } from '../elements/actions'
 import { Action } from '../elements/actions/action'
-import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
+import {
+	Binding,
+	BindingKind,
+	bindingKinds,
+	Condition,
+	CONDITIONS,
+	Element,
+	RepeatFrom,
+} from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { InteliStateValue } from '../ui/intelinput'
+import { Intelinput, InteliStateValue, inteliToString } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
 import { useGetStates } from './use-get-states'
@@ -249,7 +258,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 					from
 				</Text>
 				<Code className="overflow-x-auto grow no-scrollbar max-w-[237px]">
-					{dataSource.url}
+					{inteliToString(dataSource.url)}
 				</Code>
 			</div>
 		</div>
@@ -382,19 +391,18 @@ function BindingInput({
 	kind: BindingKind
 	removeBinding: () => void
 }) {
+	const states = useGetStates()
+
 	return (
 		<div className="space-y-2">
 			<CloseButton size="xs" ml="auto" onClick={removeBinding} />
 			<div className="flex items-center gap-2">
-				<Text color="dimmed" size="xs" className="w-8">
-					Get
-				</Text>
-				<Code className="grow">{kind}</Code>
-			</div>
-			<div className="flex items-center gap-2">
-				<Text color="dimmed" size="xs" className="w-8">
-					from
-				</Text>
+				<div className="flex items-center w-12 gap-1">
+					<Code>{kind}</Code>
+					<Text color="dimmed" size="xs">
+						if
+					</Text>
+				</div>
 				<Select
 					size="xs"
 					data={stateNames.map((name) => ({
@@ -405,6 +413,25 @@ function BindingInput({
 					value={binding.fromStateName}
 					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
 				/>
+			</div>
+			<Select
+				size="xs"
+				data={CONDITIONS}
+				className="grow"
+				value={binding.condition}
+				onChange={(value) => onChange({ ...binding, condition: value as Condition })}
+			/>
+			<div className="flex items-center gap-2">
+				<Text color="dimmed" size="xs" className="w-12">
+					value
+				</Text>
+				<div className="grow">
+					<Intelinput
+						options={states.map((s) => s.name)}
+						onChange={(value) => onChange({ ...binding, value })}
+						value={binding.value ?? []}
+					/>
+				</div>
 			</div>
 		</div>
 	)

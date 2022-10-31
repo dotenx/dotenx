@@ -30,6 +30,7 @@ export class NavbarElement extends Element {
 			produce(new BoxElement(), (draft) => {
 				_.set(draft, 'style.desktop.default.width', '100px')
 				_.set(draft, 'style.desktop.default.height', '100px')
+				_.set(draft, 'style.desktop.default.minHeight', 'auto')
 			}),
 			navMenu,
 			produce(new MenuButtonElement(), (draft) => {

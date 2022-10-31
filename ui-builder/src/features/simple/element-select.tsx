@@ -12,6 +12,7 @@ import { SetStateAction } from '../elements/actions/set-state'
 import { useElementsStore } from '../elements/elements-store'
 import { FormElement } from '../elements/extensions/form'
 import { projectTagAtom } from '../page/top-bar'
+import { inteliText } from '../ui/intelinput'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleElementSelect() {
@@ -50,7 +51,9 @@ export function SimpleElementSelect() {
 									const newElement = controller.transform()
 									if (controller instanceof SignUpBasic) {
 										const id = uuid()
-										const url = `https://api.dotenx.com/user/management/project/${projectTag}/register`
+										const url = inteliText(
+											`https://api.dotenx.com/user/management/project/${projectTag}/register`
+										)
 										const dataSourceName = `${controller.name}_${id}`
 										const navigateAction = new NavigateAction()
 										navigateAction.to = '/login'
@@ -71,7 +74,9 @@ export function SimpleElementSelect() {
 									}
 									if (controller instanceof SignInBasic) {
 										const id = uuid()
-										const url = `https://api.dotenx.com/user/management/project/${projectTag}/login`
+										const url = inteliText(
+											`https://api.dotenx.com/user/management/project/${projectTag}/login`
+										)
 										const dataSourceName = `${controller.name}_${id}`
 										const navigateAction = new NavigateAction()
 										navigateAction.to = '/login'

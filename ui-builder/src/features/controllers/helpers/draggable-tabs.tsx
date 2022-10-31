@@ -48,7 +48,6 @@ export function DraggableTabs({
 					<DndContext
 						sensors={sensors}
 						collisionDetection={closestCenter}
-						onDragStart={(e) => console.log('start')}
 						onDragEnd={onDragEnd}
 					>
 						<SortableContext
@@ -99,7 +98,9 @@ export function DraggableTabs({
 								<TbTrash
 									size={16}
 									className={
-										minLength && tabs.length === minLength ? 'text-gray' : 'text-red-500'
+										minLength && tabs.length === minLength
+											? 'text-gray'
+											: 'text-red-500'
 									}
 								/>
 							</ActionIcon>
