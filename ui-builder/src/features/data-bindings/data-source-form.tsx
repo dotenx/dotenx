@@ -58,7 +58,9 @@ export function DataSourceForm({
 		isPrivate: false,
 	},
 	onSuccess,
+	withoutFetch
 }: {
+	withoutFetch?: boolean
 	mode: DataSourceFormMode
 	initialValues?: DataSource
 	onSuccess?: (values: Schema) => void
@@ -66,7 +68,7 @@ export function DataSourceForm({
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const isSimple = mode === 'simple-add' || mode === 'simple-edit'
 	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
-	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess })
+	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess, withoutFetch })
 	const handleSubmit = form.onSubmit(addDataSource)
 	const states = useGetStates()
 
@@ -252,11 +254,13 @@ export const useAddDataSource = ({
 	},
 	onSuccess,
 	onSubmit,
+	withoutFetch
 }: {
 	mode: DataSourceFormMode
 	initialValues?: DataSource
 	onSuccess?: (values: Schema) => void
 	onSubmit?: (values: AnyJson) => void
+	withoutFetch?: boolean
 }) => {
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const setPageState = usePageStates((store) => store.setState)
@@ -269,6 +273,27 @@ export const useAddDataSource = ({
 			axios.request<AnyJson>({ url, method, data: body })
 	)
 	const addDataSource = (values: Schema) => {
+
+
+		// This section is particularly used for handling form add request. In this case, we don't want to send an actual request to the server
+		if (withoutFetch) {
+			const response = [] as AnyJson // Based on the current logic we have to at least return an empty array so the state can be used in other places
+			const properties = findPropertyPaths(response)
+			if (isAddMode) {
+				addSource({
+					...values,
+					id: uuid(),
+					properties
+				})
+				setPageState(values.stateName, response)
+			} else {
+				editSource(initialValues.id, { ...values, properties })
+			}
+			onSuccess?.(values)
+			closeAllModals()
+			return
+		}
+
 		const evaluatedUrl = evaluateState(values.url)
 		mutation.mutate(
 			{ url: evaluatedUrl, body: values.body, method: values.method },
