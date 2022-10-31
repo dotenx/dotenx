@@ -91,6 +91,7 @@ function FormOptions({ element }: { element: FormElement }) {
 							title: 'Add Request',
 							children: (
 								<DataSourceForm
+									withoutFetch={true}
 									mode="simple-add"
 									initialValues={dataSource}
 									onSuccess={(values) =>
