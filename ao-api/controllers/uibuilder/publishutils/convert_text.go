@@ -7,6 +7,10 @@ import (
 	"text/template"
 )
 
+type TextSource struct {
+	Kind string `json:"kind"`
+	Data string `json:"data"`
+}
 type Text struct {
 	Kind       string        `json:"type"`
 	Id         string        `json:"id"`
@@ -23,15 +27,29 @@ type Text struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
-		Text string `json:"text"`
+		Text []TextSource `json:"text"`
 	} `json:"data"`
+}
+
+func renderTextSource(textSource TextSource) string {
+	if textSource.Kind == "text" {
+		return textSource.Data
+	} else {
+		return fmt.Sprintf(`${%s}`, textSource.Data)
+	}
 }
 
 // TODO: id in templates rendered with RepeatFrom won't work! Do something about it
 
-const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html="{{.Data.Text}}"></div>{{if .RepeatFrom.Name}}</template>{{end}}`
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html="` + "`" + "{{range .Data.Text}}{{renderTextSource .}} {{end}}" + "`" + `"></div>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+
+	funcMap := template.FuncMap{
+		// The name "title" is what the function will be called in the template text.
+		"renderTextSource": renderTextSource,
+	}
+
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -40,7 +58,7 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 	var text Text
 	json.Unmarshal(b, &text)
 	// fmt.Printf("%#v\n", text)
-	tmpl, err := template.New("text").Parse(textTemplate)
+	tmpl, err := template.New("text").Funcs(funcMap).Parse(textTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
