@@ -18,7 +18,15 @@ import { TbPlus } from 'react-icons/tb'
 import { z } from 'zod'
 import { AnyJson, uuid } from '../../utils'
 import { ACTIONS } from '../elements/actions'
-import { IntelinputText } from '../ui/intelinput'
+import {
+	Intelinput,
+	intelinputSchema,
+	IntelinputText,
+	IntelinputValue,
+	IntelinputValueKind,
+	inteliText,
+	inteliToString,
+} from '../ui/intelinput'
 import {
 	DataSource,
 	findPropertyPaths,
@@ -31,7 +39,7 @@ import { useGetStates } from './use-get-states'
 
 const schema = z.object({
 	stateName: z.string().min(1),
-	url: z.string().url(),
+	url: intelinputSchema,
 	method: z.nativeEnum(HttpMethod),
 	headers: z.string(),
 	body: z.string(),
@@ -48,7 +56,7 @@ export function DataSourceForm({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: '',
+		url: [],
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -58,7 +66,7 @@ export function DataSourceForm({
 		isPrivate: false,
 	},
 	onSuccess,
-	withoutFetch
+	withoutFetch,
 }: {
 	withoutFetch?: boolean
 	mode: DataSourceFormMode
@@ -68,7 +76,12 @@ export function DataSourceForm({
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const isSimple = mode === 'simple-add' || mode === 'simple-edit'
 	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
-	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess, withoutFetch })
+	const { addDataSource, mutation } = useAddDataSource({
+		mode,
+		initialValues,
+		onSuccess,
+		withoutFetch,
+	})
 	const handleSubmit = form.onSubmit(addDataSource)
 	const states = useGetStates()
 
@@ -81,7 +94,7 @@ export function DataSourceForm({
 				name="stateName"
 				{...form.getInputProps('stateName')}
 			/>
-			<IntelinputText
+			<Intelinput
 				label="URL"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('url')}
@@ -244,7 +257,7 @@ export const useAddDataSource = ({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: '',
+		url: [],
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -254,7 +267,7 @@ export const useAddDataSource = ({
 	},
 	onSuccess,
 	onSubmit,
-	withoutFetch
+	withoutFetch,
 }: {
 	mode: DataSourceFormMode
 	initialValues?: DataSource
@@ -273,8 +286,6 @@ export const useAddDataSource = ({
 			axios.request<AnyJson>({ url, method, data: body })
 	)
 	const addDataSource = (values: Schema) => {
-
-
 		// This section is particularly used for handling form add request. In this case, we don't want to send an actual request to the server
 		if (withoutFetch) {
 			const response = [] as AnyJson // Based on the current logic we have to at least return an empty array so the state can be used in other places
@@ -283,7 +294,7 @@ export const useAddDataSource = ({
 				addSource({
 					...values,
 					id: uuid(),
-					properties
+					properties,
 				})
 				setPageState(values.stateName, response)
 			} else {
@@ -296,7 +307,7 @@ export const useAddDataSource = ({
 
 		const evaluatedUrl = evaluateState(values.url)
 		mutation.mutate(
-			{ url: evaluatedUrl, body: values.body, method: values.method },
+			{ url: inteliToString(evaluatedUrl), body: values.body, method: values.method },
 			{
 				onSuccess: (data) => {
 					const response = data.data
@@ -335,9 +346,8 @@ export const useAddDataSource = ({
 	return { addDataSource, mutation }
 }
 
-export function evaluateState(state: string) {
-	return state
-		.split(' ')
-		.map((part) => (part.startsWith('$store.') ? '1' : part))
-		.join('')
+export function evaluateState(state: IntelinputValue[]) {
+	return state.map((part) =>
+		part.kind === IntelinputValueKind.State ? inteliText('1')[0] : part
+	)
 }

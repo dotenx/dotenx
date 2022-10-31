@@ -12,7 +12,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { inteliState } from '../ui/intelinput'
+import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
@@ -46,7 +46,10 @@ function ListOptions({ controller }: { controller: List }) {
 				headers: '',
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
-				url: `https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+				),
+				isPrivate: true,
 			})
 			controller.data.tableName = selectedTable
 			const columns =

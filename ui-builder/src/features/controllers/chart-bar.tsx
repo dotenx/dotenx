@@ -13,27 +13,35 @@ import { projectTagAtom } from '../page/top-bar'
 import { HttpMethod } from '../data-bindings/data-source-store'
 import { useAddDataSource } from '../data-bindings/data-source-form'
 import { Select } from '@mantine/core'
+import { inteliText } from '../ui/intelinput'
 
 export class ChartBar extends Controller {
 	name = 'Bar chart'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
+	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <ChartBarOptions options={options} />
+		return <ChartBarOptions options={options} controller={this} />
 	}
 }
 
 // =============  renderOptions =============
 
-function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
+function ChartBarOptions({
+	options,
+	controller,
+}: {
+	options: ElementOptions
+	controller: ChartBar
+}) {
 	const element = options.element as BarChart
 
-	const [selectedTable, setSelectedTable] = useInputState('')
+	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
 
 	const projectTag = useAtomValue(projectTagAtom)
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
-
+	const dataSourceName = `${options.element.id}_data`
 	const columnsQuery = useColumnsQuery({
 		tableName: selectedTable,
 		onSuccess: () => {
@@ -44,10 +52,12 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Post,
-				stateName: options.element.id + '_data',
-				url: `https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`,
+				stateName: dataSourceName,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+				),
 			})
-			// controller.data.tableName = selectedTable
+			controller.data.tableName = selectedTable
 		},
 	})
 
@@ -63,15 +73,15 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 			<Select
 				disabled={!selectedTable}
 				size="xs"
-				label="Title"
+				label="Labels"
 				description="Get title from"
 				data={columns}
-				// value={titleFrom}
+				value={element.data.axisFrom.x.propName}
 				onChange={(value) => {
 					options.set(
 						produce(element, (draft) => {
 							draft.data.axisFrom.x = {
-								listName: `$store.${options.element.id}_data`,
+								listName: `${dataSourceName}.rows`,
 								propName: value ?? '',
 							}
 						})
@@ -81,15 +91,15 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 			<Select
 				disabled={!selectedTable}
 				size="xs"
-				label="Name"
+				label="Data"
 				description="Get name from"
 				data={columns}
-				// value={nameFrom}
+				value={element.data.axisFrom.y.propName}
 				onChange={(value) => {
 					options.set(
 						produce(element, (draft) => {
 							draft.data.axisFrom.y = {
-								listName: `$store.${options.element.id}_data`,
+								listName: `${dataSourceName}.rows`,
 								propName: value ?? '',
 							}
 						})

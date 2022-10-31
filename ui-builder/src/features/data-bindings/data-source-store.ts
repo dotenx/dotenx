@@ -3,6 +3,7 @@ import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { AnyJson } from '../../utils'
 import { Action } from '../elements/actions/action'
+import { IntelinputValue } from '../ui/intelinput'
 
 type EditDataSource = Omit<DataSource, 'id'>
 
@@ -63,7 +64,7 @@ const findInnerPropertyPaths = (object: AnyJson, basePath: string): Property[] =
 export interface DataSource {
 	id: string
 	stateName: string
-	url: string
+	url: IntelinputValue[]
 	method: HttpMethod
 	headers: string
 	body: string

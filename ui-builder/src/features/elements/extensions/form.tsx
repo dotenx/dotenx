@@ -8,6 +8,7 @@ import { TbEdit, TbForms, TbPlus } from 'react-icons/tb'
 import { AnyJson } from '../../../utils'
 import { DataSourceForm } from '../../data-bindings/data-source-form'
 import { useDataSourceStore } from '../../data-bindings/data-source-store'
+import { inteliToString } from '../../ui/intelinput'
 import { Element, RenderFn } from '../element'
 import { useElementsStore } from '../elements-store'
 import { Style } from '../style'
@@ -58,7 +59,7 @@ function FormHandler({ children, element }: { children: ReactNode; element: Form
 				})
 				axios.request({
 					method: dataSource.method,
-					url: dataSource.url,
+					url: inteliToString(dataSource.url),
 					data: formValues,
 				})
 			}}

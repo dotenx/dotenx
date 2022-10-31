@@ -50,7 +50,10 @@ function CardListOptions({ controller }: { controller: CardList }) {
 				headers: '',
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
-				url: `https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+				),
+				isPrivate: true,
 			})
 			controller.data.tableName = selectedTable
 		},

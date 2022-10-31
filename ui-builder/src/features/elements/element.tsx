@@ -3,6 +3,7 @@ import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
 import { Controller } from '../controllers/controller'
+import { IntelinputValue } from '../ui/intelinput'
 import { ElementEvent } from './event'
 import { Style } from './style'
 
@@ -73,6 +74,8 @@ type Bindings = Partial<Record<BindingKind, Binding | null>>
 
 export interface Binding {
 	fromStateName: string
+	condition?: Condition
+	value?: IntelinputValue[]
 }
 
 export enum BindingKind {
@@ -88,3 +91,17 @@ export interface RepeatFrom {
 	name: string
 	iterator: string
 }
+
+export enum Condition {
+	Equals = 'equals',
+	NotEquals = 'not equals',
+	Contains = 'contains',
+	NotContains = 'not contains',
+}
+
+export const CONDITIONS = [
+	Condition.Equals,
+	Condition.NotEquals,
+	Condition.Contains,
+	Condition.NotContains,
+]
