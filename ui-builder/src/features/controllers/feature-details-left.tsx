@@ -7,11 +7,12 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
 import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class FeatureDetailsLeft extends Controller {
 	name = 'Features with details on the left'
@@ -38,7 +39,7 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 			return {
 				id: featureRow.id,
 				content: (
-					<div key={index}>
+					<div key={index} className="space-y-4">
 						<Intelinput
 							label="Title"
 							name="title"
@@ -65,6 +66,18 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
+						<DividerCollapsable title="color">
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: title,
+								title: 'Title color',
+							})}
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: details,
+								title: 'Details color',
+							})}
+						</DividerCollapsable>
 					</div>
 				),
 				onTabDelete: () => {
@@ -92,6 +105,7 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={imageDiv.data.src}
 			/>
+			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 			<Checkbox
 				label={'Round corners'}
 				onChange={(event: any) => {
@@ -160,6 +174,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			height: '350px',
 			backgroundPosition: 'right 10% bottom 80%', // todo: check why this is not working as expected. Expected right center to work
+			gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
 			backgroundSize: '60% auto',
 			paddingLeft: '10%',
 			paddingRight: '10%',
@@ -185,8 +200,9 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 
 	draft.style.mobile = {
 		default: {
-			maxWidth: '50%',
+			maxWidth: '100%',
 			lineHeight: '1.2',
+			order: 1,
 		},
 	}
 }).serialize()
@@ -201,6 +217,11 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 		},
 	}
 
+	draft.style.mobile = {
+		default: {
+			order: 0,
+		},
+	}
 	draft.data.src =
 		'https://img.freepik.com/free-vector/blue-marketing-charts-design-template_52683-24522.jpg?w=740&t=st=1666791210~exp=1666791810~hmac=42932320db4bb7c5f36815c67c56445ee01765aca6caaf5306415f1811690352'
 }).serialize()

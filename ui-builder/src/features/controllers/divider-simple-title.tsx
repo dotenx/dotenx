@@ -6,8 +6,9 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
 
 export class DividerSimpleTitle extends Controller {
 	name = 'Divider simple title'
@@ -22,6 +23,7 @@ export class DividerSimpleTitle extends Controller {
 // =============  renderOptions =============
 
 function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
+	const wrapper = options.element as BoxElement
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
 	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
 
@@ -55,6 +57,19 @@ function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsable title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: titleText,
+					title: 'title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subtitleText,
+					title: 'subtitle color',
+				})}
+			</DividerCollapsable>
 		</div>
 	)
 }
@@ -71,6 +86,7 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			width: '100%',
 			paddingTop: '40px',
 			paddingBottom: '40px',
+			backgroundColor: 'hsla(0, 0%, 100%, 1)',
 		},
 	}
 }).serialize()
@@ -88,6 +104,7 @@ const title = produce(new TextElement(), (draft) => {
 		default: {
 			fontSize: '32px',
 			marginBottom: '8px',
+			color: 'hsla(0, 0%, 4%, 1)',
 		},
 	}
 	draft.data.text = inteliText('Trusted by the world’s best')
@@ -99,6 +116,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			fontWeight: '300',
 			fontSize: '24px',
 			marginBottom: '12px',
+			color: 'hsla(0, 0%, 4%, 1)',
 		},
 	}
 	draft.data.text = inteliText('We’re proud to work with the world’s best brands')

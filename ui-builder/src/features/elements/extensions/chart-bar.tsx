@@ -113,8 +113,8 @@ export const useGetAxisFrom = (element: ChartElement) => {
 	const pageStates = usePageStates((store) => store.states)
 	if (!(element.data.axisFrom.x.listName || element.data.axisFrom.y.listName)) return element.data
 	const list = _.get(pageStates, element.data.axisFrom.x.listName) as JsonArray
-	const xData = list.map((item) => _.get(item, element.data.axisFrom.x.propName))
-	const yData = list.map((item) => _.get(item, element.data.axisFrom.y.propName))
+	const xData = list.map((item) => _.get(item, element.data.axisFrom.x.propName) as string)
+	const yData = list.map((item) => _.get(item, element.data.axisFrom.y.propName) as number)
 	const data = produce(element.data.data, (draft) => {
 		draft.labels = xData
 		draft.datasets[0].data = yData

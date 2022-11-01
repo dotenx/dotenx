@@ -7,10 +7,17 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
+import {
+	ComponentName,
+	Divider,
+	DividerCollapsable,
+	extractUrl,
+	SimpleComponentOptionsProps,
+} from './helpers'
 import { LinkElement } from '../elements/extensions/link'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class HeroCtaLeft extends Controller {
 	name = 'Hero with CTA on the left'
@@ -58,7 +65,7 @@ function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
 				}
 			/>
 			<Intelinput
-				label="Sub-title"
+				label="Subtitle"
 				name="subtitle"
 				size="xs"
 				value={subTitle.data.text}
@@ -70,6 +77,29 @@ function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsable title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: title,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subTitle,
+					title: 'Subtitle color',
+				})}
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: cta,
+					title: 'CTA background color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: cta,
+					title: 'CTA text color',
+				})}
+			</DividerCollapsable>
 			<Intelinput
 				label="CTA"
 				name="cta"
@@ -234,7 +264,6 @@ const cta = produce(new LinkElement(), (draft) => {
 
 	draft.children = [element]
 }).serialize()
-
 const defaultData = {
 	...wrapper,
 	components: [
