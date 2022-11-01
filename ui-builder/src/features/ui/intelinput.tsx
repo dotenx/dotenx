@@ -99,7 +99,8 @@ export function Intelinput({
 										}}
 										ref={index === value.length - 1 ? lastInputRef : undefined}
 										className="outline-none w-full py-1 font-mono"
-										style={{ width: `${inteliValue.data.length || 1}ch` }}
+										// to be fixed
+										// style={{ width: `${inteliValue.data.length || 1}ch` }}
 										value={inteliValue.data}
 										onChange={(event) =>
 											onChange(
@@ -135,7 +136,8 @@ export function Intelinput({
 						<input
 							ref={lastInputRef}
 							className="outline-none w-full py-1 font-mono"
-							style={{ width: `${newValue.length || 1}ch` }}
+							// to be fixed
+							// style={{ width: `${inteliValue.data.length || 1}ch` }}
 							value={newValue}
 							onChange={setNewValue}
 							onBlur={() => {

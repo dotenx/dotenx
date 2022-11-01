@@ -17,7 +17,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { IconElement } from '../elements/extensions/icon'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,6 +25,7 @@ import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class FeatureCenterCards extends Controller {
 	name = 'Feature Center Cards'
@@ -40,6 +41,7 @@ export class FeatureCenterCards extends Controller {
 
 function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
+	const wrapper = options.element as BoxElement
 
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
 	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
@@ -62,7 +64,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 		}
 	}
 	const [searchValue, setSearchValue] = useState('')
-	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
+	const [iconColor, setIconColor] = useState('hsla(0, 80%, 51%, 1)')
 	const [iconType, setIconType] = useState('far')
 	const Row = memo((r: any) => {
 		const { data: iconNames, columnIndex, rowIndex, style } = r
@@ -264,6 +266,19 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsable title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: titleText,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subtitleText,
+					title: 'Subtitle color',
+				})}
+			</DividerCollapsable>
 			<Button
 				size="xs"
 				fullWidth
@@ -325,14 +340,35 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsable title="Tiles color">
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0],
+					title: 'Vackground color',
+					mapDiv: containerDiv.children,
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[1],
+					title: 'Title color',
+					mapDiv: containerDiv.children,
+					childIndex: 1,
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[2],
+					title: 'Description color',
+					mapDiv: containerDiv.children,
+					childIndex: 2,
+				})}
+			</DividerCollapsable>
+
 			<Tabs
 				onTabChange={(name) => setIconType(name as string)}
 				variant="pills"
 				defaultValue="far"
 			>
-				<p className="mb-2 mt-3 flex items-center">
-					Icon <hr className="w-full pl-2" />
-				</p>
+				<Divider title="Icon" />
 				<TextInput
 					placeholder="Search"
 					name="search"
@@ -340,8 +376,8 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					value={searchValue}
 					onChange={(e) => setSearchValue(e.target.value)}
 				/>
-				<p className="mb-1 mt-2">Color</p>
 				<ColorInput
+					label="Color"
 					value={iconColor}
 					onChange={(value) => setIconColor(value)}
 					className="col-span-9"
@@ -365,7 +401,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(regularIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}
@@ -380,7 +416,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(solidIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}
@@ -395,7 +431,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(brandIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}
@@ -473,7 +509,7 @@ const title = produce(new TextElement(), (draft) => {
 const subTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontWeight: '200',
+			fontWeight: '300',
 			fontSize: '24px',
 			marginBottom: '12px',
 		},

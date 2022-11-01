@@ -1,4 +1,4 @@
-import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
@@ -15,8 +15,9 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { ComponentName, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
+import ColorOptions from './basic-components/color-options'
 
 export class CustomersGrid extends Controller {
 	name = 'Customers grid'
@@ -33,7 +34,6 @@ export class CustomersGrid extends Controller {
 function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 	const viewport = useAtomValue(viewportAtom)
 	const [selectedTile, setSelectedTile] = useState(0)
-
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
 	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
 
@@ -192,6 +192,20 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 					/>
 				</>
 			)}
+
+			<DividerCollapsable title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: titleText,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subtitleText,
+					title: 'Subitle color',
+				})}
+			</DividerCollapsable>
 			<Intelinput
 				label="Title"
 				name="title"
@@ -354,15 +368,13 @@ const tile = produce(new BoxElement(), (draft) => {
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: '#ee0000',
 			aspectRatio: '1',
-			backgroundImage: `url(${logoBag})`, //NOTE: inside url() do not use single quotes.
+			backgroundImage: `url(https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/87_Diaspora_logo_logos-256.png)`, //NOTE: inside url() do not use single quotes.
 			backgroundSize: 'cover',
 			backgroundPosition: 'center center',
 		},
 	}
 })
-
 function createTile({ image }: { image: string }) {
 	return produce(tile, (draft) => {
 		draft.style.desktop = {
@@ -376,22 +388,23 @@ function createTile({ image }: { image: string }) {
 
 const tiles = [
 	createTile({
-		image: logoBag,
+		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/117-Evernote-256.png',
+	}),
+
+	createTile({
+		image: 'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/11_Airbnb_logo_logos-256.png',
 	}),
 	createTile({
-		image: logoBird,
+		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/53-pandora-256.png',
 	}),
 	createTile({
-		image: logoC,
+		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/50-picasa-256.png',
 	}),
 	createTile({
-		image: logoCamera,
+		image: 'https://cdn0.iconfinder.com/data/icons/brands-flat-2/187/vimeo-social-network-brand-logo-256.png',
 	}),
 	createTile({
-		image: logoCart,
-	}),
-	createTile({
-		image: logoGift,
+		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png',
 	}),
 ]
 

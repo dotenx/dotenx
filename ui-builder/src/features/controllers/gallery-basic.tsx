@@ -7,6 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageDrop } from '../ui/image-drop'
 import { viewportAtom } from '../viewport/viewport-store'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
 
@@ -197,6 +198,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 			>
 				+ Add image
 			</Button>
+			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 
 			<Select
 				label="Tiles"

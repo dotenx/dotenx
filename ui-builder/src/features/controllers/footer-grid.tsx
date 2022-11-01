@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Collapse, Select, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Collapse, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
@@ -8,7 +8,13 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
+import {
+	ComponentName,
+	Divider,
+	DividerCollapsable,
+	repeatObject,
+	SimpleComponentOptionsProps,
+} from './helpers'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { IconElement } from '../elements/extensions/icon'
@@ -22,6 +28,7 @@ import { SortableItem, VerticalSortable } from './vertical-sortable'
 import { DragEndEvent } from '@dnd-kit/core'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class FooterGrid extends Controller {
 	name = 'Footer grid'
@@ -37,7 +44,6 @@ export class FooterGrid extends Controller {
 
 function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 	const [items, setSocialIconItems] = useState<string[]>([])
-	// const [textColumns, setSocialIconItems] = useState<string[]>([])
 
 	const [addIconOpened, setAddIconOpened] = useState(false)
 
@@ -91,130 +97,143 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 
 	return (
 		<>
-			<div className="mt-2 flex items-center">
-				<ComponentName name="Footer grid" />
-				<span className="whitespace-nowrap mr-1">Logo column</span>{' '}
-				<hr className=" w-full" />
-			</div>
-			{/* logocolumn */}
-			<LogoColumn options={options} />
-			<div className="mt-6 mb-2 flex items-center">
-				<span className="whitespace-nowrap mr-1">Link Columns</span>{' '}
-				<hr className=" w-full" />
-			</div>
-
-			<ColumnsOptions options={options} />
-
+			<ComponentName name="Footer grid" />
+			<DividerCollapsable title="Logo column">
+				<LogoColumn options={options} />
+			</DividerCollapsable>
+			<DividerCollapsable title="Link Columns">
+				<ColumnsOptions options={options} />
+			</DividerCollapsable>
 			{/* Secondary footer */}
-			<div className="mt-6 mb-2 flex items-center">
-				<span className="whitespace-nowrap mr-1">Secondary footer</span>{' '}
-				<hr className=" w-full" />
-			</div>
-			<Intelinput
-				label="text"
-				name="text"
-				size="xs"
-				value={secondFooterTextComponent.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(secondFooterTextComponent, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			{/* Add new icon */}
-			<ActionIcon
-				onClick={() => setAddIconOpened((o) => !o)}
-				variant="transparent"
-				disabled={unusedIcons.length === 0}
-			>
-				<TbPlus
-					size={16}
-					className={
-						unusedIcons.length !== 0
-							? 'text-red-500 rounded-full border-red-500 border'
-							: ''
+			<DividerCollapsable title="Secondary footer">
+				<Intelinput
+					label="text"
+					name="text"
+					size="xs"
+					value={secondFooterTextComponent.data.text}
+					onChange={(value) =>
+						options.set(
+							produce(secondFooterTextComponent, (draft) => {
+								draft.data.text = value
+							})
+						)
 					}
 				/>
-			</ActionIcon>
-			<Collapse in={addIconOpened}>
-				<div className="flex w-full gap-x-1 my-2">
-					{unusedIcons.map((u: SocialIcon) => (
-						<FontAwesomeIcon
-							className="w-5 h-5 cursor-pointer"
-							onClick={() => {
-								setUnusedIcons(unusedIcons.filter((i) => i !== u))
-								setSocialIconItems([...items, u])
-								options.set(
-									produce(socialsDiv, (draft) => {
-										draft.children.push(createSocial('fab', u, icons[u]))
-									})
-								)
-							}}
-							key={u}
-							style={{
-								color: icons[u],
-							}}
-							icon={['fab', u as IconName]}
-						/>
-					))}
-				</div>
-			</Collapse>
-			{/* Order icons */}
-			<VerticalSortable items={items} onDragEnd={handleDragEnd}>
-				<div className="flex flex-col justify-items-stretch gap-y-2">
-					{items.map((id, index) => {
-						const item = socialsDiv.children?.[index] as LinkElement
-						const icon = item.children?.[0] as IconElement
-						return (
-							<SortableItem key={id} id={id}>
-								<div className="flex justify-stretch h-full w-full gap-x-1 items-center mx-2">
-									<FontAwesomeIcon
-										style={{
-											color: icon.style.desktop!.default!.color,
-										}}
-										className="w-5 h-5"
-										icon={[
-											icon.data.type as IconPrefix,
-											icon.data.name as IconName,
-										]}
-									/>
-									<TextInput
-										placeholder="Link"
-										name="link"
-										size="xs"
-										value={item.data.href}
-										onChange={(event) =>
-											options.set(
-												produce(item, (draft) => {
-													draft.data.href = event.target.value
-												})
-											)
-										}
-									/>
-									<FontAwesomeIcon
-										className="w-3 h-3 text-red-500 cursor-pointer"
-										icon={['fas', 'trash']}
-										onClick={() => {
-											setSocialIconItems((items) => items.splice(index, 1))
-											setUnusedIcons([
-												...unusedIcons,
-												icon.data.name as SocialIcon,
-											])
-											options.set(
-												produce(socialsDiv, (draft) => {
-													draft.children?.splice(index, 1)
-												})
-											)
-										}}
-									/>
-								</div>
-							</SortableItem>
-						)
-					})}
-				</div>
-			</VerticalSortable>
+				{/* Add new icon */}
+				<ActionIcon
+					onClick={() => setAddIconOpened((o) => !o)}
+					variant="transparent"
+					disabled={unusedIcons.length === 0}
+				>
+					<TbPlus
+						size={16}
+						className={
+							unusedIcons.length !== 0
+								? 'text-red-500 rounded-full border-red-500 border'
+								: ''
+						}
+					/>
+				</ActionIcon>
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: secondFooterTextComponent,
+					title: 'Text color',
+				})}
+				{/* Add new icon */}
+				<ActionIcon
+					onClick={() => setAddIconOpened((o) => !o)}
+					variant="transparent"
+					disabled={unusedIcons.length === 0}
+				>
+					<TbPlus
+						size={16}
+						className={
+							unusedIcons.length !== 0
+								? 'text-red-500 rounded-full border-red-500 border'
+								: ''
+						}
+					/>
+				</ActionIcon>
+				<Collapse in={addIconOpened}>
+					<div className="flex w-full gap-x-1 my-2">
+						{unusedIcons.map((u: SocialIcon) => (
+							<FontAwesomeIcon
+								className="w-5 h-5 cursor-pointer"
+								onClick={() => {
+									setUnusedIcons(unusedIcons.filter((i) => i !== u))
+									setSocialIconItems([...items, u])
+									options.set(
+										produce(socialsDiv, (draft) => {
+											draft.children.push(createSocial('fab', u, icons[u]))
+										})
+									)
+								}}
+								key={u}
+								style={{
+									color: icons[u],
+								}}
+								icon={['fab', u as IconName]}
+							/>
+						))}
+					</div>
+				</Collapse>
+				{/* Order icons */}
+				<VerticalSortable items={items} onDragEnd={handleDragEnd}>
+					<div className="flex flex-col justify-items-stretch gap-y-2">
+						{items.map((id, index) => {
+							const item = socialsDiv.children?.[index] as LinkElement
+							const icon = item.children?.[0] as IconElement
+							return (
+								<SortableItem key={id} id={id}>
+									<div className="flex justify-stretch h-full w-full gap-x-1 items-center mx-2">
+										<FontAwesomeIcon
+											style={{
+												color: icon.style.desktop!.default!.color,
+											}}
+											className="w-5 h-5"
+											icon={[
+												icon.data.type as IconPrefix,
+												icon.data.name as IconName,
+											]}
+										/>
+										<TextInput
+											placeholder="Link"
+											name="link"
+											size="xs"
+											value={item.data.href}
+											onChange={(event) =>
+												options.set(
+													produce(item, (draft) => {
+														draft.data.href = event.target.value
+													})
+												)
+											}
+										/>
+										<FontAwesomeIcon
+											className="w-3 h-3 text-red-500 cursor-pointer"
+											icon={['fas', 'trash']}
+											onClick={() => {
+												setSocialIconItems((items) =>
+													items.splice(index, 1)
+												)
+												setUnusedIcons([
+													...unusedIcons,
+													icon.data.name as SocialIcon,
+												])
+												options.set(
+													produce(socialsDiv, (draft) => {
+														draft.children?.splice(index, 1)
+													})
+												)
+											}}
+										/>
+									</div>
+								</SortableItem>
+							)
+						})}
+					</div>
+				</VerticalSortable>
+			</DividerCollapsable>
 		</>
 	)
 }
@@ -226,7 +245,7 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 	const title = column.children?.[0].children?.[1] as TextElement
 
 	return (
-		<div className="flex flex-col justify-stretch">
+		<div className="flex flex-col justify-stretch space-y-4">
 			<ImageDrop
 				onChange={(src) =>
 					options.set(
@@ -265,6 +284,19 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 			>
 				<FontAwesomeIcon icon={['fas', 'plus']} /> Add Link
 			</Button>
+			<DividerCollapsable title="color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: title,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: column,
+					title: 'Column color',
+				})}
+			</DividerCollapsable>
 		</div>
 	)
 }
@@ -296,6 +328,11 @@ function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 								)
 							}
 						/>
+						{ColorOptions.getTextColorOption({
+							options,
+							wrapperDiv: title,
+							title: 'Title color',
+						})}
 						<ColumnLines column={column as BoxElement} options={options} />
 						<Button
 							className="mt-2"
@@ -451,6 +488,11 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 									}
 								/>
 							</div>
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: item,
+								title: 'Color',
+							})}
 						</SortableItem>
 					)
 				})}

@@ -6,8 +6,9 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasicStyled extends Controller {
 	name = 'Basic styled FAQ'
@@ -23,6 +24,7 @@ export class FaqBasicStyled extends Controller {
 
 function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
+	const wrapper = options.element as BoxElement
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
 	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
@@ -175,6 +177,34 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsable title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: wrapper.children?.[0].children?.[0],
+					title: 'FAQ color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[0],
+					title: 'Tiles title color',
+					mapDiv: containerDiv.children,
+					childIndex: 0,
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[1],
+					title: 'Tiles details color',
+					mapDiv: containerDiv.children,
+					childIndex: 1,
+				})}
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0],
+					title: 'Tiles background color',
+					mapDiv: containerDiv.children,
+				})}
+			</DividerCollapsable>
 			<Button
 				disabled={containerDiv.children?.length === 1}
 				size="xs"

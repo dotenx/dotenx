@@ -39,7 +39,7 @@ export const controllers = [
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
 	{ title: 'Divider', items: [DividerSimpleTitle] },
-	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards, FeatureDetailsLeft, FeatureDetailsRight, FeatureGridImages] },
+	{ title: 'Features', items: [FeatureCenterGrid, FeatureCenterCards, FeatureGridImages, FeatureDetailsLeft, FeatureDetailsRight] },
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
