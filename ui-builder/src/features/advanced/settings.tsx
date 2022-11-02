@@ -1,6 +1,6 @@
 import { Tabs } from '@mantine/core'
 import { TbDatabase, TbDroplet, TbRuler } from 'react-icons/tb'
-import { DataEditor } from '../data-bindings/data-editor'
+import { DataEditor } from '../data-source/data-editor'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { StylesEditor } from '../style/styles-editor'

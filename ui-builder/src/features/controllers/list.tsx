@@ -5,8 +5,8 @@ import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
-import { useAddDataSource } from '../data-bindings/data-source-form'
-import { HttpMethod } from '../data-bindings/data-source-store'
+import { useAddDataSource } from '../data-source/data-source-form'
+import { HttpMethod } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
@@ -58,8 +58,8 @@ function ListOptions({ controller }: { controller: List }) {
 			set(
 				produce(boxElement, (draft) => {
 					draft.repeatFrom = {
-						name: `$store.${dataSourceName}.rows`,
-						iterator: `${dataSourceName}.rowsItem`,
+						name: `$store.source.${dataSourceName}.rows`,
+						iterator: `${dataSourceName}-rowsItem`,
 					}
 					draft.children = columns.map((col) => {
 						const text = new TextElement()

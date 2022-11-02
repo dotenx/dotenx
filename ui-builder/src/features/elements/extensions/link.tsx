@@ -13,7 +13,7 @@ export class LinkElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				height: '150px',
+				minHeight: '100px',
 			},
 		},
 	}

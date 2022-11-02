@@ -1,3 +1,4 @@
+import produce, { Draft } from 'immer'
 import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
@@ -152,4 +153,16 @@ export const findElements = (ids: string[], elements: Element[]): Element[] => {
 		if (foundComponent) foundElements.push(foundComponent)
 	}
 	return foundElements
+}
+
+export function useSetElement() {
+	const set = useElementsStore((store) => store.set)
+	function setter<T extends Element = Element>(element: T, fn: (draft: Draft<T>) => void) {
+		set(
+			produce(element, (draft) => {
+				fn(draft)
+			})
+		)
+	}
+	return setter
 }

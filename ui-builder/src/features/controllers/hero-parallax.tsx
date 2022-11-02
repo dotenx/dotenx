@@ -6,14 +6,14 @@ import { BoxElement } from '../elements/extensions/box'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
-	DividerCollapsable,
+	DividerCollapsible,
 	extractUrl,
 	SimpleComponentOptionsProps,
 } from './helpers'
 
-import TitleSubtitleCta from './basic-components/title-subtitle-cta'
 import { ImageDrop } from '../ui/image-drop'
 import ColorOptions from './basic-components/color-options'
+import TitleSubtitleCta from './basic-components/title-subtitle-cta'
 export class HeroParallax extends Controller {
 	name = 'Hero with parallax'
 	image = imageUrl
@@ -50,7 +50,7 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
 			{titleSubtitleCtaOptions}
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getTextColorOption({
 					options,
 					wrapperDiv: title,
@@ -71,7 +71,7 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: cta,
 					title: 'CTA text color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 		</div>
 	)
 }

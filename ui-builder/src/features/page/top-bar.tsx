@@ -16,11 +16,11 @@ import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
 import { toggleFullScreen } from '../../utils/toggle-fullscreen'
-import { evaluateState } from '../data-bindings/data-source-form'
-import { useDataSourceStore } from '../data-bindings/data-source-store'
-import { usePageStates } from '../data-bindings/page-states'
+import { evaluateExpression } from '../data-source/data-source-form'
+import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
+import { usePageStateStore } from '../states/page-states-store'
 import { useClassesStore } from '../style/classes-store'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
@@ -71,7 +71,7 @@ const useFetchPage = () => {
 	const selectedPage = useAtomValue(selectedPageAtom)
 	const resetCanvas = useElementsStore((store) => store.reset)
 	const setDataSources = useDataSourceStore((store) => store.set)
-	const setPageState = usePageStates((store) => store.setState)
+	const setPageState = usePageStateStore((store) => store.setState)
 	const setClassNames = useClassesStore((store) => store.set)
 	const setPageParams = useSetAtom(pageParamsAtom)
 
@@ -88,7 +88,7 @@ const useFetchPage = () => {
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
-							url: inteliToString(evaluateState(source.url)),
+							url: inteliToString(evaluateExpression(source.url)),
 							method: source.method,
 							data: source.body,
 						})

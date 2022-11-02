@@ -1,23 +1,17 @@
-import { Button, Select, SelectItem, Slider, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/customer-grid.png'
-import logoBag from '../../assets/components/logo-bag-small.jpg'
-import logoBird from '../../assets/components/logo-bird-small.jpg'
-import logoC from '../../assets/components/logo-c-small.jpg'
-import logoCamera from '../../assets/components/logo-camera-small.jpg'
-import logoCart from '../../assets/components/logo-cart-small.jpg'
-import logoGift from '../../assets/components/logo-gift-small.jpg'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
-import { Controller, ElementOptions } from './controller'
 import { Intelinput, inteliText } from '../ui/intelinput'
-import { ComponentName, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
+import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class CustomersGrid extends Controller {
 	name = 'Customers grid'
@@ -193,7 +187,7 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 				</>
 			)}
 
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -205,7 +199,7 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: subtitleText,
 					title: 'Subitle color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 			<Intelinput
 				label="Title"
 				name="title"

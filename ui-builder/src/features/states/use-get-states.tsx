@@ -1,22 +1,27 @@
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { AnyJson, JsonArray } from '../../utils'
-import { Action } from '../elements/actions/action'
+import { Action } from '../actions/action'
+import {
+	findPropertyPaths,
+	Property,
+	PropertyKind,
+	useDataSourceStore,
+} from '../data-source/data-source-store'
 import { Element } from '../elements/element'
 import { findParent, useElementsStore } from '../elements/elements-store'
 import { globalStatesAtom } from '../page/actions'
 import { pageParamsAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { InteliStateValue } from '../ui/intelinput'
-import { getStateNames } from './data-editor'
-import { findPropertyPaths, Property, PropertyKind, useDataSourceStore } from './data-source-store'
-import { usePageStates } from './page-states'
+import { usePageStateStore } from './page-states-store'
+import { getStateNames } from './utils'
 
 export const useGetStates = () => {
 	const element = useSelectedElement()!
-	const pageStates = usePageStates((store) => store.states)
+	const pageStates = usePageStateStore((store) => store.states)
 	const repeatedState = element.repeatFrom?.name
-		? _.get(pageStates, element.repeatFrom.name.replace('$store.', ''))
+		? _.get(pageStates, element.repeatFrom.name.replace('$store.source.', ''))
 		: null
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
 	const { elements } = useElementsStore((store) => ({
@@ -32,7 +37,7 @@ export const useGetStates = () => {
 	if (repeatedParent && repeatedParent.repeatFrom?.name) {
 		const parentState = _.get(
 			pageStates,
-			repeatedParent.repeatFrom.name.replace('$store.', '')
+			repeatedParent.repeatFrom.name.replace('$store.source.', '')
 		) as JsonArray
 		if (parentState) {
 			passedProperties = findPropertyPaths(parentState[0]).map((property) => ({
@@ -50,7 +55,7 @@ export const useGetStates = () => {
 			.map((source) =>
 				source.properties.map((property) => ({
 					kind: property.kind,
-					name: `$store.${source.stateName}${property.path}`,
+					name: `$store.source.${source.stateName}${property.path}`,
 				}))
 			)
 			.flat(),
@@ -119,7 +124,7 @@ export const findPropertyPathsInner = (object: AnyJson, basePath: string): Prope
 }
 
 export const useDataSourceStates = () => {
-	const pageStates = usePageStates((store) => store.states)
+	const pageStates = usePageStateStore((store) => store.states)
 	const states = _.flatMap(pageStates, (value, key) => findPropertyPathsInner(value, key)).map(
 		(state) => state.path
 	)

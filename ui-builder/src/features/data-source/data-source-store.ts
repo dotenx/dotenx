@@ -2,8 +2,8 @@ import _ from 'lodash'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { AnyJson } from '../../utils'
-import { Action } from '../elements/actions/action'
-import { IntelinputValue } from '../ui/intelinput'
+import { Action } from '../actions/action'
+import { Expression } from '../states/expression'
 
 type EditDataSource = Omit<DataSource, 'id'>
 
@@ -64,7 +64,7 @@ const findInnerPropertyPaths = (object: AnyJson, basePath: string): Property[] =
 export interface DataSource {
 	id: string
 	stateName: string
-	url: IntelinputValue[]
+	url: Expression
 	method: HttpMethod
 	headers: string
 	body: string

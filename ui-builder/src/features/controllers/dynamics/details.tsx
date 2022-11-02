@@ -5,17 +5,17 @@ import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import imageUrl from '../../../assets/components/details.png'
 import { deserializeElement } from '../../../utils/deserialize'
-import { useAddDataSource } from '../../data-bindings/data-source-form'
-import { HttpMethod } from '../../data-bindings/data-source-store'
+import { useAddDataSource } from '../../data-source/data-source-form'
+import { HttpMethod } from '../../data-source/data-source-store'
 import { useElementsStore } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
-import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
 import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { IntelinputValueKind, inteliState, inteliText } from '../../ui/intelinput'
+import { Expression, ExpressionKind } from '../../states/expression'
+import { inteliState } from '../../ui/intelinput'
 import { Controller } from '../controller'
-import { useColumnsQuery, TableSelect } from '../create-form'
+import { TableSelect, useColumnsQuery } from '../create-form'
 import { ComponentName } from '../helpers'
 
 export class Details extends Controller {
@@ -48,21 +48,22 @@ function DetailsOptions({ controller }: { controller: Details }) {
 				headers: '',
 				method: HttpMethod.Get,
 				stateName: dataSourceName,
-				url: [
+				url: new Expression([
 					{
-						kind: IntelinputValueKind.Text,
-						data: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
+						kind: ExpressionKind.Text,
+						value: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
 					},
-					{ kind: IntelinputValueKind.State, data: '$store.url.id' },
-				],
+					{ kind: ExpressionKind.State, value: { name: '$store.url.id' } },
+				]),
 				isPrivate: true,
 			})
 			controller.data.tableName = selectedTable
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last(titleElement.data.text[0].data.split('.')) ?? ''
-	const descriptionFrom = _.last(descriptionElement.data.text[0].data.split('.')) ?? ''
+	const titleFrom = _.last((titleElement.data.text.value[0].value as string).split('.')) ?? ''
+	const descriptionFrom =
+		_.last((descriptionElement.data.text.value[0].value as string).split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Details" />
@@ -81,7 +82,9 @@ function DetailsOptions({ controller }: { controller: Details }) {
 					set(
 						produce(root, (draft) => {
 							const title = draft.children?.[1] as TextElement
-							title.data.text = inteliState(`$store.${dataSourceName}.${value}`)
+							title.data.text = inteliState(
+								`$store.source.${dataSourceName}.${value}`
+							)
 						})
 					)
 				}}
@@ -96,7 +99,9 @@ function DetailsOptions({ controller }: { controller: Details }) {
 					set(
 						produce(root, (draft) => {
 							const description = draft.children?.[2] as TextElement
-							description.data.text = inteliState(`$store.${dataSourceName}.${value}`)
+							description.data.text = inteliState(
+								`$store.source.${dataSourceName}.${value}`
+							)
 						})
 					)
 				}}

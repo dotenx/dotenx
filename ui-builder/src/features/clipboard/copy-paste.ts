@@ -2,6 +2,9 @@ import { uuid } from '../../utils'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { MenuButtonElement } from '../elements/extensions/nav/menu-button'
+import { NavMenuElement } from '../elements/extensions/nav/nav-menu'
+import { NavbarElement } from '../elements/extensions/nav/navbar'
 import { useSelectedElement, useSelectedElements } from '../selection/use-selected-component'
 import { useClipboardStore } from './clipboard'
 
@@ -28,6 +31,15 @@ export const regenElement = (element: Element) => {
 	const newElement = deserializeElement(element.serialize())
 	newElement.id = uuid()
 	newElement.children = newElement.children?.map((element) => regenElement(element)) ?? null
+	if (newElement instanceof NavbarElement) {
+		const navMenu = newElement.children.find((element) => element instanceof NavMenuElement)
+		const menuButton = newElement.children.find(
+			(element): element is MenuButtonElement => element instanceof MenuButtonElement
+		)
+		if (navMenu && menuButton) {
+			menuButton.data.menuId = navMenu.id
+		}
+	}
 	return newElement
 }
 

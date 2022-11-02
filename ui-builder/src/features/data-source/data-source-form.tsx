@@ -17,16 +17,11 @@ import produce from 'immer'
 import { TbPlus } from 'react-icons/tb'
 import { z } from 'zod'
 import { AnyJson, uuid } from '../../utils'
-import { ACTIONS } from '../elements/actions'
-import {
-	Intelinput,
-	intelinputSchema,
-	IntelinputText,
-	IntelinputValue,
-	IntelinputValueKind,
-	inteliText,
-	inteliToString,
-} from '../ui/intelinput'
+import { ACTIONS } from '../actions'
+import { Expression, ExpressionKind } from '../states/expression'
+import { usePageStateStore } from '../states/page-states-store'
+import { useGetStates } from '../states/use-get-states'
+import { Intelinput, inteliText, inteliToString } from '../ui/intelinput'
 import {
 	DataSource,
 	findPropertyPaths,
@@ -34,12 +29,10 @@ import {
 	httpMethods,
 	useDataSourceStore,
 } from './data-source-store'
-import { usePageStates } from './page-states'
-import { useGetStates } from './use-get-states'
 
 const schema = z.object({
 	stateName: z.string().min(1),
-	url: intelinputSchema,
+	url: z.instanceof(Expression),
 	method: z.nativeEnum(HttpMethod),
 	headers: z.string(),
 	body: z.string(),
@@ -56,7 +49,7 @@ export function DataSourceForm({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: [],
+		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -257,7 +250,7 @@ export const useAddDataSource = ({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: [],
+		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -276,7 +269,7 @@ export const useAddDataSource = ({
 	withoutFetch?: boolean
 }) => {
 	const isAddMode = mode === 'add' || mode === 'simple-add'
-	const setPageState = usePageStates((store) => store.setState)
+	const setPageState = usePageStateStore((store) => store.setState)
 	const { addSource, editSource } = useDataSourceStore((store) => ({
 		addSource: store.add,
 		editSource: store.edit,
@@ -305,7 +298,7 @@ export const useAddDataSource = ({
 			return
 		}
 
-		const evaluatedUrl = evaluateState(values.url)
+		const evaluatedUrl = evaluateExpression(values.url)
 		mutation.mutate(
 			{ url: inteliToString(evaluatedUrl), body: values.body, method: values.method },
 			{
@@ -346,8 +339,8 @@ export const useAddDataSource = ({
 	return { addDataSource, mutation }
 }
 
-export function evaluateState(state: IntelinputValue[]) {
-	return state.map((part) =>
-		part.kind === IntelinputValueKind.State ? inteliText('1')[0] : part
+export function evaluateExpression(expression: Expression) {
+	return expression.value.map((part) =>
+		part.kind === ExpressionKind.State ? inteliText('1').value[0] : part
 	)
 }

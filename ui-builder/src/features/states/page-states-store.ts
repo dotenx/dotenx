@@ -9,7 +9,7 @@ interface PageStates {
 
 type States = Record<string, AnyJson>
 
-export const usePageStates = create<PageStates>()((set) => ({
+export const usePageStateStore = create<PageStates>()((set) => ({
 	states: {},
 	toggleState: (name) =>
 		set((state) => ({ ...state, states: { ...state.states, [name]: !state.states[name] } })),

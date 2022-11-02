@@ -1,18 +1,18 @@
-import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/feature-grid-images.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
-import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
-import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
+import { TextElement } from '../elements/extensions/text'
+import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class FeatureGridImages extends Controller {
 	name = 'Feature Grid with images'
@@ -217,7 +217,7 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -229,7 +229,7 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: subtitleText,
 					title: 'Subtitle color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 
 			<Button
 				size="xs"
@@ -292,7 +292,7 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Tiles color">
+			<DividerCollapsible title="Tiles color">
 				{ColorOptions.getTextColorOption({
 					options,
 					wrapperDiv: containerDiv.children?.[0].children?.[1],
@@ -307,7 +307,7 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 					mapDiv: containerDiv.children,
 					childIndex: 2,
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 			<ImageDrop
 				onChange={(src) =>
 					options.set(

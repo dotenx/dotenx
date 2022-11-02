@@ -6,8 +6,8 @@ import _ from 'lodash'
 import imageUrl from '../../assets/components/card-list.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
-import { useAddDataSource } from '../data-bindings/data-source-form'
-import { HttpMethod } from '../data-bindings/data-source-store'
+import { useAddDataSource } from '../data-source/data-source-form'
+import { HttpMethod } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { LinkElement } from '../elements/extensions/link'
@@ -59,8 +59,8 @@ function CardListOptions({ controller }: { controller: CardList }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last(titleElement.data.text[0].data.split('.')) ?? ''
-	const nameFrom = _.last(nameElement.data.text[0].data.split('.')) ?? ''
+	const titleFrom = _.last((titleElement.data.text.value[0].value as string).split('.')) ?? ''
+	const nameFrom = _.last((nameElement.data.text.value[0].value as string).split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Card List" />
@@ -116,14 +116,14 @@ function createCard({
 }) {
 	return produce(regenElement(deserializeElement(card)) as LinkElement, (draft) => {
 		draft.repeatFrom = {
-			name: `$store.${dataSourceName}.rows`,
-			iterator: `${dataSourceName}.rowsItem`,
+			name: `$store.source.${dataSourceName}.rows`,
+			iterator: `${dataSourceName}_rowsItem`,
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
 		const name = draft.children?.[1] as TextElement
-		title.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${titleFrom}`)
-		name.data.text = inteliState(`$store.page.${dataSourceName}.rowsItem.${nameFrom}`)
-		draft.data.href = `/details?id=$store.page.${dataSourceName}.rowsItem.id`
+		title.data.text = inteliState(`${dataSourceName}_rowsItem.${titleFrom}`)
+		name.data.text = inteliState(`${dataSourceName}_rowsItem.${nameFrom}`)
+		draft.data.href = `/details?id=${dataSourceName}_rowsItem.id`
 	})
 }
 

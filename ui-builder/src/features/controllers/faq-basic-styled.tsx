@@ -1,4 +1,4 @@
-import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/faq-basic-styled.png'
@@ -8,7 +8,7 @@ import { TextElement } from '../elements/extensions/text'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class FaqBasicStyled extends Controller {
 	name = 'Basic styled FAQ'
@@ -177,7 +177,7 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -204,7 +204,7 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 					title: 'Tiles background color',
 					mapDiv: containerDiv.children,
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 			<Button
 				disabled={containerDiv.children?.length === 1}
 				size="xs"

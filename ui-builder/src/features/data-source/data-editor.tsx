@@ -1,28 +1,26 @@
 import { ActionIcon, Button, CloseButton, Code, Divider, Menu, Select, Text } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import produce from 'immer'
-import _, { bind } from 'lodash'
-import { useState } from 'react'
+import _ from 'lodash'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
-import { ACTIONS } from '../elements/actions'
-import { Action } from '../elements/actions/action'
+import { ACTIONS } from '../actions'
 import {
 	Binding,
 	BindingKind,
 	bindingKinds,
 	Condition,
 	CONDITIONS,
-	Element,
 	RepeatFrom,
 } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { Intelinput, InteliStateValue, inteliToString } from '../ui/intelinput'
+import { Expression } from '../states/expression'
+import { useGetStates } from '../states/use-get-states'
+import { Intelinput, inteliToString } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
-import { useGetStates } from './use-get-states'
 
 export function DataEditor() {
 	const element = useSelectedElement()
@@ -152,8 +150,8 @@ export function DataEditor() {
 				onChange={(value) =>
 					editRepeatFrom({
 						name: value,
-						iterator: value.replace('$store.', '')
-							? `${value.replace('$store.', '')}Item`
+						iterator: value.replace('$store.source.', '')
+							? `${value.replace('$store.source.', '')}Item`
 							: '',
 					})
 				}
@@ -166,21 +164,6 @@ export function DataEditor() {
 			</Button>
 		</div>
 	)
-}
-
-export const getStateNames = (elements: Element[]) => {
-	let states: string[] = []
-	for (const element of elements) {
-		states = [
-			...states,
-			...element.events
-				.flatMap((event) => event.actions)
-				.filter((a): a is Action & { stateName: InteliStateValue } => 'stateName' in a)
-				.map((action) => action.stateName.value),
-		]
-		states = [...states, ...getStateNames(element.children ?? [])]
-	}
-	return states
 }
 
 function RepeatInput({
@@ -203,7 +186,7 @@ function RepeatInput({
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
 						.map((state) => ({
-							label: state.name.replace('$store.', ''),
+							label: state.name.replace('$store.source.', ''),
 							value: state.name,
 						}))}
 					className="grow"
@@ -258,7 +241,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 					from
 				</Text>
 				<Code className="overflow-x-auto grow no-scrollbar max-w-[237px]">
-					{inteliToString(dataSource.url)}
+					{inteliToString(dataSource.url.value)}
 				</Code>
 			</div>
 		</div>
@@ -406,7 +389,7 @@ function BindingInput({
 				<Select
 					size="xs"
 					data={stateNames.map((name) => ({
-						label: name.replace('$store.', ''),
+						label: name.replace('$store.source.', ''),
 						value: name,
 					}))}
 					className="grow"
@@ -429,7 +412,7 @@ function BindingInput({
 					<Intelinput
 						options={states.map((s) => s.name)}
 						onChange={(value) => onChange({ ...binding, value })}
-						value={binding.value ?? []}
+						value={binding.value ?? new Expression()}
 					/>
 				</div>
 			</div>

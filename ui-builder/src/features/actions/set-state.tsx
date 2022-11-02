@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import _ from 'lodash'
-import { useGetStates, useGetMutableStates } from '../../data-bindings/use-get-states'
-import { defaultInteliState, InteliState, serializeInteliState } from '../../ui/intelinput'
+import { useGetMutableStates, useGetStates } from '../states/use-get-states'
+import { defaultInteliState, InteliState, serializeInteliState } from '../ui/intelinput'
 import {
 	Action,
 	ActionSettingsRawProps,

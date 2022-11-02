@@ -5,19 +5,18 @@ import imageUrl from '../../assets/components/hero-full-width.png'
 
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
-import { Controller, ElementOptions } from './controller'
-import {
-	ComponentName,
-	Divider,
-	DividerCollapsable,
-	extractUrl,
-	SimpleComponentOptionsProps,
-} from './helpers'
 import { LinkElement } from '../elements/extensions/link'
+import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import {
+	ComponentName,
+	DividerCollapsible,
+	extractUrl,
+	SimpleComponentOptionsProps,
+} from './helpers'
 
 export class HeroFullWidth extends Controller {
 	name = 'Full width background hero'
@@ -78,7 +77,7 @@ function HeroFullWidthOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -100,7 +99,7 @@ function HeroFullWidthOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: cta,
 					title: 'CTA text color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 			<Intelinput
 				label="CTA"
 				name="cta"

@@ -16,15 +16,15 @@ import { atom, useAtom, useAtomValue } from 'jotai'
 import { TbCheck, TbDeviceFloppy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useMatch, useParams } from 'react-router-dom'
 import {
+	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	changeGlobalStates,
 	updatePage,
 } from '../../api'
-import { useDataSourceStore } from '../data-bindings/data-source-store'
+import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
 import { pageParamsAtom, projectTagAtom, selectedPageAtom } from './top-bar'
