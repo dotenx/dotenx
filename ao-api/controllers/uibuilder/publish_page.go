@@ -33,11 +33,14 @@ func (controller *UIbuilderController) PublishPage() gin.HandlerFunc {
 
 		page, err := controller.Service.GetPage(accountId, projectTag, pageName)
 		if err != nil {
-			logrus.Error(err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
+			if err.Error() == "page not found" {
+				c.AbortWithError(http.StatusBadRequest, err)
+			} else {
+				logrus.Error(err.Error())
+				c.AbortWithStatus(http.StatusInternalServerError)
+			}
 			return
 		}
-
 		html, scripts, styles, err := publishutils.RenderPage(page)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -124,6 +127,7 @@ func (controller *UIbuilderController) PublishPage() gin.HandlerFunc {
 						return
 					}
 				} else { // This is an internal server error
+					logrus.Error(err.Error())
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
