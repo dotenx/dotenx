@@ -10,7 +10,7 @@ import (
 )
 
 func convertEvent(event Event) (string, error) {
-	const dataSourcesTemplate = `function {{.Id}}(dtx_event){
+	const eventTemplate = `function {{.Id}}(dtx_event){
 		{{.RenderedActions}}
 	}
 `
@@ -24,7 +24,7 @@ func convertEvent(event Event) (string, error) {
 		actionsRendered.WriteString(renderedAction + "\n")
 	}
 
-	tmpl, err := template.New("dataSources").Parse(dataSourcesTemplate)
+	tmpl, err := template.New("event").Parse(eventTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -54,9 +54,19 @@ func convertAction(action EventAction) (string, error) {
 	funcMap := template.FuncMap{
 		// The name "title" is what the function will be called in the template text.
 		"renderValueSource": func(valueSource ValueSource) string {
-			if valueSource.IsState {
+
+			switch valueSource.Mode {
+			case "page":
+				fallthrough
+			case "global":
+				fallthrough
+			case "url":
 				return fmt.Sprintf("$store.%s.%s", valueSource.Mode, valueSource.Value)
-			} else {
+			case "source":
+				return fmt.Sprintf("$store.%s", valueSource.Value)
+			case "response":
+				return fmt.Sprintf("dtx_event.%s", valueSource.Value)
+			default:
 				return fmt.Sprintf(`"%s"`, valueSource.Value)
 			}
 		},

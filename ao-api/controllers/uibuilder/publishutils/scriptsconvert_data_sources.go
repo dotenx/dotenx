@@ -10,14 +10,16 @@ import (
 )
 
 type DataSource struct {
-	StateName   string `json:"stateName"`
-	Url         string `json:"url"`
-	Method      string `json:"method"`
-	Headers     string `json:"headers"`
-	Body        string `json:"body"`
-	Id          string `json:"id"`
-	FetchOnload bool   `json:"fetchOnload"`
-	IsPrivate   bool   `json:"isPrivate"`
+	StateName   string        `json:"stateName"`
+	Url         string        `json:"url"`
+	Method      string        `json:"method"`
+	Headers     string        `json:"headers"`
+	Body        string        `json:"body"`
+	Id          string        `json:"id"`
+	FetchOnload bool          `json:"fetchOnload"`
+	IsPrivate   bool          `json:"isPrivate"`
+	OnSuccess   []EventAction `json:"onSuccess"`
+	OnError     []EventAction `json:"onError"`
 }
 
 func convertDataSources(dataSources []interface{}) (string, error) {
@@ -37,8 +39,13 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 				.then(response => response.json())
 				.then(data => {
 					this.{{.StateName}} = data;
-					this.isLoading = false;
+					{{if .OnSuccess}}{{.Id}}_success(data);
 				})
+				.catch(error => {
+					{{if .OnError}}{{.Id}}_error(data);
+					this.error = error
+				})
+				.finally(() => this.isLoading = false);
 		}
 	})
 	{{if .FetchOnload}}Alpine.store('{{.StateName}}').fetch();{{end}}
@@ -65,6 +72,37 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	if err != nil {
 		logrus.Error(err.Error())
 		return "", err
+	}
+
+	// Convert data-source events
+	for _, dataSource := range ds {
+		if len(dataSource.OnSuccess) > 0 {
+
+			onSuccess := Event{
+				Id:      dataSource.Id + "_success",
+				Actions: dataSource.OnSuccess,
+			}
+
+			renderedEvent, err := convertEvent(onSuccess)
+			if err != nil {
+				return "", err
+			}
+			out.WriteString(renderedEvent)
+		}
+
+		if len(dataSource.OnError) > 0 {
+
+			onError := Event{
+				Id:      dataSource.Id + "_error",
+				Actions: dataSource.OnError,
+			}
+
+			renderedEvent, err := convertEvent(onError)
+			if err != nil {
+				return "", err
+			}
+			out.WriteString(renderedEvent)
+		}
 	}
 
 	return out.String(), nil
