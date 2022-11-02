@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Page struct {
@@ -64,6 +66,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	code, err := convertBodyToHTML(page["layout"].([]interface{}), &styleStore, &functionStore)
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 
@@ -118,10 +121,12 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals)
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 	styles, err := styleStore.ConvertToHTML(page["classNames"].(map[string]interface{}))
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 
