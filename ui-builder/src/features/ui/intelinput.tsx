@@ -3,70 +3,18 @@ import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import _ from 'lodash'
 import { useRef } from 'react'
-import { z } from 'zod'
-
-export function IntelinputText({
-	value,
-	onChange,
-	label,
-	options,
-}: {
-	value?: string
-	onChange: (value: string) => void
-	label: string
-	options: string[]
-}) {
-	return (
-		<Intelinput
-			label={label}
-			options={options}
-			value={
-				value
-					?.split(' ')
-					.map((word) =>
-						word.startsWith('$store.')
-							? { kind: IntelinputValueKind.State, data: word }
-							: { kind: IntelinputValueKind.Text, data: word }
-					)
-					.reduce<IntelinputValue[]>((acc, curr) => {
-						if (
-							_.last(acc)?.kind === IntelinputValueKind.Text &&
-							curr.kind === IntelinputValueKind.Text
-						) {
-							return produce(acc, (draft) => {
-								const last = _.last(draft)
-								if (last) last.data = `${last.data} ${curr.data}`
-							})
-						}
-						return [...acc, curr]
-					}, []) ?? []
-			}
-			onChange={(value) =>
-				onChange(
-					value
-						.map((v) =>
-							v.kind === IntelinputValueKind.State && !v.data.includes('$store.')
-								? `$store.page.${v.data}`
-								: v.data
-						)
-						.filter((v) => !!v)
-						.join(' ')
-				)
-			}
-		/>
-	)
-}
+import { Expression, ExpressionKind, Value } from '../states/expression'
 
 export function Intelinput({
 	label,
 	options = [],
-	value,
+	value: expression,
 	onChange,
 }: {
 	label?: string
 	options?: string[]
-	value: IntelinputValue[]
-	onChange: (value: IntelinputValue[]) => void
+	value: Expression
+	onChange: (value: Expression) => void
 	name?: string
 	size?: 'xs'
 	placeholder?: string
@@ -88,42 +36,45 @@ export function Intelinput({
                 focus-within:border-rose-500 group font-mono"
 			>
 				<div className="flex gap-1 flex-wrap">
-					{value.map((inteliValue, index) => {
+					{expression.value.map((inteliValue, index) => {
 						switch (inteliValue.kind) {
-							case IntelinputValueKind.Text:
+							case ExpressionKind.Text:
 								return (
 									<input
 										key={index}
 										onFocus={(event) => {
 											event.stopPropagation()
 										}}
-										ref={index === value.length - 1 ? lastInputRef : undefined}
+										ref={
+											index === expression.value.length - 1
+												? lastInputRef
+												: undefined
+										}
 										className="outline-none w-full py-1 font-mono"
-										// to be fixed
-										// style={{ width: `${inteliValue.data.length || 1}ch` }}
-										value={inteliValue.data}
+										style={{ maxWidth: `${inteliValue.value.length || 1}ch` }}
+										value={inteliValue.value}
 										onChange={(event) =>
 											onChange(
-												produce(value, (draft) => {
-													draft[index].data = event.target.value
+												produce(expression, (draft) => {
+													draft.value[index].value = event.target.value
 												})
 											)
 										}
 									/>
 								)
-							case IntelinputValueKind.State:
+							case ExpressionKind.State:
 								return (
 									<div
 										key={index}
 										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center border"
 									>
-										{inteliValue.data}
+										{inteliValue.value.name}
 										<CloseButton
 											size="xs"
 											onClick={() =>
 												onChange(
-													produce(value, (draft) => {
-														draft.splice(index, 1)
+													produce(expression, (draft) => {
+														draft.value.splice(index, 1)
 													})
 												)
 											}
@@ -132,21 +83,20 @@ export function Intelinput({
 								)
 						}
 					})}
-					{_.last(value)?.kind !== IntelinputValueKind.Text && (
+					{_.last(expression.value)?.kind !== ExpressionKind.Text && (
 						<input
 							ref={lastInputRef}
 							className="outline-none w-full py-1 font-mono"
-							// to be fixed
-							// style={{ width: `${inteliValue.data.length || 1}ch` }}
+							style={{ maxWidth: `${expression.value.length || 1}ch` }}
 							value={newValue}
 							onChange={setNewValue}
 							onBlur={() => {
 								if (!newValue) return
 								onChange(
-									produce(value, (draft) => {
-										draft.push({
-											data: newValue,
-											kind: IntelinputValueKind.Text,
+									produce(expression, (draft) => {
+										draft.value.push({
+											value: newValue,
+											kind: ExpressionKind.Text,
 										})
 									})
 								)
@@ -167,10 +117,10 @@ export function Intelinput({
 								className="hover:bg-gray-200 p-2 rounded text-left font-mono"
 								onClick={() =>
 									onChange(
-										produce(value, (draft) => {
-											draft.push({
-												kind: IntelinputValueKind.State,
-												data: option,
+										produce(expression, (draft) => {
+											draft.value.push({
+												kind: ExpressionKind.State,
+												value: { name: option },
 											})
 										})
 									)
@@ -186,27 +136,17 @@ export function Intelinput({
 	)
 }
 
-export type IntelinputValue = {
-	kind: IntelinputValueKind
-	data: string
-}
-
 export function inteliText(value: string) {
-	return [{ kind: IntelinputValueKind.Text, data: value }]
+	return Expression.fromString(value)
 }
 
 export function inteliState(state: string) {
-	return [{ kind: IntelinputValueKind.State, data: state }]
+	return Expression.fromValue({ kind: ExpressionKind.State, value: { name: state } })
 }
 
-export enum IntelinputValueKind {
-	Text = 'text',
-	State = 'state',
+export function inteliToString(value: Value[]) {
+	return value.map((v) => v.value).join('')
 }
-
-export const intelinputSchema = z.array(
-	z.object({ kind: z.nativeEnum(IntelinputValueKind), data: z.string() })
-)
 
 export function InteliState({
 	label,
@@ -219,23 +159,29 @@ export function InteliState({
 	onChange: (value: InteliStateValue) => void
 	options: string[]
 }) {
-	const inputValue: IntelinputValue = {
-		kind: value?.isState ? IntelinputValueKind.State : IntelinputValueKind.Text,
-		data: value ? value.value : '',
-	}
+	const inputValue: Value = value?.isState
+		? {
+				kind: ExpressionKind.State,
+				value: { name: value.value },
+		  }
+		: {
+				kind: ExpressionKind.Text,
+				value: value?.value ?? '',
+		  }
 
 	return (
 		<Intelinput
 			label={label}
-			value={[inputValue]}
+			value={Expression.fromValue(inputValue)}
 			onChange={(newValue) => {
-				if (_.isEmpty(newValue)) onChange(defaultInteliState())
+				if (_.isEmpty(newValue.value)) onChange(defaultInteliState())
 				else {
-					const last = _.last(newValue)!
+					const last = _.last(newValue.value)!
+					const value = _.isString(last.value) ? last.value : last.value.name
 					onChange({
-						value: last.data,
-						isState: last.kind === IntelinputValueKind.State,
-						mode: getMode(last.data),
+						value: value,
+						isState: last.kind === ExpressionKind.State,
+						mode: getMode(value),
 					})
 				}
 			}}
@@ -249,10 +195,11 @@ function getMode(value: string): InteliStateMode {
 	if (value.startsWith('$store.global.')) return 'global'
 	if (value.startsWith('$store.url.')) return 'url'
 	if (value.startsWith('$store.response.')) return 'response'
+	if (value.startsWith('$store.source.')) return 'source'
 	return 'page'
 }
 
-type InteliStateMode = 'page' | 'url' | 'global' | 'response'
+type InteliStateMode = 'page' | 'url' | 'global' | 'response' | 'source'
 
 export type InteliStateValue = {
 	value: string
@@ -272,10 +219,7 @@ export function serializeInteliState(data: InteliStateValue): InteliStateValue |
 			.replace('$store.page.', '')
 			.replace('$store.global.', '')
 			.replace('$store.url.', '')
-			.replace('$store.response.', ''),
+			.replace('$store.response.', '')
+			.replace('$store.source.', ''),
 	}
-}
-
-export function inteliToString(value: IntelinputValue[]) {
-	return value.map((part) => part.data).join('')
 }

@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/divider-simple-title.png'
@@ -8,7 +7,7 @@ import { TextElement } from '../elements/extensions/text'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class DividerSimpleTitle extends Controller {
 	name = 'Divider simple title'
@@ -57,7 +56,7 @@ function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -69,7 +68,7 @@ function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: subtitleText,
 					title: 'subtitle color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 		</div>
 	)
 }

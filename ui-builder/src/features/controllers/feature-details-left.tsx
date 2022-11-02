@@ -1,18 +1,18 @@
-import { TextInput, Checkbox } from '@mantine/core'
+import { Checkbox } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/feature-details-left.png'
 
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
-import { ImageDrop } from '../ui/image-drop'
 import { ImageElement } from '../elements/extensions/image'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { TextElement } from '../elements/extensions/text'
+import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class FeatureDetailsLeft extends Controller {
 	name = 'Features with details on the left'
@@ -66,7 +66,7 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
-						<DividerCollapsable title="color">
+						<DividerCollapsible title="color">
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: title,
@@ -77,7 +77,7 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 								wrapperDiv: details,
 								title: 'Details color',
 							})}
-						</DividerCollapsable>
+						</DividerCollapsible>
 					</div>
 				),
 				onTabDelete: () => {

@@ -9,11 +9,10 @@ import { usePopper } from 'react-popper'
 import { CSSProperties } from 'styled-components'
 import { AnyJson, JsonArray } from '../../utils'
 import { animateCSS } from '../../utils/animation'
-import { usePageStates } from '../data-bindings/page-states'
+import { AnimationAction } from '../actions/action'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { DroppableMode } from '../dnd/droppable'
 import { DroppablePortal } from '../dnd/droppable-portal'
-import { AnimationAction } from '../elements/actions/action'
 import { Element } from '../elements/element'
 import { EventKind } from '../elements/event'
 import { ImageElement } from '../elements/extensions/image'
@@ -21,7 +20,9 @@ import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
-import { IntelinputValueKind, inteliText } from '../ui/intelinput'
+import { ExpressionKind } from '../states/expression'
+import { usePageStateStore } from '../states/page-states-store'
+import { inteliText } from '../ui/intelinput'
 
 export function RenderElements({
 	elements,
@@ -107,11 +108,14 @@ function RenderElementPreview({
 	overlay: Overlay
 	isDirectRootChildren?: boolean
 }) {
-	const pageStates = usePageStates((store) => store.states)
+	const pageStates = usePageStateStore((store) => store.states)
 
 	if (element.repeatFrom) {
 		const items =
-			(_.get(pageStates, element.repeatFrom.name.replace('$store.', '')) as JsonArray) ?? []
+			(_.get(
+				pageStates,
+				element.repeatFrom.name.replace('$store.source.', '')
+			) as JsonArray) ?? []
 		return (
 			<>
 				{items.map((item, index) => (
@@ -129,11 +133,14 @@ function RenderElementPreview({
 		)
 	}
 
-	if (element instanceof TextElement && element.data.text[0].kind === IntelinputValueKind.State) {
-		const splitPath = element.data.text[0].data.split('.')
+	if (
+		element instanceof TextElement &&
+		element.data.text.value[0].kind === ExpressionKind.State
+	) {
+		const splitPath = element.data.text.value[0].value.name.split('.')
 		const textValue =
 			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
-			_.get(pageStates, element.data.text[0].data.replace('$store.', ''))
+			_.get(pageStates, element.data.text.value[0].value.name.replace('$store.source.', ''))
 		const valuedElement = produce(element, (draft) => {
 			draft.data.text = inteliText(textValue)
 		})

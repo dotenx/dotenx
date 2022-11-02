@@ -3,32 +3,31 @@ import produce from 'immer'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
 
+import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
+import { IconElement } from '../elements/extensions/icon'
+import { ImageElement } from '../elements/extensions/image'
+import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
-	Divider,
-	DividerCollapsable,
+	DividerCollapsible,
 	repeatObject,
 	SimpleComponentOptionsProps,
 } from './helpers'
-import { ImageElement } from '../elements/extensions/image'
-import { LinkElement } from '../elements/extensions/link'
-import { IconElement } from '../elements/extensions/icon'
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { arrayMove } from '@dnd-kit/sortable'
 
-import { TbPlus, TbX } from 'react-icons/tb'
-import { SortableItem, VerticalSortable } from './vertical-sortable'
 import { DragEndEvent } from '@dnd-kit/core'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { TbPlus, TbX } from 'react-icons/tb'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { SortableItem, VerticalSortable } from './vertical-sortable'
 
 export class FooterGrid extends Controller {
 	name = 'Footer grid'
@@ -98,14 +97,14 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 	return (
 		<>
 			<ComponentName name="Footer grid" />
-			<DividerCollapsable title="Logo column">
+			<DividerCollapsible title="Logo column">
 				<LogoColumn options={options} />
-			</DividerCollapsable>
-			<DividerCollapsable title="Link Columns">
+			</DividerCollapsible>
+			<DividerCollapsible title="Link Columns">
 				<ColumnsOptions options={options} />
-			</DividerCollapsable>
+			</DividerCollapsible>
 			{/* Secondary footer */}
-			<DividerCollapsable title="Secondary footer">
+			<DividerCollapsible title="Secondary footer">
 				<Intelinput
 					label="text"
 					name="text"
@@ -233,7 +232,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 						})}
 					</div>
 				</VerticalSortable>
-			</DividerCollapsable>
+			</DividerCollapsible>
 		</>
 	)
 }
@@ -284,7 +283,7 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 			>
 				<FontAwesomeIcon icon={['fas', 'plus']} /> Add Link
 			</Button>
-			<DividerCollapsable title="color">
+			<DividerCollapsible title="color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -296,7 +295,7 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: column,
 					title: 'Column color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 		</div>
 	)
 }

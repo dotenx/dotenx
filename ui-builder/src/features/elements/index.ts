@@ -17,7 +17,6 @@ import { ImageElement } from './extensions/image'
 import { InputElement } from './extensions/input'
 import { LinkElement } from './extensions/link'
 import { MenuButtonElement } from './extensions/nav/menu-button'
-import { NavLinkElement } from './extensions/nav/nav-link'
 import { NavMenuElement } from './extensions/nav/nav-menu'
 import { NavbarElement } from './extensions/nav/navbar'
 import { SelectElement } from './extensions/select'
@@ -70,6 +69,5 @@ export const ElementSections = [
 
 export const ELEMENTS = ElementSections.flatMap((element) => element.items).concat([
 	MenuButtonElement,
-	NavLinkElement,
 	NavMenuElement,
 ])

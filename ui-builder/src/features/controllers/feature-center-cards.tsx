@@ -1,3 +1,5 @@
+import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
 	Button,
 	ColorInput,
@@ -5,27 +7,24 @@ import {
 	SelectItem,
 	Slider,
 	Tabs,
-	Textarea,
 	TextInput,
 	Tooltip,
 } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import { memo, ReactNode, useState } from 'react'
+import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import imageUrl from '../../assets/components/feature-center-cards.jpg'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
 import { IconElement } from '../elements/extensions/icon'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsable, SimpleComponentOptionsProps } from './helpers'
-import { areEqual, FixedSizeGrid as Grid } from 'react-window'
+import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
-import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class FeatureCenterCards extends Controller {
 	name = 'Feature Center Cards'
@@ -266,7 +265,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Color">
+			<DividerCollapsible title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -278,7 +277,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					wrapperDiv: subtitleText,
 					title: 'Subtitle color',
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 			<Button
 				size="xs"
 				fullWidth
@@ -340,7 +339,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsable title="Tiles color">
+			<DividerCollapsible title="Tiles color">
 				{ColorOptions.getBackgroundOption({
 					options,
 					wrapperDiv: containerDiv.children?.[0],
@@ -361,7 +360,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					mapDiv: containerDiv.children,
 					childIndex: 2,
 				})}
-			</DividerCollapsable>
+			</DividerCollapsible>
 
 			<Tabs
 				onTabChange={(name) => setIconType(name as string)}

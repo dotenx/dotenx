@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import _ from 'lodash'
-import { useGetStates } from '../../data-bindings/use-get-states'
-import { IntelinputText } from '../../ui/intelinput'
+import { useGetStates } from '../states/use-get-states'
+import { InteliState } from '../ui/intelinput'
 import {
 	Action,
 	ActionSettingsRawProps,
@@ -47,7 +47,7 @@ function NavigateSettingsRaw({ action, onSubmit }: ActionSettingsRawProps<Naviga
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit}>
-			<IntelinputText
+			<InteliState
 				label="To"
 				options={states.map((s) => s.name)}
 				{...form.getInputProps('to')}

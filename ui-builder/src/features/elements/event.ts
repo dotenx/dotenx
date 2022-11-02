@@ -1,4 +1,4 @@
-import { Action } from './actions/action'
+import { Action } from '../actions/action'
 
 export interface ElementEvent {
 	id: string

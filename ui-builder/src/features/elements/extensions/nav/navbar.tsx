@@ -2,6 +2,7 @@ import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbLayoutNavbar } from 'react-icons/tb'
+import { SimpleShadowsEditor } from '../../../style/shadows-editor'
 import { Element, RenderFn } from '../../element'
 import { Style } from '../../style'
 import { BoxElement } from '../box'
@@ -28,9 +29,8 @@ export class NavbarElement extends Element {
 
 		return [
 			produce(new BoxElement(), (draft) => {
-				_.set(draft, 'style.desktop.default.width', '100px')
-				_.set(draft, 'style.desktop.default.height', '100px')
-				_.set(draft, 'style.desktop.default.minHeight', 'auto')
+				_.set(draft, 'style.desktop.default.minWidth', '100px')
+				_.set(draft, 'style.desktop.default.minHeight', '60px')
 			}),
 			navMenu,
 			produce(new MenuButtonElement(), (draft) => {
@@ -44,6 +44,10 @@ export class NavbarElement extends Element {
 	}
 
 	renderOptions(): ReactNode {
-		return <div className="text-center">This element have no options</div>
+		return (
+			<div className="text-center">
+				<SimpleShadowsEditor />
+			</div>
+		)
 	}
 }

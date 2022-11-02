@@ -1,4 +1,4 @@
-import { DataSource } from '../features/data-bindings/data-source-store'
+import { DataSource } from '../features/data-source/data-source-store'
 import { Element } from '../features/elements/element'
 import { CssSelector, Style } from '../features/elements/style'
 
