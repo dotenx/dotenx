@@ -12,6 +12,7 @@ import { ScatterChart } from './extensions/chart-scatter'
 import { CollapsibleElement } from './extensions/collapsible'
 import { ColumnsElement } from './extensions/columns'
 import { DividerElement } from './extensions/divider'
+import { DropdownElement } from './extensions/dropdown'
 import { FormElement } from './extensions/form'
 import { IconElement } from './extensions/icon'
 import { ImageElement } from './extensions/image'
@@ -45,7 +46,7 @@ export const ElementSections = [
 	},
 	{
 		title: 'Compound',
-		items: [NavbarElement, SliderElement, CollapsibleElement],
+		items: [NavbarElement, SliderElement, CollapsibleElement, DropdownElement],
 	},
 	{
 		title: 'Form',

@@ -1,19 +1,22 @@
 import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
-import { useClickOutside } from '@mantine/hooks'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { previewAtom, TopBar } from '../features/page/top-bar'
-import { SimpleElementSelect } from '../features/simple/element-select'
-import { insertingAtom, SimpleCanvas } from '../features/simple/simple-canvas'
-import { SimpleOptions } from '../features/simple/simple-options'
+import { useAtomValue } from 'jotai'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { previewAtom, TopBar } from '../page/top-bar'
+import { AdvancedCanvas } from './canvas'
+import { ElementDraggerAndLayers } from './element-dragger-layer'
+import { ElementAdvancedSettings } from './settings'
 
-export function SimplePage() {
+export function Advanced() {
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
 
 	return (
-		<AppShell header={<AppHeader />} {...sidebars} padding={0}>
-			<SimpleCanvas />
-		</AppShell>
+		<DndProvider backend={HTML5Backend}>
+			<AppShell header={<AppHeader />} {...sidebars} padding={0}>
+				<AdvancedCanvas />
+			</AppShell>
+		</DndProvider>
 	)
 }
 
@@ -26,11 +29,8 @@ function AppHeader() {
 }
 
 function AppLeftSideBar() {
-	const setInserting = useSetAtom(insertingAtom)
-	const outsideClickRef = useClickOutside(() => setInserting(null))
-
 	return (
-		<Navbar width={{ base: 310 }} ref={outsideClickRef}>
+		<Navbar width={{ base: 310 }}>
 			<Navbar.Section
 				component={ScrollArea}
 				grow
@@ -39,7 +39,7 @@ function AppLeftSideBar() {
 				offsetScrollbars
 			>
 				<div className="py-2 px-4">
-					<SimpleElementSelect />
+					<ElementDraggerAndLayers />
 				</div>
 			</Navbar.Section>
 		</Navbar>
@@ -59,7 +59,7 @@ function AppRightSideBar() {
 				px="xl"
 			>
 				<div className="py-2 px-1">
-					<SimpleOptions />
+					<ElementAdvancedSettings />
 				</div>
 			</Aside.Section>
 		</Aside>

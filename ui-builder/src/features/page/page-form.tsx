@@ -1,10 +1,10 @@
 import { Button, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { addPage, QueryKey } from '../../api'
+import { addPage } from '../../api'
 import { projectTagAtom } from './top-bar'
 
 const schema = z.object({
@@ -17,18 +17,12 @@ const schema = z.object({
 		}),
 })
 
-export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
+export function PageForm() {
+	const projectTag = useAtomValue(projectTagAtom)
 	const { projectName } = useParams()
 	const navigate = useNavigate()
-	const queryClient = useQueryClient()
 	const form = useForm({ initialValues: { pageName: '' }, validate: zodResolver(schema) })
-	const projectTag = useAtomValue(projectTagAtom)
-	const addPageMutation = useMutation(addPage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.Pages])
-			onSuccess()
-		},
-	})
+	const addPageMutation = useMutation(addPage)
 	const onSubmit = form.onSubmit((values) => {
 		addPageMutation.mutate(
 			{
@@ -46,9 +40,9 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 	})
 
 	return (
-		<form onSubmit={onSubmit} className="p-1">
-			<TextInput size="xs" label="Page name" {...form.getInputProps('pageName')} />
-			<Button type="submit" size="xs" mt="xs" fullWidth loading={addPageMutation.isLoading}>
+		<form onSubmit={onSubmit}>
+			<TextInput label="Page name" {...form.getInputProps('pageName')} />
+			<Button type="submit" mt="sm" fullWidth loading={addPageMutation.isLoading}>
 				Add Page
 			</Button>
 		</form>

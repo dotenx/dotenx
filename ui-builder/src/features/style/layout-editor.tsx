@@ -222,6 +222,7 @@ const flexJustifies = [
 	{ label: <TbLayoutAlignRight />, title: 'End', value: 'flex-end' },
 	{ label: <TbLayoutList />, title: 'Space between', value: 'space-between' },
 	{ label: <TbLayoutDistributeVertical />, title: 'Space around', value: 'space-around' },
+	{ label: <TbArrowsHorizontal />, title: 'Stretch', value: 'stretch' },
 ].map(toCenter)
 
 const justifyItems = [
