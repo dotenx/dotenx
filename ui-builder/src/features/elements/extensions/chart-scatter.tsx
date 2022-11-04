@@ -23,7 +23,7 @@ export const options = {
 		},
 		title: {
 			display: true,
-			text: 'Bar Chart',
+			text: 'Scatter Chart',
 		},
 	},
 	scales: {

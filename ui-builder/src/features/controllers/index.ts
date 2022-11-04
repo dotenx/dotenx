@@ -1,7 +1,17 @@
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
 import { CardList } from './card-list'
-import { ChartBar } from './chart-bar'
+import {
+	ChartArea,
+	ChartBar,
+	ChartBubble,
+	ChartDoughnut,
+	ChartLine,
+	ChartPie,
+	ChartPolarArea,
+	ChartRadar,
+	ChartScatter,
+} from './chart-bar'
 import { ComparisonTableSimple } from './comparison-table-simple'
 import { CreateForm } from './create-form'
 import { CustomersGrid } from './customers-grid'
@@ -36,7 +46,20 @@ import { TeamRoundLeft } from './team-round-left'
 
 export const controllers = [
 	{ title: 'About', items: [AboutLeft, AboutRight] },
-	{ title: 'Charts', items: [ChartBar] },
+	{
+		title: 'Charts',
+		items: [
+			ChartBar,
+			ChartArea,
+			ChartBubble,
+			ChartDoughnut,
+			ChartLine,
+			ChartPie,
+			ChartPolarArea,
+			ChartRadar,
+			ChartScatter,
+		],
+	},
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },

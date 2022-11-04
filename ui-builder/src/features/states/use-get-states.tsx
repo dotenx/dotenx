@@ -88,7 +88,11 @@ export const useGetMutableStates = () => {
 			.map((stateName) =>
 				stateName.includes('$store.') ? stateName : `$store.page.${stateName}`
 			)
-			.concat(globalStates.map((state) => `$store.global.${state}`))
+			.concat(
+				globalStates
+					.concat(['token', 'authenticated'])
+					.map((state) => `$store.global.${state}`)
+			)
 	).map((stateName) => ({
 		kind: PropertyKind.Unknown,
 		name: stateName,

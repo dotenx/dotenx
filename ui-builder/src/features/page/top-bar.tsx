@@ -10,7 +10,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 } from 'react-icons/tb'
-import { useMatch, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
@@ -27,14 +27,13 @@ import { ViewportSelection } from '../viewport/viewport-selection'
 import { globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 
-export const selectedPageAtom = atom({ exists: false, route: '' })
+export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
 	useFetchProjectTag()
-	useFetchPage()
 	useFetchGlobalStates()
 
 	return (
@@ -54,30 +53,34 @@ export function TopBar() {
 	)
 }
 
-const useFetchProjectTag = () => {
+export const useFetchProjectTag = () => {
 	const { projectName = '' } = useParams()
 	const setProjectTag = useSetAtom(projectTagAtom)
-	useQuery([QueryKey.ProjectDetails, projectName], () => getProjectDetails({ projectName }), {
-		onSuccess: (data) => setProjectTag(data.data.tag),
-		enabled: !!projectName,
-	})
+	const query = useQuery(
+		[QueryKey.ProjectDetails, projectName],
+		() => getProjectDetails({ projectName }),
+		{
+			onSuccess: (data) => setProjectTag(data.data.tag),
+			enabled: !!projectName,
+		}
+	)
+	return query.data?.data.tag
 }
 
-const useFetchPage = () => {
-	const navigate = useNavigate()
-	const { projectName = '' } = useParams()
-	const isSimple = useMatch('/projects/:projectName/simple')
-	const projectTag = useAtomValue(projectTagAtom)
-	const selectedPage = useAtomValue(selectedPageAtom)
+export const useFetchPage = () => {
+	const projectTag = useFetchProjectTag() ?? ''
+	const { pageName = '', projectName } = useParams()
+	const setSelectedPage = useSetAtom(pageModeAtom)
 	const resetCanvas = useElementsStore((store) => store.reset)
 	const setDataSources = useDataSourceStore((store) => store.set)
 	const setPageState = usePageStateStore((store) => store.setState)
 	const setClassNames = useClassesStore((store) => store.set)
 	const setPageParams = useSetAtom(pageParamsAtom)
+	const navigate = useNavigate()
 
-	useQuery(
-		[QueryKey.PageDetails, projectTag, selectedPage.route],
-		() => getPageDetails({ projectTag, pageName: selectedPage.route }),
+	const query = useQuery(
+		[QueryKey.PageDetails, projectTag, pageName],
+		() => getPageDetails({ projectTag, pageName }),
 		{
 			onSuccess: (data) => {
 				const { content } = data.data
@@ -85,6 +88,8 @@ const useFetchPage = () => {
 				setDataSources(content.dataSources)
 				setClassNames(content.classNames)
 				setPageParams(content.pageParams)
+				setSelectedPage(content.mode)
+
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
@@ -94,14 +99,13 @@ const useFetchPage = () => {
 						})
 						.then((data) => setPageState(source.stateName, data.data))
 				)
-				if (content.mode === 'simple' && !isSimple)
-					navigate(`/projects/${projectName}/simple`)
-				else if (content.mode === 'advanced' && isSimple)
-					navigate(`/projects/${projectName}`)
 			},
-			enabled: !!projectTag && selectedPage.exists && !!selectedPage.route,
+			onError: () => navigate(`/projects/${projectName}`),
+			enabled: !!projectTag && !!pageName,
 		}
 	)
+
+	return query
 }
 
 const useFetchGlobalStates = () => {
@@ -149,9 +153,10 @@ function PreviewButton() {
 
 function AdvancedModeButton() {
 	const queryClient = useQueryClient()
-	const isSimple = useMatch('/projects/:projectName/simple')
+	const mode = useAtomValue(pageModeAtom)
+	const isSimple = mode === 'simple'
+	const { pageName = '' } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
-	const selectedPage = useAtomValue(selectedPageAtom)
 	const elements = useElementsStore((state) => state.elements)
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
@@ -161,7 +166,7 @@ function AdvancedModeButton() {
 	const saveAdvanced = () => {
 		savePageMutation.mutate({
 			projectTag,
-			pageName: selectedPage.route,
+			pageName,
 			elements,
 			dataSources,
 			classNames: classes,

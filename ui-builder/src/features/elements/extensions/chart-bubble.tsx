@@ -15,7 +15,7 @@ export const options = {
 		},
 		title: {
 			display: true,
-			text: 'Bar Chart',
+			text: 'Bubble Chart',
 		},
 	},
 	scales: {

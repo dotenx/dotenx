@@ -1,15 +1,10 @@
-import { ActionIcon, Select, SelectItem, Switch } from '@mantine/core'
+import { ActionIcon, Select, SelectItem } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import '@splidejs/react-splide/css'
 import '@splidejs/react-splide/css/core'
 import produce from 'immer'
 import { FC, ReactNode } from 'react'
-import {
-	TbArrowNarrowDown,
-	TbArrowNarrowUp,
-	TbLayoutSidebarLeftExpand,
-	TbTrash,
-} from 'react-icons/tb'
+import { TbArrowNarrowDown, TbArrowNarrowUp, TbFoldDown, TbTrash } from 'react-icons/tb'
 import { Expression } from '../../states/expression'
 import { Element, RenderFn, RenderOptions } from '../element'
 import { Style } from '../style'
@@ -17,16 +12,16 @@ import { BoxElement } from './box'
 import { IconElement } from './icon'
 import { TextElement } from './text'
 
-export class CollapsibleHeaderCollapsed extends BoxElement {
-	name = 'CollapsibleHeaderCollapsed'
+export class DropdownHeaderCollapsed extends BoxElement {
+	name = 'DropdownHeaderCollapsed'
 	style = {}
 }
-export class CollapsibleHeaderOpened extends BoxElement {
-	name = 'CollapsibleHeaderOpened'
+export class DropdownHeaderOpened extends BoxElement {
+	name = 'DropdownHeaderOpened'
 	style = {}
 }
-export class CollapsibleContent extends BoxElement {
-	name = 'CollapsibleContent'
+export class DropdownContent extends BoxElement {
+	name = 'DropdownContent'
 	style = {}
 }
 
@@ -52,14 +47,10 @@ const colors: string[] = [
 	'#53D634',
 	'#5E5E93',
 ]
-export class CollapsibleElement extends Element {
-	name = 'Collapsible'
-	icon = (<TbLayoutSidebarLeftExpand className="rotate-90" />)
-	children: Element[] = [
-		createSingleCollapsible(),
-		createSingleCollapsible(),
-		createSingleCollapsible(),
-	]
+export class DropdownElement extends Element {
+	name = 'Dropdown'
+	icon = (<TbFoldDown />)
+	children: Element[] = [createSingleDropdown()]
 	style: Style = {
 		desktop: {
 			default: {
@@ -68,6 +59,7 @@ export class CollapsibleElement extends Element {
 				alignItems: 'stretch',
 				padding: '10px',
 				minHeight: 'auto',
+				position: 'relative',
 			},
 		},
 	}
@@ -76,7 +68,7 @@ export class CollapsibleElement extends Element {
 		selected: 0,
 		section: 0,
 		move: { from: '', position: 'before', to: '' },
-		slides: colors.slice(0, 3),
+		slides: colors.slice(0, 1),
 		isToggle: false,
 	}
 
@@ -94,66 +86,12 @@ export class CollapsibleElement extends Element {
 	}
 
 	renderPreview(renderFn: RenderFn) {
-		return <CollapsiblePreview element={this} renderFn={renderFn} />
+		return <DropdownPreview element={this} renderFn={renderFn} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return (
 			<div className="space-y-6">
-				<button
-					className="flex items-center justify-center w-full h-10 text-white bg-red-500 rounded-md"
-					onClick={() => {
-						set(
-							produce(this, (draft) => {
-								draft.children.push(createSingleCollapsible())
-								draft.data.slides.push(colors[draft.children.length - 1])
-							})
-						)
-					}}
-					disabled={this.children.length == colors.length}
-				>
-					+ Add new slide
-				</button>
-				<Container
-					cards={this.data.slides}
-					selected={this.data.selected}
-					setSelected={(index: number) => {
-						set(
-							produce(this, (draft) => {
-								draft.data.selected = index
-							})
-						)
-					}}
-					moveCard={(index: number, isUp: boolean) => {
-						const newIndex = index + (isUp ? -1 : 1)
-						set(
-							produce(this, (draft) => {
-								const temp = draft.data.slides[index]
-								draft.data.slides[index] = draft.data.slides[newIndex]
-								draft.data.slides[newIndex] = temp
-
-								const child = draft.children[index]
-								draft.children[index] = draft.children[newIndex]
-								draft.children[newIndex] = child
-
-								draft.data.selected = newIndex
-							})
-						)
-					}}
-					removeCard={(index: number) => {
-						set(
-							produce(this, (draft) => {
-								if (draft.data.selected === index) {
-									draft.data.selected = 0
-								} else if (draft.data.selected === draft.children.length - 1) {
-									draft.data.selected = draft.children.length - 2
-								}
-								draft.data.slides.splice(index, 1)
-								draft.children.splice(index, 1)
-							})
-						)
-					}}
-				/>
 				<Select
 					label="Section"
 					placeholder="Select a section"
@@ -173,23 +111,12 @@ export class CollapsibleElement extends Element {
 					}}
 					value={this.data.section + ''}
 				/>
-				<Switch
-					label="Toggle"
-					checked={this.data.isToggle}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.isToggle = event.target.checked
-							})
-						)
-					}
-				/>
 			</div>
 		)
 	}
 }
 
-const createSingleCollapsible = () =>
+const createSingleDropdown = () =>
 	produce(new BoxElement(), (draft) => {
 		const createHeader = (isOpen: boolean) => {
 			const headerTitle = produce(new TextElement(), (text) => {
@@ -232,7 +159,7 @@ const createSingleCollapsible = () =>
 				div.children = [headerTitle, headerIcon]
 			})
 			const header = produce(
-				isOpen ? new CollapsibleHeaderOpened() : new CollapsibleHeaderCollapsed(),
+				isOpen ? new DropdownHeaderOpened() : new DropdownHeaderCollapsed(),
 				(div) => {
 					div.children = [headerContentWrapper]
 				}
@@ -243,7 +170,7 @@ const createSingleCollapsible = () =>
 		const headerOpen = createHeader(true)
 		const headerClosed = createHeader(false)
 
-		const content = produce(new CollapsibleContent(), (div) => {
+		const content = produce(new DropdownContent(), (div) => {
 			const text = produce(new TextElement(), (text) => {
 				text.style = {
 					desktop: {
@@ -264,11 +191,26 @@ const createSingleCollapsible = () =>
 				mollit anim id est laborum.`)
 			})
 			div.children = [text]
-			div.style = {}
+			div.style = {
+				desktop: {
+					default: {
+						position: 'absolute',
+						top: '100%',
+						left: '0',
+						right: '0',
+						zIndex: '10',
+						backgroundColor: 'white',
+						boxShadow:
+							'0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+						borderRadius: '6px',
+						padding: '10px',
+					},
+				},
+			}
 		})
 
 		draft.children = [headerOpen, headerClosed, content]
-		draft.style = {}
+		draft.style = { desktop: { default: { position: 'relative' } } }
 	})
 
 //------- container
@@ -393,13 +335,7 @@ const Card: FC<CardProps> = ({
 	)
 }
 
-function CollapsiblePreview({
-	element,
-	renderFn,
-}: {
-	element: CollapsibleElement
-	renderFn: RenderFn
-}) {
+function DropdownPreview({ element, renderFn }: { element: DropdownElement; renderFn: RenderFn }) {
 	return (
 		<div className={element.generateClasses()}>
 			{element.children.map((collapsible) => (
