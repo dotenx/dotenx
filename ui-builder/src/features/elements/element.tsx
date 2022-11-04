@@ -52,7 +52,7 @@ export abstract class Element {
 	}
 
 	generateClasses() {
-		return `${this.classes.join(' ')} ${this.id}`
+		return `${this.classes.join(' ')} ${this.id}`.trim()
 	}
 
 	renderPreview(renderFn: RenderFn, style: CSSProperties = {}) {
