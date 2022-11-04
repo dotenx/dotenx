@@ -10,8 +10,10 @@ import (
 )
 
 type DataSource struct {
-	StateName   string        `json:"stateName"`
-	Url         string        `json:"url"`
+	StateName string `json:"stateName"`
+	Url       struct {
+		Value []TextSource `json:"value"`
+	} `json:"url"`
 	Method      string        `json:"method"`
 	Headers     string        `json:"headers"`
 	Body        string        `json:"body"`
@@ -30,7 +32,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 		{{.StateName}}: Alpine.store(null),
 		fetch: function ({body{{if .Body}}={{.Body}}{{end}}}={}) {
 
-			url = '{{.Url}}';
+			url = '{{range .Url.Value}}{{renderTextSource .}} {{end}}';
 			fetch(url, {
 				method: '{{.Method}}',
 				{{if .Headers}}headers: {{if .IsPrivate}}(...{{.Headers}}, ...{Authorization: 'Bearer ' + App.store('global').token } ){{else}}{{.Headers}},{{end}}{{else}}{{if .IsPrivate}}headers: {Authorization: 'Bearer ' + App.store('global').token },{{end}}{{end}}
@@ -52,16 +54,24 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	{{end}}
 })
 `
-
 	b, err := json.Marshal(dataSources)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Error(err.Error())
 		return "", err
 	}
+
 	var ds []DataSource
 	json.Unmarshal(b, &ds)
-	fmt.Println(ds)
-	tmpl, err := template.New("dataSources").Parse(dataSourcesTemplate)
+	if len(ds) == 0 {
+		return "", nil
+	}
+
+	funcMap := template.FuncMap{
+		// The name "title" is what the function will be called in the template text.
+		"renderTextSource": renderTextSource,
+	}
+
+	tmpl, err := template.New("dataSources").Funcs(funcMap).Parse(dataSourcesTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
