@@ -9,6 +9,7 @@ import { PieChart } from './extensions/chart-pie'
 import { PolarAreaChart } from './extensions/chart-polar-area'
 import { RadarChart } from './extensions/chart-radar'
 import { ScatterChart } from './extensions/chart-scatter'
+import { CollapsibleElement } from './extensions/collapsible'
 import { ColumnsElement } from './extensions/columns'
 import { DividerElement } from './extensions/divider'
 import { FormElement } from './extensions/form'
@@ -39,13 +40,12 @@ export const ElementSections = [
 			BoxElement,
 			ColumnsElement,
 			StackElement,
-			NavbarElement,
 			IconElement,
 		],
 	},
 	{
 		title: 'Compound',
-		items: [NavbarElement, SliderElement],
+		items: [NavbarElement, SliderElement, CollapsibleElement],
 	},
 	{
 		title: 'Form',

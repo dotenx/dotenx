@@ -32,35 +32,37 @@ function NavbarOptions() {
 	const root = useSelectedElement<NavbarElement>()
 	const logo = root.children[0].children?.[0] as ImageElement
 	const navMenu = root.children[1] as NavMenuElement
-	const links = navMenu.children as LinkElement[]
+	const navMenuItems = navMenu.children as LinkElement[]
 
-	const linksTabs: DraggableTab[] = links.map((link, index) => {
-		const text = link.children[0] as TextElement
-		return {
-			id: link.id,
-			content: (
-				<div key={index} className="space-y-6">
-					<TextInput
-						label="Link URL"
-						name="url"
-						size="xs"
-						value={link.data.href}
-						onChange={(event) =>
-							set(link, (draft) => (draft.data.href = event.target.value))
-						}
-					/>
-					<Intelinput
-						label="Text"
-						name="text"
-						size="xs"
-						value={text.data.text}
-						onChange={(value) => set(text, (draft) => (draft.data.text = value))}
-					/>
-				</div>
-			),
-			onTabDelete: () => set(navMenu, (draft) => draft.children.splice(index, 1)),
-		}
-	})
+	const linksTabs: DraggableTab[] = navMenuItems
+		.filter((item): item is LinkElement => item instanceof LinkElement)
+		.map((link, index) => {
+			const text = link.children[0] as TextElement
+			return {
+				id: link.id,
+				content: (
+					<div key={index} className="space-y-6">
+						<TextInput
+							label="Link URL"
+							name="url"
+							size="xs"
+							value={link.data.href}
+							onChange={(event) =>
+								set(link, (draft) => (draft.data.href = event.target.value))
+							}
+						/>
+						<Intelinput
+							label="Text"
+							name="text"
+							size="xs"
+							value={text.data.text}
+							onChange={(value) => set(text, (draft) => (draft.data.text = value))}
+						/>
+					</div>
+				),
+				onTabDelete: () => set(navMenu, (draft) => draft.children.splice(index, 1)),
+			}
+		})
 
 	return (
 		<div className="space-y-6">
@@ -93,6 +95,14 @@ function NavbarOptions() {
 	)
 }
 
+export const createNavLink = (options: { href: string; text: string }) => {
+	return produce(navLink(), (draft) => {
+		draft.data.href = options.href
+		const text = draft.children[0] as TextElement
+		text.data.text = Expression.fromString(options.text)
+	}).serialize()
+}
+
 const defaultData = {
 	kind: 'Navbar',
 	id: 'TpQTeDDSRkskXWOT',
@@ -112,7 +122,12 @@ const defaultData = {
 						alt: '',
 						src: 'https://files.dotenx.com/d924aaa8-245a-425b-bffa-f7d34023dcaf.png',
 						style: {
-							desktop: { default: { width: '200px', height: '80px' } },
+							desktop: {
+								default: {
+									width: '200px',
+									height: '80px',
+								},
+							},
 						},
 					},
 				},
@@ -243,6 +258,8 @@ const defaultData = {
 						'0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
 					'align-items': 'center',
 					'justify-content': 'space-between',
+					'padding-left': '30px',
+					'padding-right': '30px',
 				},
 			},
 		},
