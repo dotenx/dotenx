@@ -17,7 +17,7 @@ func NewProjectService(store projectStore.ProjectStore, tpUserStore userManageme
 }
 
 type ProjectService interface {
-	AddProject(accountId string, project models.Project) error
+	AddProject(accountId string, project models.Project, uiBuilderService uibuilderService.UIbuilderService) error
 	ListProjects(accountId string) ([]models.Project, error)
 	GetProject(accountId string, projectName string) (models.Project, error)
 	GetProjectByTag(tag string) (models.Project, error)
