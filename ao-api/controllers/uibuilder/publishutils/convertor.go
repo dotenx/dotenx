@@ -159,6 +159,12 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		fallthrough
 	case "Divider":
 		return convertBox(component, styleStore, functionStore)
+	case "Navbar":
+		return convertNavbar(component, styleStore, functionStore)
+	case "NavMenu":
+		return convertNavMenu(component, styleStore, functionStore)
+	case "MenuButton":
+		return convertMenuButton(component, styleStore, functionStore)
 	case "Link":
 		return convertLink(component, styleStore, functionStore)
 	case "Columns":
