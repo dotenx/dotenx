@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-type Link struct {
+type MenuButton struct {
 	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`
 	Components []interface{} `json:"components"`
@@ -24,31 +24,32 @@ type Link struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
-		Href         string `json:"href"`
-		OpenInNewTab bool   `json:"openInNewTab"`
+		MenuId string `json:"menuId"` // This is not even used
 	} `json:"data"`
 }
 
-const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{.Href}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const menuButtonTemplate = `<button @click='isOpen = !isOpen' id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</button>`
 
-func convertLink(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	fmt.Println("convertLink")
+func convertMenuButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
 	}
-	var link Link
-	json.Unmarshal(b, &link)
-	tmpl, err := template.New("link").Parse(linkTemplate)
+	var menuButton MenuButton
+	json.Unmarshal(b, &menuButton)
+	tmpl, err := template.New("menuButton").Parse(menuButtonTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
 	}
 
+	visibleAnimation, events := PullVisibleAnimation(menuButton.Events)
+	menuButton.Events = events
+
 	var renderedChildren []string
 
-	for _, child := range link.Components {
+	for _, child := range menuButton.Components {
 		renderedChild, err := convertComponentToHTML(child.(map[string]interface{}), styleStore, functionStore)
 		if err != nil {
 			fmt.Println(err)
@@ -64,18 +65,16 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 			Name     string
 			Iterator string
 		}
-		Events       []Event
-		ClassNames   []string
-		Href         string
-		OpenInNewTab bool
+		Events     []Event
+		ClassNames []string
+		VisibleAnimation
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
-		Id:               link.Id,
-		RepeatFrom:       link.RepeatFrom,
-		Events:           link.Events,
-		ClassNames:       link.ClassNames,
-		Href:             link.Data.Href,
-		OpenInNewTab:     link.Data.OpenInNewTab,
+		Id:               menuButton.Id,
+		RepeatFrom:       menuButton.RepeatFrom,
+		Events:           menuButton.Events,
+		ClassNames:       menuButton.ClassNames,
+		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer
@@ -86,10 +85,10 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 	}
 
 	// Add the events to the function store to be rendered later
-	functionStore.AddEvents(link.Events)
+	functionStore.AddEvents(menuButton.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(link.Id, link.Data.Style.Desktop, link.Data.Style.Tablet, link.Data.Style.Mobile)
+	styleStore.AddStyle(menuButton.Id, menuButton.Data.Style.Desktop, menuButton.Data.Style.Tablet, menuButton.Data.Style.Mobile)
 
 	return out.String(), nil
 }
