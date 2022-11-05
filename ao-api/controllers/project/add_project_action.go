@@ -34,7 +34,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 				AccountId:        accountId,
 				DefaultUserGroup: dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
 				HasDatabase:      dto.HasDatabase,
-			})
+			}, uiBuilderService)
 		}
 		if err != nil {
 			log.Println(err)

@@ -19,7 +19,7 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 		hasDatabase = true
 	}
 
-	err = ps.AddProject(accountId, models.Project{Name: newProjectName, Description: newProjectDescription, HasDatabase: hasDatabase})
+	err = ps.AddProject(accountId, models.Project{Name: newProjectName, Description: newProjectDescription, HasDatabase: hasDatabase}, uiBuilderService)
 	if err != nil {
 		return err
 	}
