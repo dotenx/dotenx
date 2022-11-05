@@ -5,14 +5,14 @@ import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
-import { useAddDataSource } from '../data-bindings/data-source-form'
-import { HttpMethod } from '../data-bindings/data-source-store'
+import { useAddDataSource } from '../data-source/data-source-form'
+import { HttpMethod } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { inteliState } from '../ui/intelinput'
+import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
@@ -46,7 +46,10 @@ function ListOptions({ controller }: { controller: List }) {
 				headers: '',
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
-				url: `https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+				),
+				isPrivate: true,
 			})
 			controller.data.tableName = selectedTable
 			const columns =
@@ -55,8 +58,8 @@ function ListOptions({ controller }: { controller: List }) {
 			set(
 				produce(boxElement, (draft) => {
 					draft.repeatFrom = {
-						name: `$store.${dataSourceName}.rows`,
-						iterator: `${dataSourceName}.rowsItem`,
+						name: `$store.source.${dataSourceName}.rows`,
+						iterator: `${dataSourceName}-rowsItem`,
 					}
 					draft.children = columns.map((col) => {
 						const text = new TextElement()

@@ -21,9 +21,10 @@ import produce from 'immer'
 import _ from 'lodash'
 import { Bar } from 'react-chartjs-2'
 import { JsonArray } from '../../../utils'
-import { usePageStates } from '../../data-bindings/page-states'
-import { useDataSourceStates } from '../../data-bindings/use-get-states'
-import { Intelinput, IntelinputValueKind } from '../../ui/intelinput'
+import { Expression, TextValue } from '../../states/expression'
+import { usePageStateStore } from '../../states/page-states-store'
+import { useDataSourceStates } from '../../states/use-get-states'
+import { Intelinput } from '../../ui/intelinput'
 
 export const defaultChartLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
 export const defaultChartData = defaultChartLabels.map(() => Math.ceil(Math.random() * 1000))
@@ -110,11 +111,11 @@ export class BarChart extends Element {
 type AxisFrom = typeof defaultAxisFrom
 
 export const useGetAxisFrom = (element: ChartElement) => {
-	const pageStates = usePageStates((store) => store.states)
+	const pageStates = usePageStateStore((store) => store.states)
 	if (!(element.data.axisFrom.x.listName || element.data.axisFrom.y.listName)) return element.data
 	const list = _.get(pageStates, element.data.axisFrom.x.listName) as JsonArray
-	const xData = list.map((item) => _.get(item, element.data.axisFrom.x.propName))
-	const yData = list.map((item) => _.get(item, element.data.axisFrom.y.propName))
+	const xData = list.map((item) => _.get(item, element.data.axisFrom.x.propName) as string)
+	const yData = list.map((item) => _.get(item, element.data.axisFrom.y.propName) as number)
 	const data = produce(element.data.data, (draft) => {
 		draft.labels = xData
 		draft.datasets[0].data = yData
@@ -239,12 +240,12 @@ function SingleIntelinput({
 	return (
 		<Intelinput
 			label={label}
-			value={value.listName ? [{ data: inputValue, kind: IntelinputValueKind.State }] : []}
+			value={value.listName ? Expression.fromState(inputValue) : new Expression()}
 			onChange={(value) => {
-				if (_.isEmpty(value)) {
+				if (_.isEmpty(value.value)) {
 					onChange({ listName: '', propName: '' })
 				} else {
-					const [listName, propName] = value[0].data.split('[].')
+					const [listName, propName] = (value.value[0] as TextValue).value.split('[].')
 					onChange({ listName, propName })
 				}
 			}}

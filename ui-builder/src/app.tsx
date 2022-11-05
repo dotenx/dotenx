@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BuilderPage } from './pages/builder'
 import { HomePage } from './pages/home'
 import { NotFoundPage } from './pages/not-found'
-import { SimplePage } from './pages/simple'
 
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
@@ -60,7 +60,7 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
-				<Route path="/projects/:projectName/simple" element={<SimplePage />} />
+				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<HomePage />} />
 				<Route path="/*" element={<NotFoundPage />} />
 			</Routes>

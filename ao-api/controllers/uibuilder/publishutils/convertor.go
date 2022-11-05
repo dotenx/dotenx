@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Page struct {
@@ -30,6 +32,7 @@ var pageTemplate = `<!DOCTYPE html>
 	{{range .Head.Meta}}
 	<meta name="{{.Name}}" content="{{.Content}}">
 	{{end}}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 	<script  src="https://unpkg.com/alpinejs-intersect-class@1.x.x/dist/cdn.min.js"></script>
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
@@ -64,6 +67,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	code, err := convertBodyToHTML(page["layout"].([]interface{}), &styleStore, &functionStore)
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 
@@ -118,10 +122,12 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals)
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 	styles, err := styleStore.ConvertToHTML(page["classNames"].(map[string]interface{}))
 	if err != nil {
+		logrus.Error(err.Error())
 		return "", "", "", err
 	}
 
@@ -142,7 +148,7 @@ func convertBodyToHTML(components []interface{}, styleStore *StyleStore, functio
 }
 
 func convertComponentToHTML(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	fmt.Printf("kind: %#v\n", component["kind"])
+	logrus.Info("kind: ", component["kind"])
 
 	switch component["kind"] {
 	case "Form":
@@ -191,6 +197,24 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertChartScatter(component, styleStore, functionStore)
 	case "Bubble":
 		return convertChartBubble(component, styleStore, functionStore)
+	case "Icon":
+		return convertIcon(component, styleStore, functionStore)
+	case "Collapsible":
+		fallthrough
+	case "Dropdown":
+		return convertCollapsible(component, styleStore, functionStore)
+	case "CollapsibleHeaderCollapsed":
+		fallthrough
+	case "DropdownHeaderCollapsed":
+		return convertCollapsibleHeaderCollapsed(component, styleStore, functionStore)
+	case "CollapsibleHeaderOpened":
+		fallthrough
+	case "DropdownHeaderOpened":
+		return convertCollapsibleHeaderOpened(component, styleStore, functionStore)
+	case "CollapsibleContent":
+		fallthrough
+	case "DropdownContent":
+		return convertCollapsibleContent(component, styleStore, functionStore)
 	default:
 		return "", fmt.Errorf("Unknown component type: %s", component["kind"])
 	}

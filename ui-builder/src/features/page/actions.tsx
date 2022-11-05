@@ -12,32 +12,33 @@ import { useForm } from '@mantine/form'
 import { openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { atom, useAtom, useAtomValue } from 'jotai'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { TbCheck, TbDeviceFloppy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
-import { useMatch, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
+	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	changeGlobalStates,
 	updatePage,
 } from '../../api'
-import { useDataSourceStore } from '../data-bindings/data-source-store'
+import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
-import { pageParamsAtom, projectTagAtom, selectedPageAtom } from './top-bar'
+import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
 
 export function PageActions() {
-	const isSimple = useMatch('/projects/:projectName/simple')
+	const mode = useAtomValue(pageModeAtom)
+	const isSimple = mode === 'simple'
 
 	return (
 		<Button.Group>
 			{!isSimple && <PageSettingsButton />}
-			<DeleteButton />
+			<DeletePageButton />
 			<SaveButton />
 			<PublishButton />
 		</Button.Group>
@@ -45,16 +46,10 @@ export function PageActions() {
 }
 
 function PageSettingsButton() {
-	const selectedPage = useAtomValue(selectedPageAtom)
 	const { projectName = '' } = useParams()
 
 	return (
-		<Tooltip
-			withinPortal
-			withArrow
-			disabled={!selectedPage.exists}
-			label={<Text size="xs">Settings</Text>}
-		>
+		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
 			<Button
 				onClick={() =>
 					openModal({
@@ -63,7 +58,6 @@ function PageSettingsButton() {
 					})
 				}
 				size="xs"
-				disabled={!selectedPage.exists}
 				variant="default"
 			>
 				<TbSettings className="text-sm" />
@@ -132,7 +126,6 @@ function QueryParamsForm() {
 	const form = useForm<{ params: string[] }>({ initialValues: { params: pageParams ?? [] } })
 	const queryClient = useQueryClient()
 	const projectTag = useAtomValue(projectTagAtom)
-	const selectedPage = useAtomValue(selectedPageAtom)
 	const elements = useElementsStore((state) => state.elements)
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
@@ -140,6 +133,7 @@ function QueryParamsForm() {
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
+	const { pageName = '' } = useParams()
 
 	return (
 		<form
@@ -147,7 +141,7 @@ function QueryParamsForm() {
 			onSubmit={form.onSubmit((values) =>
 				savePageMutation.mutate({
 					projectTag,
-					pageName: selectedPage.route,
+					pageName,
 					elements,
 					dataSources,
 					classNames: classes,
@@ -179,31 +173,28 @@ function QueryParamsForm() {
 	)
 }
 
-function DeleteButton() {
+function DeletePageButton() {
+	const navigate = useNavigate()
 	const queryClient = useQueryClient()
 	const projectTag = useAtomValue(projectTagAtom)
-	const selectedPage = useAtomValue(selectedPageAtom)
 	const resetElements = useElementsStore((store) => store.reset)
+	const { projectName } = useParams()
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
+			navigate(`/projects/${projectName}`)
 			queryClient.invalidateQueries([QueryKey.Pages])
 			resetElements()
 		},
 	})
-	const remove = () => deletePageMutation.mutate({ projectTag, pageName: selectedPage.route })
+	const { pageName = '' } = useParams()
+	const remove = () => deletePageMutation.mutate({ projectTag, pageName })
 
 	return (
-		<Tooltip
-			withinPortal
-			withArrow
-			disabled={!selectedPage.exists}
-			label={<Text size="xs">Delete Page</Text>}
-		>
+		<Tooltip withinPortal withArrow label={<Text size="xs">Delete Page</Text>}>
 			<Button
 				onClick={remove}
 				loading={deletePageMutation.isLoading}
 				size="xs"
-				disabled={!selectedPage.exists}
 				variant="default"
 			>
 				<TbTrash className="text-sm" />
@@ -213,28 +204,31 @@ function DeleteButton() {
 }
 
 function SaveButton() {
-	const isSimple = useMatch('/projects/:projectName/simple')
+	const { pageName = '' } = useParams()
+	const mode = useAtomValue(pageModeAtom)
+	const isSimple = mode === 'simple'
 	const projectTag = useAtomValue(projectTagAtom)
-	const [selectedPage, setSelectedPage] = useAtom(selectedPageAtom)
+	const setPageMode = useSetAtom(pageModeAtom)
 	const elements = useElementsStore((store) => store.elements)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const classNames = useClassesStore((store) => store.classes)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const globals = useAtomValue(globalStatesAtom)
-	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => setSelectedPage({ exists: true, route: selectedPage.route }),
-	})
+	const savePageMutation = useMutation(updatePage)
 	const save = () => {
-		savePageMutation.mutate({
-			projectTag,
-			pageName: selectedPage.route,
-			elements,
-			dataSources,
-			classNames,
-			mode: isSimple ? 'simple' : 'advanced',
-			pageParams,
-			globals,
-		})
+		savePageMutation.mutate(
+			{
+				projectTag,
+				pageName,
+				elements,
+				dataSources,
+				classNames,
+				mode: isSimple ? 'simple' : 'advanced',
+				pageParams,
+				globals,
+			},
+			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
+		)
 	}
 
 	return (
@@ -247,8 +241,8 @@ function SaveButton() {
 }
 
 function PublishButton() {
+	const { pageName = '' } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
-	const selectedPage = useAtomValue(selectedPageAtom)
 	const publishPageMutation = useMutation(publishPage, {
 		onSuccess: (data) => {
 			showNotification({
@@ -259,21 +253,11 @@ function PublishButton() {
 			})
 		},
 	})
-	const publish = () => publishPageMutation.mutate({ projectTag, pageName: selectedPage.route })
+	const publish = () => publishPageMutation.mutate({ projectTag, pageName })
 
 	return (
-		<Tooltip
-			disabled={!selectedPage.exists}
-			withinPortal
-			withArrow
-			label={<Text size="xs">Publish Page</Text>}
-		>
-			<Button
-				onClick={publish}
-				loading={publishPageMutation.isLoading}
-				size="xs"
-				disabled={!selectedPage.exists}
-			>
+		<Tooltip withinPortal withArrow label={<Text size="xs">Publish Page</Text>}>
+			<Button onClick={publish} loading={publishPageMutation.isLoading} size="xs">
 				<TbWorldUpload className="text-sm" />
 			</Button>
 		</Tooltip>

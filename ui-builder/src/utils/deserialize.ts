@@ -1,19 +1,18 @@
 import _ from 'lodash'
 import { mapStyleToCamelCaseStyle } from '../api/mapper'
+import { ACTIONS } from '../features/actions'
+import { Action } from '../features/actions/action'
 import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
-import { ACTIONS } from '../features/elements/actions'
-import { Action } from '../features/elements/actions/action'
 import { Element } from '../features/elements/element'
-import { inteliText } from '../features/ui/intelinput'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
 		const instance = new Element()
 		return instance.name === serialized.kind
 	})
-	if (!Constructor) throw new Error(`Element ${name} not found`)
+	if (!Constructor) throw new Error(`Element ${serialized.kind} not found`)
 	const element = new Constructor()
 	element.id = serialized.id
 	element.style = mapStyleToCamelCaseStyle(serialized.data.style)
@@ -27,14 +26,6 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data
-	if (serialized?.data?.text)
-		_.set(
-			element,
-			'data.text',
-			_.isString(serialized.data.text)
-				? inteliText(serialized.data.text)
-				: serialized.data.text
-		)
 	return element
 }
 

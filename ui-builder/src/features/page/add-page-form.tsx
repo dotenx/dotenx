@@ -2,6 +2,7 @@ import { Button, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
+import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { addPage, QueryKey } from '../../api'
 import { projectTagAtom } from './top-bar'
@@ -17,6 +18,8 @@ const schema = z.object({
 })
 
 export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
+	const { projectName } = useParams()
+	const navigate = useNavigate()
 	const queryClient = useQueryClient()
 	const form = useForm({ initialValues: { pageName: '' }, validate: zodResolver(schema) })
 	const projectTag = useAtomValue(projectTagAtom)
@@ -27,16 +30,19 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 		},
 	})
 	const onSubmit = form.onSubmit((values) => {
-		addPageMutation.mutate({
-			projectTag,
-			pageName: values.pageName,
-			elements: [],
-			dataSources: [],
-			classNames: {},
-			mode: 'simple',
-			pageParams: [],
-			globals: [],
-		})
+		addPageMutation.mutate(
+			{
+				projectTag,
+				pageName: values.pageName,
+				elements: [],
+				dataSources: [],
+				classNames: {},
+				mode: 'simple',
+				pageParams: [],
+				globals: [],
+			},
+			{ onSuccess: () => navigate(`/projects/${projectName}/${values.pageName}`) }
+		)
 	})
 
 	return (

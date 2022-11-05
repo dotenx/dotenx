@@ -72,11 +72,8 @@ const AddButton = styled.button`
 	padding-right: 12px;
 	font-weight: 600;
 	cursor: pointer;
-	:hover {
-		background-color: #e11d48;
-	}
 	:active {
-		background-color: #9b1633;
+		background-color: #d41b43;
 	}
 	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

@@ -17,8 +17,11 @@ import produce from 'immer'
 import { TbPlus } from 'react-icons/tb'
 import { z } from 'zod'
 import { AnyJson, uuid } from '../../utils'
-import { ACTIONS } from '../elements/actions'
-import { IntelinputText } from '../ui/intelinput'
+import { ACTIONS } from '../actions'
+import { Expression, ExpressionKind } from '../states/expression'
+import { usePageStateStore } from '../states/page-states-store'
+import { useGetStates } from '../states/use-get-states'
+import { Intelinput, inteliText, inteliToString } from '../ui/intelinput'
 import {
 	DataSource,
 	findPropertyPaths,
@@ -26,12 +29,10 @@ import {
 	httpMethods,
 	useDataSourceStore,
 } from './data-source-store'
-import { usePageStates } from './page-states'
-import { useGetStates } from './use-get-states'
 
 const schema = z.object({
 	stateName: z.string().min(1),
-	url: z.string().url(),
+	url: z.instanceof(Expression),
 	method: z.nativeEnum(HttpMethod),
 	headers: z.string(),
 	body: z.string(),
@@ -48,7 +49,7 @@ export function DataSourceForm({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: '',
+		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -58,7 +59,9 @@ export function DataSourceForm({
 		isPrivate: false,
 	},
 	onSuccess,
+	withoutFetch,
 }: {
+	withoutFetch?: boolean
 	mode: DataSourceFormMode
 	initialValues?: DataSource
 	onSuccess?: (values: Schema) => void
@@ -66,7 +69,12 @@ export function DataSourceForm({
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const isSimple = mode === 'simple-add' || mode === 'simple-edit'
 	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
-	const { addDataSource, mutation } = useAddDataSource({ mode, initialValues, onSuccess })
+	const { addDataSource, mutation } = useAddDataSource({
+		mode,
+		initialValues,
+		onSuccess,
+		withoutFetch,
+	})
 	const handleSubmit = form.onSubmit(addDataSource)
 	const states = useGetStates()
 
@@ -79,7 +87,7 @@ export function DataSourceForm({
 				name="stateName"
 				{...form.getInputProps('stateName')}
 			/>
-			<IntelinputText
+			<Intelinput
 				label="URL"
 				options={states.map((state) => state.name)}
 				{...form.getInputProps('url')}
@@ -242,7 +250,7 @@ export const useAddDataSource = ({
 	mode,
 	initialValues = {
 		stateName: '',
-		url: '',
+		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
 		body: '',
@@ -252,14 +260,16 @@ export const useAddDataSource = ({
 	},
 	onSuccess,
 	onSubmit,
+	withoutFetch,
 }: {
 	mode: DataSourceFormMode
 	initialValues?: DataSource
 	onSuccess?: (values: Schema) => void
 	onSubmit?: (values: AnyJson) => void
+	withoutFetch?: boolean
 }) => {
 	const isAddMode = mode === 'add' || mode === 'simple-add'
-	const setPageState = usePageStates((store) => store.setState)
+	const setPageState = usePageStateStore((store) => store.setState)
 	const { addSource, editSource } = useDataSourceStore((store) => ({
 		addSource: store.add,
 		editSource: store.edit,
@@ -269,9 +279,28 @@ export const useAddDataSource = ({
 			axios.request<AnyJson>({ url, method, data: body })
 	)
 	const addDataSource = (values: Schema) => {
-		const evaluatedUrl = evaluateState(values.url)
+		// This section is particularly used for handling form add request. In this case, we don't want to send an actual request to the server
+		if (withoutFetch) {
+			const response = [] as AnyJson // Based on the current logic we have to at least return an empty array so the state can be used in other places
+			const properties = findPropertyPaths(response)
+			if (isAddMode) {
+				addSource({
+					...values,
+					id: uuid(),
+					properties,
+				})
+				setPageState(values.stateName, response)
+			} else {
+				editSource(initialValues.id, { ...values, properties })
+			}
+			onSuccess?.(values)
+			closeAllModals()
+			return
+		}
+
+		const evaluatedUrl = evaluateExpression(values.url)
 		mutation.mutate(
-			{ url: evaluatedUrl, body: values.body, method: values.method },
+			{ url: inteliToString(evaluatedUrl), body: values.body, method: values.method },
 			{
 				onSuccess: (data) => {
 					const response = data.data
@@ -310,9 +339,8 @@ export const useAddDataSource = ({
 	return { addDataSource, mutation }
 }
 
-export function evaluateState(state: string) {
-	return state
-		.split(' ')
-		.map((part) => (part.startsWith('$store.') ? '1' : part))
-		.join('')
+export function evaluateExpression(expression: Expression) {
+	return expression.value.map((part) =>
+		part.kind === ExpressionKind.State ? inteliText('1').value[0] : part
+	)
 }

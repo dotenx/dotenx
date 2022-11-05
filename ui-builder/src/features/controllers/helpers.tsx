@@ -1,3 +1,6 @@
+import { Collapse } from '@mantine/core'
+import { useState } from 'react'
+import { BsChevronUp } from 'react-icons/bs'
 import { ElementOptions } from './controller'
 
 export function repeatObject<T>(source: T, times: number): T[] {
@@ -19,9 +22,31 @@ export function extractUrl(url: string): string {
 
 export const Divider = ({ title }: { title: string }) => {
 	return (
-		<div className="mt-6 mb-2 flex items-center">
+		<div className={`mt-6 mb-2 flex items-center `}>
 			<span className="whitespace-nowrap mr-1">{title}</span> <hr className=" w-full" />
 		</div>
+	)
+}
+export const DividerCollapsible = ({
+	title,
+	children,
+}: {
+	title: string
+	children: React.ReactNode
+}) => {
+	const [opened, setOpened] = useState(true)
+
+	return (
+		<>
+			<div
+				className="mt-6 mb-2 flex items-center cursor-pointer active:opacity-70 active:text-violet-500"
+				onClick={() => setOpened((o) => !o)}
+			>
+				<span className="whitespace-nowrap mr-1">{title}</span> <hr className=" w-full" />
+				<BsChevronUp className={`${opened ? ' ' : 'rotate-180'}`} />
+			</div>
+			<Collapse in={opened}>{children}</Collapse>
+		</>
 	)
 }
 

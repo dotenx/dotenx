@@ -1,12 +1,12 @@
 import { closeAllModals } from '@mantine/modals'
 import produce from 'immer'
 import _ from 'lodash'
-import { uuid } from '../../../utils'
-import { useDataSourceStore } from '../../data-bindings/data-source-store'
-import { useSelectedElement } from '../../selection/use-selected-component'
-import { AnimationEditor } from '../../style/animation-editor'
-import { Element } from '../element'
-import { useElementsStore } from '../elements-store'
+import { uuid } from '../../utils'
+import { useDataSourceStore } from '../data-source/data-source-store'
+import { Element } from '../elements/element'
+import { useElementsStore } from '../elements/elements-store'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { AnimationEditor } from '../style/animation-editor'
 
 export type Ids = {
 	event: string

@@ -9,15 +9,16 @@ import { PieChart } from './extensions/chart-pie'
 import { PolarAreaChart } from './extensions/chart-polar-area'
 import { RadarChart } from './extensions/chart-radar'
 import { ScatterChart } from './extensions/chart-scatter'
+import { CollapsibleElement } from './extensions/collapsible'
 import { ColumnsElement } from './extensions/columns'
 import { DividerElement } from './extensions/divider'
+import { DropdownElement } from './extensions/dropdown'
 import { FormElement } from './extensions/form'
 import { IconElement } from './extensions/icon'
 import { ImageElement } from './extensions/image'
 import { InputElement } from './extensions/input'
 import { LinkElement } from './extensions/link'
 import { MenuButtonElement } from './extensions/nav/menu-button'
-import { NavLinkElement } from './extensions/nav/nav-link'
 import { NavMenuElement } from './extensions/nav/nav-menu'
 import { NavbarElement } from './extensions/nav/navbar'
 import { SelectElement } from './extensions/select'
@@ -40,13 +41,12 @@ export const ElementSections = [
 			BoxElement,
 			ColumnsElement,
 			StackElement,
-			NavbarElement,
 			IconElement,
 		],
 	},
 	{
 		title: 'Compound',
-		items: [NavbarElement, SliderElement],
+		items: [NavbarElement, SliderElement, CollapsibleElement, DropdownElement],
 	},
 	{
 		title: 'Form',
@@ -70,6 +70,5 @@ export const ElementSections = [
 
 export const ELEMENTS = ElementSections.flatMap((element) => element.items).concat([
 	MenuButtonElement,
-	NavLinkElement,
 	NavMenuElement,
 ])

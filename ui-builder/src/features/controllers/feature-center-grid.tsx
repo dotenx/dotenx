@@ -1,3 +1,5 @@
+import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
 	Button,
 	ColorInput,
@@ -5,26 +7,24 @@ import {
 	SelectItem,
 	Slider,
 	Tabs,
-	Textarea,
 	TextInput,
 	Tooltip,
 } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import { memo, ReactNode, useState } from 'react'
+import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import imageUrl from '../../assets/components/feature-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
 import { IconElement } from '../elements/extensions/icon'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, SimpleComponentOptionsProps } from './helpers'
-import { areEqual, FixedSizeGrid as Grid } from 'react-window'
+import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
-import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
+import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 export class FeatureCenterGrid extends Controller {
 	name = 'Feature Center Grid'
@@ -41,6 +41,7 @@ export class FeatureCenterGrid extends Controller {
 
 function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
+	const wrapper = options.element as BoxElement
 
 	const titleText = options.element.children?.[0].children?.[0] as TextElement
 	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
@@ -266,6 +267,20 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsible title="Color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: titleText,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subtitleText,
+					title: 'Subtitle color',
+				})}
+			</DividerCollapsible>
+
 			<Button
 				size="xs"
 				fullWidth
@@ -327,6 +342,22 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsible title="Tiles color">
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[1],
+					title: ' title color',
+					mapDiv: containerDiv.children,
+					childIndex: 1,
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: containerDiv.children?.[0].children?.[2],
+					title: 'description color',
+					mapDiv: containerDiv.children,
+					childIndex: 2,
+				})}
+			</DividerCollapsible>
 			<Tabs
 				onTabChange={(name) => setIconType(name as string)}
 				variant="pills"
@@ -367,7 +398,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(regularIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}
@@ -382,7 +413,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(solidIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}
@@ -397,7 +428,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
 						columnCount={3}
 						columnWidth={75}
-						height={400}
+						height={300}
 						rowCount={handleSearch(brandIconNames, searchValue).length / 3}
 						rowHeight={35}
 						width={260}

@@ -6,8 +6,9 @@ import { ReactNode, useContext } from 'react'
 import { FrameContext } from 'react-frame-component'
 import { TbEdit, TbForms, TbPlus } from 'react-icons/tb'
 import { AnyJson } from '../../../utils'
-import { DataSourceForm } from '../../data-bindings/data-source-form'
-import { useDataSourceStore } from '../../data-bindings/data-source-store'
+import { DataSourceForm } from '../../data-source/data-source-form'
+import { useDataSourceStore } from '../../data-source/data-source-store'
+import { inteliToString } from '../../ui/intelinput'
 import { Element, RenderFn } from '../element'
 import { useElementsStore } from '../elements-store'
 import { Style } from '../style'
@@ -58,7 +59,7 @@ function FormHandler({ children, element }: { children: ReactNode; element: Form
 				})
 				axios.request({
 					method: dataSource.method,
-					url: dataSource.url,
+					url: inteliToString(dataSource.url.value),
 					data: formValues,
 				})
 			}}
@@ -91,6 +92,7 @@ function FormOptions({ element }: { element: FormElement }) {
 							title: 'Add Request',
 							children: (
 								<DataSourceForm
+									withoutFetch={true}
 									mode="simple-add"
 									initialValues={dataSource}
 									onSuccess={(values) =>

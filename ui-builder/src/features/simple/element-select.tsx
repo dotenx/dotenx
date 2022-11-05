@@ -1,17 +1,17 @@
 import { Divider, Image } from '@mantine/core'
-import produce from 'immer'
 import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { uuid } from '../../utils'
+import { NavigateAction } from '../actions/navigate'
+import { SetStateAction } from '../actions/set-state'
 import { controllers } from '../controllers'
 import { SignInBasic } from '../controllers/sign-in-basic'
 import { SignUpBasic } from '../controllers/sign-up-basic'
-import { HttpMethod, useDataSourceStore } from '../data-bindings/data-source-store'
-import { NavigateAction } from '../elements/actions/navigate'
-import { SetStateAction } from '../elements/actions/set-state'
+import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { FormElement } from '../elements/extensions/form'
 import { projectTagAtom } from '../page/top-bar'
+import { inteliText } from '../ui/intelinput'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleElementSelect() {
@@ -50,7 +50,9 @@ export function SimpleElementSelect() {
 									const newElement = controller.transform()
 									if (controller instanceof SignUpBasic) {
 										const id = uuid()
-										const url = `https://api.dotenx.com/user/management/project/${projectTag}/register`
+										const url = inteliText(
+											`https://api.dotenx.com/user/management/project/${projectTag}/register`
+										)
 										const dataSourceName = `${controller.name}_${id}`
 										const navigateAction = new NavigateAction()
 										navigateAction.to = '/login'
@@ -71,7 +73,9 @@ export function SimpleElementSelect() {
 									}
 									if (controller instanceof SignInBasic) {
 										const id = uuid()
-										const url = `https://api.dotenx.com/user/management/project/${projectTag}/login`
+										const url = inteliText(
+											`https://api.dotenx.com/user/management/project/${projectTag}/login`
+										)
 										const dataSourceName = `${controller.name}_${id}`
 										const navigateAction = new NavigateAction()
 										navigateAction.to = '/login'

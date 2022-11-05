@@ -2,12 +2,12 @@ import { ReactNode } from 'react'
 import { TbMenu } from 'react-icons/tb'
 import { Element, RenderFn } from '../../element'
 import { Style } from '../../style'
-import { NavLinkElement } from './nav-link'
+import { navLink } from '../../utils'
 
 export class NavMenuElement extends Element {
 	name = 'NavMenu'
 	icon = (<TbMenu />)
-	children: Element[] = [new NavLinkElement(), new NavLinkElement(), new NavLinkElement()]
+	children: Element[] = [navLink(), navLink(), navLink()]
 	style: Style = {
 		desktop: {
 			default: {

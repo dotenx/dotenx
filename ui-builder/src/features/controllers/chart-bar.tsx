@@ -1,39 +1,62 @@
-import produce from 'immer'
-import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/team-round-left.png'
-import { deserializeElement } from '../../utils/deserialize'
-import { Controller, ElementOptions } from './controller'
-import { SimpleComponentOptionsProps } from './helpers'
-
-import { BarChart } from '../elements/extensions/chart-bar'
-import { TableSelect, useColumnsQuery } from './create-form'
-import { useInputState } from '@mantine/hooks'
-import { useAtomValue } from 'jotai'
-import { projectTagAtom } from '../page/top-bar'
-import { HttpMethod } from '../data-bindings/data-source-store'
-import { useAddDataSource } from '../data-bindings/data-source-form'
 import { Select } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
+import produce from 'immer'
+import { useAtomValue } from 'jotai'
+import { ReactNode } from 'react'
+import areaChartImg from '../../assets/components/area-chart.png'
+import barChartImg from '../../assets/components/bar-chart.png'
+import bubbleChartImg from '../../assets/components/bubble-chart.png'
+import doughnutChartImg from '../../assets/components/doughnut-chart.png'
+import lineChartImg from '../../assets/components/line-chart.png'
+import pieChartImg from '../../assets/components/pie-chart.png'
+import polarAreaChartImg from '../../assets/components/polar-area-chart.png'
+import radarChartImg from '../../assets/components/radar-chart.png'
+import scatterChartImg from '../../assets/components/scatter-chart.png'
+
+import { deserializeElement } from '../../utils/deserialize'
+import { useAddDataSource } from '../data-source/data-source-form'
+import { HttpMethod } from '../data-source/data-source-store'
+import { AreaChart } from '../elements/extensions/chart-area'
+import { BarChart } from '../elements/extensions/chart-bar'
+import { BubbleChart } from '../elements/extensions/chart-bubble'
+import { DoughnutChart } from '../elements/extensions/chart-doughnut'
+import { LineChart } from '../elements/extensions/chart-line'
+import { PieChart } from '../elements/extensions/chart-pie'
+import { PolarAreaChart } from '../elements/extensions/chart-polar-area'
+import { RadarChart } from '../elements/extensions/chart-radar'
+import { ScatterChart } from '../elements/extensions/chart-scatter'
+import { projectTagAtom } from '../page/top-bar'
+import { inteliText } from '../ui/intelinput'
+import { Controller, ElementOptions } from './controller'
+import { TableSelect, useColumnsQuery } from './create-form'
 
 export class ChartBar extends Controller {
 	name = 'Bar chart'
-	image = imageUrl
+	image = barChartImg
 	defaultData = deserializeElement(defaultData)
+	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <ChartBarOptions options={options} />
+		return <ChartBarOptions options={options} controller={this} />
 	}
 }
 
 // =============  renderOptions =============
 
-function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
+function ChartBarOptions({
+	options,
+	controller,
+}: {
+	options: ElementOptions
+	controller: ChartBar
+}) {
 	const element = options.element as BarChart
 
-	const [selectedTable, setSelectedTable] = useInputState('')
+	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
 
 	const projectTag = useAtomValue(projectTagAtom)
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
-
+	const dataSourceName = `${options.element.id}_data`
 	const columnsQuery = useColumnsQuery({
 		tableName: selectedTable,
 		onSuccess: () => {
@@ -44,10 +67,12 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Post,
-				stateName: options.element.id + '_data',
-				url: `https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`,
+				stateName: dataSourceName,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+				),
 			})
-			// controller.data.tableName = selectedTable
+			controller.data.tableName = selectedTable
 		},
 	})
 
@@ -63,15 +88,15 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 			<Select
 				disabled={!selectedTable}
 				size="xs"
-				label="Title"
+				label="Labels"
 				description="Get title from"
 				data={columns}
-				// value={titleFrom}
+				value={element.data.axisFrom.x.propName}
 				onChange={(value) => {
 					options.set(
 						produce(element, (draft) => {
 							draft.data.axisFrom.x = {
-								listName: `$store.${options.element.id}_data`,
+								listName: `${dataSourceName}.rows`,
 								propName: value ?? '',
 							}
 						})
@@ -81,15 +106,15 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 			<Select
 				disabled={!selectedTable}
 				size="xs"
-				label="Name"
+				label="Data"
 				description="Get name from"
 				data={columns}
-				// value={nameFrom}
+				value={element.data.axisFrom.y.propName}
 				onChange={(value) => {
 					options.set(
 						produce(element, (draft) => {
 							draft.data.axisFrom.y = {
-								listName: `$store.${options.element.id}_data`,
+								listName: `${dataSourceName}.rows`,
 								propName: value ?? '',
 							}
 						})
@@ -105,3 +130,51 @@ function ChartBarOptions({ options }: SimpleComponentOptionsProps) {
 const chart = new BarChart().serialize()
 
 const defaultData = chart
+
+export class ChartArea extends ChartBar {
+	name = 'Area chart'
+	image = areaChartImg
+	defaultData = deserializeElement(new AreaChart().serialize())
+}
+
+export class ChartBubble extends ChartBar {
+	name = 'Bubble chart'
+	image = bubbleChartImg
+	defaultData = deserializeElement(new BubbleChart().serialize())
+}
+
+export class ChartDoughnut extends ChartBar {
+	name = 'Doughnut chart'
+	image = doughnutChartImg
+	defaultData = deserializeElement(new DoughnutChart().serialize())
+}
+
+export class ChartLine extends ChartBar {
+	name = 'Line chart'
+	image = lineChartImg
+	defaultData = deserializeElement(new LineChart().serialize())
+}
+
+export class ChartPie extends ChartBar {
+	name = 'Pie chart'
+	image = pieChartImg
+	defaultData = deserializeElement(new PieChart().serialize())
+}
+
+export class ChartPolarArea extends ChartBar {
+	name = 'PolarArea chart'
+	image = polarAreaChartImg
+	defaultData = deserializeElement(new PolarAreaChart().serialize())
+}
+
+export class ChartRadar extends ChartBar {
+	name = 'Radar chart'
+	image = radarChartImg
+	defaultData = deserializeElement(new RadarChart().serialize())
+}
+
+export class ChartScatter extends ChartBar {
+	name = 'Scatter chart'
+	image = scatterChartImg
+	defaultData = deserializeElement(new ScatterChart().serialize())
+}

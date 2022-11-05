@@ -11,13 +11,14 @@ import { useParams } from 'react-router-dom'
 import { getColumns, GetColumnsResponse, getTables, QueryKey } from '../../api'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
-import { HttpMethod, useDataSourceStore } from '../data-bindings/data-source-store'
+import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { FormElement } from '../elements/extensions/form'
 import { InputElement } from '../elements/extensions/input'
 import { SubmitElement } from '../elements/extensions/submit'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { ComponentName } from './helpers'
 
@@ -56,7 +57,9 @@ function CreateFormOptions({ controller }: { controller: CreateForm }) {
 				method: HttpMethod.Post,
 				properties: [],
 				stateName: sourceName,
-				url: `https://api.dotenx.com/database/query/insert/project/${projectTag}/table/${selectedTable}`,
+				url: inteliText(
+					`https://api.dotenx.com/database/query/insert/project/${projectTag}/table/${selectedTable}`
+				),
 			})
 			const inputs = columns.map((col) => {
 				const input = new InputElement()

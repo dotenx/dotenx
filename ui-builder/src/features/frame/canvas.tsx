@@ -1,6 +1,8 @@
+import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
 import Frame, { FrameContextConsumer } from 'react-frame-component'
 import { StyleSheetManager } from 'styled-components'
+import { previewAtom } from '../page/top-bar'
 import { useCanvasMaxWidth } from '../viewport/viewport-store'
 import { FrameHotkeys } from './hotkey'
 import { FrameStyles } from './style'
@@ -9,6 +11,7 @@ export const ROOT_ID = 'CANVAS_ROOT'
 
 export function CanvasFrame({ children }: { children: ReactNode }) {
 	const maxWidth = useCanvasMaxWidth()
+	const { isFullscreen } = useAtomValue(previewAtom)
 
 	return (
 		<div className="h-full bg-gray-50">
@@ -18,7 +21,7 @@ export function CanvasFrame({ children }: { children: ReactNode }) {
 						<FrameContextConsumer>
 							{(frameContext) => (
 								<StyleSheetManager target={frameContext.document?.head}>
-									<div id={ROOT_ID} style={{ padding: 3 }}>
+									<div id={ROOT_ID} style={{ padding: isFullscreen ? 0 : 3 }}>
 										{children}
 									</div>
 								</StyleSheetManager>

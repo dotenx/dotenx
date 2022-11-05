@@ -4,16 +4,23 @@ import produce from 'immer'
 import _ from 'lodash'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
-import { ACTIONS } from '../elements/actions'
-import { Action } from '../elements/actions/action'
-import { Binding, BindingKind, bindingKinds, Element, RepeatFrom } from '../elements/element'
+import { ACTIONS } from '../actions'
+import {
+	Binding,
+	BindingKind,
+	bindingKinds,
+	Condition,
+	CONDITIONS,
+	RepeatFrom,
+} from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { InteliStateValue } from '../ui/intelinput'
+import { Expression } from '../states/expression'
+import { useGetStates } from '../states/use-get-states'
+import { Intelinput, inteliToString } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
-import { useGetStates } from './use-get-states'
 
 export function DataEditor() {
 	const element = useSelectedElement()
@@ -143,8 +150,8 @@ export function DataEditor() {
 				onChange={(value) =>
 					editRepeatFrom({
 						name: value,
-						iterator: value.replace('$store.', '')
-							? `${value.replace('$store.', '')}Item`
+						iterator: value.replace('$store.source.', '')
+							? `${value.replace('$store.source.', '')}Item`
 							: '',
 					})
 				}
@@ -157,21 +164,6 @@ export function DataEditor() {
 			</Button>
 		</div>
 	)
-}
-
-export const getStateNames = (elements: Element[]) => {
-	let states: string[] = []
-	for (const element of elements) {
-		states = [
-			...states,
-			...element.events
-				.flatMap((event) => event.actions)
-				.filter((a): a is Action & { stateName: InteliStateValue } => 'stateName' in a)
-				.map((action) => action.stateName.value),
-		]
-		states = [...states, ...getStateNames(element.children ?? [])]
-	}
-	return states
 }
 
 function RepeatInput({
@@ -194,7 +186,7 @@ function RepeatInput({
 					data={states
 						.filter((state) => state.kind === PropertyKind.Array)
 						.map((state) => ({
-							label: state.name.replace('$store.', ''),
+							label: state.name.replace('$store.source.', ''),
 							value: state.name,
 						}))}
 					className="grow"
@@ -249,7 +241,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 					from
 				</Text>
 				<Code className="overflow-x-auto grow no-scrollbar max-w-[237px]">
-					{dataSource.url}
+					{inteliToString(dataSource.url.value)}
 				</Code>
 			</div>
 		</div>
@@ -382,29 +374,47 @@ function BindingInput({
 	kind: BindingKind
 	removeBinding: () => void
 }) {
+	const states = useGetStates()
+
 	return (
 		<div className="space-y-2">
 			<CloseButton size="xs" ml="auto" onClick={removeBinding} />
 			<div className="flex items-center gap-2">
-				<Text color="dimmed" size="xs" className="w-8">
-					Get
-				</Text>
-				<Code className="grow">{kind}</Code>
-			</div>
-			<div className="flex items-center gap-2">
-				<Text color="dimmed" size="xs" className="w-8">
-					from
-				</Text>
+				<div className="flex items-center w-12 gap-1">
+					<Code>{kind}</Code>
+					<Text color="dimmed" size="xs">
+						if
+					</Text>
+				</div>
 				<Select
 					size="xs"
 					data={stateNames.map((name) => ({
-						label: name.replace('$store.', ''),
+						label: name.replace('$store.source.', ''),
 						value: name,
 					}))}
 					className="grow"
 					value={binding.fromStateName}
 					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
 				/>
+			</div>
+			<Select
+				size="xs"
+				data={CONDITIONS}
+				className="grow"
+				value={binding.condition}
+				onChange={(value) => onChange({ ...binding, condition: value as Condition })}
+			/>
+			<div className="flex items-center gap-2">
+				<Text color="dimmed" size="xs" className="w-12">
+					value
+				</Text>
+				<div className="grow">
+					<Intelinput
+						options={states.map((s) => s.name)}
+						onChange={(value) => onChange({ ...binding, value })}
+						value={binding.value ?? new Expression()}
+					/>
+				</div>
 			</div>
 		</div>
 	)

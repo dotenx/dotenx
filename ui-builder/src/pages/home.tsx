@@ -1,67 +1,44 @@
-import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
-import { useAtomValue } from 'jotai'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { AdvancedCanvas } from '../features/advanced/canvas'
-import { ElementDraggerAndLayers } from '../features/advanced/element-dragger-layer'
-import { ElementAdvancedSettings } from '../features/advanced/settings'
-import { previewAtom, TopBar } from '../features/page/top-bar'
+import { Container, Divider, Loader, Text } from '@mantine/core'
+import { useQuery } from '@tanstack/react-query'
+import _ from 'lodash'
+import { getPages, QueryKey } from '../api'
+import { PageForm } from '../features/page/page-form'
+import { PageList } from '../features/page/page-list'
+import { useFetchProjectTag } from '../features/page/top-bar'
 
 export function HomePage() {
-	const { isFullscreen } = useAtomValue(previewAtom)
-	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
+	const pagesQuery = usePagesQuery()
+	const pages = pagesQuery.data?.data?.filter((page) => !!page) ?? []
+
+	if (pagesQuery.isLoading) return <Loader size="xs" mx="auto" mt="xl" />
 
 	return (
-		<DndProvider backend={HTML5Backend}>
-			<AppShell header={<AppHeader />} {...sidebars} padding={0}>
-				<AdvancedCanvas />
-			</AppShell>
-		</DndProvider>
+		<Container my="xl" py="xl">
+			{_.isEmpty(pages) ? (
+				<NoPageMessage />
+			) : (
+				<>
+					<PageList pages={pages} />
+					<Divider label="or add a new page" my="xl" />
+				</>
+			)}
+			<PageForm />
+		</Container>
 	)
 }
 
-function AppHeader() {
+function NoPageMessage() {
 	return (
-		<Header height={60} sx={{ zIndex: 110 }}>
-			<TopBar />
-		</Header>
+		<Text size="xs" color="dimmed" my="xl">
+			You have no page yet, add one to continue
+		</Text>
 	)
 }
 
-function AppLeftSideBar() {
-	return (
-		<Navbar width={{ base: 310 }}>
-			<Navbar.Section
-				component={ScrollArea}
-				grow
-				scrollbarSize={0}
-				scrollHideDelay={0}
-				offsetScrollbars
-			>
-				<div className="py-2 px-4">
-					<ElementDraggerAndLayers />
-				</div>
-			</Navbar.Section>
-		</Navbar>
-	)
-}
-
-function AppRightSideBar() {
-	return (
-		<Aside width={{ base: 310 }}>
-			<Aside.Section
-				component={ScrollArea}
-				grow
-				scrollbarSize={4}
-				scrollHideDelay={0}
-				offsetScrollbars
-				mx="-xs"
-				px="xl"
-			>
-				<div className="py-2 px-1">
-					<ElementAdvancedSettings />
-				</div>
-			</Aside.Section>
-		</Aside>
-	)
+const usePagesQuery = () => {
+	const projectTag = useFetchProjectTag() ?? ''
+	const pagesQuery = useQuery([QueryKey.Pages, projectTag], () => getPages({ projectTag }), {
+		enabled: !!projectTag,
+	})
+	return pagesQuery
 }

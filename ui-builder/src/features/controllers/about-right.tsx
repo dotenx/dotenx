@@ -1,18 +1,24 @@
-import { ColorInput, TextInput } from '@mantine/core'
+import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
 
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
-import { LinkElement } from '../elements/extensions/link'
-import { ImageDrop } from '../ui/image-drop'
 import { IconElement } from '../elements/extensions/icon'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { LinkElement } from '../elements/extensions/link'
+import { TextElement } from '../elements/extensions/text'
+import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
+import { Controller, ElementOptions } from './controller'
+import {
+	ComponentName,
+	DividerCollapsible,
+	extractUrl,
+	SimpleComponentOptionsProps,
+} from './helpers'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'
@@ -59,20 +65,18 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
-						<ColorInput
-							label="Icon color"
-							value={icon.style.desktop?.default?.color}
-							onChange={(color) => {
-								options.set(
-									produce(icon, (draft) => {
-										draft.style.desktop!.default!.color = color
-									})
-								)
-							}}
-							className="mt-4"
-							size="xs"
-							format="hsla"
-						/>
+						<DividerCollapsible title="color">
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: icon,
+								title: 'Icon color',
+							})}
+							{ColorOptions.getTextColorOption({
+								wrapperDiv: text,
+								options,
+								title: 'text color',
+							})}
+						</DividerCollapsible>
 					</div>
 				),
 				onTabDelete: () => {
@@ -151,6 +155,32 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			<DividerCollapsible title="color">
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: wrapper,
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: title,
+					title: 'Title color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: subTitle,
+					title: 'Subtitle color',
+				})}
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: cta,
+					title: 'Button background color',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: cta,
+					title: 'Button text color',
+				})}
+			</DividerCollapsible>
 			<DraggableTabs
 				onDragEnd={(event) => {
 					const { active, over } = event

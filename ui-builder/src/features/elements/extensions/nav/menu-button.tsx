@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
@@ -8,9 +7,10 @@ import { BordersEditor } from '../../../style/border-editor'
 import { ShadowsEditor } from '../../../style/shadow-editor'
 import { SizeEditor } from '../../../style/size-editor'
 import { SpacingEditor } from '../../../style/spacing-editor'
-import { Element, RenderOptions } from '../../element'
+import { Element, RenderFn, RenderOptions } from '../../element'
 import { findElement, useElementsStore } from '../../elements-store'
 import { Style } from '../../style'
+import { IconElement } from '../icon'
 
 export class MenuButtonElement extends Element {
 	name = 'MenuButton'
@@ -27,27 +27,16 @@ export class MenuButtonElement extends Element {
 		},
 		tablet: { default: { display: 'flex' } },
 	}
-	data = { text: 'Menu', menuId: '' }
+	data = { menuId: '' }
+	children: Element[] = menuIcon()
 
-	render(): ReactNode {
-		return <MenuButtonRender element={this} />
+	render(renderFn: RenderFn): ReactNode {
+		return <MenuButtonRender element={this}>{renderFn(this)}</MenuButtonRender>
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return (
 			<div className="space-y-6">
-				<TextInput
-					label="Text"
-					size="xs"
-					value={this.data.text}
-					onChange={(event) =>
-						set(
-							produce(this, (draft) => {
-								draft.data.text = event.target.value
-							})
-						)
-					}
-				/>
 				<BackgroundsEditor simple />
 				<SizeEditor simple />
 				<SpacingEditor />
@@ -58,7 +47,24 @@ export class MenuButtonElement extends Element {
 	}
 }
 
-function MenuButtonRender({ element }: { element: MenuButtonElement }) {
+function menuIcon() {
+	const icon = produce(new IconElement(), (draft) => {
+		draft.data.type = 'fas'
+		draft.data.name = 'bars'
+		_.set(draft, 'style.desktop.default.color', '#333333')
+		_.set(draft, 'style.desktop.default.height', '20px')
+		_.set(draft, 'style.desktop.default.width', '20px')
+	})
+	return [icon]
+}
+
+function MenuButtonRender({
+	element,
+	children,
+}: {
+	element: MenuButtonElement
+	children: ReactNode
+}) {
 	const { elements, set } = useElementsStore((store) => ({
 		elements: store.elements,
 		set: store.set,
@@ -76,7 +82,7 @@ function MenuButtonRender({ element }: { element: MenuButtonElement }) {
 
 	return (
 		<button style={{ border: 'none', backgroundColor: 'inherit' }} onClick={handleClick}>
-			{element.data.text}
+			{children}
 		</button>
 	)
 }
