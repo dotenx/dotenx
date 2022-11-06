@@ -15,9 +15,10 @@ import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
 import { ComponentName } from './helpers'
 import { Intelinput } from '../ui/intelinput'
+import { Expression } from '../states/expression'
 
 export class SignUpBasic extends Controller {
-	name = 'Sign Up Basic'
+	name = 'Basic Sign-up '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -209,47 +210,37 @@ const defaultData = {
 						dataSourceName: '',
 					},
 					components: [
-						{
-							kind: 'Text',
-							classNames: [],
-							bindings: {},
-							events: [],
-							id: '',
-							parentId: '',
-							repeatFrom: null,
-							data: {
-								style: {
-									desktop: {
-										default: {
-											blockSize: '99.7969px',
-											border: '0px none rgb(85, 85, 85)',
-											color: 'rgb(85, 85, 85)',
-											columnRule: '0px none rgb(85, 85, 85)',
-											columnRuleColor: 'rgb(85, 85, 85)',
-											display: 'block',
-											fontSize: '39px',
-											height: '99.7969px',
-											inlineSize: '460px',
-											lineHeight: '46.8px',
-											minBlockSize: 'auto',
-											minHeight: 'auto',
-											minInlineSize: 'auto',
-											minWidth: 'auto',
-											outline: 'rgb(85, 85, 85) none 0px',
-											outlineColor: 'rgb(85, 85, 85)',
-											padding: '0px 0px 53px',
-											textAlign: 'center',
-											textDecoration: 'none solid rgb(85, 85, 85)',
-											width: 'auto',
-										},
+						produce(new TextElement(), (draft) => {
+							draft.style = {
+								desktop: {
+									default: {
+										blockSize: '99.7969px',
+										border: '0px none rgb(85, 85, 85)',
+										color: 'rgb(85, 85, 85)',
+										columnRule: '0px none rgb(85, 85, 85)',
+										columnRuleColor: 'rgb(85, 85, 85)',
+										display: 'block',
+										fontSize: '39px',
+										height: '99.7969px',
+										inlineSize: '460px',
+										lineHeight: '46.8px',
+										minBlockSize: 'auto',
+										minHeight: 'auto',
+										minInlineSize: 'auto',
+										minWidth: 'auto',
+										outline: 'rgb(85, 85, 85) none 0px',
+										outlineColor: 'rgb(85, 85, 85)',
+										padding: '0px 0px 53px',
+										textAlign: 'center',
+										textDecoration: 'none solid rgb(85, 85, 85)',
+										width: 'auto',
 									},
-									tablet: {},
-									mobile: {},
 								},
-								text: 'Sign Up',
-							},
-							components: [],
-						},
+								tablet: {},
+								mobile: {},
+							}
+							draft.data.text = Expression.fromString('Sign Up')
+						}).serialize(),
 						...roundInputWithLabel({
 							label: 'Email',
 							inputName: 'email',
@@ -295,25 +286,20 @@ const defaultData = {
 								},
 							},
 							components: [
-								{
-									kind: 'Text',
-									...elementBase,
-									data: {
-										style: {
-											desktop: {
-												default: {
-													lineHeight: '21px',
-													textAlign: 'center',
-													textDecoration: 'none solid rgb(153, 153, 153)',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												lineHeight: '21px',
+												textAlign: 'center',
+												textDecoration: 'none solid rgb(153, 153, 153)',
 											},
-											tablet: {},
-											mobile: {},
 										},
-										text: 'I agree with&nbsp;',
-									},
-									components: [],
-								},
+										tablet: {},
+										mobile: {},
+									}
+									draft.data.text = Expression.fromString('I agree with&nbsp;')
+								}).serialize(),
 								{
 									kind: 'Link',
 									...elementBase,
@@ -327,48 +313,39 @@ const defaultData = {
 										openInNewTab: false,
 									},
 									components: [
-										{
-											kind: 'Text',
-											...elementBase,
-											data: {
-												style: {
-													desktop: {
-														default: {
-															display: 'inline',
-															color: 'rgb(153, 153, 153)',
-															textAlign: 'center',
-															textDecoration:
-																'none solid rgb(153, 153, 153)',
-														},
+										produce(new TextElement(), (draft) => {
+											draft.style = {
+												desktop: {
+													default: {
+														display: 'inline',
+														color: 'rgb(153, 153, 153)',
+														textAlign: 'center',
+														textDecoration:
+															'none solid rgb(153, 153, 153)',
 													},
-													tablet: {},
-													mobile: {},
 												},
-												text: 'terms of service',
-											},
-											components: [],
-										},
+												tablet: {},
+												mobile: {},
+											}
+											draft.data.text =
+												Expression.fromString('terms of service')
+										}).serialize(),
 									],
 								},
-								{
-									kind: 'Text',
-									...elementBase,
-									data: {
-										style: {
-											desktop: {
-												default: {
-													lineHeight: '21px',
-													textAlign: 'center',
-													textDecoration: 'none solid rgb(153, 153, 153)',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												lineHeight: '21px',
+												textAlign: 'center',
+												textDecoration: 'none solid rgb(153, 153, 153)',
 											},
-											tablet: {},
-											mobile: {},
 										},
-										text: '&nbsp;and&nbsp;',
-									},
-									components: [],
-								},
+										tablet: {},
+										mobile: {},
+									}
+									draft.data.text = Expression.fromString('&nbsp;and&nbsp;')
+								}).serialize(),
 								{
 									kind: 'Link',
 									...elementBase,
@@ -382,27 +359,23 @@ const defaultData = {
 										openInNewTab: false,
 									},
 									components: [
-										{
-											kind: 'Text',
-											...elementBase,
-											data: {
-												style: {
-													desktop: {
-														default: {
-															display: 'inline',
-															color: 'rgb(153, 153, 153)',
-															textAlign: 'center',
-															textDecoration:
-																'none solid rgb(153, 153, 153)',
-														},
+										produce(new TextElement(), (draft) => {
+											draft.style = {
+												desktop: {
+													default: {
+														display: 'inline',
+														color: 'rgb(153, 153, 153)',
+														textAlign: 'center',
+														textDecoration:
+															'none solid rgb(153, 153, 153)',
 													},
-													tablet: {},
-													mobile: {},
 												},
-												text: 'privacy policy',
-											},
-											components: [],
-										},
+												tablet: {},
+												mobile: {},
+											}
+											draft.data.text =
+												Expression.fromString('privacy policy')
+										}).serialize(),
 									],
 								},
 							],
@@ -431,25 +404,21 @@ const defaultData = {
 								},
 							},
 							components: [
-								{
-									kind: 'Text',
-									...elementBase,
-									data: {
-										style: {
-											desktop: {
-												default: {
-													lineHeight: '21px',
-													textAlign: 'center',
-													textDecoration: 'none solid rgb(153, 153, 153)',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												lineHeight: '21px',
+												textAlign: 'center',
+												textDecoration: 'none solid rgb(153, 153, 153)',
 											},
-											tablet: {},
-											mobile: {},
 										},
-										text: 'Already a member?&nbsp',
-									},
-									components: [],
-								},
+										tablet: {},
+										mobile: {},
+									}
+									draft.data.text =
+										Expression.fromString('Already a member?&nbsp')
+								}).serialize(),
 								{
 									kind: 'Link',
 									...elementBase,
@@ -463,27 +432,22 @@ const defaultData = {
 										openInNewTab: false,
 									},
 									components: [
-										{
-											kind: 'Text',
-											...elementBase,
-											data: {
-												style: {
-													desktop: {
-														default: {
-															display: 'inline',
-															color: 'rgb(153, 153, 153)',
-															textAlign: 'center',
-															textDecoration:
-																'none solid rgb(153, 153, 153)',
-														},
+										produce(new TextElement(), (draft) => {
+											draft.style = {
+												desktop: {
+													default: {
+														display: 'inline',
+														color: 'rgb(153, 153, 153)',
+														textAlign: 'center',
+														textDecoration:
+															'none solid rgb(153, 153, 153)',
 													},
-													tablet: {},
-													mobile: {},
 												},
-												text: 'Sign in',
-											},
-											components: [],
-										},
+												tablet: {},
+												mobile: {},
+											}
+											draft.data.text = Expression.fromString('Sign in')
+										}).serialize(),
 									],
 								},
 							],

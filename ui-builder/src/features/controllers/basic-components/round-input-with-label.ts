@@ -1,4 +1,7 @@
+import produce from 'immer'
+import { TextElement } from '../../elements/extensions/text'
 import { Style } from '../../elements/style'
+import { Expression } from '../../states/expression'
 import { elementBase } from './base'
 type roundInputWithLabelProps = {
 	label: string
@@ -33,60 +36,50 @@ const element = ({
 			},
 		},
 		components: [
-			{
-				kind: 'Text',
-				classNames: [],
-				bindings: {},
-				events: [],
-				id: '',
-				parentId: '',
-				repeatFrom: null,
-				data: {
-					style: {
-						desktop: {
-							default: {
-								border: '0px none rgb(85, 85, 85)',
-								borderBlock: '0px none rgb(85, 85, 85)',
-								borderBlockColor: 'rgb(85, 85, 85)',
-								borderBlockEnd: '0px none rgb(85, 85, 85)',
-								borderBlockEndColor: 'rgb(85, 85, 85)',
-								borderBlockStart: '0px none rgb(85, 85, 85)',
-								borderBlockStartColor: 'rgb(85, 85, 85)',
-								borderBottom: '0px none rgb(85, 85, 85)',
-								borderBottomColor: 'rgb(85, 85, 85)',
-								borderColor: 'rgb(85, 85, 85)',
-								borderInline: '0px none rgb(85, 85, 85)',
-								borderInlineColor: 'rgb(85, 85, 85)',
-								borderInlineEnd: '0px none rgb(85, 85, 85)',
-								borderInlineEndColor: 'rgb(85, 85, 85)',
-								borderInlineStart: '0px none rgb(85, 85, 85)',
-								borderInlineStartColor: 'rgb(85, 85, 85)',
-								borderLeft: '0px none rgb(85, 85, 85)',
-								borderLeftColor: 'rgb(85, 85, 85)',
-								borderRight: '0px none rgb(85, 85, 85)',
-								borderRightColor: 'rgb(85, 85, 85)',
-								borderTop: '0px none rgb(85, 85, 85)',
-								borderTopColor: 'rgb(85, 85, 85)',
-								caretColor: 'rgb(85, 85, 85)',
-								color: 'rgb(85, 85, 85)',
-								columnRule: '0px none rgb(85, 85, 85)',
-								columnRuleColor: 'rgb(85, 85, 85)',
-								fontSize: '16px',
-								outline: 'rgb(85, 85, 85) none 0px',
-								outlineColor: 'rgb(85, 85, 85)',
-								textDecoration: 'none solid rgb(85, 85, 85)',
-								textDecorationColor: 'rgb(85, 85, 85)',
-								textEmphasis: 'none rgb(85, 85, 85)',
-								textEmphasisColor: 'rgb(85, 85, 85)',
-							},
+			produce(new TextElement(), (draft) => {
+				draft.style = {
+					desktop: {
+						default: {
+							border: '0px none rgb(85, 85, 85)',
+							borderBlock: '0px none rgb(85, 85, 85)',
+							borderBlockColor: 'rgb(85, 85, 85)',
+							borderBlockEnd: '0px none rgb(85, 85, 85)',
+							borderBlockEndColor: 'rgb(85, 85, 85)',
+							borderBlockStart: '0px none rgb(85, 85, 85)',
+							borderBlockStartColor: 'rgb(85, 85, 85)',
+							borderBottom: '0px none rgb(85, 85, 85)',
+							borderBottomColor: 'rgb(85, 85, 85)',
+							borderColor: 'rgb(85, 85, 85)',
+							borderInline: '0px none rgb(85, 85, 85)',
+							borderInlineColor: 'rgb(85, 85, 85)',
+							borderInlineEnd: '0px none rgb(85, 85, 85)',
+							borderInlineEndColor: 'rgb(85, 85, 85)',
+							borderInlineStart: '0px none rgb(85, 85, 85)',
+							borderInlineStartColor: 'rgb(85, 85, 85)',
+							borderLeft: '0px none rgb(85, 85, 85)',
+							borderLeftColor: 'rgb(85, 85, 85)',
+							borderRight: '0px none rgb(85, 85, 85)',
+							borderRightColor: 'rgb(85, 85, 85)',
+							borderTop: '0px none rgb(85, 85, 85)',
+							borderTopColor: 'rgb(85, 85, 85)',
+							caretColor: 'rgb(85, 85, 85)',
+							color: 'rgb(85, 85, 85)',
+							columnRule: '0px none rgb(85, 85, 85)',
+							columnRuleColor: 'rgb(85, 85, 85)',
+							fontSize: '16px',
+							outline: 'rgb(85, 85, 85) none 0px',
+							outlineColor: 'rgb(85, 85, 85)',
+							textDecoration: 'none solid rgb(85, 85, 85)',
+							textDecorationColor: 'rgb(85, 85, 85)',
+							textEmphasis: 'none rgb(85, 85, 85)',
+							textEmphasisColor: 'rgb(85, 85, 85)',
 						},
-						tablet: {},
-						mobile: {},
 					},
-					text: label,
-				},
-				components: [],
-			},
+					tablet: {},
+					mobile: {},
+				}
+				draft.data.text = Expression.fromString(label)
+			}).serialize(),
 		],
 	},
 	{
