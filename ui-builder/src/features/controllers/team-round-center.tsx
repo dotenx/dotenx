@@ -9,11 +9,12 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 import Bio from './basic-components/bio'
 import { ImageDrop } from '../ui/image-drop'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import ColorOptions from './basic-components/color-options'
 
 export class TeamRoundCenter extends Controller {
 	name = 'Team with round profiles centered'
@@ -34,6 +35,7 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 		return containerDiv.children.map((column, index) => {
 			const image = column.children![0] as ImageElement
 			const bioRoot = column.children![1] as BoxElement
+
 			return {
 				id: column.id,
 				content: (
@@ -49,6 +51,18 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 							}
 						/>
 						{Bio.getOptions({ set: options.set, root: bioRoot })}
+						<DividerCollapsible title="Color">
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: column.children![1].children![0],
+								title: 'Title',
+							})}
+							{ColorOptions.getTextColorOption({
+								options,
+								wrapperDiv: column.children![1].children![1],
+								title: 'Description',
+							})}
+						</DividerCollapsible>
 					</div>
 				),
 				onTabDelete: () => {
@@ -117,6 +131,7 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr 1fr 1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
+			paddingTop: '50px',
 		},
 	}
 }).serialize()
@@ -162,6 +177,7 @@ const createBioWithImage = ({
 				paddingTop: '20px',
 				paddingBottom: '20px',
 				gap: '10px',
+				textAlign: 'center',
 			},
 		}
 

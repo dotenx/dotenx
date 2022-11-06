@@ -1,4 +1,4 @@
-import { Button, Select, Switch, TextInput } from '@mantine/core'
+import { Button, Select, Switch, ColorInput } from '@mantine/core'
 import produce from 'immer'
 import React, { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/comparison-table-simple.png'
@@ -6,12 +6,19 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, repeatObject, SimpleComponentOptionsProps } from './helpers'
+import {
+	ComponentName,
+	Divider,
+	DividerCollapsible,
+	repeatObject,
+	SimpleComponentOptionsProps,
+} from './helpers'
 
 import { Element } from '../elements/element'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class ComparisonTableSimple extends Controller {
 	name = 'Simple comparison table'
@@ -40,7 +47,6 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 			.split('1fr').length
 		return repeatObject(0, totalCells / colsCount).map((_, i) => i + 1 + '')
 	}, [gridDiv.children.length, gridDiv.style.desktop!.default!.gridTemplateColumns])
-
 	const cols = useMemo(() => {
 		const colsCount = gridDiv.style
 			.desktop!.default!.gridTemplateColumns!.toString()
@@ -203,6 +209,28 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 				}}
 				value={(gridDiv.children?.[selectedTile].children?.[0] as TextElement).data.text}
 			/>
+			<DividerCollapsible title="color">
+				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: options.element,
+					title: 'Text color',
+				})}
+				<ColorInput
+					value={gridDiv.style.desktop!.default!.borderColor}
+					label="Border color"
+					onChange={(value: any) => {
+						options.set(
+							produce(gridDiv as BoxElement, (draft) => {
+								draft.style.desktop!.default!.borderColor = value
+							})
+						)
+					}}
+					className="col-span-9"
+					size="xs"
+					format="hsla"
+				/>
+			</DividerCollapsible>
 		</div>
 	)
 }
@@ -224,6 +252,12 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			marginRight: '10%',
 			paddingTop: '40px',
 			paddingBottom: '40px',
+			borderRadius: '15px',
+			borderWidth: '1px',
+			borderStyle: 'solid',
+			borderColor: 'rgb(142, 142, 142)',
+			backgroundColor: 'white',
+			color: 'black',
 		},
 	}
 	draft.style.mobile = {
@@ -240,10 +274,10 @@ const newElement = (element: BoxElement): BoxElement =>
 				fontSize: '14px',
 				borderTopWidth: '1px',
 				borderTopStyle: 'solid',
-				borderTopColor: 'rgb(142, 142, 142)',
+				borderColor: 'inherit',
 				float: 'left',
-				paddingTop: '10px',
-				paddingBottom: '10px',
+				padding: '10px',
+				wordBreak: 'break-all',
 			},
 		}
 
@@ -259,6 +293,8 @@ const title = produce(newElement(new BoxElement()), (draft) => {
 			...draft.style.desktop!.default,
 			fontSize: '20px',
 			fontWeight: '600',
+			padding: '10px',
+			wordBreak: 'break-all',
 		},
 	}
 })

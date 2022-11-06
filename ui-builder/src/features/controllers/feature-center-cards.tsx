@@ -343,7 +343,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 				{ColorOptions.getBackgroundOption({
 					options,
 					wrapperDiv: containerDiv.children?.[0],
-					title: 'Vackground color',
+					title: 'Background color',
 					mapDiv: containerDiv.children,
 				})}
 				{ColorOptions.getTextColorOption({
