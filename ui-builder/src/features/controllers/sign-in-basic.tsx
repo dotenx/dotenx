@@ -5,8 +5,10 @@ import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
+import { FormElement } from '../elements/extensions/form'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
 import { elementBase } from './basic-components/base'
@@ -16,7 +18,7 @@ import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 
 export class SignInBasic extends Controller {
-	name = 'Sign In Basic'
+	name = 'Basic Sign-in'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -97,100 +99,86 @@ export class SignInBasic extends Controller {
 	}
 }
 
-const defaultData = {
-	kind: 'Box',
-	...elementBase,
-	data: {
-		style: {
-			desktop: {
-				default: {
-					alignItems: 'center',
-					backgroundColor: 'rgb(188, 213, 235)',
-					backgroundImage:
-						'url(https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjY0Nzg0NzQz&auto=format&fit=crop&w=2400&q=80)',
-					backgroundPosition: '50% 50%',
-					backgroundRepeat: 'no-repeat',
-					backgroundSize: 'cover',
-					display: 'flex',
-					flexFlow: 'row wrap',
-					flexWrap: 'wrap',
-					fontFamily: 'Roboto',
-					height: '1000px',
-					justifyContent: 'center',
-					minHeight: '1000px',
-					padding: '0px',
-					width: '100%',
-				},
-			},
-			tablet: {},
-			mobile: {},
+
+const wrapper = produce(new BoxElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			alignItems: 'center',
+			backgroundColor: 'rgb(188, 213, 235)',
+			backgroundImage:
+				'url(https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjY0Nzg0NzQz&auto=format&fit=crop&w=2400&q=80)',
+			backgroundPosition: '50% 50%',
+			backgroundRepeat: 'no-repeat',
+			backgroundSize: 'cover',
+			display: 'flex',
+			flexFlow: 'row wrap',
+			flexWrap: 'wrap',
+			fontFamily: 'Roboto',
+			height: '1000px',
+			justifyContent: 'center',
+			minHeight: '1000px',
+			padding: '0px',
+			width: '100%',
 		},
-	},
+	}
+}).serialize()
+
+
+const formWrapper = produce(new BoxElement(), (draft) => {
+	draft.style = {
+		desktop: {
+			default: {
+				backgroundColor: 'rgb(255, 255, 255)',
+				borderRadius: '10px',
+				bottom: '0px',
+				display: 'block',
+				minHeight: '584.797px',
+				inlineSize: '680px',
+				inset: '0px',
+				paddingBottom: '33px',
+				paddingLeft: '110px',
+				paddingRight: '110px',
+				paddingTop: '62px',
+				position: 'relative',
+				width: '680px',
+			},
+		},
+		tablet: {
+			default: {
+				width: '90%',
+				padding: '0px',
+				paddingTop: '30px',
+				paddingLeft: '5%',
+				paddingRight: '5%',
+			},
+		},
+		mobile: {
+			default: {
+				width: '90%',
+			},
+		},
+	}
+
+}).serialize()
+
+const form = produce(new FormElement(), (draft) => {
+	draft.data.dataSourceName = 'login'
+}).serialize()
+
+const defaultData = {
+	...wrapper,
 	components: [
 		{
-			kind: 'Box',
-			...elementBase,
-			data: {
-				style: {
-					desktop: {
-						default: {
-							backgroundColor: 'rgb(255, 255, 255)',
-							borderRadius: '10px',
-							bottom: '0px',
-							display: 'block',
-							minHeight: '584.797px',
-							inlineSize: '680px',
-							inset: '0px',
-							paddingBottom: '33px',
-							paddingLeft: '110px',
-							paddingRight: '110px',
-							paddingTop: '62px',
-							position: 'relative',
-							width: '680px',
-						},
-					},
-					tablet: {
-						default: {
-							width: '90%',
-							padding: '0px',
-							paddingTop: '30px',
-							paddingLeft: '5%',
-							paddingRight: '5%',
-						},
-					},
-					mobile: {
-						default: {
-							width: '90%',
-						},
-					},
-				},
-			},
+			...formWrapper,
 			components: [
 				{
-					kind: 'Form',
-					...elementBase,
-					data: {
-						style: {
-							desktop: {},
-							tablet: {},
-							mobile: {},
-						},
-						dataSourceName: '',
-					},
+					...form,
 					components: [
-						{
-							kind: 'Text',
-							classNames: [],
-							bindings: {},
-							events: [],
-							id: '',
-							parentId: '',
-							repeatFrom: null,
-							data: {
-								style: {
-									desktop: {
-										default: {
-											blockSize: '99.7969px',
+						produce(new TextElement(), (draft)=>{
+							draft.style = {
+								desktop: {
+									default: {
+										blockSize: '99.7969px',
 											border: '0px none rgb(85, 85, 85)',
 											color: 'rgb(85, 85, 85)',
 											columnRule: '0px none rgb(85, 85, 85)',
@@ -210,15 +198,13 @@ const defaultData = {
 											textAlign: 'center',
 											textDecoration: 'none solid rgb(85, 85, 85)',
 											width: 'auto',
-										},
 									},
-									tablet: {},
-									mobile: {},
 								},
-								text: 'Sign In',
-							},
-							components: [],
-						},
+								tablet: {},
+								mobile: {},
+							}
+							draft.data.text = Expression.fromString('Sign In')
+						}).serialize(),
 						...roundInputWithLabel({
 							label: 'Email',
 							inputName: 'email',
@@ -262,25 +248,20 @@ const defaultData = {
 								},
 							},
 							components: [
-								{
-									kind: 'Text',
-									...elementBase,
-									data: {
-										style: {
-											desktop: {
-												default: {
-													lineHeight: '21px',
-													textAlign: 'center',
-													textDecoration: 'none solid rgb(153, 153, 153)',
-												},
+								produce(new TextElement(), (draft)=>{
+									draft.style = {
+										desktop: {
+											default: {
+												lineHeight: '21px',
+												textAlign: 'center',
+												textDecoration: 'none solid rgb(153, 153, 153)',
 											},
-											tablet: {},
-											mobile: {},
 										},
-										text: 'Not a member?',
-									},
-									components: [],
-								},
+										tablet: {},
+										mobile: {},
+									}
+									draft.data.text = Expression.fromString('Don\'t have an account?')
+								}).serialize(),
 								{
 									kind: 'Link',
 									...elementBase,
@@ -294,27 +275,22 @@ const defaultData = {
 										openInNewTab: false,
 									},
 									components: [
-										{
-											kind: 'Text',
-											...elementBase,
-											data: {
-												style: {
-													desktop: {
-														default: {
-															display: 'inline',
+										produce(new TextElement(), (draft)=>{
+											draft.style = {
+												desktop: {
+													default: {
+														display: 'inline',
 															color: 'rgb(153, 153, 153)',
 															textAlign: 'center',
 															textDecoration:
 																'none solid rgb(153, 153, 153)',
-														},
 													},
-													tablet: {},
-													mobile: {},
 												},
-												text: 'Sign up now',
-											},
-											components: [],
-										},
+												tablet: {},
+												mobile: {},
+											}
+											draft.data.text = Expression.fromString('Sign up now')
+										}).serialize(),
 									],
 								},
 							],

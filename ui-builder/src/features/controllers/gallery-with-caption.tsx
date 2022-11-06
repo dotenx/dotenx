@@ -1,45 +1,39 @@
-import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
-import imageUrl from '../../assets/components/team-center-grid.png'
-import profile1Url from '../../assets/components/profile1.jpg'
-import profile2Url from '../../assets/components/profile2.jpg'
-import profile3Url from '../../assets/components/profile3.jpg'
-import profile4Url from '../../assets/components/profile4.jpg'
+import imageUrl from '../../assets/components/gelly-with-caption.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import { ImageElement } from '../elements/extensions/image'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
-
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
+import { ImageDrop } from '../ui/image-drop'
+import { ImageElement } from '../elements/extensions/image'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 
-export class TeamCenterGrid extends Controller {
-	name = 'Team Center Grid'
+export class GalleryWithCaptions extends Controller {
+	name = 'Gallery with image captions'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryBasicOptions options={options} />
-		// return <div></div>
+		return <GalleryWithCaptionsOptions options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
+function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
 	const [selectedTile, setSelectedTile] = useState(0)
 
-	const titleText = options.element.children?.[0].children?.[0] as TextElement
-	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
-
-	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
+	const wrapper = options.element
+	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
 	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
 	const viewport = useAtomValue(viewportAtom)
+	console.log(getSelectedTileDiv().children?.[0].children?.[0])
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
@@ -54,17 +48,17 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
-
+	const selectedTileImage = getSelectedTileDiv().children?.[0] as ImageElement
 	return (
 		<div className="space-y-6">
-			<ComponentName name="Team Center Grid" />
+			<ComponentName name="Gallery with image captions" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>
 					<Slider
 						step={1}
-						min={2}
-						max={5}
+						min={1}
+						max={10}
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('desktop')}
 						onChange={(val) => {
@@ -108,8 +102,8 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 					<p>Tablet mode columns</p>
 					<Slider
 						step={1}
-						min={2}
-						max={5}
+						min={1}
+						max={10}
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('tablet')}
 						onChange={(val) => {
@@ -153,8 +147,8 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 					<p>Mobile mode columns</p>
 					<Slider
 						step={1}
-						min={2}
-						max={5}
+						min={1}
+						max={10}
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('mobile')}
 						onChange={(val) => {
@@ -194,50 +188,8 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 					/>
 				</>
 			)}
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={titleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(titleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Subtitle"
-				name="title"
-				size="xs"
-				value={subtitleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subtitleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<DividerCollapsible title="color">
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: options.element,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: titleText,
-					title: 'Title',
-				})}
 
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subtitleText,
-					title: 'Subtitle',
-				})}
-			</DividerCollapsible>
-
+			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 			<Button
 				size="xs"
 				fullWidth
@@ -272,7 +224,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				value={selectedTile + ''}
 			/>
 			<Intelinput
-				label="Feature title"
+				label="Image caption"
 				name="title"
 				size="xs"
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
@@ -284,43 +236,24 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<Intelinput
-				label="Feature description"
-				name="description"
-				size="xs"
-				autosize
-				maxRows={10}
-				value={(getSelectedTileDiv().children?.[2] as TextElement).data.text}
-				onChange={(value) =>
+			{ColorOptions.getTextColorOption({
+				options,
+				wrapperDiv: getSelectedTileDiv().children?.[1] as TextElement,
+				title: 'Color',
+			})}
+
+			<ImageDrop
+				onChange={(src) =>
 					options.set(
-						produce(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
-							draft.data.text = value
+						produce(selectedTileImage, (draft) => {
+							draft.style.desktop!.default!.backgroundImage = `url(${src})`
 						})
 					)
 				}
+				src={extractUrl(
+					selectedTileImage.style.desktop!.default!.backgroundImage as string
+				)}
 			/>
-			<DividerCollapsible title="Tiles color">
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: containerDiv.children?.[0],
-					title: 'Background color',
-					mapDiv: containerDiv.children,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: containerDiv.children?.[0].children?.[1],
-					title: 'Title color',
-					mapDiv: containerDiv.children,
-					childIndex: 1,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: containerDiv.children?.[0].children?.[2],
-					title: 'Description color',
-					mapDiv: containerDiv.children,
-					childIndex: 2,
-				})}
-			</DividerCollapsible>
 			<Button
 				disabled={containerDiv.children?.length === 1}
 				size="xs"
@@ -357,15 +290,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const topDiv = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			textAlign: 'center',
-			marginBottom: '20px',
-		},
-	}
-}).serialize()
-
 const divFlex = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -377,112 +301,79 @@ const divFlex = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const title = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: '32px',
-			marginBottom: '8px',
-		},
-	}
-	draft.data.text = inteliText('Our team')
-}).serialize()
-
-const subTitle = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: '24px',
-			marginBottom: '12px',
-			color: '#666',
-		},
-	}
-	draft.data.text = inteliText('Meet the team of people who make it all happen')
-}).serialize()
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '24px',
-			fontWeight: 'bold',
-			marginBottom: '14px',
+			fontSize: '18px',
+			fontWeight: '400',
+			marginTop: '10px',
+			color: 'black',
 		},
 	}
-	draft.data.text = inteliText('Feature')
+	draft.data.text = inteliText('Caption')
 })
 
-const tileDetails = produce(new TextElement(), (draft) => {
+const tileImage = produce(new BoxElement(), (draft) => {
+	// prettier-ignore
 	draft.style.desktop = {
 		default: {
-			fontSize: '14px',
+			width: '100%',
+			maxHeight: '400px',
+			height: '100%',
+			minHeight:'300px',
+			objectFit: 'cover',
+			objectPosition: 'center center',
+			backgroundImage:'url(https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56)'
 		},
 	}
-	draft.data.text = inteliText('Feature description goes here')
-})
-
-const tileIcon = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			width: '50%',
-			borderRadius: '50%',
-			marginBottom: '10px',
-			transform: 'translateY(-10px)',
-		},
-	}
-	draft.data.src = 'https://cdn.iconscout.com/icon/free/png-256/like-1648810-1401300.png'
 })
 
 const tile = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			padding: '10px',
+			textAlign: 'center',
+			borderRadius: '8px',
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.2)',
-			borderRadius: '10px',
-			paddingBottom: '30px',
-			backgroundColor: 'white',
 		},
 	}
-	draft.children = [tileIcon, tileTitle, tileDetails]
+	draft.children = [tileImage, tileTitle]
 })
 
-function createTile({
-	image,
-	title,
-	description,
-}: {
-	image: string
-	title: string
-	description: string
-}) {
+function createTile({ src, title }: { src: string; title: string }) {
 	return produce(tile, (draft) => {
-		const ImageElement = draft.children?.[0] as ImageElement
-		ImageElement.data.src = image
+		const iconElement = draft.children[0] as BoxElement
+		iconElement.style.desktop!.default!.backgroundImage = `url(${src})`
 		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
-		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
 	})
 }
-
 const tiles = [
 	createTile({
-		image: profile1Url,
-		title: 'John Doe',
-		description: 'No-code developer',
+		src: 'https://img.freepik.com/free-vector/green-shades-wavy-background_23-2148897829.jpg?w=740&t=st=1667653664~exp=1667654264~hmac=9526cd24b0865b9b6ed785cf3cfb27993f80343136cfb88551550d143f5b6b44',
+		title: 'Customizable',
 	}),
 	createTile({
-		image: profile2Url,
-		title: 'Jane Doe',
-		description: 'Senior UX designer',
+		src: 'https://img.freepik.com/free-vector/abstract-wallpaper-with-halftone_23-2148585152.jpg?t=st=1667653639~exp=1667654239~hmac=da2ff3def2e5cb24eeab3a1979b8701238081a3ed82ef3f58dd6216e8381fdae',
+		title: 'Fast',
 	}),
 	createTile({
-		image: profile3Url,
-		title: 'Jack Doe',
-		description: 'CEO',
+		src: 'https://img.freepik.com/free-vector/abstract-halftone-background-concept_23-2148605018.jpg?t=st=1667653639~exp=1667654239~hmac=00369d4f05fcda0c7131e9487f27e583f7a557ab648e593326d9fe9c86b10293',
+		title: 'Made with Love',
 	}),
 	createTile({
-		image: profile4Url,
-		title: 'Sam Doe',
-		description: 'Marketing manager',
+		src: 'https://img.freepik.com/free-vector/halftone-effect-gradient-background_23-2148593366.jpg?w=740&t=st=1667653718~exp=1667654318~hmac=f661bfe1fc3b108ae80e4178f12893c7b2c9364f818de2ceb276edb9004cbfef',
+		title: 'Easy to Use',
+	}),
+	createTile({
+		src: 'https://img.freepik.com/free-vector/abstract-backgroud-concept_52683-43706.jpg?t=st=1667653639~exp=1667654239~hmac=45b124f9def8278922834cc158986cfaf6b3fc10f1a0f5a0d54e9c30b385800b',
+		title: 'Cloud Storage',
+	}),
+	createTile({
+		src: 'https://img.freepik.com/free-vector/abstract-neon-lights-background_52683-45117.jpg?t=st=1667653639~exp=1667654239~hmac=44d9c26a7c8f22bd2752f6785556945db7e7cb42b65987a534bfc28ec962ccdd',
+		title: 'Instant Setup',
 	}),
 ]
 
@@ -490,7 +381,7 @@ const grid = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
-			gridTemplateColumns: '1fr 1fr 1fr 1fr',
+			gridTemplateColumns: '1fr 1fr 1fr',
 			gridGap: '20px',
 			width: '70%',
 		},
@@ -510,10 +401,6 @@ const grid = produce(new BoxElement(), (draft) => {
 const defaultData = {
 	...wrapperDiv,
 	components: [
-		{
-			...topDiv,
-			components: [title, subTitle],
-		},
 		{
 			...divFlex,
 			components: [
