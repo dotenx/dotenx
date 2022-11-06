@@ -55,6 +55,10 @@ func convertAction(action EventAction) (string, error) {
 		// The name "title" is what the function will be called in the template text.
 		"renderValueSource": func(valueSource ValueSource) string {
 
+			if valueSource.Value == "" {
+				return ""
+			}
+
 			switch valueSource.Mode {
 			case "page":
 				fallthrough
