@@ -78,6 +78,9 @@ func convertAction(action EventAction) (string, error) {
 	{{.Id}}(dtx_event);
 `
 
+	const navigateTemplate = `
+	window.location.href="{{.To}}"
+	`
 	const toggleStateTemplate = `
 	Alpine.store('{{.StateName.Mode}}').toggle("{{.StateName.Value}}")
 	`
@@ -141,6 +144,9 @@ func convertAction(action EventAction) (string, error) {
 		actionTemplate = fetchTemplate
 	case "Animation":
 		actionTemplate = animateTemplate
+	case "Navigate":
+		actionTemplate = navigateTemplate
+
 	}
 
 	tmpl, err := template.New("action").Funcs(funcMap).Parse(actionTemplate)
