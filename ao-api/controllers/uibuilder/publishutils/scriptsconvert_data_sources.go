@@ -29,7 +29,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	{{range .}}
 	Alpine.store('{{.StateName}}', {
 		isLoading: true,
-		{{.StateName}}: Alpine.store(null),
+		'{{.StateName}}': Alpine.store(null),
 		fetch: function ({body{{if .Body}}={{.Body}}{{end}}}={}) {
 
 			url = '{{range .Url.Value}}{{renderTextSource .}} {{end}}';
@@ -40,11 +40,11 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			})
 				.then(response => response.json())
 				.then(data => {
-					this.{{.StateName}} = data;
-					{{if .OnSuccess}}{{.Id}}_success(data);
+					this['{{.StateName}}'] = data;
+					{{if .OnSuccess}}{{.Id}}_success(data);{{end}}
 				})
 				.catch(error => {
-					{{if .OnError}}{{.Id}}_error(data);
+					{{if .OnError}}{{.Id}}_error(data);{{end}}
 					this.error = error
 				})
 				.finally(() => this.isLoading = false);
