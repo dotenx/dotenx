@@ -28,7 +28,8 @@ import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
-import { Hero } from './hero'
+import { GalleryWithTitle } from './gallery-with-title'
+import { GalleryWithCaptions } from './gallery-with-caption'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
@@ -75,9 +76,9 @@ export const controllers = [
 		],
 	},
 	{ title: 'Footers', items: [FooterGrid] },
-	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded] },
+	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded, GalleryWithTitle, GalleryWithCaptions] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
-	{ title: 'Misc', items: [Hero, CreateForm, List, CardList, Navbar, NavbarWithAuth] },
+	{ title: 'Misc', items: [CreateForm, List, CardList, Navbar, NavbarWithAuth] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },

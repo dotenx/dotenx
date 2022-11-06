@@ -255,6 +255,8 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				}
 				src={logo.data.src}
 			/>
+			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+
 			<Intelinput
 				label="Title"
 				placeholder="Text"
@@ -269,6 +271,7 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
+			{ColorOptions.getTextColorOption({ options, wrapperDiv: title, title: '' })}
 			<LogoColumnLines column={column as BoxElement} options={options} />
 			<Button
 				className="mt-2"
@@ -276,12 +279,12 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				onClick={() => {
 					options.set(
 						produce(column, (draft) => {
-							draft.children?.push(createLeftTextLine('New Line')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
+							draft.children?.push(createLeftTextLine('New line')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
 						})
 					)
 				}}
 			>
-				<FontAwesomeIcon icon={['fas', 'plus']} /> Add Link
+				<FontAwesomeIcon icon={['fas', 'plus']} /> Add line
 			</Button>
 			<DividerCollapsible title="color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
@@ -490,7 +493,7 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: item,
-								title: 'Color',
+								title: '',
 							})}
 						</SortableItem>
 					)
@@ -571,6 +574,12 @@ function LogoColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 										)
 									}
 								/>
+
+								{ColorOptions.getTextColorOption({
+									options,
+									wrapperDiv: item,
+									title: '',
+								})}
 							</div>
 						</SortableItem>
 					)

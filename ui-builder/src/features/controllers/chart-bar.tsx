@@ -1,8 +1,15 @@
-import { Select } from '@mantine/core'
-import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
+import { deserializeElement } from '../../utils/deserialize'
+import { Controller, ElementOptions } from './controller'
+import { ColorInput, Select } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
+import { TableSelect, useColumnsQuery } from './create-form'
+import { projectTagAtom } from '../page/top-bar'
+import { inteliText } from '../ui/intelinput'
+import { ComponentName } from './helpers'
+import { BarChart } from '../elements/extensions/chart-bar'
 import areaChartImg from '../../assets/components/area-chart.png'
 import barChartImg from '../../assets/components/bar-chart.png'
 import bubbleChartImg from '../../assets/components/bubble-chart.png'
@@ -12,12 +19,7 @@ import pieChartImg from '../../assets/components/pie-chart.png'
 import polarAreaChartImg from '../../assets/components/polar-area-chart.png'
 import radarChartImg from '../../assets/components/radar-chart.png'
 import scatterChartImg from '../../assets/components/scatter-chart.png'
-
-import { deserializeElement } from '../../utils/deserialize'
-import { useAddDataSource } from '../data-source/data-source-form'
-import { HttpMethod } from '../data-source/data-source-store'
 import { AreaChart } from '../elements/extensions/chart-area'
-import { BarChart } from '../elements/extensions/chart-bar'
 import { BubbleChart } from '../elements/extensions/chart-bubble'
 import { DoughnutChart } from '../elements/extensions/chart-doughnut'
 import { LineChart } from '../elements/extensions/chart-line'
@@ -25,10 +27,8 @@ import { PieChart } from '../elements/extensions/chart-pie'
 import { PolarAreaChart } from '../elements/extensions/chart-polar-area'
 import { RadarChart } from '../elements/extensions/chart-radar'
 import { ScatterChart } from '../elements/extensions/chart-scatter'
-import { projectTagAtom } from '../page/top-bar'
-import { inteliText } from '../ui/intelinput'
-import { Controller, ElementOptions } from './controller'
-import { TableSelect, useColumnsQuery } from './create-form'
+import { HttpMethod } from '../data-source/data-source-store'
+import { useAddDataSource } from '../data-source/data-source-form'
 
 export class ChartBar extends Controller {
 	name = 'Bar chart'
@@ -51,7 +51,6 @@ function ChartBarOptions({
 	controller: ChartBar
 }) {
 	const element = options.element as BarChart
-
 	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
 
 	const projectTag = useAtomValue(projectTagAtom)
@@ -80,6 +79,7 @@ function ChartBarOptions({
 
 	return (
 		<div className="space-y-6">
+			<ComponentName name="Bar chart" />
 			<TableSelect
 				description="Table which you want to get data from"
 				value={selectedTable}
@@ -103,6 +103,7 @@ function ChartBarOptions({
 					)
 				}}
 			/>
+
 			<Select
 				disabled={!selectedTable}
 				size="xs"
@@ -120,6 +121,20 @@ function ChartBarOptions({
 						})
 					)
 				}}
+			/>
+			<ColorInput
+				value={element.data.data.datasets?.[0].backgroundColor}
+				label={'Bar color'}
+				onChange={(value: any) => {
+					options.set(
+						produce(element, (draft) => {
+							draft.data.data.datasets[0].backgroundColor = value
+						})
+					)
+				}}
+				className="col-span-9"
+				size="xs"
+				format="hsla"
 			/>
 		</div>
 	)

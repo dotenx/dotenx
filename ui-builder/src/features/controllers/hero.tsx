@@ -7,10 +7,12 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName } from './helpers'
+import { ComponentName, DividerCollapsible } from './helpers'
 
 export class Hero extends Controller {
+	//feature details left is similar to this component but better//
 	name = 'Hero'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
@@ -19,7 +21,6 @@ export class Hero extends Controller {
 		const titleComponent = options.element.children?.[0].children?.[0] as TextElement
 		const descriptionComponent = options.element.children?.[0].children?.[1] as TextElement
 		const imageComponent = options.element.children?.[1].children?.[0] as ImageElement
-
 		return (
 			<div className="space-y-6">
 				<ComponentName name="Hero" />
@@ -61,6 +62,19 @@ export class Hero extends Controller {
 					}
 					src={imageComponent.data.src}
 				/>
+				<DividerCollapsible title="color">
+					{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+					{ColorOptions.getTextColorOption({
+						options,
+						wrapperDiv: titleComponent,
+						title: 'Title',
+					})}
+					{ColorOptions.getTextColorOption({
+						options,
+						wrapperDiv: descriptionComponent,
+						title: 'Description',
+					})}
+				</DividerCollapsible>
 			</div>
 		)
 	}

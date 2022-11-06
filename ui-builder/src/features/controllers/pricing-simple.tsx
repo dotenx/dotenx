@@ -6,7 +6,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 import { useAtomValue } from 'jotai'
 import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
@@ -17,6 +17,7 @@ import VerticalOptions from './helpers/vertical-options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import ColorOptions from './basic-components/color-options'
 
 export class PricingSimple extends Controller {
 	name = 'Simple pricing'
@@ -40,7 +41,11 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 				id: column.id,
 				content: (
 					<div className="flex flex-col justify-stretch">
-						<MemTabOptions set={options.set} tileDiv={column as BoxElement} />
+						<MemTabOptions
+							options={options}
+							set={options.set}
+							tileDiv={column as BoxElement}
+						/>
 					</div>
 				),
 				onTabDelete: () => {
@@ -255,73 +260,132 @@ function GridOptions({ set, containerDiv, viewport }: GridOptionsProps): JSX.Ele
 type TabOptionsProps = {
 	set: (element: Element) => void
 	tileDiv: BoxElement
+	options: any
 }
 
-const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
+const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 	const title = tileDiv.children[0] as TextElement
+
+	const yearlyPrice = tileDiv.children[1].children![0].children![0] as TextElement
+	const monthlyPrice = tileDiv.children[1].children![1].children![0] as TextElement
 	const ctaLink = tileDiv.children[3] as LinkElement
 	const ctaText = ctaLink.children?.[0] as TextElement
 	const featureLinesWrapper = tileDiv.children[2] as BoxElement
 	return (
 		<div className="flex flex-col items-stretch gap-y-2">
-			<Intelinput
-				label="Title"
-				placeholder="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Divider title="Features" />
-			<VerticalOptions
-				showDelete={true}
-				set={set}
-				containerDiv={featureLinesWrapper}
-				items={featureLinesWrapper.children.map((child) => {
-					const text = child.children?.[1] as TextElement
-					return {
-						id: child.id,
-						content: (
-							<Intelinput
-								label="Title"
-								name="title"
-								size="xs"
-								value={text.data.text}
-								onChange={(value) =>
-									set(
-										produce(text, (draft) => {
-											draft.data.text = value
-										})
-									)
-								}
-							/>
-						),
+			<DividerCollapsible title="price">
+				<Intelinput
+					label="Title"
+					placeholder="Title"
+					name="title"
+					size="xs"
+					value={title.data.text}
+					onChange={(value) =>
+						set(
+							produce(title, (draft) => {
+								draft.data.text = value
+							})
+						)
 					}
-				})}
-			/>
-			<Button
-				className="mt-2"
-				size="xs"
-				onClick={() => {
-					set(
-						produce(featureLinesWrapper, (draft) => {
-							draft.children?.push(createLine('new feature')) // TODO: Assign a new id
-						})
-					)
-				}}
-			>
-				<FontAwesomeIcon icon={['fas', 'plus']} /> Add feature
-			</Button>
+				/>
+				<Intelinput
+					label="Yearly price"
+					name="yearlyPrice"
+					size="xs"
+					value={yearlyPrice.data.text}
+					onChange={(value) =>
+						set(
+							produce(yearlyPrice, (draft) => {
+								draft.data.text = value
+							})
+						)
+					}
+				/>
+				<Intelinput
+					label="Monthly price"
+					name="MonthlyPrice"
+					size="xs"
+					value={monthlyPrice.data.text}
+					onChange={(value) =>
+						set(
+							produce(monthlyPrice, (draft) => {
+								draft.data.text = value
+							})
+						)
+					}
+				/>
+				<DividerCollapsible title="Color">
+					{ColorOptions.getBackgroundOption({ options, wrapperDiv: tileDiv })}
+					{ColorOptions.getTextColorOption({
+						options,
+						wrapperDiv: title,
+						title: 'Title',
+					})}
+					{ColorOptions.getTextColorOption({
+						options,
+						wrapperDiv: tileDiv.children[1].children![0],
+						title: 'Yearly price',
+					})}
+					{ColorOptions.getTextColorOption({
+						options,
+						wrapperDiv: tileDiv.children[1].children![1],
+						title: 'Monthly price',
+					})}
+				</DividerCollapsible>
+			</DividerCollapsible>
+
+			<DividerCollapsible title="Features">
+				<VerticalOptions
+					showDelete={true}
+					set={set}
+					containerDiv={featureLinesWrapper}
+					items={featureLinesWrapper.children.map((child) => {
+						const text = child.children?.[1] as TextElement
+						return {
+							id: child.id,
+							content: (
+								<>
+									<Intelinput
+										label="Title"
+										name="title"
+										size="xs"
+										value={text.data.text}
+										onChange={(value) =>
+											set(
+												produce(text, (draft) => {
+													draft.data.text = value
+												})
+											)
+										}
+									/>
+									{ColorOptions.getTextColorOption({
+										options,
+										wrapperDiv: text,
+										title: '',
+									})}
+								</>
+							),
+						}
+					})}
+				/>
+				<Button
+					className="mt-2"
+					size="xs"
+					onClick={() => {
+						set(
+							produce(featureLinesWrapper, (draft) => {
+								draft.children?.push(createLine('new feature')) // TODO: Assign a new id
+							})
+						)
+					}}
+				>
+					<FontAwesomeIcon icon={['fas', 'plus']} /> Add feature
+				</Button>
+			</DividerCollapsible>
 			<Divider title="CTA" />
 			<Intelinput
 				placeholder="CTA"
-				label="CTA"
+				label="Text"
 				name="cta"
 				size="xs"
 				value={ctaText.data.text}
@@ -347,6 +411,18 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 					)
 				}
 			/>
+			<DividerCollapsible title="CTA color">
+				{ColorOptions.getBackgroundOption({
+					options,
+					wrapperDiv: ctaLink,
+					title: 'Button',
+				})}
+				{ColorOptions.getTextColorOption({
+					options,
+					wrapperDiv: ctaText,
+					title: 'Text',
+				})}
+			</DividerCollapsible>
 		</div>
 	)
 }
@@ -477,7 +553,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 			default: {
 				fontSize: '48px',
 				fontWeight: 'bold',
-				color: 'rgba(27, 27, 27, 0.933)',
+				color: 'inherit',
 				margin: '0px',
 			},
 		}
@@ -489,7 +565,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 			default: {
 				fontSize: '12px',
 				fontWeight: 'bold',
-				color: 'rgba(81, 81, 81, 0.933)',
+				color: 'inherit',
 				margin: '0px',
 			},
 		}
@@ -512,7 +588,6 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 			default: {
 				fontSize: '12px',
 				fontWeight: 'bold',
-				color: 'rgba(27, 27, 27, 0.933)',
 				margin: '0px',
 			},
 		}
@@ -524,7 +599,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 			default: {
 				fontSize: '12px',
 				fontWeight: 'bold',
-				color: 'rgba(81, 81, 81, 0.933)',
+				color: 'inherit',
 				margin: '0px',
 			},
 		}
