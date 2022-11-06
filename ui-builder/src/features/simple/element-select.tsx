@@ -55,7 +55,7 @@ export function SimpleElementSelect() {
 										)
 										const dataSourceName = `signup_${id}` // State name cannot contain space
 										const navigateAction = new NavigateAction()
-										navigateAction.to = '/login'
+										navigateAction.to = '/login.html'
 										addDataSource({
 											id,
 											stateName: dataSourceName,
@@ -78,7 +78,7 @@ export function SimpleElementSelect() {
 										)
 										const dataSourceName = `signin_${id}` // State name cannot contain space
 										const navigateAction = new NavigateAction()
-										navigateAction.to = '/login'
+										navigateAction.to = '/index.html'
 										const setTokenAction = new SetStateAction()
 										setTokenAction.stateName = {
 											isState: true,
