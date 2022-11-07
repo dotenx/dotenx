@@ -8,12 +8,17 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 )
 
-func NewProjectService(store projectStore.ProjectStore, tpUserStore userManagementStore.UserManagementStore) ProjectService {
-	return &projectService{Store: store, TpUserStore: tpUserStore}
+func NewProjectService(store projectStore.ProjectStore, tpUserStore userManagementStore.UserManagementStore, dbStore databaseStore.DatabaseStore) ProjectService {
+	return &projectService{
+		Store:       store,
+		TpUserStore: tpUserStore,
+		DbStore:     dbStore,
+	}
 }
 
 type ProjectService interface {
@@ -33,6 +38,7 @@ type ProjectService interface {
 type projectService struct {
 	Store       projectStore.ProjectStore
 	TpUserStore userManagementStore.UserManagementStore
+	DbStore     databaseStore.DatabaseStore
 }
 
 var noContext = context.Background()

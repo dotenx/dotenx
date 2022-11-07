@@ -123,9 +123,10 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 			allSelectItems[c] = 1
 		}
 	}
-	for _, fs := range filters.FilterSet {
-		allSelectItems[fs.Key] = 1
-	}
+	applyConditionGroupKeys(filters, allSelectItems)
+	// for _, fs := range filters.FilterSet {
+	// 	allSelectItems[fs.Key] = 1
+	// }
 	for item, _ := range allSelectItems {
 		if strings.HasPrefix(item, "__") {
 			continue
@@ -158,7 +159,7 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 	signCnt := 1
 	values := make([]interface{}, 0)
 	if len(filters.FilterSet) != 0 {
-		returnValues, conditionStmt, err := getConditionStmt(filters, db, &signCnt, tableName)
+		returnValues, conditionStmt, err := getConditionStmt(filters, db, &signCnt, tableName, true)
 		if err != nil {
 			log.Println("Error getting condition statement:", err)
 			return nil, err
@@ -415,7 +416,7 @@ func SelectScan(rows, functionResults *sql.Rows, page, size, totalRows int) (map
 	return finalResults, nil
 }
 
-func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, tableName string) (returnValues []interface{}, conditionStmt string, err error) {
+func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, tableName string, convertToDbType bool) (returnValues []interface{}, conditionStmt string, err error) {
 	// whereCondition := prevCondition
 	// cl := strings.TrimSuffix(strings.Join(columns, ","), ",")
 
@@ -423,7 +424,7 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 		whereConditions := make([]string, 0)
 		allValues := make([]interface{}, 0)
 		for _, cond := range conditionGroup.FilterSet {
-			values, stmt, err := getConditionStmt(cond, db, signCnt, tableName)
+			values, stmt, err := getConditionStmt(cond, db, signCnt, tableName, convertToDbType)
 			if err != nil {
 				return []interface{}{}, "", err
 			}
@@ -501,7 +502,11 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 			case "=", "!=":
 				whereCondition += fmt.Sprintf("%s %s $%d", cond.Key, cond.Operator, *signCnt)
 				*signCnt += 1
-				values = append(values, pq.Array(cond.Value))
+				if convertToDbType {
+					values = append(values, pq.Array(cond.Value))
+				} else {
+					values = append(values, cond.Value)
+				}
 			case "has":
 				whereCondition += fmt.Sprintf("$%d = ANY (%s)", *signCnt, cond.Key)
 				*signCnt += 1
@@ -519,5 +524,16 @@ func getConditionStmt(conditionGroup ConditionGroup, db *db.DB, signCnt *int, ta
 			return []interface{}{}, "", err
 		}
 		return values, whereCondition, nil
+	}
+}
+
+// applyConditionGroupKeys iterates recursively on conditions and mark key of conditions on keysMap (for retrieving unique keys)
+func applyConditionGroupKeys(conditionGroup ConditionGroup, keysMap map[string]int) {
+	if len(conditionGroup.FilterSet) != 0 {
+		for _, cond := range conditionGroup.FilterSet {
+			applyConditionGroupKeys(cond, keysMap)
+		}
+	} else {
+		keysMap[conditionGroup.Key] = 1
 	}
 }

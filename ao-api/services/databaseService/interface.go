@@ -23,6 +23,13 @@ type DatabaseService interface {
 	DeleteRow(tpAccountId string, projectTag string, tableName string, id int, filters databaseStore.ConditionGroup) error
 	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, page int, size int) (map[string]interface{}, error)
 	SelectRowById(tpAccountId string, projectTag string, tableName string, id int) (map[string]interface{}, error)
+
+	UpsertView(accountId string, projectName string, viewName string, tableName string, columns []string, filters databaseStore.ConditionGroup, jsonQuery map[string]interface{}, isPublic bool) error
+	GetViewsList(accountId string, projectName string) ([]models.DatabaseView, error)
+	GetViewDetails(accountId string, projectName string, viewName string) (models.DatabaseView, error)
+	DeleteView(accountId string, projectName string, viewName string) error
+	RunViewQuery(tpAccountId string, projectTag string, viewName string, page int, size int) (map[string]interface{}, error)
+	IsViewPublic(projectTag string, viewName string) (bool, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore, userMgService userManagementService.UserManagementService) DatabaseService {
