@@ -100,7 +100,7 @@ export const useFetchPage = () => {
 						.then((data) => setPageState(source.stateName, data.data))
 				)
 			},
-			onError: () => navigate(`/projects/${projectName}`),
+			onError: () => navigate(`/projects/${projectName}/index`),
 			enabled: !!projectTag && !!pageName,
 		}
 	)

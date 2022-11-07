@@ -99,7 +99,6 @@ export class SignInBasic extends Controller {
 	}
 }
 
-
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -122,7 +121,6 @@ const wrapper = produce(new BoxElement(), (draft) => {
 		},
 	}
 }).serialize()
-
 
 const formWrapper = produce(new BoxElement(), (draft) => {
 	draft.style = {
@@ -158,7 +156,6 @@ const formWrapper = produce(new BoxElement(), (draft) => {
 			},
 		},
 	}
-
 }).serialize()
 
 const form = produce(new FormElement(), (draft) => {
@@ -174,30 +171,30 @@ const defaultData = {
 				{
 					...form,
 					components: [
-						produce(new TextElement(), (draft)=>{
+						produce(new TextElement(), (draft) => {
 							draft.style = {
 								desktop: {
 									default: {
 										blockSize: '99.7969px',
-											border: '0px none rgb(85, 85, 85)',
-											color: 'rgb(85, 85, 85)',
-											columnRule: '0px none rgb(85, 85, 85)',
-											columnRuleColor: 'rgb(85, 85, 85)',
-											display: 'block',
-											fontSize: '39px',
-											height: '99.7969px',
-											inlineSize: '460px',
-											lineHeight: '46.8px',
-											minBlockSize: 'auto',
-											minHeight: 'auto',
-											minInlineSize: 'auto',
-											minWidth: 'auto',
-											outline: 'rgb(85, 85, 85) none 0px',
-											outlineColor: 'rgb(85, 85, 85)',
-											padding: '0px 0px 53px',
-											textAlign: 'center',
-											textDecoration: 'none solid rgb(85, 85, 85)',
-											width: 'auto',
+										border: '0px none rgb(85, 85, 85)',
+										color: 'rgb(85, 85, 85)',
+										columnRule: '0px none rgb(85, 85, 85)',
+										columnRuleColor: 'rgb(85, 85, 85)',
+										display: 'block',
+										fontSize: '39px',
+										height: '99.7969px',
+										inlineSize: '460px',
+										lineHeight: '46.8px',
+										minBlockSize: 'auto',
+										minHeight: 'auto',
+										minInlineSize: 'auto',
+										minWidth: 'auto',
+										outline: 'rgb(85, 85, 85) none 0px',
+										outlineColor: 'rgb(85, 85, 85)',
+										padding: '0px 0px 53px',
+										textAlign: 'center',
+										textDecoration: 'none solid rgb(85, 85, 85)',
+										width: 'auto',
 									},
 								},
 								tablet: {},
@@ -248,7 +245,7 @@ const defaultData = {
 								},
 							},
 							components: [
-								produce(new TextElement(), (draft)=>{
+								produce(new TextElement(), (draft) => {
 									draft.style = {
 										desktop: {
 											default: {
@@ -260,7 +257,8 @@ const defaultData = {
 										tablet: {},
 										mobile: {},
 									}
-									draft.data.text = Expression.fromString('Don\'t have an account?')
+									draft.data.text =
+										Expression.fromString("Don't have an account?")
 								}).serialize(),
 								{
 									kind: 'Link',
@@ -275,15 +273,15 @@ const defaultData = {
 										openInNewTab: false,
 									},
 									components: [
-										produce(new TextElement(), (draft)=>{
+										produce(new TextElement(), (draft) => {
 											draft.style = {
 												desktop: {
 													default: {
 														display: 'inline',
-															color: 'rgb(153, 153, 153)',
-															textAlign: 'center',
-															textDecoration:
-																'none solid rgb(153, 153, 153)',
+														color: 'rgb(153, 153, 153)',
+														textAlign: 'center',
+														textDecoration:
+															'none solid rgb(153, 153, 153)',
 													},
 												},
 												tablet: {},

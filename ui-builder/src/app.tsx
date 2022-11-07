@@ -4,9 +4,8 @@ import { NotificationsProvider } from '@mantine/notifications'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
-import { HomePage } from './pages/home'
 import { NotFoundPage } from './pages/not-found'
 
 const queryClient = new QueryClient({
@@ -61,7 +60,7 @@ function Router() {
 		<Layout>
 			<Routes>
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
-				<Route path="/projects/:projectName" element={<HomePage />} />
+				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
 				<Route path="/*" element={<NotFoundPage />} />
 			</Routes>
 		</Layout>
