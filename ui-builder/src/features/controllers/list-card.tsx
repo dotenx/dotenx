@@ -60,8 +60,12 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last((titleElement.data.text.value[0].value as string).split('.')) ?? ''
-	const nameFrom = _.last((nameElement.data.text.value[0].value as string).split('.')) ?? ''
+
+	const titleValue = typeof titleElement.data.text.value[0].value === 'string' ? titleElement.data.text.value[0].value : titleElement.data.text.value[0].value.name
+	const nameValue = typeof nameElement.data.text.value[0].value === 'string' ? nameElement.data.text.value[0].value : nameElement.data.text.value[0].value.name
+
+	const titleFrom = _.last(titleValue.split('.')) ?? ''
+	const nameFrom = _.last(nameValue.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Card List" />
@@ -117,7 +121,7 @@ function createCard({
 }) {
 	return produce(regenElement(deserializeElement(card)) as LinkElement, (draft) => {
 		draft.repeatFrom = {
-			name: `$store.source.${dataSourceName}.rows`,
+			name: `$store.${dataSourceName}.rows`,
 			iterator: `${dataSourceName}_rowsItem`,
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
