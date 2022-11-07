@@ -53,9 +53,9 @@ export function SimpleElementSelect() {
 										const url = inteliText(
 											`https://api.dotenx.com/user/management/project/${projectTag}/register`
 										)
-										const dataSourceName = `${controller.name}_${id}`
+										const dataSourceName = `signup_${id}` // State name cannot contain space
 										const navigateAction = new NavigateAction()
-										navigateAction.to = '/login'
+										navigateAction.to = '/login.html'
 										addDataSource({
 											id,
 											stateName: dataSourceName,
@@ -76,9 +76,9 @@ export function SimpleElementSelect() {
 										const url = inteliText(
 											`https://api.dotenx.com/user/management/project/${projectTag}/login`
 										)
-										const dataSourceName = `${controller.name}_${id}`
+										const dataSourceName = `signin_${id}` // State name cannot contain space
 										const navigateAction = new NavigateAction()
-										navigateAction.to = '/login'
+										navigateAction.to = '/index.html'
 										const setTokenAction = new SetStateAction()
 										setTokenAction.stateName = {
 											isState: true,

@@ -14,23 +14,24 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
-export class CardList extends Controller {
+export class ListCard extends Controller {
 	name = 'Card List'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions() {
-		return <CardListOptions controller={this} />
+		return <ListCardOptions controller={this} />
 	}
 }
 
-function CardListOptions({ controller }: { controller: CardList }) {
+function ListCardOptions({ controller }: { controller: ListCard }) {
 	const columnsElement = useSelectedElement() as ColumnsElement
 	const titleElement = columnsElement.children?.[0].children?.[0].children?.[0]
 		.children?.[0] as TextElement
@@ -143,36 +144,28 @@ const defaultData = {
 							kind: 'Box',
 							id: 'gUIfSBYpoMvbuQGZ',
 							components: [
-								{
-									kind: 'Text',
-									id: 'GdKvL_lAvygTLqFG',
-									classNames: [],
-									repeatFrom: null,
-									events: [],
-									bindings: {},
-									data: {
-										text: '82%',
-										style: {
-											desktop: {
-												default: {
-													color: '#2d6a4f',
-													height: '24px',
-													display: 'flex',
-													'font-size': '1rem',
-													'align-items': 'center',
-													'font-weight': '500',
-													'padding-top': '0px',
-													'padding-left': '12px',
-													'border-radius': '4px',
-													'padding-right': '12px',
-													'padding-bottom': '0px',
-													'justify-content': 'center',
-													'background-color': '#d8f3dc',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												color: '#2d6a4f',
+												height: '24px',
+												display: 'flex',
+												fontSize: '1rem',
+												alignItems: 'center',
+												fontWeight: '500',
+												paddingTop: '0px',
+												paddingLeft: '12px',
+												borderRadius: '4px',
+												paddingRight: '12px',
+												paddingBottom: '0px',
+												justifyContent: 'center',
+												backgroundColor: '#d8f3dc',
 											},
 										},
-									},
-								},
+									}
+									draft.data.text = Expression.fromString('82%')
+								}).serialize(),
 								{
 									kind: 'Box',
 									id: 'PpAVtyZddQnEQkEK',
@@ -268,27 +261,19 @@ const defaultData = {
 						},
 					},
 				},
-				{
-					kind: 'Text',
-					id: 'ZWotVlhlPVwbFuIY',
-					classNames: [],
-					repeatFrom: null,
-					events: [],
-					bindings: {},
-					data: {
-						text: 'Elegant Wood chair',
-						style: {
-							desktop: {
-								default: {
-									color: 'hsla(0, 0%, 27%, 1)',
-									'font-size': '1rem',
-									'margin-top': '20px',
-									'font-weight': '500',
-								},
+				produce(new TextElement(), (draft) => {
+					draft.style = {
+						desktop: {
+							default: {
+								color: 'hsla(0, 0%, 27%, 1)',
+								fontSize: '1rem',
+								marginTop: '20px',
+								fontWeight: '500',
 							},
 						},
-					},
-				},
+					}
+					draft.data.text = Expression.fromString('Elegant Wood chair')
+				}).serialize(),
 			],
 			classNames: [],
 			repeatFrom: null,
@@ -318,36 +303,28 @@ const defaultData = {
 							kind: 'Box',
 							id: 'gUIfSBYpoMvbuQGZ',
 							components: [
-								{
-									kind: 'Text',
-									id: 'GdKvL_lAvygTLqFG',
-									classNames: [],
-									repeatFrom: null,
-									events: [],
-									bindings: {},
-									data: {
-										text: '82%',
-										style: {
-											desktop: {
-												default: {
-													color: '#2d6a4f',
-													height: '24px',
-													display: 'flex',
-													'font-size': '1rem',
-													'align-items': 'center',
-													'font-weight': '500',
-													'padding-top': '0px',
-													'padding-left': '12px',
-													'border-radius': '4px',
-													'padding-right': '12px',
-													'padding-bottom': '0px',
-													'justify-content': 'center',
-													'background-color': '#d8f3dc',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												color: '#2d6a4f',
+												height: '24px',
+												display: 'flex',
+												fontSize: '1rem',
+												alignItems: 'center',
+												fontWeight: '500',
+												paddingTop: '0px',
+												paddingLeft: '12px',
+												borderRadius: '4px',
+												paddingRight: '12px',
+												paddingBottom: '0px',
+												justifyContent: 'center',
+												backgroundColor: '#d8f3dc',
 											},
 										},
-									},
-								},
+									}
+									draft.data.text = Expression.fromString('82%')
+								}).serialize(),
 								{
 									kind: 'Box',
 									id: 'PpAVtyZddQnEQkEK',
@@ -443,27 +420,19 @@ const defaultData = {
 						},
 					},
 				},
-				{
-					kind: 'Text',
-					id: 'ZWotVlhlPVwbFuIY',
-					classNames: [],
-					repeatFrom: null,
-					events: [],
-					bindings: {},
-					data: {
-						text: 'Elegant Wood chair',
-						style: {
-							desktop: {
-								default: {
-									color: 'hsla(0, 0%, 27%, 1)',
-									'font-size': '1rem',
-									'margin-top': '20px',
-									'font-weight': '500',
-								},
+				produce(new TextElement(), (draft) => {
+					draft.style = {
+						desktop: {
+							default: {
+								color: 'hsla(0, 0%, 27%, 1)',
+								fontSize: '1rem',
+								marginTop: '20px',
+								fontWeight: '500',
 							},
 						},
-					},
-				},
+					}
+					draft.data.text = Expression.fromString('Elegant Wood chair')
+				}).serialize(),
 			],
 			classNames: [],
 			repeatFrom: null,
@@ -493,36 +462,28 @@ const defaultData = {
 							kind: 'Box',
 							id: 'gUIfSBYpoMvbuQGZ',
 							components: [
-								{
-									kind: 'Text',
-									id: 'GdKvL_lAvygTLqFG',
-									classNames: [],
-									repeatFrom: null,
-									events: [],
-									bindings: {},
-									data: {
-										text: '82%',
-										style: {
-											desktop: {
-												default: {
-													color: '#2d6a4f',
-													height: '24px',
-													display: 'flex',
-													'font-size': '1rem',
-													'align-items': 'center',
-													'font-weight': '500',
-													'padding-top': '0px',
-													'padding-left': '12px',
-													'border-radius': '4px',
-													'padding-right': '12px',
-													'padding-bottom': '0px',
-													'justify-content': 'center',
-													'background-color': '#d8f3dc',
-												},
+								produce(new TextElement(), (draft) => {
+									draft.style = {
+										desktop: {
+											default: {
+												color: '#2d6a4f',
+												height: '24px',
+												display: 'flex',
+												fontSize: '1rem',
+												alignItems: 'center',
+												fontWeight: '500',
+												paddingTop: '0px',
+												paddingLeft: '12px',
+												borderRadius: '4px',
+												paddingRight: '12px',
+												paddingBottom: '0px',
+												justifyContent: 'center',
+												backgroundColor: '#d8f3dc',
 											},
 										},
-									},
-								},
+									}
+									draft.data.text = Expression.fromString('82%')
+								}).serialize(),
 								{
 									kind: 'Box',
 									id: 'PpAVtyZddQnEQkEK',
@@ -618,27 +579,19 @@ const defaultData = {
 						},
 					},
 				},
-				{
-					kind: 'Text',
-					id: 'ZWotVlhlPVwbFuIY',
-					classNames: [],
-					repeatFrom: null,
-					events: [],
-					bindings: {},
-					data: {
-						text: 'Elegant Wood chair',
-						style: {
-							desktop: {
-								default: {
-									color: 'hsla(0, 0%, 27%, 1)',
-									'font-size': '1rem',
-									'margin-top': '20px',
-									'font-weight': '500',
-								},
+				produce(new TextElement(), (draft) => {
+					draft.style = {
+						desktop: {
+							default: {
+								color: 'hsla(0, 0%, 27%, 1)',
+								fontSize: '1rem',
+								marginTop: '20px',
+								fontWeight: '500',
 							},
 						},
-					},
-				},
+					}
+					draft.data.text = Expression.fromString('Elegant Wood chair')
+				}).serialize(),
 			],
 			classNames: [],
 			repeatFrom: null,
@@ -756,36 +709,28 @@ const card = {
 					bindings: {},
 					classNames: [],
 					components: [
-						{
-							id: 'NTNQT_KiCknFstoj',
-							data: {
-								text: '82%',
-								style: {
-									desktop: {
-										default: {
-											color: '#2d6a4f',
-											height: '24px',
-											display: 'flex',
-											'font-size': '1rem',
-											'align-items': 'center',
-											'font-weight': '500',
-											'padding-top': '0px',
-											'padding-left': '12px',
-											'border-radius': '4px',
-											'padding-right': '12px',
-											'padding-bottom': '0px',
-											'justify-content': 'center',
-											'background-color': '#d8f3dc',
-										},
+						produce(new TextElement(), (draft) => {
+							draft.style = {
+								desktop: {
+									default: {
+										color: '#2d6a4f',
+										height: '24px',
+										display: 'flex',
+										fontSize: '1rem',
+										alignItems: 'center',
+										fontWeight: '500',
+										paddingTop: '0px',
+										paddingLeft: '12px',
+										borderRadius: '4px',
+										paddingRight: '12px',
+										paddingBottom: '0px',
+										justifyContent: 'center',
+										backgroundColor: '#d8f3dc',
 									},
 								},
-							},
-							kind: 'Text',
-							events: [],
-							bindings: {},
-							classNames: [],
-							repeatFrom: null,
-						},
+							}
+							draft.data.text = Expression.fromString('82%')
+						}).serialize(),
 						{
 							id: 'kezlhxUHixTfSogU',
 							data: {
@@ -838,27 +783,19 @@ const card = {
 			],
 			repeatFrom: null,
 		},
-		{
-			id: 'DBmcmmyQdEBGAiri',
-			data: {
-				text: 'Elegant Wood chair',
-				style: {
-					desktop: {
-						default: {
-							color: 'hsla(0, 0%, 27%, 1)',
-							'font-size': '1rem',
-							'margin-top': '20px',
-							'font-weight': '500',
-						},
+		produce(new TextElement(), (draft) => {
+			draft.style = {
+				desktop: {
+					default: {
+						color: 'hsla(0, 0%, 27%, 1)',
+						fontSize: '1rem',
+						marginTop: '20px',
+						fontWeight: '500',
 					},
 				},
-			},
-			kind: 'Text',
-			events: [],
-			bindings: {},
-			classNames: [],
-			repeatFrom: null,
-		},
+			}
+			draft.data.text = Expression.fromString('Elegant Wood chair')
+		}).serialize(),
 	],
 	repeatFrom: null,
 }

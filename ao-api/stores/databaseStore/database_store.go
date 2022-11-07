@@ -3,11 +3,11 @@ package databaseStore
 import (
 	"context"
 
-	"github.com/dotenx/dotenx/ao-api/db"
+	dbPkg "github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func New(db *db.DB) DatabaseStore {
+func New(db *dbPkg.DB) DatabaseStore {
 	return &databaseStore{db}
 }
 
@@ -26,8 +26,17 @@ type DatabaseStore interface {
 	DeleteRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, filters ConditionGroup) error
 	SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, functions []Function, filters ConditionGroup, offset int, size int) (map[string]interface{}, error)
 	SelectRowById(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int) (map[string]interface{}, error)
+
+	CreateViewsTable(db *dbPkg.DB) (err error)
+	DeleteView(ctx context.Context, accountId string, projectName string, viewName string) error
+	GetViewsList(ctx context.Context, accountId string, projectName string) ([]models.DatabaseView, error)
+	GetViewDetails(ctx context.Context, accountId string, projectName string, viewName string) (models.DatabaseView, error)
+	GetViewDetailsByProjectTag(ctx context.Context, projectTag string, viewName string) (models.DatabaseView, error)
+	UpsertView(ctx context.Context, accountId string, projectName string, viewName string, tableName string, columns []string, filters ConditionGroup, jsonQuery map[string]interface{}, isPublic bool) error
+	RunViewQuery(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, viewName string, offset int, limit int) (map[string]interface{}, error)
+	IsViewPublic(ctx context.Context, projectTag string, viewName string) (bool, error)
 }
 
 type databaseStore struct {
-	db *db.DB
+	db *dbPkg.DB
 }

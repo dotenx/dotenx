@@ -48,6 +48,9 @@ func (store *redisStore) SetRedisPair(key, value string, ttl time.Duration) (err
 }
 
 func (store *redisStore) AddToRedisSortedSet(key string, value []interface{}) (err error) {
+	if len(value) == 0 {
+		return nil
+	}
 	rzSlice := make([]redis.Z, 0)
 	for _, v := range value {
 		rzSlice = append(rzSlice, redis.Z{
@@ -75,6 +78,9 @@ func (store *redisStore) GetRedisSortedSet(key string) (exist bool, value []stri
 }
 
 func (store *redisStore) RemoveFromRedisSortedSet(key string, value []interface{}) (err error) {
+	if len(value) == 0 {
+		return nil
+	}
 	err = store.redisClient.ZRem(key, value...).Err()
 	return
 }

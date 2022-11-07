@@ -55,6 +55,10 @@ func convertAction(action EventAction) (string, error) {
 		// The name "title" is what the function will be called in the template text.
 		"renderValueSource": func(valueSource ValueSource) string {
 
+			if valueSource.Value == "" {
+				return ""
+			}
+
 			switch valueSource.Mode {
 			case "page":
 				fallthrough
@@ -78,6 +82,9 @@ func convertAction(action EventAction) (string, error) {
 	{{.Id}}(dtx_event);
 `
 
+	const navigateTemplate = `
+	window.location.href="{{.To}}"
+	`
 	const toggleStateTemplate = `
 	Alpine.store('{{.StateName.Mode}}').toggle("{{.StateName.Value}}")
 	`
@@ -141,6 +148,9 @@ func convertAction(action EventAction) (string, error) {
 		actionTemplate = fetchTemplate
 	case "Animation":
 		actionTemplate = animateTemplate
+	case "Navigate":
+		actionTemplate = navigateTemplate
+
 	}
 
 	tmpl, err := template.New("action").Funcs(funcMap).Parse(actionTemplate)
