@@ -676,9 +676,9 @@ function createTile({
 }) {
 	return produce(newTile(), (draft) => {
 		const featureLines = lines.map((line) => createLine(line))
-		;(draft.children[0]! as BoxElement).data!.text = title
-		;(draft.children[1]! as BoxElement).children![0].children![0].data!.text = yearlyPrice
-		;(draft.children[1]! as BoxElement).children![1].children![0].data!.text = monthlyPrice
+		;(draft.children[0]! as BoxElement).data!.text = inteliText(title)
+		;(draft.children[1]! as BoxElement).children![0].children![0].data!.text = inteliText(yearlyPrice)
+		;(draft.children[1]! as BoxElement).children![1].children![0].data!.text = inteliText(monthlyPrice)
 		;(draft.children[2]! as BoxElement).children = featureLines
 	})
 }

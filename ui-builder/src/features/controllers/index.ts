@@ -1,6 +1,6 @@
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
-import { CardList } from './card-list'
+import { ListCard } from './list-card'
 import {
 	ChartArea,
 	ChartBar,
@@ -78,9 +78,9 @@ export const controllers = [
 	{ title: 'Footers', items: [FooterGrid] },
 	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded, GalleryWithTitle, GalleryWithCaptions] },
 	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
-	{ title: 'Misc', items: [CreateForm, List, CardList, Navbar, NavbarWithAuth] },
+	{ title: 'Navbar', items: [ Navbar, NavbarWithAuth] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
-	{ title: 'Dynamic', items: [CreateForm, List, CardList, Details] },
+	{ title: 'Dynamic', items: [CreateForm, List, ListCard, Details] },
 ] as const
