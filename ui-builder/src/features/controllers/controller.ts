@@ -13,6 +13,7 @@ export abstract class Controller {
 	transform(): Element {
 		const newElement = regenElement(this.defaultData ?? new BoxElement())
 		newElement.controller = this
+		newElement.onDelete = () => this.onDelete()
 		return newElement
 	}
 
@@ -21,6 +22,14 @@ export abstract class Controller {
 			name: this.name,
 			data: this.data,
 		}
+	}
+
+	onDelete() {
+		// noop
+	}
+
+	onCreate(root: Element) {
+		// noop
 	}
 }
 

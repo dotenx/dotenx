@@ -58,6 +58,8 @@ export const useElementsStore = create<ElementsState>()(
 		},
 		remove: (ids) => {
 			set((state) => {
+				const elements = findElements(ids, state.elements)
+				elements.forEach((element) => element.onDelete())
 				state.elements = removeElements(ids, state.elements)
 				state.history = [...state.history.slice(0, state.historyIndex + 1), state.elements]
 				state.historyIndex = state.historyIndex + 1
