@@ -13,6 +13,7 @@ interface DataSourceState {
 	add: (source: DataSource) => void
 	edit: (id: string, source: EditDataSource) => void
 	remove: (id: string) => void
+	removeByName: (name: string) => void
 }
 
 export const useDataSourceStore = create<DataSourceState>()(
@@ -38,6 +39,11 @@ export const useDataSourceStore = create<DataSourceState>()(
 		remove: (id) => {
 			set((state) => {
 				state.sources = state.sources.filter((source) => source.id !== id)
+			})
+		},
+		removeByName: (name) => {
+			set((state) => {
+				state.sources = state.sources.filter((source) => source.stateName !== name)
 			})
 		},
 	}))

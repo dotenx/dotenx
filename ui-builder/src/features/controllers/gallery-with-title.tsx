@@ -1,18 +1,18 @@
 import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import { ReactNode, useState } from 'react'
 import imageUrl from '../../assets/components/gallery-with-title.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
+import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { ImageDrop } from '../ui/image-drop'
+import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
-import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
-import { ImageDrop } from '../ui/image-drop'
-import { ImageElement } from '../elements/extensions/image'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
 
 export class GalleryWithTitle extends Controller {
 	name = 'Gallery with title on images'
@@ -33,7 +33,6 @@ function GalleryWithTitleOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
 	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
 	const viewport = useAtomValue(viewportAtom)
-	console.log(getSelectedTileDiv().children?.[0].children?.[0])
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {

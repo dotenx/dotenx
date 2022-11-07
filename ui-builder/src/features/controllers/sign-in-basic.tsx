@@ -2,15 +2,21 @@ import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/sc-sign-in-basic.png'
+import { uuid } from '../../utils'
 import { deserializeElement } from '../../utils/deserialize'
+import { NavigateAction } from '../actions/navigate'
+import { SetStateAction } from '../actions/set-state'
+import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
 import { FormElement } from '../elements/extensions/form'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { useProjectStore } from '../page/project-store'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { Intelinput } from '../ui/intelinput'
+import { Intelinput, inteliText } from '../ui/intelinput'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
@@ -21,6 +27,7 @@ export class SignInBasic extends Controller {
 	name = 'Basic Sign-in'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
+	data = { dataSourceName: '' }
 
 	renderOptions(options: ElementOptions): ReactNode {
 		const title = options.element.children?.[0].children?.[0].children?.[0] as TextElement
@@ -96,6 +103,46 @@ export class SignInBasic extends Controller {
 				/>
 			</div>
 		)
+	}
+
+	onDelete() {
+		const removeDataSource = useDataSourceStore.getState().removeByName
+		removeDataSource(this.data.dataSourceName)
+	}
+
+	onCreate(root: Element) {
+		const projectTag = useProjectStore.getState().tag
+		const addDataSource = useDataSourceStore.getState().add
+		const id = uuid()
+		const url = inteliText(`https://api.dotenx.com/user/management/project/${projectTag}/login`)
+		const dataSourceName = `signin_${id}` // State name cannot contain space
+		const navigateAction = new NavigateAction()
+		navigateAction.to = '/index.html'
+		const setTokenAction = new SetStateAction()
+		setTokenAction.stateName = {
+			isState: true,
+			mode: 'global',
+			value: 'token',
+		}
+		setTokenAction.value = {
+			isState: true,
+			mode: 'response',
+			value: 'accessToken',
+		}
+		addDataSource({
+			id,
+			stateName: dataSourceName,
+			method: HttpMethod.Post,
+			url,
+			fetchOnload: false,
+			body: '',
+			headers: '',
+			properties: [],
+			onSuccess: [setTokenAction, navigateAction],
+		})
+		this.data.dataSourceName = dataSourceName
+		const formElement = root.children?.[0].children?.[0] as FormElement
+		formElement.data.dataSourceName = dataSourceName
 	}
 }
 

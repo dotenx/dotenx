@@ -62,6 +62,10 @@ export abstract class Element {
 			</div>
 		)
 	}
+
+	onDelete() {
+		// noop
+	}
 }
 
 export interface RenderOptions {
