@@ -178,7 +178,7 @@ function DeletePageButton() {
 	const queryClient = useQueryClient()
 	const projectTag = useAtomValue(projectTagAtom)
 	const resetElements = useElementsStore((store) => store.reset)
-	const { projectName } = useParams()
+	const { projectName, pageName = '' } = useParams()
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
 			navigate(`/projects/${projectName}`)
@@ -186,7 +186,6 @@ function DeletePageButton() {
 			resetElements()
 		},
 	})
-	const { pageName = '' } = useParams()
 	const remove = () => deletePageMutation.mutate({ projectTag, pageName })
 
 	return (
@@ -196,6 +195,7 @@ function DeletePageButton() {
 				loading={deletePageMutation.isLoading}
 				size="xs"
 				variant="default"
+				disabled={pageName === 'index'}
 			>
 				<TbTrash className="text-sm" />
 			</Button>
