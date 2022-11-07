@@ -97,10 +97,13 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 	}
 	converted.WriteString("\n" + convertedScripts)
 
+	// Todo: Do this only if there is a slider!
 	mountSplider := `
 document.addEventListener( 'DOMContentLoaded', function() {
-	var splide = new Splide( '.splide' );
-	splide.mount();
+	try{
+    var splide = new Splide( '.splide' );
+	if(splide){splide.mount();}
+  } catch(e){}
 } );
 `
 	converted.WriteString("\n" + mountSplider) // TODO: mount splider only if there is a slider
