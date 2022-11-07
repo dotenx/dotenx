@@ -62,7 +62,7 @@ func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool
 		whereCondition := ""
 		signCnt := 1
 		values := make([]interface{}, 0)
-		returnValues, conditionStmt, err := getConditionStmt(filters, db, &signCnt, tableName)
+		returnValues, conditionStmt, err := getConditionStmt(filters, db, &signCnt, tableName, true)
 		if err != nil {
 			log.Println("Error getting condition statement:", err)
 			return err
