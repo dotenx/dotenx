@@ -11,6 +11,7 @@ import {
 	TbCornerUpRight,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
+
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
@@ -26,6 +27,7 @@ import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
 import { globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
+import { useProjectStore } from './project-store'
 
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
@@ -54,13 +56,17 @@ export function TopBar() {
 }
 
 export const useFetchProjectTag = () => {
+	const setTag = useProjectStore((store) => store.setTag)
 	const { projectName = '' } = useParams()
 	const setProjectTag = useSetAtom(projectTagAtom)
 	const query = useQuery(
 		[QueryKey.ProjectDetails, projectName],
 		() => getProjectDetails({ projectName }),
 		{
-			onSuccess: (data) => setProjectTag(data.data.tag),
+			onSuccess: (data) => {
+				setProjectTag(data.data.tag)
+				setTag(data.data.tag)
+			},
 			enabled: !!projectName,
 		}
 	)

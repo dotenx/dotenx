@@ -1,17 +1,10 @@
 import { Divider, Image } from '@mantine/core'
 import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
-import { uuid } from '../../utils'
-import { NavigateAction } from '../actions/navigate'
-import { SetStateAction } from '../actions/set-state'
 import { controllers } from '../controllers'
-import { SignInBasic } from '../controllers/sign-in-basic'
-import { SignUpBasic } from '../controllers/sign-up-basic'
-import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
+import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
-import { FormElement } from '../elements/extensions/form'
 import { projectTagAtom } from '../page/top-bar'
-import { inteliText } from '../ui/intelinput'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleElementSelect() {
@@ -48,63 +41,7 @@ export function SimpleElementSelect() {
 								label={controller.name}
 								onClick={() => {
 									const newElement = controller.transform()
-									if (controller instanceof SignUpBasic) {
-										const id = uuid()
-										const url = inteliText(
-											`https://api.dotenx.com/user/management/project/${projectTag}/register`
-										)
-										const dataSourceName = `signup_${id}` // State name cannot contain space
-										const navigateAction = new NavigateAction()
-										navigateAction.to = '/login.html'
-										addDataSource({
-											id,
-											stateName: dataSourceName,
-											method: HttpMethod.Post,
-											url,
-											fetchOnload: false,
-											body: '',
-											headers: '',
-											properties: [],
-											onSuccess: [navigateAction],
-										})
-										const formElement = newElement.children?.[0]
-											.children?.[0] as FormElement
-										formElement.data.dataSourceName = dataSourceName
-									}
-									if (controller instanceof SignInBasic) {
-										const id = uuid()
-										const url = inteliText(
-											`https://api.dotenx.com/user/management/project/${projectTag}/login`
-										)
-										const dataSourceName = `signin_${id}` // State name cannot contain space
-										const navigateAction = new NavigateAction()
-										navigateAction.to = '/index.html'
-										const setTokenAction = new SetStateAction()
-										setTokenAction.stateName = {
-											isState: true,
-											mode: 'global',
-											value: 'token',
-										}
-										setTokenAction.value = {
-											isState: true,
-											mode: 'response',
-											value: 'accessToken',
-										}
-										addDataSource({
-											id,
-											stateName: dataSourceName,
-											method: HttpMethod.Post,
-											url,
-											fetchOnload: false,
-											body: '',
-											headers: '',
-											properties: [],
-											onSuccess: [setTokenAction, navigateAction],
-										})
-										const formElement = newElement.children?.[0]
-											.children?.[0] as FormElement
-										formElement.data.dataSourceName = dataSourceName
-									}
+									controller.onCreate(newElement)
 									switch (inserting.placement) {
 										case 'initial':
 											add(newElement, {

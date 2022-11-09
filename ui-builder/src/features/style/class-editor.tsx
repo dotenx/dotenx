@@ -5,13 +5,14 @@ import {
 	MultiSelect,
 	MultiSelectValueProps,
 	Select,
+	TextInput,
 } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import produce from 'immer'
 import { atom, useAtom } from 'jotai'
 import _ from 'lodash'
 import { Element } from '../elements/element'
-import { useElementsStore } from '../elements/elements-store'
+import { useElementsStore, useSetElement } from '../elements/elements-store'
 import { CssSelector, cssSelectors } from '../elements/style'
 import { useSelectedElements } from '../selection/use-selected-component'
 import { CollapseLine } from '../ui/collapse-line'
@@ -64,6 +65,7 @@ export function ClassEditor() {
 		addClassName: store.add,
 		classNames: store.classes,
 	}))
+	const set = useSetElement()
 	const classNameList = _.keys(classNames)
 	const setElement = useElementsStore((store) => store.set)
 	const [selector, setSelector] = useAtom(selectedSelectorAtom)
@@ -111,6 +113,15 @@ export function ClassEditor() {
 					mt="xs"
 					value={selector}
 					onChange={(value: CssSelector) => setSelector(value)}
+				/>
+				<TextInput
+					placeholder="Element ID"
+					size="xs"
+					mt="xs"
+					value={selectedElement.elementId ?? ''}
+					onChange={(event) =>
+						set(selectedElement, (draft) => (draft.elementId = event.target.value))
+					}
 				/>
 			</div>
 		</CollapseLine>

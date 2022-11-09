@@ -35,7 +35,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			url = '{{range .Url.Value}}{{renderTextSource .}} {{end}}';
 			fetch(url, {
 				method: '{{.Method}}',
-				{{if .Headers}}headers: {{if .IsPrivate}}(...{{.Headers}}, ...{Authorization: 'Bearer ' + App.store('global').token } ){{else}}{{.Headers}},{{end}}{{else}}{{if .IsPrivate}}headers: {Authorization: 'Bearer ' + App.store('global').token },{{end}}{{end}}
+				{{if .Headers}}headers: {{if .IsPrivate}}(...{{.Headers}}, ...{Authorization: 'Bearer ' + Alpine.store('global')?.token } ){{else}}{{.Headers}},{{end}}{{else}}{{if .IsPrivate}}headers: {Authorization: 'Bearer ' + Alpine.store('global')?.token },{{end}}{{end}}
 				...(body? {body: JSON.stringify(body)} : {})
 			})
 				.then(response => response.json())

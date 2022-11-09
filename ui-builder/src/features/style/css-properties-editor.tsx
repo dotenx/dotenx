@@ -15,44 +15,40 @@ export const normalizedCssProperties = cssProperties.all.map((property) =>
 
 export function CssPropertiesEditor() {
 	const { style, editStyle } = useEditStyle()
-	const styles = _.toPairs(style)
+	const styles = _.toPairs(style).filter(([, value]) => value !== undefined)
+	styles.sort(([a], [b]) => a.localeCompare(b))
 
 	return (
 		<CollapseLine label="CSS Properties" defaultClosed>
 			<div>
 				<div className="space-y-4">
-					{styles
-						.filter(([, value]) => value !== undefined)
-						.map(([property, value]) => (
-							<div className="flex items-center gap-2" key={property}>
-								<Select
-									searchable
-									creatable
-									data={normalizedCssProperties}
-									size="xs"
-									value={property ?? ''}
-									onChange={(newProperty) =>
-										editStyle((newProperty ?? '') as keyof CSSProperties, value)
-									}
-								/>
-								<TextInput
-									size="xs"
-									value={value ?? ''}
-									onChange={(event) =>
-										editStyle(
-											property as keyof CSSProperties,
-											event.target.value
-										)
-									}
-								/>
-								<CloseButton
-									size="xs"
-									onClick={() =>
-										editStyle(property as keyof CSSProperties, undefined as any)
-									}
-								/>
-							</div>
-						))}
+					{styles.map(([property, value]) => (
+						<div className="flex items-center gap-2" key={property}>
+							<Select
+								searchable
+								creatable
+								data={normalizedCssProperties}
+								size="xs"
+								value={property ?? ''}
+								onChange={(newProperty) =>
+									editStyle((newProperty ?? '') as keyof CSSProperties, value)
+								}
+							/>
+							<TextInput
+								size="xs"
+								value={value ?? ''}
+								onChange={(event) =>
+									editStyle(property as keyof CSSProperties, event.target.value)
+								}
+							/>
+							<CloseButton
+								size="xs"
+								onClick={() =>
+									editStyle(property as keyof CSSProperties, undefined as any)
+								}
+							/>
+						</div>
+					))}
 				</div>
 				<Button
 					leftIcon={<TbPlus />}

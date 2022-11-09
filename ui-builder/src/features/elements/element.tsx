@@ -25,6 +25,7 @@ export abstract class Element {
 	repeatFrom: RepeatFrom | null = null
 	controller: Controller | null = null
 	data?: Record<string, unknown>
+	elementId?: string
 
 	isContainer() {
 		return this.children !== null
@@ -48,6 +49,7 @@ export abstract class Element {
 			bindings: this.bindings,
 			controller: this.controller?.serialize(),
 			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style) },
+			elementId: this.elementId,
 		}
 	}
 
@@ -57,10 +59,14 @@ export abstract class Element {
 
 	renderPreview(renderFn: RenderFn, style: CSSProperties = {}) {
 		return (
-			<div style={style} className={this.generateClasses()}>
+			<div style={style} className={this.generateClasses()} id={this.elementId}>
 				{this.render(renderFn)}
 			</div>
 		)
+	}
+
+	onDelete() {
+		// noop
 	}
 }
 

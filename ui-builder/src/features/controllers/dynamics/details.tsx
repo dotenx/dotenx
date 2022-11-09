@@ -135,7 +135,7 @@ const defaultData = {
 			events: [],
 			bindings: {},
 			data: {
-				text: 'Elegant Wood chair',
+				text: Expression.fromString('Elegant Wood chair'),
 				style: {
 					desktop: {
 						default: {
@@ -158,7 +158,9 @@ const defaultData = {
 			events: [],
 			bindings: {},
 			data: {
-				text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit nulla, rerum facere possimus perspiciatis labore optio! Quae deleniti id quam, doloremque commodi tempore quos quas saepe et reiciendis beatae sed?',
+				text: Expression.fromString(
+					'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit nulla, rerum facere possimus perspiciatis labore optio! Quae deleniti id quam, doloremque commodi tempore quos quas saepe et reiciendis beatae sed?'
+				),
 				style: {
 					desktop: {
 						default: {

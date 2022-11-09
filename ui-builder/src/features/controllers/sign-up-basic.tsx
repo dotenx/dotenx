@@ -9,18 +9,25 @@ import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 
+import { uuid } from '../../utils'
+import { NavigateAction } from '../actions/navigate'
+import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
+import { Element } from '../elements/element'
+import { FormElement } from '../elements/extensions/form'
 import { LinkElement } from '../elements/extensions/link'
+import { useProjectStore } from '../page/project-store'
+import { Expression } from '../states/expression'
+import { Intelinput, inteliText } from '../ui/intelinput'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
 import { ComponentName } from './helpers'
-import { Intelinput } from '../ui/intelinput'
-import { Expression } from '../states/expression'
 
 export class SignUpBasic extends Controller {
 	name = 'Basic Sign-up '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
+	data = { dataSourceName: '' }
 
 	renderOptions(options: ElementOptions): ReactNode {
 		const title = options.element.children?.[0].children?.[0].children?.[0] as TextElement
@@ -126,6 +133,37 @@ export class SignUpBasic extends Controller {
 				/>
 			</div>
 		)
+	}
+
+	onDelete() {
+		const removeDataSource = useDataSourceStore.getState().removeByName
+		removeDataSource(this.data.dataSourceName)
+	}
+
+	onCreate(root: Element) {
+		const projectTag = useProjectStore.getState().tag
+		const addDataSource = useDataSourceStore.getState().add
+		const id = uuid()
+		const url = inteliText(
+			`https://api.dotenx.com/user/management/project/${projectTag}/register`
+		)
+		const dataSourceName = `signup_${id}` // State name cannot contain space
+		const navigateAction = new NavigateAction()
+		navigateAction.to = '/login.html'
+		addDataSource({
+			id,
+			stateName: dataSourceName,
+			method: HttpMethod.Post,
+			url,
+			fetchOnload: false,
+			body: '',
+			headers: '',
+			properties: [],
+			onSuccess: [navigateAction],
+		})
+		this.data.dataSourceName = dataSourceName
+		const formElement = root.children?.[0].children?.[0] as FormElement
+		formElement.data.dataSourceName = dataSourceName
 	}
 }
 
