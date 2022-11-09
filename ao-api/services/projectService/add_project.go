@@ -88,6 +88,9 @@ func (ps *projectService) createAndPrepareDatabase(ctx context.Context, accountI
 	if err := ps.Store.CreateProjectDatabase(ctx, accountId, projectName); err != nil {
 		return err
 	}
+	if err := ps.Store.CreateDbUserAndGrantAccess(ctx, accountId, projectName); err != nil {
+		return err
+	}
 
 	db, closeFunc, err := dbutil.GetDbInstance(accountId, projectName)
 	if err != nil {

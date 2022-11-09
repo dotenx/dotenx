@@ -271,6 +271,10 @@ var migrations = []struct {
 		name: "create-ui-builder-global-states-table",
 		stmt: createUIBuilderGlobalStatesTable,
 	},
+	{
+		name: "create-database-user-table",
+		stmt: createDatabaseUserTableStmt,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -764,6 +768,16 @@ CREATE TABLE IF NOT EXISTS ui_builder_global_states (
 account_id                 VARCHAR(64) NOT NULL,
 project_name 		       VARCHAR(128) NOT NULL,
 states                     VARCHAR [] NOT NULL DEFAULT '{}',
+UNIQUE (account_id, project_name)
+)
+`
+
+var createDatabaseUserTableStmt = `
+CREATE TABLE IF NOT EXISTS database_user (
+account_id                 VARCHAR(64) NOT NULL,
+project_name 		       VARCHAR(128) NOT NULL,
+username                   VARCHAR(128) NOT NULL,
+password                   VARCHAR(128) NOT NULL,
 UNIQUE (account_id, project_name)
 )
 `
