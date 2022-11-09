@@ -1,5 +1,5 @@
 import { closeAllModals } from '@mantine/modals'
-import produce from 'immer'
+import produce, { immerable } from 'immer'
 import _ from 'lodash'
 import { uuid } from '../../utils'
 import { useDataSourceStore } from '../data-source/data-source-store'
@@ -19,6 +19,8 @@ export type SourceIds = {
 }
 
 export abstract class Action {
+	[immerable] = true
+
 	id = uuid()
 	abstract name: string
 	abstract renderSettings(ids: Ids): JSX.Element
