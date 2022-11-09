@@ -24,6 +24,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 
 import { DragEndEvent } from '@dnd-kit/core'
 import { TbPlus, TbX } from 'react-icons/tb'
+import { Expression } from '../states/expression'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
@@ -249,11 +250,11 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) =>
 					options.set(
 						produce(logo, (draft) => {
-							draft.data.src = src
+							draft.data.src = Expression.fromString(src)
 						})
 					)
 				}
-				src={logo.data.src}
+				src={logo.data.src.toString()}
 			/>
 			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 
@@ -657,8 +658,9 @@ const logoImage = produce(new ImageElement(), (draft) => {
 		},
 	}
 
-	draft.data.src =
+	draft.data.src = Expression.fromString(
 		'https://images.unsplash.com/photo-1484256017452-47f3e80eae7c?dpr=1&auto=format&fit=crop&w=2850&q=60&cs=tinysrgb'
+	)
 }).serialize()
 
 const logoText = produce(new TextElement(), (draft) => {

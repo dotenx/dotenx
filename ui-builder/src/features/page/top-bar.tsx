@@ -35,9 +35,6 @@ export const projectTagAtom = atom('')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
-	useFetchProjectTag()
-	useFetchGlobalStates()
-
 	return (
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
 			<Group align="center" spacing="xl">
@@ -74,7 +71,7 @@ export const useFetchProjectTag = () => {
 }
 
 export const useFetchPage = () => {
-	const projectTag = useFetchProjectTag() ?? ''
+	const projectTag = useProjectStore((store) => store.tag)
 	const { pageName = '', projectName } = useParams()
 	const setSelectedPage = useSetAtom(pageModeAtom)
 	const resetCanvas = useElementsStore((store) => store.reset)
@@ -114,7 +111,7 @@ export const useFetchPage = () => {
 	return query
 }
 
-const useFetchGlobalStates = () => {
+export const useFetchGlobalStates = () => {
 	const { projectName = '' } = useParams()
 	const setGlobalStates = useSetAtom(globalStatesAtom)
 	useQuery([QueryKey.GlobalStates, projectName], () => getGlobalStates({ projectName }), {

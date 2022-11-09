@@ -1,18 +1,19 @@
 import produce from 'immer'
 import { ReactNode, useMemo } from 'react'
-import imageUrl from '../../assets/components/team-round-left.png'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'
 import profile4Url from '../../assets/components/profile4.jpg'
+import imageUrl from '../../assets/components/team-round-left.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 
-import Bio from './basic-components/bio'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
+import Bio from './basic-components/bio'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class TeamRoundLeft extends Controller {
@@ -39,11 +40,11 @@ function TeamRoundLeftOptions({ options }: SimpleComponentOptionsProps) {
 				content: (
 					<div className="flex flex-col justify-stretch gap-y-4 pt-4">
 						<ImageDrop
-							src={image.data.src}
+							src={image.data.src.toString()}
 							onChange={(value) =>
 								options.set(
 									produce(image, (draft) => {
-										draft.data.src = value
+										draft.data.src = Expression.fromString(value)
 									})
 								)
 							}
@@ -172,7 +173,7 @@ const createBioWithImage = ({
 					borderRadius: '50%',
 				},
 			}
-			draft.data.src = image
+			draft.data.src = Expression.fromString(image)
 		})
 
 		draft.children = [imageElement, Bio.getComponent(name, description, 'left')]

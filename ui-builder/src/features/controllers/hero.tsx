@@ -1,10 +1,10 @@
-import { Textarea, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
@@ -56,11 +56,11 @@ export class Hero extends Controller {
 					onChange={(src) =>
 						options.set(
 							produce(imageComponent, (draft) => {
-								draft.data.src = src
+								draft.data.src = Expression.fromString(src)
 							})
 						)
 					}
-					src={imageComponent.data.src}
+					src={imageComponent.data.src.toString()}
 				/>
 				<DividerCollapsible title="color">
 					{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
