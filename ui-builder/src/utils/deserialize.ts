@@ -26,6 +26,7 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data
+	element.elementId = serialized.elementId
 	return element
 }
 
