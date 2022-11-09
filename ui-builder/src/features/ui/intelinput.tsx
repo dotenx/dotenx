@@ -4,6 +4,7 @@ import produce from 'immer'
 import _ from 'lodash'
 import { useRef } from 'react'
 import { Expression, ExpressionKind, Value } from '../states/expression'
+import { useGetStates } from '../states/use-get-states'
 
 export function Intelinput({
 	label,
@@ -87,7 +88,6 @@ export function Intelinput({
 						<input
 							ref={lastInputRef}
 							className="outline-none w-full py-1 font-mono"
-							style={{ maxWidth: `${expression.value.length || 1}ch` }}
 							value={newValue}
 							onChange={setNewValue}
 							onBlur={() => {
@@ -222,4 +222,32 @@ export function serializeInteliState(data: InteliStateValue): InteliStateValue |
 			.replace('$store.response.', '')
 			.replace('$store.source.', ''),
 	}
+}
+
+export function SingleIntelinput({
+	label,
+	value,
+	onChange,
+}: {
+	label: string
+	value: Expression
+	onChange: (value: Expression) => void
+}) {
+	const states = useGetStates()
+
+	return (
+		<Intelinput
+			label={label}
+			value={value}
+			onChange={(value) => {
+				if (_.isEmpty(value.value)) {
+					onChange(new Expression())
+				} else {
+					const last = _.last(value.value)!
+					onChange(Expression.fromValue(last))
+				}
+			}}
+			options={states.map((state) => state.name)}
+		/>
+	)
 }

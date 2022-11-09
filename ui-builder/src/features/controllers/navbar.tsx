@@ -67,8 +67,10 @@ function NavbarOptions() {
 	return (
 		<div className="space-y-6">
 			<ImageDrop
-				src={logo.data.src}
-				onChange={(value) => set(logo, (draft) => (draft.data.src = value))}
+				src={logo.data.src.toString()}
+				onChange={(value) =>
+					set(logo, (draft) => (draft.data.src = Expression.fromString(value)))
+				}
 			/>
 
 			<DraggableTabs

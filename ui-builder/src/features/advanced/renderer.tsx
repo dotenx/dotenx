@@ -156,7 +156,7 @@ function RenderElementPreview({
 
 	let backgroundUrl = ''
 	if (element instanceof ImageElement) {
-		backgroundUrl = element.data.src
+		backgroundUrl = element.data.src.toString()
 	}
 	const style = backgroundUrl
 		? {
@@ -244,7 +244,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 	}
 
 	let backgroundUrl = ''
-	if (element instanceof ImageElement) backgroundUrl = element.data.src
+	if (element instanceof ImageElement) backgroundUrl = element.data.src.toString()
 	const backgroundImage = backgroundUrl
 		? {
 				backgroundImage: `url(${backgroundUrl})`,

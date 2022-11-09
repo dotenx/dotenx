@@ -6,6 +6,9 @@ import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
 import { Element } from '../features/elements/element'
+import { ImageElement } from '../features/elements/extensions/image'
+import { TextElement } from '../features/elements/extensions/text'
+import { Expression } from '../features/states/expression'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
@@ -26,6 +29,18 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data
+	if (element instanceof ImageElement) {
+		const src = serialized.data.src
+		element.data.src = _.isString(src)
+			? Expression.fromString(serialized.data.src)
+			: _.assign(new Expression(), src)
+	}
+	if (element instanceof TextElement) {
+		const text = serialized.data.text
+		element.data.text = _.isString(text)
+			? Expression.fromString(serialized.data.text)
+			: _.assign(new Expression(), text)
+	}
 	element.elementId = serialized.elementId
 	return element
 }

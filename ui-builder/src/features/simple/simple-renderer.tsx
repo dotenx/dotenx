@@ -47,7 +47,7 @@ export function ElementOverlay({
 	}
 
 	let backgroundUrl = ''
-	if (element instanceof ImageElement) backgroundUrl = element.data.src
+	if (element instanceof ImageElement) backgroundUrl = element.data.src.toString()
 	const backgroundImage = backgroundUrl
 		? {
 				backgroundImage: `url(${backgroundUrl})`,
