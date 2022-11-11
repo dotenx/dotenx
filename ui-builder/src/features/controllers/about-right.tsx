@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
@@ -8,6 +7,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
@@ -142,15 +142,15 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA Link"
 				name="ctaLink"
 				size="xs"
 				value={cta.data.href}
-				onChange={(event) =>
+				onChange={(value) =>
 					options.set(
 						produce(cta, (draft) => {
-							draft.data.href = event.target.value
+							draft.data.href = value
 						})
 					)
 				}
@@ -423,7 +423,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	const element = new TextElement()
 	element.data.text = inteliText('Get Started')
 
-	draft.data.href = '#'
+	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 
 	draft.children = [element]

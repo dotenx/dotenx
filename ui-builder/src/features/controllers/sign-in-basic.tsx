@@ -88,15 +88,15 @@ export class SignInBasic extends Controller {
 							: ''
 					}
 				/>
-				<TextInput
+				<Intelinput
 					label="Sign-up link"
 					name="signUpLink"
 					size="xs"
 					value={signUpLink.data.href}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(signUpLink, (draft) => {
-								draft.data.href = event.target.value
+								draft.data.href = value
 							})
 						)
 					}

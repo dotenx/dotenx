@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { TbClick } from 'react-icons/tb'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { BordersEditor } from '../../style/border-editor'
-import { ShadowsEditor } from '../../style/shadow-editor'
+import { SimpleShadowsEditor } from '../../style/shadows-editor'
 import { SizeEditor } from '../../style/size-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { Element, RenderOptions } from '../element'
@@ -55,7 +55,7 @@ export class ButtonElement extends Element {
 				<SizeEditor simple />
 				<SpacingEditor />
 				<BordersEditor />
-				<ShadowsEditor />
+				<SimpleShadowsEditor />
 			</div>
 		)
 	}

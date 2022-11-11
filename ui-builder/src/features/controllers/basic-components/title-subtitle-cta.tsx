@@ -1,9 +1,9 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
+import { Expression } from '../../states/expression'
 import { Intelinput, inteliText } from '../../ui/intelinput'
 
 const layout = produce(new BoxElement(), (draft) => {
@@ -56,7 +56,7 @@ const layout = produce(new BoxElement(), (draft) => {
 			draft.data.text = inteliText('Click here')
 		})
 		draft.children = [text]
-		draft.data.href = '#'
+		draft.data.href = Expression.fromString('#')
 		draft.data.openInNewTab = false
 	})
 
@@ -104,16 +104,16 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				label="CTA Link"
 				placeholder="CTA link"
 				name="cta"
 				size="xs"
 				value={ctaLink.data.href}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(ctaLink, (draft) => {
-							draft.data.href = event.target.value
+							draft.data.href = value
 						})
 					)
 				}

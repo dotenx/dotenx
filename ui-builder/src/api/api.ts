@@ -2,7 +2,7 @@ import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
 import { addControllers } from '../utils/controller-utils'
-import { deserializeAction, deserializeElement } from '../utils/deserialize'
+import { deserializeAction, deserializeElement, deserializeExpression } from '../utils/deserialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
 	AddPageRequest,
@@ -88,6 +88,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 				dataSources: response.data.content.dataSources.map((source) => ({
 					...source,
 					onSuccess: source.onSuccess?.map(deserializeAction),
+					url: deserializeExpression(source.url),
 				})),
 			},
 		},
