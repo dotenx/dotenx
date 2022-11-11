@@ -20,9 +20,10 @@ import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
-import { ExpressionKind } from '../states/expression'
-import { usePageStateStore } from '../states/page-states-store'
+import { Expression, ExpressionKind } from '../states/expression'
+import { States, usePageStateStore } from '../states/page-states-store'
 import { inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 
 export function RenderElements({
 	elements,
@@ -135,14 +136,29 @@ function RenderElementPreview({
 
 	if (
 		element instanceof TextElement &&
-		element.data.text.value[0].kind === ExpressionKind.State
+		element.data.text.value.some((part) => part.kind === ExpressionKind.State)
 	) {
-		const splitPath = element.data.text.value[0].value.name.split('.')
-		const textValue =
-			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
-			_.get(pageStates, element.data.text.value[0].value.name.replace('$store.source.', ''))
+		const evaluatedText = evaluateExpression(element.data.text, states, pageStates)
 		const valuedElement = produce(element, (draft) => {
-			draft.data.text = inteliText(textValue)
+			draft.data.text = inteliText(evaluatedText)
+		})
+		return (
+			<RenderElement
+				isDirectRootChildren={isDirectRootChildren}
+				key={element.id}
+				element={valuedElement}
+				overlay={overlay}
+			/>
+		)
+	}
+
+	if (
+		element instanceof ImageElement &&
+		element.data.src.value.some((part) => part.kind === ExpressionKind.State)
+	) {
+		const evaluatedText = evaluateExpression(element.data.src, states, pageStates)
+		const valuedElement = produce(element, (draft) => {
+			draft.data.src = inteliText(evaluatedText)
 		})
 		return (
 			<RenderElement
@@ -183,7 +199,27 @@ function RenderElementPreview({
 	)
 }
 
+function evaluateExpression(
+	expression: Expression,
+	states: AnyJson | undefined,
+	pageStates: States
+) {
+	return expression.value
+		.map((part) => {
+			if (part.kind === ExpressionKind.Text) return part.value
+			const splitPath = part.value.name.split('.')
+			const textValue =
+				_.get(
+					states,
+					splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
+				) ?? _.get(pageStates, part.value.name.replace('$store.source.', ''))
+			return textValue as string
+		})
+		.join('')
+}
+
 export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+	const styles = useAppliedStyle(element)
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const { selectElements, selectedElements, setHovered, unsetHovered } = useSelectionStore(
 		(store) => ({
@@ -248,7 +284,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 	const backgroundImage = backgroundUrl
 		? {
 				backgroundImage: `url(${backgroundUrl})`,
-				backgroundSize: 'contain',
+				backgroundSize: styles?.objectFit ? styles?.objectFit : 'contain',
 				backgroundRepeat: 'no-repeat',
 				backgroundPosition: 'center',
 		  }
@@ -358,4 +394,10 @@ function ElementKind({
 		</div>,
 		targetElement
 	)
+}
+
+function useAppliedStyle(element: Element) {
+	const viewport = useAtomValue(viewportAtom)
+	const style = element.style[viewport]?.default
+	return style
 }

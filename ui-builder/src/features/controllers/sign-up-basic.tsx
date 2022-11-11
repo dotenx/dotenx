@@ -92,41 +92,41 @@ export class SignUpBasic extends Controller {
 							: ''
 					}
 				/>
-				<TextInput
+				<Intelinput
 					label="Terms of service link"
 					name="tcLink"
 					size="xs"
 					value={tcLink.data.href}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(tcLink, (draft) => {
-								draft.data.href = event.target.value
+								draft.data.href = value
 							})
 						)
 					}
 				/>
-				<TextInput
+				<Intelinput
 					label="Privacy policy link"
 					name="ppLink"
 					size="xs"
 					value={ppLink.data.href}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(ppLink, (draft) => {
-								draft.data.href = event.target.value
+								draft.data.href = value
 							})
 						)
 					}
 				/>
-				<TextInput
+				<Intelinput
 					label="Sign-in link"
 					name="signInLink"
 					size="xs"
 					value={signInLink.data.href}
-					onChange={(event) =>
+					onChange={(value) =>
 						options.set(
 							produce(signInLink, (draft) => {
-								draft.data.href = event.target.value
+								draft.data.href = value
 							})
 						)
 					}

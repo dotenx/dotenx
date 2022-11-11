@@ -68,7 +68,17 @@ export function DataSourceForm({
 }) {
 	const isAddMode = mode === 'add' || mode === 'simple-add'
 	const isSimple = mode === 'simple-add' || mode === 'simple-edit'
-	const form = useForm<Schema>({ validate: zodResolver(schema), initialValues })
+	const normalizedInitialValues = produce(initialValues, (draft) => {
+		if (!(initialValues.url instanceof Expression)) {
+			const newUrl = new Expression()
+			newUrl.value = (initialValues.url as any)?.value ?? []
+			draft.url = newUrl
+		}
+	})
+	const form = useForm<Schema>({
+		validate: zodResolver(schema),
+		initialValues: normalizedInitialValues,
+	})
 	const { addDataSource, mutation } = useAddDataSource({
 		mode,
 		initialValues,

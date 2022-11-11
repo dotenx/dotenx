@@ -6,7 +6,7 @@ import {
 	Loader,
 	Text,
 	TextInput,
-	Tooltip,
+	Tooltip
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { openModal } from '@mantine/modals'
@@ -22,7 +22,7 @@ import {
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	updatePage,
+	updatePage
 } from '../../api'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
@@ -46,7 +46,7 @@ export function PageActions() {
 }
 
 function PageSettingsButton() {
-	const { projectName = '' } = useParams()
+	const { projectName = '', pageName = '' } = useParams()
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
@@ -54,7 +54,7 @@ function PageSettingsButton() {
 				onClick={() =>
 					openModal({
 						title: 'Page Settings',
-						children: <PageSettings projectName={projectName} />,
+						children: <PageSettings projectName={projectName} pageName={pageName} />,
 					})
 				}
 				size="xs"
@@ -66,11 +66,11 @@ function PageSettingsButton() {
 	)
 }
 
-function PageSettings({ projectName }: { projectName: string }) {
+function PageSettings({ projectName, pageName }: { projectName: string; pageName: string }) {
 	return (
 		<div>
 			<Divider label="URL params" mb="xl" />
-			<QueryParamsForm />
+			<QueryParamsForm pageName={pageName} />
 			<Divider label="Persisted states" my="xl" />
 			<PersistedStatesForm projectName={projectName} />
 		</div>
@@ -121,7 +121,7 @@ function PersistedStatesForm({ projectName }: { projectName: string }) {
 	)
 }
 
-function QueryParamsForm() {
+function QueryParamsForm({ pageName }: { pageName: string }) {
 	const pageParams = useAtomValue(pageParamsAtom)
 	const form = useForm<{ params: string[] }>({ initialValues: { params: pageParams ?? [] } })
 	const queryClient = useQueryClient()
@@ -133,7 +133,6 @@ function QueryParamsForm() {
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
-	const { pageName = '' } = useParams()
 
 	return (
 		<form

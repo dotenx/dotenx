@@ -14,7 +14,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { Expression } from '../states/expression'
+import { Expression, ExpressionKind } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
@@ -61,8 +61,14 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
 
-	const titleValue = typeof titleElement.data.text.value[0].value === 'string' ? titleElement.data.text.value[0].value : titleElement.data.text.value[0].value.name
-	const nameValue = typeof nameElement.data.text.value[0].value === 'string' ? nameElement.data.text.value[0].value : nameElement.data.text.value[0].value.name
+	const titleValue =
+		typeof titleElement.data.text.value[0].value === 'string'
+			? titleElement.data.text.value[0].value
+			: titleElement.data.text.value[0].value.name
+	const nameValue =
+		typeof nameElement.data.text.value[0].value === 'string'
+			? nameElement.data.text.value[0].value
+			: nameElement.data.text.value[0].value.name
 
 	const titleFrom = _.last(titleValue.split('.')) ?? ''
 	const nameFrom = _.last(nameValue.split('.')) ?? ''
@@ -128,7 +134,10 @@ function createCard({
 		const name = draft.children?.[1] as TextElement
 		title.data.text = inteliState(`${dataSourceName}_rowsItem.${titleFrom}`)
 		name.data.text = inteliState(`${dataSourceName}_rowsItem.${nameFrom}`)
-		draft.data.href = `/details?id=${dataSourceName}_rowsItem.id`
+		draft.data.href = new Expression([
+			{ kind: ExpressionKind.Text, value: `/details?id=` },
+			{ kind: ExpressionKind.State, value: { name: `${dataSourceName}_rowsItem.id` } },
+		])
 	})
 }
 

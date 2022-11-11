@@ -7,7 +7,7 @@ interface PageStates {
 	setState: (name: string, value: AnyJson) => void
 }
 
-type States = Record<string, AnyJson>
+export type States = Record<string, AnyJson>
 
 export const usePageStateStore = create<PageStates>()((set) => ({
 	states: {},

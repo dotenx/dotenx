@@ -1,8 +1,7 @@
 import produce from 'immer'
-import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbMessage2 } from 'react-icons/tb'
-import { Expression } from '../../states/expression'
+import { Expression, ExpressionKind } from '../../states/expression'
 import { useGetStates } from '../../states/use-get-states'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
@@ -24,15 +23,11 @@ export class TextElement extends Element {
 	}
 
 	render(renderFn: RenderFn): ReactNode {
-		return (
-			<span
-				dangerouslySetInnerHTML={{
-					__html: this.data.text.value
-						.map((p) => (_.isString(p.value) ? p.value : p.value.name))
-						.join(''),
-				}}
-			/>
-		)
+		const renderedText = this.data.text.value
+			.map((part) => (part.kind === ExpressionKind.Text ? part.value : part.value.name))
+			.join('')
+
+		return <span dangerouslySetInnerHTML={{ __html: renderedText }} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

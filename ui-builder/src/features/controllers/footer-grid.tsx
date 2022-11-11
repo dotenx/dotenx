@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Collapse, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Collapse } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
@@ -196,15 +196,15 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 												icon.data.name as IconName,
 											]}
 										/>
-										<TextInput
+										<Intelinput
 											placeholder="Link"
 											name="link"
 											size="xs"
 											value={item.data.href}
-											onChange={(event) =>
+											onChange={(value) =>
 												options.set(
 													produce(item, (draft) => {
-														draft.data.href = event.target.value
+														draft.data.href = value
 													})
 												)
 											}
@@ -477,15 +477,15 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 										)
 									}
 								/>
-								<TextInput
+								<Intelinput
 									placeholder="Link"
 									name="link"
 									size="xs"
 									value={item.data.href}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(item, (draft) => {
-												draft.data.href = event.target.value
+												draft.data.href = value
 											})
 										)
 									}
@@ -735,7 +735,7 @@ const createColumnLine = (text: string, href: string) =>
 			draft.data.text = inteliText(text)
 		})
 
-		draft.data.href = href
+		draft.data.href = Expression.fromString(href)
 		draft.children = [element]
 	})
 
@@ -790,7 +790,7 @@ const social = produce(new LinkElement(), (draft) => {
 	})
 
 	draft.children = [element]
-	draft.data.href = ''
+	draft.data.href = new Expression()
 })
 
 const createSocial = (type: string, name: string, color: string) => {

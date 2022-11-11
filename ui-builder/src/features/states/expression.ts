@@ -26,7 +26,9 @@ export class Expression {
 	}
 
 	toString() {
-		return this.value.map((v) => v.value).join('')
+		return this.value
+			.map((part) => (part.kind === ExpressionKind.State ? part.value.name : part.value))
+			.join('')
 	}
 
 	exists() {

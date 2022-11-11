@@ -1,6 +1,6 @@
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Collapse, TextInput } from '@mantine/core'
+import { ActionIcon, Collapse } from '@mantine/core'
 import produce from 'immer'
 import { useState } from 'react'
 import { TbPlus } from 'react-icons/tb'
@@ -8,7 +8,8 @@ import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { IconElement } from '../../elements/extensions/icon'
 import { LinkElement } from '../../elements/extensions/link'
-import { TextElement } from '../../elements/extensions/text'
+import { Expression } from '../../states/expression'
+import { Intelinput } from '../../ui/intelinput'
 import VerticalOptions from '../helpers/vertical-options'
 
 const iconsSet = {
@@ -46,7 +47,7 @@ const createLayout = (icons: SocialIcon[]) =>
 
 function createSocialLink(iconName: string, color: string) {
 	return produce(new LinkElement(), (draft) => {
-		draft.data.href = '#'
+		draft.data.href = Expression.fromString('#')
 		draft.data.openInNewTab = true
 
 		const icon = produce(new IconElement(), (draft) => {
@@ -97,15 +98,15 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 										icon.data.name as IconName,
 									]}
 								/>
-								<TextInput
+								<Intelinput
 									placeholder="Link"
 									name="link"
 									size="xs"
 									value={link.data.href}
-									onChange={(event) =>
+									onChange={(value) =>
 										set(
 											produce(link, (draft) => {
-												draft.data.href = event.target.value
+												draft.data.href = value
 											})
 										)
 									}

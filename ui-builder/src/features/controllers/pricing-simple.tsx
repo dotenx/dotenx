@@ -1,4 +1,4 @@
-import { Button, Slider, TextInput } from '@mantine/core'
+import { Button, Slider } from '@mantine/core'
 import produce from 'immer'
 import React, { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/pricing-simple.png'
@@ -8,16 +8,17 @@ import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
-import { useAtomValue } from 'jotai'
-import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
-import { LinkElement } from '../elements/extensions/link'
-import { IconElement } from '../elements/extensions/icon'
-import { Element } from '../elements/element'
-import VerticalOptions from './helpers/vertical-options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { useAtomValue } from 'jotai'
+import { Element } from '../elements/element'
+import { IconElement } from '../elements/extensions/icon'
+import { LinkElement } from '../elements/extensions/link'
+import { Expression } from '../states/expression'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import VerticalOptions from './helpers/vertical-options'
 
 export class PricingSimple extends Controller {
 	name = 'Simple pricing'
@@ -397,16 +398,16 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 					)
 				}
 			/>
-			<TextInput
+			<Intelinput
 				placeholder="Link"
 				label="Link"
 				name="ctaLink"
 				size="xs"
 				value={ctaLink.data.href}
-				onChange={(event) =>
+				onChange={(value) =>
 					set(
 						produce(ctaLink, (draft) => {
-							draft.data.href = event.target.value
+							draft.data.href = value
 						})
 					)
 				}
@@ -653,7 +654,7 @@ const tileCta = produce(new LinkElement(), (draft) => {
 		draft.data.text = inteliText('Learn more')
 	})
 
-	draft.data.href = '#'
+	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 	draft.children = [text]
 })
