@@ -21,6 +21,9 @@ type DatabaseStore interface {
 	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)
 	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]models.PgColumn, error)
 
+	DeleteDatabase(ctx context.Context, accountId string, projectName string) error
+	DeleteDatabaseUser(ctx context.Context, accountId string, projectName string) error
+
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, filters ConditionGroup) error
