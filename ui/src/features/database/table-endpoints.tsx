@@ -46,7 +46,7 @@ export function TableEndpoints({ projectTag }: TableEndpointsProps) {
 			)}
 			<Endpoint
 				label="Add a record"
-				url={`${API_URL}/database/query/insert/project//table/`}
+				url={`${API_URL}/database/query/insert/project/${projectTag}/table/`}
 				method="POST"
 				code={body}
 			/>
