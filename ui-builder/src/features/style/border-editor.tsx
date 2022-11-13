@@ -48,7 +48,7 @@ export function BordersEditor({ simple }: { simple?: boolean }) {
 	)
 
 	return (
-		<CollapseLine label="Borders">
+		<CollapseLine label="Borders" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Radius</p>
 				<div className="col-span-9">

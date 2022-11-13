@@ -13,7 +13,7 @@ const positions = [
 export function PositionEditor() {
 	const { style, editStyle } = useEditStyle()
 	return (
-		<CollapseLine label="Position">
+		<CollapseLine label="Position" defaultClosed>
 			<div>
 				<Select
 					value={style.position ?? ''}

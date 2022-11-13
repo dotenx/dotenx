@@ -156,7 +156,7 @@ export function TypographyEditor({ simple }: { simple?: boolean }) {
 	)
 
 	return (
-		<CollapseLine label="Typography">
+		<CollapseLine label="Typography" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Font</p>
 				<Select
