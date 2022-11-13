@@ -7,7 +7,7 @@ export function SpacingEditor() {
 	const { style: styles, editStyle } = useEditStyle()
 
 	return (
-		<CollapseLine label="Spacing">
+		<CollapseLine label="Spacing" defaultClosed>
 			<div className="relative flex flex-col gap-2 px-2 py-2 font-mono border rounded">
 				<Text
 					className="absolute uppercase top-1 left-2"

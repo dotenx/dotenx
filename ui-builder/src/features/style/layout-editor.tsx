@@ -29,7 +29,7 @@ export function LayoutEditor() {
 	if (!selectedComponent) return null
 
 	return (
-		<CollapseLine label="Layout">
+		<CollapseLine label="Layout" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Display</p>
 				<SegmentedControl

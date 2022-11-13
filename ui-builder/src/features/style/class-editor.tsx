@@ -75,7 +75,7 @@ export function ClassEditor() {
 	const elementClasses = selectedElement.classes
 
 	return (
-		<CollapseLine label="Class">
+		<CollapseLine label="Class" defaultClosed>
 			<div>
 				<MultiSelect
 					placeholder="Select class for this component"
