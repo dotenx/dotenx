@@ -24,15 +24,21 @@ type Link struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
-		Href         string `json:"href"`
-		OpenInNewTab bool   `json:"openInNewTab"`
+		Href struct {
+			Value []TextSource
+		} `json:"href"`
+		OpenInNewTab bool `json:"openInNewTab"`
 	} `json:"data"`
 }
 
-const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{.Href}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{range .Href.Value}}{{renderTextSource .}}{{end}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertLink(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	fmt.Println("convertLink")
+
+	funcMap := template.FuncMap{
+		"renderTextSource": renderTextSource,
+	}
+
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -40,7 +46,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 	}
 	var link Link
 	json.Unmarshal(b, &link)
-	tmpl, err := template.New("link").Parse(linkTemplate)
+	tmpl, err := template.New("link").Funcs(funcMap).Parse(linkTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -64,9 +70,11 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 			Name     string
 			Iterator string
 		}
-		Events       []Event
-		ClassNames   []string
-		Href         string
+		Events     []Event
+		ClassNames []string
+		Href       struct {
+			Value []TextSource
+		}
 		OpenInNewTab bool
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
