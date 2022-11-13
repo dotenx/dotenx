@@ -6,7 +6,7 @@ import {
 	Loader,
 	Text,
 	TextInput,
-	Tooltip
+	Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { openModal } from '@mantine/modals'
@@ -22,11 +22,12 @@ import {
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	updatePage
+	updatePage,
 } from '../../api'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
+import { fontsAtom } from '../style/typography-editor'
 import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
@@ -133,6 +134,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
+	const fonts = useAtomValue(fontsAtom)
 
 	return (
 		<form
@@ -147,6 +149,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 					pageParams: values.params,
 					mode: 'advanced',
 					globals,
+					fonts,
 				})
 			)}
 		>
@@ -213,6 +216,7 @@ function SaveButton() {
 	const classNames = useClassesStore((store) => store.classes)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const globals = useAtomValue(globalStatesAtom)
+	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
 	const save = () => {
 		savePageMutation.mutate(
@@ -225,6 +229,7 @@ function SaveButton() {
 				mode: isSimple ? 'simple' : 'advanced',
 				pageParams,
 				globals,
+				fonts,
 			},
 			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
 		)
