@@ -104,6 +104,7 @@ export const addPage = ({
 	mode,
 	pageParams,
 	globals,
+	fonts,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -127,6 +128,7 @@ export const addPage = ({
 			mode,
 			pageParams,
 			globals,
+			fonts,
 		},
 	})
 }

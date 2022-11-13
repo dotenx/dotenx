@@ -1,4 +1,7 @@
 import { Chip, ColorInput, SegmentedControl, Select } from '@mantine/core'
+import { openModal } from '@mantine/modals'
+import { atom, useAtomValue } from 'jotai'
+import _ from 'lodash'
 import {
 	TbAlignCenter,
 	TbAlignJustified,
@@ -10,9 +13,11 @@ import {
 	TbUnderline,
 	TbX,
 } from 'react-icons/tb'
+import { useParams } from 'react-router-dom'
 import { toCenter } from '../../utils/center'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
+import { FontForm } from './font-form'
 import { useEditStyle } from './use-edit-style'
 
 export const decorations = [
@@ -41,7 +46,7 @@ export const weights = [
 	{ label: '900 - Black', value: '900' },
 ]
 
-const fonts = [
+const defaultFonts = [
 	'Arial',
 	'Arial Black',
 	'Bahnschrift',
@@ -94,6 +99,8 @@ const fonts = [
 	'Verdana',
 	'Yu Gothic',
 ]
+export const fontsAtom = atom<Record<string, string>>({})
+
 const fontSizes = [
 	{ label: 'xs', value: '0.75rem' },
 	{ label: 'sm', value: '0.875rem' },
@@ -111,6 +118,8 @@ const fontSizes = [
 ]
 
 export function TypographyEditor({ simple }: { simple?: boolean }) {
+	const { pageName = '' } = useParams()
+	const fonts = useAtomValue(fontsAtom)
 	const { style, editStyle } = useEditStyle()
 
 	const sizeAndHeight = (
@@ -152,10 +161,20 @@ export function TypographyEditor({ simple }: { simple?: boolean }) {
 				<p className="col-span-3">Font</p>
 				<Select
 					value={style.fontFamily ?? ''}
-					onChange={(value) => editStyle('fontFamily', value ?? fonts[0])}
+					onChange={(value) => editStyle('fontFamily', value ?? defaultFonts[0])}
 					className="col-span-9"
-					data={fonts}
+					data={[..._.keys(fonts), ...defaultFonts]}
 					size="xs"
+					onCreate={(fontName) => {
+						openModal({
+							title: 'Add Font',
+							children: <FontForm fontName={fontName} pageName={pageName} />,
+						})
+						return fontName
+					}}
+					creatable
+					searchable
+					getCreateLabel={(query) => `+ Add ${query}`}
 				/>
 
 				<p className="col-span-3">Weight</p>
