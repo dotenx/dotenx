@@ -45,8 +45,32 @@ func (i *StyleStore) AddStyle(id string, desktopStyles, tabletStyles, mobileStyl
 // a template to render all the imports
 
 const importTemplate = `
+*, *::before, *::after {
+box-sizing: border-box;
+}
+* {
+margin: 0;
+}
+html, body {
+height: 100%;
+}
 body {
-	margin: 0;
+line-height: 1.5;
+-webkit-font-smoothing: antialiased;
+font-family: 'Roboto', sans-serif;
+}
+img, picture, video, canvas, svg {
+display: block;
+max-width: 100%;
+}
+input, button, textarea, select {
+font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+overflow-wrap: break-word;
+}
+#root, #__next {
+isolation: isolate;
 }
 {{range $id, $styles := .DesktopStyles}}{{if $styles}}
 {{if $styles.Default}}#{{$id}} {
