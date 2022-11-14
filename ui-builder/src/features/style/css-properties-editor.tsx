@@ -18,7 +18,6 @@ export function CssPropertiesEditor() {
 	const { style, editStyle } = useEditStyle()
 	const styles = _.toPairs(style).filter(([, value]) => value !== undefined)
 	styles.sort(([a], [b]) => a.localeCompare(b))
-	console.log(styles)
 	const [isAdding, setIsAdding] = useState(false)
 
 	return (

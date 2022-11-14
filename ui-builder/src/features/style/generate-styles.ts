@@ -1,5 +1,6 @@
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { useMemo } from 'react'
 import { mapStyleToKebabCase } from '../../api/mapper'
 import { Element } from '../elements/element'
 import { CssSelector, SelectorStyle, Style } from '../elements/style'
@@ -41,25 +42,30 @@ const globalPageStyles = `
 export const useGenerateStyles = (elements: Element[]) => {
 	const fonts = useAtomValue(fontsAtom)
 	const classNames = useClassesStore((store) => store.classes)
-	const desktopIds = generateCssIds(elements, 'desktop')
-	const tabletIds = generateCssIds(elements, 'tablet')
-	const mobileIds = generateCssIds(elements, 'mobile')
 
-	const desktopClasses = generateCssClasses(classNames, 'desktop')
-	const tabletClasses = generateCssClasses(classNames, 'tablet')
-	const mobileClasses = generateCssClasses(classNames, 'mobile')
-	const fontsCss = generateFontsCss(fonts)
+	const desktopIds = useMemo(() => generateCssIds(elements, 'desktop'), [elements])
+	const tabletIds = useMemo(() => generateCssIds(elements, 'tablet'), [elements])
+	const mobileIds = useMemo(() => generateCssIds(elements, 'mobile'), [elements])
 
-	const generatedStyles = `
-		${fontsCss}
-		${globalPageStyles}
-		${desktopClasses}
-		${desktopIds}
-		@media (max-width: 767px) { ${tabletClasses} }
-		@media (max-width: 478px) { ${mobileClasses} }
-		@media (max-width: 767px) { ${tabletIds} }
-		@media (max-width: 478px) { ${mobileIds} }
-	`
+	const desktopClasses = useMemo(() => generateCssClasses(classNames, 'desktop'), [classNames])
+	const tabletClasses = useMemo(() => generateCssClasses(classNames, 'tablet'), [classNames])
+	const mobileClasses = useMemo(() => generateCssClasses(classNames, 'mobile'), [classNames])
+
+	const fontsCss = useMemo(() => generateFontsCss(fonts), [fonts])
+
+	const generatedStyles = useMemo(
+		() => `
+			${fontsCss}
+			${globalPageStyles}
+			${desktopClasses}
+			${desktopIds}
+			@media (max-width: 767px) { ${tabletClasses} }
+			@media (max-width: 478px) { ${mobileClasses} }
+			@media (max-width: 767px) { ${tabletIds} }
+			@media (max-width: 478px) { ${mobileIds} }
+		`,
+		[desktopClasses, desktopIds, fontsCss, mobileClasses, mobileIds, tabletClasses, tabletIds]
+	)
 
 	return generatedStyles
 }
