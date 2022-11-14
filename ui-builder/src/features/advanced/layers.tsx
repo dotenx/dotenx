@@ -46,7 +46,7 @@ function Layer({ element: element }: { element: Element }) {
 	)
 
 	return (
-		<div className={clsx(isSelected && 'bg-gray-200 rounded')}>
+		<div className={clsx('px-1', isSelected && 'bg-gray-200 rounded-sm')}>
 			<div
 				className="flex items-center py-1 border-b group"
 				onMouseOver={() => setHovered(element.id)}
@@ -58,7 +58,7 @@ function Layer({ element: element }: { element: Element }) {
 					document.getElementById(element.id)?.scrollIntoView()
 				}}
 			>
-				<div>{disclosureButton}</div>
+				{element.hasChildren() && <div>{disclosureButton}</div>}
 				<span className={clsx('pl-1', !element.hasChildren() && 'pl-[22px]')}>
 					{element.icon}
 				</span>

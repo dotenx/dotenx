@@ -2,7 +2,7 @@ import { useIntersection } from '@mantine/hooks'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
-import { MouseEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react'
+import { MouseEvent, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { usePopper } from 'react-popper'
@@ -241,13 +241,13 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		},
 		[intersectionRef]
 	)
-	const showHoverAnimations = () => {
+	const showHoverAnimations = useCallback(() => {
 		element.events
 			.filter((event) => event.kind === EventKind.MouseEnter)
 			.flatMap((event) => event.actions)
 			.filter((action): action is AnimationAction => action instanceof AnimationAction)
 			.forEach((animation) => animateCSS(`.${element.id}`, animation.animationName))
-	}
+	}, [element.events, element.id])
 	const intersectionAnimation = intersection.entry?.isIntersecting
 		? 'animate__animated ' +
 		  element.events
@@ -257,50 +257,73 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				.map((animation) => `animate__${animation.animationName}`)
 		: ''
 	const classes = `${element.generateClasses()} ${intersectionAnimation}`
-	const style: CSSProperties = {
-		cursor: 'default',
-		outlineColor: '#fb7185',
-		outlineWidth: isHovered ? 2 : 1,
-		outlineStyle: isHighlighted ? 'solid' : undefined,
-	}
-	const handleMouseOver = (event: MouseEvent) => {
-		event.stopPropagation()
-		if (!isFullscreen) setHovered(element.id)
-		showHoverAnimations()
-	}
-	const handleMouseOut = (event: MouseEvent) => {
-		event.stopPropagation()
-		unsetHovered()
-	}
-	const handleClick = (event: MouseEvent) => {
-		event.stopPropagation()
-		if (isFullscreen) return
-		if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
-		else selectElements(element.id)
-	}
+
+	const handleMouseOver = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			if (!isFullscreen) setHovered(element.id)
+			showHoverAnimations()
+		},
+		[element.id, isFullscreen, setHovered, showHoverAnimations]
+	)
+	const handleMouseOut = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			unsetHovered()
+		},
+		[unsetHovered]
+	)
+	const handleClick = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			if (isFullscreen) return
+			if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
+			else selectElements(element.id)
+		},
+		[element.id, isFullscreen, isSelected, selectElements, selectedElements]
+	)
 
 	let backgroundUrl = ''
 	if (element instanceof ImageElement) backgroundUrl = element.data.src.toString()
-	const backgroundImage = backgroundUrl
-		? {
-				backgroundImage: `url(${backgroundUrl})`,
-				backgroundSize: styles?.objectFit ? styles?.objectFit : 'contain',
-				backgroundRepeat: 'no-repeat',
-				backgroundPosition: 'center',
-		  }
-		: {}
+	const style: CSSProperties = useMemo(
+		() => ({
+			cursor: 'default',
+			outlineColor: '#fb7185',
+			outlineWidth: isHovered ? 2 : 1,
+			outlineStyle: isHighlighted ? 'solid' : undefined,
+		}),
+		[isHighlighted, isHovered]
+	)
+	const backgroundImage = useMemo(
+		() =>
+			backgroundUrl
+				? {
+						backgroundImage: `url(${backgroundUrl})`,
+						backgroundSize: styles?.objectFit ? styles?.objectFit : 'contain',
+						backgroundRepeat: 'no-repeat',
+						backgroundPosition: 'center',
+				  }
+				: {},
+		[backgroundUrl, styles?.objectFit]
+	)
+
+	const draggableData = useMemo(
+		() => ({ mode: DraggableMode.Move as const, elementId: element.id }),
+		[element.id]
+	)
+	const draggableStyle = useMemo(
+		() => ({ ...style, ...backgroundImage }),
+		[backgroundImage, style]
+	)
 
 	return (
 		<Draggable
-			data={{ mode: DraggableMode.Move, elementId: element.id }}
 			ref={handleRef}
+			data={draggableData}
 			className={classes}
 			tabIndex={0}
 			id={element.id}
-			style={{
-				...style,
-				...backgroundImage,
-			}}
+			style={draggableStyle}
 			onMouseOver={handleMouseOver}
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}
