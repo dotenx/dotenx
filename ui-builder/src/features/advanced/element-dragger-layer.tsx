@@ -1,10 +1,9 @@
 import { Divider, Tabs } from '@mantine/core'
 import { TbComponents, TbLayersDifference } from 'react-icons/tb'
-import { useElementsStore } from '../elements/elements-store'
 import { ComponentDragger } from '../marketplace/component-dragger'
 import { DesignSystems } from '../marketplace/design-systems'
 import { ElementDragger } from './element-dragger'
-import { Layers } from './layers'
+import { DndLayers } from './layers'
 
 export function ElementDraggerAndLayers() {
 	return (
@@ -22,7 +21,7 @@ export function ElementDraggerAndLayers() {
 				<ElementDraggerTab />
 			</Tabs.Panel>
 			<Tabs.Panel value="layers" pt="xs">
-				<LayersTab />
+				<DndLayers />
 			</Tabs.Panel>
 		</Tabs>
 	)
@@ -37,11 +36,4 @@ function ElementDraggerTab() {
 			<DesignSystems />
 		</div>
 	)
-}
-
-function LayersTab() {
-	const elements = useElementsStore((store) => store.elements)
-	if (elements.length === 0)
-		return <p className="text-xs text-center">Add an element to see layers</p>
-	return <Layers elements={elements} />
 }

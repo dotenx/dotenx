@@ -21,7 +21,7 @@ import produce from 'immer'
 import _ from 'lodash'
 import { Bar } from 'react-chartjs-2'
 import { JsonArray } from '../../../utils'
-import { Expression, TextValue } from '../../states/expression'
+import { Expression, StateValue } from '../../states/expression'
 import { usePageStateStore } from '../../states/page-states-store'
 import { useDataSourceStates } from '../../states/use-get-states'
 import { Intelinput } from '../../ui/intelinput'
@@ -245,7 +245,9 @@ function SingleIntelinput({
 				if (_.isEmpty(value.value)) {
 					onChange({ listName: '', propName: '' })
 				} else {
-					const [listName, propName] = (value.value[0] as TextValue).value.split('[].')
+					const [listName, propName] = (value.value[0] as StateValue).value.name.split(
+						'[].'
+					)
 					onChange({ listName, propName })
 				}
 			}}
