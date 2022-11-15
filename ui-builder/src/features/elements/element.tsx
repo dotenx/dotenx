@@ -1,4 +1,5 @@
 import { immerable } from 'immer'
+import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
@@ -28,7 +29,7 @@ export abstract class Element {
 	elementId?: string
 
 	isContainer() {
-		return this.children !== null
+		return _.isNil(this.children) === false
 	}
 
 	hasChildren() {
