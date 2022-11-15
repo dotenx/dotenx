@@ -149,6 +149,21 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 		}
 	}
 
+	if project.HasDatabase {
+		// Drop database of project
+		err = dbService.DeleteDatabase(accountId, project.Name)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		// Delete corresponding database user
+		err = dbService.DeleteDatabaseUser(accountId, project.Name)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+	}
+
 	err = ps.Store.DeleteProjectByTag(context.Background(), projectTag)
 	if err != nil {
 		logrus.Error(err.Error())

@@ -48,25 +48,31 @@ export const useGetStates = () => {
 	}
 	const pageParams = useAtomValue(pageParamsAtom)
 	const mutableStates = useGetMutableStates()
+	const dataSourceStates = dataSources
+		.map((source) =>
+			source.properties.map((property) => ({
+				kind: property.kind,
+				name: `$store.source.${source.stateName}${property.path}`,
+			}))
+		)
+		.flat()
+	const pageParamStates = pageParams.map((param) => ({
+		kind: PropertyKind.String,
+		name: `$store.url.${param}`,
+	}))
+	const repeatedStates = element.repeatFrom
+		? repeatedProperties.map((property) => ({
+				kind: property.kind,
+				name: `${element.repeatFrom?.iterator}${property.path}`,
+		  }))
+		: []
 
 	const states = [
 		...mutableStates,
-		...dataSources
-			.map((source) =>
-				source.properties.map((property) => ({
-					kind: property.kind,
-					name: `$store.source.${source.stateName}${property.path}`,
-				}))
-			)
-			.flat(),
-		...(element.repeatFrom
-			? repeatedProperties.map((property) => ({
-					kind: property.kind,
-					name: `${element.repeatFrom?.iterator}${property.path}`,
-			  }))
-			: []),
+		...dataSourceStates,
+		...repeatedStates,
 		...passedProperties,
-		...pageParams.map((param) => ({ kind: PropertyKind.String, name: `$store.url.${param}` })),
+		...pageParamStates,
 	]
 
 	return states.filter((state) => !!state.name)

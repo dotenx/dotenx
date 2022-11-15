@@ -8,7 +8,7 @@ import { Layers } from './layers'
 
 export function ElementDraggerAndLayers() {
 	return (
-		<Tabs defaultValue="elements">
+		<Tabs keepMounted={false} defaultValue="elements">
 			<Tabs.List grow>
 				<Tabs.Tab value="elements" icon={<TbComponents size={14} />}>
 					Elements

@@ -6,6 +6,10 @@ import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
 import { Element } from '../features/elements/element'
+import { ImageElement } from '../features/elements/extensions/image'
+import { LinkElement } from '../features/elements/extensions/link'
+import { TextElement } from '../features/elements/extensions/text'
+import { Expression } from '../features/states/expression'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
@@ -26,6 +30,24 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data
+	if (element instanceof ImageElement) {
+		const src = serialized.data.src
+		element.data.src = _.isString(src)
+			? Expression.fromString(serialized.data.src)
+			: _.assign(new Expression(), src)
+	}
+	if (element instanceof TextElement) {
+		const text = serialized.data.text
+		element.data.text = _.isString(text)
+			? Expression.fromString(serialized.data.text)
+			: _.assign(new Expression(), text)
+	}
+	if (element instanceof LinkElement) {
+		const href = serialized.data.href
+		element.data.href = _.isString(href)
+			? Expression.fromString(serialized.data.href)
+			: _.assign(new Expression(), href)
+	}
 	element.elementId = serialized.elementId
 	return element
 }
@@ -62,4 +84,8 @@ export function deserializeAction(data: any) {
 	)
 	_.assign(action, deserialized)
 	return action
+}
+
+export function deserializeExpression(data: any): Expression {
+	return _.assign(new Expression(), data)
 }

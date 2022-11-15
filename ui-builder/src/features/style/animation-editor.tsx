@@ -110,7 +110,7 @@ export function AnimationEditor() {
 	)
 
 	return (
-		<CollapseLine label="Animation">
+		<CollapseLine label="Animation" defaultClosed>
 			<div>
 				<div className="space-y-4">{animations}</div>
 				<Button mt="xl" size="xs" leftIcon={<TbPlus />} onClick={addNewAnimation}>

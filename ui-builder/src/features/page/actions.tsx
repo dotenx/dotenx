@@ -27,6 +27,7 @@ import {
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
+import { fontsAtom } from '../style/typography-editor'
 import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
@@ -46,7 +47,7 @@ export function PageActions() {
 }
 
 function PageSettingsButton() {
-	const { projectName = '' } = useParams()
+	const { projectName = '', pageName = '' } = useParams()
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
@@ -54,7 +55,7 @@ function PageSettingsButton() {
 				onClick={() =>
 					openModal({
 						title: 'Page Settings',
-						children: <PageSettings projectName={projectName} />,
+						children: <PageSettings projectName={projectName} pageName={pageName} />,
 					})
 				}
 				size="xs"
@@ -66,11 +67,11 @@ function PageSettingsButton() {
 	)
 }
 
-function PageSettings({ projectName }: { projectName: string }) {
+function PageSettings({ projectName, pageName }: { projectName: string; pageName: string }) {
 	return (
 		<div>
 			<Divider label="URL params" mb="xl" />
-			<QueryParamsForm />
+			<QueryParamsForm pageName={pageName} />
 			<Divider label="Persisted states" my="xl" />
 			<PersistedStatesForm projectName={projectName} />
 		</div>
@@ -121,7 +122,7 @@ function PersistedStatesForm({ projectName }: { projectName: string }) {
 	)
 }
 
-function QueryParamsForm() {
+function QueryParamsForm({ pageName }: { pageName: string }) {
 	const pageParams = useAtomValue(pageParamsAtom)
 	const form = useForm<{ params: string[] }>({ initialValues: { params: pageParams ?? [] } })
 	const queryClient = useQueryClient()
@@ -133,7 +134,7 @@ function QueryParamsForm() {
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
-	const { pageName = '' } = useParams()
+	const fonts = useAtomValue(fontsAtom)
 
 	return (
 		<form
@@ -148,6 +149,7 @@ function QueryParamsForm() {
 					pageParams: values.params,
 					mode: 'advanced',
 					globals,
+					fonts,
 				})
 			)}
 		>
@@ -214,6 +216,7 @@ function SaveButton() {
 	const classNames = useClassesStore((store) => store.classes)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const globals = useAtomValue(globalStatesAtom)
+	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
 	const save = () => {
 		savePageMutation.mutate(
@@ -226,6 +229,7 @@ function SaveButton() {
 				mode: isSimple ? 'simple' : 'advanced',
 				pageParams,
 				globals,
+				fonts,
 			},
 			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
 		)

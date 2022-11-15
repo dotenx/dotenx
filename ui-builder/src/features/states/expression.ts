@@ -24,6 +24,20 @@ export class Expression {
 		expression.value = [{ kind: ExpressionKind.State, value: { name: state } }]
 		return expression
 	}
+
+	toString() {
+		return this.value
+			.map((part) => (part.kind === ExpressionKind.State ? part.value.name : part.value))
+			.join('')
+	}
+
+	exists() {
+		return this.value.filter((part) => !!part.value).length > 0
+	}
+
+	isSingleState() {
+		return this.value.length === 1 && this.value[0].kind === ExpressionKind.State
+	}
 }
 
 export type State = { name: string }

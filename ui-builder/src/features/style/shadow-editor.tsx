@@ -14,7 +14,7 @@ export function ShadowsEditor() {
 	const shadowColor = shadowProperties?.[4]
 
 	return (
-		<CollapseLine label="Shadows">
+		<CollapseLine label="Shadows" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2 gap-x-3">
 				<p className="col-span-3">Color</p>
 				<div className="col-span-9">

@@ -45,7 +45,7 @@ export class NavbarElement extends Element {
 
 	renderOptions(): ReactNode {
 		return (
-			<div className="text-center">
+			<div>
 				<SimpleShadowsEditor />
 			</div>
 		)

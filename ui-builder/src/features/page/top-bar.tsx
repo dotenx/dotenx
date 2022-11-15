@@ -23,6 +23,7 @@ import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
 import { usePageStateStore } from '../states/page-states-store'
 import { useClassesStore } from '../style/classes-store'
+import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
 import { globalStatesAtom, PageActions } from './actions'
@@ -35,9 +36,6 @@ export const projectTagAtom = atom('')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
-	useFetchProjectTag()
-	useFetchGlobalStates()
-
 	return (
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
 			<Group align="center" spacing="xl">
@@ -74,7 +72,7 @@ export const useFetchProjectTag = () => {
 }
 
 export const useFetchPage = () => {
-	const projectTag = useFetchProjectTag() ?? ''
+	const projectTag = useProjectStore((store) => store.tag)
 	const { pageName = '', projectName } = useParams()
 	const setSelectedPage = useSetAtom(pageModeAtom)
 	const resetCanvas = useElementsStore((store) => store.reset)
@@ -83,6 +81,7 @@ export const useFetchPage = () => {
 	const setClassNames = useClassesStore((store) => store.set)
 	const setPageParams = useSetAtom(pageParamsAtom)
 	const navigate = useNavigate()
+	const setFonts = useSetAtom(fontsAtom)
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -95,6 +94,7 @@ export const useFetchPage = () => {
 				setClassNames(content.classNames)
 				setPageParams(content.pageParams)
 				setSelectedPage(content.mode)
+				setFonts(content.fonts)
 
 				content.dataSources.map((source) =>
 					axios
@@ -114,7 +114,7 @@ export const useFetchPage = () => {
 	return query
 }
 
-const useFetchGlobalStates = () => {
+export const useFetchGlobalStates = () => {
 	const { projectName = '' } = useParams()
 	const setGlobalStates = useSetAtom(globalStatesAtom)
 	useQuery([QueryKey.GlobalStates, projectName], () => getGlobalStates({ projectName }), {
@@ -179,6 +179,7 @@ function AdvancedModeButton() {
 			mode: 'advanced',
 			pageParams: [],
 			globals: [],
+			fonts: {},
 		})
 	}
 	const handleClick = () => {

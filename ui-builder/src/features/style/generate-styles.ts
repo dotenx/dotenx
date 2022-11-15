@@ -1,9 +1,12 @@
+import { useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { useMemo } from 'react'
 import { mapStyleToKebabCase } from '../../api/mapper'
 import { Element } from '../elements/element'
 import { CssSelector, SelectorStyle, Style } from '../elements/style'
 import { ViewportDevice } from '../viewport/viewport-store'
 import { useClassesStore } from './classes-store'
+import { fontsAtom } from './typography-editor'
 
 const globalPageStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
@@ -37,24 +40,32 @@ const globalPageStyles = `
 `
 
 export const useGenerateStyles = (elements: Element[]) => {
+	const fonts = useAtomValue(fontsAtom)
 	const classNames = useClassesStore((store) => store.classes)
-	const desktopIds = generateCssIds(elements, 'desktop')
-	const tabletIds = generateCssIds(elements, 'tablet')
-	const mobileIds = generateCssIds(elements, 'mobile')
 
-	const desktopClasses = generateCssClasses(classNames, 'desktop')
-	const tabletClasses = generateCssClasses(classNames, 'tablet')
-	const mobileClasses = generateCssClasses(classNames, 'mobile')
+	const desktopIds = useMemo(() => generateCssIds(elements, 'desktop'), [elements])
+	const tabletIds = useMemo(() => generateCssIds(elements, 'tablet'), [elements])
+	const mobileIds = useMemo(() => generateCssIds(elements, 'mobile'), [elements])
 
-	const generatedStyles = `
-		${globalPageStyles}
-		${desktopClasses}
-		${desktopIds}
-		@media (max-width: 767px) { ${tabletClasses} }
-		@media (max-width: 478px) { ${mobileClasses} }
-		@media (max-width: 767px) { ${tabletIds} }
-		@media (max-width: 478px) { ${mobileIds} }
-	`
+	const desktopClasses = useMemo(() => generateCssClasses(classNames, 'desktop'), [classNames])
+	const tabletClasses = useMemo(() => generateCssClasses(classNames, 'tablet'), [classNames])
+	const mobileClasses = useMemo(() => generateCssClasses(classNames, 'mobile'), [classNames])
+
+	const fontsCss = useMemo(() => generateFontsCss(fonts), [fonts])
+
+	const generatedStyles = useMemo(
+		() => `
+			${fontsCss}
+			${globalPageStyles}
+			${desktopClasses}
+			${desktopIds}
+			@media (max-width: 767px) { ${tabletClasses} }
+			@media (max-width: 478px) { ${mobileClasses} }
+			@media (max-width: 767px) { ${tabletIds} }
+			@media (max-width: 478px) { ${mobileIds} }
+		`,
+		[desktopClasses, desktopIds, fontsCss, mobileClasses, mobileIds, tabletClasses, tabletIds]
+	)
 
 	return generatedStyles
 }
@@ -96,5 +107,10 @@ const generateCssClasses = (classNames: Record<string, Style>, viewport: Viewpor
 const stylesToString = (styles: Record<string, string>) => {
 	return _.toPairs(styles)
 		.map(([key, value]) => `${key}: ${value};`)
+		.join(' ')
+}
+function generateFontsCss(fonts: Record<string, string>) {
+	return _.values(fonts)
+		.map((fontUrl) => `@import url('${fontUrl}');`)
 		.join(' ')
 }

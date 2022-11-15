@@ -18,7 +18,7 @@ import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { useGetStates } from '../states/use-get-states'
-import { Intelinput, inteliToString } from '../ui/intelinput'
+import { Intelinput } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
 
@@ -151,7 +151,7 @@ export function DataEditor() {
 					editRepeatFrom({
 						name: value,
 						iterator: value.replace('$store.source.', '')
-							? `${value.replace('$store.source.', '')}Item`
+							? `${value.replace('$store.source.', '').replaceAll('.', '_')}Item`
 							: '',
 					})
 				}
@@ -241,7 +241,7 @@ function DataSourceItem({ dataSource }: { dataSource: DataSource }) {
 					from
 				</Text>
 				<Code className="overflow-x-auto grow no-scrollbar max-w-[237px]">
-					{inteliToString(dataSource.url.value)}
+					{dataSource.url.toString()}
 				</Code>
 			</div>
 		</div>

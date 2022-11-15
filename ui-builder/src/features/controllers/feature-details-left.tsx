@@ -7,6 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
@@ -99,11 +100,11 @@ function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) =>
 					options.set(
 						produce(imageDiv, (draft) => {
-							draft.data.src = src
+							draft.data.src = Expression.fromString(src)
 						})
 					)
 				}
-				src={imageDiv.data.src}
+				src={imageDiv.data.src.toString()}
 			/>
 			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 			<Checkbox
@@ -222,8 +223,9 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 			order: 0,
 		},
 	}
-	draft.data.src =
+	draft.data.src = Expression.fromString(
 		'https://img.freepik.com/free-vector/blue-marketing-charts-design-template_52683-24522.jpg?w=740&t=st=1666791210~exp=1666791810~hmac=42932320db4bb7c5f36815c67c56445ee01765aca6caaf5306415f1811690352'
+	)
 }).serialize()
 
 const featureRowsWrapper = produce(new BoxElement(), (draft) => {

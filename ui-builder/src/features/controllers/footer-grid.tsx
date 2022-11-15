@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Collapse, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Collapse } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/footer-grid.png'
@@ -24,6 +24,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 
 import { DragEndEvent } from '@dnd-kit/core'
 import { TbPlus, TbX } from 'react-icons/tb'
+import { Expression } from '../states/expression'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
@@ -195,15 +196,15 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 												icon.data.name as IconName,
 											]}
 										/>
-										<TextInput
+										<Intelinput
 											placeholder="Link"
 											name="link"
 											size="xs"
 											value={item.data.href}
-											onChange={(event) =>
+											onChange={(value) =>
 												options.set(
 													produce(item, (draft) => {
-														draft.data.href = event.target.value
+														draft.data.href = value
 													})
 												)
 											}
@@ -249,11 +250,11 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) =>
 					options.set(
 						produce(logo, (draft) => {
-							draft.data.src = src
+							draft.data.src = Expression.fromString(src)
 						})
 					)
 				}
-				src={logo.data.src}
+				src={logo.data.src.toString()}
 			/>
 			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 
@@ -476,15 +477,15 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 										)
 									}
 								/>
-								<TextInput
+								<Intelinput
 									placeholder="Link"
 									name="link"
 									size="xs"
 									value={item.data.href}
-									onChange={(event) =>
+									onChange={(value) =>
 										options.set(
 											produce(item, (draft) => {
-												draft.data.href = event.target.value
+												draft.data.href = value
 											})
 										)
 									}
@@ -657,8 +658,9 @@ const logoImage = produce(new ImageElement(), (draft) => {
 		},
 	}
 
-	draft.data.src =
+	draft.data.src = Expression.fromString(
 		'https://images.unsplash.com/photo-1484256017452-47f3e80eae7c?dpr=1&auto=format&fit=crop&w=2850&q=60&cs=tinysrgb'
+	)
 }).serialize()
 
 const logoText = produce(new TextElement(), (draft) => {
@@ -733,7 +735,7 @@ const createColumnLine = (text: string, href: string) =>
 			draft.data.text = inteliText(text)
 		})
 
-		draft.data.href = href
+		draft.data.href = Expression.fromString(href)
 		draft.children = [element]
 	})
 
@@ -788,7 +790,7 @@ const social = produce(new LinkElement(), (draft) => {
 	})
 
 	draft.children = [element]
-	draft.data.href = ''
+	draft.data.href = new Expression()
 })
 
 const createSocial = (type: string, name: string, color: string) => {

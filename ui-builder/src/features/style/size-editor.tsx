@@ -40,14 +40,16 @@ export function SizeEditor({ simple }: { simple?: boolean }) {
 
 	if (simple)
 		return (
-			<div className="grid items-center grid-cols-12 gap-x-3 gap-y-3">
-				{widthInput}
-				{heightInput}
-			</div>
+			<CollapseLine label="Size">
+				<div className="grid items-center grid-cols-12 gap-x-3 gap-y-3">
+					{widthInput}
+					{heightInput}
+				</div>
+			</CollapseLine>
 		)
 
 	return (
-		<CollapseLine label="Size">
+		<CollapseLine label="Size" defaultClosed>
 			<div>
 				<div className="grid items-center grid-cols-12 gap-x-3 gap-y-3">
 					{widthInput}

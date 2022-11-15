@@ -7,6 +7,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import { viewportAtom } from '../viewport/viewport-store'
@@ -312,11 +313,11 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 				onChange={(src) =>
 					options.set(
 						produce(selectedTileImage as ImageElement, (draft) => {
-							draft.data.src = src
+							draft.data.src = Expression.fromString(src)
 						})
 					)
 				}
-				src={selectedTileImage.data.src as string}
+				src={selectedTileImage.data.src.toString()}
 			/>
 			<Button
 				disabled={containerDiv.children?.length === 1}
@@ -423,7 +424,7 @@ const tileImage = produce(new ImageElement(), (draft) => {
 		},
 	}
 
-	draft.data.src = 'https://i.ibb.co/GHCF717/Marketing-bro.png'
+	draft.data.src = Expression.fromString('https://i.ibb.co/GHCF717/Marketing-bro.png')
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -452,7 +453,7 @@ function createTile({
 }) {
 	return produce(tile, (draft) => {
 		const iconElement = draft.children?.[0] as ImageElement
-		iconElement.data.src = src
+		iconElement.data.src = Expression.fromString(src)
 		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
 		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
 	})

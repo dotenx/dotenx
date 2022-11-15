@@ -18,6 +18,9 @@ type DatabaseService interface {
 	GetTablesList(accountId string, projectName string) ([]string, error)
 	ListTableColumns(accountId string, projectName string, tableName string) ([]models.PgColumn, error)
 
+	DeleteDatabase(accountId string, projectName string) error
+	DeleteDatabaseUser(accountId string, projectName string) error
+
 	InsertRow(tpAccountId string, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(tpAccountId string, projectTag string, tableName string, id int, filters databaseStore.ConditionGroup) error

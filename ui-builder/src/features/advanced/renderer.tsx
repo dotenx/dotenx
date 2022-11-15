@@ -2,7 +2,7 @@ import { useIntersection } from '@mantine/hooks'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
-import { MouseEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react'
+import { MouseEvent, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { usePopper } from 'react-popper'
@@ -20,9 +20,10 @@ import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
-import { ExpressionKind } from '../states/expression'
-import { usePageStateStore } from '../states/page-states-store'
+import { Expression, ExpressionKind } from '../states/expression'
+import { States, usePageStateStore } from '../states/page-states-store'
 import { inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 
 export function RenderElements({
 	elements,
@@ -135,14 +136,29 @@ function RenderElementPreview({
 
 	if (
 		element instanceof TextElement &&
-		element.data.text.value[0].kind === ExpressionKind.State
+		element.data.text.value.some((part) => part.kind === ExpressionKind.State)
 	) {
-		const splitPath = element.data.text.value[0].value.name.split('.')
-		const textValue =
-			_.get(states, splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)) ??
-			_.get(pageStates, element.data.text.value[0].value.name.replace('$store.source.', ''))
+		const evaluatedText = evaluateExpression(element.data.text, states, pageStates)
 		const valuedElement = produce(element, (draft) => {
-			draft.data.text = inteliText(textValue)
+			draft.data.text = inteliText(evaluatedText)
+		})
+		return (
+			<RenderElement
+				isDirectRootChildren={isDirectRootChildren}
+				key={element.id}
+				element={valuedElement}
+				overlay={overlay}
+			/>
+		)
+	}
+
+	if (
+		element instanceof ImageElement &&
+		element.data.src.value.some((part) => part.kind === ExpressionKind.State)
+	) {
+		const evaluatedText = evaluateExpression(element.data.src, states, pageStates)
+		const valuedElement = produce(element, (draft) => {
+			draft.data.src = inteliText(evaluatedText)
 		})
 		return (
 			<RenderElement
@@ -156,7 +172,7 @@ function RenderElementPreview({
 
 	let backgroundUrl = ''
 	if (element instanceof ImageElement) {
-		backgroundUrl = element.data.src
+		backgroundUrl = element.data.src.toString()
 	}
 	const style = backgroundUrl
 		? {
@@ -183,7 +199,27 @@ function RenderElementPreview({
 	)
 }
 
+function evaluateExpression(
+	expression: Expression,
+	states: AnyJson | undefined,
+	pageStates: States
+) {
+	return expression.value
+		.map((part) => {
+			if (part.kind === ExpressionKind.Text) return part.value
+			const splitPath = part.value.name.split('.')
+			const textValue =
+				_.get(
+					states,
+					splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
+				) ?? _.get(pageStates, part.value.name.replace('$store.source.', ''))
+			return textValue as string
+		})
+		.join('')
+}
+
 export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+	const styles = useAppliedStyle(element)
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const { selectElements, selectedElements, setHovered, unsetHovered } = useSelectionStore(
 		(store) => ({
@@ -205,13 +241,13 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		},
 		[intersectionRef]
 	)
-	const showHoverAnimations = () => {
+	const showHoverAnimations = useCallback(() => {
 		element.events
 			.filter((event) => event.kind === EventKind.MouseEnter)
 			.flatMap((event) => event.actions)
 			.filter((action): action is AnimationAction => action instanceof AnimationAction)
 			.forEach((animation) => animateCSS(`.${element.id}`, animation.animationName))
-	}
+	}, [element.events, element.id])
 	const intersectionAnimation = intersection.entry?.isIntersecting
 		? 'animate__animated ' +
 		  element.events
@@ -221,50 +257,73 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				.map((animation) => `animate__${animation.animationName}`)
 		: ''
 	const classes = `${element.generateClasses()} ${intersectionAnimation}`
-	const style: CSSProperties = {
-		cursor: 'default',
-		outlineColor: '#fb7185',
-		outlineWidth: isHovered ? 2 : 1,
-		outlineStyle: isHighlighted ? 'solid' : undefined,
-	}
-	const handleMouseOver = (event: MouseEvent) => {
-		event.stopPropagation()
-		if (!isFullscreen) setHovered(element.id)
-		showHoverAnimations()
-	}
-	const handleMouseOut = (event: MouseEvent) => {
-		event.stopPropagation()
-		unsetHovered()
-	}
-	const handleClick = (event: MouseEvent) => {
-		event.stopPropagation()
-		if (isFullscreen) return
-		if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
-		else selectElements(element.id)
-	}
+
+	const handleMouseOver = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			if (!isFullscreen) setHovered(element.id)
+			showHoverAnimations()
+		},
+		[element.id, isFullscreen, setHovered, showHoverAnimations]
+	)
+	const handleMouseOut = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			unsetHovered()
+		},
+		[unsetHovered]
+	)
+	const handleClick = useCallback(
+		(event: MouseEvent) => {
+			event.stopPropagation()
+			if (isFullscreen) return
+			if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
+			else selectElements(element.id)
+		},
+		[element.id, isFullscreen, isSelected, selectElements, selectedElements]
+	)
 
 	let backgroundUrl = ''
-	if (element instanceof ImageElement) backgroundUrl = element.data.src
-	const backgroundImage = backgroundUrl
-		? {
-				backgroundImage: `url(${backgroundUrl})`,
-				backgroundSize: 'contain',
-				backgroundRepeat: 'no-repeat',
-				backgroundPosition: 'center',
-		  }
-		: {}
+	if (element instanceof ImageElement) backgroundUrl = element.data.src.toString()
+	const style: CSSProperties = useMemo(
+		() => ({
+			cursor: 'default',
+			outlineColor: '#fb7185',
+			outlineWidth: isHovered ? 2 : 1,
+			outlineStyle: isHighlighted ? 'solid' : undefined,
+		}),
+		[isHighlighted, isHovered]
+	)
+	const backgroundImage = useMemo(
+		() =>
+			backgroundUrl
+				? {
+						backgroundImage: `url(${backgroundUrl})`,
+						backgroundSize: styles?.objectFit ? styles?.objectFit : 'contain',
+						backgroundRepeat: 'no-repeat',
+						backgroundPosition: 'center',
+				  }
+				: {},
+		[backgroundUrl, styles?.objectFit]
+	)
+
+	const draggableData = useMemo(
+		() => ({ mode: DraggableMode.Move as const, elementId: element.id }),
+		[element.id]
+	)
+	const draggableStyle = useMemo(
+		() => ({ ...style, ...backgroundImage }),
+		[backgroundImage, style]
+	)
 
 	return (
 		<Draggable
-			data={{ mode: DraggableMode.Move, elementId: element.id }}
 			ref={handleRef}
+			data={draggableData}
 			className={classes}
 			tabIndex={0}
 			id={element.id}
-			style={{
-				...style,
-				...backgroundImage,
-			}}
+			style={draggableStyle}
 			onMouseOver={handleMouseOver}
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}
@@ -358,4 +417,10 @@ function ElementKind({
 		</div>,
 		targetElement
 	)
+}
+
+function useAppliedStyle(element: Element) {
+	const viewport = useAtomValue(viewportAtom)
+	const style = element.style[viewport]?.default
+	return style
 }

@@ -1,4 +1,3 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/navbar.png'
@@ -42,14 +41,12 @@ function NavbarOptions() {
 				id: link.id,
 				content: (
 					<div key={index} className="space-y-6">
-						<TextInput
+						<Intelinput
 							label="Link URL"
 							name="url"
 							size="xs"
 							value={link.data.href}
-							onChange={(event) =>
-								set(link, (draft) => (draft.data.href = event.target.value))
-							}
+							onChange={(value) => set(link, (draft) => (draft.data.href = value))}
 						/>
 						<Intelinput
 							label="Text"
@@ -67,8 +64,10 @@ function NavbarOptions() {
 	return (
 		<div className="space-y-6">
 			<ImageDrop
-				src={logo.data.src}
-				onChange={(value) => set(logo, (draft) => (draft.data.src = value))}
+				src={logo.data.src.toString()}
+				onChange={(value) =>
+					set(logo, (draft) => (draft.data.src = Expression.fromString(value)))
+				}
 			/>
 
 			<DraggableTabs
@@ -97,7 +96,7 @@ function NavbarOptions() {
 
 export const createNavLink = (options: { href: string; text: string }) => {
 	return produce(navLink(), (draft) => {
-		draft.data.href = options.href
+		draft.data.href = Expression.fromString(options.href)
 		const text = draft.children[0] as TextElement
 		text.data.text = Expression.fromString(options.text)
 	}).serialize()
@@ -149,17 +148,17 @@ const defaultData = {
 			id: 'uFYBRRddGliPPqcN',
 			components: [
 				produce(navLink(), (draft) => {
-					draft.data.href = '/home'
+					draft.data.href = Expression.fromString('/home')
 					const text = draft.children[0] as TextElement
 					text.data.text = Expression.fromString('Home')
 				}).serialize(),
 				produce(navLink(), (draft) => {
-					draft.data.href = '/about'
+					draft.data.href = Expression.fromString('/about')
 					const text = draft.children[0] as TextElement
 					text.data.text = Expression.fromString('About')
 				}).serialize(),
 				produce(navLink(), (draft) => {
-					draft.data.href = '/blog'
+					draft.data.href = Expression.fromString('/blog')
 					const text = draft.children[0] as TextElement
 					text.data.text = Expression.fromString('Blog')
 				}).serialize(),

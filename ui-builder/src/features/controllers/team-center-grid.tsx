@@ -1,21 +1,22 @@
-import { Button, Select, SelectItem, Slider, Textarea, TextInput } from '@mantine/core'
+import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode, useState } from 'react'
-import imageUrl from '../../assets/components/team-center-grid.png'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'
 import profile4Url from '../../assets/components/profile4.jpg'
+import imageUrl from '../../assets/components/team-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
 import { ImageElement } from '../elements/extensions/image'
+import { TextElement } from '../elements/extensions/text'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
+import { Expression } from '../states/expression'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
 
 export class TeamCenterGrid extends Controller {
@@ -427,7 +428,9 @@ const tileIcon = produce(new ImageElement(), (draft) => {
 			transform: 'translateY(-10px)',
 		},
 	}
-	draft.data.src = 'https://cdn.iconscout.com/icon/free/png-256/like-1648810-1401300.png'
+	draft.data.src = Expression.fromString(
+		'https://cdn.iconscout.com/icon/free/png-256/like-1648810-1401300.png'
+	)
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -457,7 +460,7 @@ function createTile({
 }) {
 	return produce(tile, (draft) => {
 		const ImageElement = draft.children?.[0] as ImageElement
-		ImageElement.data.src = image
+		ImageElement.data.src = Expression.fromString(image)
 		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
 		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
 	})

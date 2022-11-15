@@ -34,6 +34,7 @@ export type AddPageRequest = {
 	mode: LayoutMode
 	pageParams: string[]
 	globals: string[]
+	fonts: Record<string, string>
 }
 
 export type PublishPageRequest = {
@@ -55,6 +56,7 @@ interface PageDetails {
 		classNames: Record<string, BackendStyle>
 		mode: LayoutMode
 		pageParams: string[]
+		fonts: Record<string, string>
 	}
 }
 

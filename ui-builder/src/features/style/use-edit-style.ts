@@ -9,7 +9,7 @@ import { viewportAtom } from '../viewport/viewport-store'
 import { selectedClassAtom, selectedSelectorAtom } from './class-editor'
 import { useClassesStore } from './classes-store'
 
-export type EditStyle = (style: keyof CSSProperties, value: string) => void
+export type EditStyle = (style: keyof CSSProperties, value: string | null, prev?: string) => void
 
 export const useEditStyle = () => {
 	const element = useSelectedElement()
@@ -30,8 +30,14 @@ export const useEditStyle = () => {
 		else console.error("Can't edit class style without selected class name")
 	}
 	const editClassOrComponentStyle = selectedClassName ? editClassStyle : editSingleStyle
-	const editStyle: EditStyle = (oneStyle, value) => {
-		editClassOrComponentStyle({ ...style, [oneStyle]: value })
+	const editStyle: EditStyle = (oneStyle, value, prev) => {
+		if (value === null) {
+			editClassOrComponentStyle(_.omit(style, oneStyle))
+		} else if (prev) {
+			editClassOrComponentStyle({ ...style, [prev]: undefined, [oneStyle]: value })
+		} else {
+			editClassOrComponentStyle({ ...style, [oneStyle]: value })
+		}
 	}
 
 	return { editStyle, style }

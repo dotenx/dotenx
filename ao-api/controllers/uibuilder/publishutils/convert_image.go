@@ -24,13 +24,20 @@ type Image struct {
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Alt string `json:"alt"`
-		Src string `json:"src"`
+		Src struct {
+			Value []TextSource `json:"value"`
+		} `json:"src"`
 	} `json:"data"`
 }
 
-const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}" x-bind:src="` + "`{{.Data.Src}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
+const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<img {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}()" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}" x-bind:src="` + "`{{range .Data.Src.Value}}{{renderTextSource .}}{{end}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertImage(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+
+	funcMap := template.FuncMap{
+		"renderTextSource": renderTextSource,
+	}
+
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -38,7 +45,7 @@ func convertImage(component map[string]interface{}, styleStore *StyleStore, func
 	}
 	var image Image
 	json.Unmarshal(b, &image)
-	tmpl, err := template.New("image").Parse(imageTemplate)
+	tmpl, err := template.New("image").Funcs(funcMap).Parse(imageTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
