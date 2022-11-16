@@ -7,17 +7,19 @@ import { TbPlus } from 'react-icons/tb'
 import { CollapseLine } from '../ui/collapse-line'
 import { useEditStyle } from './use-edit-style'
 
-export const normalizedCssProperties = cssProperties.all.map((property) =>
-	property
-		.split('-')
-		.map((part, index) => (index !== 0 ? _.capitalize(part) : part))
-		.join('')
-)
+export const normalizedCssProperties = cssProperties.all
+	.map((property) =>
+		property
+			.split('-')
+			.map((part, index) => (index !== 0 ? _.capitalize(part) : part))
+			.join('')
+	)
+	.filter((property) => !property.includes('Epub'))
+	.filter((property) => !property.includes('Webkit'))
 
 export function CssPropertiesEditor() {
 	const { style, editStyle } = useEditStyle()
 	const styles = _.toPairs(style).filter(([, value]) => value !== undefined)
-	styles.sort(([a], [b]) => a.localeCompare(b))
 	const [isAdding, setIsAdding] = useState(false)
 
 	return (
