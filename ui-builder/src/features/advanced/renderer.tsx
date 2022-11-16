@@ -277,6 +277,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			if (isFullscreen) return
 			if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
 			else selectElements(element.id)
+			document.getElementById(element.id)?.scrollIntoView({ behavior: 'smooth' })
 		},
 		[element.id, isFullscreen, isSelected, selectElements, selectedElements]
 	)

@@ -141,8 +141,6 @@ function Layer({
 		setDroppableNodeRef(element)
 	}
 
-	if (isDragging) return null
-
 	return (
 		<div
 			ref={setNodeRefs}
@@ -162,7 +160,9 @@ function Layer({
 					if (event.ctrlKey && !isSelected) select([...selectedIds, element.id])
 					else select([element.id])
 					if (!isSelected) setSelectedClass(null)
-					document.getElementById(element.id)?.scrollIntoView()
+					window.frames[0].document
+						.getElementById(element.id)
+						?.scrollIntoView({ behavior: 'smooth' })
 				}}
 			>
 				{element.hasChildren() && <div>{disclosureButton}</div>}
