@@ -9,11 +9,19 @@ import {
 	Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { openModal } from '@mantine/modals'
+import { closeAllModals, openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { TbCheck, TbDeviceFloppy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+	TbCheck,
+	TbCode,
+	TbDeviceFloppy,
+	TbPlus,
+	TbSettings,
+	TbTrash,
+	TbWorldUpload,
+} from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
@@ -28,9 +36,11 @@ import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
+import { CustomCode } from './custom-code'
 import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
+export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
 
 export function PageActions() {
 	const mode = useAtomValue(pageModeAtom)
@@ -68,9 +78,58 @@ function PageSettingsButton() {
 }
 
 function PageSettings({ projectName, pageName }: { projectName: string; pageName: string }) {
+	const [customCodes, setCustomCodes] = useAtom(customCodesAtom)
+
 	return (
 		<div>
-			<Divider label="URL params" mb="xl" />
+			<Divider label="Custom code" mb="xl" />
+			<div className="flex gap-2">
+				<Button
+					fullWidth
+					leftIcon={<TbCode />}
+					onClick={() =>
+						openModal({
+							title: 'Head Code',
+							children: (
+								<CustomCode
+									defaultValue={customCodes.head}
+									onSave={(value) => {
+										setCustomCodes((codes) => ({ ...codes, head: value }))
+										closeAllModals()
+									}}
+									defaultLanguage="html"
+								/>
+							),
+							size: 'xl',
+						})
+					}
+				>
+					Head Code
+				</Button>
+				<Button
+					fullWidth
+					leftIcon={<TbCode />}
+					onClick={() =>
+						openModal({
+							title: 'Head Code',
+							children: (
+								<CustomCode
+									defaultValue={customCodes.footer}
+									onSave={(value) => {
+										setCustomCodes((codes) => ({ ...codes, footer: value }))
+										closeAllModals()
+									}}
+									defaultLanguage="javascript"
+								/>
+							),
+							size: 'xl',
+						})
+					}
+				>
+					Footer Code
+				</Button>
+			</div>
+			<Divider label="URL params" my="xl" />
 			<QueryParamsForm pageName={pageName} />
 			<Divider label="Persisted states" my="xl" />
 			<PersistedStatesForm projectName={projectName} />
@@ -135,6 +194,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
 	const fonts = useAtomValue(fontsAtom)
+	const customCodes = useAtomValue(customCodesAtom)
 
 	return (
 		<form
@@ -150,6 +210,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 					mode: 'advanced',
 					globals,
 					fonts,
+					customCodes,
 				})
 			)}
 		>
@@ -218,6 +279,8 @@ function SaveButton() {
 	const globals = useAtomValue(globalStatesAtom)
 	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
+	const customCodes = useAtomValue(customCodesAtom)
+
 	const save = () => {
 		savePageMutation.mutate(
 			{
@@ -230,6 +293,7 @@ function SaveButton() {
 				pageParams,
 				globals,
 				fonts,
+				customCodes,
 			},
 			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
 		)
