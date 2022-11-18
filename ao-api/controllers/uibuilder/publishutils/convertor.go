@@ -23,6 +23,10 @@ type Page struct {
 	Body struct {
 		Content string
 	}
+	CustomCodes struct {
+		Head   string
+		Footer string
+	}
 }
 
 var pageTemplate = `<!DOCTYPE html>
@@ -53,11 +57,13 @@ var pageTemplate = `<!DOCTYPE html>
   />
 
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+	{{if .CustomCodes.Head}}{{.CustomCodes.Head}}{{end}}
 
 </head>
 <body x-data>
 	{{.Body.Content}}
 	<script src="./{{.Name}}.js"></script>
+	{{if .CustomCodes.Footer}}{{.CustomCodes.Footer}}{{end}}
 </body>
 </html>
 `
@@ -69,6 +75,25 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 	code, err := convertBodyToHTML(page["layout"].([]interface{}), &styleStore, &functionStore)
 	if err != nil {
 		logrus.Error(err.Error())
+		return "", "", "", err
+	}
+
+	cc := page["customCodes"].(interface{})
+
+	b, err := json.Marshal(cc)
+	if err != nil {
+		fmt.Println(err)
+		return "", "", "", err
+	}
+
+	var customCodes struct {
+		Head   string `json:"head"`
+		Footer string `json:"footer"`
+	}
+
+	err = json.Unmarshal(b, &customCodes)
+	if err != nil {
+		fmt.Println(err)
 		return "", "", "", err
 	}
 
@@ -91,6 +116,10 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		}{
 			Content: code,
 		},
+		CustomCodes: struct {
+			Head   string
+			Footer string
+		}{Head: customCodes.Head, Footer: customCodes.Footer},
 	}
 
 	tmpl, err := template.New("button").Parse(pageTemplate)
@@ -110,7 +139,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	// convert page["globals"] to []string
 
-	b, err := json.Marshal(page["globals"])
+	b, err = json.Marshal(page["globals"])
 	if err != nil {
 		fmt.Println(err)
 		return "", "", "", err
@@ -118,8 +147,6 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 
 	var globals []string
 	err = json.Unmarshal(b, &globals)
-
-	fmt.Println(globals)
 
 	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals)
 	if err != nil {
