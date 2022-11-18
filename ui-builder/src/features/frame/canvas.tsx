@@ -2,11 +2,10 @@ import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
 import Frame, { FrameContextConsumer } from 'react-frame-component'
 import { StyleSheetManager } from 'styled-components'
-import { customCodesAtom } from '../page/actions'
 import { pageScaleAtom, previewAtom } from '../page/top-bar'
 import { useCanvasMaxWidth } from '../viewport/viewport-store'
 import { FrameHotkeys } from './hotkey'
-import { FrameHead } from './style'
+import { FrameStyles } from './style'
 
 export const ROOT_ID = 'CANVAS_ROOT'
 
@@ -14,12 +13,11 @@ export function CanvasFrame({ children }: { children: ReactNode }) {
 	const maxWidth = useCanvasMaxWidth()
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const pageScale = useAtomValue(pageScaleAtom)
-	const customCodes = useAtomValue(customCodesAtom)
 
 	return (
 		<div className="h-full bg-gray-50">
 			<div className="h-full mx-auto" style={{ maxWidth }}>
-				<Frame className="w-full min-h-full h-full" head={<FrameHead />}>
+				<Frame className="w-full min-h-full h-full" head={<FrameStyles />}>
 					<FrameHotkeys>
 						<FrameContextConsumer>
 							{(frameContext) => (
@@ -43,7 +41,6 @@ export function CanvasFrame({ children }: { children: ReactNode }) {
 							)}
 						</FrameContextConsumer>
 					</FrameHotkeys>
-					<script>{customCodes.footer}</script>
 				</Frame>
 			</div>
 		</div>
