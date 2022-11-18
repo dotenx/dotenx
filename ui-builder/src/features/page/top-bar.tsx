@@ -126,7 +126,7 @@ export const useFetchPage = () => {
 				setPageParams(content.pageParams)
 				setSelectedPage(content.mode)
 				setFonts(content.fonts)
-				setCustomCodes(content.customCodes)
+				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 
 				content.dataSources.map((source) =>
 					axios
