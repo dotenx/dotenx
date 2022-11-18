@@ -6,7 +6,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import { AddPageRequest, QueryKey, updatePage } from '../../api'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
-import { globalStatesAtom } from '../page/actions'
+import { customCodesAtom, globalStatesAtom } from '../page/actions'
 import { pageParamsAtom, projectTagAtom } from '../page/top-bar'
 import { useClassesStore } from './classes-store'
 import { fontsAtom } from './typography-editor'
@@ -23,6 +23,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 	})
 	const pageParams = useAtomValue(pageParamsAtom)
 	const fonts = useAtomValue(fontsAtom)
+	const customCodes = useAtomValue(customCodesAtom)
 	const update = (values: Partial<AddPageRequest>) => {
 		savePageMutation.mutate(
 			{
@@ -35,6 +36,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 				mode: 'advanced',
 				globals,
 				fonts,
+				customCodes,
 				...values,
 			},
 			options

@@ -28,7 +28,7 @@ import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { globalStatesAtom, PageActions } from './actions'
+import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
 
@@ -112,6 +112,7 @@ export const useFetchPage = () => {
 	const setPageParams = useSetAtom(pageParamsAtom)
 	const navigate = useNavigate()
 	const setFonts = useSetAtom(fontsAtom)
+	const setCustomCodes = useSetAtom(customCodesAtom)
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -125,6 +126,7 @@ export const useFetchPage = () => {
 				setPageParams(content.pageParams)
 				setSelectedPage(content.mode)
 				setFonts(content.fonts)
+				setCustomCodes(content.customCodes)
 
 				content.dataSources.map((source) =>
 					axios
@@ -210,6 +212,7 @@ function AdvancedModeButton() {
 			pageParams: [],
 			globals: [],
 			fonts: {},
+			customCodes: { head: '', footer: '' },
 		})
 	}
 	const handleClick = () => {
