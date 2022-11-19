@@ -12,18 +12,26 @@ type InternalController struct {
 	Service internalService.InternalService
 }
 
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) ActivateAutomation(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) DeActivateAutomation(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) SubmitExecution(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) CheckAccess(ctx *gin.Context) {
 	type AccessDto struct {
 		Access bool `json:"access"`
@@ -34,6 +42,8 @@ func (c *InternalController) CheckAccess(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) GetCurrentPlan(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"plan":                    "pro",
@@ -140,5 +150,33 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"tp_users": tpUsers,
 		"total":    len(tpUsers),
+	})
+}
+
+func (c *InternalController) ListUiPages(ctx *gin.Context) {
+	type body struct {
+		AccountId string `json:"accountId"`
+	}
+	var dto body
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	uiPages, err := c.Service.ListUiPages(dto.AccountId)
+	if err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"ui_pages": uiPages,
+		"total":    len(uiPages),
 	})
 }

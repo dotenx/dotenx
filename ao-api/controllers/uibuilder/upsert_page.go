@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -37,9 +38,18 @@ func (controller *UIbuilderController) UpsertPage() gin.HandlerFunc {
 			Status:     "modified",
 			ProjectTag: projectTag,
 		}
-		if err := controller.Service.UpsertPage(page); err != nil {
+		err := controller.Service.UpsertPage(page)
+		if err != nil {
 			logrus.Error(err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		c.Status(http.StatusOK)

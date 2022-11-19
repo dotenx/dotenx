@@ -219,17 +219,15 @@ function evaluateExpression(
 }
 
 export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+	const [isHovered, setIsHovered] = useState(false)
 	const styles = useAppliedStyle(element)
 	const { isFullscreen } = useAtomValue(previewAtom)
-	const { selectElements, selectedElements, setHovered, unsetHovered } = useSelectionStore(
-		(store) => ({
-			selectElements: store.select,
-			selectedElements: store.selectedIds,
-			setHovered: store.setHovered,
-			unsetHovered: store.unsetHovered,
-		})
-	)
-	const { isHighlighted, isHovered, isSelected } = useIsHighlighted(element.id)
+	const { selectElements, selectedElements } = useSelectionStore((store) => ({
+		selectElements: store.select,
+		selectedElements: store.selectedIds,
+	}))
+	const { isSelected } = useIsHighlighted(element.id)
+	const isHighlighted = isSelected || isHovered
 	const canContain = element.isContainer()
 	const intersection = useIntersection()
 	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
@@ -261,17 +259,17 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 	const handleMouseOver = useCallback(
 		(event: MouseEvent) => {
 			event.stopPropagation()
-			if (!isFullscreen) setHovered(element.id)
+			if (!isFullscreen) setIsHovered(true)
 			showHoverAnimations()
 		},
-		[element.id, isFullscreen, setHovered, showHoverAnimations]
+		[isFullscreen, setIsHovered, showHoverAnimations]
 	)
 	const handleMouseOut = useCallback(
 		(event: MouseEvent) => {
 			event.stopPropagation()
-			unsetHovered()
+			setIsHovered(false)
 		},
-		[unsetHovered]
+		[setIsHovered]
 	)
 	const handleClick = useCallback(
 		(event: MouseEvent) => {
@@ -279,6 +277,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			if (isFullscreen) return
 			if (event.ctrlKey && !isSelected) selectElements([...selectedElements, element.id])
 			else selectElements(element.id)
+			document.getElementById(element.id)?.scrollIntoView({ behavior: 'smooth' })
 		},
 		[element.id, isFullscreen, isSelected, selectElements, selectedElements]
 	)
@@ -371,7 +370,13 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				sameHeight
 				updateDeps={[element]}
 			/>
-			{isSelected && <ElementKind element={element} referenceElement={referenceElement} />}
+			{isSelected && (
+				<ElementKind
+					element={element}
+					referenceElement={referenceElement}
+					isHovered={isHovered}
+				/>
+			)}
 			{children}
 		</Draggable>
 	)
@@ -380,15 +385,16 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 function ElementKind({
 	element,
 	referenceElement,
+	isHovered,
 }: {
 	element: Element
 	referenceElement: HTMLDivElement | null
+	isHovered: boolean
 }) {
 	const { window } = useContext(FrameContext)
 	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 	const popperElement = useRef<HTMLDivElement>(null)
 	const { styles: popperStyles, attributes } = usePopper(referenceElement, popperElement.current)
-	const { isHovered } = useIsHighlighted(element.id)
 
 	return createPortal(
 		<div

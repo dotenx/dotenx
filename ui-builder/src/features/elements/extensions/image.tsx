@@ -17,7 +17,7 @@ export class ImageElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				objectFit: 'contain',
+				objectFit: 'cover',
 			},
 		},
 	}

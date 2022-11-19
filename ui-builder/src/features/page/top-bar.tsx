@@ -2,13 +2,15 @@ import { ActionIcon, Anchor, Button, Group, Text, Tooltip } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import {
 	TbAffiliate,
 	TbArrowsMaximize,
 	TbArrowsMinimize,
 	TbCornerUpLeft,
 	TbCornerUpRight,
+	TbZoomIn,
+	TbZoomOut,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -26,7 +28,7 @@ import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { globalStatesAtom, PageActions } from './actions'
+import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
 
@@ -46,10 +48,38 @@ export function TopBar() {
 				<AdvancedModeButton />
 			</Group>
 			<Group align="center" spacing="xl">
+				<PageScaling />
 				<UndoRedo />
 				<PageActions />
 			</Group>
 		</Group>
+	)
+}
+
+export const pageScaleAtom = atom(1)
+
+function PageScaling() {
+	const [scale, setScale] = useAtom(pageScaleAtom)
+
+	return (
+		<Button.Group>
+			<Button
+				onClick={() => setScale((scale) => scale - 0.1)}
+				size="xs"
+				disabled={scale <= 0.6}
+				variant="default"
+			>
+				<TbZoomOut className="text-sm" />
+			</Button>
+			<Button
+				onClick={() => setScale((scale) => scale + 0.1)}
+				size="xs"
+				disabled={scale >= 1}
+				variant="default"
+			>
+				<TbZoomIn className="text-sm" />
+			</Button>
+		</Button.Group>
 	)
 }
 
@@ -82,6 +112,7 @@ export const useFetchPage = () => {
 	const setPageParams = useSetAtom(pageParamsAtom)
 	const navigate = useNavigate()
 	const setFonts = useSetAtom(fontsAtom)
+	const setCustomCodes = useSetAtom(customCodesAtom)
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -95,6 +126,7 @@ export const useFetchPage = () => {
 				setPageParams(content.pageParams)
 				setSelectedPage(content.mode)
 				setFonts(content.fonts)
+				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 
 				content.dataSources.map((source) =>
 					axios
@@ -180,6 +212,7 @@ function AdvancedModeButton() {
 			pageParams: [],
 			globals: [],
 			fonts: {},
+			customCodes: { head: '', footer: '' },
 		})
 	}
 	const handleClick = () => {

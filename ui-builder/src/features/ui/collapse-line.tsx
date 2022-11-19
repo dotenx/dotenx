@@ -1,5 +1,5 @@
-import { Collapse, Divider } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { Divider } from '@mantine/core'
+import { useLocalStorage } from '@mantine/hooks'
 import { ReactNode } from 'react'
 import { TbChevronDown, TbChevronUp } from 'react-icons/tb'
 
@@ -12,7 +12,10 @@ export function CollapseLine({
 	label: string
 	defaultClosed?: boolean
 }) {
-	const [opened, handlers] = useDisclosure(!defaultClosed)
+	const [opened, setOpened] = useLocalStorage({
+		key: `CollapseLine-${label}-IsOpened`,
+		defaultValue: !defaultClosed,
+	})
 
 	return (
 		<div>
@@ -25,9 +28,9 @@ export function CollapseLine({
 				}
 				className="rounded cursor-pointer hover:bg-gray-50"
 				mb="xs"
-				onClick={handlers.toggle}
+				onClick={() => setOpened((opened) => !opened)}
 			/>
-			<Collapse in={opened}>{children}</Collapse>
+			<div hidden={!opened}>{children}</div>
 		</div>
 	)
 }
