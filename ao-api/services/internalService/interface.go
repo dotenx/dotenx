@@ -25,6 +25,7 @@ type InternalService interface {
 	ListProjects(accountId string) ([]models.Project, error)
 	ListDBProjects(accountId string) ([]models.Project, error)
 	ListTpUsers(projects []models.Project, accountId string) ([]models.ThirdUser, error)
+	ListDomains(accountId string) ([]models.ProjectDomain, error)
 	ListUiPages(accountId string) ([]string, error)
 	ProcessUpdatingPlan(accountId string) (err error)
 }

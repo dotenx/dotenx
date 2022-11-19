@@ -124,7 +124,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	store.Options(sessions.Options{
 		Domain: storeDomain,
 		Path:   "/",
-		MaxAge: int(6 * time.Hour / time.Second),
+		MaxAge: int(24 * time.Hour / time.Second),
 	})
 	r.Use(sessions.Sessions("dotenx", store))
 	// Middlewares
@@ -221,7 +221,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// TODO: add sessions middleware to needed endpoints
+	// TODO : add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
@@ -247,6 +247,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/db_project/list", middlewares.InternalMiddleware(), InternalController.ListDBProjects)
 	internal.POST("/tp_user/list", middlewares.InternalMiddleware(), InternalController.ListTpUsers)
 	internal.POST("/ui_page/list", middlewares.InternalMiddleware(), InternalController.ListUiPages)
+	internal.POST("/domain/list", middlewares.InternalMiddleware(), InternalController.ListDomains)
 	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
 
 	// tasks router
@@ -337,12 +338,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
 	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
-	project.DELETE("/tag/:project_tag", projectController.DeleteProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
+	project.DELETE("/tag/:project_tag", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.DeleteProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
-	project.GET("/tag/:project_tag/domain", projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
-	project.POST("/:project_tag/domain", projectController.SetProjectExternalDomain())
-	project.POST("/:project_tag/domain/verify", projectController.VerifyExternalDomain())
+	project.GET("/tag/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
+	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
+	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyExternalDomain())
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
