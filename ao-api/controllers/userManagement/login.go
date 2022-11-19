@@ -70,7 +70,7 @@ func (umc *UserManagementController) Login() gin.HandlerFunc {
 			return
 		}
 
-		expTime := time.Now().Add(6 * time.Hour).Unix()
+		expTime := time.Now().Add(24 * time.Hour).Unix()
 		ctx.JSON(http.StatusOK, gin.H{
 			"message":        "User login successfully",
 			"expirationTime": expTime,

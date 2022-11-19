@@ -33,6 +33,8 @@ type ProjectService interface {
 	CheckCreateDatabaseAccess(accountId string) (bool, error)
 	// DeleteProject deletes a project and all its associated resources
 	DeleteProject(accountId, projectTag string, ubService uibuilderService.UIbuilderService, dbService databaseService.DatabaseService, cService crudService.CrudService) error
+
+	CheckCreateDomainAccess(accountId string) (bool, error)
 }
 
 type projectService struct {
