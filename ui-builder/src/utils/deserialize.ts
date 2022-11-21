@@ -63,7 +63,6 @@ function deserializeController(data: any): Controller {
 }
 
 export function deserializeAction(data: any) {
-	console.log(JSON.stringify(data))
 	if (data.kind === 'Animation') {
 		return new AnimationAction(data.animationName)
 	}

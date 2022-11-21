@@ -4,7 +4,8 @@ import { useElementsStore } from '../elements/elements-store'
 import { CanvasFrame, ROOT_ID } from '../frame/canvas'
 import { FrameDnd } from '../frame/dnd'
 import { useCanvasHotkeys } from '../hotkey/hotkeys'
-import { ElementOverlay, RenderElements } from './renderer'
+import { ElementOverlay } from './overlay'
+import { RenderElements } from './renderer'
 
 export function AdvancedCanvas() {
 	const elements = useElementsStore((store) => store.elements)

@@ -10,7 +10,7 @@ import { restrictToFirstScrollableAncestor } from '@dnd-kit/modifiers'
 import { ActionIcon, clsx, Portal } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
-import { useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import { TbChevronDown, TbChevronUp, TbGripVertical, TbPackgeExport } from 'react-icons/tb'
 import { Element } from '../elements/element'
@@ -18,6 +18,7 @@ import { useElementsStore } from '../elements/elements-store'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 import { selectedClassAtom } from '../style/class-editor'
 import { ComponentForm } from './component-form'
+import { hoveringAtom } from './overlay'
 
 export function DndLayers() {
 	const { elements, move } = useElementsStore((store) => ({
@@ -96,6 +97,7 @@ function Layer({
 	element: Element
 	isParentDragging: boolean
 }) {
+	const [hovering, setHovering] = useAtom(hoveringAtom)
 	const { select, selectedIds } = useSelectionStore((store) => ({
 		select: store.select,
 		selectedIds: store.selectedIds,
@@ -140,6 +142,7 @@ function Layer({
 		setNodeRef(element)
 		setDroppableNodeRef(element)
 	}
+	const isHovered = hovering.elementId === element.id
 
 	return (
 		<div
@@ -148,11 +151,20 @@ function Layer({
 			{...attributes}
 			id={element.id}
 			className={clsx(
-				'px-1',
+				'px-1 focus:outline-none',
+				isHovered && 'bg-gray-50',
 				isSelected && 'bg-gray-200 rounded-sm',
 				isDragging && 'opacity-0',
 				isOver && !disableDrop && 'bg-green-50'
 			)}
+			onMouseOver={(event) => {
+				event.stopPropagation()
+				setHovering({ elementId: element.id })
+			}}
+			onMouseOut={(event) => {
+				event.stopPropagation()
+				setHovering({ elementId: null })
+			}}
 		>
 			<div
 				className="flex items-center py-1 border-b group"
