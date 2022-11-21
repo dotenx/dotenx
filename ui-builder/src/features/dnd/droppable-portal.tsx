@@ -14,19 +14,25 @@ export function DroppablePortal({
 	data,
 	style,
 	placement,
-	sameWidth,
-	sameHeight,
+	fullWidth,
+	fullHeight,
 	center,
 	updateDeps,
+	overStyle,
+	halfHeight,
+	halfWidth,
 }: {
 	referenceElement: HTMLDivElement | null
 	data: DroppableData
 	style?: CSSProperties
 	placement: Placement
-	sameWidth?: boolean
-	sameHeight?: boolean
+	fullWidth?: boolean
+	fullHeight?: boolean
+	halfHeight?: boolean
+	halfWidth?: boolean
 	center?: boolean
 	updateDeps: unknown[]
+	overStyle?: CSSProperties
 }) {
 	const { window } = useContext(FrameContext)
 	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -40,10 +46,12 @@ export function DroppablePortal({
 						: [0, -10],
 				},
 			},
-			...(sameWidth ? [sameWidthModifier] : []),
-			...(sameHeight ? [sameHeightModifier] : []),
+			...(fullWidth ? [fullWidthModifier] : []),
+			...(fullHeight ? [fullHeightModifier] : []),
+			...(halfWidth ? [halfWidthModifier] : []),
+			...(halfHeight ? [halfHeightModifier] : []),
 		],
-		[center, sameHeight, sameWidth]
+		[center, fullHeight, fullWidth, halfHeight, halfWidth]
 	)
 	const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
 		placement,
@@ -63,14 +71,15 @@ export function DroppablePortal({
 			ref={setPopperElement}
 			style={{ ...styles.popper, ...style }}
 			data={data}
+			overStyle={overStyle}
 			{...attributes.popper}
 		/>,
 		targetElement
 	)
 }
 
-const sameWidthModifier: Partial<Modifier<string, object>> = {
-	name: 'sameWidth',
+const fullWidthModifier: Partial<Modifier<string, object>> = {
+	name: 'fullWidth',
 	enabled: true,
 	phase: 'beforeWrite' as ModifierPhases,
 	requires: ['computeStyles'],
@@ -82,8 +91,8 @@ const sameWidthModifier: Partial<Modifier<string, object>> = {
 	},
 }
 
-const sameHeightModifier: Partial<Modifier<string, object>> = {
-	name: 'sameHeight',
+const fullHeightModifier: Partial<Modifier<string, object>> = {
+	name: 'fullHeight',
 	enabled: true,
 	phase: 'beforeWrite' as ModifierPhases,
 	requires: ['computeStyles'],
@@ -93,6 +102,36 @@ const sameHeightModifier: Partial<Modifier<string, object>> = {
 	effect({ state }) {
 		state.elements.popper.style.minHeight = `${
 			(state.elements.reference as any).offsetHeight
+		}px`
+	},
+}
+
+const halfWidthModifier: Partial<Modifier<string, object>> = {
+	name: 'halfWidth',
+	enabled: true,
+	phase: 'beforeWrite' as ModifierPhases,
+	requires: ['computeStyles'],
+	fn({ state }) {
+		state.styles.popper.minWidth = `${state.rects.reference.width / 2}px`
+	},
+	effect({ state }) {
+		state.elements.popper.style.minWidth = `${
+			(state.elements.reference as any).offsetWidth / 2
+		}px`
+	},
+}
+
+const halfHeightModifier: Partial<Modifier<string, object>> = {
+	name: 'halfHeight',
+	enabled: true,
+	phase: 'beforeWrite' as ModifierPhases,
+	requires: ['computeStyles'],
+	fn({ state }) {
+		state.styles.popper.minHeight = `${state.rects.reference.height / 2}px`
+	},
+	effect({ state }) {
+		state.elements.popper.style.minHeight = `${
+			(state.elements.reference as any).offsetHeight / 2
 		}px`
 	},
 }
