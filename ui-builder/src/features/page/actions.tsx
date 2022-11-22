@@ -6,7 +6,7 @@ import {
 	Loader,
 	Text,
 	TextInput,
-	Tooltip,
+	Tooltip
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { closeAllModals, openModal } from '@mantine/modals'
@@ -20,7 +20,7 @@ import {
 	TbPlus,
 	TbSettings,
 	TbTrash,
-	TbWorldUpload,
+	TbWorldUpload
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
@@ -30,7 +30,7 @@ import {
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	updatePage,
+	updatePage
 } from '../../api'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
@@ -308,14 +308,19 @@ function SaveButton() {
 	)
 }
 
+export const publishedUrlAtom = atom<string | null>(null)
+
 function PublishButton() {
 	const { pageName = '' } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
+	const setPublishedUrl = useSetAtom(publishedUrlAtom)
 	const publishPageMutation = useMutation(publishPage, {
 		onSuccess: (data) => {
+			const publishedUrl = data.data.url
+			setPublishedUrl(publishedUrl)
 			showNotification({
 				title: 'Page published',
-				message: <PublishedUrl url={data.data.url} />,
+				message: <PublishedUrl url={publishedUrl} />,
 				color: 'green',
 				icon: <TbCheck size={18} />,
 			})

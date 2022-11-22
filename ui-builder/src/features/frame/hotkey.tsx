@@ -5,7 +5,7 @@ import { useCanvasHotkeys } from '../hotkey/hotkeys'
 
 export function FrameHotkeys({ children }: { children: ReactNode }) {
 	const { window } = useContext(FrameContext)
-	const hotkeys = useCanvasHotkeys({ noCopyPaste: true })
+	const hotkeys = useCanvasHotkeys()
 
 	useEffect(() => {
 		const hotkeysEvent = getHotkeyHandler(hotkeys as any)
