@@ -3,7 +3,7 @@ import { useCopyPaste } from '../clipboard/copy-paste'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
 
-export const useCanvasHotkeys = ({ noCopyPaste }: { noCopyPaste?: boolean } = {}): HotkeyItem[] => {
+export const useCanvasHotkeys = (): HotkeyItem[] => {
 	const { elements, removeElement, undo, redo } = useElementsStore((store) => ({
 		elements: store.elements,
 		removeElement: store.remove,
@@ -18,16 +18,6 @@ export const useCanvasHotkeys = ({ noCopyPaste }: { noCopyPaste?: boolean } = {}
 	const { copy, paste } = useCopyPaste()
 	const remove = () => removeElement(selectedIds)
 	const selectAll = () => select(elements.map((element) => element.id))
-
-	if (noCopyPaste)
-		return [
-			['Escape', deselect],
-			['mod+z', undo],
-			['mod+shift+z', redo],
-			['Delete', remove],
-			['Backspace', remove],
-			['mod+a', selectAll],
-		]
 
 	return [
 		['Escape', deselect],
