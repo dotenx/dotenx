@@ -10,10 +10,11 @@ interface DroppableProps {
 	onClick?: () => void
 	data: DroppableData
 	style?: CSSProperties
+	overStyle?: CSSProperties
 }
 
 export const Droppable = forwardRef<HTMLDivElement, DroppableProps>(
-	({ children, onClick, data, style }, ref) => {
+	({ children, onClick, data, style, overStyle = {} }, ref) => {
 		const { add, move } = useElementsStore((store) => ({ add: store.add, move: store.move }))
 		const select = useSelectionStore((store) => store.select)
 
@@ -83,7 +84,6 @@ export const Droppable = forwardRef<HTMLDivElement, DroppableProps>(
 			},
 			collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
 		}))
-
 		const handleRef = (element: HTMLDivElement) => {
 			drop(element)
 			if (ref) {
@@ -95,7 +95,7 @@ export const Droppable = forwardRef<HTMLDivElement, DroppableProps>(
 		return (
 			<div
 				ref={handleRef}
-				style={{ ...style, backgroundColor: isOver ? '#ffe4e699' : style?.backgroundColor }}
+				style={{ ...style, ...(isOver ? overStyle : {}) }}
 				onClick={onClick}
 			>
 				{children}

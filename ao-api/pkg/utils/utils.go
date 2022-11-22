@@ -226,7 +226,7 @@ func GenerateTpJwtToken(accountId, tpAccountId, userGroup string) (accToken stri
 		claims["user_group"] = ""
 	}
 	claims["token_type"] = "tp"
-	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
+	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
 	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))

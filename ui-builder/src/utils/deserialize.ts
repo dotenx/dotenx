@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { mapStyleToCamelCaseStyle } from '../api/mapper'
 import { ACTIONS } from '../features/actions'
-import { Action } from '../features/actions/action'
+import { Action, AnimationAction } from '../features/actions/action'
 import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
@@ -63,6 +63,9 @@ function deserializeController(data: any): Controller {
 }
 
 export function deserializeAction(data: any) {
+	if (data.kind === 'Animation') {
+		return new AnimationAction(data.animationName)
+	}
 	const Constructor = ACTIONS.find((action) => new action().name === data.kind)
 	if (!Constructor) throw new Error(`Action ${data.name} not found`)
 	const action = new Constructor() as Action

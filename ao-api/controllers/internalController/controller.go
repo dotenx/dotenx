@@ -180,3 +180,32 @@ func (c *InternalController) ListUiPages(ctx *gin.Context) {
 		"total":    len(uiPages),
 	})
 }
+
+// ListDomains returns list of external domains for a specific user
+func (c *InternalController) ListDomains(ctx *gin.Context) {
+	type body struct {
+		AccountId string `json:"accountId"`
+	}
+	var dto body
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	domains, err := c.Service.ListDomains(dto.AccountId)
+	if err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"domains": domains,
+		"total":   len(domains),
+	})
+}
