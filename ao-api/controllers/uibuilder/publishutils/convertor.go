@@ -27,6 +27,7 @@ type Page struct {
 		Head   string
 		Footer string
 	}
+	Fonts string
 }
 
 var pageTemplate = `<!DOCTYPE html>
@@ -57,6 +58,7 @@ var pageTemplate = `<!DOCTYPE html>
   />
 
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+	{{if .Fonts}}{{.Fonts}}{{end}}
 	{{if .CustomCodes.Head}}{{.CustomCodes.Head}}{{end}}
 
 </head>
@@ -97,6 +99,12 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		return "", "", "", err
 	}
 
+	fonts, err := convertFonts(page["fonts"].(map[string]interface{}))
+	if err != nil {
+		logrus.Error(err.Error())
+		return "", "", "", err
+	}
+
 	p := Page{
 		Name: name,
 		Head: struct {
@@ -120,6 +128,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 			Head   string
 			Footer string
 		}{Head: customCodes.Head, Footer: customCodes.Footer},
+		Fonts: fonts,
 	}
 
 	tmpl, err := template.New("button").Parse(pageTemplate)
