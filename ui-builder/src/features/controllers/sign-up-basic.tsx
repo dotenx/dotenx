@@ -156,7 +156,7 @@ export class SignUpBasic extends Controller {
 			method: HttpMethod.Post,
 			url,
 			fetchOnload: false,
-			body: '',
+			body: new Expression(),
 			headers: '',
 			properties: [],
 			onSuccess: [navigateAction],

@@ -73,7 +73,7 @@ export interface DataSource {
 	url: Expression
 	method: HttpMethod
 	headers: string
-	body: string
+	body: Expression
 	fetchOnload: boolean
 	properties: Property[]
 	onSuccess?: Action[]

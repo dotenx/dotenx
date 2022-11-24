@@ -15,7 +15,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { Expression, ExpressionKind, State } from '../states/expression'
+import { Expression, ExpressionKind } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
@@ -48,7 +48,7 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 		onSuccess: () => {
 			if (!selectedTable) return
 			addDataSource({
-				body: JSON.stringify({ columns: [] }),
+				body: Expression.fromString(JSON.stringify({ columns: [] })),
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Post,
@@ -63,19 +63,11 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
 
-	const titleValue =
-		typeof titleElement.data.text.value[0].value === 'string'
-			? titleElement.data.text.value[0].value
-			: titleElement.data.text.value[0].value.name
-	const nameValue =
-		typeof nameElement.data.text.value[0].value === 'string'
-			? nameElement.data.text.value[0].value
-			: nameElement.data.text.value[0].value.name
-
+	const titleValue = titleElement.data.text.value[0].value
+	const nameValue = nameElement.data.text.value[0].value
 	const titleFrom = _.last(titleValue.split('.')) ?? ''
 	const nameFrom = _.last(nameValue.split('.')) ?? ''
-	const imageFrom =
-		_.last((imageElement.data.src.value[0].value as State)?.name?.split('.')) ?? ''
+	const imageFrom = _.last(imageElement.data.src.value[0].value?.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Card List" />
@@ -170,7 +162,7 @@ function createCard({
 		image.data.src = inteliState(`${dataSourceName}_rowsItem.${imageFrom}`)
 		draft.data.href = new Expression([
 			{ kind: ExpressionKind.Text, value: `/details?id=` },
-			{ kind: ExpressionKind.State, value: { name: `${dataSourceName}_rowsItem.id` } },
+			{ kind: ExpressionKind.State, value: `${dataSourceName}_rowsItem.id` },
 		])
 	})
 }

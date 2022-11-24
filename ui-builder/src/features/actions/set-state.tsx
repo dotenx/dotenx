@@ -1,6 +1,7 @@
 import { Button } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import _ from 'lodash'
+import { EventKind } from '../elements/event'
 import { useGetMutableStates, useGetStates } from '../states/use-get-states'
 import { defaultInteliState, InteliState, serializeInteliState } from '../ui/intelinput'
 import {
@@ -17,8 +18,8 @@ export class SetStateAction extends Action {
 	stateName = defaultInteliState()
 	key = defaultInteliState()
 	value = defaultInteliState()
-	renderSettings(ids: Ids) {
-		return <SetStateSettings ids={ids} />
+	renderSettings(ids: Ids, eventKind?: EventKind) {
+		return <SetStateSettings ids={ids} eventKind={eventKind} />
 	}
 	serialize() {
 		return {
@@ -38,12 +39,16 @@ function SetStateDataSource({ ids }: { ids: SourceIds }) {
 	return <SetStateSettingsRaw action={action} onSubmit={update} />
 }
 
-function SetStateSettings({ ids }: { ids: Ids }) {
+function SetStateSettings({ ids, eventKind }: { ids: Ids; eventKind?: EventKind }) {
 	const { action, update } = useAction<SetStateAction>(ids)
-	return <SetStateSettingsRaw action={action} onSubmit={update} />
+	return <SetStateSettingsRaw action={action} onSubmit={update} eventKind={eventKind} />
 }
 
-function SetStateSettingsRaw({ action, onSubmit }: ActionSettingsRawProps<SetStateAction>) {
+function SetStateSettingsRaw({
+	action,
+	onSubmit,
+	eventKind,
+}: ActionSettingsRawProps<SetStateAction>) {
 	const states = useGetStates()
 	const mutableStates = useGetMutableStates()
 	const form = useForm({
@@ -69,7 +74,10 @@ function SetStateSettingsRaw({ action, onSubmit }: ActionSettingsRawProps<SetSta
 			/>
 			<InteliState
 				label="To"
-				options={states.map((state) => state.name)}
+				options={[
+					...(eventKind === EventKind.Change ? ['$store.event.value'] : []),
+					...states.map((state) => state.name),
+				]}
 				{...form.getInputProps('value')}
 			/>
 			<Button type="submit" fullWidth>

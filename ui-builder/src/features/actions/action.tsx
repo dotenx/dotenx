@@ -5,6 +5,7 @@ import { uuid } from '../../utils'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { AnimationEditor } from '../style/animation-editor'
 
@@ -23,7 +24,7 @@ export abstract class Action {
 
 	id = uuid()
 	abstract name: string
-	abstract renderSettings(ids: Ids): JSX.Element
+	abstract renderSettings(ids: Ids, eventKind?: EventKind): JSX.Element
 	renderDataSourceSettings(sourceId: string): JSX.Element {
 		return <>{sourceId}</>
 	}
@@ -105,4 +106,5 @@ export function useDataSourceAction<T extends Action>(ids: SourceIds) {
 export interface ActionSettingsRawProps<T extends Action> {
 	action?: T
 	onSubmit: (action: T) => void
+	eventKind?: EventKind
 }

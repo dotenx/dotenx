@@ -12,7 +12,7 @@ import { ImageElement } from '../../elements/extensions/image'
 import { TextElement } from '../../elements/extensions/text'
 import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { Expression, ExpressionKind, State } from '../../states/expression'
+import { Expression, ExpressionKind } from '../../states/expression'
 import { inteliState } from '../../ui/intelinput'
 import { Controller } from '../controller'
 import { TableSelect, useColumnsQuery } from '../create-form'
@@ -44,7 +44,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 		onSuccess: () => {
 			if (!selectedTable) return
 			addDataSource({
-				body: '',
+				body: new Expression(),
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Get,
@@ -54,7 +54,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 						kind: ExpressionKind.Text,
 						value: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
 					},
-					{ kind: ExpressionKind.State, value: { name: '$store.url.id' } },
+					{ kind: ExpressionKind.State, value: '$store.url.id' },
 				]),
 				isPrivate: true,
 			})
@@ -62,12 +62,9 @@ function DetailsOptions({ controller }: { controller: Details }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const imageFrom =
-		_.last((imageElement.data.src.value[0].value as State)?.name?.split('.')) ?? ''
-	const titleFrom =
-		_.last((titleElement.data.text.value[0].value as State)?.name?.split('.')) ?? ''
-	const descriptionFrom =
-		_.last((descriptionElement.data.text.value[0].value as State)?.name?.split('.')) ?? ''
+	const imageFrom = _.last(imageElement.data.src.value[0].value?.split('.')) ?? ''
+	const titleFrom = _.last(titleElement.data.text.value[0].value?.split('.')) ?? ''
+	const descriptionFrom = _.last(descriptionElement.data.text.value[0].value?.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Details" />
