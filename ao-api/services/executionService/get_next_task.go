@@ -1,10 +1,17 @@
 package executionService
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -117,6 +124,11 @@ func (manager *executionManager) GetNextTask(taskId, executionId int, status, ac
 		}
 		manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTasks[task.Type].Author, "task", task.Type)
 	}
+	err = manager.updateExecutionTasksUsage(accountId, len(taskIds))
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
 	return nil
 }
 
@@ -149,4 +161,47 @@ func (manager *executionManager) mapFields(execId int, accountId string, taskNam
 	// }
 	logrus.Info("finalTaskBody:", finalTaskBody)
 	return finalTaskBody, nil
+}
+
+// updateExecutionTasksUsage sends a request to dotenx-admin and add number of tasks to account's plan usage
+func (manager *executionManager) updateExecutionTasksUsage(accountId string, tasks int) error {
+	dt := executionTaskDto{
+		AccountId: accountId,
+		Tasks:     tasks,
+	}
+	jsonData, err := json.Marshal(dt)
+	if err != nil {
+		return errors.New("bad input body")
+	}
+	requestBody := bytes.NewBuffer(jsonData)
+	token, err := utils.GeneratToken()
+	if err != nil {
+		return err
+	}
+	Requestheaders := []utils.Header{
+		{
+			Key:   "Authorization",
+			Value: token,
+		},
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+	}
+	url := config.Configs.Endpoints.Admin + "/internal/execution/task"
+	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, Requestheaders, time.Minute, true)
+	if err != nil {
+		return err
+	}
+	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println("status code:", status)
+		return errors.New("not ok with status: " + strconv.Itoa(status))
+	}
+	return nil
+}
+
+type executionTaskDto struct {
+	AccountId string `json:"account_id" binding:"required"`
+	Tasks     int    `json:"tasks" binding:"required"`
 }

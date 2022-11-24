@@ -32,6 +32,12 @@ func (c *InternalController) SubmitExecution(ctx *gin.Context) {
 
 // a dummy handler just for local use cases when running project locally address of dotenx-admin
 // is actually ao-api address so we need this dummy hendler
+func (c *InternalController) UpdateExecutionTasksUsage(ctx *gin.Context) {
+	ctx.Status(http.StatusOK)
+}
+
+// a dummy handler just for local use cases when running project locally address of dotenx-admin
+// is actually ao-api address so we need this dummy hendler
 func (c *InternalController) CheckAccess(ctx *gin.Context) {
 	type AccessDto struct {
 		Access bool `json:"access"`
