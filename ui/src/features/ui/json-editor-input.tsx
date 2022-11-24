@@ -130,12 +130,15 @@ function JsonInputReal({
 		<JsonInput
 			onChange={(value) => onChange(safeParseJson(value))}
 			value={_.isString(value) ? value : JSON.stringify(value, null, 2)}
-			validationError="Invalid json"
 			formatOnBlur
 			autosize
 			minRows={4}
 			styles={(theme) => ({
 				input: { backgroundColor: theme.colors.gray[0] },
+				invalid: {
+					borderColor: theme.colors.gray[5],
+					color: 'inherit',
+				},
 			})}
 		/>
 	)
