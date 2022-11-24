@@ -1,4 +1,5 @@
 import { DecrementStateAction } from './decrement-state'
+import { FetchAction } from './fetch'
 import { IncrementStateAction } from './increment-state'
 import { NavigateAction } from './navigate'
 import { PushStateAction } from './push-state'
@@ -14,4 +15,5 @@ export const ACTIONS = [
 	IncrementStateAction,
 	DecrementStateAction,
 	NavigateAction,
+	FetchAction,
 ]

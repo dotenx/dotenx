@@ -245,9 +245,7 @@ function SingleIntelinput({
 				if (_.isEmpty(value.value)) {
 					onChange({ listName: '', propName: '' })
 				} else {
-					const [listName, propName] = (value.value[0] as StateValue).value.name.split(
-						'[].'
-					)
+					const [listName, propName] = (value.value[0] as StateValue).value.split('[].')
 					onChange({ listName, propName })
 				}
 			}}

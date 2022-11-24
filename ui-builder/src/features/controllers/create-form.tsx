@@ -18,6 +18,7 @@ import { InputElement } from '../elements/extensions/input'
 import { SubmitElement } from '../elements/extensions/submit'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { ComponentName } from './helpers'
@@ -51,7 +52,7 @@ function CreateFormOptions({ controller }: { controller: CreateForm }) {
 			const sourceName = `create_${selectedTable}_${sourceId}`
 			addDataSource({
 				id: sourceId,
-				body: '',
+				body: new Expression(),
 				headers: '',
 				fetchOnload: false,
 				method: HttpMethod.Post,

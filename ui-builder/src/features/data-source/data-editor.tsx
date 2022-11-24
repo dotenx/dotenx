@@ -336,10 +336,13 @@ function EventInput({
 											onClick={() => {
 												openModal({
 													title: action.name,
-													children: action.renderSettings({
-														event: event.id,
-														action: action.id,
-													}),
+													children: action.renderSettings(
+														{
+															event: event.id,
+															action: action.id,
+														},
+														event.kind
+													),
 												})
 												changeEvent({
 													...event,

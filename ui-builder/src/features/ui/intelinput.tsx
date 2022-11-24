@@ -69,7 +69,7 @@ export function Intelinput({
 										key={index}
 										className="whitespace-nowrap bg-gray-50 rounded px-1 flex gap-0.5 items-center border"
 									>
-										{inteliValue.value.name}
+										{inteliValue.value}
 										<CloseButton
 											size="xs"
 											onClick={() =>
@@ -120,7 +120,7 @@ export function Intelinput({
 										produce(expression, (draft) => {
 											draft.value.push({
 												kind: ExpressionKind.State,
-												value: { name: option },
+												value: option,
 											})
 										})
 									)
@@ -141,7 +141,7 @@ export function inteliText(value: string) {
 }
 
 export function inteliState(state: string) {
-	return Expression.fromValue({ kind: ExpressionKind.State, value: { name: state } })
+	return Expression.fromValue({ kind: ExpressionKind.State, value: state })
 }
 
 export function inteliToString(value: Value[]) {
@@ -162,7 +162,7 @@ export function InteliState({
 	const inputValue: Value = value?.isState
 		? {
 				kind: ExpressionKind.State,
-				value: { name: value.value },
+				value: value?.value ?? '' ,
 		  }
 		: {
 				kind: ExpressionKind.Text,
@@ -177,7 +177,7 @@ export function InteliState({
 				if (_.isEmpty(newValue.value)) onChange(defaultInteliState())
 				else {
 					const last = _.last(newValue.value)!
-					const value = _.isString(last.value) ? last.value : last.value.name
+					const value = last.value
 					onChange({
 						value: value,
 						isState: last.kind === ExpressionKind.State,
