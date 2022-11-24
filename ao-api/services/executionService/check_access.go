@@ -20,7 +20,6 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 	if err != nil {
 		return false, errors.New("bad input body")
 	}
-	requestBody := bytes.NewBuffer(json_data)
 	token, err := utils.GeneratToken()
 	if err != nil {
 		return false, err
@@ -36,7 +35,7 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 		},
 	}
 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/executionMinutes", requestBody, Requestheaders, time.Minute, true)
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/executionMinutes", bytes.NewBuffer(json_data), Requestheaders, time.Minute, true)
 	if err != nil {
 		return false, err
 	}
@@ -47,6 +46,21 @@ func (manager *executionManager) CheckAccess(accountId string, excutionId int) (
 	}
 	var res struct {
 		Access bool `json:"access"`
+	}
+	if err := json.Unmarshal(out, &res); err != nil {
+		return false, err
+	}
+	if !res.Access {
+		return false, nil
+	}
+
+	out, err, status, _ = httpHelper.HttpRequest(http.MethodPost, config.Configs.Endpoints.Admin+"/internal/user/access/executionTasks", bytes.NewBuffer(json_data), Requestheaders, time.Minute, true)
+	if err != nil {
+		return false, err
+	}
+	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println(string(out))
+		return false, errors.New("not ok with status: " + strconv.Itoa(status))
 	}
 	if err := json.Unmarshal(out, &res); err != nil {
 		return false, err
