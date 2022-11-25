@@ -77,8 +77,8 @@ export function deserializeAction(data: any) {
 					key,
 					{
 						...data,
-						isState: !!value,
-						value: value ? `$store.${mode}.${value}` : '',
+						isState: !!value && mode !== 'text',
+						value: value ? (mode === 'text' ? value : `$store.${mode}.${value}`) : '',
 					},
 				]
 			}

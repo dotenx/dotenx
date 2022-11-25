@@ -162,7 +162,7 @@ export function InteliState({
 	const inputValue: Value = value?.isState
 		? {
 				kind: ExpressionKind.State,
-				value: value?.value ?? '' ,
+				value: value?.value ?? '',
 		  }
 		: {
 				kind: ExpressionKind.Text,
@@ -196,10 +196,10 @@ function getMode(value: string): InteliStateMode {
 	if (value.startsWith('$store.url.')) return 'url'
 	if (value.startsWith('$store.response.')) return 'response'
 	if (value.startsWith('$store.source.')) return 'source'
-	return 'page'
+	return 'text'
 }
 
-type InteliStateMode = 'page' | 'url' | 'global' | 'response' | 'source'
+type InteliStateMode = 'page' | 'url' | 'global' | 'response' | 'source' | 'text'
 
 export type InteliStateValue = {
 	value: string
@@ -208,7 +208,7 @@ export type InteliStateValue = {
 }
 
 export function defaultInteliState(): InteliStateValue {
-	return { value: '', isState: false, mode: 'page' }
+	return { value: '', isState: false, mode: 'text' }
 }
 
 export function serializeInteliState(data: InteliStateValue): InteliStateValue | undefined {
