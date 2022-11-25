@@ -8,8 +8,9 @@ import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
 import { useAddDataSource } from '../data-source/data-source-form'
 import { HttpMethod } from '../data-source/data-source-store'
-import { useElementsStore } from '../elements/elements-store'
+import { useSetElement } from '../elements/elements-store'
 import { ColumnsElement } from '../elements/extensions/columns'
+import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
@@ -35,8 +36,9 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 	const columnsElement = useSelectedElement() as ColumnsElement
 	const titleElement = columnsElement.children?.[0].children?.[0].children?.[0]
 		.children?.[0] as TextElement
+	const imageElement = columnsElement.children?.[0].children?.[0].children?.[1] as ImageElement
 	const nameElement = columnsElement.children?.[0].children?.[1] as TextElement
-	const set = useElementsStore((store) => store.set)
+	const set = useSetElement()
 	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
 	const dataSourceName = `${selectedTable}s`
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
@@ -46,13 +48,13 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 		onSuccess: () => {
 			if (!selectedTable) return
 			addDataSource({
-				body: JSON.stringify({ columns: [] }),
+				body: Expression.fromString(JSON.stringify({ columns: [] })),
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
 				url: inteliText(
-					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+					`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}`
 				),
 				isPrivate: true,
 			})
@@ -61,17 +63,11 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
 
-	const titleValue =
-		typeof titleElement.data.text.value[0].value === 'string'
-			? titleElement.data.text.value[0].value
-			: titleElement.data.text.value[0].value.name
-	const nameValue =
-		typeof nameElement.data.text.value[0].value === 'string'
-			? nameElement.data.text.value[0].value
-			: nameElement.data.text.value[0].value.name
-
+	const titleValue = titleElement.data.text.value[0].value
+	const nameValue = nameElement.data.text.value[0].value
 	const titleFrom = _.last(titleValue.split('.')) ?? ''
 	const nameFrom = _.last(nameValue.split('.')) ?? ''
+	const imageFrom = _.last(imageElement.data.src.value[0].value?.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Card List" />
@@ -82,18 +78,40 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 			/>
 			<Select
 				size="xs"
+				label="Image"
+				description="Get image from"
+				data={columns}
+				value={imageFrom}
+				onChange={(value) => {
+					set(columnsElement, (draft) => {
+						draft.children = [
+							createCard({
+								dataSourceName,
+								titleFrom,
+								nameFrom,
+								imageFrom: value ?? '',
+							}),
+						]
+					})
+				}}
+			/>
+			<Select
+				size="xs"
 				label="Title"
 				description="Get title from"
 				data={columns}
 				value={titleFrom}
 				onChange={(value) => {
-					set(
-						produce(columnsElement, (draft) => {
-							draft.children = [
-								createCard({ dataSourceName, titleFrom: value ?? '', nameFrom }),
-							]
-						})
-					)
+					set(columnsElement, (draft) => {
+						draft.children = [
+							createCard({
+								dataSourceName,
+								titleFrom: value ?? '',
+								nameFrom,
+								imageFrom,
+							}),
+						]
+					})
 				}}
 			/>
 			<Select
@@ -103,13 +121,16 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 				data={columns}
 				value={nameFrom}
 				onChange={(value) => {
-					set(
-						produce(columnsElement, (draft) => {
-							draft.children = [
-								createCard({ dataSourceName, titleFrom, nameFrom: value ?? '' }),
-							]
-						})
-					)
+					set(columnsElement, (draft) => {
+						draft.children = [
+							createCard({
+								dataSourceName,
+								titleFrom,
+								nameFrom: value ?? '',
+								imageFrom,
+							}),
+						]
+					})
 				}}
 			/>
 		</div>
@@ -120,23 +141,28 @@ function createCard({
 	dataSourceName,
 	nameFrom,
 	titleFrom,
+	imageFrom,
 }: {
 	dataSourceName: string
 	titleFrom: string
 	nameFrom: string
+	imageFrom: string
 }) {
 	return produce(regenElement(deserializeElement(card)) as LinkElement, (draft) => {
 		draft.repeatFrom = {
-			name: `$store.${dataSourceName}.rows`,
+			name: `$store.source.${dataSourceName}.rows`,
 			iterator: `${dataSourceName}_rowsItem`,
 		}
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
 		const name = draft.children?.[1] as TextElement
+		const image = draft.children?.[0].children?.[1] as ImageElement
+		console.log(image)
 		title.data.text = inteliState(`${dataSourceName}_rowsItem.${titleFrom}`)
 		name.data.text = inteliState(`${dataSourceName}_rowsItem.${nameFrom}`)
+		image.data.src = inteliState(`${dataSourceName}_rowsItem.${imageFrom}`)
 		draft.data.href = new Expression([
 			{ kind: ExpressionKind.Text, value: `/details?id=` },
-			{ kind: ExpressionKind.State, value: { name: `${dataSourceName}_rowsItem.id` } },
+			{ kind: ExpressionKind.State, value: `${dataSourceName}_rowsItem.id` },
 		])
 	})
 }
@@ -239,6 +265,7 @@ const defaultData = {
 											'align-self': 'center',
 											'background-size': 'cover',
 											'background-position': 'center',
+											'object-fit': 'cover',
 										},
 									},
 								},

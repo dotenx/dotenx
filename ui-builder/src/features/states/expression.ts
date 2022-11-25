@@ -21,13 +21,13 @@ export class Expression {
 
 	static fromState(state: string) {
 		const expression = new Expression()
-		expression.value = [{ kind: ExpressionKind.State, value: { name: state } }]
+		expression.value = [{ kind: ExpressionKind.State, value: state }]
 		return expression
 	}
 
 	toString() {
 		return this.value
-			.map((part) => (part.kind === ExpressionKind.State ? part.value.name : part.value))
+			.map((part) => (part.kind === ExpressionKind.State ? part.value : part.value))
 			.join('')
 	}
 
@@ -39,8 +39,6 @@ export class Expression {
 		return this.value.length === 1 && this.value[0].kind === ExpressionKind.State
 	}
 }
-
-export type State = { name: string }
 
 export enum ExpressionKind {
 	Text = 'text',
@@ -54,7 +52,7 @@ export type TextValue = {
 
 export type StateValue = {
 	kind: ExpressionKind.State
-	value: State
+	value: string
 }
 
 export type Value = TextValue | StateValue

@@ -12,6 +12,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
 import { Controller } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
@@ -41,7 +42,7 @@ function ListOptions({ controller }: { controller: List }) {
 			const sourceId = uuid()
 			const dataSourceName = `list_${selectedTable}_${sourceId}`
 			addDataSource({
-				body: JSON.stringify({ columns: [] }),
+				body: Expression.fromString(JSON.stringify({ columns: [] })),
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Post,

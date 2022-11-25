@@ -135,7 +135,7 @@ export class SignInBasic extends Controller {
 			method: HttpMethod.Post,
 			url,
 			fetchOnload: false,
-			body: '',
+			body: new Expression(),
 			headers: '',
 			properties: [],
 			onSuccess: [setTokenAction, navigateAction],

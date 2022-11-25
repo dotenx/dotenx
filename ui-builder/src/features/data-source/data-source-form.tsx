@@ -35,7 +35,7 @@ const schema = z.object({
 	url: z.instanceof(Expression),
 	method: z.nativeEnum(HttpMethod),
 	headers: z.string(),
-	body: z.string(),
+	body: z.instanceof(Expression),
 	fetchOnload: z.boolean(),
 	onSuccess: z.array(z.any()).optional(),
 	isPrivate: z.boolean().optional(),
@@ -52,7 +52,7 @@ export function DataSourceForm({
 		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
-		body: '',
+		body: new Expression(),
 		id: '',
 		properties: [],
 		fetchOnload: true,
@@ -175,14 +175,10 @@ export function DataSourceForm({
 			<div className="space-y-6">
 				{methods}
 				{headers}
-				<JsonInput
+				<Intelinput
 					label="Body"
-					description="The request data"
 					placeholder="JSON object"
-					validationError="Invalid JSON"
-					formatOnBlur
-					autosize
-					minRows={3}
+					options={states.map((state) => state.name)}
 					{...form.getInputProps('body')}
 				/>
 			</div>
@@ -263,7 +259,7 @@ export const useAddDataSource = ({
 		url: new Expression(),
 		method: HttpMethod.Get,
 		headers: '',
-		body: '',
+		body: new Expression(),
 		id: '',
 		properties: [],
 		fetchOnload: true,

@@ -17,7 +17,7 @@ interface Inserting {
 
 export function SimpleCanvas() {
 	const elements = useElementsStore((store) => store.elements)
-	const hotkeys = useCanvasHotkeys({ noCopyPaste: true })
+	const hotkeys = useCanvasHotkeys()
 	useHotkeys(hotkeys)
 	const isEmpty = elements.length === 0
 
@@ -29,11 +29,17 @@ export function SimpleCanvas() {
 
 	return (
 		<CanvasFrame>
-			{isEmpty ? (
-				prompt
-			) : (
-				<RenderElements elements={elements} isDirectRootChildren overlay={ElementOverlay} />
-			)}
+			<div style={{ minHeight: 'calc(100vh - 6px)' }}>
+				{isEmpty ? (
+					prompt
+				) : (
+					<RenderElements
+						elements={elements}
+						isDirectRootChildren
+						overlay={ElementOverlay}
+					/>
+				)}
+			</div>
 		</CanvasFrame>
 	)
 }

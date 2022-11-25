@@ -28,7 +28,7 @@ import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
+import { customCodesAtom, globalStatesAtom, PageActions, publishedUrlAtom } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
 
@@ -48,11 +48,26 @@ export function TopBar() {
 				<AdvancedModeButton />
 			</Group>
 			<Group align="center" spacing="xl">
+				<PublishedUrl />
 				<PageScaling />
 				<UndoRedo />
 				<PageActions />
 			</Group>
 		</Group>
+	)
+}
+
+function PublishedUrl() {
+	const publishedUrl = useAtomValue(publishedUrlAtom)
+
+	if (!publishedUrl) return null
+
+	return (
+		<div>
+			<Anchor href={publishedUrl} target="_blank" size="xs">
+				View Published Page
+			</Anchor>
+		</div>
 	)
 }
 
@@ -113,6 +128,7 @@ export const useFetchPage = () => {
 	const navigate = useNavigate()
 	const setFonts = useSetAtom(fontsAtom)
 	const setCustomCodes = useSetAtom(customCodesAtom)
+	const setPublishedPage = useSetAtom(publishedUrlAtom)
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -127,6 +143,7 @@ export const useFetchPage = () => {
 				setSelectedPage(content.mode)
 				setFonts(content.fonts)
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
+				setPublishedPage(null)
 
 				content.dataSources.map((source) =>
 					axios

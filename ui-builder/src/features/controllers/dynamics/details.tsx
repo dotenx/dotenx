@@ -1,14 +1,14 @@
 import { Select } from '@mantine/core'
 import { useInputState } from '@mantine/hooks'
-import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import imageUrl from '../../../assets/components/details.png'
 import { deserializeElement } from '../../../utils/deserialize'
 import { useAddDataSource } from '../../data-source/data-source-form'
 import { HttpMethod } from '../../data-source/data-source-store'
-import { useElementsStore } from '../../elements/elements-store'
+import { useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
+import { ImageElement } from '../../elements/extensions/image'
 import { TextElement } from '../../elements/extensions/text'
 import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
@@ -30,9 +30,10 @@ export class Details extends Controller {
 }
 
 function DetailsOptions({ controller }: { controller: Details }) {
-	const set = useElementsStore((store) => store.set)
+	const set = useSetElement()
 	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
 	const root = useSelectedElement() as BoxElement
+	const imageElement = root.children[0] as ImageElement
 	const titleElement = root.children?.[1] as TextElement
 	const descriptionElement = root.children?.[2] as TextElement
 	const dataSourceName = `${selectedTable}_details`
@@ -43,7 +44,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 		onSuccess: () => {
 			if (!selectedTable) return
 			addDataSource({
-				body: '',
+				body: new Expression(),
 				fetchOnload: true,
 				headers: '',
 				method: HttpMethod.Get,
@@ -53,7 +54,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 						kind: ExpressionKind.Text,
 						value: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
 					},
-					{ kind: ExpressionKind.State, value: { name: '$store.url.id' } },
+					{ kind: ExpressionKind.State, value: '$store.url.id' },
 				]),
 				isPrivate: true,
 			})
@@ -61,9 +62,9 @@ function DetailsOptions({ controller }: { controller: Details }) {
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []
-	const titleFrom = _.last((titleElement.data.text.value[0].value as string).split('.')) ?? ''
-	const descriptionFrom =
-		_.last((descriptionElement.data.text.value[0].value as string).split('.')) ?? ''
+	const imageFrom = _.last(imageElement.data.src.value[0].value?.split('.')) ?? ''
+	const titleFrom = _.last(titleElement.data.text.value[0].value?.split('.')) ?? ''
+	const descriptionFrom = _.last(descriptionElement.data.text.value[0].value?.split('.')) ?? ''
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Details" />
@@ -74,19 +75,31 @@ function DetailsOptions({ controller }: { controller: Details }) {
 			/>
 			<Select
 				size="xs"
+				label="Image"
+				description="Get image from"
+				data={columns}
+				value={imageFrom}
+				onChange={(value) => {
+					set(
+						imageElement,
+						(draft) =>
+							(draft.data.src = inteliState(
+								`$store.source.${dataSourceName}.${value}`
+							))
+					)
+				}}
+			/>
+			<Select
+				size="xs"
 				label="Title"
 				description="Get title from"
 				data={columns}
 				value={titleFrom}
 				onChange={(value) => {
-					set(
-						produce(root, (draft) => {
-							const title = draft.children?.[1] as TextElement
-							title.data.text = inteliState(
-								`$store.source.${dataSourceName}.${value}`
-							)
-						})
-					)
+					set(root, (draft) => {
+						const title = draft.children?.[1] as TextElement
+						title.data.text = inteliState(`$store.source.${dataSourceName}.${value}`)
+					})
 				}}
 			/>
 			<Select
@@ -96,14 +109,12 @@ function DetailsOptions({ controller }: { controller: Details }) {
 				data={columns}
 				value={descriptionFrom}
 				onChange={(value) => {
-					set(
-						produce(root, (draft) => {
-							const description = draft.children?.[2] as TextElement
-							description.data.text = inteliState(
-								`$store.source.${dataSourceName}.${value}`
-							)
-						})
-					)
+					set(root, (draft) => {
+						const description = draft.children?.[2] as TextElement
+						description.data.text = inteliState(
+							`$store.source.${dataSourceName}.${value}`
+						)
+					})
 				}}
 			/>
 		</div>
@@ -124,7 +135,9 @@ const defaultData = {
 			data: {
 				alt: '',
 				src: 'https://img.freepik.com/free-photo/furniture-modern-studio-lifestyle-green_1122-1837.jpg?1&w=996&t=st=1665145693~exp=1665146293~hmac=c6f1344624e73fe176b2e26c6d127432a0e77b94453b79fcefc6d78e69fa7887',
-				style: { desktop: { default: { height: '300px' } } },
+				style: {
+					desktop: { default: { height: '300px', objectFit: 'cover', margin: 'auto' } },
+				},
 			},
 		},
 		{

@@ -1,7 +1,7 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbMessage2 } from 'react-icons/tb'
-import { Expression, ExpressionKind } from '../../states/expression'
+import { Expression } from '../../states/expression'
 import { useGetStates } from '../../states/use-get-states'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
@@ -23,9 +23,7 @@ export class TextElement extends Element {
 	}
 
 	render(renderFn: RenderFn): ReactNode {
-		const renderedText = this.data.text.value
-			.map((part) => (part.kind === ExpressionKind.Text ? part.value : part.value.name))
-			.join('')
+		const renderedText = this.data.text.value.map((part) => part.value).join('')
 
 		return <span dangerouslySetInnerHTML={{ __html: renderedText }} />
 	}

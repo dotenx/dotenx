@@ -33,7 +33,6 @@ export function useFlow() {
 	useEffect(() => {
 		if (!automation) return
 		const elements = mapAutomationToElements(automation)
-		console.log(elements)
 		const triggers = mapTriggersToElements(automation.manifest.triggers)
 		const layout = getLaidOutElements([...elements, ...triggers], 'TB', NODE_WIDTH, NODE_HEIGHT)
 		setElements(layout)

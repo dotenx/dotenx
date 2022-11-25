@@ -241,6 +241,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
 	internal.POST("/execution/submit", InternalController.SubmitExecution)
+	internal.POST("/execution/task", InternalController.UpdateExecutionTasksUsage)
 	internal.POST("/user/access/:resource", InternalController.CheckAccess)
 	internal.POST("/user/plan/current", InternalController.GetCurrentPlan)
 	internal.POST("/project/list", middlewares.InternalMiddleware(), InternalController.ListProjects)

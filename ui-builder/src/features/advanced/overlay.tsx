@@ -1,4 +1,3 @@
-import { useIntersection } from '@mantine/hooks'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import {
 	CSSProperties,
@@ -10,7 +9,7 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
-	useState
+	useState,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
@@ -49,16 +48,10 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 	const { isSelected } = useIsHighlighted(element.id)
 	const isHighlighted = isSelected || isHovered
 	const canContain = element.isContainer()
-	const intersection = useIntersection()
 	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
-	const intersectionRef = intersection.ref
-	const handleRef = useCallback(
-		(event: HTMLDivElement) => {
-			intersectionRef(event)
-			setReferenceElement(event)
-		},
-		[intersectionRef]
-	)
+	const handleRef = useCallback((event: HTMLDivElement) => {
+		setReferenceElement(event)
+	}, [])
 	const showHoverAnimations = useCallback(() => {
 		element.events
 			.filter((event) => event.kind === EventKind.MouseEnter)
@@ -66,15 +59,17 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			.filter((action): action is AnimationAction => action instanceof AnimationAction)
 			.forEach((animation) => animateCSS(`.${element.id}`, animation.animationName))
 	}, [element.events, element.id])
-	const intersectionAnimation = intersection.entry?.isIntersecting
-		? 'animate__animated ' +
-		  element.events
-				.filter((event) => event.kind === EventKind.Intersection)
+	const animations = useMemo(
+		() =>
+			'animate__animated ' +
+			element.events
 				.flatMap((event) => event.actions)
 				.filter((action): action is AnimationAction => action instanceof AnimationAction)
-				.map((animation) => `animate__${animation.animationName}`)
-		: ''
-	const classes = `${element.generateClasses()} ${intersectionAnimation}`
+				.map((animation) => `animate__${animation.animationName}`),
+		[element.events]
+	)
+
+	const classes = `${element.generateClasses()} ${animations}`
 
 	const handleMouseOver = useCallback(
 		(event: MouseEvent) => {

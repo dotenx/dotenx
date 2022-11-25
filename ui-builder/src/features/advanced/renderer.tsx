@@ -193,12 +193,12 @@ function evaluateExpression(
 	return expression.value
 		.map((part) => {
 			if (part.kind === ExpressionKind.Text) return part.value
-			const splitPath = part.value.name.split('.')
+			const splitPath = part.value.split('.')
 			const textValue =
 				_.get(
 					states,
 					splitPath.splice(splitPath.findIndex((p) => p.endsWith('Item')) + 1)
-				) ?? _.get(pageStates, part.value.name.replace('$store.source.', ''))
+				) ?? _.get(pageStates, part.value.replace('$store.source.', ''))
 			return textValue as string
 		})
 		.join('')
