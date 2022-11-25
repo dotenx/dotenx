@@ -59,6 +59,10 @@ func convertAction(action EventAction) (string, error) {
 				return ""
 			}
 
+			if !valueSource.IsState {
+				return fmt.Sprintf(`"%s"`, valueSource.Value)
+			}
+
 			switch valueSource.Mode {
 			case "page":
 				fallthrough
@@ -90,7 +94,7 @@ func convertAction(action EventAction) (string, error) {
 	`
 
 	const setStateTemplate = `
-	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Value}}, {{renderValueSource .Key}})
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Value}}{{if .Key.Value}}, {{renderValueSource .Key}}{{end}})
 	`
 
 	const pushStateTemplate = `
@@ -98,11 +102,11 @@ func convertAction(action EventAction) (string, error) {
 	`
 
 	const incStateTemplate = `
-	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Key}})
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}"{{if .Key.Value}}, {{renderValueSource .Key}}{{end}})
 	`
 
 	const decStateTemplate = `
-	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}", {{renderValueSource .Key}})
+	Alpine.store('{{.StateName.Mode}}').set("{{.StateName.Value}}"{{if .Key.Value}}, {{renderValueSource .Key}}{{end}})
 	`
 
 	const fetchTemplate = `
