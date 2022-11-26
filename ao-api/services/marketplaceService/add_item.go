@@ -27,8 +27,9 @@ func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService dat
 	if item.Category == models.CategoryUIComponent || item.Category == models.CategoryUIDesignSystem {
 		dto, err = ps.ExportComponent(item.AccountId, projectName, item.ComponentName, componentService)
 	} else {
-		dto, err = ps.ExportProject(item.AccountId, projectName, item.ProjectTag, dbService, cService)
+		dto, err = ps.ExportProject(item.AccountId, projectName, item.ProjectTag, item.ProjectHasDb, dbService, cService)
 	}
+
 	// Upload the project as a JSON file to S3
 	item.S3Key = fmt.Sprintf("item_%s_%s_%s", utils.GetNewUuid(), item.Category, projectName)
 	if err != nil {
