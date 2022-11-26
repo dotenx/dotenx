@@ -175,7 +175,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	projectController := project.ProjectController{Service: ProjectService}
 	databaseController := database.DatabaseController{Service: DatabaseService}
 	userManagementController := userManagement.UserManagementController{Service: UserManagementService, ProjectService: ProjectService, OauthService: OauthService, NotifyService: notifyService.NewNotifierService()}
-	profileController := profile.ProfileController{}
+	profileController := profile.ProfileController{Service: UserManagementService}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
@@ -416,8 +416,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
 	public.GET("/marketplace", marketplaceController.ListItems())
 
-	// profile router
-	profile.GET("", profileController.GetProfile())
+	// tp users profile router
+	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
 
 	// dt, err := marketplaceService.GetProjectOfItem(1)
 	// if err != nil {
