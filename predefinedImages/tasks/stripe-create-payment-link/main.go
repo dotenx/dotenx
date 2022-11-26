@@ -1,4 +1,4 @@
-// image: stripe/stripe-create-payment-link:lambda
+// image: stripe/stripe-create-payment-link:lambda2
 package main
 
 import (
@@ -46,7 +46,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	// authorization := event.Authorization
 	// for _, val := range event.Body {
 	singleInput := event.Body
-	uiUrl := singleInput["UI_URL"].(string)
+	successUrl := singleInput["SUCCESS_URL"].(string)
+	cancelUrl := singleInput["CANCEL_URL"].(string)
 	secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
 	customerId := singleInput["CUS_ID"].(string)
 	shoppingBag := singleInput["SHOPPING_BAG"].(map[string]interface{})
@@ -64,7 +65,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	// quantity := singleInput["QUANTITY"].(int)
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
-	url, err := createSession(sc, uiUrl, customerId, bag)
+	url, err := createSession(sc, successUrl, cancelUrl, customerId, bag)
 	if err != nil {
 		fmt.Println(err)
 		resp.Successfull = false
@@ -96,7 +97,7 @@ func main() {
 	lambda.Start(HandleLambdaEvent)
 }
 
-func createSession(sc *client.API, uiUrl, customerId string, shoppingBag map[string]int) (string, error) {
+func createSession(sc *client.API, successUrl, cancelUrl, customerId string, shoppingBag map[string]int) (string, error) {
 	bag := make([]*stripe.CheckoutSessionLineItemParams, 0)
 	for priceId, quantity := range shoppingBag {
 		bag = append(bag, &stripe.CheckoutSessionLineItemParams{
@@ -105,8 +106,8 @@ func createSession(sc *client.API, uiUrl, customerId string, shoppingBag map[str
 		})
 	}
 	params := &stripe.CheckoutSessionParams{
-		SuccessURL:        stripe.String(uiUrl + "/payment/status/success"),
-		CancelURL:         stripe.String(uiUrl + "/payment/status/cancel"),
+		SuccessURL:        stripe.String(successUrl),
+		CancelURL:         stripe.String(cancelUrl),
 		LineItems:         bag,
 		Mode:              stripe.String(string(stripe.CheckoutSessionModePayment)),
 		ClientReferenceID: stripe.String(customerId),
