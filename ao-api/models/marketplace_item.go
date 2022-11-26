@@ -24,6 +24,7 @@ type MarketplaceItem struct {
 	UpdatedAt        time.Time                `db:"-" json:"updatedAt"`
 	ProjectName      string                   `db:"project_name" json:"-"`
 	ProjectTag       string                   `db:"-" json:"project_tag"`
+	ProjectHasDb     bool                     `db:"-" json:"project_has_db"`
 	ComponentName    string                   `db:"component_name" json:"-"`
 	S3Key            string                   `db:"s3_key" json:"-"`
 }
