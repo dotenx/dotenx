@@ -275,6 +275,10 @@ var migrations = []struct {
 		name: "create-database-user-table",
 		stmt: createDatabaseUserTableStmt,
 	},
+	{
+		name: "add-preview-url-field-to-marketplace-items-table",
+		stmt: addPreviewUrlFieldToMarketplaceItemsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -780,4 +784,9 @@ username                   VARCHAR(128) NOT NULL,
 password                   VARCHAR(128) NOT NULL,
 UNIQUE (account_id, project_name)
 )
+`
+
+var addPreviewUrlFieldToMarketplaceItemsTable = `
+ALTER TABLE marketplace_items
+ADD COLUMN IF NOT EXISTS preview_url VARCHAR DEFAULT '';
 `

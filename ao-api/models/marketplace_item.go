@@ -17,6 +17,7 @@ type MarketplaceItem struct {
 	Enabled          bool                     `db:"enabled" json:"enabled"`
 	Price            int                      `db:"price" json:"price"`
 	ImageUrl         string                   `db:"image_url" json:"imageUrl"`
+	PreviewUrl       string                   `db:"preview_url" json:"previewUrl"`
 	Features         []MarketplaceItemFeature `db:"-" json:"features"`
 	FeaturesForDb    []byte                   `db:"features" json:"-"`
 	CreatedAt        time.Time                `db:"created_at" json:"createdAt"`
