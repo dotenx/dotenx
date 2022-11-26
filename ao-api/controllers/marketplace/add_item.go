@@ -23,6 +23,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			Description      string                          `json:"description"`
 			Price            int                             `json:"price"`
 			ImageUrl         string                          `json:"imageUrl"`
+			TemplateUrl      string                          `json:"templateURL"`
 			Features         []models.MarketplaceItemFeature `json:"features"`
 			ProjectName      string                          `json:"projectName"`
 			ComponentName    string                          `json:"component_name"`
@@ -56,6 +57,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			Description:      dto.Description,
 			Price:            dto.Price,
 			ImageUrl:         dto.ImageUrl,
+			PreviewUrl:       dto.TemplateUrl,
 			Features:         dto.Features,
 			ProjectName:      dto.ProjectName,
 			ProjectTag:       project.Tag,
@@ -68,6 +70,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
+
 		c.Status(http.StatusOK)
 	}
 }

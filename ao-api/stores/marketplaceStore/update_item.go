@@ -15,8 +15,8 @@ func (store *marketplaceStore) UpdateItem(ctx context.Context, item models.Marke
 	updateItem := `
 	UPDATE marketplace_items SET item_type = $1, category = $2, title = $3, 
 	short_description = $4, description = $5,
-	price = $6, features = $7, image_url = $8, updated_at = $9
-	WHERE id = $10 AND creator_account_id = $11
+	price = $6, features = $7, image_url = $8, updated_at = $9, preview_url = $10
+	WHERE id = $11 AND creator_account_id = $12
 	`
 	var stmt string
 	switch store.db.Driver {
@@ -31,7 +31,7 @@ func (store *marketplaceStore) UpdateItem(ctx context.Context, item models.Marke
 	if err != nil {
 		return err
 	}
-	_, err = store.db.Connection.Exec(stmt, item.Type, item.Category, item.Title, item.ShortDescription, item.Description, item.Price, string(bytes), item.ImageUrl, time.Now(), item.Id, item.AccountId)
+	_, err = store.db.Connection.Exec(stmt, item.Type, item.Category, item.Title, item.ShortDescription, item.Description, item.Price, string(bytes), item.ImageUrl, time.Now(), item.PreviewUrl, item.Id, item.AccountId)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return fmt.Errorf("item not found")
