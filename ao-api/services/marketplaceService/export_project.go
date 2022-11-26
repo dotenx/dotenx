@@ -11,15 +11,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (ms *marketplaceService) ExportProject(accountId string, projectName, projectTag string, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error) {
+func (ms *marketplaceService) ExportProject(accountId string, projectName, projectTag string, projectHasDb bool, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error) {
 	projectDto = models.ProjectDto{}
 	projectDto.Name = projectName
 
 	// Get the list of all the tables of this project
-	projectDto.DataBaseTables, err = getTables(accountId, projectName, projectTag, dbService)
-	if err != nil {
-		log.Printf("Error getting project: %v", err)
-		return
+	if projectHasDb {
+		projectDto.DataBaseTables, err = getTables(accountId, projectName, projectTag, dbService)
+		if err != nil {
+			log.Printf("Error getting project: %v", err)
+			return
+		}
 	}
 
 	// Get the list of all the pipelines of this project

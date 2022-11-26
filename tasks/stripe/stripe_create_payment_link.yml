@@ -1,16 +1,20 @@
 service: stripe
 type: Stripe create payment link
-image: stripe/stripe-create-payment-link:lambda
+image: stripe/stripe-create-payment-link:lambda2
 integrations: [stripe]
 fields:
     - key: CUS_ID
       type: text
       description: customer's Stripe id (e.g cus_asdfg8234sad)
       display_name: customer id
-    - key: UI_URL
+    - key: SUCCESS_URL
       type: text
-      description: address of your website (e.g example.web.dotenx.com)
-      display_name: ui url
+      description: address of your website that your users should be redirect to it when payment is successfull (e.g https://example.web.dotenx.com/payment/success)
+      display_name: success url
+    - key: CANCEL_URL
+      type: text
+      description: address of your website that your users should be redirect to it when payment is not successfull (e.g https://example.web.dotenx.com/payment/cancel)
+      display_name: cancel url
     - key: SHOPPING_BAG
       type: object
       description: "a json format field that keys are price IDs and values are quantities (e.g { \"price_esl4sdcx5\": 2})"
