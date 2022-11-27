@@ -1,7 +1,6 @@
 package database
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -16,10 +15,19 @@ func (dc *DatabaseController) GetTablesList(pService projectService.ProjectServi
 		projectName := c.Param("project_name")
 
 		tables, err := dc.Service.GetTablesList(accountId, projectName)
-		if err != nil && err.Error() != "not found" {
-			log.Println("error:", err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			} else if err.Error() != "not found" {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+				return
+			}
 		}
 
 		// we should filter default tables

@@ -19,7 +19,9 @@ WHERE  name = $1;
 
 func (ds *databaseStore) GetViewDetails(ctx context.Context, accountId string, projectName string, viewName string) (models.DatabaseView, error) {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return models.DatabaseView{}, err
@@ -54,7 +56,9 @@ func (ds *databaseStore) GetViewDetailsByProjectTag(ctx context.Context, project
 	}
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return models.DatabaseView{}, err

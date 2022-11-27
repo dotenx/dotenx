@@ -22,7 +22,9 @@ COMMENT ON TABLE %s IS %s
 func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic bool) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err

@@ -16,13 +16,15 @@ func (dc *DatabaseController) DeleteView() gin.HandlerFunc {
 
 		if err := dc.Service.DeleteView(accountId, projectName, viewName); err != nil {
 			logrus.Error(err.Error())
-			if err.Error() == "not found" {
+			if err.Error() == "not found" || err == utils.ErrUserDatabaseNotFound {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"message": err.Error(),
 				})
 				return
 			}
-			c.AbortWithStatus(http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "an internal server error occurred",
+			})
 			return
 		}
 

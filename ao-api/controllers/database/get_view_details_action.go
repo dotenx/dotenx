@@ -17,14 +17,14 @@ func (dc *DatabaseController) GetViewDetails() gin.HandlerFunc {
 		details, err := dc.Service.GetViewDetails(accountId, projectName, viewName)
 		if err != nil {
 			logrus.Error(err.Error())
-			if err.Error() == "not found" {
+			if err.Error() == "not found" || err == utils.ErrUserDatabaseNotFound {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"message": err.Error(),
 				})
 				return
 			}
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
+				"message": "an internal server error occurred",
 			})
 			return
 		}

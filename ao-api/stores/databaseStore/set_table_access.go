@@ -11,7 +11,9 @@ import (
 func (ds *databaseStore) SetTableAccess(ctx context.Context, accountId, projectName, tableName string, isPublic bool) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		logrus.Error("Error getting database connection:", err.Error())
 		return err
