@@ -1,7 +1,9 @@
+import { Button } from '@mantine/core'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
 	AutomationKind,
 	deleteAutomation,
@@ -53,6 +55,30 @@ export function useActionBar(kind: AutomationKind) {
 							clearStatus()
 							setListen((x) => x + 1)
 						},
+
+						onError: (e: any) => {
+							if (e.response.status === 400) {
+								toast(
+									<div className="space-y-5 pt-3">
+										<div className="text-slate-900">
+											You have reached your account’s limitation. Please
+											upgrade your account to be able to run automations.
+										</div>
+										<Button size="xs">
+											<a
+												href="https://admin.dotenx.com/plan"
+												rel="noopener noreferrer"
+											>
+												Upgrade plan
+											</a>
+										</Button>
+									</div>,
+									{ closeButton: true, autoClose: false }
+								)
+							} else {
+								toast(e.response.data.message, { type: 'error', autoClose: 2000 })
+							}
+						},
 					}
 				)
 			} else {
@@ -61,7 +87,35 @@ export function useActionBar(kind: AutomationKind) {
 					runMutation.mutate(
 						{ automationName: selectedAutomationData.name, projectName },
 						{
-							onSuccess: (data) => modal.open(Modals.InteractionResponse, data.data),
+							onSuccess: (data) => {
+								modal.open(Modals.InteractionResponse, data.data)
+							},
+							onError: (e: any) => {
+								if (e.response.status === 400) {
+									toast(
+										<div className="space-y-5 pt-3">
+											<div className="text-slate-900">
+												You have reached your account’s limitation. Please
+												upgrade your account to be able to run automations.
+											</div>
+											<Button size="xs">
+												<a
+													href="https://admin.dotenx.com/plan"
+													rel="noopener noreferrer"
+												>
+													Upgrade plan
+												</a>
+											</Button>
+										</div>,
+										{ closeButton: true, autoClose: false }
+									)
+								} else {
+									toast(e.response.data.message, {
+										type: 'error',
+										autoClose: 2000,
+									})
+								}
+							},
 						}
 					)
 			}

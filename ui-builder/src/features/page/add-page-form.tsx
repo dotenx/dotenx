@@ -1,5 +1,6 @@
 import { Button, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
+import { showNotification } from '@mantine/notifications'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -43,7 +44,40 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				fonts: {},
 				customCodes: { head: '', footer: '' },
 			},
-			{ onSuccess: () => navigate(`/projects/${projectName}/${values.pageName}`) }
+			{
+				onSuccess: () => navigate(`/projects/${projectName}/${values.pageName}`),
+				onError: (e: any) => {
+					if (e.response.status === 400) {
+						showNotification({
+							message: (
+								<div className="space-y-5 pt-3">
+									<div className="text-slate-900">
+										You have reached your account’s limitation. Please upgrade
+										your account to be able to add new pages.
+										<span className="text-slate-500">
+											You can also use referral codes to increase your
+											account’s limits.
+										</span>
+									</div>
+									<Button size="xs">
+										<a
+											href="https://admin.dotenx.com/plan"
+											rel="noopener noreferrer"
+										>
+											Upgrade plan
+										</a>
+									</Button>
+								</div>
+							),
+							autoClose: false,
+						})
+					} else {
+						showNotification({
+							message: e.response.data.message,
+						})
+					}
+				},
+			}
 		)
 	})
 
