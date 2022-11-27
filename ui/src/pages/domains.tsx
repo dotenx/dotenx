@@ -122,6 +122,29 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 	})
 	const { mutate, isLoading } = useMutation(addDomain, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetDomains),
+		onError: (e: any) => {
+			if (e.response.status === 400) {
+				toast(
+					<div className="space-y-5 pt-3">
+						<div className="text-slate-900">
+							You have reached your account’s limitation. Please upgrade your account
+							to be able to add custom domains.
+						</div>
+						<Button size="xs">
+							<a href="https://admin.dotenx.com/plan" rel="noopener noreferrer">
+								Upgrade plan
+							</a>
+						</Button>
+					</div>,
+					{ closeButton: true, autoClose: false }
+				)
+			} else {
+				toast(e.response.data.message, {
+					type: 'error',
+					autoClose: 2000,
+				})
+			}
+		},
 	})
 	return (
 		<div className="font-medium border-2 rounded-md p-3">
