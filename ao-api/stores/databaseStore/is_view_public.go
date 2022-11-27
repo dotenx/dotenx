@@ -31,7 +31,9 @@ func (ds *databaseStore) IsViewPublic(ctx context.Context, projectTag string, vi
 	}
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		logrus.Println("Error getting database connection:", err)
 		return false, err

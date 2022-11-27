@@ -6,6 +6,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -29,8 +30,18 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
-		if err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 

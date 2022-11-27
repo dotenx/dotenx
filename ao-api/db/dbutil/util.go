@@ -2,7 +2,6 @@ package dbutil
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -23,7 +22,9 @@ The consumer of GetDbInstance function MUST call fn(db.Connection) to close the 
 Usage:
 func usage_example() {
 	db, fn, _ := GetDbInstance("", "")
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err := db.Connection.Ping(); err != nil {
 		panic(err)
 	}
@@ -60,7 +61,7 @@ func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCa
 	err = adminSqlxDb.QueryRowx(getDatabaseUserStmt, accountId, projectName).StructScan(&dbUser)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			err = errors.New("not found")
+			err = utils.ErrUserDatabaseNotFound
 		}
 		return nil, nil, err
 	}
