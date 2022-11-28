@@ -7,6 +7,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -48,8 +49,18 @@ func (dc *DatabaseController) AddTableColumn() gin.HandlerFunc {
 			}
 		}
 
-		if err := dc.Service.AddTableColumn(accountId, dto.ProjectName, dto.TableName, dto.ColumnName, dto.ColumnType); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		err := dc.Service.AddTableColumn(accountId, dto.ProjectName, dto.TableName, dto.ColumnName, dto.ColumnType)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 

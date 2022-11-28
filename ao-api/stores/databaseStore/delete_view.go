@@ -15,7 +15,9 @@ WHERE name = $1;
 
 func (ds *databaseStore) DeleteView(ctx context.Context, accountId string, projectName string, viewName string) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err

@@ -27,6 +27,7 @@ import (
 
 // Errors
 var ErrReachLimitationOfPlan = errors.New("you have reached your limit. please upgrade your plan")
+var ErrUserDatabaseNotFound = errors.New("database not found. this error occurs when your project has not database")
 
 // constants
 const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)

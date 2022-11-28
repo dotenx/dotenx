@@ -46,7 +46,9 @@ func (ds *databaseStore) DeleteRow(ctx context.Context, useRowLevelSecurity bool
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
 
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err

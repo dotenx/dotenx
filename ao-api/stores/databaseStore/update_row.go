@@ -40,7 +40,9 @@ func (ds *databaseStore) UpdateRow(ctx context.Context, useRowLevelSecurity bool
 	log.Println("res:", res)
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err

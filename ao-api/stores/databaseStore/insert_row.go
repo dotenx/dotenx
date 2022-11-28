@@ -76,7 +76,9 @@ func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, table
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
 
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err

@@ -1,11 +1,11 @@
 package database
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -23,10 +23,19 @@ func (dc *DatabaseController) ListTableColumns() gin.HandlerFunc {
 		tableName := c.Param("table_name")
 
 		columns, err := dc.Service.ListTableColumns(accountId, projectName, tableName)
-		if err != nil && err.Error() != "not found" {
-			log.Println("error:", err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			} else if err.Error() != "not found" {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+				return
+			}
 		}
 
 		c.JSON(200, gin.H{"columns": columns})

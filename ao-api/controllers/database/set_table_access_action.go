@@ -31,11 +31,18 @@ func (dc *DatabaseController) SetTableAccess() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
-		if err := dc.Service.SetTableAccess(accountId, projectName, tableName, dto.IsPublic); err != nil {
-			logrus.Error("err:", err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+		err := dc.Service.SetTableAccess(accountId, projectName, tableName, dto.IsPublic)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 
