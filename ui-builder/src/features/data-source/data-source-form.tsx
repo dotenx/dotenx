@@ -303,10 +303,13 @@ export const useAddDataSource = ({
 			closeAllModals()
 			return
 		}
-
 		const evaluatedUrl = evaluateExpression(values.url)
 		mutation.mutate(
-			{ url: inteliToString(evaluatedUrl), body: values.body, method: values.method },
+			{
+				url: inteliToString(evaluatedUrl),
+				body: inteliToString(evaluateExpression(values.body)),
+				method: values.method,
+			},
 			{
 				onSuccess: (data) => {
 					const response = data.data
@@ -346,7 +349,9 @@ export const useAddDataSource = ({
 }
 
 export function evaluateExpression(expression: Expression) {
-	return expression.value.map((part) =>
-		part.kind === ExpressionKind.State ? inteliText('1').value[0] : part
+	return (
+		expression.value?.map((part) =>
+			part.kind === ExpressionKind.State ? inteliText('1').value[0] : part
+		) ?? []
 	)
 }

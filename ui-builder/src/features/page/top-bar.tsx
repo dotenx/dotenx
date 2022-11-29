@@ -150,7 +150,7 @@ export const useFetchPage = () => {
 						.request<AnyJson>({
 							url: inteliToString(evaluateExpression(source.url)),
 							method: source.method,
-							data: source.body,
+							data: inteliToString(evaluateExpression(source.body)),
 						})
 						.then((data) => setPageState(source.stateName, data.data))
 				)

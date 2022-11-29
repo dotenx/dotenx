@@ -156,7 +156,6 @@ function createCard({
 		const title = draft.children?.[0].children?.[0].children?.[0] as TextElement
 		const name = draft.children?.[1] as TextElement
 		const image = draft.children?.[0].children?.[1] as ImageElement
-		console.log(image)
 		title.data.text = inteliState(`${dataSourceName}_rowsItem.${titleFrom}`)
 		name.data.text = inteliState(`${dataSourceName}_rowsItem.${nameFrom}`)
 		image.data.src = inteliState(`${dataSourceName}_rowsItem.${imageFrom}`)
@@ -425,6 +424,7 @@ const defaultData = {
 											'align-self': 'center',
 											'background-size': 'cover',
 											'background-position': 'center',
+											'object-fit': 'cover',
 										},
 									},
 								},
@@ -810,6 +810,7 @@ const card = {
 									'align-self': 'center',
 									'background-size': 'cover',
 									'background-position': 'center',
+									'object-fit': 'cover',
 								},
 							},
 						},
