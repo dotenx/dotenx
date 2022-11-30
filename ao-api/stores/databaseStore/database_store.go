@@ -38,6 +38,10 @@ type DatabaseStore interface {
 	UpsertView(ctx context.Context, accountId string, projectName string, viewName string, tableName string, columns []string, filters ConditionGroup, jsonQuery map[string]interface{}, isPublic bool) error
 	RunViewQuery(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, viewName string, offset int, limit int) (map[string]interface{}, error)
 	IsViewPublic(ctx context.Context, projectTag string, viewName string) (bool, error)
+
+	AddDatabaseJob(ctx context.Context, dbJob models.DatabaseJob) error
+	SetDatabaseJobStatus(ctx context.Context, accountId, projectName, jobType, status string) error
+	GetDatabaseJob(ctx context.Context, accountId string, projectName string) (models.DatabaseJob, error)
 }
 
 type databaseStore struct {
