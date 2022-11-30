@@ -33,6 +33,9 @@ type DatabaseService interface {
 	DeleteView(accountId string, projectName string, viewName string) error
 	RunViewQuery(tpAccountId string, projectTag string, viewName string, page int, size int) (map[string]interface{}, error)
 	IsViewPublic(projectTag string, viewName string) (bool, error)
+
+	RunDatabaseJob(accountId, projectName, job string) error
+	GetDatabaseJob(accountId string, projectName string) (models.DatabaseJob, error)
 }
 
 func NewDatabaseService(store databaseStore.DatabaseStore, userMgService userManagementService.UserManagementService) DatabaseService {

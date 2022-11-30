@@ -364,6 +364,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRows())
 	database.POST("/query/select/project/:project_tag/view/:view_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.RunViewQuery())
+	database.POST("/job/project/:project_name/result", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetDatabaseJob(ProjectService))
+	database.POST("/job/project/:project_name/run", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.RunDatabaseJob(ProjectService))
 	public.POST("/database/query/select/project/:project_tag/table/:table_name", databaseController.SelectRowsPublicly())
 	public.POST("/database/query/select/project/:project_tag/view/:view_name", databaseController.RunViewQueryPublicly())
 	public.GET("/database/query/select/project/:project_tag/table/:table_name/row/:id", databaseController.SelectRowByIdPublicly())
