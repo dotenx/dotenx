@@ -16,6 +16,7 @@ type Input struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -31,7 +32,7 @@ type Input struct {
 	} `json:"data"`
 }
 
-const inputTemplate = `<input type="{{.Data.Type}}" id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
+const inputTemplate = `<input type="{{.Data.Type}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
 
 func convertInput(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

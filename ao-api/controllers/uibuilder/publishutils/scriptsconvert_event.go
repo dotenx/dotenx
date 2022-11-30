@@ -59,10 +59,6 @@ func convertAction(action EventAction) (string, error) {
 				return ""
 			}
 
-			if !valueSource.IsState {
-				return fmt.Sprintf(`"%s"`, valueSource.Value)
-			}
-
 			switch valueSource.Mode {
 			case "page":
 				fallthrough

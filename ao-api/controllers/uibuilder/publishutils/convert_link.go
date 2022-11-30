@@ -18,6 +18,7 @@ type Link struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -31,7 +32,7 @@ type Link struct {
 	} `json:"data"`
 }
 
-const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{range .Href.Value}}{{renderTextSource .}}{{end}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{range .Href.Value}}{{renderTextSource .}}{{end}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertLink(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
@@ -66,6 +67,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 	params := struct {
 		RenderedChildren string
 		Id               string
+		ElementId        string
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -79,6 +81,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               link.Id,
+		ElementId:        link.ElementId,
 		RepeatFrom:       link.RepeatFrom,
 		Events:           link.Events,
 		ClassNames:       link.ClassNames,

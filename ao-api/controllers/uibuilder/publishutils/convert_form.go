@@ -18,6 +18,7 @@ type Form struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -29,7 +30,7 @@ type Form struct {
 	} `json:"data"`
 }
 
-const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
+const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -60,6 +61,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 	params := struct {
 		RenderedChildren string
 		Id               string
+		ElementId        string
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -70,6 +72,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               form.Id,
+		ElementId:        form.ElementId,
 		RepeatFrom:       form.RepeatFrom,
 		Events:           form.Events,
 		DataSourceName:   form.Data.DataSourceName,

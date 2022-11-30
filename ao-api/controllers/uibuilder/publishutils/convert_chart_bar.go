@@ -18,6 +18,7 @@ type ChartBar struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -57,14 +58,14 @@ type ChartBar struct {
 }
 
 const chartTemplate = `
-<canvas id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
+<canvas id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
 `
 
 const barChartEffectTemplate = `
 Alpine.effect(() => {
 	const data = Alpine.store("{{.StoreName}}")?.{{.StoreName}};
 	if (data) {
-		barChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{.Id}}", title: "{{.Title}}",
+		barChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}", title: "{{.Title}}",
 		borderColor: "{{.BorderColor}}", pointBackgroundColor: "{{.PointBackgroundColor}}" })
 	}
 })
@@ -114,6 +115,7 @@ func convertChartBar(component map[string]interface{}, styleStore *StyleStore, f
 		Xlabel               string
 		Ylabel               string
 		Id                   string
+		ElementId            string
 		Title                string
 		BorderColor          string
 		PointBackgroundColor string
@@ -122,6 +124,7 @@ func convertChartBar(component map[string]interface{}, styleStore *StyleStore, f
 		Xlabel:               chart.Data.AxisFrom.X.PropName,
 		Ylabel:               chart.Data.AxisFrom.Y.PropName,
 		Id:                   chart.Id,
+		ElementId:            chart.ElementId,
 		Title:                chart.Data.Options.Plugins.Title.Text,
 		BorderColor:          "rgba(102, 126, 234, 1)", // Todo: get this from the UI
 		PointBackgroundColor: "rgba(102, 126, 234, 1)", // Todo: get this from the UI

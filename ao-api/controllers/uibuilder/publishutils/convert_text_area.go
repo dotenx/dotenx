@@ -16,6 +16,7 @@ type TextArea struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -33,7 +34,7 @@ type TextArea struct {
 	} `json:"data"`
 }
 
-const textAreaTemplate = `<textarea cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
+const textAreaTemplate = `<textarea cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
 
 func convertTextArea(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
