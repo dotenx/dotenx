@@ -16,6 +16,7 @@ type SubmitButton struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -26,7 +27,7 @@ type SubmitButton struct {
 	} `json:"data"`
 }
 
-const submitButtonTemplate = `<button type="submit" id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
+const submitButtonTemplate = `<button type="submit" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
 
 func convertSubmitButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)

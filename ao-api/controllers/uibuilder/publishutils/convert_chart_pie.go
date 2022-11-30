@@ -18,6 +18,7 @@ type ChartPie struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -60,7 +61,7 @@ const pieChartEffectTemplate = `
 Alpine.effect(() => {
 	const data = Alpine.store("{{.StoreName}}")?.{{.StoreName}};
 	if (data) {
-		pieChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{.Id}}", title: "{{.Title}}" })
+		pieChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}", title: "{{.Title}}" })
 	}
 })
 `

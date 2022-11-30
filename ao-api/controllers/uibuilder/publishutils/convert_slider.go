@@ -13,6 +13,7 @@ type Slider struct {
 	Components []interface{} `json:"components"`
 	Events     []Event       `json:"events"`
 	ClassNames []string      `json:"classNames"`
+	ElementId  string        `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -23,7 +24,7 @@ type Slider struct {
 	} `json:"data"`
 }
 
-const sliderTemplate = `<div id="{{.Id}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
+const sliderTemplate = `<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
 {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} 
 {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} 
 >
@@ -69,12 +70,14 @@ func convertSlider(component map[string]interface{}, styleStore *StyleStore, fun
 	params := struct {
 		RenderedChildren []string
 		Id               string
+		ElementId        string
 		Events           []Event
 		ClassNames       []string
 		VisibleAnimation
 	}{
 		RenderedChildren: renderedChildren,
 		Id:               slider.Id,
+		ElementId:        slider.ElementId,
 		Events:           slider.Events,
 		ClassNames:       slider.ClassNames,
 		VisibleAnimation: visibleAnimation,
