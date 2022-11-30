@@ -18,6 +18,7 @@ type ChartLine struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -60,7 +61,7 @@ const lineChartEffectTemplate = `
 Alpine.effect(() => {
 	const data = Alpine.store("{{.StoreName}}")?.{{.StoreName}};
 	if (data) {
-		lineChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{.Id}}", title: "{{.Title}}",
+		lineChart().renderChart({ data, xlabel: "{{.Xlabel}}", ylabel: "{{.Ylabel}}", chartId: "{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}", title: "{{.Title}}",
 		borderColor: "{{.BorderColor}}", pointBackgroundColor: "{{.PointBackgroundColor}}", backgroundColor: "{{.BackgroundColor}}" })
 	}
 })
@@ -110,6 +111,7 @@ func convertChartLine(component map[string]interface{}, styleStore *StyleStore, 
 		Xlabel               string
 		Ylabel               string
 		Id                   string
+		ElementId            string
 		Title                string
 		BorderColor          string
 		PointBackgroundColor string
@@ -119,6 +121,7 @@ func convertChartLine(component map[string]interface{}, styleStore *StyleStore, 
 		Xlabel:               chart.Data.AxisFrom.X.PropName,
 		Ylabel:               chart.Data.AxisFrom.Y.PropName,
 		Id:                   chart.Id,
+		ElementId:            chart.ElementId,
 		Title:                chart.Data.Options.Plugins.Title.Text,
 		BorderColor:          "rgb(53, 162, 235)",       // Todo: get this from the UI
 		PointBackgroundColor: "rgb(53, 162, 235)",       // Todo: get this from the UI

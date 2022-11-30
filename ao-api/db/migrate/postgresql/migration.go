@@ -279,6 +279,14 @@ var migrations = []struct {
 		name: "add-preview-url-field-to-marketplace-items-table",
 		stmt: addPreviewUrlFieldToMarketplaceItemsTable,
 	},
+	{
+		name: "create_database_jobs_table",
+		stmt: createDatabaseJobsTable,
+	},
+	{
+		name: "add-pg-dump-status-field-to-database-jobs-table",
+		stmt: addPgDumpStatusFieldToDatabaseJobsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -789,4 +797,19 @@ UNIQUE (account_id, project_name)
 var addPreviewUrlFieldToMarketplaceItemsTable = `
 ALTER TABLE marketplace_items
 ADD COLUMN IF NOT EXISTS preview_url VARCHAR DEFAULT '';
+`
+
+var createDatabaseJobsTable = `
+CREATE TABLE IF NOT EXISTS database_jobs (
+account_id                   VARCHAR(64) NOT NULL,
+project_name 		         VARCHAR(128) NOT NULL,
+pg_dump_url                  VARCHAR DEFAULT '',
+pg_dump_url_expiration_time  BIGINT DEFAULT 0,
+UNIQUE (account_id, project_name)
+)
+`
+
+var addPgDumpStatusFieldToDatabaseJobsTable = `
+ALTER TABLE database_jobs
+ADD COLUMN IF NOT EXISTS pg_dump_status VARCHAR DEFAULT '';
 `

@@ -28,6 +28,8 @@ import (
 // Errors
 var ErrReachLimitationOfPlan = errors.New("you have reached your limit. please upgrade your plan")
 var ErrUserDatabaseNotFound = errors.New("database not found. this error occurs when your project has not database")
+var ErrDatabaseJobResultAlreadyExists = errors.New("database job result already exists")
+var ErrDatabaseJobIsPending = errors.New("datbase job status is pending")
 
 // constants
 const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)

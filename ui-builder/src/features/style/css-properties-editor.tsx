@@ -4,18 +4,19 @@ import cssProperties from 'known-css-properties'
 import _ from 'lodash'
 import { CSSProperties, useState } from 'react'
 import { TbPlus } from 'react-icons/tb'
+import { camelCaseToKebabCase, kebabCaseToCamelCase } from '../../utils'
 import { CollapseLine } from '../ui/collapse-line'
 import { useEditStyle } from './use-edit-style'
 
 export const normalizedCssProperties = cssProperties.all
-	.map((property) =>
-		property
-			.split('-')
-			.map((part, index) => (index !== 0 ? _.capitalize(part) : part))
-			.join('')
-	)
-	.filter((property) => !property.includes('Epub'))
-	.filter((property) => !property.includes('Webkit'))
+	// .map((property) =>
+	// 	property
+	// 		.split('-')
+	// 		.map((part, index) => (index !== 0 ? _.capitalize(part) : part))
+	// 		.join('')
+	// )
+	.filter((property) => !property.includes('epub'))
+	.filter((property) => !property.includes('webkit'))
 
 export function CssPropertiesEditor() {
 	const { style, editStyle } = useEditStyle()
@@ -29,10 +30,14 @@ export function CssPropertiesEditor() {
 					{styles.map(([property, value]) => (
 						<StyleInput
 							key={property}
-							property={property}
+							property={camelCaseToKebabCase(property)}
 							value={value}
 							onChangeProperty={(property, prev) =>
-								editStyle(property as keyof CSSProperties, value, prev)
+								editStyle(
+									kebabCaseToCamelCase(property) as keyof CSSProperties,
+									value,
+									kebabCaseToCamelCase(prev)
+								)
 							}
 							onChangeValue={(value) =>
 								editStyle(property as keyof CSSProperties, value)
@@ -46,7 +51,7 @@ export function CssPropertiesEditor() {
 							value={''}
 							onDelete={() => setIsAdding(false)}
 							onChangeProperty={(property) => {
-								editStyle(property as keyof CSSProperties, '')
+								editStyle(kebabCaseToCamelCase(property) as keyof CSSProperties, '')
 								setIsAdding(false)
 							}}
 							onChangeValue={() => null}

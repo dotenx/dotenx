@@ -18,6 +18,7 @@ type CollapsibleHeaderCollapsed struct {
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
+	ElementId  string   `json:"elementId"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -27,7 +28,7 @@ type CollapsibleHeaderCollapsed struct {
 	} `json:"data"`
 }
 
-const collapsibleHeaderCollapsedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{.Id}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active == $el.parentElement.id : isOpen[$el.parentElement.id]' @click='toggle ? active = -1 : isOpen[$el.parentElement.id] = false'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const collapsibleHeaderCollapsedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active == $el.parentElement.id : isOpen[$el.parentElement.id]' @click='toggle ? active = -1 : isOpen[$el.parentElement.id] = false'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertCollapsibleHeaderCollapsed(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -60,6 +61,7 @@ func convertCollapsibleHeaderCollapsed(component map[string]interface{}, styleSt
 	params := struct {
 		RenderedChildren string
 		Id               string
+		ElementId        string
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -70,6 +72,7 @@ func convertCollapsibleHeaderCollapsed(component map[string]interface{}, styleSt
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               collapsibleHeaderCollapsed.Id,
+		ElementId:        collapsibleHeaderCollapsed.ElementId,
 		RepeatFrom:       collapsibleHeaderCollapsed.RepeatFrom,
 		Events:           collapsibleHeaderCollapsed.Events,
 		ClassNames:       collapsibleHeaderCollapsed.ClassNames,
