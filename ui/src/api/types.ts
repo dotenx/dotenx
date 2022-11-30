@@ -35,6 +35,9 @@ export enum QueryKey {
 	GetUserGroups = 'get-user-groups',
 	GetUserGroup = 'get-user-group',
 	GetDomains = 'get-domains',
+	GetViews = 'get-views',
+	GetViewDetails = 'get-view-details',
+	GetViewData = 'get-view-data',
 }
 
 export enum TaskExecutionStatus {
@@ -321,7 +324,7 @@ export type CreateProjectRequest = Project
 export type GetProjectsResponse = Project[] | null
 
 export type GetUserManagementDataResponse = {
-	totalRows: number,
+	totalRows: number
 	rows: {
 		account_id: string
 		created_at: string
@@ -345,6 +348,63 @@ export type GetTablesResponse = {
 		name: string
 		is_public: boolean
 	}[]
+}
+
+export type View = {
+	name: string
+	is_public: boolean
+}
+
+export type GetViewsResponse = {
+	views: View[]
+}
+
+export interface GetViewDetailsResponse {
+	name: string
+	query_as_json: {
+		columns: string[]
+		filters: {
+			conjunction: string
+			filterSet: {
+				key: string
+				operator: string
+				value: string
+			}[]
+		}
+		isPublic: boolean
+		projectName: string
+		tableName: string
+		viewName: string
+	}
+	is_public: boolean
+}
+
+export type GetViewDataResponse = {
+	functions: unknown
+	page: number
+	rows: JsonMap[]
+	size: number
+	totalRows: number
+}
+
+export interface CreateViewRequest {
+	projectName: string
+	tableName: string
+	viewName: string
+	columns: string[]
+	isPublic: boolean
+	filters: Filters
+}
+
+export interface Filters {
+	filterSet: FilterSet[]
+	conjunction: string
+}
+
+export interface FilterSet {
+	key: string
+	operator: string
+	value: string
 }
 
 export interface Table {
@@ -377,10 +437,13 @@ export interface RecordsFilters {
 
 export type GetTableRecordsRequest = RecordsFilters
 
-export type EndpointFields = Record<string, {
-	key: string,
-	type: string
-}[]>
+export type EndpointFields = Record<
+	string,
+	{
+		key: string
+		type: string
+	}[]
+>
 
 export type TableRecord = Record<
 	string,
@@ -487,7 +550,7 @@ export type GetUserGroupResponse = Record<string, UserGroup>
 
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 
-interface JsonMap {
+export interface JsonMap {
 	[key: string]: AnyJson
 }
 

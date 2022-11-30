@@ -1,6 +1,6 @@
+import { Switch } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Switch } from '@mantine/core'
 import { Link } from 'react-router-dom'
 import { getTables, QueryKey, setTableAccess } from '../../api'
 import { Modals, useModal } from '../hooks'
@@ -24,28 +24,36 @@ export function TableList({ projectName }: { projectName: string }) {
 	return (
 		<div>
 			<PageTitle title="Tables" helpDetails={helpDetails} />
-			<div className="flex flex-wrap gap-8 mt-4">
-				{tables
-					.filter(
-						(table: { name: string; is_public: boolean }) =>
-							table.name !== 'user_info' && table.name !== 'user_group'
-					)
-					.map((table: { name: string; is_public: boolean }, index: number) => (
-						<TableItem
-							key={index}
-							projectName={projectName}
-							isPublic={table.is_public}
-							name={table.name}
-						/>
-					))}
-
-				<AddTableButton />
-			</div>
+			<List items={tables} projectName={projectName} />
 		</div>
 	)
 }
 
-function TableItem({
+function List({
+	items,
+	projectName,
+}: {
+	items: { name: string; is_public: boolean }[]
+	projectName: string
+}) {
+	return (
+		<div className="flex flex-wrap gap-8 mt-4">
+			{items
+				.filter((table) => table.name !== 'user_info' && table.name !== 'user_group')
+				.map((table, index) => (
+					<ListItem
+						key={index}
+						projectName={projectName}
+						isPublic={table.is_public}
+						name={table.name}
+					/>
+				))}
+			<AddTableButton />
+		</div>
+	)
+}
+
+function ListItem({
 	name,
 	isPublic,
 	projectName,
@@ -75,8 +83,13 @@ function TableItem({
 				}
 				className={`flex mt-3 cursor-pointer mr-2 ${isLoading && 'blur-sm animate-pulse '}`}
 			>
-				<Switch className="mr-2" size="md" color={'pink'} checked={isPublic}></Switch>
-				{isPublic ? 'public' : 'private'}
+				<Switch
+					label={isPublic ? 'public' : 'private'}
+					className="mr-2"
+					size="md"
+					color={'pink'}
+					checked={isPublic}
+				></Switch>
 			</div>
 		</div>
 	)
