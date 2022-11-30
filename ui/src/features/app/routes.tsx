@@ -1,9 +1,11 @@
+import { useViewportSize } from '@mantine/hooks'
 import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { Navigate, Route, Routes as ReactRoutes, useLocation } from 'react-router-dom'
 import { ADMIN_URL, IS_LOCAL } from '../../constants'
 import AutomationPage from '../../pages/automation'
 import AutomationsPage from '../../pages/automations'
+import DomainsPage from '../../pages/domains'
 import ExecutionPage from '../../pages/execution'
 import Files from '../../pages/files'
 import HistoryPage from '../../pages/history'
@@ -18,17 +20,17 @@ import ProvidersPage from '../../pages/providers'
 import TablePage from '../../pages/table'
 import TablesPage from '../../pages/tables'
 import TemplatePage from '../../pages/template'
+import TemplateAutomationsPage from '../../pages/template-automations'
 import TemplatesPage from '../../pages/templates'
 import TriggersPage from '../../pages/triggers'
 import TryOutPage from '../../pages/try-out'
 import UserGroupsPage from '../../pages/user-groups'
-import DomainsPage from '../../pages/domains'
 import UserManagementPage from '../../pages/user-management'
+import { ViewPage } from '../../pages/view'
 import { Layout } from '../ui'
-import { useViewportSize } from '@mantine/hooks'
-import TemplateAutomationsPage from '../../pages/template-automations'
 
 const routes = [
+	{ path: '/builder/projects/:projectName/views/:viewName', element: <ViewPage /> },
 	{ path: '/builder/projects/:projectName/providers/:providerName', element: <ProviderPage /> },
 	{ path: '/builder/projects/:projectName/providers', element: <ProvidersPage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
@@ -89,7 +91,7 @@ export function Routes() {
 	}, [location])
 	if (width < 600) {
 		return (
-			<div className="w-full px-20 text-center pt-10 ">
+			<div className="w-full px-20 pt-10 text-center ">
 				Dotenx is not designed for mobile use, please come back with a bigger screen.
 			</div>
 		)

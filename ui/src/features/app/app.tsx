@@ -1,4 +1,5 @@
 import { createEmotionCache, MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
 import { useEffect } from 'react'
 import ReactModal from 'react-modal'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -45,8 +46,10 @@ export function App() {
 					}}
 					emotionCache={emotionCache}
 				>
-					<Routes />
-					<ToastContainer />
+					<ModalsProvider>
+						<Routes />
+						<ToastContainer />
+					</ModalsProvider>
 				</MantineProvider>
 			</QueryClientProvider>
 		</BrowserRouter>

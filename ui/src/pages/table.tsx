@@ -1,5 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, Button } from '@mantine/core'
+import { openModal } from '@mantine/modals'
 import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -11,6 +12,7 @@ import {
 	API_URL,
 	deleteColumn,
 	deleteRecord,
+	Filters,
 	getColumns,
 	getProject,
 	getTableRecords,
@@ -29,6 +31,7 @@ import {
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
+import { ViewForm } from '../features/views/view-form'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -191,6 +194,8 @@ function QueryTable({
 	const defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' }
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const form = useForm<QueryBuilderValues>({ defaultValues })
+	const modal = useModal()
+
 	return (
 		<QueryBuilder
 			index={0}
@@ -201,12 +206,32 @@ function QueryTable({
 			tableName={tableName}
 		>
 			{(values) => (
-				<Endpoint
-					method="POST"
-					label="Get records"
-					url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
-					code={{ columns: [], filters: values }}
-				/>
+				<>
+					<Endpoint
+						method="POST"
+						label="Get records"
+						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+						code={{ columns: [], filters: values }}
+					/>
+					<Button
+						onClick={() => {
+							modal.close()
+							openModal({
+								title: 'Create view',
+								children: (
+									<ViewForm
+										filters={values as Filters}
+										projectName={projectName}
+										tableName={tableName}
+										columns={query.data?.data.columns ?? []}
+									/>
+								),
+							})
+						}}
+					>
+						Create view from query
+					</Button>
+				</>
 			)}
 		</QueryBuilder>
 	)

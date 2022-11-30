@@ -49,8 +49,16 @@ export const operatorOptions = {
 		{ label: 'contains', value: 'contains' },
 		{ label: 'does not contain', value: 'doesNotContain' },
 	],
-	boolean: [{ label: 'is', value: '=' }, { label: 'is not', value: '!=' }],
-	array: [{ label: '=', value: '=' }, { label: '≠', value: '!=' }, { label: 'has', value: 'has' }, { label: 'has not', value: 'hasNot' }],
+	boolean: [
+		{ label: 'is', value: '=' },
+		{ label: 'is not', value: '!=' },
+	],
+	array: [
+		{ label: '=', value: '=' },
+		{ label: '≠', value: '!=' },
+		{ label: 'has', value: 'has' },
+		{ label: 'has not', value: 'hasNot' },
+	],
 	none: [],
 }
 export const columnTypeKinds = [
@@ -70,5 +78,4 @@ export const columnTypeKinds = [
 		kind: 'array' as const,
 		types: ['text_array', 'yes_no_array', 'num_array', 'float_num_array'],
 	},
-
 ]
