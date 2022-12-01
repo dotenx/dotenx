@@ -1,7 +1,7 @@
-import { Loader } from '@mantine/core'
 import { useQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 import { getViews, QueryKey, View } from '../../api'
+import { Loader } from '../ui'
 import { PageTitle } from '../ui/page-title'
 
 export function ViewList({ projectName }: { projectName: string }) {
