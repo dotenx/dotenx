@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
-import { Loader, Table as MantineTable, TextInput, Title } from '@mantine/core'
+import { Table as MantineTable, TextInput, Title } from '@mantine/core'
 import Fuse from 'fuse.js'
 import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
 import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
-import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
 import { HelpDetails, HelpPopover } from './help-popover'
+import { Loader } from './loader'
 
 interface TableProps<D extends object = Record<string, string>> {
 	title: string
@@ -56,6 +56,8 @@ export function Table<D extends object = Record<string, string>>({
 		data: searched,
 	})
 
+	if (loading) return <Loader />
+
 	return (
 		<div className="flex flex-col gap-10">
 			<div className="flex justify-between ">
@@ -72,12 +74,7 @@ export function Table<D extends object = Record<string, string>>({
 			<div className="flex justify-start bg-red-200">
 				<div className="text-sm -mt-8 font-medium">{subtitle}</div>
 			</div>
-			{loading && (
-				<div className="left-1/2 top-1/3 absolute">
-					<Loader color="red" />
-				</div>
-			)}
-			{!loading && data.length === 0 && (
+			{data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
 					{actionBar}
 					<span className="text-lg">{emptyText}</span>
@@ -85,7 +82,7 @@ export function Table<D extends object = Record<string, string>>({
 				</div>
 			)}
 			{(data.length !== 0 || !emptyText) && (
-				<div className="flex flex-col gap-6">
+				<div className="flex flex-col gap-6 grow">
 					<TextInput
 						icon={<IoSearch className="text-xl" />}
 						value={search}
@@ -93,19 +90,22 @@ export function Table<D extends object = Record<string, string>>({
 						onChange={(e) => setSearch(e.target.value)}
 						className="max-w-xs"
 					/>
-					<div className="overflow-hidden border rounded-md">
+					<div className="max-w-full overflow-auto scrollbar-thin scrollbar-track-rounded-sm scrollbar-corner-rounded-sm scrollbar-thumb-rounded-sm scrollbar-thumb-gray-900 scrollbar-track-gray-100 pb-4">
 						<MantineTable
-							striped
-							verticalSpacing="xl"
-							horizontalSpacing="xl"
+							verticalSpacing={1}
+							horizontalSpacing="xs"
+							highlightOnHover
+							withBorder
+							withColumnBorders
+							fontSize={13}
 							{...getTableProps()}
 						>
-							<thead className="bg-gray-200">
+							<thead className="bg-gray-100">
 								{headerGroups.map((headerGroup) => (
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="text-left last:text-right last:flex last:justify-end first:!justify-start !py-2"
+												className="!font-medium !text-slate-900"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}
@@ -122,7 +122,8 @@ export function Table<D extends object = Record<string, string>>({
 											{row.cells.map((cell) => {
 												return (
 													<td
-														className="last:text-right first:!text-left"
+														className="text-slate-900 text-xs !overflow-hidden !whitespace-nowrap !text-ellipsis max-w-xs"
+														title={cell.value as string}
 														{...cell.getCellProps()}
 													>
 														{cell.render('Cell')}
