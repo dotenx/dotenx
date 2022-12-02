@@ -6,7 +6,7 @@ import {
 	Loader,
 	Text,
 	TextInput,
-	Tooltip
+	Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { closeAllModals, openModal } from '@mantine/modals'
@@ -20,7 +20,7 @@ import {
 	TbPlus,
 	TbSettings,
 	TbTrash,
-	TbWorldUpload
+	TbWorldUpload,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
@@ -30,10 +30,11 @@ import {
 	GlobalStates,
 	publishPage,
 	QueryKey,
-	updatePage
+	updatePage,
 } from '../../api'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
+import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { CustomCode } from './custom-code'
@@ -195,6 +196,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 	})
 	const fonts = useAtomValue(fontsAtom)
 	const customCodes = useAtomValue(customCodesAtom)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 
 	return (
 		<form
@@ -211,6 +213,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 					globals,
 					fonts,
 					customCodes,
+					statesDefaultValues,
 				})
 			)}
 		>
@@ -280,6 +283,7 @@ function SaveButton() {
 	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 
 	const save = () => {
 		savePageMutation.mutate(
@@ -294,6 +298,7 @@ function SaveButton() {
 				globals,
 				fonts,
 				customCodes,
+				statesDefaultValues,
 			},
 			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
 		)

@@ -90,6 +90,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 					onSuccess: source.onSuccess?.map(deserializeAction),
 					url: deserializeExpression(source.url),
 				})),
+				statesDefaultValues: response.data.content.statesDefaultValues,
 			},
 		},
 	}
@@ -106,6 +107,7 @@ export const addPage = ({
 	globals,
 	fonts,
 	customCodes,
+	statesDefaultValues,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -131,6 +133,7 @@ export const addPage = ({
 			globals,
 			fonts,
 			customCodes,
+			statesDefaultValues,
 		},
 	})
 }

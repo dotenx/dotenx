@@ -37,7 +37,7 @@ export function Intelinput({
                 focus-within:border-rose-500 group font-mono"
 			>
 				<div className="flex gap-1 flex-wrap">
-					{expression.value.map((inteliValue, index) => {
+					{expression.value?.map((inteliValue, index) => {
 						switch (inteliValue.kind) {
 							case ExpressionKind.Text:
 								return (
