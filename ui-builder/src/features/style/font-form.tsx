@@ -8,6 +8,7 @@ import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { customCodesAtom, globalStatesAtom } from '../page/actions'
 import { pageParamsAtom, projectTagAtom } from '../page/top-bar'
+import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from './classes-store'
 import { fontsAtom } from './typography-editor'
 
@@ -18,6 +19,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
 	const globals = useAtomValue(globalStatesAtom)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
@@ -37,6 +39,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 				globals,
 				fonts,
 				customCodes,
+				statesDefaultValues,
 				...values,
 			},
 			options

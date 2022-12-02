@@ -105,6 +105,20 @@ export const useGetMutableStates = () => {
 	}))
 }
 
+export const useGetPageModeStates = () => {
+	const elements = useElementsStore((store) => store.elements)
+	return _.uniq(
+		getStateNames(elements)
+			.filter((stateName) => !!stateName)
+			.map((stateName) =>
+				stateName.includes('$store.') ? stateName : `$store.page.${stateName}`
+			)
+	).map((stateName) => ({
+		kind: PropertyKind.Unknown,
+		name: stateName,
+	}))
+}
+
 const findRepeatedParent = (element: Element, elements: Element[]): Element | null => {
 	const parent = findParent(element.id, elements)
 	if (!parent) return null

@@ -23,6 +23,7 @@ import { evaluateExpression } from '../data-source/data-source-form'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
+import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { usePageStateStore } from '../states/page-states-store'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
@@ -129,6 +130,7 @@ export const useFetchPage = () => {
 	const setFonts = useSetAtom(fontsAtom)
 	const setCustomCodes = useSetAtom(customCodesAtom)
 	const setPublishedPage = useSetAtom(publishedUrlAtom)
+	const setStatesDefaultValues = useSetAtom(statesDefaultValuesAtom)
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -144,6 +146,7 @@ export const useFetchPage = () => {
 				setFonts(content.fonts)
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 				setPublishedPage(null)
+				setStatesDefaultValues(content.statesDefaultValues ?? {})
 
 				content.dataSources.map((source) =>
 					axios
@@ -215,6 +218,7 @@ function AdvancedModeButton() {
 	const elements = useElementsStore((state) => state.elements)
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
@@ -230,6 +234,7 @@ function AdvancedModeButton() {
 			globals: [],
 			fonts: {},
 			customCodes: { head: '', footer: '' },
+			statesDefaultValues,
 		})
 	}
 	const handleClick = () => {

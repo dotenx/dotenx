@@ -36,6 +36,7 @@ export type AddPageRequest = {
 	globals: string[]
 	fonts: Record<string, string>
 	customCodes: { head: string; footer: string }
+	statesDefaultValues: Record<string, string>
 }
 
 export type PublishPageRequest = {
@@ -59,6 +60,7 @@ interface PageDetails {
 		pageParams: string[]
 		fonts: Record<string, string>
 		customCodes: { head: string; footer: string }
+		statesDefaultValues: Record<string, string>
 	}
 }
 
