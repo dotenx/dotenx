@@ -8,6 +8,7 @@ import (
 	"text/template"
 )
 
+// Doesn't support bindings
 type CollapsibleHeaderOpened struct {
 	Kind       string        `json:"kind"`
 	Id         string        `json:"id"`

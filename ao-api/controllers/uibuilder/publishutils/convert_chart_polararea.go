@@ -19,6 +19,7 @@ type ChartPolarArea struct {
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -67,6 +68,9 @@ Alpine.effect(() => {
 `
 
 func convertChartPolarArea(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -75,7 +79,7 @@ func convertChartPolarArea(component map[string]interface{}, styleStore *StyleSt
 	var chart ChartPolarArea
 
 	json.Unmarshal(b, &chart)
-	tmpl, err := template.New("chartPolarArea").Parse(chartTemplate)
+	tmpl, err := template.New("chartPolarArea").Funcs(funcMap).Parse(chartTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

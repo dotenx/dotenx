@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+
+	"github.com/sirupsen/logrus"
 )
 
 func NewFunctionStore() FunctionStore {
@@ -44,7 +46,7 @@ func (i *FunctionStore) AddEvents(events []Event) {
 
 }
 
-func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []string) (string, error) {
+func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []string, statesDefaultValues map[string]interface{}) (string, error) {
 
 	i.lock.RLock()
 	defer i.lock.RUnlock()
@@ -92,7 +94,7 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 
 	convertedScripts, err := convertEffects(i.Script)
 	if err != nil {
-		fmt.Println("error: ", err.Error())
+		logrus.Error(err)
 		return "", err
 	}
 	converted.WriteString("\n" + convertedScripts)
@@ -107,6 +109,14 @@ document.addEventListener( 'DOMContentLoaded', function() {
 } );
 `
 	converted.WriteString("\n" + mountSplider) // TODO: mount splider only if there is a slider
+
+	// We do this here because we want to make sure it's added after the functions that declare page and global stores
+	convertedDefaultValues, err := convertStateDefaultValues(statesDefaultValues)
+	if err != nil {
+		logrus.Error(err)
+		return "", err
+	}
+	converted.WriteString("\n" + convertedDefaultValues)
 
 	return converted.String(), nil
 }

@@ -17,6 +17,7 @@ type Input struct {
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -32,9 +33,12 @@ type Input struct {
 	} `json:"data"`
 }
 
-const inputTemplate = `<input type="{{.Data.Type}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
+const inputTemplate = `<input x-show="{{renderBindings .Bindings}}" type="{{.Data.Type}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
 
 func convertInput(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -42,7 +46,7 @@ func convertInput(component map[string]interface{}, styleStore *StyleStore, func
 	}
 	var input Input
 	json.Unmarshal(b, &input)
-	tmpl, err := template.New("input").Parse(inputTemplate)
+	tmpl, err := template.New("input").Funcs(funcMap).Parse(inputTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
