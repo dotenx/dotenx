@@ -48,8 +48,9 @@ func (dc *DatabaseController) GetTablesList(pService projectService.ProjectServi
 		}
 
 		type table struct {
-			Name     string `json:"name"`
-			IsPublic bool   `json:"is_public"`
+			Name          string `json:"name"`
+			IsPublic      bool   `json:"is_public"`
+			IsWritePublic bool   `json:"is_write_public"`
 		}
 		results := make([]table, 0)
 		for _, t := range filteredTables {
@@ -60,9 +61,11 @@ func (dc *DatabaseController) GetTablesList(pService projectService.ProjectServi
 			// 	c.AbortWithStatus(http.StatusInternalServerError)
 			// 	return
 			// }
+			isWritePublic, _ := dc.Service.IsWriteToTablePublic(project.Tag, t)
 			resTable := table{
-				Name:     t,
-				IsPublic: isPublic,
+				Name:          t,
+				IsPublic:      isPublic,
+				IsWritePublic: isWritePublic,
 			}
 			results = append(results, resTable)
 		}

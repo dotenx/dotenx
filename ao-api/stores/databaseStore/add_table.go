@@ -2,6 +2,7 @@ package databaseStore
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -16,10 +17,10 @@ CREATE TABLE IF NOT EXISTS %s (
 `
 
 var addCommentToTable = `
-COMMENT ON TABLE %s IS %s
+COMMENT ON TABLE %s IS '%s';
 `
 
-func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic bool) error {
+func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic, isWritePublic bool) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 
 	if db != nil {
@@ -34,19 +35,36 @@ func (ds *databaseStore) AddTable(ctx context.Context, accountId string, project
 		log.Println("Error creating table:", err)
 		return err
 	}
+
+	commentJson := make(map[string]interface{})
 	if isPublic {
-		_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": true}'"))
-		if err != nil {
-			log.Println("Error creating table:", err)
-			return err
-		}
+		commentJson["isPublic"] = true
 	} else {
-		_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": false}'"))
-		if err != nil {
-			log.Println("Error creating table:", err)
-			return err
-		}
+		commentJson["isPublic"] = false
 	}
+	if isWritePublic {
+		commentJson["isWritePublic"] = true
+	} else {
+		commentJson["isWritePublic"] = false
+	}
+	commentBytes, err := json.Marshal(commentJson)
+	if err != nil {
+		return err
+	}
+
+	// if isPublic {
+	_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, string(commentBytes)))
+	if err != nil {
+		log.Println("Error creating table:", err)
+		return err
+	}
+	// } else {
+	// 	_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": false}'"))
+	// 	if err != nil {
+	// 		log.Println("Error creating table:", err)
+	// 		return err
+	// 	}
+	// }
 	log.Println("Table created:", tableName)
 	return nil
 }

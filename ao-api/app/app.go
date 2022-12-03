@@ -221,7 +221,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// TODO : add sessions middleware to needed endpoints
+	// TODO: add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
@@ -350,6 +350,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
 	database.DELETE("/project/:project_name/table/:table_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteTable())
 	database.PATCH("/project/:project_name/table/:table_name/access", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.SetTableAccess())
+	database.PATCH("/project/:project_name/table/:table_name/write/access", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.SetWriteToTableAccess())
 	database.POST("/view", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.UpsertView())
 	database.POST("/table/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTableColumn())
 	database.DELETE("/project/:project_name/view/:view_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.DeleteView())
@@ -366,6 +367,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.POST("/query/select/project/:project_tag/view/:view_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.RunViewQuery())
 	database.POST("/job/project/:project_name/result", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetDatabaseJob(ProjectService))
 	database.POST("/job/project/:project_name/run", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.RunDatabaseJob(ProjectService))
+	public.POST("/database/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRowPublicly())
 	public.POST("/database/query/select/project/:project_tag/table/:table_name", databaseController.SelectRowsPublicly())
 	public.POST("/database/query/select/project/:project_tag/view/:view_name", databaseController.RunViewQueryPublicly())
 	public.GET("/database/query/select/project/:project_tag/table/:table_name/row/:id", databaseController.SelectRowByIdPublicly())
