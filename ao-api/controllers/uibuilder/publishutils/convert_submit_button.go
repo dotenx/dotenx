@@ -17,6 +17,7 @@ type SubmitButton struct {
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -27,9 +28,12 @@ type SubmitButton struct {
 	} `json:"data"`
 }
 
-const submitButtonTemplate = `<button type="submit" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
+const submitButtonTemplate = `<button x-show="{{renderBindings .Bindings}}" type="submit" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
 
 func convertSubmitButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -37,7 +41,7 @@ func convertSubmitButton(component map[string]interface{}, styleStore *StyleStor
 	}
 	var button SubmitButton
 	json.Unmarshal(b, &button)
-	tmpl, err := template.New("button").Parse(submitButtonTemplate)
+	tmpl, err := template.New("button").Funcs(funcMap).Parse(submitButtonTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

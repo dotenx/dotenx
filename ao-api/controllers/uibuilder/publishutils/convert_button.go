@@ -16,6 +16,7 @@ type Button struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
+	Bindings   Bindings `json:"bindings"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
 	Data       struct {
@@ -28,9 +29,12 @@ type Button struct {
 	} `json:"data"`
 }
 
-const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
+const buttonTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<button x-show="{{renderBindings .Bindings}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +43,7 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 	var button Button
 
 	json.Unmarshal(b, &button)
-	tmpl, err := template.New("button").Parse(buttonTemplate)
+	tmpl, err := template.New("button").Funcs(funcMap).Parse(buttonTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

@@ -26,3 +26,21 @@ type EventAction struct {
 	AnimationName  string      `json:"animationName"`
 	To             string      `json:"to"`
 }
+
+type TextState struct {
+	Kind  string `json:"kind"`
+	Value string `json:"value"`
+}
+
+type Binding struct {
+	FromStateName string `json:"fromStateName"`
+	Condition     string `json:"condition"`
+	Value         struct {
+		Value []TextState `json:"value"`
+	} `json:"value"`
+}
+
+type Bindings struct {
+	Hide Binding `json:"hide"`
+	Show Binding `json:"show"`
+}

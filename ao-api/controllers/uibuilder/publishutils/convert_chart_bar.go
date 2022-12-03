@@ -17,6 +17,7 @@ type ChartBar struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
+	Bindings   Bindings `json:"bindings"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
 	Data       struct {
@@ -58,7 +59,7 @@ type ChartBar struct {
 }
 
 const chartTemplate = `
-<canvas id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
+<canvas x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
 `
 
 const barChartEffectTemplate = `
@@ -72,6 +73,9 @@ Alpine.effect(() => {
 `
 
 func convertChartBar(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -80,7 +84,7 @@ func convertChartBar(component map[string]interface{}, styleStore *StyleStore, f
 	var chart ChartBar
 
 	json.Unmarshal(b, &chart)
-	tmpl, err := template.New("chartBar").Parse(chartTemplate)
+	tmpl, err := template.New("chartBar").Funcs(funcMap).Parse(chartTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

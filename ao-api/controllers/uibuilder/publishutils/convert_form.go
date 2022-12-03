@@ -17,6 +17,7 @@ type Form struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
+	Bindings   Bindings `json:"bindings"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
 	Data       struct {
@@ -30,9 +31,12 @@ type Form struct {
 	} `json:"data"`
 }
 
-const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
+const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form x-show="{{renderBindings .Bindings}}" @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -41,7 +45,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 
 	var form Form
 	json.Unmarshal(b, &form)
-	tmpl, err := template.New("form").Parse(formTemplate)
+	tmpl, err := template.New("form").Funcs(funcMap).Parse(formTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -62,6 +66,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 		RenderedChildren string
 		Id               string
 		ElementId        string
+		Bindings         Bindings
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -73,6 +78,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               form.Id,
 		ElementId:        form.ElementId,
+		Bindings:         form.Bindings,
 		RepeatFrom:       form.RepeatFrom,
 		Events:           form.Events,
 		DataSourceName:   form.Data.DataSourceName,

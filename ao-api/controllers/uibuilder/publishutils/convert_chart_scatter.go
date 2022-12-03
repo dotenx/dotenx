@@ -19,6 +19,7 @@ type ChartScatter struct {
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -68,6 +69,9 @@ Alpine.effect(() => {
 `
 
 func convertChartScatter(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -76,7 +80,7 @@ func convertChartScatter(component map[string]interface{}, styleStore *StyleStor
 	var chart ChartScatter
 
 	json.Unmarshal(b, &chart)
-	tmpl, err := template.New("chartScatter").Parse(chartTemplate)
+	tmpl, err := template.New("chartScatter").Funcs(funcMap).Parse(chartTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
