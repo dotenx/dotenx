@@ -29,9 +29,10 @@ type PipelineProjectDto struct {
 }
 
 type DatabaseTable struct {
-	Name     string     `json:"name"`
-	IsPublic bool       `json:"is_public"`
-	Columns  []PgColumn `json:"columns"`
+	Name          string     `json:"name"`
+	IsPublic      bool       `json:"is_public"`
+	IsWritePublic bool       `json:"is_write_public"`
+	Columns       []PgColumn `json:"columns"`
 }
 
 type PgColumn struct {

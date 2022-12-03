@@ -9,10 +9,12 @@ import (
 )
 
 type DatabaseService interface {
-	AddTable(accountId string, projectName string, tableName string, isPublic bool) error
+	AddTable(accountId string, projectName string, tableName string, isPublic, isWritePublic bool) error
 	DeleteTable(accountId string, projectName string, tableName string) error
 	IsTablePublic(projectTag string, tableName string) (bool, error)
+	IsWriteToTablePublic(projectTag string, tableName string) (bool, error)
 	SetTableAccess(accountId, projectName, tableName string, isPublic bool) error
+	SetWriteToTableAccess(accountId, projectName, tableName string, isWritePublic bool) error
 	AddTableColumn(accountId string, projectName string, tableName string, columnName string, columnType string) error
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(accountId string, projectName string) ([]string, error)

@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (ds *databaseStore) SetTableAccess(ctx context.Context, accountId, projectName, tableName string, isPublic bool) error {
+func (ds *databaseStore) SetWriteToTableAccess(ctx context.Context, accountId, projectName, tableName string, isWritePublic bool) error {
 	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
 
 	if db != nil {
@@ -33,28 +33,20 @@ func (ds *databaseStore) SetTableAccess(ctx context.Context, accountId, projectN
 		logrus.Error(err.Error())
 		return err
 	}
-	if isPublic {
-		commentMap["isPublic"] = true
+	if isWritePublic {
+		commentMap["isWritePublic"] = true
 	} else {
-		commentMap["isPublic"] = false
+		commentMap["isWritePublic"] = false
 	}
 	commentBytes, err := json.Marshal(commentMap)
 	if err != nil {
 		return err
 	}
 
-	// if isPublic {
 	_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, string(commentBytes)))
 	if err != nil {
 		logrus.Error("Error changing table access:", err.Error())
 		return err
 	}
-	// } else {
-	// 	_, err = db.Connection.Exec(fmt.Sprintf(addCommentToTable, tableName, "'{\"isPublic\": false}'"))
-	// 	if err != nil {
-	// 		logrus.Error("Error changing table access:", err.Error())
-	// 		return err
-	// 	}
-	// }
 	return nil
 }

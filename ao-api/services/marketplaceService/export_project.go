@@ -53,10 +53,12 @@ func getTables(accountId, projectName, projectTag string, dbService databaseServ
 			return nil, err
 		}
 		isTablePublic, _ := dbService.IsTablePublic(projectTag, tableName)
+		isWriteToTablePublic, _ := dbService.IsWriteToTablePublic(projectTag, tableName)
 		tables = append(tables, models.DatabaseTable{
-			Name:     tableName,
-			Columns:  columns,
-			IsPublic: isTablePublic,
+			Name:          tableName,
+			Columns:       columns,
+			IsPublic:      isTablePublic,
+			IsWritePublic: isWriteToTablePublic,
 		})
 	}
 	return tables, nil

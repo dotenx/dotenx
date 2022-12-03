@@ -30,7 +30,7 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
-		err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic)
+		err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic, dto.IsWritePublic)
 		if err != nil {
 			logrus.Error(err.Error())
 			if err == utils.ErrUserDatabaseNotFound {
@@ -51,7 +51,8 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 }
 
 type addTableDTO struct {
-	ProjectName string `json:"projectName"`
-	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=2,max=20"`
-	IsPublic    bool   `json:"isPublic"`
+	ProjectName   string `json:"projectName"`
+	TableName     string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=2,max=20"`
+	IsPublic      bool   `json:"isPublic"`
+	IsWritePublic bool   `json:"isWritePublic"`
 }
