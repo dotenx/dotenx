@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-const navMenuTemplate = `<div @resize.window="const width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 640) {isOpen = true}"  :style='{display: isOpen ?"flex":"none" }' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>`
+const navMenuTemplate = `<div @resize.window="const width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 640) {isOpen = true}"  :style='{display: isOpen ?"flex":"none" }' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>`
 
 // Exactly same as box, just a slightly different template
 func convertNavMenu(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
