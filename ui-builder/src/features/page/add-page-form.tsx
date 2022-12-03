@@ -43,6 +43,7 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				globals: [],
 				fonts: {},
 				customCodes: { head: '', footer: '' },
+				statesDefaultValues: {},
 			},
 			{
 				onSuccess: () => navigate(`/projects/${projectName}/${values.pageName}`),

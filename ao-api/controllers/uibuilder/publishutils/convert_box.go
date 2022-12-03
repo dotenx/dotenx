@@ -17,6 +17,7 @@ type Box struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
+	Bindings   Bindings `json:"bindings"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
 	Data       struct {
@@ -29,9 +30,14 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
+
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +45,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 	}
 	var box Box
 	json.Unmarshal(b, &box)
-	tmpl, err := template.New("box").Parse(boxTemplate)
+	tmpl, err := template.New("box").Funcs(funcMap).Parse(boxTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -63,6 +69,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		RenderedChildren string
 		Id               string
 		ElementId        string
+		Bindings         Bindings
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -74,6 +81,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
 		ElementId:        box.ElementId,
+		Bindings:         box.Bindings,
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
@@ -117,4 +125,44 @@ func PullVisibleAnimation(events []Event) (VisibleAnimation, []Event) {
 		}
 	}
 	return visibleAnimation, newEvents
+}
+
+func RenderBindings(bindings Bindings) string {
+	var renderedBindings = strings.Builder{}
+	if bindings.Show.FromStateName != "" {
+		renderedBindings.WriteString(renderBinding(bindings.Show))
+		if bindings.Hide.FromStateName != "" {
+			renderedBindings.WriteString(" || ")
+		}
+	}
+
+	if bindings.Hide.FromStateName != "" {
+		renderedBindings.WriteString(fmt.Sprintf("!%s", renderBinding(bindings.Hide)))
+	}
+	return renderedBindings.String()
+}
+
+func renderBinding(binding Binding) string {
+	renderedValue := renderTextStates(binding.Value.Value)
+	switch binding.Condition {
+	case "equals":
+		return fmt.Sprintf("%s == %s", binding.FromStateName, renderedValue)
+	case "not equals":
+		return fmt.Sprintf("%s != %s", binding.FromStateName, renderedValue)
+	case "contains":
+		return fmt.Sprintf("%s.includes(%s)", binding.FromStateName, renderedValue)
+	case "not contains":
+		return fmt.Sprintf("!%s.includes(%s)", binding.FromStateName, renderedValue)
+	}
+	return ""
+}
+
+func renderTextStates(textState []TextState) string {
+	var renderedTextState = strings.Builder{}
+
+	for _, s := range textState {
+		renderedTextState.WriteString(s.Value)
+	}
+
+	return renderedTextState.String()
 }

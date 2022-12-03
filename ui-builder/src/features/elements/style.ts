@@ -15,6 +15,8 @@ export enum CssSelector {
 	Disabled = 'disabled',
 	Active = 'active',
 	Visited = 'visited',
+	Before = ':before',
+	After = ':after',
 }
 
 export const cssSelectors = [
@@ -24,4 +26,6 @@ export const cssSelectors = [
 	CssSelector.Disabled,
 	CssSelector.Active,
 	CssSelector.Visited,
+	CssSelector.Before,
+	CssSelector.After,
 ]

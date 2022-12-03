@@ -2,6 +2,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { TableForm, TableList } from '../features/database'
 import { Modals } from '../features/hooks'
 import { ContentWrapper, NewModal } from '../features/ui'
+import { ViewList } from '../features/views/view-list'
 
 export default function TablesPage() {
 	const { projectName } = useParams()
@@ -14,6 +15,7 @@ function Tables({ name }: { name: string }) {
 		<>
 			<ContentWrapper>
 				<TableList projectName={name} />
+				<ViewList projectName={name} />
 			</ContentWrapper>
 			<NewModal kind={Modals.NewTable} title="Add a new table">
 				<TableForm projectName={name} />

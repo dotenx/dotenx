@@ -27,7 +27,7 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 		if table.Name == "user_info" || table.Name == "user_group" || table.Name == "security_code" || table.Name == "views" {
 			continue
 		}
-		err := dbService.AddTable(accountId, newProjectName, table.Name, table.IsPublic)
+		err := dbService.AddTable(accountId, newProjectName, table.Name, table.IsPublic, table.IsWritePublic)
 		if err != nil {
 			return err
 		}

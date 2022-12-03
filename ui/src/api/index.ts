@@ -8,6 +8,7 @@ import {
 	CreateTableRequest,
 	CreateTriggerRequest,
 	CreateUserGroupRequest,
+	CreateViewRequest,
 	EndpointFields,
 	Execution,
 	GetAutomationExecutionsResponse,
@@ -38,6 +39,9 @@ import {
 	GetUserGroupResponse,
 	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
+	GetViewDataResponse,
+	GetViewDetailsResponse,
+	GetViewsResponse,
 	Provider,
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
@@ -316,6 +320,35 @@ export function getTables(projectName: string) {
 	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
 }
 
+export function getViews(projectName: string) {
+	return api.get<GetViewsResponse>(`/database/project/${projectName}/view`)
+}
+
+export function getViewDetails({
+	projectName,
+	viewName,
+}: {
+	projectName: string
+	viewName: string
+}) {
+	return api.get<GetViewDetailsResponse>(`/database/project/${projectName}/view/${viewName}`)
+}
+
+export function getViewData({ projectTag, viewName }: { projectTag: string; viewName: string }) {
+	return api.post<GetViewDataResponse>(
+		`/database/query/select/project/${projectTag}/view/${viewName}`,
+		{}
+	)
+}
+
+export function deleteView({ projectName, viewName }: { projectName: string; viewName: string }) {
+	return api.delete<void>(`/database/project/${projectName}/view/${viewName}`)
+}
+
+export function createView(payload: CreateViewRequest) {
+	return api.post<void>('/database/view', payload)
+}
+
 export function createTable(projectName: string, payload: CreateTableRequest) {
 	return api.post<void>('/database/table', { projectName, ...payload })
 }
@@ -356,8 +389,8 @@ export function getTableRecords(
 		payload,
 		{
 			headers: {
-				'page': page,
-				'size': 10
+				page: page,
+				size: 10,
 			},
 		}
 	)
@@ -373,8 +406,8 @@ export function getUserManagementData(projectTag: string, page: number) {
 		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] },
 		{
 			headers: {
-				'page': page,
-				'size': 10
+				page: page,
+				size: 10,
 			},
 		}
 	)

@@ -19,6 +19,7 @@ type Collapsible struct {
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -29,9 +30,12 @@ type Collapsible struct {
 	} `json:"data"`
 }
 
-const collapsibleTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-data="{active: -1, toggle: {{.IsToggle}}, isOpen:{}}">{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const collapsibleTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-data="{active: -1, toggle: {{.IsToggle}}, isOpen:{}}">{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertCollapsible(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +43,7 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 	}
 	var collapsible Collapsible
 	json.Unmarshal(b, &collapsible)
-	tmpl, err := template.New("collapsible").Parse(collapsibleTemplate)
+	tmpl, err := template.New("collapsible").Funcs(funcMap).Parse(collapsibleTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
@@ -63,6 +67,7 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 		RenderedChildren string
 		Id               string
 		ElementId        string
+		Bindings         Bindings
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -75,6 +80,7 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               collapsible.Id,
 		ElementId:        collapsible.ElementId,
+		Bindings:         collapsible.Bindings,
 		RepeatFrom:       collapsible.RepeatFrom,
 		Events:           collapsible.Events,
 		ClassNames:       collapsible.ClassNames,

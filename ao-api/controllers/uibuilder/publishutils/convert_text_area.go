@@ -17,6 +17,7 @@ type TextArea struct {
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -34,9 +35,12 @@ type TextArea struct {
 	} `json:"data"`
 }
 
-const textAreaTemplate = `<textarea cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
+const textAreaTemplate = `<textarea x-show="{{renderBindings .Bindings}}" cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
 
 func convertTextArea(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -44,7 +48,7 @@ func convertTextArea(component map[string]interface{}, styleStore *StyleStore, f
 	}
 	var textArea TextArea
 	json.Unmarshal(b, &textArea)
-	tmpl, err := template.New("textArea").Parse(textAreaTemplate)
+	tmpl, err := template.New("textArea").Funcs(funcMap).Parse(textAreaTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

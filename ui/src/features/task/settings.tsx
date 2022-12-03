@@ -55,7 +55,7 @@ export function TaskSettingsWithIntegration({
 			// setTaskBuilder({ opened: false })
 		}
 	}, [setIsAddingIntegration, setTaskBuilder, setTaskCode, taskForm.taskType])
-	
+
 	return (
 		<div className={clsx('grid h-full', hasSecondPanel && 'grid-cols-2')}>
 			<div className={clsx(hasSecondPanel && 'pr-10')}>

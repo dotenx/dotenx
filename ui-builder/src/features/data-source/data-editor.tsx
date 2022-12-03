@@ -16,6 +16,7 @@ import {
 import { useElementsStore } from '../elements/elements-store'
 import { ElementEvent, EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { StatesDefaultValuesForm } from '../states/default-values-form'
 import { Expression } from '../states/expression'
 import { useGetStates } from '../states/use-get-states'
 import { Intelinput } from '../ui/intelinput'
@@ -120,6 +121,20 @@ export function DataEditor() {
 
 	return (
 		<div>
+			<Button
+				variant="light"
+				fullWidth
+				size="xs"
+				my="xs"
+				onClick={() =>
+					openModal({
+						title: 'States Default Values',
+						children: <StatesDefaultValuesForm />,
+					})
+				}
+			>
+				States Default Values
+			</Button>
 			<Divider label="Events" mb="xs" />
 			<div className="space-y-4">{events}</div>
 			<Button mt="md" leftIcon={<TbPlus />} size="xs" onClick={handleAddEvent}>

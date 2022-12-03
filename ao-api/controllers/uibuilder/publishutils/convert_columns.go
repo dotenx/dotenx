@@ -19,6 +19,7 @@ type Columns struct {
 	Events     []Event  `json:"events"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -34,9 +35,12 @@ type Columns struct {
 	} `json:"data"`
 }
 
-const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -63,6 +67,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		RenderedChildren string
 		Id               string
 		ElementId        string
+		Bindings         Bindings
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -74,6 +79,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               columns.Id,
 		ElementId:        columns.ElementId,
+		Bindings:         columns.Bindings,
 		RepeatFrom:       columns.RepeatFrom,
 		Events:           columns.Events,
 		ClassNames:       columns.ClassNames,
@@ -81,7 +87,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 	}
 
 	// Render the component and its children
-	tmpl, err := template.New("columns").Parse(columnsTemplate)
+	tmpl, err := template.New("columns").Funcs(funcMap).Parse(columnsTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

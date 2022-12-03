@@ -17,6 +17,7 @@ type Select struct {
 	} `json:"repeatFrom"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
+	Bindings   Bindings `json:"bindings"`
 	Data       struct {
 		Style struct {
 			Desktop StyleModes `json:"desktop"`
@@ -37,9 +38,12 @@ type Select struct {
 	} `json:"data"`
 }
 
-const selectTemplate = `<select id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .Data.Multiple}}multiple{{end}} x-data="{ options: {{.Data.Options}} }"  x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}><template x-for="option in options" :key="option"><option x-text="option.label" :value="option.value" :selected="{{if .Data.Multiple}}formData.{{.Data.Name}} === option.value{{else}}formData.{{.Data.Name}}.lastIndexOf(option.value) != -1{{end}}"></option></template></select>`
+const selectTemplate = `<select x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .Data.Multiple}}multiple{{end}} x-data="{ options: {{.Data.Options}} }"  x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}><template x-for="option in options" :key="option"><option x-text="option.label" :value="option.value" :selected="{{if .Data.Multiple}}formData.{{.Data.Name}} === option.value{{else}}formData.{{.Data.Name}}.lastIndexOf(option.value) != -1{{end}}"></option></template></select>`
 
 func convertSelect(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderBindings": RenderBindings,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +52,7 @@ func convertSelect(component map[string]interface{}, styleStore *StyleStore, fun
 	var sel Select
 	json.Unmarshal(b, &sel)
 	// fmt.Printf("%#v\n", sel)
-	tmpl, err := template.New("sel").Parse(selectTemplate)
+	tmpl, err := template.New("sel").Funcs(funcMap).Parse(selectTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

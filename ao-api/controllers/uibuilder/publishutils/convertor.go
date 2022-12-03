@@ -157,7 +157,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 	var globals []string
 	err = json.Unmarshal(b, &globals)
 
-	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals)
+	scripts, err := functionStore.ConvertToHTML(page["dataSources"].([]interface{}), globals, page["statesDefaultValues"].(map[string]interface{}))
 	if err != nil {
 		logrus.Error(err.Error())
 		return "", "", "", err

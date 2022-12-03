@@ -1,7 +1,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, Button } from '@mantine/core'
+import { openModal } from '@mantine/modals'
 import _ from 'lodash'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
@@ -11,6 +12,7 @@ import {
 	API_URL,
 	deleteColumn,
 	deleteRecord,
+	Filters,
 	getColumns,
 	getProject,
 	getTableRecords,
@@ -28,7 +30,8 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
+import { Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
+import { ViewForm } from '../features/views/view-form'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -46,16 +49,12 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const projectTag = projectDetails.data?.data.tag ?? ''
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
-		[QueryKey.GetTableRecords, projectTag, tableName, filters],
+		[QueryKey.GetTableRecords, projectTag, tableName, filters, currentPage],
 		() => getTableRecords(projectTag, tableName, currentPage, filters),
 		{ enabled: !!projectTag }
 	)
 
 	const nPages = Math.ceil((recordsQuery.data?.data?.totalRows as number) / 10)
-
-	useEffect(() => {
-		recordsQuery.refetch()
-	}, [currentPage])
 
 	const records = (recordsQuery.data?.data?.rows || []).map((record) =>
 		_.fromPairs(
@@ -69,7 +68,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					: [key, value]
 			)
 		)
-	) ?? [{}]
+	)
 	const columns = columnsQuery.data?.data.columns ?? []
 	const headers =
 		columns.map((column) => ({
@@ -106,7 +105,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 
 	return (
 		<>
-			<ContentWrapper>
+			<main className="lg:pr-32 pl-24 py-6 lg:pl-52 lg:py-16 space-y-10 grow px-4 max-w-[100vw] flex flex-col">
 				<Table
 					withPagination
 					currentPage={currentPage}
@@ -119,7 +118,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>
-			</ContentWrapper>
+			</main>
 			<NewModal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</NewModal>
@@ -191,6 +190,8 @@ function QueryTable({
 	const defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' }
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const form = useForm<QueryBuilderValues>({ defaultValues })
+	const modal = useModal()
+
 	return (
 		<QueryBuilder
 			index={0}
@@ -201,12 +202,32 @@ function QueryTable({
 			tableName={tableName}
 		>
 			{(values) => (
-				<Endpoint
-					method="POST"
-					label="Get records"
-					url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
-					code={{ columns: [], filters: values }}
-				/>
+				<>
+					<Endpoint
+						method="POST"
+						label="Get records"
+						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+						code={{ columns: [], filters: values }}
+					/>
+					<Button
+						onClick={() => {
+							modal.close()
+							openModal({
+								title: 'Create view',
+								children: (
+									<ViewForm
+										filters={values as Filters}
+										projectName={projectName}
+										tableName={tableName}
+										columns={query.data?.data.columns ?? []}
+									/>
+								),
+							})
+						}}
+					>
+						Create view from query
+					</Button>
+				</>
 			)}
 		</QueryBuilder>
 	)
@@ -291,7 +312,11 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 		<div className="flex items-center gap-2">
 			{name}
 			{showDelete && (
-				<ActionIcon type="button" onClick={() => deleteMutation.mutate()}>
+				<ActionIcon
+					type="button"
+					onClick={() => deleteMutation.mutate()}
+					loading={deleteMutation.isLoading}
+				>
 					<IoTrash />
 				</ActionIcon>
 			)}
@@ -348,7 +373,7 @@ function RecordActions({
 	const modal = useModal()
 
 	return (
-		<div className="flex justify-end gap-1">
+		<div className="flex gap-1">
 			<ActionIcon
 				type="button"
 				onClick={() =>

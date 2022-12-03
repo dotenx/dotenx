@@ -21,45 +21,6 @@ import { useClassesStore } from './classes-store'
 export const selectedClassAtom = atom<string | null>(null)
 export const selectedSelectorAtom = atom<CssSelector>(CssSelector.Default)
 
-function Value({
-	value,
-	className,
-	onRemove,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	classNames,
-	...others
-}: MultiSelectValueProps & { value: string }) {
-	const [selectedClass, setSelectedClass] = useAtom(selectedClassAtom)
-	const isSelected = selectedClass === value
-
-	return (
-		<div
-			{...others}
-			className={clsx(
-				'rounded flex items-center',
-				isSelected ? 'bg-rose-500 text-white' : 'bg-gray-50',
-				className
-			)}
-		>
-			<button
-				className="pl-1.5"
-				onClick={() => {
-					if (selectedClass === value) setSelectedClass(null)
-					else setSelectedClass(value)
-				}}
-			>
-				{value}
-			</button>
-			<CloseButton
-				size="xs"
-				onClick={onRemove}
-				variant="transparent"
-				className={clsx(isSelected && '!text-white')}
-			/>
-		</div>
-	)
-}
-
 export function ClassEditor() {
 	const { addClassName, classNames } = useClassesStore((store) => ({
 		addClassName: store.add,
@@ -125,6 +86,45 @@ export function ClassEditor() {
 				/>
 			</div>
 		</CollapseLine>
+	)
+}
+
+function Value({
+	value,
+	className,
+	onRemove,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	classNames,
+	...others
+}: MultiSelectValueProps & { value: string }) {
+	const [selectedClass, setSelectedClass] = useAtom(selectedClassAtom)
+	const isSelected = selectedClass === value
+
+	return (
+		<div
+			{...others}
+			className={clsx(
+				'rounded flex items-center',
+				isSelected ? 'bg-rose-500 text-white' : 'bg-gray-50',
+				className
+			)}
+		>
+			<button
+				className="pl-1.5"
+				onClick={() => {
+					if (selectedClass === value) setSelectedClass(null)
+					else setSelectedClass(value)
+				}}
+			>
+				{value}
+			</button>
+			<CloseButton
+				size="xs"
+				onClick={onRemove}
+				variant="transparent"
+				className={clsx(isSelected && '!text-white')}
+			/>
+		</div>
 	)
 }
 

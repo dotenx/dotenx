@@ -17,6 +17,7 @@ type Link struct {
 		Iterator string
 	} `json:"repeatFrom"`
 	Events     []Event  `json:"events"`
+	Bindings   Bindings `json:"bindings"`
 	ClassNames []string `json:"classNames"`
 	ElementId  string   `json:"elementId"`
 	Data       struct {
@@ -32,12 +33,13 @@ type Link struct {
 	} `json:"data"`
 }
 
-const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a href="{{range .Href.Value}}{{renderTextSource .}}{{end}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const linkTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<a x-show="{{renderBindings .Bindings}}" href="{{range .Href.Value}}{{renderTextSource .}}{{end}}" {{if .OpenInNewTab}}target="blank"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</a>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertLink(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
 	funcMap := template.FuncMap{
 		"renderTextSource": renderTextSource,
+		"renderBindings":   RenderBindings,
 	}
 
 	b, err := json.Marshal(component)
@@ -68,6 +70,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 		RenderedChildren string
 		Id               string
 		ElementId        string
+		Bindings         Bindings
 		RepeatFrom       struct {
 			Name     string
 			Iterator string
@@ -82,6 +85,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               link.Id,
 		ElementId:        link.ElementId,
+		Bindings:         link.Bindings,
 		RepeatFrom:       link.RepeatFrom,
 		Events:           link.Events,
 		ClassNames:       link.ClassNames,

@@ -28,13 +28,15 @@ export const Divider = ({ title }: { title: string }) => {
 	)
 }
 export const DividerCollapsible = ({
+	closed,
 	title,
 	children,
 }: {
+	closed?: boolean
 	title: string
 	children: React.ReactNode
 }) => {
-	const [opened, setOpened] = useState(true)
+	const [opened, setOpened] = useState(closed ? !closed : true)
 
 	return (
 		<div className="mt-4 mb-2 space-y-4">
