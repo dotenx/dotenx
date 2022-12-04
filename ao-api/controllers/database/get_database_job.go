@@ -59,9 +59,28 @@ func (dc *DatabaseController) GetDatabaseJob(pService projectService.ProjectServ
 
 		switch dto.Job {
 		case "pg_dump":
+			if dbJob.PgDumpStatus == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "not found",
+				})
+				return
+			}
 			if time.Now().Unix() >= dbJob.PgDumpUrlExpirationTime && dbJob.PgDumpStatus == "completed" {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"message": "pg dump url expired",
+				})
+				return
+			}
+		case "csv":
+			if dbJob.CsvStatus == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "not found",
+				})
+				return
+			}
+			if time.Now().Unix() >= dbJob.CsvUrlExpirationTime && dbJob.CsvStatus == "completed" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "csv url expired",
 				})
 				return
 			}

@@ -13,6 +13,12 @@ SET pg_dump_status = $1
 WHERE account_id = $2 AND project_name = $3;
 `
 
+var setCsvJobStatus = `
+UPDATE database_jobs
+SET csv_status = $1
+WHERE account_id = $2 AND project_name = $3;
+`
+
 func (ds *databaseStore) SetDatabaseJobStatus(ctx context.Context, accountId, projectName, jobType, status string) error {
 	var stmt string
 	switch ds.db.Driver {
@@ -24,6 +30,8 @@ func (ds *databaseStore) SetDatabaseJobStatus(ctx context.Context, accountId, pr
 	switch jobType {
 	case "pg_dump":
 		stmt = setPgDumpJobStatus
+	case "csv":
+		stmt = setCsvJobStatus
 	default:
 		return errors.New("invalid job type")
 	}

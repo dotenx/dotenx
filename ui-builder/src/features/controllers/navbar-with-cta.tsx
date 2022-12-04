@@ -29,12 +29,11 @@ export class NavbarWithCTA extends Controller {
 
 function NavbarWithCTAOptions() {
 	const set = useSetElement()
-	const root = useSelectedElement<NavbarElement>()
+	const root = useSelectedElement<NavbarElement>()!
 	const logo = root.children[0].children?.[0] as ImageElement
 	const navMenu = root.children[1] as NavMenuElement
 	const navMenuItems = navMenu.children as LinkElement[]
 	const navCTA = navMenu.children?.[3] as TextElement
-	console.log(navCTA)
 	const linksTabs: DraggableTab[] = navMenuItems
 		.filter((item): item is LinkElement => item instanceof LinkElement)
 		.map((link, index) => {

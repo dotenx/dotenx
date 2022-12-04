@@ -18,9 +18,9 @@ import { usePageStateStore } from './page-states-store'
 import { getStateNames } from './utils'
 
 export const useGetStates = () => {
-	const element = useSelectedElement()!
+	const element = useSelectedElement()
 	const pageStates = usePageStateStore((store) => store.states)
-	const repeatedState = element.repeatFrom?.name
+	const repeatedState = element?.repeatFrom?.name
 		? _.get(pageStates, element.repeatFrom.name.replace('$store.source.', ''))
 		: null
 	const repeatedSample = _.isArray(repeatedState) ? repeatedState[0] : null
@@ -31,7 +31,7 @@ export const useGetStates = () => {
 		dataSources: store.sources,
 		addDataSource: store.add,
 	}))
-	const repeatedParent = findRepeatedParent(element, elements)
+	const repeatedParent = element ? findRepeatedParent(element, elements) : null
 	const repeatedProperties = findPropertyPaths(repeatedSample)
 	let passedProperties: { kind: PropertyKind; name: string }[] = []
 	if (repeatedParent && repeatedParent.repeatFrom?.name) {
@@ -60,7 +60,7 @@ export const useGetStates = () => {
 		kind: PropertyKind.String,
 		name: `$store.url.${param}`,
 	}))
-	const repeatedStates = element.repeatFrom
+	const repeatedStates = element?.repeatFrom
 		? repeatedProperties.map((property) => ({
 				kind: property.kind,
 				name: `${element.repeatFrom?.iterator}${property.path}`,

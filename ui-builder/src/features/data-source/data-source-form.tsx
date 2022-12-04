@@ -74,6 +74,11 @@ export function DataSourceForm({
 			newUrl.value = (initialValues.url as any)?.value ?? []
 			draft.url = newUrl
 		}
+		if (!(initialValues.body instanceof Expression)) {
+			const newBody = new Expression()
+			newBody.value = (initialValues.body as any)?.value ?? []
+			draft.body = newBody
+		}
 	})
 	const form = useForm<Schema>({
 		validate: zodResolver(schema),

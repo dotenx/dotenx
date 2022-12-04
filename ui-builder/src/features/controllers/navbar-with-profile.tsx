@@ -29,12 +29,11 @@ export class NavbarWithProfile extends Controller {
 
 function NavbarWithProfileOptions() {
 	const set = useSetElement()
-	const root = useSelectedElement<NavbarElement>()
+	const root = useSelectedElement<NavbarElement>()!
 	const logo = root.children[0].children?.[0] as ImageElement
 	const navMenu = root.children[1] as NavMenuElement
 	const navMenuItems = navMenu.children as LinkElement[]
 	const navProfile = navMenu.children?.[3] as ImageElement
-	console.log(navProfile)
 	const linksTabs: DraggableTab[] = navMenuItems
 		.filter((item): item is LinkElement => item instanceof LinkElement)
 		.map((link, index) => {

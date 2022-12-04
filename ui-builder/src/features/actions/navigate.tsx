@@ -1,8 +1,9 @@
 import { Button } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import _ from 'lodash'
+import { Expression } from '../states/expression'
 import { useGetStates } from '../states/use-get-states'
-import { InteliState } from '../ui/intelinput'
+import { Intelinput } from '../ui/intelinput'
 import {
 	Action,
 	ActionSettingsRawProps,
@@ -14,7 +15,7 @@ import {
 
 export class NavigateAction extends Action {
 	name = 'Navigate'
-	to = ''
+	to = new Expression()
 	renderSettings(ids: Ids) {
 		return <NavigateSettings ids={ids} />
 	}
@@ -37,7 +38,7 @@ function NavigateSettings({ ids }: { ids: Ids }) {
 }
 
 function NavigateSettingsRaw({ action, onSubmit }: ActionSettingsRawProps<NavigateAction>) {
-	const form = useForm({ initialValues: { to: action?.to } })
+	const form = useForm({ initialValues: { to: action?.to ?? new Expression() } })
 	const states = useGetStates()
 	const handleSubmit = form.onSubmit((values) => {
 		const action = new NavigateAction()
@@ -47,7 +48,7 @@ function NavigateSettingsRaw({ action, onSubmit }: ActionSettingsRawProps<Naviga
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit}>
-			<InteliState
+			<Intelinput
 				label="To"
 				options={states.map((s) => s.name)}
 				{...form.getInputProps('to')}
