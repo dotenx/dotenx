@@ -149,7 +149,7 @@ export class SignUpBasic extends Controller {
 		)
 		const dataSourceName = `signup_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
-		navigateAction.to = '/login.html'
+		navigateAction.to = Expression.fromString('/login.html')
 		addDataSource({
 			id,
 			stateName: dataSourceName,

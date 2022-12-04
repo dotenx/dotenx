@@ -117,7 +117,7 @@ export class SignInBasic extends Controller {
 		const url = inteliText(`https://api.dotenx.com/user/management/project/${projectTag}/login`)
 		const dataSourceName = `signin_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
-		navigateAction.to = '/index.html'
+		navigateAction.to = Expression.fromString('/index.html')
 		const setTokenAction = new SetStateAction()
 		setTokenAction.stateName = {
 			isState: true,

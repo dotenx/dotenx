@@ -28,7 +28,7 @@ export class Navbar extends Controller {
 
 function NavbarOptions() {
 	const set = useSetElement()
-	const root = useSelectedElement<NavbarElement>()
+	const root = useSelectedElement<NavbarElement>()!
 	const logo = root.children[0].children?.[0] as ImageElement
 	const navMenu = root.children[1] as NavMenuElement
 	const navMenuItems = navMenu.children as LinkElement[]
