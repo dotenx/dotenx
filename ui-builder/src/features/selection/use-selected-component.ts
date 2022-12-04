@@ -12,5 +12,5 @@ export const useSelectedElements = () => {
 export function useSelectedElement<T extends Element = Element>() {
 	const selectedElements = useSelectedElements()
 	const selectedElement = selectedElements.length === 1 ? selectedElements[0] : null
-	return selectedElement as T
+	return selectedElement as T | null
 }
