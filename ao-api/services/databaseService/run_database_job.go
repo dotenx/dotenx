@@ -28,6 +28,8 @@ func (ds *databaseService) RunDatabaseJob(accountId, projectName, job string) er
 			ProjectName:             projectName,
 			PgDumpUrl:               "",
 			PgDumpUrlExpirationTime: 0,
+			CsvUrl:                  "",
+			CsvUrlExpirationTime:    0,
 		}
 		err := ds.Store.AddDatabaseJob(noContext, newJob)
 		if err != nil {
@@ -64,6 +66,48 @@ func (ds *databaseService) RunDatabaseJob(accountId, projectName, job string) er
 				ContainerOverrides: []*ecs.ContainerOverride{
 					{
 						Name: aws.String("test1"),
+						Environment: []*ecs.KeyValuePair{
+							{
+								Name:  aws.String("ACCOUNT_ID"),
+								Value: aws.String(accountId),
+							},
+							{
+								Name:  aws.String("PROJECT_NAME"),
+								Value: aws.String(projectName),
+							},
+							{
+								Name:  aws.String("DB_NAME"),
+								Value: aws.String(utils.GetProjectDatabaseName(accountId, projectName)),
+							},
+						},
+					},
+				},
+			},
+		}
+		taskOutput, err := svc.RunTask(&taskInput)
+		if err != nil {
+			return err
+		}
+		logrus.Info(taskOutput.GoString())
+		return nil
+	case "csv":
+		if time.Now().Unix() < dbJob.CsvUrlExpirationTime {
+			return utils.ErrDatabaseJobResultAlreadyExists
+		}
+		if dbJob.CsvStatus == "pending" {
+			return utils.ErrDatabaseJobIsPending
+		}
+		err := ds.Store.SetDatabaseJobStatus(noContext, accountId, projectName, job, "pending")
+		if err != nil {
+			return err
+		}
+		taskInput := ecs.RunTaskInput{
+			Cluster:        aws.String("dotenx"),
+			TaskDefinition: aws.String("dotenx-export-as-csv:1"),
+			Overrides: &ecs.TaskOverride{
+				ContainerOverrides: []*ecs.ContainerOverride{
+					{
+						Name: aws.String("test2"),
 						Environment: []*ecs.KeyValuePair{
 							{
 								Name:  aws.String("ACCOUNT_ID"),
