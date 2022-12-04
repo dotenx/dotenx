@@ -287,6 +287,18 @@ var migrations = []struct {
 		name: "add-pg-dump-status-field-to-database-jobs-table",
 		stmt: addPgDumpStatusFieldToDatabaseJobsTable,
 	},
+	{
+		name: "add-csv-url-field-to-database-jobs-table",
+		stmt: addCsvUrlFieldToDatabaseJobsTable,
+	},
+	{
+		name: "add-csv-url-expiration-time-field-to-database-jobs-table",
+		stmt: addCsvUrlExpirationTimeFieldToDatabaseJobsTable,
+	},
+	{
+		name: "add-csv-status-field-to-database-jobs-table",
+		stmt: addCsvStatusFieldToDatabaseJobsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -812,4 +824,19 @@ UNIQUE (account_id, project_name)
 var addPgDumpStatusFieldToDatabaseJobsTable = `
 ALTER TABLE database_jobs
 ADD COLUMN IF NOT EXISTS pg_dump_status VARCHAR DEFAULT '';
+`
+
+var addCsvUrlFieldToDatabaseJobsTable = `
+ALTER TABLE database_jobs
+ADD COLUMN IF NOT EXISTS csv_url VARCHAR DEFAULT '';
+`
+
+var addCsvUrlExpirationTimeFieldToDatabaseJobsTable = `
+ALTER TABLE database_jobs
+ADD COLUMN IF NOT EXISTS csv_url_expiration_time BIGINT DEFAULT 0;
+`
+
+var addCsvStatusFieldToDatabaseJobsTable = `
+ALTER TABLE database_jobs
+ADD COLUMN IF NOT EXISTS csv_status VARCHAR DEFAULT '';
 `
