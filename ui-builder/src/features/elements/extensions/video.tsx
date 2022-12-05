@@ -13,6 +13,18 @@ export class VideoElement extends Element {
 	data = { src: '', poster: '', controls: true, autoplay: false, loop: false, muted: false }
 
 	render(): ReactNode {
+		if (this.data.src.startsWith('https://www.youtube.com/embed/'))
+			return (
+				<iframe
+					src={this.data.src}
+					title="YouTube video player"
+					frameBorder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					allowFullScreen
+					className={this.generateClasses()}
+				/>
+			)
+
 		return (
 			<video {...this.data} className={this.generateClasses()}>
 				Sorry, your browser doesn&apos;t support embedded videos.

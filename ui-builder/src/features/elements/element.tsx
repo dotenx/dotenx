@@ -26,6 +26,7 @@ export abstract class Element {
 	controller: Controller | null = null
 	data?: Record<string, unknown>
 	elementId?: string
+	hidden?: boolean
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -82,16 +83,16 @@ export interface Binding {
 	fromStateName: string
 	condition?: Condition
 	value?: Expression
+	class?: string
 }
 
 export enum BindingKind {
-	Text = 'text',
 	Hide = 'hide',
 	Show = 'show',
-	Link = 'link',
+	Class = 'class',
 }
 
-export const bindingKinds = [BindingKind.Hide, BindingKind.Show]
+export const bindingKinds = [BindingKind.Hide, BindingKind.Show, BindingKind.Class]
 
 export interface RepeatFrom {
 	name: string

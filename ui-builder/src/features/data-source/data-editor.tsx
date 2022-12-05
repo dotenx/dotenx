@@ -19,6 +19,7 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { StatesDefaultValuesForm } from '../states/default-values-form'
 import { Expression } from '../states/expression'
 import { useGetStates } from '../states/use-get-states'
+import { useClassesStore } from '../style/classes-store'
 import { Intelinput } from '../ui/intelinput'
 import { DataSourceForm } from './data-source-form'
 import { DataSource, PropertyKind, useDataSourceStore } from './data-source-store'
@@ -393,10 +394,41 @@ function BindingInput({
 	removeBinding: () => void
 }) {
 	const states = useGetStates()
+	const classNames = useClassesStore((store) => store.classes)
+	const classNameList = _.keys(classNames)
 
-	return (
-		<div className="space-y-2">
-			<CloseButton size="xs" ml="auto" onClick={removeBinding} />
+	const classBinding =
+		kind === BindingKind.Class ? (
+			<div className="space-y-2">
+				<div className="flex items-center gap-1 w-full">
+					<span>add</span>
+					<Code>{kind}</Code>
+					<Select
+						placeholder="Select class"
+						data={classNameList}
+						value={binding.class}
+						onChange={(value) => onChange({ ...binding, class: value ?? undefined })}
+						size="xs"
+						className="grow"
+					/>
+				</div>
+				<div className="flex items-center gap-1 w-full">
+					<Text color="dimmed" size="xs">
+						if
+					</Text>
+					<Select
+						size="xs"
+						data={stateNames.map((name) => ({
+							label: name.replace('$store.source.', ''),
+							value: name,
+						}))}
+						className="grow"
+						value={binding.fromStateName}
+						onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
+					/>
+				</div>
+			</div>
+		) : (
 			<div className="flex items-center gap-2">
 				<div className="flex items-center w-12 gap-1">
 					<Code>{kind}</Code>
@@ -415,6 +447,12 @@ function BindingInput({
 					onChange={(value) => onChange({ ...binding, fromStateName: value ?? '' })}
 				/>
 			</div>
+		)
+
+	return (
+		<div className="space-y-2">
+			<CloseButton size="xs" ml="auto" onClick={removeBinding} />
+			{classBinding}
 			<Select
 				size="xs"
 				data={CONDITIONS}
