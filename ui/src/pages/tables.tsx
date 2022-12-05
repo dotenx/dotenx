@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { TableForm, TableList } from '../features/database'
+import ExportDatabase from '../features/database/export-database'
 import { Modals } from '../features/hooks'
 import { ContentWrapper, NewModal } from '../features/ui'
 import { ViewList } from '../features/views/view-list'
@@ -14,6 +15,7 @@ function Tables({ name }: { name: string }) {
 	return (
 		<>
 			<ContentWrapper>
+				<ExportDatabase projectName={name} />
 				<TableList projectName={name} />
 				<ViewList projectName={name} />
 			</ContentWrapper>
