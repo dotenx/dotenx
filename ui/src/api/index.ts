@@ -49,6 +49,7 @@ import {
 	TestTaskResponse,
 	TestTriggerRequest,
 	TestTriggerResponse,
+	ExportDatabaseResponse,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
 } from './types'
@@ -352,6 +353,21 @@ export function createView(payload: CreateViewRequest) {
 export function createTable(projectName: string, payload: CreateTableRequest) {
 	return api.post<void>('/database/table', { projectName, ...payload })
 }
+export function exportDatabase(projectName: string, format: string) {
+	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+	return api.post<ExportDatabaseResponse>(`/database/job/project/${projectName}/result`, {
+		job: jobFormat
+	})
+}
+export function runExportDatabase(projectName: string, format: string) {
+	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+
+	return api.post<void>(`/database/job/project/${projectName}/run`, {
+		job: jobFormat
+	})
+}
+
+
 export function uploadFile(projectTag: string, formData: FormData) {
 	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
 		headers: {

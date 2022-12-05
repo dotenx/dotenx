@@ -83,6 +83,18 @@ export interface Integration {
 	access_token: string
 }
 
+export interface ExportDatabaseResponse {
+	db_job: {
+		account_id: string
+		project_name: string
+		pg_dump_url: string
+		pg_dump_status: string,
+		pg_dump_url_expiration_time: number
+		csv_url: string
+		csv_status: string
+		csv_url_expiration_time: number
+	}
+}
 export interface AutomationEventMessage {
 	execution_id: string
 	tasks: {
