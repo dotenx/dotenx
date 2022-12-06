@@ -12,9 +12,9 @@ import { useDisclosure } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
 import { useAtom, useSetAtom } from 'jotai'
 import { useState } from 'react'
-import { TbChevronDown, TbChevronUp, TbGripVertical, TbPackgeExport } from 'react-icons/tb'
+import { TbChevronDown, TbChevronUp, TbEye, TbGripVertical, TbPackgeExport } from 'react-icons/tb'
 import { Element } from '../elements/element'
-import { useElementsStore } from '../elements/elements-store'
+import { useElementsStore, useSetElement } from '../elements/elements-store'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 import { selectedClassAtom } from '../style/class-editor'
 import { ComponentForm } from './component-form'
@@ -102,6 +102,7 @@ function Layer({
 		select: store.select,
 		selectedIds: store.selectedIds,
 	}))
+	const set = useSetElement()
 	const setSelectedClass = useSetAtom(selectedClassAtom)
 	const [opened, disclosure] = useDisclosure(true)
 	const { isSelected } = useIsHighlighted(element.id)
@@ -183,6 +184,15 @@ function Layer({
 				</span>
 				<p className="pl-2 cursor-default">{element.name}</p>
 				<div className="ml-auto opacity-0 group-hover:opacity-100 flex gap-1 items-center">
+					<ActionIcon
+						size="sm"
+						onClick={(event: any) => {
+							event.stopPropagation()
+							set(element, (draft) => (draft.hidden = !element.hidden))
+						}}
+					>
+						<TbEye />
+					</ActionIcon>
 					<ExtractButton element={element} />
 					<div
 						{...listeners}

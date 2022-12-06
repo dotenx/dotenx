@@ -98,10 +98,18 @@ const loginExample = {
 
 function ActionBar({ projectTag }: { projectTag: string }) {
 	const modal = useModal()
-	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const profileQuery = useQuery(
+		[QueryKey.GetProfile, projectTag],
+		() => getProfile({ projectTag }),
+		{ enabled: !!projectTag }
+	)
 	const accountId = profileQuery.data?.data.account_id
 	const profileExample = {
 		account_id: accountId,
+		created_at: '2022-11-25 20:59:13.675894187 +0000 UTC m=+171.884849553',
+		email: 'example.email.com',
+		full_name: 'John Smith',
+		user_group: 'users',
 		tp_account_id: '********-****-****-****-************',
 	}
 	const queryClient = useQueryClient()
@@ -147,7 +155,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 					/>
 					<Endpoint
 						label="Get user profile"
-						url={`${API_URL}/profile`}
+						url={`${API_URL}/profile/project/${projectTag}`}
 						method="GET"
 						code={profileExample}
 						isResponse

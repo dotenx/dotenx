@@ -49,7 +49,10 @@ import { NavbarWithCTA } from './navbar-with-cta'
 import { NavbarWithProfile } from './navbar-with-profile'
 
 export const controllers = [
-	{ title: 'About', items: [AboutLeft, AboutRight] },
+	{
+		title: 'About', items: [AboutLeft,
+			AboutRight]
+	},
 	{
 		title: 'Charts',
 		items: [
@@ -83,7 +86,10 @@ export const controllers = [
 		title: 'Gallery',
 		items: [GalleryBasic, GalleryBasicRounded, GalleryWithTitle, GalleryWithCaptions],
 	},
-	{ title: 'Hero', items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax] },
+	{
+		title: 'Hero', items: [HeroFullWidth, HeroCtaLeft,
+			HeroCtaRight, HeroParallax]
+	},
 	{ title: 'Navbar', items: [Navbar, NavbarWithAuth, NavbarWithCTA, NavbarWithProfile] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },

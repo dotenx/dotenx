@@ -11,6 +11,7 @@ import {
 	CreateViewRequest,
 	EndpointFields,
 	Execution,
+	ExportDatabaseResponse,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
 	GetAutomationsResponse,
@@ -49,7 +50,6 @@ import {
 	TestTaskResponse,
 	TestTriggerRequest,
 	TestTriggerResponse,
-	ExportDatabaseResponse,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
 } from './types'
@@ -356,17 +356,16 @@ export function createTable(projectName: string, payload: CreateTableRequest) {
 export function exportDatabase(projectName: string, format: string) {
 	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
 	return api.post<ExportDatabaseResponse>(`/database/job/project/${projectName}/result`, {
-		job: jobFormat
+		job: jobFormat,
 	})
 }
 export function runExportDatabase(projectName: string, format: string) {
 	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
 
 	return api.post<void>(`/database/job/project/${projectName}/run`, {
-		job: jobFormat
+		job: jobFormat,
 	})
 }
-
 
 export function uploadFile(projectTag: string, formData: FormData) {
 	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
@@ -481,8 +480,8 @@ export function updateRecord(
 	)
 }
 
-export function getProfile() {
-	return api.get<GetProfileResponse>('/profile')
+export function getProfile({ projectTag }: { projectTag: string }) {
+	return api.get<GetProfileResponse>(`/profile/project/${projectTag}`)
 }
 
 export function createUserGroup(projectTag: string, payload: CreateUserGroupRequest) {

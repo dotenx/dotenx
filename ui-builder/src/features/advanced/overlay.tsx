@@ -105,8 +105,9 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			outlineColor: '#fb7185',
 			outlineWidth: isSelected ? 2 : 1,
 			outlineStyle: isHighlighted ? 'solid' : undefined,
+			visibility: element.hidden ? 'hidden' : undefined,
 		}),
-		[isHighlighted, isSelected]
+		[element.hidden, isHighlighted, isSelected]
 	)
 	const backgroundImage = useMemo(
 		() =>
