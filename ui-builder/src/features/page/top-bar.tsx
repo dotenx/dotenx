@@ -85,7 +85,7 @@ function PageScaling() {
 				disabled={scale <= 0.6}
 				variant="default"
 			>
-				<TbZoomOut className="text-sm" />
+				<TbZoomOut className="w-5 h-5" />
 			</Button>
 			<Button
 				onClick={() => setScale((scale) => scale + 0.1)}
@@ -93,7 +93,7 @@ function PageScaling() {
 				disabled={scale >= 1}
 				variant="default"
 			>
-				<TbZoomIn className="text-sm" />
+				<TbZoomIn className="w-5 h-5" />
 			</Button>
 		</Button.Group>
 	)
@@ -203,7 +203,11 @@ function PreviewButton() {
 			offset={10}
 		>
 			<ActionIcon onClick={handleClick}>
-				{isFullscreen ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
+				{isFullscreen ? (
+					<TbArrowsMinimize className="w-5 h-5" />
+				) : (
+					<TbArrowsMaximize className="w-5 h-5" />
+				)}
 			</ActionIcon>
 		</Tooltip>
 	)
@@ -256,7 +260,7 @@ function AdvancedModeButton() {
 	return (
 		<Tooltip withArrow label={<Text size="xs">Advanced mode</Text>} offset={10}>
 			<ActionIcon onClick={handleClick}>
-				<TbAffiliate />
+				<TbAffiliate className="w-5 h-5" />
 			</ActionIcon>
 		</Tooltip>
 	)
@@ -275,10 +279,10 @@ function UndoRedo() {
 	return (
 		<Button.Group>
 			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default">
-				<TbCornerUpLeft className="text-sm" />
+				<TbCornerUpLeft className="w-5 h-5" />
 			</Button>
 			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default">
-				<TbCornerUpRight className="text-sm" />
+				<TbCornerUpRight className="w-5 h-5" />
 			</Button>
 		</Button.Group>
 	)

@@ -13,15 +13,8 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import {
-	TbCheck,
-	TbCode,
-	TbDeviceFloppy,
-	TbPlus,
-	TbSettings,
-	TbTrash,
-	TbWorldUpload,
-} from 'react-icons/tb'
+import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { IoSaveOutline } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
@@ -72,7 +65,7 @@ function PageSettingsButton() {
 				size="xs"
 				variant="default"
 			>
-				<TbSettings className="text-sm" />
+				<TbSettings className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
@@ -263,7 +256,7 @@ function DeletePageButton() {
 				variant="default"
 				disabled={pageName === 'index'}
 			>
-				<TbTrash className="text-sm" />
+				<TbTrash className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
@@ -307,7 +300,7 @@ function SaveButton() {
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button onClick={save} loading={savePageMutation.isLoading} size="xs" variant="default">
-				<TbDeviceFloppy className="text-sm" />
+				<IoSaveOutline className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
@@ -336,7 +329,7 @@ function PublishButton() {
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Publish Page</Text>}>
 			<Button onClick={publish} loading={publishPageMutation.isLoading} size="xs">
-				<TbWorldUpload className="text-sm" />
+				<TbWorldUpload className=" w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)

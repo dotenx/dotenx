@@ -5,6 +5,7 @@ import imageUrl from '../../assets/components/about-left.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
+import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
@@ -12,12 +13,7 @@ import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import {
-	ComponentName,
-	DividerCollapsible,
-	extractUrl,
-	SimpleComponentOptionsProps,
-} from './helpers'
+import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class AboutLeft extends Controller {
@@ -34,6 +30,7 @@ export class AboutLeft extends Controller {
 
 function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 	const wrapper = options.element as BoxElement
+	const heroImage = options.element.children?.[1] as ImageElement
 	const title = options.element.children?.[0].children?.[0] as TextElement
 	const subTitle = options.element.children?.[0].children?.[1] as TextElement
 	const featureLinesWrapper = options.element.children?.[0].children?.[2] as BoxElement
@@ -93,12 +90,12 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 			<ImageDrop
 				onChange={(src) =>
 					options.set(
-						produce(wrapper, (draft) => {
-							draft.style.desktop!.default!.backgroundImage = `url(${src})`
+						produce(heroImage, (draft) => {
+							draft.data.src = Expression.fromString(src)
 						})
 					)
 				}
-				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
+				src={heroImage.data.src.toString()}
 			/>
 			<Intelinput
 				label="Title"
@@ -212,52 +209,68 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			display: 'flex',
+			display: 'grid',
+			gridTemplateColumns: '1fr 1fr ',
 			width: '100%',
-			height: '600px',
+			minHeight: '600px',
 			alignItems: 'center',
-			justifyContent: 'flex-start',
+			justifyContent: 'center',
 			fontFamily: 'Rubik sans-serif',
-			backgroundImage:
-				'url(https://img.freepik.com/free-vector/business-man-working-hard-stock-financial-trade-market-diagram-vector-illustration-flat-design_1150-39773.jpg?w=826&t=st=1666036897~exp=1666037497~hmac=71047e78a189950cf262684b1f76f34a9f41aab3a395001031304c2edd4242a5)',
-			backgroundRepeat: 'no-repeat',
-			backgroundAttachment: 'fixed',
-			backgroundPosition: 'right',
-			backgroundSize: '60% auto',
 			paddingLeft: '10%',
 			paddingRight: '10%',
+			paddingTop: '40px',
+			paddingBottom: '40px',
+		},
+	}
+
+	draft.style.tablet = {
+		default: {
+			height: 'auto',
+			gridTemplateColumns: ' 1fr ',
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			height: '350px',
-			backgroundPosition: 'right 10% bottom 80%', // todo: check why this is not working as expected. Expected right center to work
-			backgroundSize: '60% auto',
 			paddingLeft: '10%',
 			paddingRight: '10%',
 		},
 	}
 }).serialize()
-
+const heroImage = produce(new ImageElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			width: '100%',
+			maxWidth: '600px',
+			height: 'auto',
+		},
+	}
+	draft.data.src = Expression.fromString(
+		'https://files.dotenx.com/68c53d72-a5b6-4be5-b0b4-498bd6b43bfd.png'
+	)
+}).serialize()
 const detailsWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'flex-start',
-			maxWidth: '40%',
+			maxWidth: '50%',
 			lineHeight: '1.6',
 		},
 	}
 	draft.style.tablet = {
 		default: {
+			width: '100%',
+			maxWidth: '100%',
+			textAlign: 'center',
+			justifyContent: 'center',
+			alignItems: 'center',
 			lineHeight: '1.3',
 		},
 	}
 
 	draft.style.mobile = {
 		default: {
-			maxWidth: '50%',
 			lineHeight: '1.2',
 		},
 	}
@@ -288,14 +301,13 @@ const subTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '18px',
-			marginBottom: '30px',
 			color: '#696969',
 		},
 	}
 	draft.style.mobile = {
 		default: {
 			fontSize: '14px',
-			marginBottom: '20px',
+			marginBottom: '10px',
 		},
 	}
 	draft.data.text = inteliText(
@@ -315,7 +327,7 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			marginTop: '0px',
 			marginBottom: '12px',
-			fontSize: '10px',
+			fontSize: '12px',
 		},
 	}
 }).serialize()
@@ -332,7 +344,6 @@ const createFeatureLine = () =>
 				marginRight: '0px',
 			},
 		}
-
 		const icon = produce(new IconElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
@@ -392,26 +403,29 @@ const cta = produce(new LinkElement(), (draft) => {
 			backgroundColor: '#7670f1',
 			border: 'none',
 			padding: '15px',
-			borderRadius: '10px',
+			borderRadius: '15px',
 			marginTop: '10px',
 			width: '180px',
 			height: 'auto',
 			color: 'white',
-			fontSize: '24px',
+			fontSize: '26px',
 			fontWeight: 'bold',
 			textAlign: 'center',
 			textDecoration: 'none',
 			cursor: 'pointer',
 		},
 	}
+	draft.style.tablet = {
+		default: {
+			justifySelf: 'center',
+		},
+	}
 
 	draft.style.mobile = {
 		default: {
-			padding: '10px',
-			borderRadius: '8px',
 			marginTop: '8px',
-			width: '100px',
-			fontSize: '16px',
+			width: '120px',
+			fontSize: '14px',
 			fontWeight: 'bold',
 		},
 	}
@@ -440,5 +454,6 @@ const defaultData = {
 				cta,
 			],
 		},
+		heroImage,
 	],
 }
