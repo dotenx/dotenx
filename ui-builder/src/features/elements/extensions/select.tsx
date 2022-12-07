@@ -1,15 +1,22 @@
-import { Button, CloseButton, Switch, TextInput } from '@mantine/core'
+import { Button, CloseButton, Select, Switch, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbPlus, TbSelect } from 'react-icons/tb'
 import { uuid } from '../../../utils'
+import { useGetStates } from '../../states/use-get-states'
 import { Element } from '../element'
 import { useElementsStore } from '../elements-store'
 
 export class SelectElement extends Element {
 	name = 'Select'
 	icon = (<TbSelect />)
-	data = { options: [] as Option[], defaultValue: '', name: '', required: false }
+	data = {
+		options: [] as Option[],
+		defaultValue: '',
+		name: '',
+		required: false,
+		optionsFromState: null as string | null,
+	}
 
 	render(): ReactNode {
 		return (
@@ -42,6 +49,7 @@ type Option = {
 function SelectOptions({ element }: { element: SelectElement }) {
 	const set = useElementsStore((store) => store.set)
 	const { options, required } = element.data
+	const states = useGetStates()
 
 	const changeOptions = (options: Option[]) => {
 		set(
@@ -115,15 +123,30 @@ function SelectOptions({ element }: { element: SelectElement }) {
 						/>
 					</div>
 				))}
-				<Button
-					leftIcon={<TbPlus />}
-					onClick={() =>
-						changeOptions([...options, { label: '', value: '', key: uuid() }])
-					}
-					size="xs"
-				>
-					Option
-				</Button>
+				<div className="flex gap-2 items-center">
+					<Button
+						leftIcon={<TbPlus />}
+						onClick={() =>
+							changeOptions([...options, { label: '', value: '', key: uuid() }])
+						}
+						size="xs"
+					>
+						Option
+					</Button>
+					<Select
+						size="xs"
+						placeholder="Get options from state"
+						data={states.map((state) => state.name)}
+						value={element.data.optionsFromState}
+						onChange={(value) =>
+							set(
+								produce(element, (draft) => {
+									draft.data.optionsFromState = value
+								})
+							)
+						}
+					/>
+				</div>
 			</form>
 			<TextInput
 				size="xs"
