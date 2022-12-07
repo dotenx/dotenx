@@ -1,8 +1,8 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
+import { Slider } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import { viewportAtom } from '../viewport/viewport-store'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/customer-logo-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
@@ -12,6 +12,7 @@ import { Controller, ElementOptions } from './controller'
 import { inteliText } from '../ui/intelinput'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 import ColorOptions from './basic-components/color-options'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class CustomersLogoGrid extends Controller {
 	name = 'Customers logo grid'
@@ -27,10 +28,9 @@ export class CustomersLogoGrid extends Controller {
 
 function CustomersLogoGridOptions({ options }: SimpleComponentOptionsProps) {
 	const viewport = useAtomValue(viewportAtom)
-	const [selectedTile, setSelectedTile] = useState(0)
 
 	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
-	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
+	const logos = containerDiv.children
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
@@ -45,6 +45,50 @@ function CustomersLogoGridOptions({ options }: SimpleComponentOptionsProps) {
 				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
+
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return logos.map((logo, index) => {
+			return {
+				id: logo.id,
+				content: (
+					<div key={index}>
+						<ImageDrop
+							onChange={(src) => {
+								options.set(
+									produce(logo, (draft) => {
+										draft.style.desktop = {
+											default: {
+												...draft.style.desktop?.default,
+												...{ backgroundImage: `url(${src})` },
+											},
+										}
+									})
+								)
+							}}
+							src={
+								// remove the url() part
+								logo?.style.desktop?.default?.backgroundImage?.trim().length === 5 // This means that the url is empty
+									? ''
+									: logo?.style.desktop?.default?.backgroundImage?.substring(
+											4,
+											(logo?.style.desktop?.default?.backgroundImage?.trim()
+												.length ?? 0) - 1 // Remove the trailing )
+									  ) ?? ''
+							}
+						/>
+					</div>
+				),
+				onTabDelete: () => {
+					options.set(
+						produce(containerDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
+			}
+		})
+	}, [logos])
+
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Customers logo grid" />
@@ -187,76 +231,34 @@ function CustomersLogoGridOptions({ options }: SimpleComponentOptionsProps) {
 			)}
 			<Divider title="Color" />
 			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(containerDiv, (draft) => {
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
+							})
+						)
+					}
+				}}
+				onAddNewTab={() => {
 					options.set(
 						produce(containerDiv, (draft) => {
-							draft.children?.push(deserializeElement(tile.serialize()))
+							draft.children.push(
+								createTile({
+									image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png',
+								})
+							)
 						})
 					)
 				}}
-			>
-				+ Add customer
-			</Button>
-			<Select
-				label="Tiles"
-				placeholder="Select a tile"
-				data={containerDiv.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				tabs={tabsList}
 			/>
-			<ImageDrop
-				onChange={(src) => {
-					options.set(
-						produce(getSelectedTileDiv(), (draft) => {
-							draft.style.desktop = {
-								default: {
-									...draft.style.desktop?.default,
-									...{ backgroundImage: `url(${src})` },
-								},
-							}
-						})
-					)
-				}}
-				src={
-					// remove the url() part
-					getSelectedTileDiv()?.style.desktop?.default?.backgroundImage?.trim().length ===
-					5 // This means that the url is empty
-						? ''
-						: getSelectedTileDiv()?.style.desktop?.default?.backgroundImage?.substring(
-								4,
-								(getSelectedTileDiv()?.style.desktop?.default?.backgroundImage?.trim()
-									.length ?? 0) - 1 // Remove the trailing )
-						  ) ?? ''
-				}
-			/>
-			<Button
-				disabled={containerDiv.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
-			>
-				+ Delete customer
-			</Button>
 		</div>
 	)
 }
