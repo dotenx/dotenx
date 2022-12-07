@@ -239,7 +239,7 @@ deploy ui: &deploy_ui
     - mkdir ${build_dest}
     - tar -xzvf ${environment}_build.tar.gz
     - cd ./${build_dest}
-    - aws s3 sync --delete --acl public-read . s3://${BUCKET}
+    - aws s3 sync --acl public-read . s3://${BUCKET}
     - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/index.html"
   except:
     - schedules
