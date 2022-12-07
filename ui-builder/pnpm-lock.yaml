@@ -32,7 +32,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.45.1
   '@vitejs/plugin-react': ^2.2.0
   autoprefixer: ^10.4.13
-  axios: ^1.2.0
+  axios: ^1.2.1
   chart.js: ^4.0.1
   dnd-core: ^16.0.1
   eslint: ^8.29.0
@@ -40,7 +40,7 @@ specifiers:
   eslint-plugin-react: ^7.31.11
   eslint-plugin-react-hooks: ^4.6.0
   immer: ^9.0.16
-  jotai: ^1.11.0
+  jotai: ^1.11.1
   js-cookie: ^3.0.1
   known-css-properties: ^0.26.0
   lodash: ^4.17.21
@@ -93,7 +93,7 @@ dependencies:
   '@types/lodash': 4.14.191
   '@typescript-eslint/eslint-plugin': 5.45.1_tdm6ms4ntwhlpozn7kjqrhum74
   '@typescript-eslint/parser': 5.45.1_s5ps7njkmjlaqajutnox5ntcla
-  axios: 1.2.0
+  axios: 1.2.1
   chart.js: 4.0.1
   dnd-core: 16.0.1
   eslint: 8.29.0
@@ -101,7 +101,7 @@ dependencies:
   eslint-plugin-react: 7.31.11_eslint@8.29.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.29.0
   immer: 9.0.16
-  jotai: 1.11.0_zavbqmrropwrojvx6ojaa4s7im
+  jotai: 1.11.1_zavbqmrropwrojvx6ojaa4s7im
   js-cookie: 3.0.1
   known-css-properties: 0.26.0
   lodash: 4.17.21
@@ -1444,8 +1444,8 @@ packages:
       postcss-value-parser: 4.2.0
     dev: true
 
-  /axios/1.2.0:
-    resolution: {integrity: sha512-zT7wZyNYu3N5Bu0wuZ6QccIf93Qk1eV8LOewxgjOZFd2DenOs98cJ7+Y6703d0wkaXGY6/nZd4EweJaHz9uzQw==}
+  /axios/1.2.1:
+    resolution: {integrity: sha512-I88cFiGu9ryt/tfVEi4kX2SITsvDddTajXTOFmt2uK1ZVA8LytjtdeyefdQWEf5PU8w+4SSJDoYnggflB5tW4A==}
     dependencies:
       follow-redirects: 1.15.1
       form-data: 4.0.0
@@ -2589,8 +2589,8 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: false
 
-  /jotai/1.11.0_zavbqmrropwrojvx6ojaa4s7im:
-    resolution: {integrity: sha512-8OzJmRxcTZoAOJSz6uTnmofmjAOgNOdAOy26rvyw3OBxt6XIoklNnfUTCm8wgp84SSLJbPZA01VS5O/SUz+QYg==}
+  /jotai/1.11.1_zavbqmrropwrojvx6ojaa4s7im:
+    resolution: {integrity: sha512-pHpaZUdvIpcS12ryMCrwtvmT/IovZAbicfrlll/Rb9394rwhqKoDFsDs0kv4oWtBy/XHHNv7iSZnQFmntiQj+w==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@babel/core': '*'
