@@ -52,7 +52,9 @@ func convertEvent(event Event) (string, error) {
 func convertAction(action EventAction) (string, error) {
 
 	funcMap := template.FuncMap{
-		// The name "title" is what the function will be called in the template text.
+
+		"renderTextStates": renderTextStates,
+
 		"renderValueSource": func(valueSource ValueSource) string {
 
 			if valueSource.Value == "" {
@@ -83,7 +85,7 @@ func convertAction(action EventAction) (string, error) {
 `
 
 	const navigateTemplate = `
-	window.location.href="{{.To}}"
+	window.location.href="{{renderTextStates .To.Value}}"
 	`
 	const toggleStateTemplate = `
 	Alpine.store('{{.StateName.Mode}}').toggle("{{.StateName.Value}}")
