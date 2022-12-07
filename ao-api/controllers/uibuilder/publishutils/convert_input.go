@@ -33,7 +33,7 @@ type Input struct {
 	} `json:"data"`
 }
 
-const inputTemplate = `<input x-show="{{renderBindings .Bindings}}" type="{{.Data.Type}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
+const inputTemplate = `<input {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} type="{{.Data.Type}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}/>`
 
 func convertInput(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{

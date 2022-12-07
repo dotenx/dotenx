@@ -28,7 +28,7 @@ type SubmitButton struct {
 	} `json:"data"`
 }
 
-const submitButtonTemplate = `<button x-show="{{renderBindings .Bindings}}" type="submit" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
+const submitButtonTemplate = `<button {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} type="submit" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.Data.Text}}</button>`
 
 func convertSubmitButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
