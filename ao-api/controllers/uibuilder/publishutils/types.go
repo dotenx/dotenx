@@ -24,7 +24,9 @@ type EventAction struct {
 	Body           string      `json:"body"`
 	Params         string      `json:"params"`
 	AnimationName  string      `json:"animationName"`
-	To             string      `json:"to"`
+	To             struct {
+		Value []TextState `json:"value"`
+	} `json:"to"`
 }
 
 type TextState struct {
