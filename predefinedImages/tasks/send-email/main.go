@@ -1,10 +1,11 @@
-// image: awrmin/sendemail:lambda5
+// image: awrmin/sendemail:lambda6
 package main
 
 import (
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -21,7 +22,9 @@ type Event struct {
 }
 
 type Response struct {
-	Successfull bool `json:"successfull"`
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -32,6 +35,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	singleInput := event.Body
 	sender := singleInput["sender"].(string)
 	target := singleInput["target"].(string)
+	subject := singleInput["subject"].(string)
 	text := singleInput["text"].(string)
 	apiKey := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 	if apiKey == "" {
@@ -39,7 +43,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		resp.Successfull = false
 		// continue
 	}
-	err := SendGridEmail(apiKey, sender, target, text)
+	sendGridResp, err := SendGridEmail(apiKey, sender, target, subject, text)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Printf("sending email to '%s' wasn't successful\n", target)
@@ -64,8 +68,16 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	// 	resp.Successfull = false
 	// 	return resp, err
 	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": sendGridResp,
+	}
 	if resp.Successfull {
-		fmt.Println("All email(s) was send successfully")
+		resp.Status = "completed"
+		fmt.Println("Email was sent successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Email wasn't sent successfully")
 	}
 	return resp, nil
 }
@@ -74,14 +86,12 @@ func main() {
 	lambda.Start(HandleLambdaEvent)
 }
 
-func SendGridEmail(apiKey, sender, target, text string) error {
+func SendGridEmail(apiKey, sender, target, subject, text string) (*rest.Response, error) {
 	from := mail.NewEmail("DoTenX", sender)
-	subject := "ao email"
 	to := mail.NewEmail("for User", target)
 	plainTextContent := text
 	htmlContent := "<strong>" + text + "</strong>"
 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 	client := sendgrid.NewSendClient(apiKey)
-	_, err := client.Send(message)
-	return err
+	return client.Send(message)
 }

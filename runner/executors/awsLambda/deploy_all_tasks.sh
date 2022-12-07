@@ -5,17 +5,17 @@
 # # hojjat12/database-get-records:lambda9
 # # hojjat12/database-update-record:lambda6
 # # hawwwdi/send-discord-message:lambda4
-# # awrmin/dotenx-http-call:lambda5
+# # awrmin/dotenx-http-call:lambda6
 # # hojjat12/facebook-publish-post:lambda4
 # # hojjat12/google-send-email:lambda4
 # # awrmin/create-jira-ticket:lambda5
-# # awrmin/sendemail:lambda5
-# # awrmin/slack-send-message:lambda5
+# # awrmin/sendemail:lambda6
+# # awrmin/slack-send-message:lambda6
 # # hojjat12/starshipit-create-order:lambda3
 # # stripe/stripe-create-customer:lambda5
 # # stripe/stripe-find-customer:lambda5
 # # stripe/stripe-update-customer:lambda5
-# # hojjat12/twitter-send-tweet:lambda4
+# # hojjat12/twitter-send-tweet:lambda5
 # # hojjat12/youtube-upload-file:lambda4
 # # stripe/stripe-create-payment-link:lambda2
 
@@ -66,7 +66,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/dotenx-http-call"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="http-call"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -102,7 +102,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/sendemail"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="send-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -111,7 +111,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/slack-send-message"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="slack-message"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -156,7 +156,7 @@
 
 # export region="us-east-1"
 # export repository_name="hojjat12/twitter-send-tweet"
-# export tag="lambda4"
+# export tag="lambda5"
 # export directory_address="twitter-send-tweet"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')

@@ -1,4 +1,4 @@
-// image: awrmin/dotenx-http-call:lambda5
+// image: awrmin/dotenx-http-call:lambda6
 package main
 
 import (
@@ -46,11 +46,24 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	method := singleInput["method"].(string)
 	url := singleInput["url"].(string)
 	body := fmt.Sprint(singleInput["body"])
+	headersStr := fmt.Sprint(singleInput["headers"])
+	var headersMap map[string]interface{}
+	var headers []Header
+	headersMap, ok := singleInput["headers"].(map[string]interface{})
+	if !ok {
+		json.Unmarshal([]byte(headersStr), &headersMap)
+	}
+	for key, val := range headersMap {
+		headers = append(headers, Header{
+			Key:   key,
+			Value: fmt.Sprint(val),
+		})
+	}
 	var out []byte
 	var err error
 	var statusCode int
 	if body == "" {
-		out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
+		out, err, statusCode = HttpRequest(method, url, nil, headers, 0)
 	} else {
 		var jsonMap map[string]interface{}
 		myMap, ok := singleInput["body"].(map[string]interface{})
@@ -66,7 +79,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			// continue
 		}
 		payload := bytes.NewBuffer(jsonData)
-		out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
+		out, err, statusCode = HttpRequest(method, url, payload, headers, 0)
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
 			resp.Successfull = false
@@ -90,7 +103,10 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	// }
 
 	resp.ReturnValue = map[string]interface{}{
-		"outputs": res,
+		"outputs": map[string]interface{}{
+			"response":    res,
+			"status_code": statusCode,
+		},
 	}
 	if resp.Successfull {
 		resp.Status = "completed"
