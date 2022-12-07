@@ -286,8 +286,17 @@ export const useAddDataSource = ({
 		editSource: store.edit,
 	}))
 	const mutation = useMutation(
-		({ body, method, url }: { url: string; method: HttpMethod; body: unknown }) =>
-			axios.request<AnyJson>({ url, method, data: body })
+		({
+			body,
+			method,
+			url,
+			withCredentials,
+		}: {
+			url: string
+			method: HttpMethod
+			body: unknown
+			withCredentials: boolean
+		}) => axios.request<AnyJson>({ url, method, data: body, withCredentials })
 	)
 	const addDataSource = (values: Schema) => {
 		// This section is particularly used for handling form add request. In this case, we don't want to send an actual request to the server
@@ -314,6 +323,7 @@ export const useAddDataSource = ({
 				url: inteliToString(evaluatedUrl),
 				body: inteliToString(evaluateExpression(values.body)),
 				method: values.method,
+				withCredentials: !!values.isPrivate,
 			},
 			{
 				onSuccess: (data) => {

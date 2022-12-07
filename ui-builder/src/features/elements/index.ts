@@ -28,6 +28,7 @@ import { SubmitElement } from './extensions/submit'
 import { TextElement } from './extensions/text'
 import { TextareaElement } from './extensions/textarea'
 import { VideoElement } from './extensions/video'
+import { YouTubeElement } from './extensions/youtube'
 import './fa-import'
 
 export const ElementSections = [
@@ -44,6 +45,7 @@ export const ElementSections = [
 			StackElement,
 			IconElement,
 			VideoElement,
+			YouTubeElement,
 		],
 	},
 	{
