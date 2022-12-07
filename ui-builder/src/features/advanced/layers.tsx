@@ -12,7 +12,14 @@ import { useDisclosure } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
 import { useAtom, useSetAtom } from 'jotai'
 import { useState } from 'react'
-import { TbChevronDown, TbChevronUp, TbEye, TbGripVertical, TbPackgeExport } from 'react-icons/tb'
+import {
+	TbChevronDown,
+	TbChevronUp,
+	TbEye,
+	TbEyeOff,
+	TbGripVertical,
+	TbPackgeExport,
+} from 'react-icons/tb'
 import { Element } from '../elements/element'
 import { useElementsStore, useSetElement } from '../elements/elements-store'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -134,7 +141,7 @@ function Layer({
 	)
 
 	const childrenLayers = element.children && (
-		<div className="pl-4" hidden={!opened}>
+		<div className="pl-2" hidden={!opened}>
 			<Layers elements={element.children} isParentDragging={isDragging || isParentDragging} />
 		</div>
 	)
@@ -183,22 +190,23 @@ function Layer({
 					{element.icon}
 				</span>
 				<p className="pl-2 cursor-default">{element.name}</p>
-				<div className="ml-auto opacity-0 group-hover:opacity-100 flex gap-1 items-center">
+				<div className="ml-auto flex gap-1 items-center">
 					<ActionIcon
 						size="sm"
+						className={clsx(!element.hidden && 'opacity-0 group-hover:opacity-100')}
 						onClick={(event: any) => {
 							event.stopPropagation()
 							set(element, (draft) => (draft.hidden = !element.hidden))
 						}}
 					>
-						<TbEye />
+						{element.hidden ? <TbEyeOff /> : <TbEye />}
 					</ActionIcon>
 					<ExtractButton element={element} />
 					<div
 						{...listeners}
 						onClick={(event) => event.stopPropagation()}
 						className={clsx(
-							'cursor-grab hover:bg-gray-50 p-1 rounded',
+							'cursor-grab hover:bg-gray-50 p-1 rounded opacity-0 group-hover:opacity-100',
 							isDragging && 'cursor-grabbing'
 						)}
 					>
@@ -215,6 +223,7 @@ function ExtractButton({ element }: { element: Element }) {
 	return (
 		<ActionIcon
 			title="Create custom component"
+			className="opacity-0 group-hover:opacity-100"
 			size="sm"
 			onClick={() =>
 				openModal({

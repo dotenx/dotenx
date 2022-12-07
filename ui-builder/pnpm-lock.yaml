@@ -2,10 +2,10 @@ lockfileVersion: 5.4
 
 specifiers:
   '@babel/core': ^7.20.5
-  '@dnd-kit/core': ^6.0.5
-  '@dnd-kit/modifiers': ^6.0.0
+  '@dnd-kit/core': ^6.0.6
+  '@dnd-kit/modifiers': ^6.0.1
   '@dnd-kit/sortable': ^7.0.1
-  '@dnd-kit/utilities': ^3.2.0
+  '@dnd-kit/utilities': ^3.2.1
   '@emotion/react': ^11.10.5
   '@fortawesome/fontawesome-svg-core': ^6.2.1
   '@fortawesome/free-brands-svg-icons': ^6.2.1
@@ -47,7 +47,7 @@ specifiers:
   monaco-editor: ^0.34.1
   nanoid: ^4.0.0
   postcss: ^8.4.19
-  prettier: ^2.8.0
+  prettier: ^2.8.1
   prop-types: ^15.8.1
   react: ^18.2.0
   react-chartjs-2: ^5.0.1
@@ -70,10 +70,10 @@ specifiers:
 
 dependencies:
   '@babel/core': 7.20.5
-  '@dnd-kit/core': 6.0.5_biqbaboplfbrettd7655fr4n2y
-  '@dnd-kit/modifiers': 6.0.0_vvd3dzag27tc7rclyb2whqqnpe
-  '@dnd-kit/sortable': 7.0.1_vvd3dzag27tc7rclyb2whqqnpe
-  '@dnd-kit/utilities': 3.2.0_react@18.2.0
+  '@dnd-kit/core': 6.0.6_biqbaboplfbrettd7655fr4n2y
+  '@dnd-kit/modifiers': 6.0.1_ighjjj6vulsdnb2lagbd2egmxy
+  '@dnd-kit/sortable': 7.0.1_ighjjj6vulsdnb2lagbd2egmxy
+  '@dnd-kit/utilities': 3.2.1_react@18.2.0
   '@emotion/react': 11.10.5_xl5my4wapvq2ctl7qwehtbgorq
   '@fortawesome/fontawesome-svg-core': 6.2.1
   '@fortawesome/free-brands-svg-icons': 6.2.1
@@ -107,7 +107,7 @@ dependencies:
   lodash: 4.17.21
   monaco-editor: 0.34.1
   nanoid: 4.0.0
-  prettier: 2.8.0
+  prettier: 2.8.1
   prop-types: 15.8.1
   react: 18.2.0
   react-chartjs-2: 5.0.1_mdhqntb7qznawtkbfweh7f2mzm
@@ -454,45 +454,45 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@dnd-kit/core/6.0.5_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-3nL+Zy5cT+1XwsWdlXIvGIFvbuocMyB4NBxTN74DeBaBqeWdH9JsnKwQv7buZQgAHmAH+eIENfS1ginkvW6bCw==}
+  /@dnd-kit/core/6.0.6_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-kHcD80IsYV+NpNl68zX4BEj5ZeReIq2OhjFXlg8MDqQP0tHot1GFwITke1W33pNoXOf55WMRt/O3UzNtwILU8Q==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
       '@dnd-kit/accessibility': 3.0.1_react@18.2.0
-      '@dnd-kit/utilities': 3.2.0_react@18.2.0
+      '@dnd-kit/utilities': 3.2.1_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tslib: 2.4.0
     dev: false
 
-  /@dnd-kit/modifiers/6.0.0_vvd3dzag27tc7rclyb2whqqnpe:
-    resolution: {integrity: sha512-V3+JSo6/BTcgPRHiNUTSKgqVv/doKXg+T4Z0QvKiiXp+uIyJTUtPkQOBRQApUWi3ApBhnoWljyt/3xxY4fTd0Q==}
+  /@dnd-kit/modifiers/6.0.1_ighjjj6vulsdnb2lagbd2egmxy:
+    resolution: {integrity: sha512-rbxcsg3HhzlcMHVHWDuh9LCjpOVAgqbV78wLGI8tziXY3+qcMQ61qVXIvNKQFuhj75dSfD+o+PYZQ/NUk2A23A==}
     peerDependencies:
-      '@dnd-kit/core': ^6.0.0
+      '@dnd-kit/core': ^6.0.6
+      react: '>=16.8.0'
     dependencies:
-      '@dnd-kit/core': 6.0.5_biqbaboplfbrettd7655fr4n2y
-      '@dnd-kit/utilities': 3.2.0_react@18.2.0
+      '@dnd-kit/core': 6.0.6_biqbaboplfbrettd7655fr4n2y
+      '@dnd-kit/utilities': 3.2.1_react@18.2.0
+      react: 18.2.0
       tslib: 2.4.0
-    transitivePeerDependencies:
-      - react
     dev: false
 
-  /@dnd-kit/sortable/7.0.1_vvd3dzag27tc7rclyb2whqqnpe:
+  /@dnd-kit/sortable/7.0.1_ighjjj6vulsdnb2lagbd2egmxy:
     resolution: {integrity: sha512-n77qAzJQtMMywu25sJzhz3gsHnDOUlEjTtnRl8A87rWIhnu32zuP+7zmFjwGgvqfXmRufqiHOSlH7JPC/tnJ8Q==}
     peerDependencies:
       '@dnd-kit/core': ^6.0.4
       react: '>=16.8.0'
     dependencies:
-      '@dnd-kit/core': 6.0.5_biqbaboplfbrettd7655fr4n2y
-      '@dnd-kit/utilities': 3.2.0_react@18.2.0
+      '@dnd-kit/core': 6.0.6_biqbaboplfbrettd7655fr4n2y
+      '@dnd-kit/utilities': 3.2.1_react@18.2.0
       react: 18.2.0
       tslib: 2.4.0
     dev: false
 
-  /@dnd-kit/utilities/3.2.0_react@18.2.0:
-    resolution: {integrity: sha512-h65/pn2IPCCIWwdlR2BMLqRkDxpTEONA+HQW3n765HBijLYGyrnTCLa2YQt8VVjjSQD6EfFlTE6aS2Q/b6nb2g==}
+  /@dnd-kit/utilities/3.2.1_react@18.2.0:
+    resolution: {integrity: sha512-OOXqISfvBw/1REtkSK2N3Fi2EQiLMlWUlqnOK/UpOISqBZPWpE6TqL+jcPtMOkE8TqYGiURvRdPSI9hltNUjEA==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
@@ -3049,8 +3049,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: false
 
-  /prettier/2.8.0:
-    resolution: {integrity: sha512-9Lmg8hTFZKG0Asr/kW9Bp8tJjRVluO8EJQVfY2T7FMw9T5jy4I/Uvx0Rca/XWf50QQ1/SS48+6IJWnrb+2yemA==}
+  /prettier/2.8.1:
+    resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: false
