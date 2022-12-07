@@ -1,4 +1,4 @@
-// image: hojjat12/twitter-send-tweet:lambda4
+// image: hojjat12/twitter-send-tweet:lambda5
 package main
 
 import (
@@ -22,7 +22,9 @@ type Event struct {
 }
 
 type Response struct {
-	Successfull bool `json:"successfull"`
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -36,15 +38,23 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
 	accessTokenSecret := singleInput["INTEGRATION_ACCESS_TOKEN_SECRET"].(string)
 	text := singleInput["text"].(string)
-	err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
+	tweet, err := sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret)
 	if err != nil {
 		fmt.Println(err)
 		resp.Successfull = false
 		// continue
 	}
 	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": tweet,
+	}
 	if resp.Successfull {
-		fmt.Println("All tweet(s) successfully published")
+		resp.Status = "completed"
+		fmt.Println("Tweet successfully published")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Tweet can't publish successfully")
 	}
 	return resp, nil
 }
@@ -65,12 +75,12 @@ func main() {
 }
 
 // send a tweet based on this repo examples: https://github.com/dghubble/go-twitter
-func sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret string) (err error) {
+func sendTweet(text, consumerKey, consumerSecret, accessToken, accessTokenSecret string) (tweet *twitter.Tweet, err error) {
 	config := oauth1.NewConfig(consumerKey, consumerSecret)
 	token := oauth1.NewToken(accessToken, accessTokenSecret)
 	httpClient := config.Client(oauth1.NoContext, token)
 	// Twitter client
 	client := twitter.NewClient(httpClient)
-	_, _, err = client.Statuses.Update(text, nil)
+	tweet, _, err = client.Statuses.Update(text, nil)
 	return
 }
