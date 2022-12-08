@@ -126,12 +126,9 @@ const pageGlobals = `
 document.addEventListener("alpine:init", () => {
 
   Alpine.store('global', {
-    isOpen: Alpine.$persist(true),
-    init() {
-      {{range .Globals}}
-      this['{{.}}'] = Alpine.$persist(null)
-      {{end}}
-    },
+    {{range .Globals}}
+    {{.}}: Alpine.$persist(null),
+    {{end}}
     set(name, value, key) {
       if (!key) {
         this[name] = value;
