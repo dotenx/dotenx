@@ -1,13 +1,22 @@
 import { Divider, Tabs } from '@mantine/core'
+import { atom, useAtom } from 'jotai'
 import { TbComponents, TbLayersDifference } from 'react-icons/tb'
 import { ComponentDragger } from '../marketplace/component-dragger'
 import { DesignSystems } from '../marketplace/design-systems'
 import { ElementDragger } from './element-dragger'
 import { DndLayers } from './layers'
 
+export const sidebarAtom = atom<{ tab: string | null }>({ tab: 'elements' })
+
 export function ElementDraggerAndLayers() {
+	const [sidebar, setSidebar] = useAtom(sidebarAtom)
+
 	return (
-		<Tabs keepMounted={false} defaultValue="elements">
+		<Tabs
+			defaultValue="elements"
+			value={sidebar.tab}
+			onTabChange={(value) => setSidebar({ tab: value })}
+		>
 			<Tabs.List grow>
 				<Tabs.Tab value="elements" icon={<TbComponents size={14} />}>
 					Elements

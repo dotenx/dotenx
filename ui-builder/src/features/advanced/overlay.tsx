@@ -130,6 +130,8 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		() => ({ ...style, ...backgroundImage }),
 		[backgroundImage, style]
 	)
+	const { window } = useContext(FrameContext)
+	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 
 	return (
 		<DraggableNoFocus
@@ -153,6 +155,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 					fullHeight
 					center
 					updateDeps={[element]}
+					targetElement={targetElement}
 				/>
 			)}
 			<DroppablePortal
@@ -165,6 +168,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				halfHeight={!canContain}
 				center={!canContain}
 				updateDeps={[element]}
+				targetElement={targetElement}
 			/>
 			<DroppablePortal
 				referenceElement={referenceElement}
@@ -174,6 +178,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				placement="right"
 				fullHeight
 				updateDeps={[element]}
+				targetElement={targetElement}
 			/>
 			<DroppablePortal
 				referenceElement={referenceElement}
@@ -185,6 +190,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				halfHeight={!canContain}
 				center={!canContain}
 				updateDeps={[element]}
+				targetElement={targetElement}
 			/>
 			<DroppablePortal
 				referenceElement={referenceElement}
@@ -194,6 +200,7 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 				placement="left"
 				fullHeight
 				updateDeps={[element]}
+				targetElement={targetElement}
 			/>
 			<ElementKindWrapper
 				element={element}
