@@ -1,17 +1,8 @@
-import {
-	DndContext,
-	DragEndEvent,
-	DragOverlay,
-	DragStartEvent,
-	useDraggable,
-	useDroppable,
-} from '@dnd-kit/core'
-import { restrictToFirstScrollableAncestor } from '@dnd-kit/modifiers'
-import { ActionIcon, clsx, Portal } from '@mantine/core'
+import { ActionIcon, clsx } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
-import { useAtom, useSetAtom } from 'jotai'
-import { useState } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 import {
 	TbChevronDown,
 	TbChevronUp,
@@ -20,65 +11,24 @@ import {
 	TbGripVertical,
 	TbPackgeExport,
 } from 'react-icons/tb'
+import { Draggable, DraggableMode } from '../dnd/draggable'
+import { DroppableMode } from '../dnd/droppable'
+import { DroppablePortal } from '../dnd/droppable-portal'
 import { Element } from '../elements/element'
 import { useElementsStore, useSetElement } from '../elements/elements-store'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
 import { selectedClassAtom } from '../style/class-editor'
 import { ComponentForm } from './component-form'
+import { sidebarAtom } from './element-dragger-layer'
 import { hoveringAtom } from './overlay'
 
 export function DndLayers() {
-	const { elements, move } = useElementsStore((store) => ({
-		elements: store.elements,
-		move: store.move,
-	}))
-	const [draggedElement, setDraggedElement] = useState<Element | null>(null)
+	const elements = useElementsStore((store) => store.elements)
 
 	if (elements.length === 0)
 		return <p className="text-xs text-center">Add an element to see layers</p>
 
-	const handleDragStart = (event: DragStartEvent) => {
-		setDraggedElement(event.active.data.current as Element)
-	}
-
-	const handleDragEnd = (event: DragEndEvent) => {
-		const droppedOverElement = event.over?.data.current as Element | undefined
-		if (droppedOverElement && draggedElement) {
-			move(draggedElement.id, {
-				id: droppedOverElement.id,
-				mode: droppedOverElement.isContainer() ? 'in' : 'after',
-			})
-		}
-		setDraggedElement(null)
-	}
-
-	return (
-		<DndContext
-			modifiers={[restrictToFirstScrollableAncestor]}
-			onDragStart={handleDragStart}
-			onDragEnd={handleDragEnd}
-		>
-			<Layers elements={elements} isParentDragging={false} />
-			<Portal>
-				<DragOverlay>
-					{draggedElement && <LayerOverlay element={draggedElement} />}
-				</DragOverlay>
-			</Portal>
-		</DndContext>
-	)
-}
-
-function LayerOverlay({ element }: { element: Element }) {
-	return (
-		<div className="rounded pl-[26px] pr-1.5 py-1 bg-gray-50 flex gap-2 shadow-sm items-center text-sm">
-			<div>{element.icon}</div>
-			<div>{element.name}</div>
-
-			<div className="cursor-grab hover:bg-gray-50 p-1 rounded ml-auto">
-				<TbGripVertical />
-			</div>
-		</div>
-	)
+	return <Layers elements={elements} isParentDragging={false} />
 }
 
 function Layers({
@@ -104,66 +54,42 @@ function Layer({
 	element: Element
 	isParentDragging: boolean
 }) {
+	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
 	const [hovering, setHovering] = useAtom(hoveringAtom)
-	const { select, selectedIds } = useSelectionStore((store) => ({
-		select: store.select,
-		selectedIds: store.selectedIds,
-	}))
-	const set = useSetElement()
+	const select = useSelectionStore((store) => store.select)
+	const selectedIds = useSelectionStore((store) => store.selectedIds)
 	const setSelectedClass = useSetAtom(selectedClassAtom)
-	const [opened, disclosure] = useDisclosure(true)
+	const [childrenExpanded, childrenExpandedHandlers] = useDisclosure(true)
 	const { isSelected } = useIsHighlighted(element.id)
-	const { isDragging, attributes, listeners, setNodeRef, transform } = useDraggable({
-		id: `draggable-${element.id}`,
-		data: element,
-	})
-	const disableDrop = isDragging || isParentDragging
-	const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
-		id: `droppable-${element.id}`,
-		disabled: disableDrop,
-		data: element,
-	})
-	const style = transform
-		? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
-		: undefined
+	const isHovered = hovering.elementId === element.id
+	const sidebar = useAtomValue(sidebarAtom)
+	const [delayedRender, setDelayedRender] = useState(false)
 
-	const disclosureButton = element.isContainer() && (
-		<ActionIcon
-			size="xs"
-			className="opacity-0 group-hover:opacity-100"
-			onClick={(event: any) => {
-				event.stopPropagation()
-				disclosure.toggle()
-			}}
-		>
-			{opened ? <TbChevronUp /> : <TbChevronDown />}
-		</ActionIcon>
-	)
+	const handleSelectLayer = (event: React.MouseEvent<HTMLDivElement>) => {
+		if (event.ctrlKey && !isSelected) select([...selectedIds, element.id])
+		else select([element.id])
+		if (!isSelected) setSelectedClass(null)
+		window.frames[0].document.getElementById(element.id)?.scrollIntoView({ behavior: 'smooth' })
+	}
 
 	const childrenLayers = element.children && (
-		<div className="pl-2" hidden={!opened}>
-			<Layers elements={element.children} isParentDragging={isDragging || isParentDragging} />
+		<div className="pl-2" hidden={!childrenExpanded}>
+			<Layers elements={element.children} isParentDragging={isParentDragging} />
 		</div>
 	)
 
-	const setNodeRefs = (element: HTMLElement | null) => {
-		setNodeRef(element)
-		setDroppableNodeRef(element)
-	}
-	const isHovered = hovering.elementId === element.id
+	useEffect(() => {
+		if (sidebar.tab === 'layers') setDelayedRender(true)
+		else setDelayedRender(false)
+	}, [sidebar.tab])
 
 	return (
 		<div
-			ref={setNodeRefs}
-			style={style}
-			{...attributes}
 			id={element.id}
 			className={clsx(
 				'px-1 focus:outline-none',
 				isHovered && 'bg-gray-50',
-				isSelected && 'bg-gray-200 rounded-sm',
-				isDragging && 'opacity-0',
-				isOver && !disableDrop && 'bg-green-50'
+				isSelected && 'bg-gray-100 rounded-sm'
 			)}
 			onMouseOver={(event) => {
 				event.stopPropagation()
@@ -176,46 +102,109 @@ function Layer({
 		>
 			<div
 				className="flex items-center py-1 border-b group"
-				onClick={(event) => {
-					if (event.ctrlKey && !isSelected) select([...selectedIds, element.id])
-					else select([element.id])
-					if (!isSelected) setSelectedClass(null)
-					window.frames[0].document
-						.getElementById(element.id)
-						?.scrollIntoView({ behavior: 'smooth' })
-				}}
+				onClick={handleSelectLayer}
+				ref={setReferenceElement}
 			>
-				{element.hasChildren() && <div>{disclosureButton}</div>}
+				{element.hasChildren() && (
+					<DisclosureButton
+						opened={childrenExpanded}
+						onClick={childrenExpandedHandlers.toggle}
+					/>
+				)}
 				<span className={clsx('pl-1', !element.hasChildren() && 'pl-[22px]')}>
 					{element.icon}
 				</span>
 				<p className="pl-2 cursor-default">{element.name}</p>
 				<div className="ml-auto flex gap-1 items-center">
-					<ActionIcon
-						size="sm"
-						className={clsx(!element.hidden && 'opacity-0 group-hover:opacity-100')}
-						onClick={(event: any) => {
-							event.stopPropagation()
-							set(element, (draft) => (draft.hidden = !element.hidden))
-						}}
-					>
-						{element.hidden ? <TbEyeOff /> : <TbEye />}
-					</ActionIcon>
+					<ToggleVisibilityButton element={element} />
 					<ExtractButton element={element} />
-					<div
-						{...listeners}
-						onClick={(event) => event.stopPropagation()}
-						className={clsx(
-							'cursor-grab hover:bg-gray-50 p-1 rounded opacity-0 group-hover:opacity-100',
-							isDragging && 'cursor-grabbing'
-						)}
-					>
-						<TbGripVertical />
-					</div>
+					<DragHandle elementId={element.id} />
 				</div>
+				{element.isContainer() && (
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertIn, elementId: element.id }}
+						overStyle={{ boxShadow: 'inset 0px 0px 0px 3px #fb7185' }}
+						placement="bottom"
+						fullWidth
+						fullHeight
+						center
+						updateDeps={[element, sidebar.tab, delayedRender]}
+						targetElement={document.body}
+						style={{ zIndex: 100 }}
+					/>
+				)}
+				<DroppablePortal
+					referenceElement={referenceElement}
+					data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
+					style={{ height: '10px', zIndex: 100 }}
+					overStyle={{ boxShadow: 'inset 0px 3px 0px 0px #fb7185' }}
+					placement="top"
+					fullWidth
+					halfHeight={!element.isContainer()}
+					center={!element.isContainer()}
+					updateDeps={[element, element, sidebar.tab, delayedRender]}
+					targetElement={document.body}
+				/>
+				<DroppablePortal
+					referenceElement={referenceElement}
+					data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
+					style={{ height: '10px', zIndex: 100 }}
+					overStyle={{ boxShadow: 'inset 0px -3px 0px 0px #fb7185' }}
+					placement="bottom"
+					fullWidth
+					halfHeight={!element.isContainer()}
+					center={!element.isContainer()}
+					updateDeps={[element, element, sidebar.tab, delayedRender]}
+					targetElement={document.body}
+				/>
 			</div>
 			{childrenLayers}
 		</div>
+	)
+}
+
+function DragHandle({ elementId }: { elementId: string }) {
+	return (
+		<Draggable
+			data={{ mode: DraggableMode.Move, elementId }}
+			onClick={(event) => event.stopPropagation()}
+			className="cursor-grab hover:bg-gray-50 p-1 rounded opacity-0 group-hover:opacity-100"
+		>
+			<TbGripVertical />
+		</Draggable>
+	)
+}
+
+function ToggleVisibilityButton({ element }: { element: Element }) {
+	const set = useSetElement()
+
+	return (
+		<ActionIcon
+			size="sm"
+			className={clsx(!element.hidden && 'opacity-0 group-hover:opacity-100')}
+			onClick={(event: any) => {
+				event.stopPropagation()
+				set(element, (draft) => (draft.hidden = !element.hidden))
+			}}
+		>
+			{element.hidden ? <TbEyeOff /> : <TbEye />}
+		</ActionIcon>
+	)
+}
+
+function DisclosureButton({ onClick, opened }: { onClick: () => void; opened: boolean }) {
+	return (
+		<ActionIcon
+			size="xs"
+			className="opacity-0 group-hover:opacity-100"
+			onClick={(event: any) => {
+				event.stopPropagation()
+				onClick()
+			}}
+		>
+			{opened ? <TbChevronUp /> : <TbChevronDown />}
+		</ActionIcon>
 	)
 }
 

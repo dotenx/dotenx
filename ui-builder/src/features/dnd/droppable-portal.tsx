@@ -1,13 +1,25 @@
 import { useDidUpdate } from '@mantine/hooks'
 import { ModifierPhases, Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
-import { CSSProperties, useContext, useMemo, useState } from 'react'
+import { CSSProperties, HTMLAttributes, useMemo, useState } from 'react'
 import ReactDOM from 'react-dom'
-import { FrameContext } from 'react-frame-component'
 import { Modifier, usePopper } from 'react-popper'
-import { ROOT_ID } from '../frame/canvas'
 import { isDraggingAtom } from './draggable'
 import { Droppable, DroppableData } from './droppable'
+
+interface DroppablePortalProps extends HTMLAttributes<HTMLDivElement> {
+	referenceElement: HTMLDivElement | null
+	data: DroppableData
+	placement: Placement
+	fullWidth?: boolean
+	fullHeight?: boolean
+	halfHeight?: boolean
+	halfWidth?: boolean
+	center?: boolean
+	updateDeps: unknown[]
+	overStyle?: CSSProperties
+	targetElement: Element
+}
 
 export function DroppablePortal({
 	referenceElement,
@@ -21,20 +33,9 @@ export function DroppablePortal({
 	overStyle,
 	halfHeight,
 	halfWidth,
-}: {
-	referenceElement: HTMLDivElement | null
-	data: DroppableData
-	style?: CSSProperties
-	placement: Placement
-	fullWidth?: boolean
-	fullHeight?: boolean
-	halfHeight?: boolean
-	halfWidth?: boolean
-	center?: boolean
-	updateDeps: unknown[]
-	overStyle?: CSSProperties
-}) {
-	const { window } = useContext(FrameContext)
+	targetElement,
+	...rest
+}: DroppablePortalProps) {
 	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
 	const modifiers = useMemo<Partial<Modifier<string, object>>[]>(
 		() => [
@@ -57,7 +58,6 @@ export function DroppablePortal({
 		placement,
 		modifiers,
 	})
-	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 	const dragging = useAtomValue(isDraggingAtom)
 
 	useDidUpdate(() => {
@@ -72,6 +72,7 @@ export function DroppablePortal({
 			style={{ ...styles.popper, ...style }}
 			data={data}
 			overStyle={overStyle}
+			{...rest}
 			{...attributes.popper}
 		/>,
 		targetElement

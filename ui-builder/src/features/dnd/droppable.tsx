@@ -1,20 +1,17 @@
-import { CSSProperties, forwardRef, ReactNode } from 'react'
+import { CSSProperties, forwardRef, HTMLAttributes } from 'react'
 import { useDrop } from 'react-dnd'
 import { regenElement } from '../clipboard/copy-paste'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
 import { DraggableData, DraggableKinds, DraggableMode } from './draggable'
 
-interface DroppableProps {
-	children?: ReactNode
-	onClick?: () => void
+interface DroppableProps extends HTMLAttributes<HTMLDivElement> {
 	data: DroppableData
-	style?: CSSProperties
 	overStyle?: CSSProperties
 }
 
 export const Droppable = forwardRef<HTMLDivElement, DroppableProps>(
-	({ children, onClick, data, style, overStyle = {} }, ref) => {
+	({ children, data, style, overStyle = {}, ...rest }, ref) => {
 		const { add, move } = useElementsStore((store) => ({ add: store.add, move: store.move }))
 		const select = useSelectionStore((store) => store.select)
 
@@ -93,11 +90,7 @@ export const Droppable = forwardRef<HTMLDivElement, DroppableProps>(
 		}
 
 		return (
-			<div
-				ref={handleRef}
-				style={{ ...style, ...(isOver ? overStyle : {}) }}
-				onClick={onClick}
-			>
+			<div ref={handleRef} style={{ ...style, ...(isOver ? overStyle : {}) }} {...rest}>
 				{children}
 			</div>
 		)
