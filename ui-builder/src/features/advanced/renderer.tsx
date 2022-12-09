@@ -16,11 +16,13 @@ export function RenderElements({
 	states,
 	overlay,
 	isDirectRootChildren,
+	parentHidden,
 }: {
 	elements: Element[]
 	states?: AnyJson
 	overlay: Overlay
 	isDirectRootChildren?: boolean
+	parentHidden?: boolean
 }) {
 	return (
 		<>
@@ -31,6 +33,7 @@ export function RenderElements({
 					states={states}
 					overlay={overlay}
 					isDirectRootChildren={isDirectRootChildren}
+					parentHidden={parentHidden}
 				/>
 			))}
 		</>
@@ -41,6 +44,7 @@ export type Overlay = (props: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
+	parentHidden?: boolean
 }) => JSX.Element
 
 function RenderElement({
@@ -48,11 +52,13 @@ function RenderElement({
 	states,
 	overlay,
 	isDirectRootChildren,
+	parentHidden,
 }: {
 	element: Element
 	states?: AnyJson
 	overlay: Overlay
 	isDirectRootChildren?: boolean
+	parentHidden?: boolean
 }) {
 	const { isFullscreen } = useAtomValue(previewAtom)
 
@@ -70,16 +76,19 @@ function RenderElement({
 	const Overlay = overlay
 
 	return (
-		<Overlay element={element} isDirectRootChildren={isDirectRootChildren}>
-			<>
-				{element.render((element) => (
-					<RenderElements
-						elements={element.children ?? []}
-						states={states}
-						overlay={overlay}
-					/>
-				))}
-			</>
+		<Overlay
+			element={element}
+			isDirectRootChildren={isDirectRootChildren}
+			parentHidden={parentHidden}
+		>
+			{element.render((element) => (
+				<RenderElements
+					elements={element.children ?? []}
+					states={states}
+					overlay={overlay}
+					parentHidden={parentHidden || element.hidden}
+				/>
+			))}
 		</Overlay>
 	)
 }
