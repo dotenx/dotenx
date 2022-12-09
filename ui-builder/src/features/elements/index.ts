@@ -21,6 +21,7 @@ import { LinkElement } from './extensions/link'
 import { MenuButtonElement } from './extensions/nav/menu-button'
 import { NavMenuElement } from './extensions/nav/nav-menu'
 import { NavbarElement } from './extensions/nav/navbar'
+import { PictureElement } from './extensions/picture'
 import { SelectElement } from './extensions/select'
 import { SliderElement } from './extensions/slider'
 import { StackElement } from './extensions/stack'
@@ -46,6 +47,7 @@ export const ElementSections = [
 			IconElement,
 			VideoElement,
 			YouTubeElement,
+			PictureElement,
 		],
 	},
 	{
