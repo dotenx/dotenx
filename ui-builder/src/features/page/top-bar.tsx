@@ -3,6 +3,7 @@ import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
 	TbArrowsMaximize,
@@ -43,6 +44,7 @@ export function TopBar() {
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
 			<Group align="center" spacing="xl">
 				<Logo />
+				<BackToBackEnd />
 				<PageSelection />
 				<ViewportSelection />
 				<PreviewButton />
@@ -184,7 +186,22 @@ function Logo() {
 		</Tooltip>
 	)
 }
+function BackToBackEnd() {
+	const { projectName = '' } = useParams()
 
+	return (
+		<div className="group p-1 cursor-pointer px-2 bg-rose-600 rounded text-white hover:scale-x-105  flex items-center justify-center transition-all  ">
+			<IoArrowBack className="mr-1 w-4 h-4" />
+			<a
+				className="hidden text-sm group-hover:block transition-all "
+				href={`https://app.dotenx.com/builder/projects/${projectName}/tables`}
+				rel="noopener noreferrer"
+			>
+				Backend builder
+			</a>
+		</div>
+	)
+}
 function PreviewButton() {
 	const setPreview = useSetAtom(previewAtom)
 	const deselect = useSelectionStore((store) => store.deselect)
