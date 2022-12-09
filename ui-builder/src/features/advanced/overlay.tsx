@@ -37,7 +37,16 @@ const DraggableNoFocus = styled(Draggable)`
 
 export const hoveringAtom = atom<{ elementId: string | null }>({ elementId: null })
 
-export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+export function ElementOverlay({
+	children,
+	element,
+	parentHidden,
+}: {
+	children: ReactNode
+	element: Element
+	parentHidden?: boolean
+}) {
+	const invisible = parentHidden || element.hidden
 	const viewPort = useAtomValue(viewportAtom)
 	const [hovering, setHovering] = useAtom(hoveringAtom)
 	const isHovered = hovering.elementId === element.id
@@ -115,9 +124,9 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			outlineColor: '#fb7185',
 			outlineWidth: isSelected ? 2 : 1,
 			outlineStyle: isHighlighted ? 'solid' : undefined,
-			visibility: element.hidden ? 'hidden' : undefined,
+			visibility: invisible ? 'hidden' : undefined,
 		}),
-		[element.hidden, isHighlighted, isSelected]
+		[invisible, isHighlighted, isSelected]
 	)
 	const backgroundImage = useMemo(
 		() =>
@@ -155,63 +164,67 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}
 		>
-			{canContain && (
-				<DroppablePortal
-					referenceElement={referenceElement}
-					data={{ mode: DroppableMode.InsertIn, elementId: element.id }}
-					overStyle={{ boxShadow: 'inset 0px 0px 0px 3px #fb7185' }}
-					placement="bottom"
-					fullWidth
-					fullHeight
-					center
-					updateDeps={[element]}
-					targetElement={targetElement}
-				/>
+			{!invisible && (
+				<>
+					{canContain && !invisible && (
+						<DroppablePortal
+							referenceElement={referenceElement}
+							data={{ mode: DroppableMode.InsertIn, elementId: element.id }}
+							overStyle={{ boxShadow: 'inset 0px 0px 0px 3px #fb7185' }}
+							placement="bottom"
+							fullWidth
+							fullHeight
+							center
+							updateDeps={[element]}
+							targetElement={targetElement}
+						/>
+					)}
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
+						style={{ height: '10px' }}
+						overStyle={{ boxShadow: 'inset 0px 3px 0px 0px #fb7185' }}
+						placement="top"
+						fullWidth
+						halfHeight={!canContain}
+						center={!canContain}
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
+						style={{ width: '10px' }}
+						overStyle={{ boxShadow: 'inset -3px 0px 0px 0px #fb7185' }}
+						placement="right"
+						fullHeight
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
+						style={{ height: '10px' }}
+						overStyle={{ boxShadow: 'inset 0px -3px 0px 0px #fb7185' }}
+						placement="bottom"
+						fullWidth
+						halfHeight={!canContain}
+						center={!canContain}
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
+						style={{ width: '10px' }}
+						overStyle={{ boxShadow: 'inset 3px 0px 0px 0px #fb7185' }}
+						placement="left"
+						fullHeight
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+				</>
 			)}
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
-				style={{ height: '10px' }}
-				overStyle={{ boxShadow: 'inset 0px 3px 0px 0px #fb7185' }}
-				placement="top"
-				fullWidth
-				halfHeight={!canContain}
-				center={!canContain}
-				updateDeps={[element]}
-				targetElement={targetElement}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
-				style={{ width: '10px' }}
-				overStyle={{ boxShadow: 'inset -3px 0px 0px 0px #fb7185' }}
-				placement="right"
-				fullHeight
-				updateDeps={[element]}
-				targetElement={targetElement}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
-				style={{ height: '10px' }}
-				overStyle={{ boxShadow: 'inset 0px -3px 0px 0px #fb7185' }}
-				placement="bottom"
-				fullWidth
-				halfHeight={!canContain}
-				center={!canContain}
-				updateDeps={[element]}
-				targetElement={targetElement}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
-				style={{ width: '10px' }}
-				overStyle={{ boxShadow: 'inset 3px 0px 0px 0px #fb7185' }}
-				placement="left"
-				fullHeight
-				updateDeps={[element]}
-				targetElement={targetElement}
-			/>
 			<ElementKindWrapper
 				element={element}
 				referenceElement={referenceElement}
