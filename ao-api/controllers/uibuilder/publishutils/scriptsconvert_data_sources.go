@@ -14,9 +14,11 @@ type DataSource struct {
 	Url       struct {
 		Value []TextSource `json:"value"`
 	} `json:"url"`
-	Method      string        `json:"method"`
-	Headers     string        `json:"headers"`
-	Body        string        `json:"body"`
+	Method  string `json:"method"`
+	Headers string `json:"headers"`
+	Body    struct {
+		Value []TextSource `json:"value"`
+	} `json:"body"`
 	Id          string        `json:"id"`
 	FetchOnload bool          `json:"fetchOnload"`
 	IsPrivate   bool          `json:"isPrivate"`
@@ -30,9 +32,9 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	Alpine.store('{{.StateName}}', {
 		isLoading: true,
 		'{{.StateName}}': Alpine.store(null),
-		fetch: function ({body{{if .Body}}={{.Body}}{{end}}}={}) {
+		fetch: function ({body{{if .Body}}={{range .Body.Value}}{{renderTextSource .}}{{end}}{{end}}}={}) {
 
-			url = '{{range .Url.Value}}{{renderTextSource .}} {{end}}';
+			url = '{{range .Url.Value}}{{renderTextSource .}}{{end}}';
 			fetch(url, {
 				method: '{{.Method}}',
 				{{if .Headers}}headers: {{if .IsPrivate}}(...{{.Headers}}, ...{Authorization: 'Bearer ' + Alpine.store('global')?.token } ){{else}}{{.Headers}},{{end}}{{else}}{{if .IsPrivate}}headers: {Authorization: 'Bearer ' + Alpine.store('global')?.token },{{end}}{{end}}
@@ -67,7 +69,6 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	}
 
 	funcMap := template.FuncMap{
-		// The name "title" is what the function will be called in the template text.
 		"renderTextSource": renderTextSource,
 	}
 
