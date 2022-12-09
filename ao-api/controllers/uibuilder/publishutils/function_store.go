@@ -1,7 +1,6 @@
 package publishutils
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 	"sync"
@@ -51,7 +50,27 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 	i.lock.RLock()
 	defer i.lock.RUnlock()
 
-	var out strings.Builder
+	var out, converted strings.Builder
+
+	// page, url and global stores must be added first
+	converted.WriteString(pageUrlStore)
+	tmpl, err := template.New("button").Parse(pageGlobals)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	params := struct {
+		Globals []string
+	}{
+		Globals: globals,
+	}
+	err = tmpl.Execute(&out, params)
+	if err != nil {
+		fmt.Println("error: ", err.Error())
+		return "", err
+	}
+	converted.WriteString("\n" + out.String())
+
 	for _, event := range i.Events {
 		renderedEvent, err := convertEvent(event)
 		if err != nil {
@@ -64,31 +83,7 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 	if err != nil {
 		return "", err
 	}
-
-	var converted strings.Builder
-
-	converted.WriteString(pageStore)
-
-	tmpl, err := template.New("button").Parse(pageGlobals)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	params := struct {
-		Globals []string
-	}{
-		Globals: globals,
-	}
-	var buf bytes.Buffer
-	err = tmpl.Execute(&out, params)
-	if err != nil {
-		fmt.Println("error: ", err.Error())
-		return "", err
-	}
-	converted.WriteString("\n" + buf.String())
-
 	converted.WriteString("\n" + ds)
-	converted.WriteString("\n" + out.String())
 
 	converted.WriteString("\n" + renderCharts(i.ChartTypes))
 
@@ -203,7 +198,7 @@ document.addEventListener("alpine:init", () => {
 })
 `
 
-const pageStore = `
+const pageUrlStore = `
 document.addEventListener("alpine:init", () => {
 
   Alpine.store('url', {
