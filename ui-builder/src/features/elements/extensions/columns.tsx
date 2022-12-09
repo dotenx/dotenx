@@ -1,4 +1,4 @@
-import { Button, CloseButton, NumberInput, SegmentedControl } from '@mantine/core'
+import { Button, CloseButton, NumberInput, SegmentedControl, TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbLayoutColumns, TbPlus } from 'react-icons/tb'
@@ -9,7 +9,7 @@ import { SpacingEditor } from '../../style/spacing-editor'
 import { useEditStyle } from '../../style/use-edit-style'
 import { getStyleNumber } from '../../ui/style-input'
 import { Element, RenderFn } from '../element'
-import { useElementsStore } from '../elements-store'
+import { useElementsStore, useSetElement } from '../elements-store'
 import { Style } from '../style'
 import { BoxElement } from './box'
 
@@ -27,6 +27,7 @@ export class ColumnsElement extends Element {
 			},
 		},
 	}
+	data = { as: 'div' }
 
 	render(renderFn: RenderFn): ReactNode {
 		return renderFn(this)
@@ -44,6 +45,7 @@ export class ColumnsElement extends Element {
 }
 
 function ColumnsSettings() {
+	const set = useSetElement()
 	const addElement = useElementsStore((store) => store.add)
 	const { style: styles, editStyle } = useEditStyle()
 	const element = useSelectedElement() as ColumnsElement
@@ -53,6 +55,12 @@ function ColumnsSettings() {
 
 	return (
 		<div className="space-y-6">
+			<TextInput
+				size="xs"
+				label="As HTML element"
+				value={element.data.as}
+				onChange={(event) => set(element, (draft) => (draft.data.as = event.target.value))}
+			/>
 			<NumberInput
 				size="xs"
 				label="Space"

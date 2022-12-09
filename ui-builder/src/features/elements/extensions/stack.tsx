@@ -1,12 +1,14 @@
-import { SegmentedControl } from '@mantine/core'
+import { SegmentedControl, TextInput } from '@mantine/core'
 import { ReactNode } from 'react'
 import { TbStack } from 'react-icons/tb'
+import { useSelectedElement } from '../../selection/use-selected-component'
 import { simpleFlexAligns } from '../../style/layout-editor'
 import { ShadowsEditor } from '../../style/shadow-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { useEditStyle } from '../../style/use-edit-style'
 import { InputWithUnit } from '../../ui/style-input'
 import { Element, RenderFn } from '../element'
+import { useSetElement } from '../elements-store'
 import { Style } from '../style'
 
 export class StackElement extends Element {
@@ -23,6 +25,7 @@ export class StackElement extends Element {
 			},
 		},
 	}
+	data = { as: 'div' }
 
 	render(renderFn: RenderFn): ReactNode {
 		return renderFn(this)
@@ -41,9 +44,17 @@ export class StackElement extends Element {
 
 function StackSettings() {
 	const { style, editStyle } = useEditStyle()
+	const element = useSelectedElement() as StackElement
+	const set = useSetElement()
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-6">
+			<TextInput
+				size="xs"
+				label="As HTML element"
+				value={element.data.as}
+				onChange={(event) => set(element, (draft) => (draft.data.as = event.target.value))}
+			/>
 			<InputWithUnit
 				value={style.gap?.toString()}
 				onChange={(value) => editStyle('gap', value)}
