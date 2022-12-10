@@ -53,10 +53,16 @@ func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCa
 
 	// The driver is intentionally hardcoded to postgres.
 	adminDb, err := sql.Open("postgres", connStr)
+	if adminDb != nil {
+		defer adminDb.Close()
+	}
 	if err != nil {
 		return nil, nil, err
 	}
 	adminSqlxDb := sqlx.NewDb(adminDb, "postgres")
+	if adminSqlxDb != nil {
+		defer adminSqlxDb.Close()
+	}
 	var dbUser models.DatabaseUser
 	err = adminSqlxDb.QueryRowx(getDatabaseUserStmt, accountId, projectName).StructScan(&dbUser)
 	if err != nil {
@@ -65,8 +71,6 @@ func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCa
 		}
 		return nil, nil, err
 	}
-	defer adminSqlxDb.Close()
-	defer adminDb.Close()
 
 	encryptedUsername := dbUser.Username
 	username, err := utils.Decrypt(encryptedUsername, config.Configs.Secrets.Encryption)
@@ -90,6 +94,9 @@ func GetDbInstance(accountId string, projectName string) (*dbpkg.DB, PostQueryCa
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
+		if db != nil {
+			db.Close()
+		}
 		return nil, nil, err
 	}
 	return &dbpkg.DB{
