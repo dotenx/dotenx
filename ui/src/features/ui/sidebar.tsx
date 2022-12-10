@@ -11,6 +11,7 @@ import {
 	BsTable,
 	BsWindowSidebar,
 } from 'react-icons/bs'
+import { RiPantoneLine } from 'react-icons/ri'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
@@ -26,7 +27,8 @@ import {
 } from '../../constants'
 import { NavItem } from './nav-item'
 import { Tour } from './tour'
-
+import { Button } from '@mantine/core'
+import { Modals, useModal } from '../hooks'
 const studioLinks = [
 	{ to: '/automations', label: 'Automation', icon: <BsFillDiagram3Fill /> },
 	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
@@ -81,6 +83,7 @@ export const Sidebar = memo(() => {
 			icon: <BsGlobe2 />,
 		},
 	]
+	const modal = useModal()
 
 	return (
 		<div className="flex flex-col w-[86px] text-white transition-all py-7 bg-rose-600 group hover:w-64 overflow-hidden h-screen fixed z-10">
@@ -112,6 +115,17 @@ export const Sidebar = memo(() => {
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
 				<Tour />
+				<div
+					className="flex items-center gap-2 mt-16 pl-8 cursor-pointer "
+					onClick={() => modal.open(Modals.AccessToken)}
+				>
+					<span className="text-xl">
+						<RiPantoneLine />
+					</span>
+					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100 ">
+						Access Token
+					</span>
+				</div>
 				<div className="space-y-2">
 					<a
 						href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
