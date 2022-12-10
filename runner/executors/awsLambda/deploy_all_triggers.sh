@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# # awrmin/google-new-email:lambda5
+# # awrmin/google-new-email:lambda6
 # # hojjat12/dropbox-upload-new-file:lambda4
 # # hojjat12/ebay-new-order:lambda4
 # # hojjat12/facebook-publish-new-post:lambda5
@@ -12,7 +12,7 @@
 
 # export region="us-east-1"
 # export repository_name="awrmin/google-new-email"
-# export tag="lambda5"
+# export tag="lambda6"
 # export directory_address="google-new-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
