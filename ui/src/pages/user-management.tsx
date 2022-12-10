@@ -7,7 +7,6 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
 import { ContentWrapper, Drawer, Endpoint, Loader, Table } from '../features/ui'
-import { AccessToken } from '../internal/access-token'
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -135,9 +134,6 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 				>
 					Endpoints
 				</Button>
-				<Button className="access_token" onClick={() => modal.open(Modals.AccessToken)}>
-					Access Token
-				</Button>
 			</div>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
@@ -179,9 +175,6 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 						}}
 					/>
 				</div>
-			</Drawer>
-			<Drawer kind={Modals.AccessToken} title="Personal Access Token" size="xl">
-				<AccessToken />
 			</Drawer>
 		</>
 	)

@@ -2,6 +2,8 @@ import { ActionIcon, Button, Code } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
 import { IoCheckmark, IoCopy, IoRepeat, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useParams } from 'react-router-dom'
+import { getProject, QueryKey } from '../api'
 import { Loader } from '../features/ui'
 import {
 	deleteAccessToken,
@@ -14,6 +16,10 @@ import {
 export function AccessToken() {
 	const queryClient = useQueryClient()
 	const query = useQuery(InternalQueryKey.GetAccessToken, getAccessToken)
+	const { projectName = '' } = useParams()
+	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
+	const projectTag = projectQuery.data?.data.tag ?? ''
+
 	const generateMutation = useMutation(setAccessToken, {
 		onSuccess: () => queryClient.invalidateQueries(InternalQueryKey.GetAccessToken),
 	})
@@ -28,22 +34,33 @@ export function AccessToken() {
 	})
 	const accessToken = query.data?.data.accessToken
 
-	if (query.isLoading) return <Loader />
+	if (query.isLoading || projectQuery.isLoading) return <Loader />
 
 	if (!accessToken) {
 		return (
-			<Button
-				type="button"
-				onClick={() => generateMutation.mutate()}
-				loading={generateMutation.isLoading}
-			>
-				Generate personal access token
-			</Button>
+			<div>
+				<div className="flex items-center mb-4  justify-between">
+					<div>
+						Project tag: <Code>{projectTag}</Code>
+					</div>
+					<div>
+						<CopyButton text={projectTag} />
+					</div>
+				</div>
+				<Button
+					type="button"
+					onClick={() => generateMutation.mutate()}
+					loading={generateMutation.isLoading}
+				>
+					Generate personal access token
+				</Button>
+			</div>
 		)
 	}
 
 	return (
 		<div>
+			<div className="flex items-center mb-2">Project tag: {projectTag}</div>
 			<div className="flex items-center justify-between gap-2">
 				{accessToken && <Code>{accessToken}</Code>}
 				<div className="flex gap-0.5">
