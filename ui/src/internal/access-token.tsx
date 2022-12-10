@@ -39,9 +39,9 @@ export function AccessToken() {
 	if (!accessToken) {
 		return (
 			<div>
-				<div className="flex items-center mb-4  justify-between">
+				<div className="flex items-center mb-6  justify-between">
 					<div>
-						Project tag: <Code>{projectTag}</Code>
+						<span className="text-sm">Project tag:</span> <Code>{projectTag}</Code>
 					</div>
 					<div>
 						<CopyButton text={projectTag} />
@@ -60,7 +60,14 @@ export function AccessToken() {
 
 	return (
 		<div>
-			<div className="flex items-center mb-2">Project tag: {projectTag}</div>
+			<div className="flex items-center mb-6  justify-between">
+				<div>
+					<span className="text-sm">Project tag:</span> <Code>{projectTag}</Code>
+				</div>
+				<div>
+					<CopyButton text={projectTag} />
+				</div>
+			</div>
 			<div className="flex items-center justify-between gap-2">
 				{accessToken && <Code>{accessToken}</Code>}
 				<div className="flex gap-0.5">

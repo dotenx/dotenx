@@ -116,11 +116,11 @@ export const Sidebar = memo(() => {
 				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
 				<Tour />
 				<div
-					className="flex items-center gap-2 mt-16 pl-8 cursor-pointer "
+					className="flex mb-2	 items-center gap-2 mt-16 pl-8 py-4 cursor-pointer transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500 "
 					onClick={() => modal.open(Modals.AccessToken)}
 				>
 					<span className="text-xl">
-						<RiPantoneLine />
+						<RiPantoneLine className="w-6 h-6" />
 					</span>
 					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100 ">
 						Access Token
