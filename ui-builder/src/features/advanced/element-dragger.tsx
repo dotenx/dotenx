@@ -1,9 +1,13 @@
 import { Divider } from '@mantine/core'
+import { useSetAtom } from 'jotai'
 import { ReactNode } from 'react'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { ElementSections } from '../elements'
+import { sidebarAtom } from './element-dragger-layer'
 
 export function ElementDragger() {
+	const setSidebar = useSetAtom(sidebarAtom)
+
 	return (
 		<div className="space-y-6">
 			{ElementSections.map((section) => (
@@ -16,6 +20,7 @@ export function ElementDragger() {
 								<Draggable
 									key={element.name}
 									data={{ mode: DraggableMode.Add, ElementClass: Element }}
+									onDrag={() => setSidebar({ tab: 'layers' })}
 								>
 									<ElementCard label={element.name} icon={element.icon} />
 								</Draggable>

@@ -1,4 +1,4 @@
-// image: awrmin/slack-send-message:lambda5
+// image: awrmin/slack-send-message:lambda6
 package main
 
 import (
@@ -13,7 +13,9 @@ type Event struct {
 }
 
 type Response struct {
-	Successfull bool `json:"successfull"`
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
 }
 
 func HandleLambdaEvent(event Event) (Response, error) {
@@ -30,7 +32,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		resp.Successfull = false
 		// continue
 	}
-	err := SendSlackMessage(text, target, access_token)
+	channel, timestamp, err := SendSlackMessage(text, target, access_token)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Printf("sending message to '%s' wasn't successful\n", target)
@@ -40,8 +42,19 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Printf("sending message to '%s' was successful\n", target)
 	}
 	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": map[string]interface{}{
+			"channel":   channel,
+			"timestamp": timestamp,
+		},
+	}
 	if resp.Successfull {
-		fmt.Println("All message(s) was send successfully")
+		resp.Status = "completed"
+		fmt.Println("Message was send successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Message wasn't send successfully")
 	}
 	return resp, nil
 }
@@ -50,14 +63,14 @@ func main() {
 	lambda.Start(HandleLambdaEvent)
 }
 
-func SendSlackMessage(text, targetId, botAccessToken string) error {
+func SendSlackMessage(text, targetId, botAccessToken string) (channel, timestamp string, err error) {
 	api := slack.New(botAccessToken)
-	_, _, err := api.PostMessage(
+	channel, timestamp, err = api.PostMessage(
 		targetId,
 		slack.MsgOptionText(text, false),
 	)
 	if err != nil {
-		return err
+		return "", "", err
 	}
-	return nil
+	return
 }

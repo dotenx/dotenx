@@ -32,6 +32,7 @@ export function SimpleShadowsEditor() {
 			size="xs"
 			label="Shadow"
 			allowDeselect
+			clearable
 			data={shadows}
 			value={styles.boxShadow}
 			onChange={(value) => editStyle('boxShadow', value ?? '')}

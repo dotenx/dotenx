@@ -1,8 +1,13 @@
+import { Button } from '@mantine/core'
+import { useState } from 'react'
+import { IoArrowBack } from 'react-icons/io5'
+import { useQuery } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
+import { getTables, QueryKey } from '../api'
 import { TableForm, TableList } from '../features/database'
 import ExportDatabase from '../features/database/export-database'
 import { Modals } from '../features/hooks'
-import { ContentWrapper, NewModal } from '../features/ui'
+import { ContentWrapper, Loader, NewModal } from '../features/ui'
 import { ViewList } from '../features/views/view-list'
 
 export default function TablesPage() {
@@ -12,12 +17,43 @@ export default function TablesPage() {
 }
 
 function Tables({ name }: { name: string }) {
+	const [noDatabase, setNoDatabase] = useState(false)
+	const query = useQuery(QueryKey.GetTables, () => getTables(name), {
+		onError: (err: any) => {
+			if (err.response.status === 400) {
+				setNoDatabase(true)
+			}
+		},
+	})
+	if (query.isLoading)
+		return (
+			<ContentWrapper>
+				<Loader />
+			</ContentWrapper>
+		)
 	return (
 		<>
 			<ContentWrapper>
-				<ExportDatabase projectName={name} />
-				<TableList projectName={name} />
-				<ViewList projectName={name} />
+				{noDatabase ? (
+					<div className="flex flex-col items-center">
+						<div className="mb-4 mt-44">
+							This project does not have a database to add tables you need to create a
+							project <span className="underline">with</span> database
+						</div>
+						<Button size="sm">
+							<IoArrowBack className="mr-1" />
+							<a href="https://admin.dotenx.com/projects" rel="noopener noreferrer">
+								Projects
+							</a>
+						</Button>
+					</div>
+				) : (
+					<>
+						<ExportDatabase projectName={name} />
+						<TableList projectName={name} query={query} />
+						<ViewList projectName={name} />
+					</>
+				)}
 			</ContentWrapper>
 			<NewModal kind={Modals.NewTable} title="Add a new table">
 				<TableForm projectName={name} />

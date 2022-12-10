@@ -1,4 +1,4 @@
-// image: awrmin/google-new-email:lambda5
+// image: awrmin/google-new-email:lambda6
 package main
 
 import (
@@ -44,11 +44,6 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	}
 	accessToken := event.AccessToken
 	refreshToken := event.RefreshToken
-	_, err := listMessages(accessToken, refreshToken)
-	if err != nil {
-		fmt.Println(err)
-		return resp, err
-	}
 
 	passedSeconds := event.PassedSeconds
 	seconds, err := strconv.Atoi(passedSeconds)
@@ -62,34 +57,39 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		return resp, err
 	}
+
+	body := make(map[string]interface{})
+	outerBody := make([]map[string]interface{}, 0)
 	if len(messages) > 0 {
-		if messages[0].InternalDate/1000 > selectedUnix {
-			body := make(map[string]interface{})
-			body["accountId"] = accId
-			innerBody := make(map[string]interface{})
-			outerBody := make([]map[string]interface{}, 0)
-			msgBody, _ := base64.URLEncoding.DecodeString(messages[0].Payload.Body.Data)
-			innerBody["id"] = messages[0].Id
-			innerBody["body"] = string(msgBody)
-			innerBody["date"] = time.Unix(messages[0].InternalDate/1000, 0).String()
-			for _, header := range messages[0].Payload.Headers {
-				if header.Name == "From" || header.Name == "To" || header.Name == "Subject" {
-					innerBody[strings.ToLower(header.Name)] = header.Value
+		for i, _ := range messages {
+			if messages[i].InternalDate/1000 > selectedUnix {
+				body["accountId"] = accId
+				innerBody := make(map[string]interface{})
+				innerBody["id"] = messages[i].Id
+				innerBody["body_plain"] = getBodyOfMessage(messages[i].Payload.Parts, "text/plain")
+				innerBody["body_html"] = getBodyOfMessage(messages[i].Payload.Parts, "text/html")
+				innerBody["date"] = time.Unix(messages[i].InternalDate/1000, 0).String()
+				innerBody["headers"] = make(map[string]interface{})
+				for _, header := range messages[i].Payload.Headers {
+					innerBody["headers"].(map[string]interface{})[header.Name] = header.Value
 				}
+				outerBody = append(outerBody, innerBody)
 			}
-			outerBody = append(outerBody, innerBody)
-			body[triggerName] = outerBody
-			resp.Triggered = true
-			resp.ReturnValue = body
-			fmt.Println("trigger activated successfully")
-			return resp, nil
-		} else {
-			fmt.Println("no new message in inbox")
-			resp.Triggered = false
-			return resp, nil
 		}
 	} else {
 		fmt.Println("no message in inbox")
+		resp.Triggered = false
+		return resp, nil
+	}
+
+	if len(outerBody) != 0 {
+		body[triggerName] = outerBody
+		resp.Triggered = true
+		resp.ReturnValue = body
+		fmt.Println("trigger activated successfully")
+		return resp, nil
+	} else {
+		fmt.Println("no new message in inbox")
 		resp.Triggered = false
 		return resp, nil
 	}
@@ -130,6 +130,28 @@ func listMessages(accessToken, refreshToken string) (messages []*gmail.Message, 
 	}
 
 	return
+}
+
+/*
+supported mimeType:
+"text/plain"
+"text/html"
+*/
+func getBodyOfMessage(messageParts []*gmail.MessagePart, mimeType string) string {
+	results := make([]string, 0)
+	for i, _ := range messageParts {
+		if len(messageParts[i].Parts) == 0 {
+			if messageParts[i].MimeType == mimeType {
+				plainTextBytes, _ := base64.URLEncoding.DecodeString(messageParts[i].Body.Data)
+				results = append(results, string(plainTextBytes))
+			}
+		} else {
+			tmp := getBodyOfMessage(messageParts[i].Parts, mimeType)
+			results = append(results, tmp)
+		}
+	}
+	result := strings.TrimSuffix(strings.Join(results, "|"), "|")
+	return result
 }
 
 func httpRequest(method string, url string, body io.Reader, headers []Header, timeout time.Duration) (out []byte, err error, statusCode int, header *http.Header) {

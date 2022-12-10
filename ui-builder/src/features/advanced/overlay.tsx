@@ -23,6 +23,7 @@ import { DroppablePortal } from '../dnd/droppable-portal'
 import { Element } from '../elements/element'
 import { EventKind } from '../elements/event'
 import { ImageElement } from '../elements/extensions/image'
+import { PictureElement } from '../elements/extensions/picture'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -36,7 +37,17 @@ const DraggableNoFocus = styled(Draggable)`
 
 export const hoveringAtom = atom<{ elementId: string | null }>({ elementId: null })
 
-export function ElementOverlay({ children, element }: { children: ReactNode; element: Element }) {
+export function ElementOverlay({
+	children,
+	element,
+	parentHidden,
+}: {
+	children: ReactNode
+	element: Element
+	parentHidden?: boolean
+}) {
+	const invisible = parentHidden || element.hidden
+	const viewPort = useAtomValue(viewportAtom)
 	const [hovering, setHovering] = useAtom(hoveringAtom)
 	const isHovered = hovering.elementId === element.id
 	const styles = useAppliedStyle(element)
@@ -99,15 +110,23 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 
 	let backgroundUrl = ''
 	if (element instanceof ImageElement) backgroundUrl = element.data.src.toString()
+	if (element instanceof PictureElement) {
+		backgroundUrl =
+			viewPort === 'desktop'
+				? element.data.desktopSrc
+				: viewPort === 'tablet'
+				? element.data.tabletSrc || element.data.desktopSrc
+				: element.data.mobileSrc || element.data.tabletSrc || element.data.desktopSrc
+	}
 	const style: CSSProperties = useMemo(
 		() => ({
 			cursor: 'default',
 			outlineColor: '#fb7185',
 			outlineWidth: isSelected ? 2 : 1,
 			outlineStyle: isHighlighted ? 'solid' : undefined,
-			visibility: element.hidden ? 'hidden' : undefined,
+			visibility: invisible ? 'hidden' : undefined,
 		}),
-		[element.hidden, isHighlighted, isSelected]
+		[invisible, isHighlighted, isSelected]
 	)
 	const backgroundImage = useMemo(
 		() =>
@@ -130,6 +149,8 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 		() => ({ ...style, ...backgroundImage }),
 		[backgroundImage, style]
 	)
+	const { window } = useContext(FrameContext)
+	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 
 	return (
 		<DraggableNoFocus
@@ -143,58 +164,67 @@ export function ElementOverlay({ children, element }: { children: ReactNode; ele
 			onMouseOut={handleMouseOut}
 			onClick={handleClick}
 		>
-			{canContain && (
-				<DroppablePortal
-					referenceElement={referenceElement}
-					data={{ mode: DroppableMode.InsertIn, elementId: element.id }}
-					overStyle={{ boxShadow: 'inset 0px 0px 0px 3px #fb7185' }}
-					placement="bottom"
-					fullWidth
-					fullHeight
-					center
-					updateDeps={[element]}
-				/>
+			{!invisible && (
+				<>
+					{canContain && !invisible && (
+						<DroppablePortal
+							referenceElement={referenceElement}
+							data={{ mode: DroppableMode.InsertIn, elementId: element.id }}
+							overStyle={{ boxShadow: 'inset 0px 0px 0px 3px #fb7185' }}
+							placement="bottom"
+							fullWidth
+							fullHeight
+							center
+							updateDeps={[element]}
+							targetElement={targetElement}
+						/>
+					)}
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
+						style={{ height: '10px' }}
+						overStyle={{ boxShadow: 'inset 0px 3px 0px 0px #fb7185' }}
+						placement="top"
+						fullWidth
+						halfHeight={!canContain}
+						center={!canContain}
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
+						style={{ width: '10px' }}
+						overStyle={{ boxShadow: 'inset -3px 0px 0px 0px #fb7185' }}
+						placement="right"
+						fullHeight
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
+						style={{ height: '10px' }}
+						overStyle={{ boxShadow: 'inset 0px -3px 0px 0px #fb7185' }}
+						placement="bottom"
+						fullWidth
+						halfHeight={!canContain}
+						center={!canContain}
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+					<DroppablePortal
+						referenceElement={referenceElement}
+						data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
+						style={{ width: '10px' }}
+						overStyle={{ boxShadow: 'inset 3px 0px 0px 0px #fb7185' }}
+						placement="left"
+						fullHeight
+						updateDeps={[element]}
+						targetElement={targetElement}
+					/>
+				</>
 			)}
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
-				style={{ height: '10px' }}
-				overStyle={{ boxShadow: 'inset 0px 3px 0px 0px #fb7185' }}
-				placement="top"
-				fullWidth
-				halfHeight={!canContain}
-				center={!canContain}
-				updateDeps={[element]}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
-				style={{ width: '10px' }}
-				overStyle={{ boxShadow: 'inset -3px 0px 0px 0px #fb7185' }}
-				placement="right"
-				fullHeight
-				updateDeps={[element]}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertAfter, elementId: element.id }}
-				style={{ height: '10px' }}
-				overStyle={{ boxShadow: 'inset 0px -3px 0px 0px #fb7185' }}
-				placement="bottom"
-				fullWidth
-				halfHeight={!canContain}
-				center={!canContain}
-				updateDeps={[element]}
-			/>
-			<DroppablePortal
-				referenceElement={referenceElement}
-				data={{ mode: DroppableMode.InsertBefore, elementId: element.id }}
-				style={{ width: '10px' }}
-				overStyle={{ boxShadow: 'inset 3px 0px 0px 0px #fb7185' }}
-				placement="left"
-				fullHeight
-				updateDeps={[element]}
-			/>
 			<ElementKindWrapper
 				element={element}
 				referenceElement={referenceElement}

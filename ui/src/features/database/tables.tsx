@@ -1,17 +1,13 @@
 import { Switch } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { Link } from 'react-router-dom'
-import { getTables, QueryKey, setTableAccess } from '../../api'
+import { QueryKey, setTableAccess } from '../../api'
 import { Modals, useModal } from '../hooks'
-import { Loader } from '../ui'
 import { PageTitle } from '../ui/page-title'
 
-export function TableList({ projectName }: { projectName: string }) {
-	const query = useQuery(QueryKey.GetTables, () => getTables(projectName))
-
+export function TableList({ projectName, query }: { projectName: string; query: any }) {
 	const tables = query.data?.data.tables ?? []
-	if (query.isLoading) return <Loader />
 
 	const helpDetails = {
 		title: 'Use tables to store the data of your application',

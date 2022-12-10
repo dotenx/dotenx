@@ -21,6 +21,7 @@ import { LinkElement } from './extensions/link'
 import { MenuButtonElement } from './extensions/nav/menu-button'
 import { NavMenuElement } from './extensions/nav/nav-menu'
 import { NavbarElement } from './extensions/nav/navbar'
+import { PictureElement } from './extensions/picture'
 import { SelectElement } from './extensions/select'
 import { SliderElement } from './extensions/slider'
 import { StackElement } from './extensions/stack'
@@ -28,6 +29,7 @@ import { SubmitElement } from './extensions/submit'
 import { TextElement } from './extensions/text'
 import { TextareaElement } from './extensions/textarea'
 import { VideoElement } from './extensions/video'
+import { YouTubeElement } from './extensions/youtube'
 import './fa-import'
 
 export const ElementSections = [
@@ -44,6 +46,8 @@ export const ElementSections = [
 			StackElement,
 			IconElement,
 			VideoElement,
+			YouTubeElement,
+			PictureElement,
 		],
 	},
 	{
@@ -70,7 +74,37 @@ export const ElementSections = [
 	},
 ] as const
 
-export const ELEMENTS = ElementSections.flatMap((element) => element.items).concat([
+export const ELEMENTS = [
+	TextElement,
+	ButtonElement,
+	ImageElement,
+	LinkElement,
+	DividerElement,
+	BoxElement,
+	ColumnsElement,
+	StackElement,
+	IconElement,
+	VideoElement,
+	YouTubeElement,
+	PictureElement,
+	NavbarElement,
+	SliderElement,
+	CollapsibleElement,
+	DropdownElement,
+	FormElement,
+	InputElement,
+	SelectElement,
+	TextareaElement,
+	SubmitElement,
+	BarChart,
+	AreaChart,
+	LineChart,
+	PieChart,
+	DoughnutChart,
+	PolarAreaChart,
+	RadarChart,
+	ScatterChart,
+	BubbleChart,
 	MenuButtonElement,
 	NavMenuElement,
-])
+]

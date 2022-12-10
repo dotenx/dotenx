@@ -677,7 +677,7 @@ function createTile({
 }) {
 	return produce(newTile(), (draft) => {
 		const featureLines = lines.map((line) => createLine(line))
-		;(draft.children[0]! as BoxElement).data!.text = inteliText(title)
+		;(draft.children[0]! as TextElement).data!.text = inteliText(title)
 		;(draft.children[1]! as BoxElement).children![0].children![0].data!.text =
 			inteliText(yearlyPrice)
 		;(draft.children[1]! as BoxElement).children![1].children![0].data!.text =

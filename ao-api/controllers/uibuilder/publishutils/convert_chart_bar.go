@@ -59,7 +59,7 @@ type ChartBar struct {
 }
 
 const chartTemplate = `
-<canvas x-show="{{renderBindings .Bindings}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
+<canvas {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
 `
 
 const barChartEffectTemplate = `
