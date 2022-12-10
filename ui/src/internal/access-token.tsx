@@ -1,5 +1,6 @@
 import { ActionIcon, Button, Code } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
+import { useState } from 'react'
 import { IoCheckmark, IoCopy, IoRepeat, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
@@ -19,21 +20,25 @@ export function AccessToken() {
 	const { projectName = '' } = useParams()
 	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
 	const projectTag = projectQuery.data?.data.tag ?? ''
-
+	const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+	const [showConfirmRegenerate, setShowConfirmRegenerate] = useState(false)
 	const generateMutation = useMutation(setAccessToken, {
 		onSuccess: () => queryClient.invalidateQueries(InternalQueryKey.GetAccessToken),
 	})
 	const regenerateMutation = useMutation(updateAccessToken, {
-		onSuccess: () => queryClient.invalidateQueries(InternalQueryKey.GetAccessToken),
+		onSuccess: () => {
+			setShowConfirmRegenerate(false),
+				queryClient.invalidateQueries(InternalQueryKey.GetAccessToken)
+		},
 	})
 	const deleteMutation = useMutation(deleteAccessToken, {
 		onSuccess: () => {
+			setShowConfirmDelete(false)
 			queryClient.invalidateQueries(InternalQueryKey.GetAccessToken)
 			query.remove()
 		},
 	})
 	const accessToken = query.data?.data.accessToken
-
 	if (query.isLoading || projectQuery.isLoading) return <Loader />
 
 	if (!accessToken) {
@@ -62,27 +67,40 @@ export function AccessToken() {
 		<div>
 			<div className="flex items-center mb-6  justify-between">
 				<div>
-					<span className="text-sm">Project tag:</span> <Code>{projectTag}</Code>
+					<span className="text-xs">Project tag: </span> <Code>{projectTag}</Code>
 				</div>
 				<div>
 					<CopyButton text={projectTag} />
 				</div>
 			</div>
 			<div className="flex items-center justify-between gap-2">
-				{accessToken && <Code>{accessToken}</Code>}
+				{accessToken && (
+					<div>
+						<span className="text-xs whitespace-nowrap">Access token: </span>
+						<Code>{accessToken}</Code>
+					</div>
+				)}
 				<div className="flex gap-0.5">
 					<ActionIcon
+						className={`${showConfirmDelete && '!bg-slate-200'}`}
 						type="button"
 						title="Delete existing access token"
-						onClick={() => deleteMutation.mutate()}
+						onClick={() => {
+							setShowConfirmRegenerate(false),
+								setShowConfirmDelete(!showConfirmDelete)
+						}}
 						loading={deleteMutation.isLoading}
 					>
 						<IoTrash />
 					</ActionIcon>
 					<ActionIcon
 						type="button"
+						className={`${showConfirmRegenerate && '!bg-slate-200'}`}
 						title="Generate a new access token"
-						onClick={() => regenerateMutation.mutate()}
+						onClick={() => {
+							setShowConfirmDelete(false),
+								setShowConfirmRegenerate(!showConfirmRegenerate)
+						}}
 						loading={regenerateMutation.isLoading}
 					>
 						<IoRepeat />
@@ -90,6 +108,30 @@ export function AccessToken() {
 					<CopyButton text={accessToken} />
 				</div>
 			</div>
+			{showConfirmDelete && (
+				<div className="flex flex-col items-end space-y-2 mt-2 border p-2">
+					<p>Are you sure you want to delete existing access token?</p>
+					<Button
+						className="!w-fit "
+						loading={deleteMutation.isLoading}
+						onClick={() => deleteMutation.mutate()}
+					>
+						Delete
+					</Button>
+				</div>
+			)}
+			{showConfirmRegenerate && (
+				<div className="flex flex-col items-end space-y-2 mt-2 border p-2">
+					<p>Are you sure you want to generate a new access token?</p>
+					<Button
+						className="!w-fit"
+						loading={regenerateMutation.isLoading}
+						onClick={() => regenerateMutation.mutate()}
+					>
+						Generate
+					</Button>
+				</div>
+			)}
 			<p className="mt-10">Set this header in requests</p>
 			<Code>DTX-auth: {accessToken}</Code>
 		</div>
