@@ -77,7 +77,7 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 			fmt.Println("error: ", err.Error())
 			return "", err
 		}
-		out.WriteString(renderedEvent + "\n")
+		converted.WriteString(renderedEvent + "\n")
 	}
 
 	ds, err := convertDataSources(dataSources)
