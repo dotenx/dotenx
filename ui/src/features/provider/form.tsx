@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ActionIcon, Avatar, Button, Code, Group, Select, Text } from '@mantine/core'
+import { ActionIcon, Avatar, Button, Code, Group, Loader, Select, Text } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
 import { forwardRef, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -11,6 +11,7 @@ import {
 	API_URL,
 	createProvider,
 	getIntegrationKinds,
+	GetIntegrationKindsResponse,
 	getProfile,
 	getProject,
 	QueryKey,
@@ -18,7 +19,7 @@ import {
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
-import { CreatableSelect, Field, Form, NewSelect } from '../ui'
+import { ContentWrapper, CreatableSelect, Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
 	name: z
@@ -42,36 +43,14 @@ type Schema = z.infer<typeof schema>
 export function ProviderForm() {
 	const modal = useModal()
 	const client = useQueryClient()
-	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const [newOptions, setNewOptions] = useState<any>()
-	const [typeValue, setTypeValue] = useState<any>()
-	const mutation = useMutation(createProvider, {
-		onSuccess: () => {
-			client.invalidateQueries(QueryKey.GetProviders)
-			modal.close()
-		},
-	})
-	const form = useForm<Schema>({
-		defaultValues: {
-			name: '',
-			type: '',
-			key: '',
-			secret: '',
-			scopes: [],
-			front_end_url: '',
-		},
-		resolver: zodResolver(schema),
-	})
-	form.setValue('type', typeValue as string)
-	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
-	const integrationKindOptions = integrationTypesQuery.data?.data
-		.filter((integration) => !!integration.oauth_provider)
-		.map((integration) => integration.type)
-		.map(toOption)
-	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
-	const providerName = form.watch('name')
 
-	useEffect(() => {
+	const hadnleSetValue = ({ data }: { data: GetIntegrationKindsResponse }) => {
+		const integrationKindOptions = data
+			.filter((integration) => !!integration.oauth_provider)
+			.map((integration) => integration.type)
+			.map(toOption)
+
 		setNewOptions(
 			integrationKindOptions?.map((o) => {
 				const imageUrl = () => {
@@ -101,7 +80,35 @@ export function ProviderForm() {
 				return { image: imageUrl(), ...o }
 			})
 		)
-	}, [])
+	}
+	useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds, {
+		onSuccess: (data) => {
+			hadnleSetValue(data)
+		},
+	})
+	const [typeValue, setTypeValue] = useState<any>()
+	const mutation = useMutation(createProvider, {
+		onSuccess: () => {
+			client.invalidateQueries(QueryKey.GetProviders)
+			modal.close()
+		},
+	})
+	const form = useForm<Schema>({
+		defaultValues: {
+			name: '',
+			type: '',
+			key: '',
+			secret: '',
+			scopes: [],
+			front_end_url: '',
+		},
+		resolver: zodResolver(schema),
+	})
+	form.setValue('type', typeValue as string)
+	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
+
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
+	const providerName = form.watch('name')
 
 	interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 		image: string
@@ -116,7 +123,7 @@ export function ProviderForm() {
 					<Avatar src={image} />
 
 					<div>
-						<Text size="md" className="capitalize">
+						<Text size="md" className="capitalize font-semibold">
 							{label}
 						</Text>
 					</div>
@@ -125,6 +132,7 @@ export function ProviderForm() {
 		)
 	)
 	SelectItem.displayName = 'SelectItem'
+
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
