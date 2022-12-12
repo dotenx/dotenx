@@ -27,10 +27,11 @@ type Box struct {
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
 		Name string `json:"name"`
+		As   string `json:"as"`
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init="{$nextTick(() => {{$event.Id}}())}"{{end}} {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init="{$nextTick(() => {{$event.Id}}())}"{{end}} {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
@@ -65,6 +66,11 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		renderedChildren = append(renderedChildren, renderedChild)
 	}
 
+	as := "div"
+	if box.Data.As != "" {
+		as = box.Data.As
+	}
+
 	params := struct {
 		RenderedChildren string
 		Id               string
@@ -77,6 +83,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		Events     []Event
 		ClassNames []string
 		VisibleAnimation
+		As string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               box.Id,
@@ -86,6 +93,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
 		VisibleAnimation: visibleAnimation,
+		As:               as,
 	}
 
 	var out bytes.Buffer

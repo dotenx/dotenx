@@ -32,10 +32,11 @@ type Columns struct {
 		Required     bool   `json:"required"`
 		Type         string `json:"type"`
 		Value        string `json:"value"`
+		As           string `json:"as"`
 	} `json:"data"`
 }
 
-const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{.RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
@@ -63,6 +64,11 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 	visibleAnimation, events := PullVisibleAnimation(columns.Events)
 	columns.Events = events
 
+	as := "div"
+	if columns.Data.As != "" {
+		as = columns.Data.As
+	}
+
 	params := struct {
 		RenderedChildren string
 		Id               string
@@ -75,6 +81,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		Events     []Event
 		ClassNames []string
 		VisibleAnimation
+		As string
 	}{
 		RenderedChildren: strings.Join(renderedChildren, "\n"),
 		Id:               columns.Id,
@@ -84,6 +91,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		Events:           columns.Events,
 		ClassNames:       columns.ClassNames,
 		VisibleAnimation: visibleAnimation,
+		As:               as,
 	}
 
 	// Render the component and its children

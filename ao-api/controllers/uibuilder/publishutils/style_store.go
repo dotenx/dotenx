@@ -68,6 +68,8 @@ font: inherit;
 }
 p, h1, h2, h3, h4, h5, h6 {
 overflow-wrap: break-word;
+font-weight: normal;
+font-style: normal;
 }
 #root, #__next {
 isolation: isolate;
