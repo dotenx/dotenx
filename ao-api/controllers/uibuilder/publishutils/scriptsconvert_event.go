@@ -73,7 +73,7 @@ func convertAction(action EventAction) (string, error) {
 			case "response":
 				return fmt.Sprintf("dtx_event.%s", valueSource.Value)
 			default:
-				return fmt.Sprintf(`"%s"`, valueSource.Value)
+				return fmt.Sprintf("%s", valueSource.Value)
 			}
 		},
 	}

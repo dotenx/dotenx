@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ActionIcon, Button, Code } from '@mantine/core'
+import { ActionIcon, Avatar, Button, Code, Group, Loader, Select, Text } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
+import { forwardRef, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { IoCheckmark, IoCopy } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
@@ -10,6 +11,7 @@ import {
 	API_URL,
 	createProvider,
 	getIntegrationKinds,
+	GetIntegrationKindsResponse,
 	getProfile,
 	getProject,
 	QueryKey,
@@ -17,7 +19,7 @@ import {
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
-import { CreatableSelect, Field, Form, NewSelect } from '../ui'
+import { ContentWrapper, CreatableSelect, Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
 	name: z
@@ -41,7 +43,50 @@ type Schema = z.infer<typeof schema>
 export function ProviderForm() {
 	const modal = useModal()
 	const client = useQueryClient()
-	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
+	const [newOptions, setNewOptions] = useState<any>()
+
+	const hadnleSetValue = ({ data }: { data: GetIntegrationKindsResponse }) => {
+		const integrationKindOptions = data
+			.filter((integration) => !!integration.oauth_provider)
+			.map((integration) => integration.type)
+			.map(toOption)
+
+		setNewOptions(
+			integrationKindOptions?.map((o) => {
+				const imageUrl = () => {
+					switch (o.value) {
+						case 'google':
+							return 'https://files.dotenx.com/7e467928-5267-4bd2-8665-245028533690.png'
+						case 'instagram':
+							return 'https://files.dotenx.com/6651658e-c8d2-4593-8f1b-be107c692faf.png'
+						case 'discord':
+							return 'https://files.dotenx.com/819c2274-b428-413e-8531-fc36340de72c.png'
+						case 'typeform':
+							return 'https://files.dotenx.com/099cae2c-f0cd-43f7-93bb-db2603b29cbc.png'
+						case 'dropbox':
+							return 'https://files.dotenx.com/8c68c03a-5876-4a5d-b8a5-8158ca772c1c.png'
+						case 'ebay':
+							return 'https://files.dotenx.com/31a9e7bb-9655-40c4-9c3f-a85516ab6f3f.png'
+						case 'facebook':
+							return 'https://files.dotenx.com/ae4d36e6-afe0-45e3-8b9c-b9fd5d7ccd14.png'
+						case 'slack-bot':
+							return 'https://files.dotenx.com/6bf34bf3-a8ea-4547-97e4-9fab4fb71b95.png'
+						case 'twitter':
+							return 'https://files.dotenx.com/81fa98a7-50a0-426c-b6be-a5ba51e322ab.png'
+						default:
+							return 'https://files.dotenx.com/4b613007-c386-4a10-8080-79a42c349a75.png'
+					}
+				}
+				return { image: imageUrl(), ...o }
+			})
+		)
+	}
+	useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds, {
+		onSuccess: (data) => {
+			hadnleSetValue(data)
+		},
+	})
+	const [typeValue, setTypeValue] = useState<any>()
 	const mutation = useMutation(createProvider, {
 		onSuccess: () => {
 			client.invalidateQueries(QueryKey.GetProviders)
@@ -59,13 +104,34 @@ export function ProviderForm() {
 		},
 		resolver: zodResolver(schema),
 	})
+	form.setValue('type', typeValue as string)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
-	const integrationKindOptions = integrationTypesQuery.data?.data
-		.filter((integration) => !!integration.oauth_provider)
-		.map((integration) => integration.type)
-		.map(toOption)
+
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const providerName = form.watch('name')
+
+	interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+		image: string
+		label: string
+		value: string
+	}
+
+	const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+		({ image, label, ...others }: ItemProps, ref) => (
+			<div ref={ref} {...others}>
+				<Group noWrap>
+					<Avatar src={image} />
+
+					<div>
+						<Text size="md" className="capitalize font-semibold">
+							{label}
+						</Text>
+					</div>
+				</Group>
+			</div>
+		)
+	)
+	SelectItem.displayName = 'SelectItem'
 
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
@@ -77,14 +143,26 @@ export function ProviderForm() {
 					label="Name"
 					placeholder="Provider name"
 				/>
-				<NewSelect
-					control={form.control}
-					errors={form.formState.errors}
-					options={integrationKindOptions}
-					loading={integrationTypesQuery.isLoading}
-					name="type"
+				<Select
+					styles={(theme) => ({
+						item: {
+							'&[data-selected]': {
+								'&, &:hover': {
+									backgroundColor:
+										theme.colorScheme === 'dark'
+											? theme.colors.dark[5]
+											: theme.colors.dark[3],
+									color: theme.colorScheme === 'dark' ? theme.white : theme.white,
+								},
+							},
+						},
+					})}
+					onChange={setTypeValue}
 					label="Type"
 					placeholder="Provider kind"
+					itemComponent={SelectItem}
+					data={newOptions || []}
+					maxDropdownHeight={400}
 				/>
 				<CallbackUrls projectName={projectName} providerName={providerName} />
 				<Field

@@ -32,6 +32,7 @@ type Text struct {
 		Text struct {
 			Value []TextSource `json:"value"`
 		} `json:"text"`
+		As string `json:"as"`
 	} `json:"data"`
 }
 
@@ -45,7 +46,7 @@ func renderTextSource(textSource TextSource) string {
 
 // TODO: id in templates rendered with RepeatFrom won't work! Do something about it
 
-const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<div {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html="` + "`" + "{{range .Data.Text.Value}}{{renderTextSource .}}{{end}}" + "`" + `"></div>{{if .RepeatFrom.Name}}</template>{{end}}`
+const textTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<{{.Data.As}} {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" display="inline" x-html="` + "`" + "{{range .Data.Text.Value}}{{renderTextSource .}}{{end}}" + "`" + `"></{{.Data.As}}>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertText(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
@@ -67,6 +68,10 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 	if err != nil {
 		fmt.Println(err)
 		return "", err
+	}
+
+	if text.Data.As == "" {
+		text.Data.As = "p"
 	}
 
 	visibleAnimation, events := PullVisibleAnimation(text.Events)
