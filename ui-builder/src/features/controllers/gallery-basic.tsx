@@ -1,7 +1,7 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
+import { Slider } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/gallery-basic.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
@@ -10,6 +10,7 @@ import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class GalleryBasic extends Controller {
 	name = 'Basic Gallery'
@@ -24,26 +25,65 @@ export class GalleryBasic extends Controller {
 // =============  renderOptions =============
 
 function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
-	const [selectedTile, setSelectedTile] = useState(0)
-
 	const containerDiv = options.element.children?.[0] as BoxElement
-	const getSelectedSimpleDiv = () => containerDiv.children?.[selectedTile] as BoxElement
 	const viewport = useAtomValue(viewportAtom)
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
 			case 'desktop':
 				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			case 'tablet':
 				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			default:
 				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
 
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return containerDiv.children?.map((tile, index) => {
+			return {
+				id: tile.id,
+				content: (
+					<div key={index}>
+						<ImageDrop
+							onChange={(src) => {
+								options.set(
+									produce(tile, (draft) => {
+										draft.style.desktop = {
+											default: {
+												...draft.style.desktop?.default,
+												...{ backgroundImage: `url(${src})` },
+											},
+										}
+									})
+								)
+							}}
+							src={
+								// remove the url() part
+								tile?.style.desktop?.default?.backgroundImage?.trim().length === 5 // This means that the url is empty
+									? ''
+									: tile?.style.desktop?.default?.backgroundImage?.substring(
+											4,
+											(tile?.style.desktop?.default?.backgroundImage?.trim()
+												.length ?? 0) - 1 // Remove the trailing )
+									  ) ?? ''
+							}
+						/>
+					</div>
+				),
+				onTabDelete: () => {
+					options.set(
+						produce(containerDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
+			}
+		})
+	}, [containerDiv.children])
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Basic Gallery" />
@@ -184,80 +224,31 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				</>
 			)}
 
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
+			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(containerDiv, (draft) => {
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
+							})
+						)
+					}
+				}}
+				onAddNewTab={() => {
 					options.set(
 						produce(containerDiv, (draft) => {
 							draft.children?.push(deserializeElement(simpleDiv))
 						})
 					)
 				}}
-			>
-				+ Add image
-			</Button>
-			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-
-			<Select
-				label="Tiles"
-				placeholder="Select a tile"
-				data={containerDiv.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				tabs={tabsList}
 			/>
-
-			<ImageDrop
-				onChange={(src) => {
-					options.set(
-						produce(getSelectedSimpleDiv(), (draft) => {
-							draft.style.desktop = {
-								default: {
-									...draft.style.desktop?.default,
-									...{ backgroundImage: `url(${src})` },
-								},
-							}
-						})
-					)
-				}}
-				src={
-					// remove the url() part
-					getSelectedSimpleDiv()?.style.desktop?.default?.backgroundImage?.trim()
-						.length === 5 // This means that the url is empty
-						? ''
-						: getSelectedSimpleDiv()?.style.desktop?.default?.backgroundImage?.substring(
-								4,
-								(getSelectedSimpleDiv()?.style.desktop?.default?.backgroundImage?.trim()
-									.length ?? 0) - 1 // Remove the trailing )
-						  ) ?? ''
-				}
-			/>
-
-			<Button
-				disabled={containerDiv.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
-			>
-				+ Delete image
-			</Button>
 		</div>
 	)
 }
