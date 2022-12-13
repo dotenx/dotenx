@@ -31,7 +31,7 @@ type Form struct {
 	} `json:"data"`
 }
 
-const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} @submit.prevent="$store.{{.DataSourceName}}.fetch({body: formData})" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
+const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}">{{end}}<form {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} @submit.prevent="$store.{{.DataSourceName}}.fetch(formData)" x-data="{formData:{}}" {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}">{{.RenderedChildren}}</form>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
