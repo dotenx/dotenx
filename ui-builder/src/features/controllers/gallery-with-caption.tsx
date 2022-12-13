@@ -1,7 +1,7 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
+import { Slider } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/gelly-with-caption.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
@@ -13,6 +13,7 @@ import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class GalleryWithCaptions extends Controller {
 	name = 'Gallery with image captions'
@@ -27,11 +28,7 @@ export class GalleryWithCaptions extends Controller {
 // =============  renderOptions =============
 
 function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
-	const [selectedTile, setSelectedTile] = useState(0)
-
-	const wrapper = options.element
 	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
-	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
 	const viewport = useAtomValue(viewportAtom)
 
 	const countGridTemplateColumns = (mode: string) => {
@@ -47,7 +44,57 @@ function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
 				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
-	const selectedTileImage = getSelectedTileDiv().children?.[0] as ImageElement
+
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return containerDiv.children?.map((tile, index) => {
+			const selectedTileImage = tile.children?.[0] as ImageElement
+			return {
+				id: tile.id,
+				content: (
+					<div key={index}>
+						<Intelinput
+							label="Image caption"
+							name="title"
+							size="xs"
+							value={(tile.children?.[1] as TextElement).data.text}
+							onChange={(value) =>
+								options.set(
+									produce(tile.children?.[1] as TextElement, (draft) => {
+										draft.data.text = value
+									})
+								)
+							}
+						/>
+						{ColorOptions.getTextColorOption({
+							options,
+							wrapperDiv: tile.children?.[1] as TextElement,
+							title: 'Color',
+						})}
+
+						<ImageDrop
+							onChange={(src) =>
+								options.set(
+									produce(selectedTileImage, (draft) => {
+										draft.style.desktop!.default!.backgroundImage = `url(${src})`
+									})
+								)
+							}
+							src={extractUrl(
+								selectedTileImage.style.desktop!.default!.backgroundImage as string
+							)}
+						/>
+					</div>
+				),
+				onTabDelete: () => {
+					options.set(
+						produce(containerDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
+			}
+		})
+	}, [containerDiv.children])
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Gallery with image captions" />
@@ -189,11 +236,22 @@ function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
 			)}
 
 			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(containerDiv, (draft) => {
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
+							})
+						)
+					}
+				}}
+				onAddNewTab={() => {
 					options.set(
 						produce(containerDiv, (draft) => {
 							draft.children?.push(
@@ -204,71 +262,8 @@ function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
 						})
 					)
 				}}
-			>
-				+ Add feature
-			</Button>
-			<Select
-				label="Tiles"
-				placeholder="Select a tile"
-				data={containerDiv.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				tabs={tabsList}
 			/>
-			<Intelinput
-				label="Image caption"
-				name="title"
-				size="xs"
-				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(value) =>
-					options.set(
-						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			{ColorOptions.getTextColorOption({
-				options,
-				wrapperDiv: getSelectedTileDiv().children?.[1] as TextElement,
-				title: 'Color',
-			})}
-
-			<ImageDrop
-				onChange={(src) =>
-					options.set(
-						produce(selectedTileImage, (draft) => {
-							draft.style.desktop!.default!.backgroundImage = `url(${src})`
-						})
-					)
-				}
-				src={extractUrl(
-					selectedTileImage.style.desktop!.default!.backgroundImage as string
-				)}
-			/>
-			<Button
-				disabled={containerDiv.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
-			>
-				+ Delete feature
-			</Button>
 		</div>
 	)
 }
