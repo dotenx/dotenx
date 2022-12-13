@@ -29,9 +29,12 @@ type CollapsibleHeaderOpened struct {
 	} `json:"data"`
 }
 
-const collapsibleHeaderOpenedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active != $el.parentElement.id : !isOpen[$el.parentElement.id]' @click='toggle ? active = $el.parentElement.id : isOpen[$el.parentElement.id] = true'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const collapsibleHeaderOpenedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active != $el.parentElement.id : !isOpen[$el.parentElement.id]' @click='toggle ? active = $el.parentElement.id : isOpen[$el.parentElement.id] = true'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
+	funcMap := template.FuncMap{
+		"renderRepeatFromName": renderRepeatFromName,
+	}
 	b, err := json.Marshal(component)
 	if err != nil {
 		fmt.Println(err)
@@ -39,7 +42,7 @@ func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore
 	}
 	var collapsibleHeaderOpened CollapsibleHeaderOpened
 	json.Unmarshal(b, &collapsibleHeaderOpened)
-	tmpl, err := template.New("collapsibleHeaderOpened").Parse(collapsibleHeaderOpenedTemplate)
+	tmpl, err := template.New("collapsibleHeaderOpened").Funcs(funcMap).Parse(collapsibleHeaderOpenedTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
