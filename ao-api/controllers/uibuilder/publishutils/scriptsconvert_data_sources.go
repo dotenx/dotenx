@@ -32,7 +32,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 	Alpine.store('{{.StateName}}', {
 		isLoading: true,
 		'{{.StateName}}': Alpine.store(null),
-		fetch: function ({body{{if .Body}}={{range .Body.Value}}{{renderTextSource .}}{{end}}{{end}}}={}) {
+		fetch: function ({body={{if .Body.Value}}{{range .Body.Value}}{{renderTextSource .}}{{end}}{{else}}{}{{end}}) {
 
 			url = '{{range .Url.Value}}{{renderTextSource .}}{{end}}';
 			fetch(url, {
