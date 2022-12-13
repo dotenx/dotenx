@@ -2,6 +2,7 @@ package databaseService
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
@@ -24,6 +25,7 @@ type DatabaseService interface {
 	DeleteDatabaseUser(accountId string, projectName string) error
 
 	InsertRow(tpAccountId string, projectTag string, tableName string, row map[string]interface{}) error
+	ImportCsvFile(file *multipart.FileHeader, projectTag string, tableName string) error
 	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(tpAccountId string, projectTag string, tableName string, id int, filters databaseStore.ConditionGroup) error
 	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, page int, size int) (map[string]interface{}, error)
