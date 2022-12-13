@@ -31,12 +31,13 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{.RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init="{$nextTick(() => {{$event.Id}}())}"{{end}} {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init="{$nextTick(() => {{$event.Id}}())}"{{end}} {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
 	funcMap := template.FuncMap{
-		"renderBindings": RenderBindings,
+		"renderBindings":       RenderBindings,
+		"renderRepeatFromName": renderRepeatFromName,
 	}
 
 	b, err := json.Marshal(component)
@@ -133,6 +134,25 @@ func PullVisibleAnimation(events []Event) (VisibleAnimation, []Event) {
 		}
 	}
 	return visibleAnimation, newEvents
+}
+
+func renderRepeatFromName(name string) string {
+	/*
+		if `name` starts with $store.source, remove .source and place ?.data after the part after .source, o.w. return name
+		for example, if name equals $store.source.x.y.z the function should return $store.x?.data.y.z
+	*/
+	if strings.HasPrefix(name, "$store.source") {
+		tmp := strings.Replace(name, "$store.source.", "", 1)
+		parts := strings.SplitN(tmp, ".", 2)
+		if len(parts) == 1 {
+			return fmt.Sprintf("$store.%s.data", parts[0])
+		} else {
+			return fmt.Sprintf("$store.%s.data?.%s", parts[0], parts[1])
+		}
+	} else {
+		return name
+	}
+
 }
 
 func RenderBindings(bindings Bindings) string {
