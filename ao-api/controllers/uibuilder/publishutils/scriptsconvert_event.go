@@ -85,7 +85,7 @@ func convertAction(action EventAction) (string, error) {
 `
 
 	const navigateTemplate = `
-	window.location.href="{{renderTextStates .To.Value}}"
+	window.location.href={{renderTextStates .To.Value}}
 	`
 	const toggleStateTemplate = `
 	Alpine.store('{{.StateName.Mode}}').toggle("{{.StateName.Value}}")
