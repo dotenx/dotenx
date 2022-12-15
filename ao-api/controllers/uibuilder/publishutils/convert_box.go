@@ -189,8 +189,25 @@ func renderTextStates(textState []TextState) string {
 	var renderedTextState = strings.Builder{}
 
 	for _, s := range textState {
-		renderedTextState.WriteString(s.Value)
+		toSend := s.Value
+		if s.Kind == "state" {
+
+			if strings.HasPrefix(s.Value, "$store.source") {
+				toSend = strings.Replace(s.Value, "$store.source.", "", 1)
+			} else {
+				toSend = strings.Replace(s.Value, "$store.", "", 1)
+			}
+
+			parts := strings.SplitN(toSend, ".", 2)
+			if len(parts) == 1 {
+				toSend = fmt.Sprintf("Alpine.store('%s')", parts[0])
+			} else {
+				toSend = fmt.Sprintf("Alpine.store('%s').%s", parts[0], parts[1])
+			}
+			toSend = fmt.Sprintf("${%s}", toSend)
+		}
+		renderedTextState.WriteString(toSend)
 	}
 
-	return renderedTextState.String()
+	return fmt.Sprintf("`%s`", renderedTextState.String())
 }
