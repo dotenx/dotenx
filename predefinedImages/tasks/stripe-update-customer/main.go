@@ -1,65 +1,86 @@
+// image: stripe/stripe-update-customer:lambda5
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
-func main() {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	name := os.Getenv("CUS_NAME")
-	phone := os.Getenv("CUS_PHONE")
-	email := os.Getenv("CUS_EMAIL")
-	id := os.Getenv("CUS_ID")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
+// type Event struct {
+// 	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+// 	CusName        string `json:"CUS_NAME"`
+// 	CusPhone       string `json:"CUS_PHONE"`
+// 	CusEmail       string `json:"CUS_EMAIL"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
+
+type Event struct {
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
+}
+
+type Response struct {
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	outputCnt := 0
+	// outputs := make([]map[string]interface{}, 0)
+	// resultEndpoint := event.ResultEndpoint
+	// authorization := event.Authorization
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+	name := singleInput["CUS_NAME"].(string)
+	phone := singleInput["CUS_PHONE"].(string)
+	email := singleInput["CUS_EMAIL"].(string)
+	id := singleInput["CUS_ID"].(string)
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	id, err := updateCustomer(sc, id, name, phone, email)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		// continue
 	}
-	outputs := make(map[string]interface{})
-	outputs["customer_id"] = id
-	data := map[string]interface{}{
-		"status":       "started",
-		"return_value": outputs,
-		"log":          "",
-	}
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	headers := []Header{
-		{
-			Key:   "Content-Type",
-			Value: "application/json",
-		},
-		{
-			Key:   "authorization",
-			Value: authorization,
+	// outputs = append(outputs, map[string]interface{}{
+	// 	"customer_id": id,
+	// })
+	outputCnt++
+	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": map[string]interface{}{
+			"customer_id": id,
 		},
 	}
-	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println(status)
-		return
+	if resp.Successfull {
+		resp.Status = "completed"
+		fmt.Println("All customer(s) updated successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Some/all customer(s) can't updated successfully")
 	}
-	fmt.Println(string(out))
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func updateCustomer(sc *client.API, id, Name, Phone, Email string) (string, error) {

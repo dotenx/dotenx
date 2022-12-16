@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -29,14 +30,20 @@ func LocalTokenTypeMiddleware() gin.HandlerFunc {
 				c.AbortWithError(http.StatusUnauthorized, err)
 				return
 			}
+			userGroup, err := utils.GetUserGroup(tokenString)
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
 			c.Set("accountId", accountId)
 			c.Set("tpAccountId", tpAccountId)
+			c.Set("userGroup", userGroup)
 			c.Set("tokenType", "tp")
 			c.Next()
 			return
 		} else {
 			c.Set("tokenType", "external")
-			c.Set("accountId", "123456")
+			c.Set("accountId", config.Configs.App.AccountId)
 			c.Next()
 			return
 		}

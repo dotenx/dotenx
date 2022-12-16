@@ -10,7 +10,7 @@ import {
 	UpdateRecordRequest,
 } from '../../api'
 import { useModal } from '../hooks'
-import { Field, Form } from '../ui'
+import { CreatableSelect, Field, Form, Textarea } from '../ui'
 
 export function RecordForm({
 	columns,
@@ -39,15 +39,35 @@ export function RecordForm({
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
 				{columns.map((column) =>
-					column.type !== 'yes_no' ? (
+					column.type === 'yes_no' ? (
+						<Checkbox
+							key={column.name}
+							label={column.name}
+							{...form.register(column.name)}
+						/>
+					) : column.type.includes('array') ? (
+						<CreatableSelect
+							key={column.name}
+							control={form.control}
+							name={column.name}
+							label={column.name}
+							placeholder=""
+						/>
+					) : column.type === 'dtx_json' ? (
+						<Textarea
+							key={column.name}
+							raw
+							control={form.control}
+							name={column.name}
+							label={column.name}
+						/>
+					) : (
 						<Field
 							key={column.name}
 							label={column.name}
 							name={column.name}
 							control={form.control}
 						/>
-					) : (
-						<Checkbox label={column.name} {...form.register(column.name)} />
 					)
 				)}
 			</div>
@@ -89,15 +109,35 @@ export function EditRecordForm({
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
 				{columns.map((column) =>
-					column.type !== 'yes_no' ? (
+					column.type === 'yes_no' ? (
+						<Checkbox
+							key={column.name}
+							label={column.name}
+							{...form.register(column.name)}
+						/>
+					) : column.type.includes('array') ? (
+						<CreatableSelect
+							key={column.name}
+							control={form.control}
+							name={column.name}
+							label={column.name}
+							placeholder=""
+						/>
+					) : column.type === 'dtx_json' ? (
+						<Textarea
+							key={column.name}
+							raw
+							control={form.control}
+							name={column.name}
+							label={column.name}
+						/>
+					) : (
 						<Field
 							key={column.name}
 							label={column.name}
 							name={column.name}
 							control={form.control}
 						/>
-					) : (
-						<Checkbox label={column.name} {...form.register(column.name)} />
 					)
 				)}
 			</div>

@@ -8,7 +8,7 @@ import (
 	"regexp"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/dotenx/dotenx/ao-api/config"
+	// "github.com/dotenx/dotenx/ao-api/config"
 	dbPkg "github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/db/migrate/postgresql"
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -16,23 +16,25 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
+
+	// "github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
 )
 
-func Bootstrap() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
+// TODO: Fix this if it's broken. This function doesn't exist anymore
+// func Bootstrap() error {
+// 	err := godotenv.Load()
+// 	if err != nil {
+// 		return err
+// 	}
 
-	err = config.Load()
-	if err != nil {
-		return err
-	}
-	log.Println("Environment variables loaded...")
-	return nil
-}
+// 	err = config.Load()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.Println("Environment variables loaded...")
+// 	return nil
+// }
 
 func SetUpRouter() *gin.Engine {
 	router := gin.Default()

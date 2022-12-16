@@ -1,3 +1,4 @@
+// image: hawwwdi/send-discord-message:lambda4
 package main
 
 import (
@@ -6,31 +7,59 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-type Body struct {
+type DiscordBody struct {
 	Content string `json:"content"`
 }
 
-func main() {
-	webhookURL := os.Getenv("WEBHOOK_URL")
-	text := os.Getenv("TEXT")
-	body := Body{
+// type Event struct {
+// 	WebhookUrl string `json:"WEBHOOK_URL"`
+// 	Text       string `json:"TEXT"`
+// }
+
+type Event struct {
+	Body map[string]interface{} `json:"body"`
+}
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	lambdaResp := Response{}
+	lambdaResp.Successfull = true
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	webhookURL := singleInput["WEBHOOK_URL"].(string)
+	text := singleInput["TEXT"].(string)
+	discordBody := DiscordBody{
 		Content: text,
 	}
-	data, _ := json.Marshal(body)
+	data, _ := json.Marshal(discordBody)
 	req, _ := http.NewRequest("POST", webhookURL, bytes.NewReader(data))
 	req.Header["Content-Type"] = []string{"application/json"}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		lambdaResp.Successfull = false
+		// continue
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("send message failed, status: %v, response: %v", resp.StatusCode, string(bytes))
-		os.Exit(1)
+		fmt.Printf("send message failed, status: %v, response: %v\n", resp.StatusCode, string(bytes))
+		lambdaResp.Successfull = false
+		// continue
 	}
-	return
+	// }
+	if lambdaResp.Successfull {
+		fmt.Println("All message(s) sended successfully")
+	}
+	return lambdaResp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }

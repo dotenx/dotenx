@@ -15,16 +15,20 @@ import (
 func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		var tpAccountId string
+		// TODO: remove this '?' (question mark added by Hojjat :) )
+		var tpAccountId, userGroup string
 		if tp, ok := c.Get("tokenType"); ok && tp == "tp" {
 			accId, _ := utils.GetThirdPartyAccountId(c)
 			tpAccountId = fmt.Sprintf("%v", accId)
+			ug, _ := c.Get("userGroup") // We must always set the user_group claim even if it's empty
+			userGroup = ug.(string)
 		} else if config.Configs.App.RunLocally {
 			tpAccountId = "tp-123456"
 		}
@@ -32,7 +36,7 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "creating from template requeirs third party account id"})
 			return
 		}
-		p, err := mc.Service.GetPipelineByName(accountId, name)
+		p, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -57,11 +61,18 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 			Manifest: p.PipelineDetailes.Manifest,
 		}
 
-		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId)
+		automationName, err := mc.Service.CreateFromTemplate(&base, &pipeline, fields, tpAccountId, p.ProjectName, userGroup, int(p.PipelineDetailes.PipelineId))
 		if err != nil {
 			log.Println(err.Error())
 			if err.Error() == "invalid pipeline name or base version" || err.Error() == "pipeline already exists" || strings.Contains(err.Error(), "your inputed integration") {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			} else if err.Error() == "you don't have permission to create automation from this template" {
+				c.JSON(http.StatusForbidden, gin.H{
+					"message": err.Error(),
+				})
 				return
 			}
 			c.Status(http.StatusInternalServerError)
@@ -75,13 +86,14 @@ func (mc *CRUDController) CreateFromTemplate() gin.HandlerFunc {
 func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		temp, err := mc.Service.GetTemplateDetailes(accountId, name)
+		temp, err := mc.Service.GetTemplateDetailes(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -94,13 +106,14 @@ func (mc *CRUDController) GetTemplateDetailes() gin.HandlerFunc {
 func (mc *CRUDController) GetInteractionDetailes() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, err := utils.GetAccountId(c)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		temp, err := mc.Service.GetInteractionDetailes(accountId, name)
+		temp, err := mc.Service.GetInteractionDetailes(accountId, name, projectName)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

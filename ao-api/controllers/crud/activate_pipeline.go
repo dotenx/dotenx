@@ -12,8 +12,9 @@ import (
 func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -26,7 +27,15 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 		err = mc.Service.ActivatePipeline(accountId, pipeline.PipelineDetailes.Id)
 		if err != nil {
 			log.Println(err.Error())
-			c.Status(http.StatusInternalServerError)
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": err.Error(),
+				})
+			}
 			return
 		}
 	}
@@ -35,8 +44,9 @@ func (mc *CRUDController) ActivatePipeline() gin.HandlerFunc {
 func (mc *CRUDController) DeActivatePipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)

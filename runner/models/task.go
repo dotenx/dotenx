@@ -4,6 +4,7 @@ type TaskDetails struct {
 	Name           string       `json:"name"`
 	Id             int          `json:"id"`
 	Type           string       `json:"type"`
+	AwsLambda      string       `json:"aws_lambda"`
 	Image          string       `json:"image"`
 	Timeout        int          `json:"timeout"`
 	Body           TaskBody     `json:"body"`
@@ -12,7 +13,7 @@ type TaskDetails struct {
 	Workspace      string
 }
 
-type TaskBody map[string]interface{}
+type TaskBody interface{}
 
 type TaskExecutionResult struct {
 	Name        string                 `json:"name"`

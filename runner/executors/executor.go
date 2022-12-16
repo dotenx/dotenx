@@ -1,7 +1,7 @@
 package executors
 
 import (
-	"github.com/dotenx/dotenx/runner/executors/docker"
+	"github.com/dotenx/dotenx/runner/executors/awsLambda"
 	"github.com/dotenx/dotenx/runner/models"
 )
 
@@ -10,5 +10,5 @@ type Executor interface {
 }
 
 func NewExecutor() Executor {
-	return &docker.DockerExecutor
+	return &awsLambda.LambdaExecutor
 }

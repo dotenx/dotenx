@@ -3,6 +3,8 @@ package databaseStore
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -10,7 +12,34 @@ import (
 	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	"github.com/lib/pq"
 )
+
+type jsonInterface map[string]interface{}
+
+func (j jsonInterface) Value() (driver.Value, error) {
+	return json.Marshal(j)
+}
+
+func (j *jsonInterface) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion .([]byte) failed")
+	}
+
+	var i interface{}
+	err := json.Unmarshal(b, &i)
+	if err != nil {
+		return err
+	}
+
+	*j, ok = i.(map[string]interface{})
+	if !ok {
+		return errors.New("type assertion .(map[string]interface{}) failed")
+	}
+
+	return nil
+}
 
 var findProjectDatabase = `
 SELECT account_id, name FROM projects
@@ -47,7 +76,9 @@ func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, table
 
 	db, fn, err := dbutil.GetDbInstance(res.AccountId, res.ProjectName)
 
-	defer fn(db.Connection)
+	if db != nil {
+		defer fn(db.Connection)
+	}
 	if err != nil {
 		log.Println("Error getting database connection:", err)
 		return err
@@ -68,7 +99,22 @@ func (ds *databaseStore) InsertRow(ctx context.Context, projectTag string, table
 		cb.WriteString(key + ",")
 		pb.WriteString("$" + strconv.Itoa(count) + ",")
 		count++
-		values = append(values, value)
+		if _, ok := value.(map[string]interface{}); ok {
+			jsBytes, err := json.Marshal(value)
+			if err != nil {
+				return err
+			}
+			var js jsonInterface
+			err = json.Unmarshal(jsBytes, &js)
+			if err != nil {
+				return err
+			}
+			values = append(values, js)
+		} else if _, ok := value.([]interface{}); ok {
+			values = append(values, pq.Array(value))
+		} else {
+			values = append(values, value)
+		}
 
 	}
 	columns := strings.TrimSuffix(cb.String(), ",")

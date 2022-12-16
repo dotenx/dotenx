@@ -6,6 +6,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -29,8 +30,18 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 		}
 		fmt.Println(dto)
 
-		if err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		err := dc.Service.AddTable(accountId, dto.ProjectName, dto.TableName, dto.IsPublic, dto.IsWritePublic)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 
@@ -40,6 +51,8 @@ func (dc *DatabaseController) AddTable() gin.HandlerFunc {
 }
 
 type addTableDTO struct {
-	ProjectName string `json:"projectName"`
-	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=2,max=20"`
+	ProjectName   string `json:"projectName"`
+	TableName     string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=2,max=20"`
+	IsPublic      bool   `json:"isPublic"`
+	IsWritePublic bool   `json:"isWritePublic"`
 }

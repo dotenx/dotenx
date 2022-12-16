@@ -2,13 +2,15 @@ import { format } from 'date-fns'
 import { useSetAtom } from 'jotai'
 import { useEffect } from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
+import { IoArrowBack } from 'react-icons/io5'
 import { useQuery } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AutomationKind, getAutomation, getExecution, QueryKey } from '../api'
 import { selectedAutomationAtom } from '../features/atoms'
 import { Flow } from '../features/flow'
 import { useTaskStatus } from '../features/task'
 import { Loader } from '../features/ui'
+import { AUTOMATION_PROJECT_NAME } from './automation'
 
 export default function ExecutionPage({ kind = 'automation' }: { kind?: AutomationKind }) {
 	return (
@@ -19,19 +21,23 @@ export default function ExecutionPage({ kind = 'automation' }: { kind?: Automati
 }
 
 function Content({ kind }: { kind: AutomationKind }) {
-	const { name: automationName, id: executionId } = useParams()
+	const {
+		name: automationName,
+		id: executionId,
+		projectName = AUTOMATION_PROJECT_NAME,
+	} = useParams()
 	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
 	const automationQuery = useQuery(
 		[QueryKey.GetAutomation, automationName],
 		() => {
 			if (!automationName) return
-			return getAutomation(automationName)
+			return getAutomation({ name: automationName, projectName })
 		},
 		{ enabled: !!automationName, onSuccess: (data) => setSelectedAutomation(data?.data) }
 	)
 	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
-	const { projectName } = useParams()
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		if (automationName && automation)
@@ -52,6 +58,9 @@ function Content({ kind }: { kind: AutomationKind }) {
 
 	return (
 		<>
+			<div onClick={() => navigate(-1)} className="ml-52 mt-10 cursor-pointer">
+				<IoArrowBack />
+			</div>
 			<ExecutionDetails
 				kind={kind}
 				automationName={automationName}

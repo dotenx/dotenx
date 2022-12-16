@@ -1,6 +1,7 @@
 service: google
 type: Read google spreadsheet
 image: mehrdadesh/read-google-spreadsheet
+on_test_stage: true
 integrations: [google]
 fields:
     - key: spreadsheetId

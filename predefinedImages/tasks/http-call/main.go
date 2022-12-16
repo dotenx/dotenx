@@ -1,3 +1,4 @@
+// image: awrmin/dotenx-http-call:lambda6
 package main
 
 import (
@@ -7,77 +8,118 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	method := os.Getenv("method")
-	url := os.Getenv("url")
-	body := os.Getenv("body")
-	//taskName := os.Getenv("TASK_NAME")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
+type Event struct {
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
+}
+
+// type Event struct {
+// 	Method         string `json:"method"`
+// 	Url            string `json:"url"`
+// 	Body           string `json:"body"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
+
+type Response struct {
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	// resultEndpoint := event.ResultEndpoint
+	// authorization := event.Authorization
+	// resultData := make([]interface{}, 0)
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	method := singleInput["method"].(string)
+	url := singleInput["url"].(string)
+	body := fmt.Sprint(singleInput["body"])
+	headersStr := fmt.Sprint(singleInput["headers"])
+	var headersMap map[string]interface{}
+	var headers []Header
+	headersMap, ok := singleInput["headers"].(map[string]interface{})
+	if !ok {
+		json.Unmarshal([]byte(headersStr), &headersMap)
+	}
+	for key, val := range headersMap {
+		headers = append(headers, Header{
+			Key:   key,
+			Value: fmt.Sprint(val),
+		})
+	}
 	var out []byte
 	var err error
 	var statusCode int
 	if body == "" {
-		out, err, statusCode = HttpRequest(method, url, nil, nil, 0)
+		out, err, statusCode = HttpRequest(method, url, nil, headers, 0)
 	} else {
-		json_data, err := json.Marshal(body)
-		if err != nil {
-			return
+		var jsonMap map[string]interface{}
+		myMap, ok := singleInput["body"].(map[string]interface{})
+		if ok {
+			jsonMap = myMap
+		} else {
+			json.Unmarshal([]byte(body), &jsonMap)
 		}
-		payload := bytes.NewBuffer(json_data)
-
-		out, err, statusCode = HttpRequest(method, url, payload, nil, 0)
+		jsonData, err := json.Marshal(jsonMap)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			resp.Successfull = false
+			// continue
+		}
+		payload := bytes.NewBuffer(jsonData)
+		out, err, statusCode = HttpRequest(method, url, payload, headers, 0)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			resp.Successfull = false
+			// continue
+		}
 	}
 
 	if err != nil {
 		// We just log the error and don't handle handle it, send the result to the ao-api as Failed
 		fmt.Printf("Error: %s", err.Error())
-		return
+		resp.Successfull = false
+		// continue
 	}
 
-	var resultData map[string]interface{}
-	if statusCode == http.StatusOK {
-		json.Unmarshal(out, &resultData)
-		fmt.Print(resultData)
-		fmt.Println("calling endpoint")
-		//resultData["fileName"] = "name of your created file as output"
-		data := map[string]interface{}{
-			"status":       "started",
-			"return_value": resultData,
-			"log":          "",
-		}
-		headers := []Header{
-			{
-				Key:   "Content-Type",
-				Value: "application/json",
-			},
-			{
-				Key:   "authorization",
-				Value: authorization,
-			},
-		}
-		json_data, err := json.Marshal(data)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		payload := bytes.NewBuffer(json_data)
-		out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-		if err != nil {
-			fmt.Println(err)
-			fmt.Println(status)
-			return
-		}
-		fmt.Println(string(out))
-	} else {
-		panic("Failed")
+	fmt.Println("Status code:", statusCode)
+	// if statusCode >= http.StatusOK && statusCode <= 299 {
+	var res interface{}
+	json.Unmarshal(out, &res)
+	// resultData = append(resultData, res)
+	// }
+	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": map[string]interface{}{
+			"response":    res,
+			"status_code": statusCode,
+		},
 	}
+	if resp.Successfull {
+		resp.Status = "completed"
+		fmt.Println("All request(s) sended successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Some/all request(s) can't sended successfully")
+	}
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

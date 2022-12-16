@@ -124,8 +124,11 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 		return integration, err
 	} else {
 		var gothProvider *goth.Provider
+		var oauthProvider = models.OauthProvider{}
 		if integration.Provider == "" {
 			providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+			providers := oauth.GetProvidersMap()
+			oauthProvider = providers[providerName]
 			gothProvider, err = oauth.GetProviderByName(providerName)
 			if err != nil {
 				return models.Integration{}, err
@@ -145,6 +148,10 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 			}
 			userProvider.Key = decryptedKey
 			userProvider.Secret = decryptedSecret
+			oauthProvider.Name = userProvider.Type
+			oauthProvider.Key = decryptedKey
+			oauthProvider.Secret = decryptedSecret
+			oauthProvider.DirectUrl = userProvider.DirectUrl
 			redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", integration.Provider, accountId)
 			gothProvider, err = provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
 			if err != nil {
@@ -152,7 +159,7 @@ func (manager *IntegrationManager) GetIntegrationByName(accountId, name string) 
 			}
 		}
 
-		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, integration.Name, accountId, manager.RedisStore)
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, oauthProvider, integration.Name, accountId, manager.RedisStore)
 		if err != nil {
 			return models.Integration{}, err
 		}
@@ -190,8 +197,11 @@ func (manager *IntegrationManager) GetIntegrationForThirdPartyAccount(accountId,
 		return integration, err
 	} else {
 		var gothProvider *goth.Provider
+		var oauthProvider = models.OauthProvider{}
 		if integration.Provider == "" {
 			providerName := models.AvaliableIntegrations[integration.Type].OauthProvider
+			providers := oauth.GetProvidersMap()
+			oauthProvider = providers[providerName]
 			gothProvider, err = oauth.GetProviderByName(providerName)
 			if err != nil {
 				return models.Integration{}, err
@@ -211,6 +221,10 @@ func (manager *IntegrationManager) GetIntegrationForThirdPartyAccount(accountId,
 			}
 			userProvider.Key = decryptedKey
 			userProvider.Secret = decryptedSecret
+			oauthProvider.Name = userProvider.Type
+			oauthProvider.Key = decryptedKey
+			oauthProvider.Secret = decryptedSecret
+			oauthProvider.DirectUrl = userProvider.DirectUrl
 			redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", integration.Provider, accountId)
 			gothProvider, err = provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
 			if err != nil {
@@ -218,7 +232,7 @@ func (manager *IntegrationManager) GetIntegrationForThirdPartyAccount(accountId,
 			}
 		}
 
-		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, integration.Name, accountId, manager.RedisStore)
+		accessToken, refreshToken, err := oauth.ExchangeRefreshToken(*gothProvider, oauthProvider, integration.Name, accountId, manager.RedisStore)
 		if err != nil {
 			return models.Integration{}, err
 		}

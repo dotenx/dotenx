@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,7 +21,24 @@ func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error
 		return err
 	}
 	if !hasAccess {
-		return errors.New("you have reached your limit")
+		return utils.ErrReachLimitationOfPlan
+	}
+	pipeline, err := cm.Store.GetById(noContext, id)
+	if err != nil {
+		return
+	}
+	if !pipeline.IsTemplate && !pipeline.IsInteraction {
+		plan, err := utils.GetUserPlan(accountId)
+		if err != nil {
+			return err
+		}
+		planTriggerFrequency := fmt.Sprint(plan["plan_trigger_frequency"])
+		redisKey := "ao-api-trigger-frequency-" + planTriggerFrequency
+		redisValue := pipeline.Endpoint
+		err = cm.RedisStore.AddToRedisSortedSet(redisKey, []interface{}{redisValue})
+		if err != nil {
+			return err
+		}
 	}
 	err = cm.Store.ActivatePipeline(noContext, accountId, pipelineId)
 	if err != nil {
@@ -70,6 +88,24 @@ func (cm *crudManager) CheckAccess(accId string, excutionId int) (bool, error) {
 }
 
 func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string, deleteRecord bool) (err error) {
+	id, _ := strconv.Atoi(pipelineId)
+	pipeline, err := cm.Store.GetById(noContext, id)
+	if err != nil {
+		return
+	}
+	if !pipeline.IsTemplate && !pipeline.IsInteraction {
+		plan, err := utils.GetUserPlan(accountId)
+		if err != nil {
+			return err
+		}
+		planTriggerFrequency := fmt.Sprint(plan["plan_trigger_frequency"])
+		redisKey := "ao-api-trigger-frequency-" + planTriggerFrequency
+		redisValue := pipeline.Endpoint
+		err = cm.RedisStore.RemoveFromRedisSortedSet(redisKey, []interface{}{redisValue})
+		if err != nil {
+			return err
+		}
+	}
 	err = cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
 	if err != nil {
 		return
@@ -77,7 +113,7 @@ func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string, deleteRe
 	return cm.NotifyPlanmanageForActivation(accountId, "deactivate", pipelineId, deleteRecord)
 }
 
-func (cm *crudManager) GetActivePipelines(accountId string) ([]models.Pipeline, error) {
+func (cm *crudManager) GetActivePipelines(accountId, projectName string) ([]models.Pipeline, error) {
 	pipelines, err := cm.Store.GetPipelines(noContext, accountId)
 	if err != nil {
 		return nil, err

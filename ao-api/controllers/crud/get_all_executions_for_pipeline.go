@@ -11,8 +11,9 @@ import (
 func (mc *CRUDController) GetListOfPipelineExecution() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accountId, _ := utils.GetAccountId(c)
-		executions, err := mc.Service.GetAllExecutions(accountId, name)
+		executions, err := mc.Service.GetAllExecutions(accountId, name, projectName)
 		if err != nil {
 			log.Println(err.Error())
 			c.JSON(http.StatusInternalServerError, err)

@@ -6,19 +6,24 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"strconv"
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/lib/pq"
 )
 
-func (p *pipelineStore) GetByName(context context.Context, accountId string, name string) (pipeline models.PipelineSummery, err error) {
+func (p *pipelineStore) GetByName(context context.Context, accountId string, name, projectName string) (pipeline models.PipelineSummery, err error) {
 	// In the future we can use different statements based on the db.Driver as per DB Engine
 	pipeline.PipelineDetailes.Manifest.Tasks = make(map[string]models.Task)
 
 	switch p.db.Driver {
 	case db.Postgres:
 		conn := p.db.Connection
-		err = conn.QueryRow(select_pipeline, accountId, name).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction)
+		var ug pq.StringArray
+		err = conn.QueryRow(select_pipeline, accountId, name, projectName).Scan(&pipeline.PipelineDetailes.Id, &pipeline.Endpoint, &pipeline.IsActive, &pipeline.IsTemplate, &pipeline.IsInteraction, &ug, &pipeline.ProjectName, &pipeline.ParentId, &pipeline.CreatedFor)
+		intId, _ := strconv.Atoi(pipeline.PipelineDetailes.Id)
+		pipeline.PipelineDetailes.PipelineId = int16(intId)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				err = errors.New("not found")
@@ -27,6 +32,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 			log.Println("error", err.Error())
 			return
 		}
+		pipeline.UserGroups = ([]string)(ug)
 		tasks := []models.Task{}
 		var rows *sql.Rows
 		rows, err = conn.Query(select_tasks_by_pipeline_id, pipeline.PipelineDetailes.Id)
@@ -38,7 +44,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 		for rows.Next() {
 			task := models.Task{}
 			var body interface{}
-			err = rows.Scan(&task.Id, &task.Name, &task.Type, &task.Integration, &task.Description, &body)
+			err = rows.Scan(&task.Id, &task.Name, &task.Type, &task.AwsLambda, &task.Integration, &task.Description, &body)
 			if err != nil {
 				return
 			}
@@ -72,6 +78,7 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 				Description:  task.Description,
 				Integration:  task.Integration,
 				MetaData:     task.MetaData,
+				AwsLambda:    task.AwsLambda,
 			}
 		}
 	}
@@ -79,12 +86,12 @@ func (p *pipelineStore) GetByName(context context.Context, accountId string, nam
 }
 
 var select_pipeline = `
-SELECT id , endpoint, is_active, is_template, is_interaction
+SELECT id , endpoint, is_active, is_template, is_interaction, user_groups, project_name, parent_id, created_for
 FROM pipelines p
-WHERE account_id = $1 AND name = $2
+WHERE account_id = $1 AND name = $2 AND project_name = $3
 `
 var select_tasks_by_pipeline_id = `
-SELECT id, name, task_type, integration, description, body FROM tasks
+SELECT id, name, task_type, aws_lambda, integration, description, body FROM tasks
 WHERE pipeline_id = $1
 `
 var select_preconditions_by_task_id = `

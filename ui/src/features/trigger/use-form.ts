@@ -10,6 +10,7 @@ import {
 	QueryKey,
 	TriggerData,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -19,7 +20,7 @@ const schema = z.object({
 	credentials: z.record(z.string()),
 })
 
-type Schema = z.infer<typeof schema>
+export type TriggerSchema = z.infer<typeof schema>
 
 export function useTriggerForm({
 	onSave,
@@ -35,13 +36,15 @@ export function useTriggerForm({
 		watch,
 		getValues,
 		setValue,
-	} = useForm<Schema>({
+	} = useForm<TriggerSchema>({
 		defaultValues: defaultValues,
 		resolver: zodResolver(schema),
 	})
 	const triggerType = watch('type')
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerKinds)
-	const automationsQuery = useQuery(QueryKey.GetAutomations, getAutomations)
+	const automationsQuery = useQuery([QueryKey.GetAutomations], () =>
+		getAutomations(AUTOMATION_PROJECT_NAME)
+	)
 	const triggerDefinitionQuery = useQuery(
 		[QueryKey.GetTriggerDefinition, triggerType],
 		() => getTriggerDefinition(triggerType),
@@ -85,6 +88,7 @@ export function useTriggerForm({
 		triggerType,
 		selectedTriggerIntegrationKind: triggerDefinitionQuery.data?.data.integrations[0],
 		triggerTypesQuery,
+		watch,
 	}
 }
 

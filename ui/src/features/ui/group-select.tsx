@@ -132,7 +132,7 @@ function GroupSelectInner({
 		<div className="relative" ref={wrapperRef}>
 			<button
 				className={clsx(
-					'flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded-lg cursor-pointer outline-rose-500 border-slate-400',
+					'flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded cursor-pointer outline-rose-500 border-slate-400',
 					isOpen && 'outline outline-offset-[-1px] outline-2'
 				)}
 				type="button"
@@ -200,8 +200,8 @@ function OpenedMenu({
 	const searchRef = useRef<HTMLInputElement>(null)
 
 	return (
-		<div className="flex flex-col pr-1 mt-1 overflow-y-auto bg-white border rounded-lg shadow-md border-slate-300 max-h-96 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thin">
-			<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded-md focus-within:bg-slate-50 transition">
+		<div className="flex flex-col pr-1 mt-1 overflow-y-auto bg-white border rounded shadow-md border-slate-300 max-h-96 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thin">
+			<div className="flex items-center gap-3 px-2 py-1.5 m-2 border rounded focus-within:bg-slate-50 transition">
 				<IoSearch className="text-slate-500" />
 				<input
 					className="p-0 m-0 text-sm transition border-none rounded focus:ring-0 focus:outline-none focus:bg-slate-50 placeholder:text-slate-500"
@@ -262,7 +262,7 @@ interface DropdownItemProps {
 function DropdownItem({ onSelect, iconUrl, label }: DropdownItemProps) {
 	return (
 		<button
-			className="flex items-center w-full gap-2 p-2 text-sm transition bg-white rounded-md outline-none cursor-pointer hover:bg-rose-50 focus:bg-rose-50"
+			className="flex items-center w-full gap-2 p-2 text-sm transition bg-white rounded outline-none cursor-pointer hover:bg-rose-50 focus:bg-rose-50"
 			type="button"
 			onClick={onSelect}
 		>

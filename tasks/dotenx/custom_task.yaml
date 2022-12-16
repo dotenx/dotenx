@@ -1,0 +1,15 @@
+service: dotenx
+type: Custom task
+image: code/node:lambda
+fields:
+    - key: tasks
+      type: text
+    - key: inputs
+      type: object
+      description: A json format field to declare inputs of your mini tasks. You can access to this inputs in mini tasks in this fromat -> inputs.YOUR_JSON_KEY
+    - key: outputs
+      type: custom-outputs
+author: mohsen
+icon: https://app.dotenx.com/favicon.png
+node_color: 2ECC71
+description: runs your mini tasks

@@ -62,17 +62,20 @@ func OauthMiddleware(httpHelper utils.HttpHelper) gin.HandlerFunc {
 			return
 		} else {
 			authHeader := c.Request.Header.Get("Authorization")
+			var qs queryString
 			if authHeader == "" {
-				var qs queryString
 				if c.ShouldBindQuery(&qs) != nil {
 					err := errors.New("token must be in query parameter: your_url?tp_access_token=TOKEN")
 					c.AbortWithError(http.StatusUnauthorized, err)
 					return
 				}
 				log.Println("qs.AccessToken:", qs.AccessToken)
-				authHeader = "Bearer " + qs.AccessToken
+				authHeader = qs.AccessToken
 			}
 			if authHeader != "" {
+				if qs.AccessToken != "" {
+					authHeader = "Bearer " + qs.AccessToken
+				}
 				if len(strings.SplitN(authHeader, "Bearer", 2)) != 2 {
 					err := errors.New("token must in Bearer type: 'Bearer YOUR_TOKEN'")
 					c.AbortWithError(http.StatusUnauthorized, err)
@@ -89,8 +92,14 @@ func OauthMiddleware(httpHelper utils.HttpHelper) gin.HandlerFunc {
 					c.AbortWithError(http.StatusUnauthorized, err)
 					return
 				}
+				userGroup, err := utils.GetUserGroup(tokenString)
+				if err != nil {
+					c.AbortWithError(http.StatusUnauthorized, err)
+					return
+				}
 				c.Set("accountId", accountId)
 				c.Set("tpAccountId", tpAccountId)
+				c.Set("userGroup", userGroup)
 				c.Set("tokenType", "tp")
 				c.Next()
 				return

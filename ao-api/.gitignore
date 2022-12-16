@@ -3,4 +3,3 @@
 release/
 vendor/
 providers.json
-.env.production

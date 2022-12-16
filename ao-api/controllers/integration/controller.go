@@ -85,9 +85,17 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		// This endpoint is called in studio mode so we should set provider empty
-		// to know that this integration use our provider not user's provider
-		integration.Provider = ""
+		tokenType, _ := c.Get("tokenType")
+		if tokenType == "tp" {
+			// for tp users we should have a provider so we fill this field with 'NULL' string
+			integration.Provider = "NULL"
+			tpAccountId, _ := utils.GetThirdPartyAccountId(c)
+			integration.TpAccountId = tpAccountId
+		} else {
+			// This endpoint is called in studio mode so we should set provider empty
+			// to know that this integration use our provider not user's provider
+			integration.Provider = ""
+		}
 
 		accessToken := integration.Secrets["ACCESS_TOKEN"]
 		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]

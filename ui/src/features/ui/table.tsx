@@ -5,25 +5,37 @@ import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
 import { IoSearch } from 'react-icons/io5'
 import { Column, useTable } from 'react-table'
-import { ReactComponent as EmptySvg } from '../../assets/images/empty.svg'
+import { HelpDetails, HelpPopover } from './help-popover'
 import { Loader } from './loader'
 
 interface TableProps<D extends object = Record<string, string>> {
 	title: string
+	subtitle?: string
 	actionBar?: ReactNode
 	emptyText?: string
 	columns: Column<D>[]
 	data: D[] | undefined
 	loading?: boolean
+	helpDetails?: HelpDetails
+	withPagination?: boolean
+	currentPage?: number
+	nPages?: number
+	setCurrentPage?: any
 }
 
 export function Table<D extends object = Record<string, string>>({
 	title,
+	subtitle,
+	currentPage,
+	setCurrentPage,
+	nPages,
 	actionBar,
 	emptyText,
 	columns,
 	data = [],
 	loading,
+	helpDetails,
+	withPagination,
 }: TableProps<D>) {
 	const [search, setSearch] = useState('')
 	const fuzzySearch = useMemo(
@@ -44,22 +56,33 @@ export function Table<D extends object = Record<string, string>>({
 		data: searched,
 	})
 
+	if (loading) return <Loader />
+
 	return (
 		<div className="flex flex-col gap-10">
-			<div className="flex justify-between">
-				<Title order={2}>{title}</Title>
+			<div className="flex justify-between ">
+				<div className="flex justify-start">
+					<Title order={2} sx={{ display: 'inline-flex' }}>
+						{title}
+					</Title>
+
+					{helpDetails && <HelpPopover helpDetails={helpDetails} />}
+				</div>
+
 				{data.length !== 0 && <span>{actionBar}</span>}
 			</div>
-			{loading && <Loader />}
-			{!loading && data.length === 0 && (
+			<div className="flex justify-start bg-red-200">
+				<div className="text-sm -mt-8 font-medium">{subtitle}</div>
+			</div>
+			{data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
-					<span className="text-lg">{emptyText}</span>
 					{actionBar}
-					<EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" />
+					<span className="text-lg">{emptyText}</span>
+					{/* <EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" /> */}
 				</div>
 			)}
-			{data.length !== 0 && (
-				<div className="flex flex-col gap-6">
+			{(data.length !== 0 || !emptyText) && (
+				<div className="flex flex-col gap-6 grow">
 					<TextInput
 						icon={<IoSearch className="text-xl" />}
 						value={search}
@@ -67,19 +90,22 @@ export function Table<D extends object = Record<string, string>>({
 						onChange={(e) => setSearch(e.target.value)}
 						className="max-w-xs"
 					/>
-					<div className="overflow-hidden border rounded-md">
+					<div className="max-w-full overflow-auto scrollbar-thin scrollbar-track-rounded-sm scrollbar-corner-rounded-sm scrollbar-thumb-rounded-sm scrollbar-thumb-gray-900 scrollbar-track-gray-100 pb-4">
 						<MantineTable
-							striped
-							verticalSpacing="xl"
-							horizontalSpacing="xl"
+							verticalSpacing={1}
+							horizontalSpacing="xs"
+							highlightOnHover
+							withBorder
+							withColumnBorders
+							fontSize={13}
 							{...getTableProps()}
 						>
-							<thead className="bg-gray-200">
+							<thead className="bg-gray-100">
 								{headerGroups.map((headerGroup) => (
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="text-left last:text-right last:flex last:justify-end first:!justify-start !py-2"
+												className="!font-medium !text-slate-900"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}
@@ -96,7 +122,8 @@ export function Table<D extends object = Record<string, string>>({
 											{row.cells.map((cell) => {
 												return (
 													<td
-														className="last:text-right first:!text-left"
+														className="text-slate-900 text-xs !overflow-hidden !whitespace-nowrap !text-ellipsis max-w-xs"
+														title={cell.value as string}
 														{...cell.getCellProps()}
 													>
 														{cell.render('Cell')}
@@ -116,6 +143,66 @@ export function Table<D extends object = Record<string, string>>({
 					</div>
 				</div>
 			)}
+			{withPagination && (
+				<Pagination
+					currentPage={currentPage || 1}
+					nPages={nPages || 1}
+					setCurrentPage={setCurrentPage}
+				/>
+			)}
+		</div>
+	)
+}
+
+const Pagination = ({
+	currentPage,
+	setCurrentPage,
+	nPages,
+}: {
+	currentPage: number
+	nPages: number
+	setCurrentPage?: any
+}) => {
+	const pageNumbers = [...Array(nPages + 1).keys()].slice(1)
+
+	const nextPage = () => {
+		setCurrentPage(currentPage + 1)
+	}
+	const prevPage = () => {
+		setCurrentPage(currentPage - 1)
+	}
+	if (nPages === 1) return null
+	return (
+		<div className="w-full  flex justify-end select-none">
+			<ul className="flex items-center space-x-2 font-medium">
+				<li
+					onClick={prevPage}
+					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
+						currentPage === 1 && 'pointer-events-none opacity-70'
+					}`}
+				>
+					Previous
+				</li>
+				{pageNumbers.map((pgNumber) => (
+					<li
+						onClick={() => setCurrentPage(pgNumber)}
+						key={pgNumber}
+						className={`bg-slate-50 p-1 px-2 rounded  cursor-pointer active:bg-slate-100 ${
+							currentPage == pgNumber ? 'bg-slate-200' : ''
+						} `}
+					>
+						{pgNumber}
+					</li>
+				))}
+				<li
+					onClick={nextPage}
+					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
+						currentPage === nPages && 'pointer-events-none opacity-70'
+					}`}
+				>
+					Next
+				</li>
+			</ul>
 		</div>
 	)
 }

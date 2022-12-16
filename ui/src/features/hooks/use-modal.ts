@@ -2,6 +2,10 @@ import { useAtom } from 'jotai'
 import { modalAtom } from '../atoms'
 
 export enum Modals {
+	UploadFile = 'upload-file',
+	InteractionUserGroup = 'interaction-user-group',
+	FilesUserGroup = 'files-user-group',
+	ConfirmCheckbox = 'confirm-checkbox',
 	NodeSettings = 'node-settings',
 	EdgeSettings = 'edge-settings',
 	TriggerSettings = 'trigger-settings',

@@ -6,6 +6,7 @@ import (
 )
 
 type UserManagementStore interface {
+	// user_info methods
 	CreateUserInfoTable(db *dbPkg.DB) (err error)
 	GetUserInfo(db *dbPkg.DB, tpEmail string) (user *models.ThirdUser, err error)
 	GetUserInfoById(db *dbPkg.DB, tpAccountId string) (user *models.ThirdUser, err error)
@@ -15,8 +16,13 @@ type UserManagementStore interface {
 	UpdatePassword(db *dbPkg.DB, userInfo models.ThirdUser) (err error)
 	DeleteUserInfo(db *dbPkg.DB, tpAccountId string) (err error)
 
-	// user group methods
+	// security_code methods
+	CreateSecurityCodeTable(db *dbPkg.DB) (err error)
+	SetSecurityCodeInfo(db *dbPkg.DB, securityCode models.SecurityCode) (err error)
+	GetSecurityCodeInfo(db *dbPkg.DB, securityCodeStr, useCase string) (securityCode models.SecurityCode, err error)
+	DisableSecurityCode(db *dbPkg.DB, securityCode, useCase string) (err error)
 
+	// user group methods
 	CreateUserGroupTable(db *dbPkg.DB) (err error)
 	GetUserGroup(db *dbPkg.DB, name string) (userGroup *models.UserGroup, err error)
 	GetAllUserGroups(db *dbPkg.DB) (userGroups []*models.UserGroup, err error)
