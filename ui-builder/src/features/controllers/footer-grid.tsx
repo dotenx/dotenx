@@ -101,11 +101,11 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 			<DividerCollapsible title="Logo column">
 				<LogoColumn options={options} />
 			</DividerCollapsible>
-			<DividerCollapsible title="Link Columns">
+			<DividerCollapsible closed title="Link Columns">
 				<ColumnsOptions options={options} />
 			</DividerCollapsible>
 			{/* Secondary footer */}
-			<DividerCollapsible title="Secondary footer">
+			<DividerCollapsible closed title="Secondary footer">
 				<Intelinput
 					label="text"
 					name="text"
@@ -287,7 +287,7 @@ function LogoColumn({ options }: SimpleComponentOptionsProps) {
 			>
 				<FontAwesomeIcon icon={['fas', 'plus']} /> Add line
 			</Button>
-			<DividerCollapsible title="color">
+			<DividerCollapsible closed title="color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 				{ColorOptions.getTextColorOption({
 					options,

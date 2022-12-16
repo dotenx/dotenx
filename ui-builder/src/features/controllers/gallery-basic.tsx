@@ -9,7 +9,7 @@ import { ImageDrop } from '../ui/image-drop'
 import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, repeatObject, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class GalleryBasic extends Controller {
@@ -243,7 +243,11 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 				onAddNewTab={() => {
 					options.set(
 						produce(containerDiv, (draft) => {
-							draft.children?.push(deserializeElement(simpleDiv))
+							draft.children.push(
+								createTile({
+									image: 'https://images.unsplash.com/photo-1657310217253-176cd053e07e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
+								})
+							)
 						})
 					)
 				}}
@@ -272,15 +276,13 @@ const divFlex = produce(new BoxElement(), (draft) => {
 const simpleDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			backgroundColor: '#ee0000',
+			backgroundColor: '#fff',
 			aspectRatio: '1',
-			backgroundImage:
-				'url(https://images.unsplash.com/photo-1484256017452-47f3e80eae7c?dpr=1&auto=format&fit=crop&w=2850&q=60&cs=tinysrgb)', //NOTE: inside url() do not use single quotes.
 			backgroundSize: 'cover',
 			backgroundPosition: 'center center',
 		},
 	}
-}).serialize()
+})
 
 const container = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -303,12 +305,44 @@ const container = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
+function createTile({ image }: { image: string }) {
+	return produce(simpleDiv, (draft) => {
+		draft.style.desktop = {
+			default: {
+				...draft.style.desktop?.default,
+				backgroundImage: `url(${image})`,
+			},
+		}
+	})
+}
+
+const tiles = [
+	createTile({
+		image: 'https://images.unsplash.com/photo-1577234286642-fc512a5f8f11?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80',
+	}),
+
+	createTile({
+		image: 'https://images.unsplash.com/photo-1595475207225-428b62bda831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
+	}),
+	createTile({
+		image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80',
+	}),
+	createTile({
+		image: 'https://images.unsplash.com/photo-1543076659-9380cdf10613?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
+	}),
+	createTile({
+		image: 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80',
+	}),
+	createTile({
+		image: 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
+	}),
+]
 const defaultData = {
 	...divFlex,
 	components: [
 		{
 			...container,
-			components: repeatObject(simpleDiv, 6),
+			components: tiles.map((tile) => tile.serialize()),
 		},
 	],
 }

@@ -67,7 +67,7 @@ function FeatureDetailsRightOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
-						<DividerCollapsible title="Color">
+						<DividerCollapsible closed title="Color">
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: title,

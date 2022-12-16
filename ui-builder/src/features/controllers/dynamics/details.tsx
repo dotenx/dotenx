@@ -183,98 +183,27 @@ const defaultData = {
 							'font-weight': '400',
 							'padding-left': '50px',
 							'padding-right': '50px',
+							maxWidth: '50%',
 						},
 					},
 				},
 			},
 		},
-		// {
-		// 	kind: 'Box',
-		// 	id: 'ngHJfiKrXxivXNAU',
-		// 	components: [
-		// 		{
-		// 			kind: 'Button',
-		// 			id: 'rfSrVunfnvGsHGxn',
-		// 			classNames: [],
-		// 			repeatFrom: null,
-		// 			events: [],
-		// 			bindings: {},
-		// 			data: {
-		// 				text: 'Edit',
-		// 				style: {
-		// 					desktop: {
-		// 						default: {
-		// 							color: 'hsla(0, 0%, 25%, 1)',
-		// 							border: '0',
-		// 							cursor: 'pointer',
-		// 							display: 'inline-block',
-		// 							'box-shadow': '0px 0px 0px 0px ',
-		// 							'text-align': 'center',
-		// 							'font-weight': 600,
-		// 							'padding-top': '6px',
-		// 							'border-style': 'solid',
-		// 							'border-width': '2px',
-		// 							'padding-left': '20px',
-		// 							'border-radius': '10px',
-		// 							'padding-right': '20px',
-		// 							'padding-bottom': '6px',
-		// 							'background-color': 'hsla(217, 0%, 100%, 1)',
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 		{
-		// 			kind: 'Icon',
-		// 			id: 'vgMyGRwPwTXdvcuC',
-		// 			components: [],
-		// 			classNames: [],
-		// 			repeatFrom: null,
-		// 			events: [],
-		// 			bindings: {},
-		// 			data: {
-		// 				name: 'trash',
-		// 				type: 'fas',
-		// 				style: {
-		// 					desktop: {
-		// 						default: {
-		// 							color: 'hsla(0, 75%, 40%, 1)',
-		// 							width: '24px',
-		// 							height: '24px',
-		// 							'background-color': '',
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	],
-		// 	classNames: [],
-		// 	repeatFrom: null,
-		// 	events: [],
-		// 	bindings: {},
-		// 	data: {
-		// 		style: {
-		// 			desktop: {
-		// 				default: {
-		// 					display: 'flex',
-		// 					'min-height': 'auto',
-		// 					'align-items': 'center',
-		// 					'margin-left': '50px',
-		// 					'padding-top': '30px',
-		// 					'margin-right': '50px',
-		// 					'padding-right': '0px',
-		// 					'justify-content': 'space-between',
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
 	],
 	classNames: [],
 	repeatFrom: null,
 	events: [],
 	bindings: {},
 	data: {
-		style: { desktop: { default: { 'min-height': 'auto' } } },
+		style: {
+			desktop: {
+				default: {
+					'min-height': 'auto',
+					'align-items': 'center',
+					display: 'flex',
+					'flex-direction': 'column',
+				},
+			},
+		},
 	},
 }

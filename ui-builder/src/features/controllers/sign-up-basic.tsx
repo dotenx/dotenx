@@ -182,13 +182,10 @@ const defaultData = {
 					backgroundRepeat: 'no-repeat',
 					backgroundSize: 'cover',
 					display: 'flex',
-					flexFlow: 'row wrap',
-					flexWrap: 'wrap',
 					fontFamily: 'Roboto',
-					height: '1000px',
+					height: '100%',
 					justifyContent: 'center',
 					minHeight: '1000px',
-					padding: '0px',
 					width: '100%',
 				},
 			},
@@ -208,9 +205,6 @@ const defaultData = {
 							borderRadius: '10px',
 							bottom: '0px',
 							display: 'block',
-							minHeight: '584.797px',
-							inlineSize: '680px',
-							inset: '0px',
 							paddingBottom: '33px',
 							paddingLeft: '110px',
 							paddingRight: '110px',
@@ -228,11 +222,7 @@ const defaultData = {
 							paddingRight: '5%',
 						},
 					},
-					mobile: {
-						default: {
-							width: '90%',
-						},
-					},
+					mobile: {},
 				},
 			},
 			components: [
@@ -252,26 +242,10 @@ const defaultData = {
 							draft.style = {
 								desktop: {
 									default: {
-										blockSize: '99.7969px',
-										border: '0px none rgb(85, 85, 85)',
 										color: 'rgb(85, 85, 85)',
-										columnRule: '0px none rgb(85, 85, 85)',
-										columnRuleColor: 'rgb(85, 85, 85)',
 										display: 'block',
 										fontSize: '39px',
-										height: '99.7969px',
-										inlineSize: '460px',
-										lineHeight: '46.8px',
-										minBlockSize: 'auto',
-										minHeight: 'auto',
-										minInlineSize: 'auto',
-										minWidth: 'auto',
-										outline: 'rgb(85, 85, 85) none 0px',
-										outlineColor: 'rgb(85, 85, 85)',
-										padding: '0px 0px 53px',
 										textAlign: 'center',
-										textDecoration: 'none solid rgb(85, 85, 85)',
-										width: 'auto',
 									},
 								},
 								tablet: {},
@@ -294,6 +268,7 @@ const defaultData = {
 							buttonStyle: {
 								desktop: {
 									default: {
+										marginTop: '10px',
 										color: 'white',
 									},
 								},
