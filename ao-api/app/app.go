@@ -234,8 +234,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profile := r.Group("/profile")
 	userManagement := r.Group("/user/management")
 	userGroupManagement := r.Group("/user/group/management")
-	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
+	objectstore := r.Group("/objectstore")
 	marketplace := r.Group("/marketplace")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)

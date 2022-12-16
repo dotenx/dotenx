@@ -9,6 +9,7 @@ import { TextElement } from '../elements/extensions/text'
 import { ImageDrop } from '../ui/image-drop'
 import { Controller, ElementOptions } from './controller'
 
+import { API_URL } from '../../api'
 import { uuid } from '../../utils'
 import { NavigateAction } from '../actions/navigate'
 import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
@@ -144,9 +145,7 @@ export class SignUpBasic extends Controller {
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
-		const url = inteliText(
-			`https://api.dotenx.com/user/management/project/${projectTag}/register`
-		)
+		const url = inteliText(`${API_URL}/user/management/project/${projectTag}/register`)
 		const dataSourceName = `signup_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
 		navigateAction.to = Expression.fromString('/login.html')
