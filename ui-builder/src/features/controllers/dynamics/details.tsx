@@ -2,6 +2,7 @@ import { Select } from '@mantine/core'
 import { useInputState } from '@mantine/hooks'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { API_URL } from '../../../api'
 import imageUrl from '../../../assets/components/details.png'
 import { deserializeElement } from '../../../utils/deserialize'
 import { useAddDataSource } from '../../data-source/data-source-form'
@@ -52,7 +53,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 				url: new Expression([
 					{
 						kind: ExpressionKind.Text,
-						value: `https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
+						value: `${API_URL}/public/database/query/select/project/${projectTag}/table/${selectedTable}/row/`,
 					},
 					{ kind: ExpressionKind.State, value: '$store.url.id' },
 				]),

@@ -106,7 +106,6 @@ export function ProviderForm() {
 	})
 	form.setValue('type', typeValue as string)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
-
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const providerName = form.watch('name')
 
