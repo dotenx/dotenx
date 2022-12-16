@@ -37,6 +37,7 @@ const studioLinks = [
 
 export const Sidebar = memo(() => {
 	const isBuilder = useMatch('/builder/*')
+	const isHome = useMatch('/')
 	const { projectName } = useParams()
 
 	const builderLinks = [

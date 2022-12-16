@@ -177,7 +177,7 @@ export const useFetchGlobalStates = () => {
 	})
 }
 
-function Logo() {
+export function Logo() {
 	return (
 		<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
 			<Anchor href={ADMIN_PANEL_URL}>

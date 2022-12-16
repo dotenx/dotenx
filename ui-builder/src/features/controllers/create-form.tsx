@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbTrash } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
-import { getColumns, GetColumnsResponse, getTables, QueryKey } from '../../api'
+import { API_URL, getColumns, GetColumnsResponse, getTables, QueryKey } from '../../api'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
 import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
@@ -59,7 +59,7 @@ function CreateFormOptions({ controller }: { controller: CreateForm }) {
 				properties: [],
 				stateName: sourceName,
 				url: inteliText(
-					`https://api.dotenx.com/database/query/insert/project/${projectTag}/table/${selectedTable}`
+					`${API_URL}/database/query/insert/project/${projectTag}/table/${selectedTable}`
 				),
 			})
 			const inputs = columns.map((col) => {

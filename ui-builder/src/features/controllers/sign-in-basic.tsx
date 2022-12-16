@@ -1,6 +1,7 @@
 import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
+import { API_URL } from '../../api'
 import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { uuid } from '../../utils'
 import { deserializeElement } from '../../utils/deserialize'
@@ -114,7 +115,7 @@ export class SignInBasic extends Controller {
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
-		const url = inteliText(`https://api.dotenx.com/user/management/project/${projectTag}/login`)
+		const url = inteliText(`${API_URL}/user/management/project/${projectTag}/login`)
 		const dataSourceName = `signin_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
 		navigateAction.to = Expression.fromString('/index.html')
