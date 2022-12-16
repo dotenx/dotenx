@@ -95,5 +95,9 @@ export const controllers = [
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple] },
-	{ title: 'Dynamic', items: [CreateForm, List, ListCard, Details] },
+	{
+		title: 'Dynamic', items: [
+			// CreateForm, List,
+			ListCard, Details]
+	},
 ] as const

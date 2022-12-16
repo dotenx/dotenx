@@ -196,6 +196,7 @@ function BackToBackEnd() {
 				className="hidden text-sm group-hover:block transition-all "
 				href={`https://app.dotenx.com/builder/projects/${projectName}/tables`}
 				rel="noopener noreferrer"
+				target={'_blank'}
 			>
 				Backend builder
 			</a>

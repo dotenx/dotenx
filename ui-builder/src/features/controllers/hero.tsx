@@ -62,7 +62,7 @@ export class Hero extends Controller {
 					}
 					src={imageComponent.data.src.toString()}
 				/>
-				<DividerCollapsible title="color">
+				<DividerCollapsible closed title="color">
 					{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 					{ColorOptions.getTextColorOption({
 						options,
