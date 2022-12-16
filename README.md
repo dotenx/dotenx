@@ -45,4 +45,10 @@ Previous stages:
 
 Current stage: beta
 
+---
 
+Run locally
+
+```
+docker compose up
+```
