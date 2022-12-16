@@ -13,8 +13,10 @@ import {
 } from 'react-icons/bs'
 import { RiPantoneLine } from 'react-icons/ri'
 import { FaUsers } from 'react-icons/fa'
-import { IoArrowBack } from 'react-icons/io5'
-import { Link, useMatch, useParams } from 'react-router-dom'
+import { IoArrowBack, IoExit } from 'react-icons/io5'
+import { useMutation } from 'react-query'
+import { useMatch, useParams } from 'react-router-dom'
+import { logout } from '../../api/admin'
 import logo from '../../assets/images/logo.png'
 import {
 	ADMIN_URL,
@@ -95,9 +97,9 @@ export const Sidebar = memo(() => {
 			</div>
 			{projectName && (
 				<div className="px-5 mt-10 text-slate-700" title="Back to Projects">
-					<Link
+					<a
 						className="flex items-center gap-2 px-2.5 py-1 font-medium transition bg-white rounded hover:bg-rose-50"
-						to="/"
+						href="https://admin.dotenx.com/projects"
 					>
 						<div className="hidden w-0 transition-all scale-0 group-hover:inline group-hover:w-6 group-hover:scale-100">
 							<IoArrowBack />
@@ -108,7 +110,7 @@ export const Sidebar = memo(() => {
 								{projectName.substring(1)}
 							</span>
 						</div>
-					</Link>
+					</a>
 				</div>
 			)}
 			<div className="flex flex-col justify-between grow">

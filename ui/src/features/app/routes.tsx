@@ -9,7 +9,6 @@ import DomainsPage from '../../pages/domains'
 import ExecutionPage from '../../pages/execution'
 import Files from '../../pages/files'
 import HistoryPage from '../../pages/history'
-import { HomePage } from '../../pages/home'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import InteractionPage from '../../pages/interaction'
@@ -77,7 +76,7 @@ const routes = [
 	{ path: '/automations/:name', element: <AutomationPage /> },
 	{ path: '/automations', element: <AutomationsPage /> },
 	{ path: '/automations/yaml/import', element: <ImportYamlPage /> },
-	{ path: '/', element: <HomePage /> },
+	{ path: '/', element: <Navigate replace to="/automations" /> },
 	{ path: '/*', element: <NotFoundPage /> },
 ]
 
