@@ -14,8 +14,17 @@ export function ProviderList() {
 	})
 	const providers = query.data?.data
 
+	const helpDetails = {
+		title: 'In order to integrate your application with third party services, you need to add a provider',
+		description:
+			'Each provider requires specific configuration. You can find the configuration details in the documentation of the provider.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<Table
+			helpDetails={helpDetails}
 			title="Providers"
 			emptyText="You have no provider yet, try adding one."
 			loading={query.isLoading}

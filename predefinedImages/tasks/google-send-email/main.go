@@ -1,29 +1,60 @@
+// image: hojjat12/google-send-email:lambda4
 package main
 
 import (
 	"encoding/base64"
 	"fmt"
-	"os"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-func main() {
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	refreshToken := os.Getenv("INTEGRATION_REFRESH_TOKEN")
-	from := os.Getenv("from")
-	to := os.Getenv("to")
-	subject := os.Getenv("subject")
-	message := os.Getenv("message")
+// type Event struct {
+// 	AccessToken  string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	RefreshToken string `json:"INTEGRATION_REFRESH_TOKEN"`
+// 	From         string `json:"from"`
+// 	To           string `json:"to"`
+// 	Subject      string `json:"subject"`
+// 	Message      string `json:"message"`
+// }
+
+type Event struct {
+	Body map[string]interface{} `json:"body"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	refreshToken := singleInput["INTEGRATION_REFRESH_TOKEN"].(string)
+	from := singleInput["from"].(string)
+	to := singleInput["to"].(string)
+	subject := singleInput["subject"].(string)
+	message := singleInput["message"].(string)
 	err := sendEmail(from, to, subject, message, accessToken, refreshToken)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		// continue
 	}
-	fmt.Println("message send successfully")
+	// }
+	if resp.Successfull {
+		fmt.Println("All email(s) sended successfully")
+	}
+	return resp, nil
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func sendEmail(from, to, subject, message, accessToken, refreshToken string) (err error) {

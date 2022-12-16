@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { KeyboardEventHandler, useState } from 'react'
 import { Controller, FieldPath, FieldValues, UseControllerProps } from 'react-hook-form'
 import { OnChangeValue } from 'react-select'
@@ -6,7 +7,7 @@ import ReactCreatableSelect from 'react-select/creatable'
 interface CreatableProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
 	placeholder: string
-	label: string
+	label?: string
 }
 
 export function CreatableSelect<
@@ -25,7 +26,7 @@ export function CreatableSelect<
 					return (
 						<CreatableRaw
 							onChange={onChange}
-							value={value ?? []}
+							value={_.isArray(value) ? value : []}
 							placeholder={placeholder}
 						/>
 					)

@@ -1,0 +1,9 @@
+{
+  "AUTHORIZATION": "123456abcd",
+  "RESULT_ENDPOINT": "https://api.dotenx.com/execution/id/66/task/23/result",
+  "VARIABLES": "outputs",
+  "WORKSPACE": "42fdf63a-b78e-4531-a600-5ee2eb412059",
+  "code": "42fdf63a-b78e-4531-a600-5ee2eb412059_code",
+  "dependency": "42fdf63a-b78e-4531-a600-5ee2eb412059_dependency",
+  "outputs": "[]"
+}

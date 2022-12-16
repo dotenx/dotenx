@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe update customer
-image: hawwwdi/stripe-update-customer:latest
+image: stripe/stripe-update-customer:lambda5
 integrations: [stripe]
 fields:
     - key: CUS_NAME

@@ -8,14 +8,17 @@ import {
 	CreateTableRequest,
 	CreateTriggerRequest,
 	CreateUserGroupRequest,
+	CreateViewRequest,
 	EndpointFields,
 	Execution,
+	ExportDatabaseResponse,
 	GetAutomationExecutionsResponse,
 	GetAutomationResponse,
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
 	GetColumnsResponse,
 	GetExecutionResultResponse,
+	GetFilesDataResponse,
 	GetFormatterFunctionsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
@@ -37,56 +40,158 @@ import {
 	GetUserGroupResponse,
 	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
+	GetViewDataResponse,
+	GetViewDetailsResponse,
+	GetViewsResponse,
 	Provider,
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
+	TestTaskRequest,
+	TestTaskResponse,
+	TestTriggerRequest,
+	TestTriggerResponse,
 	UpdateRecordRequest,
-	UpdateUserGroupRequest
+	UpdateUserGroupRequest,
 } from './types'
 export * from './types'
 
 export const API_URL = process.env.REACT_APP_API_URL
 
-const api = axios.create({
+export const api = axios.create({
 	baseURL: API_URL,
 	withCredentials: true,
 })
 
-export function createAutomation(payload: CreateAutomationRequest) {
-	return api.post<void>('/pipeline', payload)
+export function createAutomation({
+	projectName,
+	payload,
+}: {
+	projectName: string
+	payload: CreateAutomationRequest
+}) {
+	return api.post<void>(`/pipeline/project/${projectName}`, payload)
 }
 
-export function createAutomationYaml(payload: string) {
-	return api.post<{ name: string }>('/pipeline', payload, {
+export function createAutomationYaml({
+	payload,
+	projectName,
+}: {
+	projectName: string
+	payload: string
+}) {
+	return api.post<{ name: string }>(`/pipeline/project/${projectName}`, payload, {
 		headers: { accept: 'application/x-yaml' },
 	})
 }
 
-export function updateAutomation(payload: CreateAutomationRequest) {
-	return api.put<void>('/pipeline', payload)
+export function updateAutomation({
+	payload,
+	projectName,
+}: {
+	projectName: string
+	payload: CreateAutomationRequest
+}) {
+	return api.put<void>(`/pipeline/project/${projectName}`, payload)
 }
 
-export function getAutomations() {
-	return api.get<GetAutomationsResponse>('/pipeline')
+export function getAutomations(projectName: string) {
+	return api.get<GetAutomationsResponse>(`/pipeline/project/${projectName}`)
+}
+export function getTemplateAutomations(name: string, projectName: string) {
+	return api.get<GetAutomationsResponse>(
+		`/pipeline/project/${projectName}/template/name/${name}/children`
+	)
+}
+export function getAutomation({ name, projectName }: { projectName: string; name: string }) {
+	return api.get<GetAutomationResponse>(`/pipeline/project/${projectName}/name/${name}`)
 }
 
-export function getAutomation(name: string) {
-	return api.get<GetAutomationResponse>(`/pipeline/name/${name}`)
+export function getAutomationYaml({ name, projectName }: { name: string; projectName: string }) {
+	return api.get<string>(`/pipeline/project/${projectName}/name/${name}`, {
+		headers: { accept: 'application/x-yaml' },
+	})
 }
 
-export function getAutomationYaml(name: string) {
-	return api.get<string>(`/pipeline/name/${name}`, { headers: { accept: 'application/x-yaml' } })
-}
-
-export function startAutomation(automationName: string, payload: StartAutomationRequest = {}) {
+export function startAutomation({
+	automationName,
+	payload = {},
+	projectName,
+}: {
+	projectName: string
+	automationName: string
+	payload?: StartAutomationRequest
+}) {
 	return api.post<{ id: number } | Record<string, unknown>>(
-		`/execution/name/${automationName}/start`,
+		`/execution/project/${projectName}/name/${automationName}/start`,
 		payload
 	)
 }
+export function setInteractionUserGroup({
+	name,
+	payload,
+	projectName,
+}: {
+	projectName: string
+	name: string
+	payload: any
+}) {
+	return api.patch(`/pipeline/project/${projectName}/name/${name}/usergroup`, payload)
+}
+export function setFileUserGroup({
+	name,
+	payload,
+	projectTag,
+}: {
+	projectTag: string
+	name: string
+	payload: any
+}) {
+	return api.patch(`/objectstore/project/${projectTag}/file/${name}/user_groups`, payload)
+}
+export function setAccess({
+	name,
+	isPublic,
+	projectName,
+}: {
+	projectName: string
+	name: string
+	isPublic: boolean
+}) {
+	return api.patch(`/pipeline/project/${projectName}/name/${name}/access`, {
+		isPublic: !isPublic,
+	})
+}
 
-export function deleteAutomation(name: string) {
-	return api.delete<void>(`/pipeline/name/${name}`)
+export function setTableAccess({
+	name,
+	projectName,
+	isPublic,
+}: {
+	projectName: string
+	name: string
+	isPublic: boolean
+}) {
+	return api.patch(`/database/project/${projectName}/table/${name}/access`, {
+		isPublic: !isPublic,
+	})
+}
+
+export function setFilesAccess({
+	rowData,
+}: {
+	rowData: {
+		projectTag: string
+		name: string
+		isPublic: boolean
+	}
+}) {
+	return api.patch(`/objectstore/project/${rowData.projectTag}/file/${rowData.name}/access`, {
+		isPublic: !rowData.isPublic,
+	})
+}
+
+export function deleteAutomation({ name, projectName }: { name: string; projectName: string }) {
+	return api.delete<void>(`/pipeline/project/${projectName}/name/${name}`)
 }
 
 export function createIntegration(payload: CreateIntegrationRequest) {
@@ -156,16 +261,24 @@ export function getExecutionResult(executionId: string, taskName: string) {
 	)
 }
 
-export function getAutomationExecutions(name: string) {
-	return api.get<GetAutomationExecutionsResponse>(`/pipeline/name/${name}/executions`)
+export function getAutomationExecutions({
+	name,
+	projectName,
+}: {
+	projectName: string
+	name: string
+}) {
+	return api.get<GetAutomationExecutionsResponse>(
+		`/pipeline/project/${projectName}/name/${name}/executions`
+	)
 }
 
-export function activateAutomation(name: string) {
-	return api.get<void>(`/pipeline/name/${name}/activate`)
+export function activateAutomation({ projectName, name }: { projectName: string; name: string }) {
+	return api.get<void>(`/pipeline/project/${projectName}/name/${name}/activate`)
 }
 
-export function deactivateAutomation(name: string) {
-	return api.get<void>(`/pipeline/name/${name}/deactivate`)
+export function deactivateAutomation({ name, projectName }: { name: string; projectName: string }) {
+	return api.get<void>(`/pipeline/project/${projectName}/name/${name}/deactivate`)
 }
 
 export function getExecution(id: string) {
@@ -208,8 +321,58 @@ export function getTables(projectName: string) {
 	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
 }
 
+export function getViews(projectName: string) {
+	return api.get<GetViewsResponse>(`/database/project/${projectName}/view`)
+}
+
+export function getViewDetails({
+	projectName,
+	viewName,
+}: {
+	projectName: string
+	viewName: string
+}) {
+	return api.get<GetViewDetailsResponse>(`/database/project/${projectName}/view/${viewName}`)
+}
+
+export function getViewData({ projectTag, viewName }: { projectTag: string; viewName: string }) {
+	return api.post<GetViewDataResponse>(
+		`/database/query/select/project/${projectTag}/view/${viewName}`,
+		{}
+	)
+}
+
+export function deleteView({ projectName, viewName }: { projectName: string; viewName: string }) {
+	return api.delete<void>(`/database/project/${projectName}/view/${viewName}`)
+}
+
+export function createView(payload: CreateViewRequest) {
+	return api.post<void>('/database/view', payload)
+}
+
 export function createTable(projectName: string, payload: CreateTableRequest) {
 	return api.post<void>('/database/table', { projectName, ...payload })
+}
+export function exportDatabase(projectName: string, format: string) {
+	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+	return api.post<ExportDatabaseResponse>(`/database/job/project/${projectName}/result`, {
+		job: jobFormat,
+	})
+}
+export function runExportDatabase(projectName: string, format: string) {
+	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+
+	return api.post<void>(`/database/job/project/${projectName}/run`, {
+		job: jobFormat,
+	})
+}
+
+export function uploadFile(projectTag: string, formData: FormData) {
+	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	})
 }
 
 export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
@@ -233,11 +396,18 @@ export function deleteColumn(projectName: string, tableName: string, columnName:
 export function getTableRecords(
 	projectTag: string,
 	tableName: string,
+	page: number,
 	payload: GetTableRecordsRequest
 ) {
 	return api.post<GetRecordsResponse>(
 		`/database/query/select/project/${projectTag}/table/${tableName}`,
-		payload
+		payload,
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
 	)
 }
 
@@ -245,19 +415,42 @@ export function getColumns(projectName: string, tableName: string) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }
 
-export function getUserManagementData(projectTag: string) {
+export function getUserManagementData(projectTag: string, page: number) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
-		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] }
+		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] },
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
 	)
 }
-
-export function getTemplateEndpointFields(templateName: string) {
-	return api.get<EndpointFields>(`/pipeline/template/name/${templateName}`)
+export function getFiles(projectTag: string) {
+	return api.get<GetFilesDataResponse | null>(`/objectstore/project/${projectTag}`)
 }
 
-export function getInteractionEndpointFields(interactionName: string) {
-	return api.get<EndpointFields>(`/pipeline/interaction/name/${interactionName}`)
+export function getTemplateEndpointFields({
+	projectName,
+	templateName,
+}: {
+	projectName: string
+	templateName: string
+}) {
+	return api.get<EndpointFields>(`/pipeline/project/${projectName}/template/name/${templateName}`)
+}
+
+export function getInteractionEndpointFields({
+	interactionName,
+	projectName,
+}: {
+	interactionName: string
+	projectName: string
+}) {
+	return api.get<EndpointFields>(
+		`/pipeline/project/${projectName}/interaction/name/${interactionName}`
+	)
 }
 
 export function addRecord(projectTag: string, tableName: string, payload: AddRecordRequest) {
@@ -268,9 +461,11 @@ export function addRecord(projectTag: string, tableName: string, payload: AddRec
 }
 
 export function deleteRecord(projectTag: string, tableName: string, rowId: string) {
-	return api.delete<void>(
-		`/database/query/delete/project/${projectTag}/table/${tableName}/row/${rowId}`
-	)
+	return api.delete<void>(`/database/query/delete/project/${projectTag}/table/${tableName}`, {
+		data: {
+			rowId,
+		},
+	})
 }
 
 export function updateRecord(
@@ -285,8 +480,8 @@ export function updateRecord(
 	)
 }
 
-export function getProfile() {
-	return api.get<GetProfileResponse>('/profile')
+export function getProfile({ projectTag }: { projectTag: string }) {
+	return api.get<GetProfileResponse>(`/profile/project/${projectTag}`)
 }
 
 export function createUserGroup(projectTag: string, payload: CreateUserGroupRequest) {
@@ -315,4 +510,18 @@ export function getUserGroup(projectTag: string, userGroupName: string) {
 	return api.get<GetUserGroupResponse>(
 		`/user/group/management/project/${projectTag}/userGroup?name=${userGroupName}`
 	)
+}
+
+export function testTask(payload: TestTaskRequest) {
+	return api.post<TestTaskResponse>(`/execution/type/task/step/task`, {
+		...payload,
+		flat: true,
+	})
+}
+
+export function testTrigger(payload: TestTriggerRequest) {
+	return api.post<TestTriggerResponse>(`/execution/type/trigger/step/trigger`, {
+		...payload,
+		flat: true,
+	})
 }

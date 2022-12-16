@@ -1,0 +1,323 @@
+- type: array_join
+  description: The join() method creates and returns a new string by concatenating all of the elements in an array (or an array-like object), separated by commas or a specified separator string.
+  display_name: Array Join
+  number_of_params: 2
+  inputs:
+   - name: input array
+     type: array
+     description: 
+   - name: separator
+     type: string
+     description: 
+  outputs:
+   - name: output
+     type: string
+     description:
+
+- type: array_length
+  description: The length property of an object which is an instance of type Array sets or returns the number of elements in that array.
+  display_name: Array Length
+  number_of_params: 1
+  inputs:
+   - name: input array
+     type: array
+     description: 
+  outputs:
+   - name: number of elements in the array
+     type: integer
+     description:
+
+- type: array_pop
+  description: The pop() method removes the last element from an array and returns that element. This method changes the length of the array.
+  display_name: Array Pop
+  number_of_params: 1
+  inputs:
+   - name: input array
+     type: array
+     description: 
+  outputs:
+   - name: output array
+     type: array
+     description:
+
+- type: array_push
+  description: The push() method adds one or more elements to the end of an array and returns the new length of the array.
+  display_name: Array Push
+  number_of_params: -1
+  inputs:
+   - name: input array
+     type: array
+     description: 
+   - name: items
+     type: object
+     description: 
+  outputs:
+   - name: output
+     type: array
+     description:
+
+- type: array_reverse
+  description: The reverse() method reverses an array in place. The first array element becomes the last, and the last array element becomes the first.
+  display_name: Array Reverse
+  number_of_params: 1
+  inputs:
+   - name: input array
+     type: array
+     description: 
+  outputs:
+   - name: reversed array
+     type: array
+     description:
+
+- type: console_log
+  description: The console.log() method outputs a message to the web console. The message may be a single string (with optional substitution values), or it may be any one or more JavaScript objects.
+  display_name: Console Log
+  number_of_params: -1
+  inputs:
+   - name: items
+     type: object
+     description: 
+  outputs:
+
+- type: date_gethours
+  description: The getHours() method returns the hour for the specified date, according to local time.
+  display_name: Date Get Hours
+  number_of_params: 1
+  inputs:
+   - name: input date
+     type: string
+     description: 
+  outputs:
+   - name: hours
+     type: integer
+     description:
+
+- type: date_getmilliseconds
+  description: The getMilliseconds() method returns the milliseconds in the specified date according to local time.
+  display_name: Date Get Milliseconds
+  number_of_params: 1
+  inputs:
+   - name: input date
+     type: string
+     description: 
+  outputs:
+   - name: milliseconds
+     type: integer
+     description:
+
+- type: date_getminutes
+  description: The getMinutes() method returns the minutes in the specified date according to local time.
+  display_name: Date Get Minutes
+  number_of_params: 1
+  inputs:
+   - name: input date
+     type: string
+     description: 
+  outputs:
+   - name: minutes
+     type: integer
+     description:
+
+- type: date_getmonth
+  description: The getMonth() method returns the month in the specified date according to local time, as a zero-based value (where zero indicates the first month of the year).
+  display_name: Date Get Month
+  number_of_params: 1
+  inputs:
+   - name: input date
+     type: string
+     description: 
+  outputs:
+   - name: month
+     type: integer
+     description:
+
+- type: date_getseconds
+  description: The getSeconds() method returns the seconds in the specified date according to local time.
+  display_name: Date Get Seconds
+  number_of_params: 1
+  inputs:
+   - name: input date
+     type: string
+     description: 
+  outputs:
+   - name: seconds
+     type: integer
+     description:
+
+- type: date_now
+  description: The static Date.now() method returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
+  display_name: Date Now
+  number_of_params: 0
+  inputs:
+  outputs:
+   - name: number of milliseconds elapsed
+     type: integer
+     description:
+
+- type: http_request
+  description: This function makes an HTTP request to the specified URL and returns the response.
+  display_name: Date Now
+  number_of_params: 4
+  inputs:
+    - name: method
+      type: string
+      description: 
+    - name: headers
+      type: key_value_object
+      key:
+        - name: name
+          label: Name
+        - name: value
+          label: Value
+      description:
+    - name: body
+      type: object
+      description:
+    - name: url
+      type: string
+      description:
+  outputs:
+   - name: number of milliseconds elapsed
+     type: integer
+     description:
+
+- type: math_abs
+  description: The Math.abs() function returns the absolute value of a number. That is, it returns x if x is positive or zero, and the negation of x if x is negative.
+  display_name: Math Abs
+  number_of_params: 1
+  inputs:
+   - name: input number
+     type: integer
+     description: 
+  outputs:
+   - name: absolute value of input number
+     type: integer
+     description:
+
+- type: math_exp
+  description: The Math.exp() function returns e^x, where x is the argument, and e is Euler's number (also known as Napier's constant), the base of the natural logarithms.
+  display_name: Math Exp
+  number_of_params: 1
+  inputs:
+   - name: input argument
+     type: float
+     description: 
+  outputs:
+   - name: e^x
+     type: float
+     description:
+
+- type: math_floor
+  description: The Math.floor() function returns the largest integer less than or equal to a given number.
+  display_name: Math Floor
+  number_of_params: 1
+  inputs:
+   - name: input number
+     type: float
+     description: 
+  outputs:
+   - name: output number
+     type: float
+     description:
+
+- type: math_max
+  description: The Math.max() function returns the largest of the zero or more numbers given as input parameters, or NaN if any parameter isn't a number and can't be converted into one.
+  display_name: Math maximum
+  number_of_params: -1
+  inputs:
+   - name: input items
+     type: float
+     description: 
+  outputs:
+   - name: largest number
+     type: float
+     description:
+
+- type: math_min
+  description: The static function Math.min() returns the lowest-valued number passed into it, or NaN if any parameter isn't a number and can't be converted into one.
+  display_name: Math minimum
+  number_of_params: -1
+  inputs:
+   - name: input items
+     type: float
+     description: 
+  outputs:
+   - name: lowest number
+     type: float
+     description:
+
+# - type: console_log
+#   description: The Log is a function in JavaScript which is used to print any kind of variables defined before in it or to just print any message that needs to be displayed to the user.
+#   display_name: Log
+#   number_of_params: -1
+
+- type: math_pow
+  description: The Math.pow() static method, given two arguments, base and exponent, returns base^exponent.
+  display_name: Math Power
+  number_of_params: 2
+  inputs:
+   - name: base number
+     type: float
+     description:
+   - name: exponent number
+     type: float
+     description:
+  outputs:
+   - name: output number
+     type: float
+     description:
+
+- type: math_random
+  description: The Math.random() function returns a floating-point, pseudo-random number in the range 0 to less than 1 (inclusive of 0, but not 1) with approximately uniform distribution over that range — which you can then scale to your desired range.
+  display_name: Math Random
+  number_of_params: 0
+  inputs: 
+  outputs:
+   - name: random number
+     type: float
+     description:
+
+- type: math_round
+  description: The Math.round() function returns the value of a number rounded to the nearest integer.
+  display_name: Math Round
+  number_of_params: 1
+  inputs: 
+   - name: input number
+     type: float
+     description:
+  outputs:
+   - name: rounded number
+     type: float
+     description:
+
+- type: string_endswith
+  description: The endsWith() method determines whether a string ends with the characters of a specified string, returning true or false as appropriate.
+  display_name: String Ends With
+  number_of_params: 2
+  inputs: 
+   - name: input string
+     type: string
+     description:
+   - name: search string
+     type: string
+     description:
+  outputs:
+   - name: result
+     type: boolean
+     description:
+
+- type: string_startswith
+  description: The startsWith() method determines whether a string begins with the characters of a specified string, returning true or false as appropriate.
+  display_name: String Starts With
+  number_of_params: 2
+  inputs: 
+   - name: input string
+     type: string
+     description:
+   - name: search string
+     type: string
+     description: 
+  outputs:
+   - name: result
+     type: boolean
+     description:

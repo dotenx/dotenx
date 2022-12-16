@@ -1,25 +1,67 @@
+// image: awrmin/create-jira-ticket:lambda5
 package main
 
 import (
 	"errors"
-	"os"
+	"fmt"
 	"strings"
 
 	jira "github.com/andygrunwald/go-jira"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	access_token := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	project_key := os.Getenv("project_key")
-	issueType := os.Getenv("issue_type")
-	description := os.Getenv("description")
-	summery := os.Getenv("summery")
-	jiraUrl := os.Getenv("jira_url")
+type Event struct {
+	Body map[string]interface{} `json:"body"`
+}
+
+// type Event struct {
+// 	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	ProjectKey  string `json:"project_key"`
+// 	IssueType   string `json:"issue_type"`
+// 	Description string `json:"description"`
+// 	Summery     string `json:"summery"`
+// 	JiraUrl     string `json:"jira_url"`
+// }
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	project_key := singleInput["project_key"].(string)
+	issueType := singleInput["issue_type"].(string)
+	description := singleInput["description"].(string)
+	summery := singleInput["summery"].(string)
+	jiraUrl := singleInput["jira_url"].(string)
+	access_token := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	if access_token == "" {
+		fmt.Println("Error: There isn't access token, Please check your integration")
+		resp.Successfull = false
+		// continue
+	}
 	err := CreateTicket(project_key, issueType, description, summery, jiraUrl, access_token)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		fmt.Printf("creating jira ticket wasn't successful\n")
+		resp.Successfull = false
+		// continue
+	} else {
+		fmt.Printf("creating jira ticket was successful\n")
 	}
+	// }
+	if resp.Successfull {
+		fmt.Println("All ticket(s) created successfully")
+	}
+	return resp, nil
+}
 
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func CreateTicket(ProjectKey, issueType, description, summery, jiraUrl, accessToken string) error {

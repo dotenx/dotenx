@@ -7,6 +7,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -48,8 +49,18 @@ func (dc *DatabaseController) AddTableColumn() gin.HandlerFunc {
 			}
 		}
 
-		if err := dc.Service.AddTableColumn(accountId, dto.ProjectName, dto.TableName, dto.ColumnName, dto.ColumnType); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		err := dc.Service.AddTableColumn(accountId, dto.ProjectName, dto.TableName, dto.ColumnName, dto.ColumnType)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 
@@ -62,5 +73,5 @@ type addTableColumnDTO struct {
 	ProjectName string `json:"projectName"`
 	TableName   string `json:"tableName" binding:"regexp=^[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
 	ColumnName  string `json:"columnName" binding:"regexp=^(__)?[a-zA-Z][a-zA-Z0-9_]*$,min=1,max=30"`
-	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_field"`
+	ColumnType  string `json:"columnType" binding:"oneof=yes_no image_address file_address rating url email just_time just_date date_time num short_text long_text link_field text_array yes_no_array num_array dtx_json float_num float_num_array"`
 }

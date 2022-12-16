@@ -1,0 +1,26 @@
+service: typeform
+type: Typeform new response
+integrations: [typeform]
+image: hojjat12/typeform-new-response:lambda5
+deduplication_method: compare_with_list
+credentials:
+    - key: form_id
+      type: text
+      description: Unique ID for the form. Find in your form URL. For example, in the URL "https://mysite.typeform.com/to/u6nXL7" the form_id is [u6nXL7].
+    - key: passed_seconds
+      type: text
+      description: passed seconds from submit time of response
+outputs:
+    - key: answers
+      type: text
+      description: the answers of the latest response
+    - key: submitted_at
+      type: text
+      description: when the latest response was submitted
+    - key: id
+      type: text
+      description: the id of the last response
+author: Hojjat-1
+icon: https://www.logo.wine/a/logo/Typeform_(service)/Typeform_(service)-Logo.wine.svg
+node_color: B2B2B2
+description: Checks if there is a new form submission(from amount of [passed_seconds] field until now), tiggers a specefic pipeline

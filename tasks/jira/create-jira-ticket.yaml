@@ -1,7 +1,8 @@
 service: jira
 type: Create jira ticket
-image: awrmin/create-jira-ticket
+image: awrmin/create-jira-ticket:lambda5
 integrations: [jira]
+has_dynamic_variables: false
 fields:
     - key: project_key
       type: text
@@ -14,6 +15,6 @@ fields:
     - key: jira_url
       type: text
 author: Armingodiz
-icon: https://symbols.getvecta.com/stencil_85/33_jira-icon.70390a6f88.svg
+icon: https://cdn-icons-png.flaticon.com/512/5968/5968875.png
 node_color: 5364AD
 description: Creates a jira issue with given detailes

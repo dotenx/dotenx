@@ -1,0 +1,17 @@
+service: dotenx
+type: Test task
+image: awrmin/dummy-lambda:lambda
+on_test_stage: true
+fields:
+    - key: target
+      type: text
+      description: target 
+outputs:
+    - key: target
+      type: text
+      description: target 
+author: Armingodiz
+icon: https://app.dotenx.com/favicon.png
+node_color: A04000
+description: test Task
+

@@ -1,7 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { ActionIcon, Button } from '@mantine/core'
+import { openModal } from '@mantine/modals'
 import _ from 'lodash'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams } from 'react-router-dom'
@@ -10,6 +12,7 @@ import {
 	API_URL,
 	deleteColumn,
 	deleteRecord,
+	Filters,
 	getColumns,
 	getProject,
 	getTableRecords,
@@ -27,7 +30,8 @@ import {
 	TableEndpoints,
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
-import { ContentWrapper, Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
+import { Drawer, Endpoint, Modal, NewModal, Table } from '../features/ui'
+import { ViewForm } from '../features/views/view-form'
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -37,23 +41,34 @@ export default function TablePage() {
 }
 
 function TableContent({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const [currentPage, setCurrentPage] = useState(1)
+
 	const modal = useModal()
 	const [filters, setFilters] = useState<GetTableRecordsRequest>({ columns: [] })
 	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
 	const projectTag = projectDetails.data?.data.tag ?? ''
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
-		[QueryKey.GetTableRecords, projectTag, tableName, filters],
-		() => getTableRecords(projectTag, tableName, filters),
+		[QueryKey.GetTableRecords, projectTag, tableName, filters, currentPage],
+		() => getTableRecords(projectTag, tableName, currentPage, filters),
 		{ enabled: !!projectTag }
 	)
-	const records = recordsQuery.data?.data?.map((record) =>
+
+	const nPages = Math.ceil((recordsQuery.data?.data?.totalRows as number) / 10)
+
+	const records = (recordsQuery.data?.data?.rows || []).map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
-				typeof value === 'boolean' ? [key, value ? 'Yes' : 'No'] : [key, value]
+				typeof value === 'boolean'
+					? [key, value ? 'Yes' : 'No']
+					: _.isArray(value)
+					? [key, value.join(', ')]
+					: typeof value === 'object'
+					? [key, JSON.stringify(value)]
+					: [key, value]
 			)
 		)
-	) ?? [{}]
+	)
 	const columns = columnsQuery.data?.data.columns ?? []
 	const headers =
 		columns.map((column) => ({
@@ -80,18 +95,30 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		(column) => column.name !== 'id' && column.name !== 'creator_id'
 	)
 
+	const helpDetails = {
+		title: `You can manage your table's records or find the data manipulation endpoints here`,
+		description:
+			'You can also add new columns or delete existing ones. Use the column types that best fit your data. Use the query builder to filter the records with simple or complex conditions.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
+
 	return (
 		<>
-			<ContentWrapper>
+			<main className="lg:pr-32 pl-24 py-6 lg:pl-52 lg:py-16 space-y-10 grow px-4 max-w-[100vw] flex flex-col">
 				<Table
+					withPagination
+					currentPage={currentPage}
+					nPages={nPages}
+					setCurrentPage={setCurrentPage}
+					helpDetails={helpDetails}
 					title={`Table ${tableName}`}
 					columns={tableHeaders}
 					data={records}
 					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
-					emptyText="There's no record yet"
 				/>
-			</ContentWrapper>
+			</main>
 			<NewModal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</NewModal>
@@ -99,7 +126,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				<RecordForm columns={formColumns} projectTag={projectTag} tableName={tableName} />
 			</NewModal>
 			<Drawer kind={Modals.TableEndpoints} title="Endpoints">
-				<TableEndpoints projectTag={projectTag} tableName={tableName} />
+				<TableEndpoints projectTag={projectTag} />
 			</Drawer>
 			<NewModal kind={Modals.QueryBuilder} title="Query Builder" size="1100px">
 				<QueryTable
@@ -126,7 +153,23 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 						projectTag={projectTag}
 						tableName={tableName}
 						rowId={id}
-						defaultValues={data}
+						defaultValues={_.fromPairs(
+							_.toPairs(
+								_.omit(
+									recordsQuery.data?.data?.rows.find(
+										(record) => record.id === id
+									) ?? data,
+									['id', 'creator_id']
+								)
+							).map(([key, value]) => [
+								key,
+								!_.isArray(value) && _.isObject(value)
+									? JSON.stringify(value, null, 2)
+									: _.isArray(value)
+									? value.map(_.toString)
+									: value,
+							])
+						)}
 						columns={formColumns}
 					/>
 				)}
@@ -144,15 +187,47 @@ function QueryTable({
 	projectTag: string
 	tableName: string
 }) {
+	const defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' }
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
+	const form = useForm<QueryBuilderValues>({ defaultValues })
+	const modal = useModal()
+
 	return (
-		<QueryBuilder projectName={projectName} tableName={tableName}>
+		<QueryBuilder
+			index={0}
+			name=""
+			query={query}
+			form={form}
+			projectName={projectName}
+			tableName={tableName}
+		>
 			{(values) => (
-				<Endpoint
-					method="POST"
-					label="Get records"
-					url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
-					code={{ columns: [], filters: values }}
-				/>
+				<>
+					<Endpoint
+						method="POST"
+						label="Get records"
+						url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
+						code={{ columns: [], filters: values }}
+					/>
+					<Button
+						onClick={() => {
+							modal.close()
+							openModal({
+								title: 'Create view',
+								children: (
+									<ViewForm
+										filters={values as Filters}
+										projectName={projectName}
+										tableName={tableName}
+										columns={query.data?.data.columns ?? []}
+									/>
+								),
+							})
+						}}
+					>
+						Create view from query
+					</Button>
+				</>
 			)}
 		</QueryBuilder>
 	)
@@ -237,7 +312,11 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 		<div className="flex items-center gap-2">
 			{name}
 			{showDelete && (
-				<ActionIcon type="button" onClick={() => deleteMutation.mutate()}>
+				<ActionIcon
+					type="button"
+					onClick={() => deleteMutation.mutate()}
+					loading={deleteMutation.isLoading}
+				>
 					<IoTrash />
 				</ActionIcon>
 			)}
@@ -256,8 +335,18 @@ function RecordFilter({
 	defaultValues?: QueryBuilderValues
 	onSubmit: (values: QueryBuilderValues) => void
 }) {
+	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
+	const form = useForm<QueryBuilderValues>({ defaultValues })
 	return (
-		<QueryBuilder projectName={projectName} tableName={tableName} defaultValues={defaultValues}>
+		<QueryBuilder
+			index={0}
+			name=""
+			query={query}
+			form={form}
+			projectName={projectName}
+			tableName={tableName}
+			defaultValues={defaultValues}
+		>
 			{(values) => (
 				<Button type="button" onClick={() => onSubmit(values)}>
 					Apply Filter
@@ -278,13 +367,13 @@ function RecordActions({
 }) {
 	const rowId = data.id
 	const client = useQueryClient()
-	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId), {
+	const mutation = useMutation(() => deleteRecord(projectTag, tableName, rowId as string), {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTableRecords),
 	})
 	const modal = useModal()
 
 	return (
-		<div className="flex justify-end gap-1">
+		<div className="flex gap-1">
 			<ActionIcon
 				type="button"
 				onClick={() =>

@@ -6,19 +6,33 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"reflect"
+	"strconv"
+	"strings"
 	"time"
 
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"encoding/json"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// Errors
+var ErrReachLimitationOfPlan = errors.New("you have reached your limit. please upgrade your plan")
+var ErrUserDatabaseNotFound = errors.New("database not found. this error occurs when your project has not database")
+var ErrDatabaseJobResultAlreadyExists = errors.New("database job result already exists")
+var ErrDatabaseJobIsPending = errors.New("datbase job status is pending")
+
+// constants
+const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)
 
 func FailOnError(err error, msg string) {
 	if err != nil {
@@ -27,17 +41,17 @@ func FailOnError(err error, msg string) {
 }
 
 func GetAccountId(c *gin.Context) (string, error) {
-	if config.Configs.App.RunLocally {
-		return config.Configs.App.AccountId, nil
-	} else {
-		accountId, exist := c.Get("accountId")
-		if !exist {
-			return "", errors.New("account id not exists")
-		}
-		return accountId.(string), nil
+	accountId, exist := c.Get("accountId")
+	if !exist {
+		return "", errors.New("account id not exists")
 	}
+	return accountId.(string), nil
 }
 
+// SpecialProviders are not supported by goth package (https://github.com/markbates/goth)
+var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay"}
+
+// TODO: ADD COMMENT!
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
 
 func Encode(b []byte) string {
@@ -123,6 +137,19 @@ func GetTpAccountIdField(tokenString string) (string, error) {
 	return "", errors.New("claim not found")
 }
 
+func GetUserGroup(tokenString string) (string, error) {
+	claims, err := getClaims(tokenString)
+	if err != nil {
+		return "", err
+	}
+	if ug, ok := claims["user_group"]; ok {
+		if userGroup, ok2 := ug.(string); ok2 {
+			return userGroup, nil
+		}
+	}
+	return "", errors.New("claim not found")
+}
+
 func getClaims(tokenString string) (jwt.MapClaims, error) {
 	secret := []byte(config.Configs.Secrets.AuthServerJwtSecret)
 
@@ -147,8 +174,8 @@ func getClaims(tokenString string) (jwt.MapClaims, error) {
 func GeneratToken() (string, error) {
 	tokenString, err := GenerateJwtToken()
 	if err != nil {
+		log.Println("Unexpected error occurred!")
 		return "", err
-		log.Fatal("Unexpected error occurred!")
 	}
 	token := fmt.Sprintf("Bearer %s", tokenString)
 	fmt.Printf("token:\n%s\n", token)
@@ -173,6 +200,7 @@ func GenerateJwtToken() (accToken string, err error) {
 	return
 }
 
+// TODO: ADD COMMENT! Why are there magic strings in the code?
 var FullRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var LowercaseRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyz")
 
@@ -186,7 +214,8 @@ func RandStringRunes(n int, letterRunes []rune) string {
 }
 
 // GenerateJwtToken function generates a jwt token based on HS256 algorithm
-func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err error) {
+func GenerateTpJwtToken(accountId, tpAccountId, userGroup string) (accToken string, err error) {
+	logrus.Debug("GenerateTpJwtToken ", accountId, tpAccountId, userGroup)
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -194,8 +223,13 @@ func GenerateTpJwtToken(accountId, tpAccountId string) (accToken string, err err
 	claims["iss"] = "dotenx-ao-api"
 	claims["account_id"] = accountId
 	claims["tp_account_id"] = tpAccountId
+	if len(userGroup) > 0 {
+		claims["user_group"] = userGroup
+	} else {
+		claims["user_group"] = ""
+	}
 	claims["token_type"] = "tp"
-	claims["exp"] = time.Now().Add(6 * time.Hour).Unix()
+	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	// accToken, err = token.SignedString([]byte(config.Configs.App.JwtSecret))
 	accToken, err = token.SignedString([]byte(config.Configs.Secrets.AuthServerJwtSecret))
@@ -275,4 +309,188 @@ func GetThirdPartyAccountId(c *gin.Context) (tpAccountId string, err error) {
 		return "", errors.New("no tpAccountId have been set")
 	}
 	return tpAccountId, nil
+}
+
+func GetFromNestedJson(jsonBytes []byte, keys []string, index int) (interface{}, error) {
+	// var values interface{}
+	if index >= len(keys) {
+		return nil, errors.New("index out of range")
+	}
+	var data map[string]interface{}
+	err := json.Unmarshal(jsonBytes, &data)
+	if err != nil {
+		return nil, err
+	}
+	key := keys[index]
+	keyIndex := -2
+	pureIndex := ""
+	if strings.Contains(key, "[") && strings.Contains(key, "]") {
+
+		indexes := strings.Split(key, "[")
+		pureIndex = indexes[0]
+		tempIndex := strings.ReplaceAll(indexes[1], "]", "")
+		if tempIndex == "*" {
+			keyIndex = -1
+		} else if intIndex, err := strconv.Atoi(tempIndex); err == nil {
+			keyIndex = intIndex
+		} else {
+			return nil, errors.New("index is not defined correctly")
+		}
+	} else if _, ok := data[key].([]interface{}); ok {
+		keyIndex = -1
+		pureIndex = key
+	} else {
+		pureIndex = key
+	}
+
+	newValue, ok := data[pureIndex]
+	if !ok {
+		log.Println("#######################")
+		log.Println(data)
+		log.Println(pureIndex)
+		log.Println("#######################")
+		return nil, errors.New("key not found")
+	}
+	if index+1 >= len(keys) {
+		if keyIndex == -2 { // no index
+			// values = append(values, newValue)
+			return newValue, nil
+		} else if keyIndex == -1 { // all index
+			// TODO handle panic scenario
+			tempValues := make([]interface{}, 0)
+			tempValues = append(tempValues, newValue.([]interface{})...)
+			return tempValues, nil
+		} else { // specific index
+			// TODO handle panic scenario
+			newValues := newValue.([]interface{})
+			if keyIndex >= len(newValues) {
+				return nil, errors.New("index out of range")
+			}
+			// values = append(values, newValues[keyIndex])
+			return newValues[keyIndex], nil
+		}
+
+	} else {
+		if keyIndex == -2 { // no index
+			newJsonBytes, err := json.Marshal(newValue)
+			if err != nil {
+				return nil, err
+			}
+			return GetFromNestedJson(newJsonBytes, keys, index+1)
+		} else if keyIndex == -1 { // all index
+			// TODO handle panic scenario
+			tempValues := make([]interface{}, 0)
+			for _, v := range newValue.([]interface{}) {
+				newJsonBytes, err := json.Marshal(v)
+				if err != nil {
+					return nil, err
+				}
+				returnedValues, err := GetFromNestedJson(newJsonBytes, keys, index+1)
+				if err != nil {
+					return nil, err
+				}
+				tempValues = append(tempValues, returnedValues)
+			}
+			return tempValues, nil
+		} else { // specific index
+			// TODO handle panic scenario
+			newValues := newValue.([]interface{})
+			if keyIndex >= len(newValues) {
+				return nil, errors.New("index out of range")
+			}
+			newJsonBytes, err := json.Marshal(newValues[keyIndex])
+			if err != nil {
+				return nil, err
+			}
+			returnedValues, err := GetFromNestedJson(newJsonBytes, keys, index+1)
+			if err != nil {
+				return nil, err
+			}
+			// values = append(values, returnedValues...)
+			return returnedValues, nil
+		}
+	}
+}
+
+func GetFlatOfArray(values []interface{}) (interface{}, error) {
+	if len(values) == 0 {
+		return values, nil
+	}
+	// if len(values) == 1 {
+	// 	return values[0], nil
+	// }
+	valuesString := make([]string, 0)
+	for _, value := range values {
+		_, err := json.Marshal(value)
+		if _, ok := value.(map[string]interface{}); ok && err == nil {
+			valueBytes, _ := json.Marshal(removeNils(value.(map[string]interface{})))
+			valuesString = append(valuesString, string(valueBytes))
+		} else {
+			valuesString = append(valuesString, fmt.Sprint(value))
+		}
+	}
+	return strings.TrimSuffix(strings.Join(valuesString, ","), ","), nil
+}
+
+func removeNils(initialMap map[string]interface{}) map[string]interface{} {
+	withoutNils := map[string]interface{}{}
+	for key, value := range initialMap {
+		_, ok := value.(map[string]interface{})
+		if ok {
+			value = removeNils(value.(map[string]interface{}))
+			withoutNils[key] = value
+			continue
+		}
+		if value != nil {
+			withoutNils[key] = value
+		}
+	}
+	return withoutNils
+}
+
+func GetFlatOfInterface(values interface{}, ended *bool) interface{} {
+	var result interface{}
+	if jsonField, isJson := values.(map[string]interface{}); isJson {
+		result = make(map[string]interface{})
+		for key, val := range jsonField {
+			flatValue := GetFlatOfInterface(val, ended)
+			result.(map[string]interface{})[key] = flatValue
+		}
+		return result
+	} else if reflect.TypeOf(values) != nil && (reflect.TypeOf(values).Kind() == reflect.Array || reflect.TypeOf(values).Kind() == reflect.Slice) {
+		arrayField := values.([]interface{})
+		if len(arrayField) == 0 {
+			return ""
+		}
+		*ended = false
+		hasJsonField := false
+		for _, val := range arrayField {
+			if _, ok := val.(map[string]interface{}); ok {
+				hasJsonField = true
+				break
+			}
+		}
+
+		if hasJsonField {
+			result = make(map[string]interface{})
+			for _, val := range arrayField {
+				nestedJsonField, ok := val.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				for nestedKey, nestedValue := range nestedJsonField {
+					if result.(map[string]interface{})[nestedKey] == nil {
+						result.(map[string]interface{})[nestedKey] = make([]interface{}, 0)
+					}
+					flatValue := GetFlatOfInterface(nestedValue, ended)
+					result.(map[string]interface{})[nestedKey] = append(result.(map[string]interface{})[nestedKey].([]interface{}), flatValue)
+				}
+			}
+		} else {
+			result, _ = GetFlatOfArray(arrayField)
+		}
+		return result
+	} else {
+		return values
+	}
 }

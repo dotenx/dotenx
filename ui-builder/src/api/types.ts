@@ -1,0 +1,160 @@
+import { DataSource } from '../features/data-source/data-source-store'
+import { Element } from '../features/elements/element'
+import { CssSelector, Style } from '../features/elements/style'
+
+export type GetProjectDetailsRequest = {
+	projectName: string
+}
+
+export type GetProjectDetailsResponse = {
+	name: string
+	description: string
+	tag: string
+}
+
+export type GetPagesRequest = {
+	projectTag: string
+}
+
+export type GetPagesResponse = string[] | null
+
+export type GetPageDetailsRequest = {
+	projectTag: string
+	pageName: string
+}
+
+export type GetPageDetailsResponse = PageDetails
+
+export type AddPageRequest = {
+	projectTag: string
+	pageName: string
+	elements: Element[]
+	dataSources: DataSource[]
+	classNames: Record<string, Style>
+	mode: LayoutMode
+	pageParams: string[]
+	globals: string[]
+	fonts: Record<string, string>
+	customCodes: { head: string; footer: string }
+	statesDefaultValues: Record<string, string>
+}
+
+export type PublishPageRequest = {
+	projectTag: string
+	pageName: string
+}
+
+export type PublishPageResponse = {
+	url: string
+}
+
+type LayoutMode = 'simple' | 'advanced'
+
+interface PageDetails {
+	name: string
+	content: {
+		layout: Element[]
+		dataSources: DataSource[]
+		classNames: Record<string, BackendStyle>
+		mode: LayoutMode
+		pageParams: string[]
+		fonts: Record<string, string>
+		customCodes: { head: string; footer: string }
+		statesDefaultValues: Record<string, string>
+	}
+}
+
+export type BackendSelectorStyle = Record<CssSelector, Record<string, string>>
+
+export interface BackendStyle {
+	desktop: BackendSelectorStyle
+	tablet: BackendSelectorStyle
+	mobile: BackendSelectorStyle
+}
+
+export type DeletePageRequest = {
+	projectTag: string
+	pageName: string
+}
+
+export type UploadImageRequest = {
+	projectTag: string
+	image: File
+}
+
+export type UploadImageResponse = {
+	fileName: string
+	url: string
+}
+
+export type CreateComponentRequest = {
+	projectTag: string
+	payload: Component
+}
+
+export type DeleteComponentRequest = {
+	projectTag: string
+	name: string
+}
+
+export type GetComponentsRequest = {
+	projectTag: string
+}
+
+export type GetComponentsResponse =
+	| (Component & { category: 'uiComponentItem' | 'uiDesignSystemItem' })[]
+	| null
+
+export type Component = {
+	name: string
+	content: Element
+}
+
+export type CreateDesignSystemRequest = {
+	projectTag: string
+	payload: { name: string; content: Component[] }
+}
+
+export type GetDesignSystemsRequest = {
+	projectTag: string
+}
+
+export type DesignSystem = {
+	name: string
+	content: Component[]
+} & {
+	category: 'uiComponentItem' | 'uiDesignSystemItem'
+}
+
+export type GetDesignSystemsResponse = DesignSystem[] | null
+
+export type GetMarketplaceItemsResponse = {
+	category: 'uiComponentItem' | 'uiDesignSystemItem'
+	id: number
+	title: string
+	imageUrl: string
+}[]
+
+export type ImportComponentRequest = {
+	projectTag: string
+	itemId: number
+	name: string
+	category: string
+}
+
+export type GetTablesResponse = {
+	tables: { name: string; is_public: boolean }[]
+}
+
+export type GetColumnsResponse = {
+	columns: { name: string; type: string }[]
+}
+
+export type GlobalStates = {
+	states: string[]
+}
+
+export type SetGlobalStatesRequest = {
+	projectName: string
+	payload: GlobalStates
+}

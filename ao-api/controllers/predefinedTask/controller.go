@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/pkg/formatter"
 	predifinedService "github.com/dotenx/dotenx/ao-api/services/predefinedTaskService"
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,11 @@ type PredefinedTaskController struct {
 
 func New(service predifinedService.PredifinedTaskService) *PredefinedTaskController {
 	return &PredefinedTaskController{service: service}
+}
+
+func (r *PredefinedTaskController) GetFuncs(ctx *gin.Context) {
+	funcs := formatter.GetFuncs()
+	ctx.JSON(http.StatusOK, funcs)
 }
 
 func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
@@ -32,15 +38,16 @@ func (r *PredefinedTaskController) GetTasks(ctx *gin.Context) {
 
 func (r *PredefinedTaskController) GetFields(ctx *gin.Context) {
 	taskName := ctx.Param("task_name")
-	fields, integrationTypes, outputs, err := r.service.GetTaskFields(taskName)
+	fields, integrationTypes, outputs, hasDynamic, err := r.service.GetTaskFields(taskName)
 	if err != nil {
 		log.Println(err.Error())
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"fields":            fields,
-		"integration_types": integrationTypes,
-		"outputs":           outputs,
+		"fields":                fields,
+		"integration_types":     integrationTypes,
+		"outputs":               outputs,
+		"has_dynamic_variables": hasDynamic,
 	})
 }

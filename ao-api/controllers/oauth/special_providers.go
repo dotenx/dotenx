@@ -2,7 +2,9 @@ package oauthController
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -95,4 +97,69 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	}
 	err = json.Unmarshal(out, &refreshDto)
 	return refreshDto.AccessToken, err
+}
+
+func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
+	var dto struct {
+		AccessToekn string `json:"access_token"`
+	}
+	data := "client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://api.typeform.com/oauth/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("typeform response:", string(out))
+	log.Println("-----------------------------------------------------------")
+	if err != nil {
+		return "", err
+	}
+	if status != 200 {
+		return "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToekn, err
+}
+
+func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToekn, refreshToken string, err error) {
+	var dto struct {
+		AccessToekn  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+	}
+	data := "code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://api.ebay.com/identity/v1/oauth2/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+		{
+			Key:   "Authorization",
+			Value: "Basic " + base64.StdEncoding.EncodeToString([]byte(clientId+":"+clientSecret)),
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("ebay response:", string(out))
+	log.Println("-----------------------------------------------------------")
+	if err != nil {
+		return "", "", err
+	}
+	if status != 200 {
+		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToekn, dto.RefreshToken, err
 }

@@ -18,6 +18,7 @@ var gothProviders map[string]*goth.Provider
 var gothNotSupported []string
 
 func init() {
+	// gothNotSupported = append(gothNotSupported, "typeform", "ebay")
 	gothNotSupported = append(gothNotSupported, "typeform")
 	jsonFile, err := os.Open("providers.json")
 	if err != nil {

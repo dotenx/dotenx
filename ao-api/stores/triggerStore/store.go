@@ -10,15 +10,21 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/sirupsen/logrus"
 )
 
 type TriggerStore interface {
-	AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error
+	AddTrigger(ctx context.Context, accountId, projectName string, trigger models.EventTrigger) error
 	DeleteTrigger(ctx context.Context, accountId string, triggerName, pipeline string) error
 	DeleteTriggersForPipeline(ctx context.Context, accountId string, pipeline string) error
 	GetTriggersByType(ctx context.Context, accountId, triggerType string) ([]models.EventTrigger, error)
 	GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error)
 	GetAllTriggersForAccount(ctx context.Context, accountId string) ([]models.EventTrigger, error)
+	GetAllTriggersForPipelineByEndpoint(ctx context.Context, endpoint string) ([]models.EventTrigger, error)
+	AddTriggerObjectList(ctx context.Context, triggerChecker models.TriggerChecker) error
+	GetTriggerObjectListByTriggerName(ctx context.Context, accountId, projectName, pipelineName, triggerName string) (models.TriggerObjectList, error)
+	DeleteTriggerObjectListByTriggerName(ctx context.Context, accountId, projectName, pipelineName, triggerName string) error
+	UpdateTriggerObjectListByTriggerName(ctx context.Context, triggerChecker models.TriggerChecker) error
 }
 
 type triggerStore struct {
@@ -30,11 +36,11 @@ func New(db *db.DB) TriggerStore {
 }
 
 var storeTrigger = `
-INSERT INTO event_triggers (account_id, type, name, integration, pipeline, endpoint, credentials)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO event_triggers (account_id, type, name, integration, pipeline, endpoint, credentials, project_name)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
-func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, trigger models.EventTrigger) error {
+func (store *triggerStore) AddTrigger(ctx context.Context, accountId, projectName string, trigger models.EventTrigger) error {
 	var stmt string
 	switch store.db.Driver {
 	case db.Postgres:
@@ -43,8 +49,9 @@ func (store *triggerStore) AddTrigger(ctx context.Context, accountId string, tri
 		return fmt.Errorf("driver not supported")
 	}
 	js, _ := json.Marshal(trigger.Credentials)
+	logrus.Println(projectName)
 	res, err := store.db.Connection.Exec(stmt, accountId, trigger.Type, trigger.Name,
-		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js)
+		trigger.Integration, trigger.Pipeline, trigger.Endpoint, js, projectName)
 	if err != nil {
 		return err
 	}
@@ -86,7 +93,7 @@ func (store *triggerStore) GetTriggersByType(ctx context.Context, accountId, tri
 }
 
 var getTriggers = `
-select type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers;`
+select type, name, account_id, integration, pipeline, endpoint, credentials, project_name from event_triggers;`
 
 func (store *triggerStore) GetAllTriggers(ctx context.Context) ([]models.EventTrigger, error) {
 	res := make([]models.EventTrigger, 0)
@@ -105,7 +112,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context) ([]models.EventTr
 		for rows.Next() {
 			var cur models.EventTrigger
 			var cred []byte
-			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
+			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred, &cur.ProjectName)
 			json.Unmarshal(cred, &cur.Credentials)
 			if err != nil {
 				return nil, err
@@ -118,7 +125,7 @@ func (store *triggerStore) GetAllTriggers(ctx context.Context) ([]models.EventTr
 }
 
 var getTriggersForAccount = `
-select type, name, account_id, integration, pipeline, endpoint, credentials from event_triggers where account_id = $1;`
+select type, name, account_id, integration, pipeline, endpoint, credentials, project_name from event_triggers where account_id = $1;`
 
 func (store *triggerStore) GetAllTriggersForAccount(ctx context.Context, accountId string) ([]models.EventTrigger, error) {
 	res := make([]models.EventTrigger, 0)
@@ -137,7 +144,7 @@ func (store *triggerStore) GetAllTriggersForAccount(ctx context.Context, account
 		for rows.Next() {
 			var cur models.EventTrigger
 			var cred []byte
-			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred)
+			rows.Scan(&cur.Type, &cur.Name, &cur.AccountId, &cur.Integration, &cur.Pipeline, &cur.Endpoint, &cred, &cur.ProjectName)
 			json.Unmarshal(cred, &cur.Credentials)
 			if err != nil {
 				return nil, err

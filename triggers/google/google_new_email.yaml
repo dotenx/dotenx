@@ -1,7 +1,8 @@
 service: google
 type: Google new email
 integrations: [google]
-image: hojjat12/google-new-email:latest
+image: awrmin/google-new-email:lambda6
+deduplication_method: compare_with_list
 credentials:
     - key: passed_seconds
       type: text

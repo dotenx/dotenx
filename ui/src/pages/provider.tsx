@@ -15,8 +15,12 @@ export default function ProviderPage() {
 	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
 		enabled: !!projectName,
 	})
-	const projectTag = projectQuery.data?.data?.tag
-	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const projectTag = projectQuery.data?.data?.tag ?? ''
+	const profileQuery = useQuery(
+		[QueryKey.GetProfile, projectTag],
+		() => getProfile({ projectTag }),
+		{ enabled: !!projectTag }
+	)
 	const accountId = profileQuery.data?.data.account_id
 
 	if (query.isLoading || projectQuery.isLoading || profileQuery.isLoading || !provider)

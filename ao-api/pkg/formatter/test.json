@@ -1,0 +1,97 @@
+{
+  "name": "newFieldTest9",
+  "manifest": {
+      "tasks": {
+          "Create jira ticket": {
+              "type": "Create jira ticket",
+              "body": {
+                  "description": {
+                      "type": "directValue",
+                      "source": "",
+                      "key": "",
+                      "nestedKey": "",
+                      "value": "this is a sample task"
+                  },
+                  "issue_type": {
+                      "type": "refrenced",
+                      "source": "trigger",
+                      "key": "issue_type",
+                      "nestedKey": "",
+                      "value": null
+                  },
+                  "jira_url": {
+                      "type": "formatted",
+                      "formatter": {
+                          "format_str": "$func3.$func1.$func2",
+                          "func_calls": {
+                              "func1": {
+                                  "function": "ToUpper",
+                                  "args": [
+                                      {
+                                          "name": "arg1",
+                                          "type": "refrenced",
+                                          "source": "trigger",
+                                          "key": "issue_type",
+                                          "nestedKey": "",
+                                          "value": null
+                                      }
+                                  ]
+                              },
+                              "func2": {
+                                  "function": "direct_value",
+                                  "args": [
+                                      {
+                                          "name": "firstArg",
+                                          "type": "directValue",
+                                          "value": "com",
+                                          "source": "",
+                                          "key": "",
+                                          "nestedKey": ""
+                                      }
+                                  ]
+                              },
+                              "func3": {
+                                  "function": "ToUpper",
+                                  "args": [
+                                      {
+                                          "name": "arg1",
+                                          "type": "nested",
+                                          "source": "",
+                                          "key": "",
+                                          "nestedKey": "trigger2.project.key",
+                                          "value": null
+                                      }
+                                  ]
+                              }
+                          }
+                      },
+                      "source": "",
+                      "key": "",
+                      "nestedKey": "",
+                      "value": ""
+                  },
+                  "project_key": {
+                      "type": "nested",
+                      "source": "",
+                      "key": "",
+                      "nestedKey": "trigger2.project.key",
+                      "value": null
+                  },
+                  "summery": {
+                      "type": "json",
+                      "source": "",
+                      "key": "",
+                      "nestedKey": "",
+                      "value": {
+                          "name": "armin",
+                          "age": 21
+                      }
+                  }
+              },
+              "integration": "slackBot",
+              "executeAfter": {}
+          }
+      },
+      "triggers": {}
+  }
+}

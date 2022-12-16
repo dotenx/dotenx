@@ -5,19 +5,21 @@ import {
 	FieldValues,
 	UseControllerProps,
 } from 'react-hook-form'
+import { ComplexFieldValue } from './complex-field'
 import { FieldError } from './field'
-import { InputOrSelectKind, InputValue } from './input-or-select'
 
 interface TextareaProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
 	errors?: FieldErrors<TFieldValues>
 	label?: string
+	raw?: boolean
 }
 
 export function Textarea<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	label,
 	errors,
 	control,
+	raw,
 	...rest
 }: TextareaProps<TFieldValues, TName>) {
 	return (
@@ -31,7 +33,7 @@ export function Textarea<TFieldValues extends FieldValues, TName extends FieldPa
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value, name } }) => (
-					<RawTextarea name={name} onChange={onChange} value={value} />
+					<RawTextarea raw={raw} name={name} onChange={onChange} value={value} />
 				)}
 			/>
 
@@ -46,17 +48,27 @@ function RawTextarea({
 	name,
 	value,
 	onChange,
+	raw,
 }: {
 	name: string
-	value: InputValue
-	onChange: (value: InputValue) => void
+	value: ComplexFieldValue | string
+	onChange: (value: ComplexFieldValue | string) => void
+	raw?: boolean
 }) {
 	return (
 		<textarea
 			className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
 			id={name}
-			onChange={(e) => onChange({ type: InputOrSelectKind.Text, data: e.target.value })}
-			value={value?.data ?? ''}
+			onChange={(e) =>
+				raw ? onChange(e.target.value) : onChange({ kind: 'json', data: e.target.value })
+			}
+			value={
+				raw
+					? (value as string)
+					: value && typeof value === 'object' && 'data' in value
+					? value.data
+					: ''
+			}
 			autoComplete="off"
 			name={name}
 		/>

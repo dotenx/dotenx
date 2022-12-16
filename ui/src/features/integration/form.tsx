@@ -26,7 +26,7 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 	const hasOauth = integrationTypeFields?.oauth_provider
 
 	return (
-		<Form className="h-full" onSubmit={onSubmit}>
+		<Form className="flex flex-col h-full gap-10">
 			<div className="flex flex-col gap-5 grow">
 				<div className="flex items-center justify-between">
 					{integrationKind && (
@@ -87,7 +87,7 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 						/>
 					))}
 			</div>
-			<Button type="submit" loading={isSubmitting}>
+			<Button onClick={onSubmit} loading={isSubmitting}>
 				Add
 			</Button>
 		</Form>

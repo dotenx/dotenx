@@ -9,6 +9,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
+	"github.com/sirupsen/logrus"
 )
 
 func NewUserManagementService(store userManagementStore.UserManagementStore, projStore projectStore.ProjectStore) UserManagementService {
@@ -16,6 +17,7 @@ func NewUserManagementService(store userManagementStore.UserManagementStore, pro
 }
 
 type UserManagementService interface {
+	// user_info functions
 	GetUserInfo(tpEmail, projectTag string) (user *models.ThirdUser, err error)
 	GetUserInfoById(tpAccountId, projectTag string) (user *models.ThirdUser, err error)
 	SetUserInfo(userInfo models.ThirdUser, projectTag string) (err error)
@@ -23,6 +25,11 @@ type UserManagementService interface {
 	UpdateUserGroup(userInfo models.ThirdUser, projectTag string) (err error)
 	UpdatePassword(userInfo models.ThirdUser, projectTag string) (err error)
 	DeleteUserInfo(tpAccountId, projectTag string) (err error)
+
+	// security_code functions
+	SetSecurityCodeInfo(securityCode models.SecurityCode, projectTag string) (err error)
+	GetSecurityCodeInfo(securityCodeStr, useCase, projectTag string) (securityCode models.SecurityCode, err error)
+	DisableSecurityCode(securityCode, useCase, projectTag string) (err error)
 
 	// user group functions
 	GetUserGroup(userGroupName, projectTag string) (userGroup *models.UserGroup, err error)
@@ -88,6 +95,16 @@ func (ums *userManagementService) SetUserInfo(userInfo models.ThirdUser, project
 	if err != nil {
 		return err
 	}
+
+	hasAccess, err := ums.CheckAccess(project.AccountId)
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
+	if !hasAccess {
+		return utils.ErrReachLimitationOfPlan
+	}
+
 	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
 	if err != nil {
 		return err

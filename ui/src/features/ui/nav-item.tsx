@@ -5,16 +5,19 @@ import { Link, useLocation } from 'react-router-dom'
 interface NavItemProps {
 	children: ReactNode
 	to: string
+	tourSelector?: string
 }
 
-export function NavItem({ to, children }: NavItemProps) {
+export function NavItem({ to, children, tourSelector }: NavItemProps) {
 	const { pathname } = useLocation()
 	const selected = pathname.startsWith(to)
-
 	return (
 		<Link
 			to={to}
-			className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+			className={clsx(
+				'flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500 ',
+				tourSelector
+			)}
 		>
 			<div
 				className={clsx('w-1 h-8 rounded-sm shrink-0 transition', selected && 'bg-white')}

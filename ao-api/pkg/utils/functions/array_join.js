@@ -1,0 +1,1 @@
+module.exports = (array, separator) => array.join(separator);

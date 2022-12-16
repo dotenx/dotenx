@@ -4,5 +4,6 @@ release/
 vendor/
 .idea
 .DS_Store
-ao-api/providers.json
+# ao-api/providers.json
 predefinedImages/tasks/twitter-send-tweet/twitter_app_credentials.json
+deploy-dotenx.sh

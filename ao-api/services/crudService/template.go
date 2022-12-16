@@ -1,6 +1,7 @@
 package crudService
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -8,20 +9,40 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // this methods create an Automation from given base template and fields
-func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string) (name string, err error) {
+func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *models.PipelineVersion, fields map[string]interface{}, tpAccountId string, projectName string, userGroup string, parentId int) (name string, err error) {
+	templatePipeline, err := cm.GetPipelineByName(base.AccountId, base.Name, projectName)
+	if err != nil {
+		logrus.Error(err.Error())
+		return "", err
+	}
+	hasPermission := tpAccountId == ""
+	if len(templatePipeline.UserGroups) > 0 { // ONLY APPLICABLE TO INTERACTION PIPELINES
+		for _, ug := range templatePipeline.UserGroups {
+			if ug == userGroup {
+				hasPermission = true
+				break
+			}
+		}
+	} else { // Having set no user groups for the pipeline means all the user groups have access to the pipeline
+		hasPermission = true
+	}
+	if !hasPermission {
+		return "", errors.New("you don't have permission to create automation from this template")
+	}
 	pipeline.Manifest.Tasks, err = cm.fillTasks(pipeline.Manifest.Tasks, fields, base.AccountId, tpAccountId)
 	if err != nil {
 		return "", err
 	}
 	base.Name = base.Name + "_" + utils.GetNewUuid()
-	err = cm.Store.Create(noContext, base, pipeline, false, false)
+	err = cm.Store.Create(noContext, base, pipeline, false, false, projectName, parentId, tpAccountId)
 	if err != nil {
 		return
 	}
-	newPipeline, err := cm.Store.GetByName(noContext, base.AccountId, base.Name)
+	newPipeline, err := cm.Store.GetByName(noContext, base.AccountId, base.Name, projectName)
 	if err != nil {
 		return
 	}
@@ -29,7 +50,7 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 	if err != nil {
 		return "", err
 	}
-	err = cm.TriggerService.AddTriggers(base.AccountId, filledTriggers, newPipeline.Endpoint)
+	err = cm.TriggerService.AddTriggers(base.AccountId, projectName, filledTriggers, newPipeline.Endpoint)
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -39,9 +60,9 @@ func (cm *crudManager) CreateFromTemplate(base *models.Pipeline, pipeline *model
 
 // function to iterate over template tasks and triggers fields and if their value were empty,
 // we will pass them to front to get them when we want create from template
-func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detailes map[string]interface{}, err error) {
+func (cm *crudManager) GetTemplateDetailes(accountId string, name, projectName string) (detailes map[string]interface{}, err error) {
 	detailes = make(map[string]interface{})
-	temp, err := cm.GetPipelineByName(accountId, name)
+	temp, err := cm.GetPipelineByName(accountId, name, projectName)
 	if err != nil {
 		return
 	}
@@ -52,8 +73,13 @@ func (cm *crudManager) GetTemplateDetailes(accountId string, name string) (detai
 		fields := make([]string, 0)
 		body := task.Body.(models.TaskBodyMap)
 		for key, value := range body {
-			strVal := fmt.Sprintf("%v", value)
-			if strVal == "" { // if value is empty means that we must get it when we want to create from template
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(value)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				fields = append(fields, key)
 			}
 		}
@@ -94,12 +120,20 @@ func (cm *crudManager) fillTasks(emptyTasks map[string]models.Task, fields map[s
 	for taskName, task := range emptyTasks {
 		body := task.Body.(models.TaskBodyMap)
 		for k, v := range body {
-			val := fmt.Sprintf("%v", v)
-			if val == "" {
+			var insertDt models.TaskFieldDetailes
+			b, _ := json.Marshal(v)
+			err := json.Unmarshal(b, &insertDt)
+			if err != nil {
+				return nil, err
+			}
+			if insertDt.Type == models.DirectValueFieldType && fmt.Sprintf("%v", insertDt.Value) == "" {
 				if ok, taskFields := checkAndPars(fields, taskName); ok {
 					value, ok := taskFields[k]
 					if ok {
-						body[k] = value
+						body[k] = models.TaskFieldDetailes{
+							Type:  models.DirectValueFieldType,
+							Value: value,
+						}
 					} else {
 						return nil, errors.New("there is no field named " + k + " in " + taskName + " body")
 					}

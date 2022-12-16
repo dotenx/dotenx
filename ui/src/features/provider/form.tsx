@@ -14,6 +14,7 @@ import {
 	getProject,
 	QueryKey,
 } from '../../api'
+import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
 import { CreatableSelect, Field, Form, NewSelect } from '../ui'
@@ -31,7 +32,8 @@ const schema = z.object({
 	key: z.string().min(1),
 	secret: z.string().min(1),
 	front_end_url: z.string().url(),
-	scopes: z.array(z.string().min(1)),
+	scopes: z.array(z.string().min(1)).optional(),
+	direct_url: z.string().url().optional(),
 })
 
 type Schema = z.infer<typeof schema>
@@ -47,7 +49,14 @@ export function ProviderForm() {
 		},
 	})
 	const form = useForm<Schema>({
-		defaultValues: { name: '', type: '', key: '', secret: '', scopes: [], front_end_url: '' },
+		defaultValues: {
+			name: '',
+			type: '',
+			key: '',
+			secret: '',
+			scopes: [],
+			front_end_url: '',
+		},
 		resolver: zodResolver(schema),
 	})
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
@@ -55,7 +64,7 @@ export function ProviderForm() {
 		.filter((integration) => !!integration.oauth_provider)
 		.map((integration) => integration.type)
 		.map(toOption)
-	const { projectName = '' } = useParams()
+	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const providerName = form.watch('name')
 
 	return (
@@ -99,11 +108,17 @@ export function ProviderForm() {
 					label="Front-end URL"
 					placeholder="Front-end URL to redirect page"
 				/>
+				<Field
+					control={form.control}
+					errors={form.formState.errors}
+					name="direct_url"
+					label="Direct URL (optional)"
+				/>
 				<CreatableSelect
 					control={form.control}
 					name="scopes"
 					placeholder="Type something and press enter..."
-					label="Scopes"
+					label="Scopes (optional)"
 				/>
 			</div>
 			<Button loading={mutation.isLoading} type="submit">
@@ -123,8 +138,12 @@ function CallbackUrls({
 	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
 		enabled: !!projectName,
 	})
-	const projectTag = projectQuery.data?.data?.tag
-	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const projectTag = projectQuery.data?.data?.tag ?? ''
+	const profileQuery = useQuery(
+		[QueryKey.GetProfile, projectTag],
+		() => getProfile({ projectTag }),
+		{ enabled: !!projectTag }
+	)
 	const accountId = profileQuery.data?.data.account_id
 
 	return (
