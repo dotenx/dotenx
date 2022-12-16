@@ -5,7 +5,10 @@ import { ReactNode } from 'react'
 import { AnyJson, JsonArray } from '../../utils'
 import { Element } from '../elements/element'
 import { ImageElement } from '../elements/extensions/image'
+import { InputElement } from '../elements/extensions/input'
+import { SelectElement } from '../elements/extensions/select'
 import { TextElement } from '../elements/extensions/text'
+import { TextareaElement } from '../elements/extensions/textarea'
 import { previewAtom } from '../page/top-bar'
 import { Expression, ExpressionKind } from '../states/expression'
 import { States, usePageStateStore } from '../states/page-states-store'
@@ -45,6 +48,7 @@ export type Overlay = (props: {
 	element: Element
 	isDirectRootChildren?: boolean
 	parentHidden?: boolean
+	withoutStyle?: boolean
 }) => JSX.Element
 
 function RenderElement({
@@ -75,8 +79,14 @@ function RenderElement({
 
 	const Overlay = overlay
 
+	const withoutStyle =
+		element instanceof InputElement ||
+		element instanceof SelectElement ||
+		element instanceof TextareaElement
+
 	return (
 		<Overlay
+			withoutStyle={withoutStyle}
 			element={element}
 			isDirectRootChildren={isDirectRootChildren}
 			parentHidden={parentHidden}

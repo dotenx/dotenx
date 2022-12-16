@@ -66,10 +66,12 @@ export const useGetStates = () => {
 				name: `${element.repeatFrom?.iterator}${property.path}`,
 		  }))
 		: []
+	const dataSourceLoadingStates = useGetDataSourceLoadingStates()
 
 	const states = [
 		...mutableStates,
 		...dataSourceStates,
+		...dataSourceLoadingStates,
 		...repeatedStates,
 		...passedProperties,
 		...pageParamStates,
@@ -152,5 +154,14 @@ export const useDataSourceStates = () => {
 	const states = _.flatMap(pageStates, (value, key) => findPropertyPathsInner(value, key)).map(
 		(state) => state.path
 	)
+	return states
+}
+
+const useGetDataSourceLoadingStates = () => {
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const states = dataSources.map((state) => ({
+		name: `$store.source.${state.stateName}.loading`,
+		kind: PropertyKind.Boolean,
+	}))
 	return states
 }
