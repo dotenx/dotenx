@@ -13,12 +13,14 @@ import {
 	OnLoadParams,
 	removeElements,
 } from 'react-flow-renderer'
-import { Arg, AutomationData, TaskBodyValue, Triggers } from '../../api'
+import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from '../../api'
+import { BuilderSteps } from '../../internal/task-builder'
 import { flowAtom, selectedAutomationAtom } from '../atoms'
 import { EdgeCondition } from '../automation/edge-settings'
 import { EdgeData, TaskNodeData } from '../flow'
 import { InputOrSelectKind, InputOrSelectValue } from '../ui'
 import { ComplexFieldValue } from '../ui/complex-field'
+import { EditorInput, EditorObjectValue, JsonEditorFieldValue } from '../ui/json-editor'
 import { NodeType } from './types'
 import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from './use-layout'
 
@@ -107,7 +109,8 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				value: fieldValue as InputOrSelectValue,
 			}))
 		const body = _.fromPairs(bodyEntries)
-		const isCodeTask = value.type.includes('code')
+		const hasOutputs = _.keys(value.body).includes('outputs')
+
 		return {
 			id: key,
 			position: { x: 0, y: 0 },
@@ -118,12 +121,13 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 				integration: value.integration,
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
-				others: isCodeTask ? { code: body.code, dependency: body.dependency } : body,
+				others: hasOutputs ? _.omit(body, 'outputs') : body,
 				// TODO: THIS IS HARDCODED :(
-				vars: isCodeTask ? vars : undefined,
-				outputs: _.isArray(value.body.outputs)
-					? value.body.outputs.map((value) => ({ value }))
-					: undefined,
+				vars: hasOutputs ? vars : undefined,
+				outputs:
+					value.body.outputs?.type === 'customOutputs'
+						? value.body.outputs.outputs.map((value) => ({ value }))
+						: undefined,
 			},
 		}
 	})
@@ -142,35 +146,88 @@ function mapAutomationToElements(automation: AutomationData): Elements<TaskNodeD
 	return [...nodes, ...edges]
 }
 
-function toFieldValue(fieldValue: TaskBodyValue, fieldName: string) {
+function isTaskBuilder(value: any) {
+	return _.isObject(value) && 'steps' in value && _.isArray((value as any).steps)
+}
+
+function toFieldValue(fieldValue: TaskFieldValue, fieldName: string) {
 	if (!fieldValue) return ['', '']
-	let complexFieldValue = {
+
+	let normalized:
+		| ComplexFieldValue
+		| BuilderSteps
+		| { value: string }[]
+		| EditorObjectValue[]
+		| string[] = {
 		type: InputOrSelectKind.Text,
 		data: '',
-	} as ComplexFieldValue | { value: string }[]
-	if (typeof fieldValue === 'string') {
-		complexFieldValue = { type: InputOrSelectKind.Text, data: fieldValue }
-	} else if (_.isArray(fieldValue)) {
-		complexFieldValue = fieldValue.map((value) => ({ value }))
-	} else if ('key' in fieldValue) {
-		complexFieldValue = {
-			type: InputOrSelectKind.Option,
-			data: fieldValue.key,
-			groupName: fieldValue.source,
-			iconUrl: '',
-		}
-	} else {
-		const fn = fieldValue.formatter.func_calls[1]
-		const args = fn?.args?.map(argToInputOrSelect)
-		complexFieldValue = { fn: fn?.func_name, args }
 	}
 
-	return [fieldName, complexFieldValue] as [string, ComplexFieldValue]
+	switch (fieldValue.type) {
+		case 'directValue':
+			if (_.isArray(fieldValue.value)) normalized = fieldValue.value
+			else if (_.isString(fieldValue.value) || !isTaskBuilder(fieldValue.value))
+				normalized = { type: InputOrSelectKind.Text, data: fieldValue.value as any }
+			else normalized = mapToUiTaskBuilder(fieldValue.value.steps)
+			break
+		case 'refrenced':
+			normalized = {
+				type: InputOrSelectKind.Option,
+				data: fieldValue.key,
+				groupName: fieldValue.source,
+				iconUrl: '',
+			}
+			break
+		case 'nested':
+			normalized = { kind: 'nested', data: fieldValue.nestedKey }
+			break
+		case 'json':
+			normalized = mapToEditorJson(fieldValue.value)
+			break
+		case 'json_array':
+			normalized = { kind: 'json-array', data: JSON.stringify(fieldValue.value, null, 2) }
+			break
+		case 'formatted':
+			{
+				const fn = fieldValue.formatter.func_calls[1]
+				const args = fn?.args?.map(argToInputOrSelect)
+				normalized = { fn: fn?.function, args }
+			}
+			break
+		case 'customOutputs':
+			normalized = fieldValue.outputs.map((output) => ({ value: output }))
+			break
+	}
+
+	return [fieldName, normalized] as [
+		string,
+		ComplexFieldValue | BuilderSteps | { value: string }[]
+	]
+}
+
+function mapToEditorJson(json: Record<string, TaskFieldValue>): EditorObjectValue[] {
+	return _.toPairs(json).map(([name, value]) => ({
+		name,
+		id: nanoid(),
+		value: toJsonEditorProperty(value),
+	}))
+}
+
+function toJsonEditorProperty(value: TaskFieldValue): JsonEditorFieldValue {
+	if (value.type !== 'json') {
+		return toFieldValue(value, '')[1] as EditorInput
+	} else {
+		return _.toPairs(value.value).map(([name, innerValue]) => ({
+			id: nanoid(),
+			name,
+			value: toJsonEditorProperty(innerValue),
+		}))
+	}
 }
 
 const argToInputOrSelect = (arg: Arg): InputOrSelectValue => {
 	return 'value' in arg
-		? { type: InputOrSelectKind.Text, data: arg.value }
+		? { type: InputOrSelectKind.Text, data: arg.value as string }
 		: { type: InputOrSelectKind.Option, data: arg.key, groupName: arg.source, iconUrl: '' }
 }
 
@@ -185,4 +242,104 @@ function mapTriggersToElements(triggers: Triggers | undefined) {
 	}))
 
 	return triggerNodes
+}
+
+function mapToUiTaskBuilder(steps: BuilderStep[]): BuilderSteps {
+	return steps.map((step) => {
+		switch (step.type) {
+			case 'assignment':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						name: { type: InputOrSelectKind.Text, data: step.params.name },
+						value: { type: InputOrSelectKind.Text, data: step.params.value },
+					},
+				}
+			case 'function_call':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						fnName: step.params.name,
+						arguments: step.params.arguments.map((arg) => ({
+							type: InputOrSelectKind.Text,
+							data: arg,
+						})),
+						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
+					},
+				}
+			case 'execute_task':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						url: step.params.url,
+						method: step.params.method,
+						body: step.params.body,
+						accessToken: {
+							type: InputOrSelectKind.Text,
+							data: step.params.headers['DTX-auth'] ?? '',
+						},
+						output: { type: InputOrSelectKind.Text, data: step.params.output ?? '' },
+					},
+				}
+			case 'foreach':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						collection: { type: InputOrSelectKind.Text, data: step.params.collection },
+						iterator: { type: InputOrSelectKind.Text, data: step.params.iterator },
+						body: mapToUiTaskBuilder(step.params.body),
+					},
+				}
+			case 'if':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						branches: step.params.branches.map((branch) => ({
+							condition: { type: InputOrSelectKind.Text, data: branch.condition },
+							body: mapToUiTaskBuilder(branch.body),
+						})),
+						elseBranch: mapToUiTaskBuilder(step.params.elseBranch),
+					},
+				}
+			case 'repeat':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						count: { type: InputOrSelectKind.Text, data: step.params.count },
+						iterator: { type: InputOrSelectKind.Text, data: step.params.iterator },
+						body: mapToUiTaskBuilder(step.params.body),
+					},
+				}
+			case 'output':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						value: { type: InputOrSelectKind.Text, data: step.params.value },
+					},
+				}
+			case 'var_declaration':
+				return {
+					id: nanoid(),
+					opened: true,
+					type: step.type,
+					params: {
+						name: { type: InputOrSelectKind.Text, data: step.params.name },
+					},
+				}
+		}
+	})
 }

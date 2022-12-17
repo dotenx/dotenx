@@ -1,5 +1,6 @@
 import { Button } from '@mantine/core'
 import { SelectIntegration } from '../integration'
+import { TestTrigger } from '../task/test-step'
 import { Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
 import { UseTriggerForm } from './use-form'
 
@@ -33,6 +34,7 @@ export function TriggerForm({
 		automationsQuery,
 	} = triggerForm
 
+	const formData = triggerForm.watch()
 	return (
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="flex flex-col gap-5 grow">
@@ -87,6 +89,7 @@ export function TriggerForm({
 					</div>
 				))}
 			</div>
+			<TestTrigger trigger={formData} />
 			<Button loading={submitting} disabled={disableSubmit} type="submit">
 				{mode === 'new' ? 'Add' : 'Save'}
 			</Button>

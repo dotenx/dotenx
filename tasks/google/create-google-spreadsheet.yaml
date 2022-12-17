@@ -1,6 +1,7 @@
 service: google
 type: Create google spreadsheet
 image: mehrdadesh/create-google-spreadsheet
+on_test_stage: true
 integrations: [google]
 fields:
     - key: title

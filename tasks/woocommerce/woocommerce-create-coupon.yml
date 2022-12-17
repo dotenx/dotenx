@@ -1,6 +1,7 @@
 service: woocommerce
 type: WooCommerce create coupon
 image: hawwwdi/woocommerce-create-coupon:latest
+on_test_stage: true
 integrations: [woocommerce]
 fields:
     - key: COUPON_CODE

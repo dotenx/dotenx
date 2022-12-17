@@ -1,61 +1,75 @@
+// image: stripe/stripe-find-customer:lambda5
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
-func main() {
-	secretKey := os.Getenv("INTEGRATION_SECRET_KEY")
-	email := os.Getenv("CUS_EMAIL")
-	id := os.Getenv("CUS_ID")
-	resultEndpoint := os.Getenv("RESULT_ENDPOINT")
-	authorization := os.Getenv("AUTHORIZATION")
+// type Event struct {
+// 	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
+// 	CUS_ID         string `json:"CUS_ID"`
+// 	CusEmail       string `json:"CUS_EMAIL"`
+// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
+// 	Authorization  string `json:"AUTHORIZATION"`
+// }
+
+type Event struct {
+	Body           map[string]interface{} `json:"body"`
+	ResultEndpoint string                 `json:"RESULT_ENDPOINT"`
+	Authorization  string                 `json:"AUTHORIZATION"`
+}
+
+type Response struct {
+	Successfull bool                   `json:"successfull"`
+	Status      string                 `json:"status"`
+	ReturnValue map[string]interface{} `json:"return_value"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	outputCnt := 0
+	// outputs := make([]map[string]interface{}, 0)
+	// resultEndpoint := event.ResultEndpoint
+	// authorization := event.Authorization
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	secretKey := singleInput["INTEGRATION_SECRET_KEY"].(string)
+	email := singleInput["CUS_EMAIL"].(string)
+	id := singleInput["CUS_ID"].(string)
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	cus, err := findCustomer(sc, id, email)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		// continue
 	}
-	data := map[string]interface{}{
-		"status":       "started",
-		"return_value": cus,
-		"log":          "",
+	// outputs = append(outputs, cus)
+	outputCnt++
+	// }
+
+	resp.ReturnValue = map[string]interface{}{
+		"outputs": cus,
 	}
-	headers := []Header{
-		{
-			Key:   "Content-Type",
-			Value: "application/json",
-		},
-		{
-			Key:   "authorization",
-			Value: authorization,
-		},
+	if resp.Successfull {
+		resp.Status = "completed"
+		fmt.Println("All customer(s) founded successfully")
+	} else {
+		resp.Status = "failed"
+		fmt.Println("Some/all customer(s) can't founded successfully")
 	}
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	payload := bytes.NewBuffer(json_data)
-	out, err, status := HttpRequest(http.MethodPost, resultEndpoint, payload, headers, 0)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println(status)
-		return
-	}
-	fmt.Println(string(out))
+	return resp, nil
 }
 
 func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, error) {
@@ -78,10 +92,17 @@ func findCustomer(sc *client.API, id, Email string) (map[string]interface{}, err
 			return nil, err
 		}
 	}
+	if cus == nil {
+		return nil, nil
+	}
 	res := make(map[string]interface{})
 	res["customer_id"] = cus.ID
 	res["customer_email"] = cus.Email
 	return res, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 type Header struct {

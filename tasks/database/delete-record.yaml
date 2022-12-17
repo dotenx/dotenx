@@ -1,0 +1,25 @@
+service: database
+type: Delete a table record
+image: hojjat12/database-delete-record:lambda4
+fields:
+    - key: dtx_access_token
+      type: text
+      display_name: DoTenX access token
+      description: Your DoTenX personal access token
+    - key: project_tag
+      type: text
+      display_name: Project tag 
+      description: Your DoTenX project tag
+    - key: table_name
+      type: text
+      display_name: Table name 
+      description: Your DoTenX table name
+    - key: row_id
+      type: text
+      display_name: Row id
+      description: The id of record that you want delete it
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/138/138932.png
+node_color: 4ABAFF
+description: Delete a record from your DoTenX table
+

@@ -1,3 +1,4 @@
+// image: hojjat12/facebook-publish-post:lambda4
 package main
 
 import (
@@ -9,25 +10,55 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func main() {
-	accessToken := os.Getenv("INTEGRATION_ACCESS_TOKEN")
-	text := os.Getenv("text")
-	pageId := os.Getenv("page_id")
+// type Event struct {
+// 	AccessToken string `json:"INTEGRATION_ACCESS_TOKEN"`
+// 	PageId      string `json:"page_id"`
+// 	Text        string `json:"text"`
+// }
+
+type Event struct {
+	Body map[string]interface{} `json:"body"`
+}
+
+type Response struct {
+	Successfull bool `json:"successfull"`
+}
+
+func HandleLambdaEvent(event Event) (Response, error) {
+	fmt.Println("event.Body:", event.Body)
+	resp := Response{}
+	resp.Successfull = true
+	// for _, val := range event.Body {
+	singleInput := event.Body
+	accessToken := singleInput["INTEGRATION_ACCESS_TOKEN"].(string)
+	text := singleInput["text"].(string)
+	pageId := singleInput["page_id"].(string)
 	pageAccessToken, err := getPageAccessToken(accessToken, pageId)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		// continue
 	}
 	_, err = publishPost(text, pageId, pageAccessToken)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		resp.Successfull = false
+		// continue
 	}
-	fmt.Println("post successfully published")
+	// }
+	if resp.Successfull {
+		fmt.Println("All post(s) successfully published")
+	}
+	return resp, nil
+}
+
+func main() {
+	lambda.Start(HandleLambdaEvent)
 }
 
 func publishPost(text, pageId, pageAccessToken string) (id string, err error) {

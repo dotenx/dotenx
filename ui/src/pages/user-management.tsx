@@ -1,5 +1,6 @@
 import { Button, Code } from '@mantine/core'
 import { format } from 'date-fns'
+import { useState } from 'react'
 import { IoReload } from 'react-icons/io5'
 import { useQuery, useQueryClient } from 'react-query'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -14,21 +15,38 @@ export default function UserManagementPage() {
 }
 
 function UMTableContent({ projectName }: { projectName: string }) {
+	const [currentPage, setCurrentPage] = useState(1)
+
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
 		() => getProject(projectName)
 	)
 	const projectTag = projectDetails?.data.tag ?? ''
 	const { data: usersData, isLoading: usersDataLoading } = useQuery(
-		QueryKey.GetUserManagementData,
-		() => getUserManagementData(projectTag),
+		[QueryKey.GetUserManagementData, projectTag, currentPage],
+		() => getUserManagementData(projectTag, currentPage),
 		{ enabled: !!projectTag }
 	)
-	const tableData = usersData?.data ?? []
+	const tableData = usersData?.data?.rows ?? []
+
+	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
+
+	const helpDetails = {
+		title: 'You can add manage the users of your application and control their access',
+		description:
+			'The list of users of your application and the endpoints to manage them are provided here. You can use user groups to control the access of your users.',
+		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
+		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+	}
 
 	return (
 		<ContentWrapper>
 			<Table
+				withPagination
+				currentPage={currentPage}
+				nPages={nPages}
+				setCurrentPage={setCurrentPage}
+				helpDetails={helpDetails}
 				loading={projectDetailsLoading || usersDataLoading}
 				title="User Management"
 				emptyText="Your users will be displayed here"
@@ -79,10 +97,18 @@ const loginExample = {
 
 function ActionBar({ projectTag }: { projectTag: string }) {
 	const modal = useModal()
-	const profileQuery = useQuery(QueryKey.GetProfile, getProfile)
+	const profileQuery = useQuery(
+		[QueryKey.GetProfile, projectTag],
+		() => getProfile({ projectTag }),
+		{ enabled: !!projectTag }
+	)
 	const accountId = profileQuery.data?.data.account_id
 	const profileExample = {
 		account_id: accountId,
+		created_at: '2022-11-25 20:59:13.675894187 +0000 UTC m=+171.884849553',
+		email: 'example.email.com',
+		full_name: 'John Smith',
+		user_group: 'users',
 		tp_account_id: '********-****-****-****-************',
 	}
 	const queryClient = useQueryClient()
@@ -99,10 +125,15 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 				>
 					Refresh
 				</Button>
-				<Button component={Link} to="user-groups">
+				<Button className="usergroups" component={Link} to="user-groups">
 					User Groups
 				</Button>
-				<Button onClick={() => modal.open(Modals.UserManagementEndpoint)}>Endpoints</Button>
+				<Button
+					className="endpoints"
+					onClick={() => modal.open(Modals.UserManagementEndpoint)}
+				>
+					Endpoints
+				</Button>
 			</div>
 			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
 				<div className="space-y-8">
@@ -120,7 +151,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 					/>
 					<Endpoint
 						label="Get user profile"
-						url={`${API_URL}/profile`}
+						url={`${API_URL}/profile/project/${projectTag}`}
 						method="GET"
 						code={profileExample}
 						isResponse

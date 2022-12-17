@@ -7,13 +7,18 @@ import (
 )
 
 type Pipeline struct {
-	Id            int    `db:"id" json:"-"`
-	Name          string `db:"name" json:"name"`
-	Endpoint      string `db:"endpoint" json:"endpoint"`
-	AccountId     string `db:"account_id" json:"-"`
-	IsActive      bool   `db:"is_active" json:"is_active"`
-	IsTemplate    bool   `db:"is_template" json:"is_template"`
-	IsInteraction bool   `db:"is_interaction" json:"is_interaction"`
+	Id            int      `db:"id" json:"-"`
+	Name          string   `db:"name" json:"name"`
+	Endpoint      string   `db:"endpoint" json:"endpoint"`
+	AccountId     string   `db:"account_id" json:"-"`
+	IsActive      bool     `db:"is_active" json:"is_active"`
+	IsTemplate    bool     `db:"is_template" json:"is_template"`
+	IsInteraction bool     `db:"is_interaction" json:"is_interaction"`
+	IsPublic      bool     `db:"is_public" json:"is_public"`
+	UserGroups    []string `db:"user_groups" json:"user_groups"`
+	ProjectName   string   `db:"project_name" json:"project_name"`
+	ParentId      int      `db:"parent_id" json:"parent_id"`
+	CreatedFor    string   `db:"created_for" json:"created_for"`
 }
 
 type PipelineVersion struct {
@@ -28,11 +33,17 @@ type PipelineDto struct {
 }
 
 type PipelineSummery struct {
+	AccountId        string `db:"account_id" json:"-" yaml:"-"`
 	PipelineDetailes PipelineVersion
 	Endpoint         string
 	IsActive         bool
 	IsTemplate       bool
 	IsInteraction    bool
+	IsPublic         bool
+	UserGroups       []string
+	ProjectName      string
+	ParentId         int
+	CreatedFor       string
 }
 
 type Manifest struct {
@@ -58,6 +69,7 @@ type Task struct {
 	Name         string              `db:"name" json:"-" yaml:"-"`
 	ExecuteAfter map[string][]string `db:"execute_after" json:"executeAfter" yaml:"executeAfter,omitempty"`
 	Type         string              `db:"task_type" json:"type" yaml:"type"`
+	AwsLambda    string              `db:"aws_lambda" json:"awsLambda"`
 	Body         TaskBody            `db:"body" json:"body" yaml:"body"`
 	Description  string              `db:"description" json:"description" yaml:"description"`
 	Integration  string              `db:"integration" json:"integration" yaml:"integration"`

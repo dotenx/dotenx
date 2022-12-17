@@ -1,6 +1,7 @@
 service: woocommerce
 type: WooCommerce create customer
 image: hawwwdi/woocommerce-create-customer:latest
+on_test_stage: true
 integrations: [woocommerce]
 fields:
     - key: CUSTOMER_FIRST_NAME

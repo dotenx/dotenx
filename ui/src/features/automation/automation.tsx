@@ -10,24 +10,25 @@ import { ActionBar } from './action-bar'
 interface AutomationProps {
 	name?: string
 	kind: AutomationKind
+	projectName: string
 }
 
-export function Automation({ name, kind }: AutomationProps) {
+export function Automation({ name, kind, projectName }: AutomationProps) {
 	return (
 		<ReactFlowProvider>
-			<Content name={name} kind={kind} />
+			<Content name={name} kind={kind} projectName={projectName} />
 		</ReactFlowProvider>
 	)
 }
 
-function Content({ name, kind }: AutomationProps) {
+function Content({ name, kind, projectName }: AutomationProps) {
 	const setSelectedAutomation = useSetAtom(selectedAutomationAtom)
 	const setSelected = useSetAtom(selectedAutomationDataAtom)
 	const { isLoading } = useQuery(
-		[QueryKey.GetAutomation, name],
+		[QueryKey.GetAutomation, name, projectName],
 		() => {
 			if (!name) return
-			return getAutomation(name)
+			return getAutomation({ name, projectName })
 		},
 		{
 			enabled: !!name,
@@ -48,7 +49,7 @@ function Content({ name, kind }: AutomationProps) {
 
 	return (
 		<>
-			<ActionBar automationName={name} kind={kind} />
+			<ActionBar projectName={projectName} automationName={name} kind={kind} />
 			<div className="flex gap-2 grow">
 				<Flow kind={kind} />
 			</div>

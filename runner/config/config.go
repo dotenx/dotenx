@@ -28,6 +28,9 @@ type (
 		AppName             string `envconfig:"AOR_APP_NAME"`
 		AppSecret           string `envconfig:"AOR_APP_SECRET"`
 		RunnerToken         string `envconfig:"AOR_RUNNER_TOKEN_SECRET"`
+		AwsAccessKeyId      string `envconfig:"AOR_AWS_ACCESS_KEY_ID"`
+		AwsSecretAccessKey  string `envconfig:"AOR_AWS_SECRET_ACCESS_KEY"`
+		AwsRegion           string `envconfig:"AOR_AWS_REGION"`
 	}
 )
 

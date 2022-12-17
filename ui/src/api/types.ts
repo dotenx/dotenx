@@ -1,6 +1,9 @@
+import { QueryBuilderValues } from '../features/database'
+
 export enum QueryKey {
 	GetUserManagementData = 'get-user-management-data',
 	GetAutomations = 'get-automation',
+	GetTemplateAutomations = 'get-template-automations',
 	GetTasks = 'get-tasks',
 	GetTaskFields = 'get-task-fields',
 	GetAutomation = 'get-automation',
@@ -21,6 +24,7 @@ export enum QueryKey {
 	GetFormatterFunctions = 'get-formatter-functions',
 	GetProjects = 'get-projects',
 	GetProject = 'get-project',
+	GetFiles = 'get-files',
 	GetTables = 'get-tables',
 	GetTable = 'get-table',
 	GetTableRecords = 'get-table-records',
@@ -30,6 +34,10 @@ export enum QueryKey {
 	GetProfile = 'get-profile',
 	GetUserGroups = 'get-user-groups',
 	GetUserGroup = 'get-user-group',
+	GetDomains = 'get-domains',
+	GetViews = 'get-views',
+	GetViewDetails = 'get-view-details',
+	GetViewData = 'get-view-data',
 }
 
 export enum TaskExecutionStatus {
@@ -75,6 +83,18 @@ export interface Integration {
 	access_token: string
 }
 
+export interface ExportDatabaseResponse {
+	db_job: {
+		account_id: string
+		project_name: string
+		pg_dump_url: string
+		pg_dump_status: string,
+		pg_dump_url_expiration_time: number
+		csv_url: string
+		csv_status: string
+		csv_url_expiration_time: number
+	}
+}
 export interface AutomationEventMessage {
 	execution_id: string
 	tasks: {
@@ -101,6 +121,9 @@ export interface Automation {
 	name: string
 	endpoint: string
 	is_active: boolean
+	is_public?: boolean
+	created_for?: string
+	user_groups?: string[]
 	is_template?: boolean
 	is_interaction?: boolean
 }
@@ -122,9 +145,27 @@ export interface Task {
 	meta_data?: Metadata
 }
 
-export type TaskBodyValue = string | FromSource | string[] | FormatterBody | null
+export type TaskFieldValue =
+	| TfDirectValue
+	| TfRefrenced
+	| TfNested
+	| TfJson
+	| TfFormatted
+	| TfCustomOutputs
+	| TfJsonArray
 
-export type TaskBody = Record<string, TaskBodyValue>
+export type TfDirectValue = {
+	type: 'directValue'
+	value: string | string[] | { steps: BuilderStep[] }
+}
+export type TfRefrenced = { type: 'refrenced'; source: string; key: string }
+export type TfNested = { type: 'nested'; nestedKey: string }
+export type TfJson = { type: 'json'; value: Record<string, TaskFieldValue> }
+export type TfJsonArray = { type: 'json_array'; value: AnyJson }
+export type TfFormatted = { type: 'formatted'; formatter: Formatter }
+export type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
+
+export type TaskBody = Record<string, TaskFieldValue>
 
 export interface Metadata {
 	icon: string
@@ -199,12 +240,14 @@ export interface GetTaskFieldsResponse {
 	}[]
 	integration_types: string[]
 	outputs: TaskTriggerOutput[]
+	has_dynamic_variables: boolean
 }
 
 export enum FieldType {
 	Text = 'text',
 	Code = 'code',
 	Object = 'object',
+	CustomOutputs = 'custom-outputs',
 }
 
 export interface GetExecutionResultResponse {
@@ -245,8 +288,9 @@ export interface Provider {
 	type: string
 	key: string
 	secret: string
-	scopes: string[]
+	scopes?: string[]
 	front_end_url: string
+	direct_url?: string
 }
 
 export interface ProviderDetail {
@@ -279,16 +323,11 @@ export interface Formatter {
 }
 
 export interface FuncCall {
-	func_name: string
+	function: string
 	args: Arg[]
 }
 
-export type Arg = FromSource | { value: string }
-
-interface FromSource {
-	key: string
-	source: string
-}
+export type Arg = TfDirectValue | TfRefrenced
 
 export type GetProviderResponse = { provider: ProviderDetail }
 
@@ -297,12 +336,17 @@ export type CreateProjectRequest = Project
 export type GetProjectsResponse = Project[] | null
 
 export type GetUserManagementDataResponse = {
-	account_id: string
-	created_at: string
-	email: string
-	fullname: string
-	user_group: string
-}[]
+	totalRows: number
+	rows: {
+		account_id: string
+		created_at: string
+		email: string
+		fullname: string
+		user_group: string
+	}[]
+}
+
+export type GetFilesDataResponse = any
 
 export type GetProjectResponse = Project & { tag: string }
 
@@ -312,7 +356,67 @@ export interface Project {
 }
 
 export type GetTablesResponse = {
-	tables: string[]
+	tables: {
+		name: string
+		is_public: boolean
+	}[]
+}
+
+export type View = {
+	name: string
+	is_public: boolean
+}
+
+export type GetViewsResponse = {
+	views: View[]
+}
+
+export interface GetViewDetailsResponse {
+	name: string
+	query_as_json: {
+		columns: string[]
+		filters: {
+			conjunction: string
+			filterSet: {
+				key: string
+				operator: string
+				value: string
+			}[]
+		}
+		isPublic: boolean
+		projectName: string
+		tableName: string
+		viewName: string
+	}
+	is_public: boolean
+}
+
+export type GetViewDataResponse = {
+	functions: unknown
+	page: number
+	rows: JsonMap[]
+	size: number
+	totalRows: number
+}
+
+export interface CreateViewRequest {
+	projectName: string
+	tableName: string
+	viewName: string
+	columns: string[]
+	isPublic: boolean
+	filters: Filters
+}
+
+export interface Filters {
+	filterSet: FilterSet[]
+	conjunction: string
+}
+
+export interface FilterSet {
+	key: string
+	operator: string
+	value: string
 }
 
 export interface Table {
@@ -332,7 +436,7 @@ export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
 
-export type AutomationKind = 'automation' | 'template' | 'interaction'
+export type AutomationKind = 'automation' | 'template' | 'interaction' | 'template_automations'
 
 export type StartAutomationRequest =
 	| Record<string, never>
@@ -340,23 +444,28 @@ export type StartAutomationRequest =
 
 export interface RecordsFilters {
 	columns: string[]
-	filters?: {
-		conjunction: 'and' | 'or'
-		filterSet: {
-			value: string
-			key: string
-			operator: string
-		}[]
-	}
+	filters?: QueryBuilderValues
 }
 
 export type GetTableRecordsRequest = RecordsFilters
 
-export type EndpointFields = Record<string, string[]>
+export type EndpointFields = Record<
+	string,
+	{
+		key: string
+		type: string
+	}[]
+>
 
-export type TableRecord = Record<string, string>
+export type TableRecord = Record<
+	string,
+	string | string[] | boolean | boolean[] | number | number[]
+>
 
-export type GetRecordsResponse = TableRecord[] | null
+export type GetRecordsResponse = {
+	rows: TableRecord[]
+	totalRows: number
+} | null
 
 export type AddRecordRequest = TableRecord
 
@@ -364,6 +473,67 @@ export type UpdateRecordRequest = TableRecord
 
 export type GetProfileResponse = {
 	account_id: string
+}
+
+interface Assignment {
+	name: string
+	value: string
+}
+
+interface Conditional {
+	branches: { condition: string; body: BuilderStep[] }[]
+	elseBranch: BuilderStep[]
+}
+
+interface Repeat {
+	count: string
+	iterator: string
+	body: BuilderStep[]
+}
+
+interface Foreach {
+	collection: string
+	iterator: string
+	body: BuilderStep[]
+}
+
+interface FunctionCall {
+	name: string
+	arguments: string[]
+	output?: string
+}
+
+interface OutputParams {
+	value: string
+}
+
+interface VarDeclaration {
+	name: string
+}
+
+interface ExecuteTask {
+	url: string
+	method: string
+	headers: {
+		'DTX-auth': string
+	}
+	body: TestTaskRequest
+	output?: string
+}
+
+export type BuilderStep =
+	| { type: 'assignment'; params: Assignment }
+	| { type: 'if'; params: Conditional }
+	| { type: 'repeat'; params: Repeat }
+	| { type: 'foreach'; params: Foreach }
+	| { type: 'function_call'; params: FunctionCall }
+	| { type: 'output'; params: OutputParams }
+	| { type: 'var_declaration'; params: VarDeclaration }
+	| { type: 'execute_task'; params: ExecuteTask }
+
+export type TaskBuilder = {
+	prop: string
+	steps: BuilderStep[]
 }
 
 export type CreateUserGroupRequest = {
@@ -389,3 +559,50 @@ export type UpdateUserGroupRequest = CreateUserGroupRequest
 export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
+
+export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
+
+export interface JsonMap {
+	[key: string]: AnyJson
+}
+
+type JsonArray = Array<AnyJson>
+
+export type TestTaskRequest = TestTaskData
+
+type TestTaskData = {
+	manifest: {
+		tasks: {
+			task: {
+				type: string
+				integration: string
+				body: Record<string, AnyJson>
+			}
+		}
+	}
+}
+
+export type TestTaskResponse = {
+	successfull: boolean
+	status: string
+	return_value: { outputs: AnyJson }
+}
+
+export type TestTriggerRequest = TestTriggerData
+
+type TestTriggerData = {
+	manifest: {
+		triggers: {
+			trigger: {
+				type: string
+				integration: string
+				credentials: Record<string, string>
+			}
+		}
+	}
+}
+
+export type TestTriggerResponse = {
+	triggered: boolean
+	return_value: { trigger: AnyJson }
+}

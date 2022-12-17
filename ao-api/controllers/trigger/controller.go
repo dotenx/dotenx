@@ -1,7 +1,6 @@
 package trigger
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -63,14 +62,10 @@ func (controller *TriggerController) DeleteTrigger() gin.HandlerFunc {
 func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId, _ := utils.GetAccountId(c)
-		pipeline, ok := c.GetQuery("pipeline")
 		var err error
 		var triggers []models.EventTrigger
-		if !ok {
-			triggers, err = controller.Service.GetAllTriggersForAccount(accountId)
-		} else {
-			triggers, err = controller.Service.GetAllTriggersForPipeline(accountId, pipeline)
-		}
+		triggers, err = controller.Service.GetAllTriggersForAccount(accountId)
+
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
@@ -79,71 +74,71 @@ func (controller *TriggerController) GetAllTriggers() gin.HandlerFunc {
 	}
 }
 
-func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var triggers []*models.EventTrigger
-		accountId, _ := utils.GetAccountId(c)
-		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
-			log.Println(err)
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		piepline, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
-		if err != nil {
-			log.Println(err.Error())
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		if piepline.IsInteraction {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
-			return
-		}
-		err = controller.Service.AddTriggers(accountId, triggers, piepline.Endpoint)
-		if err != nil {
-			if err.Error() == "invalid trigger dto" {
-				c.JSON(http.StatusBadRequest, err.Error())
-				return
-			}
-			log.Println(err.Error())
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-		c.JSON(http.StatusOK, nil)
-	}
-}
+// func (controller *TriggerController) AddTriggers() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		var triggers []*models.EventTrigger
+// 		accountId, _ := utils.GetAccountId(c)
+// 		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
+// 			log.Println(err)
+// 			c.AbortWithStatus(http.StatusBadRequest)
+// 			return
+// 		}
+// 		piepline, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+// 		if err != nil {
+// 			log.Println(err.Error())
+// 			c.AbortWithStatus(http.StatusBadRequest)
+// 			return
+// 		}
+// 		if piepline.IsInteraction {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
+// 			return
+// 		}
+// 		err = controller.Service.AddTriggers(accountId, triggers, piepline.Endpoint)
+// 		if err != nil {
+// 			if err.Error() == "invalid trigger dto" {
+// 				c.JSON(http.StatusBadRequest, err.Error())
+// 				return
+// 			}
+// 			log.Println(err.Error())
+// 			c.JSON(http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		c.JSON(http.StatusOK, nil)
+// 	}
+// }
 
-func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var triggers []*models.EventTrigger
-		accountId, _ := utils.GetAccountId(c)
-		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
-			log.Println(err)
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		pipeline, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
-		if err != nil {
-			log.Println(err.Error())
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		if pipeline.IsInteraction {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
-			return
-		}
-		err = controller.Service.UpdateTriggers(accountId, triggers, pipeline.Endpoint)
-		if err != nil {
-			if err.Error() == "invalid trigger dto" {
-				c.JSON(http.StatusBadRequest, err.Error())
-				return
-			}
-			log.Println(err.Error())
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-		c.JSON(http.StatusOK, nil)
-	}
-}
+// func (controller *TriggerController) UpdateTriggers() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		var triggers []*models.EventTrigger
+// 		accountId, _ := utils.GetAccountId(c)
+// 		if err := c.ShouldBindJSON(&triggers); err != nil || accountId == "" || len(triggers) <= 0 {
+// 			log.Println(err)
+// 			c.AbortWithStatus(http.StatusBadRequest)
+// 			return
+// 		}
+// 		pipeline, err := controller.CrudService.GetPipelineByName(accountId, triggers[0].Pipeline)
+// 		if err != nil {
+// 			log.Println(err.Error())
+// 			c.AbortWithStatus(http.StatusBadRequest)
+// 			return
+// 		}
+// 		if pipeline.IsInteraction {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": "you cant add trigger to an interation"})
+// 			return
+// 		}
+// 		err = controller.Service.UpdateTriggers(accountId, triggers, pipeline.Endpoint)
+// 		if err != nil {
+// 			if err.Error() == "invalid trigger dto" {
+// 				c.JSON(http.StatusBadRequest, err.Error())
+// 				return
+// 			}
+// 			log.Println(err.Error())
+// 			c.JSON(http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		c.JSON(http.StatusOK, nil)
+// 	}
+// }
 
 func (controller *TriggerController) GetTriggersTypes() gin.HandlerFunc {
 	return func(c *gin.Context) {

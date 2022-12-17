@@ -22,8 +22,8 @@ const edgeTypes = {
 	default: PipeEdge,
 }
 
-export function Flow({ isEditable = true, kind }: { isEditable?: boolean; kind: AutomationKind }) {
-	const withIntegration = kind !== 'interaction'
+export function Flow({ isEditable = true }: { isEditable?: boolean; kind: AutomationKind }) {
+	const withIntegration = true
 	const {
 		reactFlowWrapper,
 		elements,
@@ -85,18 +85,23 @@ export const taskCodeState = atom<{ isOpen: boolean; key?: string; label?: strin
 	isOpen: false,
 })
 
+export const taskBuilderState = atom({ opened: false })
+
 function TaskSettingsModal({ updateNode, withIntegration }: NodeSettingsModalProps) {
 	const [isAddingIntegration, setIsAddingIntegration] = useState(false)
 	const modal = useModal()
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
-	const modalSize = taskCode.isOpen ? 'xl' : isAddingIntegration ? 'lg' : 'md'
+	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
+	const modalSize =
+		taskCode.isOpen || taskBuilder.opened ? 'xl' : isAddingIntegration ? 'lg' : 'lg'
 
 	useEffect(() => {
 		if (!modal.isOpen) {
 			setIsAddingIntegration(false)
 			setTaskCode({ isOpen: false })
+			setTaskBuilder({ opened: false })
 		}
-	}, [modal.isOpen, setTaskCode])
+	}, [modal.isOpen, setTaskBuilder, setTaskCode])
 
 	return (
 		<Modal title="Task Settings" kind={Modals.NodeSettings} size={modalSize}>

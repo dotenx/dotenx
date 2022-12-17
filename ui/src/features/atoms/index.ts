@@ -5,6 +5,7 @@ import { Automation, AutomationData } from '../../api'
 import { EdgeData, TaskNodeData } from '../flow'
 import { NodeType } from '../flow/types'
 import { Modals } from '../hooks'
+import { SlidingPanes } from '../hooks/use-sliding-pane'
 
 export const initialElements: Elements<TaskNodeData | EdgeData> = [
 	{
@@ -24,3 +25,14 @@ export const modalAtom = atom<{ isOpen: boolean; kind: Modals | null; data: unkn
 	kind: null,
 	data: null,
 })
+export const slidingPaneAtom = atom<{
+	isOpen: boolean
+	kind: SlidingPanes | null
+	data: unknown | null
+}>({
+	isOpen: false,
+	kind: null,
+	data: null,
+})
+
+export const tourElementsLoading = atom({ userManagementLoading: false })

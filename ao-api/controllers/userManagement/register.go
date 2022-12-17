@@ -26,6 +26,7 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var userInfo models.ThirdUser
 		userInfo.AccountId = uuid.New().String()
+		userInfo.UserGroup = "users"
 		projectTag := ctx.Param("tag")
 		if err := ctx.ShouldBindJSON(&userInfo); err != nil || userInfo.Email == "" || userInfo.Password == "" || projectTag == "" {
 			log.Println(err)
@@ -48,7 +49,10 @@ func (umc *UserManagementController) Register() gin.HandlerFunc {
 			})
 			return
 		}
-
-		ctx.Status(http.StatusOK)
+		// we sholudn't send welcome email to third party users so I comment this part of code (next line)
+		// err = umc.NotifyService.SendWelcomeEmail(userInfo.FullName, userInfo.Email)
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "user was registered successfully",
+		})
 	}
 }

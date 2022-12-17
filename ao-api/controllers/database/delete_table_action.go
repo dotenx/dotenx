@@ -5,6 +5,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -21,8 +22,18 @@ func (dc *DatabaseController) DeleteTable() gin.HandlerFunc {
 		projectName := c.Param("project_name")
 		tableName := c.Param("table_name")
 
-		if err := dc.Service.DeleteTable(accountId, projectName, tableName); err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
+		err := dc.Service.DeleteTable(accountId, projectName, tableName)
+		if err != nil {
+			logrus.Error(err.Error())
+			if err == utils.ErrUserDatabaseNotFound {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "an internal server error occurred",
+				})
+			}
 			return
 		}
 

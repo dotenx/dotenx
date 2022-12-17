@@ -1,25 +1,19 @@
-import { Button } from '@mantine/core'
+import { ActionIcon, Button } from '@mantine/core'
 import clsx from 'clsx'
 import { useAtom, useSetAtom } from 'jotai'
+import _ from 'lodash'
 import { useEffect } from 'react'
 import { Control, FieldErrors, FieldPath, useFieldArray } from 'react-hook-form'
-import { IoAdd, IoClose } from 'react-icons/io5'
+import { IoAdd, IoArrowBack, IoClose } from 'react-icons/io5'
 import { FieldType } from '../../api'
-import { taskCodeState } from '../flow'
+import { TaskBuilder } from '../../internal/task-builder'
+import { taskBuilderState, taskCodeState } from '../flow'
 import { IntegrationForm, SelectIntegration } from '../integration'
-import {
-	Description,
-	Field,
-	Form,
-	GroupData,
-	GroupSelect,
-	InputOrSelect,
-	InputOrSelectKind,
-	Loader,
-	Textarea,
-} from '../ui'
+import { Description, Field, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
 import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
+import { JsonEditorInput } from '../ui/json-editor-input'
 import { CodeField } from './code-field'
+import { TestTask } from './test-step'
 import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
 
 interface TaskSettingsWithIntegrationProps {
@@ -28,28 +22,45 @@ interface TaskSettingsWithIntegrationProps {
 	isAddingIntegration: boolean
 	setIsAddingIntegration: (value: boolean) => void
 	withIntegration: boolean
+	mode?: string
 }
 
+// This component renders everything you see on Task settings modal
 export function TaskSettingsWithIntegration({
 	defaultValues,
 	isAddingIntegration,
 	onSave,
 	setIsAddingIntegration,
 	withIntegration,
+	mode,
 }: TaskSettingsWithIntegrationProps) {
 	const taskForm = useTaskSettings({ defaultValues, onSave })
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
-	const hasSecondPanel = isAddingIntegration || taskCode.isOpen
+	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
+	const hasSecondPanel = isAddingIntegration || taskCode.isOpen || taskBuilder.opened
 	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
+	const taskBuilderValues = taskForm.watch('others.tasks')
+
+	// todo: filter out Custom task if mode is 'custom_task'
 
 	useEffect(() => {
-		if (taskForm.taskType) setIsAddingIntegration(false)
-	}, [setIsAddingIntegration, taskForm.taskType])
+		if (defaultValues?.type === 'Custom task') {
+			setTaskBuilder({ opened: true })
+		}
+	}, [defaultValues?.type])
+	useEffect(() => {
+		if (taskForm.taskType) {
+			setIsAddingIntegration(false)
+			setTaskCode({ isOpen: false })
+			// setTaskBuilder({ opened: false })
+		}
+	}, [setIsAddingIntegration, setTaskBuilder, setTaskCode, taskForm.taskType])
 
 	return (
 		<div className={clsx('grid h-full', hasSecondPanel && 'grid-cols-2')}>
 			<div className={clsx(hasSecondPanel && 'pr-10')}>
 				<TaskSettings
+					mode={mode}
 					taskForm={taskForm}
 					setIsAddingIntegration={setIsAddingIntegration}
 					disableSubmit={hasSecondPanel}
@@ -88,6 +99,26 @@ export function TaskSettingsWithIntegration({
 					}
 				/>
 			)}
+			{taskBuilder.opened && (
+				<div className="space-y-2">
+					<ActionIcon
+						type="button"
+						size="sm"
+						onClick={() => setTaskBuilder({ opened: false })}
+						title="Close task builder"
+					>
+						<IoArrowBack />
+					</ActionIcon>
+					<TaskBuilder
+						defaultValues={_.isArray(taskBuilderValues) ? taskBuilderValues : undefined}
+						onSubmit={(values) => {
+							taskForm.setValue(`others.tasks`, values.steps)
+							setTaskBuilder({ opened: false })
+						}}
+						otherTasksOutputs={taskForm.outputGroups}
+					/>
+				</div>
+			)}
 		</div>
 	)
 }
@@ -97,13 +128,16 @@ interface TaskSettingsProps {
 	setIsAddingIntegration: (value: boolean) => void
 	disableSubmit: boolean
 	withIntegration: boolean
+	mode?: string
 }
 
-function TaskSettings({
+// This component is used directly in the Task settings modal and also in the Task builder `Execute Task` steps
+export function TaskSettings({
 	taskForm,
 	setIsAddingIntegration,
 	disableSubmit,
 	withIntegration,
+	mode,
 }: TaskSettingsProps) {
 	const {
 		control,
@@ -116,17 +150,36 @@ function TaskSettings({
 		tasksOptions,
 		taskTypesLoading,
 		taskFieldsLoading,
+		taskType,
+		hasDynamicVariables,
 	} = taskForm
-	const setTaskCodeState = useSetAtom(taskCodeState)
-	const isCodeTask = taskFields.some((field) => field.type === FieldType.Code)
-
+	const setTaskCode = useSetAtom(taskCodeState)
+	const setTaskBuilder = useSetAtom(taskBuilderState)
+	const taskBuilderValues = taskForm.watch('others.tasks')
+	const formData = taskForm.watch()
 	return (
-		<Form className="h-full" onSubmit={onSubmit}>
+		<div className="flex flex-col h-full gap-10">
 			<div className="flex flex-col gap-5 grow">
-				<Field label="Name" name="name" control={control} errors={errors} />
+				{/* If the component is used in a custom task, we use `task` as the name, so this field becomes redundant */}
+				{mode !== 'custom_task' && (
+					<Field label="Name" name="name" control={control} errors={errors} />
+				)}
 				<div>
+					{/* The dropdown for selecting the task */}
 					<GroupSelect
-						options={tasksOptions}
+						options={
+							mode === 'custom_task'
+								? tasksOptions.map((task) => {
+										return {
+											...task,
+											options: task.options.filter(
+												(option) => option.value !== 'Custom task'
+											),
+										}
+										// eslint-disable-next-line no-mixed-spaces-and-tabs
+								  })
+								: tasksOptions
+						}
 						control={control}
 						name="type"
 						errors={errors}
@@ -138,21 +191,28 @@ function TaskSettings({
 				{taskFieldsLoading && <Loader className="py-4" />}
 				{taskFields.map((taskField) => {
 					const label = taskField.display_name || taskField.key
-					return getFieldComponent(taskField.type, {
-						key: `others.${taskField.key}`,
-						control: control,
-						errors: errors,
-						label: label,
-						name: `others.${taskField.key}`,
-						groups: outputGroups,
-						description: taskField.description,
-						onClick: () =>
-							setTaskCodeState({
-								isOpen: true,
-								key: taskField.key,
-								label: `Add ${label}`,
-							}),
-					})
+					return getFieldComponent(
+						taskField.type,
+						{
+							taskBuilderValues,
+							key: `others.${taskField.key}`,
+							control: control,
+							errors: errors,
+							label: label,
+							name: `others.${taskField.key}`,
+							groups: mode !== 'custom_task' ? outputGroups : [],
+							description: taskField.description,
+							onClick: () =>
+								setTaskCode({
+									isOpen: true,
+									key: taskField.key,
+									label: `Add ${label}`,
+								}),
+							openBuilder: () => setTaskBuilder({ opened: true }),
+						},
+						taskType,
+						mode
+					)
 				})}
 				{withIntegration && integrationTypes && integrationTypes.length !== 0 && (
 					<SelectIntegration
@@ -163,16 +223,24 @@ function TaskSettings({
 						onAddIntegration={() => setIsAddingIntegration(true)}
 					/>
 				)}
-				{isCodeTask && (
-					<Variables control={control} errors={errors} outputGroups={outputGroups} />
+				{hasDynamicVariables && (
+					<Variables
+						control={control}
+						errors={errors}
+						outputGroups={mode !== 'custom_task' ? outputGroups : []}
+					/>
 				)}
-				{isCodeTask && <Outputs control={control} errors={errors} />}
 			</div>
 
-			<Button type="submit" disabled={disableSubmit}>
-				Save
-			</Button>
-		</Form>
+			{mode !== 'custom_task' && (
+				<>
+					<TestTask task={formData} />
+					<Button fullWidth disabled={disableSubmit} onClick={onSubmit}>
+						Save
+					</Button>
+				</>
+			)}
+		</div>
 	)
 }
 
@@ -183,15 +251,26 @@ const getFieldComponent = (
 		...props
 	}: ComplexFieldProps<TaskSettingsSchema, FieldPath<TaskSettingsSchema>> & {
 		key: string
+		taskBuilderValues: any
 		onClick: () => void
 		description: string
-	}
+	} & { openBuilder: () => void },
+	type: string,
+	mode?: string
 ) => {
+	if (type === 'Custom task' && props.label === 'tasks') {
+		return (
+			<Button key={props.key} type="button" variant="default" onClick={props.openBuilder}>
+				{props.taskBuilderValues ? 'Edit Task' : 'Build A Task'}
+			</Button>
+		)
+	}
+
 	switch (kind) {
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					<ComplexField {...props} />
+					<ComplexField {...props} valueKinds={['input-or-select']} />
 					<Description>{props.description}</Description>
 				</div>
 			)
@@ -204,9 +283,17 @@ const getFieldComponent = (
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<Textarea {...props} />
+					<JsonEditorInput {...props} onlySimple={mode === 'custom_task'} />
 					<Description>{props.description}</Description>
 				</div>
+			)
+		case FieldType.CustomOutputs:
+			return (
+				<Outputs
+					key={props.key}
+					control={props.control as any}
+					errors={props.errors as any}
+				/>
 			)
 		default:
 			return null
@@ -234,7 +321,7 @@ function Variables({ control, errors, outputGroups }: VariablesProps) {
 						key={`vars.${index}.key`}
 						placeholder="Key"
 					/>
-					<InputOrSelect
+					<ComplexField
 						control={control}
 						errors={errors}
 						groups={outputGroups}
@@ -297,7 +384,7 @@ function Outputs({ control, errors }: OutputsProps) {
 			<button
 				type="button"
 				className="flex items-center justify-center w-8 h-8 mt-2 text-xl transition rounded-lg bg-gray-50 hover:bg-gray-100"
-				onClick={() => append({})}
+				onClick={() => append({} as any)}
 			>
 				<IoAdd />
 			</button>

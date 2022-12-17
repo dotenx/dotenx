@@ -9,11 +9,11 @@ import (
 	"github.com/dotenx/dotenx/ao-api/db"
 )
 
-func (ps *pipelineStore) GetPipelineId(context context.Context, accountId, name string) (id int, err error) {
+func (ps *pipelineStore) GetPipelineId(context context.Context, accountId, name, projectName string) (id int, err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
-		err = conn.QueryRow(getPipelineId, accountId, name).Scan(&id)
+		err = conn.QueryRow(getPipelineId, accountId, name, projectName).Scan(&id)
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -44,7 +44,7 @@ func (ps *pipelineStore) GetPipelineNameById(context context.Context, accountId 
 var getPipelineId = `
 select id
 from pipelines
-where account_id = $1 and name = $2
+where account_id = $1 and name = $2 and project_name = $3
 LIMIT 1;
 `
 

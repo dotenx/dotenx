@@ -1,0 +1,44 @@
+service: ebay
+type: Ebay new order
+integrations: [ebay]
+image: hojjat12/ebay-new-order:lambda4
+deduplication_method: compare_with_list
+credentials:
+    - key: passed_seconds
+      type: text
+      description: passed seconds from creation time of order
+outputs:
+    - key: buyer
+      type: json
+    - key: cancelStatus
+      type: json
+    - key: creationDate
+      type: text
+    - key: fulfillmentStartInstructions
+      type: json-array
+    - key: lastModifiedDate
+      type: text
+    - key: legacyOrderId
+      type: text
+    - key: lineItems
+      type: json-array
+    - key: orderFulfillmentStatus
+      type: text
+    - key: orderId
+      type: text
+    - key: orderPaymentStatus
+      type: text
+    - key: paymentSummary
+      type: json
+    - key: pricingSummary
+      type: json
+    - key: sellerId
+      type: text
+    - key: totalFeeBasisAmount
+      type: json
+    - key: totalMarketplaceFee
+      type: json
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/888/888848.png
+node_color: 58B843
+description: Checks if there is a new order(sent before given number of seconds), tiggers a specefic pipeline

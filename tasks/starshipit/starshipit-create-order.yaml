@@ -1,0 +1,80 @@
+service: starshipit
+type: Starshipit create order
+image: hojjat12/starshipit-create-order:lambda3
+integrations: [starshipit]
+fields:
+    - key: order_date
+      type: text
+      display_name: Order date (optional)
+      description: The date when the order was created in UTC
+
+    - key: order_number
+      type: text
+      display_name: Order number
+      description: The identifier of the order pulled from source e-Commerce platform (max length is 50)
+
+    - key: reference
+      type: text
+      display_name: Reference (optional)
+      description: Customer's reference (max length is 50)
+
+    - key: shipping_method
+      type: text
+      display_name: Shipping method (optional)
+      description: Delivery method name (max length is 100)
+
+    - key: signature_required
+      type: boolean
+      display_name: Signature required (optional)
+      description: Determine whether signature is needed on delivery
+
+    - key: destination_name
+      type: text
+      display_name: Destination name
+      description: Contact name of the receiver (max length is 100)
+
+    - key: destination_phone
+      type: text
+      display_name: Destination phone (optional)
+      description: Contact phone number of the receiver (max length is 100)
+
+    - key: destination_street
+      type: text
+      display_name: Destination street
+      description: Street number and name of the delivery address (max length is 100)
+
+    - key: destination_suburb
+      type: text
+      display_name: Destination suburb
+      description: Suburb of the delivery address (max length is 100)
+
+    - key: destination_state
+      type: text
+      display_name: Destination state
+      description: Regional, provincial or county name of the delivery address (max length is 100)
+
+    - key: destination_post_code
+      type: text
+      display_name: Destination postal code (optional)
+      description: Postal or zip code of the delivery address (max length is 10)
+
+    - key: destination_country
+      type: text
+      display_name: Destination country
+      description: The country name of delivery address (min length is 2, max length is 100)
+
+    - key: destination_delivery_instructions
+      type: text
+      display_name: Destination delivery instructions (optional)
+      description: Delivery instructions for courier (max length is 100)
+
+    - key: items
+      type: array-object
+      display_name: Items (optional)
+      description: Item list containing the order item details
+
+author: Hojjat-1
+icon: https://leadgenapp.io/wp-content/uploads/2022/03/6d4e229c8044f53ed0be250e9068fe61_2.png
+node_color: EA824A
+description: Create starshipit order based on inputs
+

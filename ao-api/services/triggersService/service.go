@@ -3,13 +3,16 @@ package triggerService
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
+	"github.com/dotenx/dotenx/ao-api/stores/marketplaceStore"
 	"github.com/dotenx/dotenx/ao-api/stores/pipelineStore"
+	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/go-co-op/gocron"
 )
@@ -24,11 +27,12 @@ type TriggerService interface {
 	GetTriggerTypes() (map[string][]triggerSummery, error)
 	GetAllTriggers() ([]models.EventTrigger, error)
 	GetAllTriggersForAccount(accountId string) ([]models.EventTrigger, error)
-	GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error)
+	// This function finds all the triggers of a pipeline
+	GetAllTriggersForPipelineByEndpoint(pipelineEndpoint string) ([]models.EventTrigger, error)
 	GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error)
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
-	AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
-	UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) error
+	AddTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
+	UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
 	StartChecking(store integrationStore.IntegrationStore) error
 	StartScheduller() error
@@ -42,6 +46,8 @@ type TriggerManager struct {
 	ExecutionService   executionService.ExecutionService
 	IntegrationService integrationService.IntegrationService
 	PipelineStore      pipelineStore.PipelineStore
+	MarketplaceStore   marketplaceStore.MarketplaceStore
+	RedisStore         redisStore.RedisStore
 }
 
 type triggerSummery struct {
@@ -51,8 +57,16 @@ type triggerSummery struct {
 	Description string `json:"description"`
 }
 
-func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService, pipeStore pipelineStore.PipelineStore) TriggerService {
-	return &TriggerManager{Store: store, UtopiopsService: service, ExecutionService: execService, IntegrationService: intService, PipelineStore: pipeStore}
+func NewTriggerService(store triggerStore.TriggerStore, service utopiopsService.UtopiopsService, execService executionService.ExecutionService, intService integrationService.IntegrationService, pipeStore pipelineStore.PipelineStore, mStore marketplaceStore.MarketplaceStore, rStore redisStore.RedisStore) TriggerService {
+	return &TriggerManager{
+		Store:              store,
+		UtopiopsService:    service,
+		ExecutionService:   execService,
+		IntegrationService: intService,
+		PipelineStore:      pipeStore,
+		MarketplaceStore:   mStore,
+		RedisStore:         rStore,
+	}
 }
 
 func (manager *TriggerManager) StopScheduler(accId, pipelineName, triggerName string) error {
@@ -67,6 +81,20 @@ func (manager *TriggerManager) StopScheduler(accId, pipelineName, triggerName st
 func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, error) {
 	triggers := make(map[string][]triggerSummery)
 	for _, integ := range models.AvaliableTriggers {
+		if integ.OnTestStage {
+			continue
+		}
+		lambdaName := strings.ReplaceAll(integ.Image, ":", "-")
+		lambdaName = strings.ReplaceAll(lambdaName, "/", "-")
+		function, err := manager.MarketplaceStore.GetFunction(context.Background(), lambdaName)
+		if err != nil && err.Error() != "function not found" {
+			continue
+		}
+		if err == nil {
+			if !function.Enabled {
+				continue
+			}
+		}
 		if _, ok := triggers[integ.Service]; ok {
 			triggers[integ.Service] = append(triggers[integ.Service], triggerSummery{Type: integ.Type, IconUrl: integ.Icon, Description: integ.Description})
 		} else {
@@ -79,14 +107,14 @@ func (manager *TriggerManager) GetTriggerTypes() (map[string][]triggerSummery, e
 	return triggers, nil
 }
 
-func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+func (manager *TriggerManager) AddTriggers(accountId string, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
 		tr.AccountId = accountId
 		if !tr.IsValid() {
 			return errors.New("invalid trigger dto")
 		}
-		err = manager.Store.AddTrigger(context.Background(), accountId, *tr)
+		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
 				err = manager.StartSchedulling(*tr)
@@ -101,7 +129,7 @@ func (manager *TriggerManager) AddTriggers(accountId string, triggers []*models.
 	return
 }
 
-func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*models.EventTrigger, endpoint string) (err error) {
+func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
 	if len(triggers) == 0 {
 		return nil
 	}
@@ -115,7 +143,7 @@ func (manager *TriggerManager) UpdateTriggers(accountId string, triggers []*mode
 		if !tr.IsValid() {
 			return errors.New("invalid trigger dto")
 		}
-		err = manager.Store.AddTrigger(context.Background(), accountId, *tr)
+		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
 				err = manager.StartSchedulling(*tr)
@@ -154,20 +182,6 @@ func (manager *TriggerManager) GetAllTriggers() ([]models.EventTrigger, error) {
 }
 func (manager *TriggerManager) GetAllTriggersForAccount(accountId string) ([]models.EventTrigger, error) {
 	return manager.Store.GetAllTriggersForAccount(context.Background(), accountId)
-}
-
-func (manager *TriggerManager) GetAllTriggersForPipeline(accountId, pipelineName string) ([]models.EventTrigger, error) {
-	triggers, err := manager.Store.GetAllTriggers(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	selected := make([]models.EventTrigger, 0)
-	for _, tr := range triggers {
-		if tr.Pipeline == pipelineName && tr.AccountId == accountId {
-			selected = append(selected, tr)
-		}
-	}
-	return selected, nil
 }
 
 func (manager *TriggerManager) GetAllTriggersForAccountByType(accountId, triggerType string) ([]models.EventTrigger, error) {

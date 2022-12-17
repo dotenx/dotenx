@@ -2,6 +2,7 @@ package oauthController
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/oauth"
@@ -18,22 +19,29 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 	q := c.Request.URL.Query()
 	providerStr := c.Param("provider")
 
-	specialProviders := []string{"slack", "instagram"}
-	if utils.ContainsString(specialProviders, providerStr) {
+	if utils.ContainsString(utils.SpecialProviders, providerStr) {
 		code := c.Query("code")
 		providers := oauth.GetProvidersMap()
-		var accessToken string
+		var accessToken, refreshToken string
 		var err error
 		switch providerStr {
 		case "slack":
 			accessToken, err = getSlackAccessToken(providers["slack"].Key, providers["slack"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/slack")
 		case "instagram":
 			accessToken, err = getInstagramAccessToken(providers["instagram"].Key, providers["instagram"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/instagram")
+		case "typeform":
+			accessToken, err = getTypeformAccessToken(providers["typeform"].Key, providers["typeform"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/typeform")
+		case "ebay":
+			accessToken, refreshToken, err = getEbayTokens(providers["ebay"].Key, providers["ebay"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/ebay")
 		}
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return
 		}
-		c.Redirect(http.StatusTemporaryRedirect, UI+"?access_token="+accessToken)
+		if accessToken != "" && refreshToken == "" {
+			c.Redirect(http.StatusTemporaryRedirect, UI+"?access_token="+accessToken)
+		} else if accessToken != "" && refreshToken != "" {
+			c.Redirect(http.StatusTemporaryRedirect, UI+"?access_token="+url.QueryEscape(accessToken)+"&refresh_token="+url.QueryEscape(refreshToken))
+		}
 		return
 	}
 

@@ -13,10 +13,11 @@ import (
 func (mc *CRUDController) GetPipeline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Param("name")
+		projectName := c.Param("project_name")
 		accept := c.GetHeader("accept")
 		accountId, _ := utils.GetAccountId(c)
 
-		pipeline, err := mc.Service.GetPipelineByName(accountId, name)
+		pipeline, err := mc.Service.GetPipelineByName(accountId, name, projectName)
 		if err != nil {
 			log.Println(err.Error())
 			c.Status(http.StatusInternalServerError)

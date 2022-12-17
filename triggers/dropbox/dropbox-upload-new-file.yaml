@@ -1,7 +1,7 @@
 service: dropbox
 type: Dropbox upload new file
 integrations: [dropbox]
-image: hojjat12/dropbox-upload-new-file:latest
+image: hojjat12/dropbox-upload-new-file:lambda4
 credentials:
     - key: path
       type: text
@@ -26,6 +26,6 @@ outputs:
       type: text
       description: this field use for identifies the location of the last uploaded file that will save there
 author: Hojjat-1
-icon: https://cdn-icons-png.flaticon.com/512/185/185969.png
+icon: https://cdn-icons-png.flaticon.com/512/174/174845.png
 node_color: 4caaff
 description: Checks that a user upload new file(sent before given number of seconds on specefic path), then tiggers a specefic pipeline

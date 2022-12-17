@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func TokenTypeMiddleware(types []string) gin.HandlerFunc {
@@ -17,12 +17,14 @@ func TokenTypeMiddleware(types []string) gin.HandlerFunc {
 			return
 		}
 		tokenType, exist := c.Get("tokenType")
+		logrus.Debug("token type:", tokenType)
+		logrus.Debug("types:", types)
 		if !exist {
 			err := errors.New("missing type field of token")
+			logrus.Debug(err)
 			c.AbortWithError(http.StatusForbidden, err)
 			return
 		}
-		log.Println("token type:", tokenType)
 		if tokenType == "external" && utils.ContainsString(types, "user") {
 			c.Next()
 			return
@@ -33,6 +35,7 @@ func TokenTypeMiddleware(types []string) gin.HandlerFunc {
 		}
 
 		err := errors.New("access denied")
+		logrus.Debug(err)
 		c.AbortWithError(http.StatusForbidden, err)
 		return
 	}

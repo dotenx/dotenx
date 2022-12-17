@@ -15,18 +15,20 @@ func (ps *projectService) GetProjectByTag(tag string) (models.Project, error) {
 	if err != nil {
 		return models.Project{}, err
 	}
-	db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
-	if err != nil {
-		return models.Project{}, err
-	}
-	defer closeFunc(db.Connection)
-	user_group, err := ps.TpUserStore.GetDefaultUserGroup(db)
-	if err != nil {
-		log.Println(err)
-		project.DefaultUserGroup = "users"
-	} else {
+	if project.HasDatabase {
+		db, closeFunc, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+		if err != nil {
+			return models.Project{}, err
+		}
+		defer closeFunc(db.Connection)
+		user_group, err := ps.TpUserStore.GetDefaultUserGroup(db)
+		if err != nil {
+			log.Println(err)
+			project.DefaultUserGroup = "users"
+		} else {
+			project.DefaultUserGroup = user_group.Name
+		}
 		project.DefaultUserGroup = user_group.Name
 	}
-	project.DefaultUserGroup = user_group.Name
 	return project, nil
 }

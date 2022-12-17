@@ -25,11 +25,6 @@ func (controller *OauthController) ThirdPartyOAuth(c *gin.Context) {
 		return
 	}
 	redirectUrl := config.Configs.Endpoints.AoApiLocal + fmt.Sprintf("/oauth/user/provider/integration/callbacks/provider/%s/account_id/%s", providerName, accountId)
-	gothProvider, err := provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
-	if utils.CheckErrorExist(c, err, http.StatusBadRequest) {
-		return
-	}
-	goth.UseProviders(*gothProvider)
 
 	tpAccountId, err := utils.GetThirdPartyAccountId(c)
 	if err != nil {
@@ -44,6 +39,17 @@ func (controller *OauthController) ThirdPartyOAuth(c *gin.Context) {
 	if utils.CheckErrorExist(c, err, http.StatusBadRequest) {
 		return
 	}
+
+	if utils.ContainsString(utils.SpecialProviders, userProvider.Type) {
+		c.Redirect(http.StatusTemporaryRedirect, userProvider.DirectUrl)
+		return
+	}
+
+	gothProvider, err := provider.New(userProvider.Type, &userProvider.Secret, &userProvider.Key, redirectUrl, userProvider.Scopes...)
+	if utils.CheckErrorExist(c, err, http.StatusBadRequest) {
+		return
+	}
+	goth.UseProviders(*gothProvider)
 
 	q := c.Request.URL.Query()
 	q.Add("provider", userProvider.Type)
