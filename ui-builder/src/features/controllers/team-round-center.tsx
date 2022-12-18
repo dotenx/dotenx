@@ -52,7 +52,7 @@ function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 							}
 						/>
 						{Bio.getOptions({ set: options.set, root: bioRoot })}
-						<DividerCollapsible title="Color">
+						<DividerCollapsible closed title="Color">
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: column.children![1].children![0],

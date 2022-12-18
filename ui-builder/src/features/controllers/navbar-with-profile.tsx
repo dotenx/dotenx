@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/navbar-with-cta.png'
+import imageUrl from '../../assets/components/navbar-with-profile.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { useSetElement } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'

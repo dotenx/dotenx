@@ -197,6 +197,7 @@ function BackToBackEnd() {
 					import.meta.env.VITE_BACKEND_BUILDER_URL
 				}/builder/projects/${projectName}/tables`}
 				rel="noopener noreferrer"
+				target={'_blank'}
 			>
 				Backend builder
 			</a>

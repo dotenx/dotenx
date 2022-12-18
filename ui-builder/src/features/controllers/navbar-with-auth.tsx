@@ -2,7 +2,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { createNavLink, Navbar } from './navbar'
 
 export class NavbarWithAuth extends Navbar {
-	name = 'Navbar With Auth'
+	name = 'Navbar with auth'
 	defaultData = deserializeElement(defaultData)
 }
 

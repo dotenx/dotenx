@@ -1,14 +1,17 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
+import { Slider } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useState } from 'react'
+import { useAtomValue } from 'jotai'
+import { ReactNode, useMemo } from 'react'
 import imageUrl from '../../assets/components/faq-basic-styled.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
 export class FaqBasicStyled extends Controller {
 	name = 'Basic styled FAQ'
@@ -23,104 +26,226 @@ export class FaqBasicStyled extends Controller {
 // =============  renderOptions =============
 
 function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
-	const [selectedTile, setSelectedTile] = useState(0)
 	const wrapper = options.element as BoxElement
 
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
-	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
-
-	const MARKS = [
-		{ value: 0, label: '1' },
-		{ value: 25, label: '2' },
-		{ value: 50, label: '3' },
-		{ value: 75, label: '4' },
-		{ value: 100, label: '5' },
-	]
+	const viewport = useAtomValue(viewportAtom)
 
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
 			case 'desktop':
 				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			case 'tablet':
 				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			default:
 				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 2) * 25
+				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
+
+	const tabsList: DraggableTab[] | null[] = useMemo(() => {
+		return containerDiv.children?.map((tile, index) => {
+			return {
+				id: tile.id,
+				content: (
+					<div key={index} className="space-y-6">
+						<Intelinput
+							label="Title"
+							name="title"
+							size="xs"
+							value={(tile.children?.[0] as TextElement).data.text}
+							onChange={(value) =>
+								options.set(
+									produce(tile.children?.[0] as TextElement, (draft) => {
+										draft.data.text = value
+									})
+								)
+							}
+						/>
+						<Intelinput
+							label="Description"
+							name="description"
+							size="xs"
+							autosize
+							maxRows={10}
+							value={(tile.children?.[1] as TextElement).data.text}
+							onChange={(value) =>
+								options.set(
+									produce(tile.children?.[1] as TextElement, (draft) => {
+										draft.data.text = value
+									})
+								)
+							}
+						/>
+					</div>
+				),
+				onTabDelete: () => {
+					options.set(
+						produce(containerDiv, (draft) => {
+							draft.children.splice(index, 1)
+						})
+					)
+				},
+			}
+		})
+	}, [containerDiv.children])
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Basic styled FAQ" />
-			<p>Desktop mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('desktop')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.desktop = {
-								default: {
-									...draft.style.desktop?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
+			{viewport === 'desktop' && (
+				<>
+					<p>Desktop mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('desktop')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.desktop = {
+										default: {
+											...draft.style.desktop?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.desktop = {
+										default: {
+											...draft.style.desktop?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
+			{viewport === 'tablet' && (
+				<>
+					<p>Tablet mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('tablet')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.tablet = {
+										default: {
+											...draft.style.tablet?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.tablet = {
+										default: {
+											...draft.style.tablet?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
+			{viewport === 'mobile' && (
+				<>
+					<p>Mobile mode columns</p>
+					<Slider
+						step={1}
+						min={1}
+						max={10}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={countGridTemplateColumns('mobile')}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.mobile = {
+										default: {
+											...draft.style.mobile?.default,
+											// prettier-ignore
+											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+										},
+									}
+								})
+							)
+						}}
+					/>
+					<p>Gap</p>
+					<Slider
+						label={(val) => val + 'px'}
+						max={20}
+						step={1}
+						styles={{ markLabel: { display: 'none' } }}
+						defaultValue={1}
+						onChange={(val) => {
+							options.set(
+								produce(containerDiv, (draft) => {
+									draft.style.mobile = {
+										default: {
+											...draft.style.mobile?.default,
+											// prettier-ignore
+											...{ gap: `${val}px`},
+										},
+									}
+								})
+							)
+						}}
+					/>
+				</>
+			)}
+			<DraggableTabs
+				onDragEnd={(event) => {
+					const { active, over } = event
+					if (active.id !== over?.id) {
+						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
+						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
+						options.set(
+							produce(containerDiv, (draft) => {
+								const temp = draft.children![oldIndex]
+								draft.children![oldIndex] = draft.children![newIndex]
+								draft.children![newIndex] = temp
+							})
+						)
+					}
 				}}
-			/>
-			<p>Tablet mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('tablet')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.tablet = {
-								default: {
-									...draft.style.tablet?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
-				}}
-			/>
-			<p>Mobile mode columns</p>
-			<Slider
-				label={(val) => MARKS.find((mark) => mark.value == val)?.label}
-				step={25}
-				marks={MARKS}
-				styles={{ markLabel: { display: 'none' } }}
-				value={countGridTemplateColumns('mobile')}
-				onChange={(val) => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.style.mobile = {
-								default: {
-									...draft.style.mobile?.default,
-									// prettier-ignore
-									...{ gridTemplateColumns: '1fr '.repeat((val/25) + 1).trimEnd() },
-								},
-							}
-						})
-					)
-				}}
-			/>
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
+				onAddNewTab={() => {
 					options.set(
 						produce(containerDiv, (draft) => {
 							draft.children?.push(
@@ -131,53 +256,9 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 						})
 					)
 				}}
-			>
-				+ Add Q&A
-			</Button>
-			<Select
-				label="Tiles"
-				placeholder="Select a tile"
-				data={containerDiv.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				tabs={tabsList}
 			/>
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={(getSelectedTileDiv().children?.[0] as TextElement).data.text}
-				onChange={(value) =>
-					options.set(
-						produce(getSelectedTileDiv().children?.[0] as TextElement, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Description"
-				name="description"
-				size="xs"
-				autosize
-				maxRows={10}
-				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(value) =>
-					options.set(
-						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<DividerCollapsible title="Color">
+			<DividerCollapsible closed title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -205,22 +286,6 @@ function FaqBasicStyledOptions({ options }: SimpleComponentOptionsProps) {
 					mapDiv: containerDiv.children,
 				})}
 			</DividerCollapsible>
-			<Button
-				disabled={containerDiv.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
-			>
-				+ Delete Q&A
-			</Button>
 		</div>
 	)
 }

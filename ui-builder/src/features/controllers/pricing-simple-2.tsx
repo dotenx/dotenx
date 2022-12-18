@@ -273,7 +273,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 	const featureLinesWrapper = tileDiv.children[2] as BoxElement
 	return (
 		<div className="flex flex-col items-stretch gap-y-2">
-			<DividerCollapsible title="price">
+			<DividerCollapsible closed title="price">
 				<Intelinput
 					label="Title"
 					placeholder="Title"
@@ -314,7 +314,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 						)
 					}
 				/>
-				<DividerCollapsible title="Color">
+				<DividerCollapsible closed title="Color">
 					{ColorOptions.getBackgroundOption({ options, wrapperDiv: tileDiv })}
 					{ColorOptions.getTextColorOption({
 						options,
@@ -334,7 +334,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 				</DividerCollapsible>
 			</DividerCollapsible>
 
-			<DividerCollapsible title="Features">
+			<DividerCollapsible closed title="Features">
 				<VerticalOptions
 					showDelete={true}
 					set={set}
@@ -411,7 +411,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 					)
 				}
 			/>
-			<DividerCollapsible title="CTA color">
+			<DividerCollapsible closed title="CTA color">
 				{ColorOptions.getTextColorOption({
 					options,
 					wrapperDiv: ctaText,

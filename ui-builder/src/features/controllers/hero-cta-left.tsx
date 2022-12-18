@@ -76,7 +76,7 @@ function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsible title="Color">
+			<DividerCollapsible closed title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
