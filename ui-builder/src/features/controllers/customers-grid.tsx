@@ -230,7 +230,7 @@ function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
 				</>
 			)}
 
-			<DividerCollapsible title="Color">
+			<DividerCollapsible closed title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 				{ColorOptions.getTextColorOption({
 					options,

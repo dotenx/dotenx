@@ -158,13 +158,10 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			backgroundRepeat: 'no-repeat',
 			backgroundSize: 'cover',
 			display: 'flex',
-			flexFlow: 'row wrap',
-			flexWrap: 'wrap',
 			fontFamily: 'Roboto',
-			height: '1000px',
+			height: '100%',
 			justifyContent: 'center',
 			minHeight: '1000px',
-			padding: '0px',
 			width: '100%',
 		},
 	}
@@ -178,10 +175,7 @@ const formWrapper = produce(new BoxElement(), (draft) => {
 				borderRadius: '10px',
 				bottom: '0px',
 				display: 'block',
-				minHeight: '584.797px',
-				inlineSize: '680px',
-				inset: '0px',
-				paddingBottom: '33px',
+				paddingBottom: '40px',
 				paddingLeft: '110px',
 				paddingRight: '110px',
 				paddingTop: '62px',
@@ -192,17 +186,12 @@ const formWrapper = produce(new BoxElement(), (draft) => {
 		tablet: {
 			default: {
 				width: '90%',
-				padding: '0px',
 				paddingTop: '30px',
 				paddingLeft: '5%',
 				paddingRight: '5%',
 			},
 		},
-		mobile: {
-			default: {
-				width: '90%',
-			},
-		},
+		mobile: {},
 	}
 }).serialize()
 
@@ -223,26 +212,10 @@ const defaultData = {
 							draft.style = {
 								desktop: {
 									default: {
-										blockSize: '99.7969px',
-										border: '0px none rgb(85, 85, 85)',
 										color: 'rgb(85, 85, 85)',
-										columnRule: '0px none rgb(85, 85, 85)',
-										columnRuleColor: 'rgb(85, 85, 85)',
 										display: 'block',
 										fontSize: '39px',
-										height: '99.7969px',
-										inlineSize: '460px',
-										lineHeight: '46.8px',
-										minBlockSize: 'auto',
-										minHeight: 'auto',
-										minInlineSize: 'auto',
-										minWidth: 'auto',
-										outline: 'rgb(85, 85, 85) none 0px',
-										outlineColor: 'rgb(85, 85, 85)',
-										padding: '0px 0px 53px',
 										textAlign: 'center',
-										textDecoration: 'none solid rgb(85, 85, 85)',
-										width: 'auto',
 									},
 								},
 								tablet: {},
@@ -265,6 +238,7 @@ const defaultData = {
 							buttonStyle: {
 								desktop: {
 									default: {
+										marginTop: '10px',
 										color: 'white',
 									},
 								},
@@ -282,7 +256,6 @@ const defaultData = {
 											height: '79px',
 											padding: '55px 0px 30px',
 											textAlign: 'center',
-											transformOrigin: '230px 39.5px',
 											width: '100%',
 											color: 'rgb(153, 153, 153)',
 											font: '14px / 21px',
@@ -299,7 +272,6 @@ const defaultData = {
 											default: {
 												lineHeight: '21px',
 												textAlign: 'center',
-												textDecoration: 'none solid rgb(153, 153, 153)',
 											},
 										},
 										tablet: {},
@@ -328,8 +300,6 @@ const defaultData = {
 														display: 'inline',
 														color: 'rgb(153, 153, 153)',
 														textAlign: 'center',
-														textDecoration:
-															'none solid rgb(153, 153, 153)',
 													},
 												},
 												tablet: {},

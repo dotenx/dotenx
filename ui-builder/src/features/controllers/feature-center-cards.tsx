@@ -265,7 +265,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsible title="Color">
+			<DividerCollapsible closed title="Color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
 				{ColorOptions.getTextColorOption({
 					options,
@@ -339,7 +339,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 					)
 				}
 			/>
-			<DividerCollapsible title="Tiles color">
+			<DividerCollapsible closed title="Tiles color">
 				{ColorOptions.getBackgroundOption({
 					options,
 					wrapperDiv: containerDiv.children?.[0],
