@@ -13,8 +13,8 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { IoSaveOutline } from 'react-icons/io5'
+import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
