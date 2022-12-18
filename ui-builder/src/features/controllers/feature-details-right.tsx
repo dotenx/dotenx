@@ -40,7 +40,7 @@ function FeatureDetailsRightOptions({ options }: SimpleComponentOptionsProps) {
 			return {
 				id: featureRow.id,
 				content: (
-					<div key={index}>
+					<div className="space-y-4" key={index}>
 						<Intelinput
 							label="Title"
 							name="title"
