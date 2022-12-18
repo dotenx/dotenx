@@ -209,7 +209,7 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 				}}
 				value={(gridDiv.children?.[selectedTile].children?.[0] as TextElement).data.text}
 			/>
-			<DividerCollapsible title="color">
+			<DividerCollapsible closed title="color">
 				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
 				{ColorOptions.getTextColorOption({
 					options,

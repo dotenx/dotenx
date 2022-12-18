@@ -21,16 +21,17 @@ type (
 	}
 
 	App struct {
-		Port               string `envconfig:"AOA_APP_PORT" default:"3004"`
-		CheckTrigger       string `envconfig:"AOA_APP_CHECK_TRIGGER"`
-		AccountId          string `envconfig:"AOA_APP_ACCOUNT_ID"`
-		Environment        string `envconfig:"AOA_APP_ENV"`
-		FileSharing        string `envconfig:"AOA_FILE_DIR"`
-		SessionDuration    string `envconfig:"AOA_SESSION_DURATION"`
-		AllowedOrigins     string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
-		RunLocally         bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
-		InteractionBodyKey string `envconfig:"AOA_INTERACTION_BODY_KEY"`
-		LogLevel           string `envconfig:"AOA_APP_LOG_LEVEL"`
+		Port                 string `envconfig:"AOA_APP_PORT" default:"3004"`
+		CheckTrigger         string `envconfig:"AOA_APP_CHECK_TRIGGER"`
+		AccountId            string `envconfig:"AOA_APP_ACCOUNT_ID"`
+		Environment          string `envconfig:"AOA_APP_ENV"`
+		FileSharing          string `envconfig:"AOA_FILE_DIR"`
+		SessionDuration      string `envconfig:"AOA_SESSION_DURATION"`
+		AllowedOrigins       string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		RunLocally           bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
+		InteractionBodyKey   string `envconfig:"AOA_INTERACTION_BODY_KEY"`
+		LogLevel             string `envconfig:"AOA_APP_LOG_LEVEL"`
+		UiBuilderPublishPath string `envconfig:"AOA_UI_BUILDER_PUBLISH_PATH"`
 	}
 
 	Queue struct {
@@ -80,6 +81,7 @@ type (
 		SendGridToken          string `envconfig:"AOA_SEND_GRID_TOKEN"`
 		MarketPlaceAdminSecret string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
 		DeployFunctionRoleArn  string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		ImportCsvS3Bucket      string `envconfig:"AOA_IMPORT_CSV_S3_BUCKET"`
 	}
 
 	Upload struct {

@@ -3,6 +3,7 @@ import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
+import { API_URL } from '../../api'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
 import { useAddDataSource } from '../data-source/data-source-form'
@@ -48,7 +49,7 @@ function ListOptions({ controller }: { controller: List }) {
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
 				url: inteliText(
-					`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${selectedTable}`
+					`${API_URL}/database/query/select/project/${projectTag}/table/${selectedTable}`
 				),
 				isPrivate: true,
 			})

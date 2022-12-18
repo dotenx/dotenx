@@ -3,6 +3,7 @@ import { useInputState } from '@mantine/hooks'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { API_URL } from '../../api'
 import imageUrl from '../../assets/components/card-list.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
@@ -54,7 +55,7 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 				method: HttpMethod.Post,
 				stateName: dataSourceName,
 				url: inteliText(
-					`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/${selectedTable}`
+					`${API_URL}/public/database/query/select/project/${projectTag}/table/${selectedTable}`
 				),
 				isPrivate: true,
 			})

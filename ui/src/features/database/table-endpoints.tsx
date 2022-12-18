@@ -52,19 +52,19 @@ export function TableEndpoints({ projectTag }: TableEndpointsProps) {
 			/>
 			<Endpoint
 				label="Get records"
-				url={`https://api.dotenx.com/database/query/select/project/${projectTag}/table/${tableName}`}
+				url={`${API_URL}/database/query/select/project/${projectTag}/table/${tableName}`}
 				method="POST"
 				code={{ columns: columns.map((column) => column.name) }}
 			/>
 			<Endpoint
 				label="Update a record by ID"
-				url={`https://api.dotenx.com/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
+				url={`${API_URL}/database/query/update/project/${projectTag}/table/${tableName}/row/:id`}
 				method="PUT"
 				code={body}
 			/>
 			<Endpoint
 				label="Delete a record by ID"
-				url={`https://api.dotenx.com/database/query/delete/project/${projectTag}/table/${tableName}`}
+				url={`${API_URL}/database/query/delete/project/${projectTag}/table/${tableName}`}
 				method="DELETE"
 				code={{ rowId: '<id>' }}
 			/>

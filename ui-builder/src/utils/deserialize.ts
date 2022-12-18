@@ -18,34 +18,36 @@ export function deserializeElement(serialized: any): Element {
 	})
 	if (!Constructor) throw new Error(`Element ${serialized.kind} not found`)
 	const element = new Constructor()
-	element.id = serialized.id
-	element.style = mapStyleToCamelCaseStyle(serialized.data.style)
-	element.children = serialized.components?.map((child: any) => deserializeElement(child))
-	element.classes = serialized.classNames
-	element.repeatFrom = serialized.repeatFrom
-	element.events = serialized.events.map((event: any) => ({
-		...event,
-		actions: event.actions.map(deserializeAction),
-	}))
-	element.bindings = serialized.bindings
+	element.id = serialized.id ? serialized.id : element.id
+	element.style = serialized.data?.style ? mapStyleToCamelCaseStyle(serialized.data?.style) : {}
+	element.children =
+		serialized.components?.map((child: any) => deserializeElement(child)) ?? element.children
+	element.classes = serialized.classNames ?? []
+	element.repeatFrom = serialized.repeatFrom ?? null
+	element.events =
+		serialized.events?.map((event: any) => ({
+			...event,
+			actions: event.actions.map(deserializeAction),
+		})) ?? []
+	element.bindings = serialized.bindings ?? {}
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
-	element.data = serialized.data
+	element.data = serialized.data ?? {}
 	if (element instanceof ImageElement) {
-		const src = serialized.data.src
+		const src = serialized.data?.src ?? ''
 		element.data.src = _.isString(src)
-			? Expression.fromString(serialized.data.src)
+			? Expression.fromString(src)
 			: _.assign(new Expression(), src)
 	}
 	if (element instanceof TextElement) {
-		const text = serialized.data.text
+		const text = serialized.data?.text ?? ''
 		element.data.text = _.isString(text)
-			? Expression.fromString(serialized.data.text)
+			? Expression.fromString(text)
 			: _.assign(new Expression(), text)
 	}
 	if (element instanceof LinkElement) {
-		const href = serialized.data.href
+		const href = serialized.data?.href ?? ''
 		element.data.href = _.isString(href)
-			? Expression.fromString(serialized.data.href)
+			? Expression.fromString(href)
 			: _.assign(new Expression(), href)
 	}
 	element.elementId = serialized.elementId
