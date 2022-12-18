@@ -98,7 +98,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 	return (
 		<>
 			<ComponentName name="Footer grid" />
-			<DividerCollapsible title="Logo column">
+			<DividerCollapsible closed title="Logo column">
 				<LogoColumn options={options} />
 			</DividerCollapsible>
 			<DividerCollapsible closed title="Link Columns">
