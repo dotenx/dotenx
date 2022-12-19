@@ -50,5 +50,5 @@ Current stage: beta
 Run locally
 
 ```
-docker compose up
+docker-compose up
 ```
