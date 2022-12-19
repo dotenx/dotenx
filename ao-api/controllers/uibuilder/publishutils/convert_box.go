@@ -218,5 +218,5 @@ func renderTextStates(textState []TextState) string {
 		renderedTextState.WriteString(toSend)
 	}
 
-	return fmt.Sprintf("`%s`", renderedTextState.String())
+	return fmt.Sprintf("%s", renderedTextState.String())
 }
