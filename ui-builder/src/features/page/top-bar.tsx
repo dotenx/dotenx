@@ -149,7 +149,6 @@ export const useFetchPage = () => {
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 				setPublishedPage(null)
 				setStatesDefaultValues(content.statesDefaultValues ?? {})
-
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({

@@ -1,6 +1,5 @@
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
-import { ListCard } from './list-card'
 import {
 	ChartArea,
 	ChartBar,
@@ -13,7 +12,6 @@ import {
 	ChartScatter,
 } from './chart-bar'
 import { ComparisonTableSimple } from './comparison-table-simple'
-import { CreateForm } from './create-form'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { DividerSimpleTitle } from './divider-simple-title'
@@ -28,15 +26,17 @@ import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
-import { GalleryWithTitle } from './gallery-with-title'
 import { GalleryWithCaptions } from './gallery-with-caption'
+import { GalleryWithTitle } from './gallery-with-title'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
 import { HeroParallax } from './hero-parallax'
-import { List } from './list'
+import { ListCard } from './list-card'
 import { Navbar } from './navbar'
 import { NavbarWithAuth } from './navbar-with-auth'
+import { NavbarWithCTA } from './navbar-with-cta'
+import { NavbarWithProfile } from './navbar-with-profile'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { SignInBasic } from './sign-in-basic'
@@ -45,13 +45,11 @@ import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
-import { NavbarWithCTA } from './navbar-with-cta'
-import { NavbarWithProfile } from './navbar-with-profile'
 
 export const controllers = [
 	{
-		title: 'About', items: [AboutLeft,
-			AboutRight]
+		title: 'About',
+		items: [AboutLeft, AboutRight],
 	},
 	{
 		title: 'Charts',
@@ -87,8 +85,8 @@ export const controllers = [
 		items: [GalleryBasic, GalleryBasicRounded, GalleryWithTitle, GalleryWithCaptions],
 	},
 	{
-		title: 'Hero', items: [HeroFullWidth, HeroCtaLeft,
-			HeroCtaRight, HeroParallax]
+		title: 'Hero',
+		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax],
 	},
 	{ title: 'Navbar', items: [Navbar, NavbarWithAuth, NavbarWithCTA, NavbarWithProfile] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
@@ -96,8 +94,11 @@ export const controllers = [
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple] },
 	{
-		title: 'Dynamic', items: [
+		title: 'Dynamic',
+		items: [
 			// CreateForm, List,
-			ListCard, Details]
+			ListCard,
+			Details,
+		],
 	},
 ] as const

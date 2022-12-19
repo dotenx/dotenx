@@ -48,3 +48,22 @@ export function kebabCaseToCamelCase(str: string) {
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 export type JsonMap = { [key: string]: AnyJson }
 export type JsonArray = AnyJson[]
+
+export function htmlToElement(html: string) {
+	const template = document.createElement('template')
+	html = html.trim() // Never return a text node of whitespace as the result
+	template.innerHTML = html
+	return [...template.content.children]
+}
+
+export function runScripts(element: Element) {
+	Array.from(element.querySelectorAll('script')).forEach((oldScriptElement) => {
+		const newScriptElement = document.createElement('script')
+		Array.from(oldScriptElement.attributes).forEach((attribute) => {
+			newScriptElement.setAttribute(attribute.name, attribute.value)
+		})
+		const scriptText = document.createTextNode(oldScriptElement.innerHTML)
+		newScriptElement.appendChild(scriptText)
+		oldScriptElement.parentNode?.replaceChild(newScriptElement, oldScriptElement)
+	})
+}

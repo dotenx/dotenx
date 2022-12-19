@@ -54,7 +54,7 @@ function FeatureGridImagesOptions({ options }: SimpleComponentOptionsProps) {
 			return {
 				id: tile.id,
 				content: (
-					<div key={index}>
+					<div className="space-y-4" key={index}>
 						<Intelinput
 							label="Feature title"
 							name="title"
