@@ -25,7 +25,7 @@ type Slider struct {
 	} `json:"data"`
 }
 
-const sliderTemplate = `<div {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
+const sliderTemplate = `<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
 {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} 
 {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} 
 >
@@ -42,7 +42,8 @@ const sliderTemplate = `<div {{if .Bindings.Show.FromStateName}}x-show="{{render
 
 func convertSlider(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
-		"renderBindings": RenderBindings,
+		"renderClassBinding": RenderClassBinding,
+		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)
 	if err != nil {
