@@ -59,7 +59,7 @@ function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
-						<DividerCollapsible closed title="color">
+						<DividerCollapsible closed title="details color">
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: icon,
