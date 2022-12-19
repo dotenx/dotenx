@@ -40,7 +40,7 @@ function FeatureDetailsRightOptions({ options }: SimpleComponentOptionsProps) {
 			return {
 				id: featureRow.id,
 				content: (
-					<div key={index}>
+					<div className="space-y-4" key={index}>
 						<Intelinput
 							label="Title"
 							name="title"
@@ -67,7 +67,7 @@ function FeatureDetailsRightOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							}
 						/>
-						<DividerCollapsible title="Color">
+						<DividerCollapsible closed title="Color">
 							{ColorOptions.getTextColorOption({
 								options,
 								wrapperDiv: title,

@@ -50,7 +50,7 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
 			{titleSubtitleCtaOptions}
-			<DividerCollapsible title="Color">
+			<DividerCollapsible closed title="Color">
 				{ColorOptions.getTextColorOption({
 					options,
 					wrapperDiv: title,

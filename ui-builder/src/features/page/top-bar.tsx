@@ -148,7 +148,6 @@ export const useFetchPage = () => {
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 				setPublishedPage(null)
 				setStatesDefaultValues(content.statesDefaultValues ?? {})
-
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
@@ -197,6 +196,7 @@ function BackToBackEnd() {
 					import.meta.env.VITE_BACKEND_BUILDER_URL
 				}/builder/projects/${projectName}/tables`}
 				rel="noopener noreferrer"
+				target={'_blank'}
 			>
 				Backend builder
 			</a>
