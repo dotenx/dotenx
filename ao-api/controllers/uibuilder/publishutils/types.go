@@ -40,9 +40,11 @@ type Binding struct {
 	Value         struct {
 		Value []TextState `json:"value"`
 	} `json:"value"`
+	Class string `json:"class"`
 }
 
 type Bindings struct {
-	Hide Binding `json:"hide"`
-	Show Binding `json:"show"`
+	Hide  Binding `json:"hide"`
+	Show  Binding `json:"show"`
+	Class Binding `json:"class"`
 }
