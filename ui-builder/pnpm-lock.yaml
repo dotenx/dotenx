@@ -50,11 +50,11 @@ specifiers:
   prettier: ^2.8.1
   prop-types: ^15.8.1
   react: ^18.2.0
-  react-chartjs-2: ^5.0.1
+  react-chartjs-2: ^5.1.0
   react-dnd: ^16.0.1
   react-dnd-html5-backend: ^16.0.1
   react-dom: ^18.2.0
-  react-frame-component: ^5.2.3
+  react-frame-component: ^5.2.4
   react-hook-form: ^7.41.0
   react-icons: ^4.7.1
   react-is: ^18.2.0
@@ -110,11 +110,11 @@ dependencies:
   prettier: 2.8.1
   prop-types: 15.8.1
   react: 18.2.0
-  react-chartjs-2: 5.0.1_dxa6kz4w32vmgoazz4fv7vwm2e
+  react-chartjs-2: 5.1.0_dxa6kz4w32vmgoazz4fv7vwm2e
   react-dnd: 16.0.1_kzbn2opkn2327fwg5yzwzya5o4
   react-dnd-html5-backend: 16.0.1
   react-dom: 18.2.0_react@18.2.0
-  react-frame-component: 5.2.3_v2m5e27vhdewzwhryxwfaorcca
+  react-frame-component: 5.2.4_v2m5e27vhdewzwhryxwfaorcca
   react-hook-form: 7.41.0_react@18.2.0
   react-icons: 4.7.1_react@18.2.0
   react-is: 18.2.0
@@ -3054,10 +3054,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /react-chartjs-2/5.0.1_dxa6kz4w32vmgoazz4fv7vwm2e:
-    resolution: {integrity: sha512-u38C9OxynlNCBp+79grgXRs7DSJ9w8FuQ5/HO5FbYBbri8HSZW+9SWgjVshLkbXBfXnMGWakbHEtvN0nL2UG7Q==}
+  /react-chartjs-2/5.1.0_dxa6kz4w32vmgoazz4fv7vwm2e:
+    resolution: {integrity: sha512-Gt76b7+p7nMQq0MvkWfUSNAzIm/TLAnAO32zIpSzrQyc9JWRbVCtq8qOzPJmfpDzPcIJ7Y9Gp5g+VdTRrGITsQ==}
     peerDependencies:
-      chart.js: ^4.0.0
+      chart.js: ^4.1.1
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       chart.js: 4.1.1
@@ -3120,8 +3120,8 @@ packages:
     resolution: {integrity: sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==}
     dev: false
 
-  /react-frame-component/5.2.3_v2m5e27vhdewzwhryxwfaorcca:
-    resolution: {integrity: sha512-r+h0o3r/uqOLNT724z4CRVkxQouKJvoi3OPfjqWACD30Y87rtEmeJrNZf1WYPGknn1Y8200HAjx7hY/dPUGgmA==}
+  /react-frame-component/5.2.4_v2m5e27vhdewzwhryxwfaorcca:
+    resolution: {integrity: sha512-4xpZFcLNS6LCEYSlWgsUy81v7LjdgbvB0VHIq7sNSD25PK+e5YYCrdy5557ebGwNLKNLEpYVfAkT3pVzFLPb1g==}
     peerDependencies:
       prop-types: ^15.5.9
       react: '>= 16.3'
