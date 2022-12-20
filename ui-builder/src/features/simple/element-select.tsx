@@ -1,4 +1,5 @@
-import { Image } from '@mantine/core'
+import { Image, Portal } from '@mantine/core'
+import { useHover } from '@mantine/hooks'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ReactElement } from 'react'
 import { elementHoverAtom } from '../advanced/element-dragger-layer'
@@ -90,21 +91,24 @@ export function InsertionItem({
 	icon: ReactElement
 	onClick: () => void
 }) {
-	const setElementHover = useSetAtom(elementHoverAtom)
+	const { hovered, ref } = useHover<HTMLButtonElement>()
 
 	return (
 		// WIP
 		<button
-			onMouseEnter={() => setElementHover(src)}
-			onMouseLeave={() => setElementHover('')}
+			ref={ref}
 			className="group border overflow-hidden flex flex-col items-center w-full gap-1 rounded bg-gray-50 text-slate-600 hover:text-slate-900"
 			onClick={onClick}
 		>
 			{icon}
 			<p className="text-xs text-center pb-1 ">{label}</p>
-			<div className="hidden group-hover:block w-52 h-52 bg-red-300 absolute z-[100000] left-40">
-				here
-			</div>
+			{hovered && (
+				<Portal>
+					<div className=" absolute backdrop-blur  backdrop-brightness-50  shadow-md rounded-md  !z-[1000] flex justify-center items-center border top-[35%] left-[20%]">
+						<Image height={300} width={600} src={src} alt={'preview'} />
+					</div>
+				</Portal>
+			)}
 		</button>
 	)
 }
