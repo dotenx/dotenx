@@ -7,6 +7,8 @@ import { ElementDragger } from './element-dragger'
 import { DndLayers } from './layers'
 
 export const sidebarAtom = atom<{ tab: string | null }>({ tab: 'elements' })
+// WIP
+export const elementHoverAtom = atom<string | null>('')
 
 export function ElementDraggerAndLayers() {
 	const [sidebar, setSidebar] = useAtom(sidebarAtom)
