@@ -6,6 +6,10 @@ import { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
 import { NotFoundPage } from './pages/not-found'
+import { PluginDetailsPage } from './pages/plugin'
+import { PluginCreatePage } from './pages/plugin-create'
+import { PluginEditPage } from './pages/plugin-edit'
+import { PluginsPage } from './pages/plugins'
 
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
@@ -56,6 +60,10 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
+				<Route path="/plugins-edit/:id" element={<PluginEditPage />} />
+				<Route path="/plugins-create" element={<PluginCreatePage />} />
+				<Route path="/plugins/:id" element={<PluginDetailsPage />} />
+				<Route path="/plugins" element={<PluginsPage />} />
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
 				<Route path="/*" element={<NotFoundPage />} />
