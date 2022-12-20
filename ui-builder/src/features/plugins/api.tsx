@@ -2,11 +2,21 @@
 import _ from 'lodash'
 import { uuid } from '../../utils'
 
-const plugins: Plugin[] = _.range(10).map(() => {
-	const id = uuid()
-	return { id, name: `Plugin ${id}` }
-})
+const plugins: Plugin[] = [
+	{
+		id: uuid(),
+		name: `counter`,
+		html: `<div>
+<p id="counter">counter: </p>
+<button type="button" id="counter-button">add</button>
+</div>`,
+		js: `let count = 0
+const counter = document.getElementById('counter')
+const counterButton = document.getElementById('counter-button')
 
+counterButton.addEventListener('click', () => counter.textContent = \`counter: \${++count}\`)`,
+	},
+]
 export const getPlugins = async () => {
 	return { data: plugins }
 	// return api.get<GetPluginsResponse>('/plugins')
@@ -17,8 +27,8 @@ export const getPlugin = async (data: { id: string }) => {
 	// return api.get<GetPluginsResponse>('/plugins')
 }
 
-export const createPlugin = async (data: { name: string }) => {
-	const plugin = { id: uuid(), name: data.name }
+export const createPlugin = async (data: Omit<Plugin, 'id'>) => {
+	const plugin = { id: uuid(), ...data }
 	plugins.push(plugin)
 	return new Promise((resolve) => resolve(null))
 	// return api.post<void>('/plugins', { name })
@@ -37,4 +47,6 @@ export const deletePlugin = async (data: { id: string }) => {
 export type Plugin = {
 	id: string
 	name: string
+	html: string
+	js: string
 }
