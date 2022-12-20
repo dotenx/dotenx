@@ -36,6 +36,7 @@ const formTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatF
 func convertForm(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
 		"renderClassBinding": RenderClassBinding,
+		"renderEvents":       renderEvents,
 		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)

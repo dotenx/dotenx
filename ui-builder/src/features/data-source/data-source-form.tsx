@@ -130,7 +130,7 @@ export function DataSourceForm({
 
 	const submitButton = (
 		<Button className="col-span-2" fullWidth type="submit" loading={mutation.isLoading}>
-			{isAddMode ? 'Add' : 'Edit'}
+			{isAddMode ? 'Add' : 'Save'}
 		</Button>
 	)
 
