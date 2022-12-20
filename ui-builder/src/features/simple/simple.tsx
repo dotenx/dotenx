@@ -1,7 +1,6 @@
 import { AppShell, Aside, Header, Image, Navbar, ScrollArea } from '@mantine/core'
 import { useClickOutside } from '@mantine/hooks'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { elementHoverAtom } from '../advanced/element-dragger-layer'
 import { previewAtom, TopBar } from '../page/top-bar'
 import { SimpleElementSelect } from './element-select'
 import { insertingAtom, SimpleCanvas } from './simple-canvas'
@@ -10,16 +9,9 @@ import { SimpleOptions } from './simple-options'
 export function Simple() {
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
-	const hoveredElement = useAtomValue(elementHoverAtom)
 
 	return (
 		<AppShell header={<AppHeader />} {...sidebars} padding={0}>
-			{/* WIP */}
-			{hoveredElement && (
-				<div className=" absolute backdrop-blur  backdrop-brightness-50  shadow-md rounded-md  !z-[1000] flex justify-center items-center border top-[35%] left-[20%]">
-					<Image height={300} width={600} src={hoveredElement} alt={'preview'} />
-				</div>
-			)}
 			<SimpleCanvas />
 		</AppShell>
 	)

@@ -276,7 +276,7 @@ function AdvancedModeButton() {
 	if (!isSimple) return null
 
 	return (
-		<Tooltip withArrow label={<Text size="xs">Advanced mode</Text>} offset={10}>
+		<Tooltip withArrow label={<Text size="xs">Switch to the advanced mode</Text>} offset={10}>
 			<ActionIcon onClick={handleClick}>
 				<TbAffiliate className="w-5 h-5" />
 			</ActionIcon>

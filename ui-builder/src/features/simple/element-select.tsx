@@ -1,13 +1,12 @@
-import { Image, Portal } from '@mantine/core'
+import { Image, Portal, Tooltip } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { ReactElement } from 'react'
-import { elementHoverAtom } from '../advanced/element-dragger-layer'
+import { FaPlus } from 'react-icons/fa'
 import { controllers } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
-import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleElementSelect() {
@@ -20,10 +19,26 @@ export function SimpleElementSelect() {
 		addAfter: store.add,
 	}))
 	const [inserting, setInserting] = useAtom(insertingAtom)
-	const projectTag = useAtomValue(projectTagAtom)
-	const setElementHover = useSetAtom(elementHoverAtom)
 
-	if (!inserting) return <p className="text-center">...</p>
+	if (!inserting)
+		return (
+			<Tooltip
+				openDelay={700}
+				withArrow
+				label={
+					<div className="flex items-center text-xs ">
+						Click on
+						<div className=" font-semibold p-1 flex items-center bg-rose-600 text-white rounded-sm mx-1">
+							<FaPlus />
+							Section
+						</div>
+						to see the components list
+					</div>
+				}
+			>
+				<p className="text-center cursor-help px-5 pb-5">...</p>
+			</Tooltip>
+		)
 
 	return (
 		<div className="flex flex-col ">
@@ -45,7 +60,6 @@ export function SimpleElementSelect() {
 									}
 									label={controller.name}
 									onClick={() => {
-										setElementHover('')
 										const newElement = controller.transform()
 										controller.onCreate(newElement)
 										switch (inserting.placement) {
@@ -94,19 +108,20 @@ export function InsertionItem({
 	const { hovered, ref } = useHover<HTMLButtonElement>()
 
 	return (
-		// WIP
 		<button
 			ref={ref}
-			className="group border overflow-hidden flex flex-col items-center w-full gap-1 rounded bg-gray-50 text-slate-600 hover:text-slate-900"
+			className=" border overflow-hidden flex flex-col items-center w-full gap-1 rounded bg-gray-50 text-slate-600 hover:text-slate-900"
 			onClick={onClick}
 		>
 			{icon}
 			<p className="text-xs text-center pb-1 ">{label}</p>
 			{hovered && (
 				<Portal>
-					<div className=" absolute backdrop-blur  backdrop-brightness-50  shadow-md rounded-md  !z-[1000] flex justify-center items-center border top-[35%] left-[20%]">
-						<Image height={300} width={600} src={src} alt={'preview'} />
-					</div>
+					<img
+						className="outline outline-1 outline-slate-200 shadow-md w-[700px] h-[300px] rounded-2xl absolute z-[100]   top-[35%] left-[20%]"
+						src={src}
+						alt="Preview"
+					/>
 				</Portal>
 			)}
 		</button>
