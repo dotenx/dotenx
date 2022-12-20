@@ -1,5 +1,8 @@
-import { ActionIcon, Anchor, Button, Container, Divider, Title } from '@mantine/core'
+import { ActionIcon, Anchor, Button, Container, Divider, TextInput, Title } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
+import Editor from '@monaco-editor/react'
 import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { TbArrowLeft } from 'react-icons/tb'
 import { Link, useNavigate } from 'react-router-dom'
 import { createPlugin } from '../features/plugins/api'
@@ -11,6 +14,9 @@ export function PluginCreatePage() {
 			navigate('/plugins')
 		},
 	})
+	const [name, setName] = useInputState('')
+	const [html, setHtml] = useState('')
+	const [js, setJs] = useState('')
 
 	return (
 		<Container>
@@ -19,15 +25,50 @@ export function PluginCreatePage() {
 				<BackToPlugins />
 			</div>
 			<Divider />
-			<Button
-				mt="xl"
-				px="xl"
-				onClick={() => createMutation.mutate({ name: 'plugin' })}
-				loading={createMutation.isLoading}
-			>
-				Create
-			</Button>
+			<div className="space-y-6 pb-10">
+				<TextInput
+					mt="xl"
+					label="Name"
+					placeholder="Choose a name for the plugin"
+					value={name}
+					onChange={setName}
+					style={{ width: 300 }}
+				/>
+				<CodeEditor title="HTML" language="html" onChange={setHtml} />
+				<CodeEditor title="JavaScript" language="javascript" onChange={setJs} />
+				<Button
+					px="xl"
+					onClick={() => createMutation.mutate({ name, html, js })}
+					loading={createMutation.isLoading}
+				>
+					Create
+				</Button>
+			</div>
 		</Container>
+	)
+}
+
+function CodeEditor({
+	title,
+	language,
+	onChange,
+}: {
+	title: string
+	language: 'html' | 'javascript'
+	onChange: (value: string) => void
+}) {
+	return (
+		<div>
+			<Title order={2}>{title}</Title>
+			<div className="rounded overflow-hidden">
+				<Editor
+					defaultLanguage={language}
+					height="300px"
+					theme="vs-dark"
+					onChange={(value) => onChange(value ?? '')}
+				/>
+			</div>
+		</div>
 	)
 }
 
