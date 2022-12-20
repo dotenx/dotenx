@@ -39,13 +39,13 @@ export const DividerCollapsible = ({
 	const [opened, setOpened] = useState(closed ? !closed : true)
 
 	return (
-		<div className="mt-4 mb-2 space-y-4">
+		<div className="my-2 space-y-4 bg-slate-50 bg-opacity-40 p-2 ">
 			<div
-				className=" flex items-center cursor-pointer active:opacity-70 active:text-violet-500"
+				className=" flex items-center cursor-pointer hover:bg-slate-100 transition-colors active:opacity-70 active:text-violet-500 shadow-sm rounded p-1 px-2"
 				onClick={() => setOpened((o) => !o)}
 			>
-				<span className="whitespace-nowrap mr-1">{title}</span> <hr className=" w-full" />
-				<BsChevronUp className={`${opened ? ' ' : 'rotate-180'}`} />
+				<span className="whitespace-nowrap mr-1 w-full">{title}</span>
+				<BsChevronUp className={`w-4 ${opened ? ' ' : 'rotate-180'}`} />
 			</div>
 			<Collapse in={opened}>
 				<div className="space-y-4">{children}</div>
