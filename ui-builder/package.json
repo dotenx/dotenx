@@ -29,6 +29,7 @@
 		"@mantine/hooks": "^5.9.5",
 		"@mantine/modals": "^5.9.5",
 		"@mantine/notifications": "^5.9.5",
+		"@mantine/prism": "^5.9.5",
 		"@monaco-editor/react": "^4.4.6",
 		"@popperjs/core": "^2.11.6",
 		"@splidejs/react-splide": "^0.7.12",

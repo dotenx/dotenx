@@ -18,6 +18,7 @@ specifiers:
   '@mantine/hooks': ^5.9.5
   '@mantine/modals': ^5.9.5
   '@mantine/notifications': ^5.9.5
+  '@mantine/prism': ^5.9.5
   '@monaco-editor/react': ^4.4.6
   '@popperjs/core': ^2.11.6
   '@splidejs/react-splide': ^0.7.12
@@ -86,6 +87,7 @@ dependencies:
   '@mantine/hooks': 5.9.5_react@18.2.0
   '@mantine/modals': 5.9.5_h4zmljtfubfbwzvuu4gizrlimy
   '@mantine/notifications': 5.9.5_h4zmljtfubfbwzvuu4gizrlimy
+  '@mantine/prism': 5.9.5_h4zmljtfubfbwzvuu4gizrlimy
   '@monaco-editor/react': 4.4.6_6vrjaj6ridxbohi43n7zt4gn7q
   '@popperjs/core': 2.11.6
   '@splidejs/react-splide': 0.7.12
@@ -1017,6 +1019,22 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-transition-group: 4.4.2_biqbaboplfbrettd7655fr4n2y
+    dev: false
+
+  /@mantine/prism/5.9.5_h4zmljtfubfbwzvuu4gizrlimy:
+    resolution: {integrity: sha512-Z3qO4t1OP1GS07ywUmPxf1vgZRaZj3VjQnPhr8Ludbqz4CY8LjPfclpcUHeZLbFsOi+P98JWzH4E/R4UNqiWOA==}
+    peerDependencies:
+      '@mantine/core': 5.9.5
+      '@mantine/hooks': 5.9.5
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@mantine/core': 5.9.5_hzg3oku4uxnt5crkeceagoktyy
+      '@mantine/hooks': 5.9.5_react@18.2.0
+      '@mantine/utils': 5.9.5_react@18.2.0
+      prism-react-renderer: 1.3.5_react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@mantine/styles/5.9.5_sogmqz4enknxtkxk3k5s6bqwnq:
@@ -3027,6 +3045,14 @@ packages:
     resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
     engines: {node: '>=10.13.0'}
     hasBin: true
+    dev: false
+
+  /prism-react-renderer/1.3.5_react@18.2.0:
+    resolution: {integrity: sha512-IJ+MSwBWKG+SM3b2SUfdrhC+gu01QkV2KmRQgREThBfSQRoufqRfxfHUxpG1WcaFjP+kojcFyO9Qqtpgt3qLCg==}
+    peerDependencies:
+      react: '>=0.14.9'
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /prop-types/15.8.1:
