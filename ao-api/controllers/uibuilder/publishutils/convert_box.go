@@ -31,13 +31,14 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init="{$nextTick(() => {{$event.Id}}())}"{{end}} {{end}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
 	funcMap := template.FuncMap{
 		"renderClassBinding":   RenderClassBinding,
 		"renderBindings":       RenderShowHideBindings,
+		"renderEvents":         renderEvents,
 		"renderRepeatFromName": renderRepeatFromName,
 	}
 
@@ -219,4 +220,22 @@ func renderTextStates(textState []TextState) string {
 	}
 
 	return fmt.Sprintf("%s", renderedTextState.String())
+}
+
+func renderEvents(events []Event) string {
+
+	var renderedEvents = strings.Builder{}
+
+	for _, event := range events {
+		if event.Kind == "intersection" {
+			renderedEvents.WriteString(fmt.Sprintf(`x-intersect="%s(null) "`, event.Id))
+		} else {
+			renderedEvents.WriteString(fmt.Sprintf(`x-on:%s="%s(null) "`, event.Kind, event.Id))
+			if event.Kind == "load" { // TODO: Remove this if it's not used.
+				renderedEvents.WriteString(fmt.Sprintf(`x-init="{$nextTick => %s()}" `, event.Id))
+			}
+		}
+	}
+
+	return strings.TrimSpace(renderedEvents.String())
 }
