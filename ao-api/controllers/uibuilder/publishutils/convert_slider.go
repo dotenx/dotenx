@@ -27,7 +27,7 @@ type Slider struct {
 
 const sliderTemplate = `<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
 {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} 
-{{range $index, $event := .Events}}x-on:{{$event.Kind}}="{{$event.Id}}($event)"{{if eq $event.Kind "load"}}x-init={$nextTick(() => {{$event.Id}}())} {{end}}" {{end}} 
+{{renderEvents .Events}} 
 >
 <div class="splide__track">
 <div class="splide__list">
@@ -43,6 +43,7 @@ const sliderTemplate = `<div {{if .Bindings.Class.FromStateName}}:class="{{rende
 func convertSlider(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
 		"renderClassBinding": RenderClassBinding,
+		"renderEvents":       renderEvents,
 		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)
