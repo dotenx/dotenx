@@ -1,18 +1,19 @@
 import { Button, CloseButton, Select, Switch, TextInput } from '@mantine/core'
-import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbPlus, TbSelect } from 'react-icons/tb'
 import { uuid } from '../../../utils'
+import { Expression } from '../../states/expression'
 import { useGetStates } from '../../states/use-get-states'
+import { SingleIntelinput } from '../../ui/intelinput'
 import { Element } from '../element'
-import { useElementsStore } from '../elements-store'
+import { useSetElement } from '../elements-store'
 
 export class SelectElement extends Element {
 	name = 'Select'
 	icon = (<TbSelect />)
 	data = {
 		options: [] as Option[],
-		defaultValue: '',
+		defaultValue: new Expression(),
 		name: '',
 		required: false,
 		optionsFromState: null as string | null,
@@ -21,7 +22,7 @@ export class SelectElement extends Element {
 	render(): ReactNode {
 		return (
 			<select
-				defaultValue={this.data.defaultValue}
+				defaultValue={this.data.defaultValue.toString()}
 				name={this.data.name}
 				required={this.data.required}
 				className={this.generateClasses()}
@@ -47,37 +48,29 @@ type Option = {
 }
 
 function SelectOptions({ element }: { element: SelectElement }) {
-	const set = useElementsStore((store) => store.set)
+	const set = useSetElement()
 	const { options, required } = element.data
 	const states = useGetStates()
 
 	const changeOptions = (options: Option[]) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.options = options
-			})
-		)
+		set(element, (draft) => {
+			draft.data.options = options
+		})
 	}
 	const changeName = (name: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.name = name
-			})
-		)
+		set(element, (draft) => {
+			draft.data.name = name
+		})
 	}
-	const changeDefaultValue = (defaultValue: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.defaultValue = defaultValue
-			})
-		)
+	const changeDefaultValue = (defaultValue: Expression) => {
+		set(element, (draft) => {
+			draft.data.defaultValue = defaultValue
+		})
 	}
 	const changeRequired = (required: boolean) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.required = required
-			})
-		)
+		set(element, (draft) => {
+			draft.data.required = required
+		})
 	}
 
 	return (
@@ -123,7 +116,7 @@ function SelectOptions({ element }: { element: SelectElement }) {
 						/>
 					</div>
 				))}
-				<div className="flex gap-2 items-center">
+				<div className="flex items-center gap-2">
 					<Button
 						leftIcon={<TbPlus />}
 						onClick={() =>
@@ -139,11 +132,9 @@ function SelectOptions({ element }: { element: SelectElement }) {
 						data={states.map((state) => state.name)}
 						value={element.data.optionsFromState}
 						onChange={(value) =>
-							set(
-								produce(element, (draft) => {
-									draft.data.optionsFromState = value
-								})
-							)
+							set(element, (draft) => {
+								draft.data.optionsFromState = value
+							})
 						}
 					/>
 				</div>
@@ -154,11 +145,10 @@ function SelectOptions({ element }: { element: SelectElement }) {
 				value={element.data.name}
 				onChange={(event) => changeName(event.target.value)}
 			/>
-			<TextInput
-				size="xs"
+			<SingleIntelinput
 				label="Default value"
 				value={element.data.defaultValue}
-				onChange={(event) => changeDefaultValue(event.target.value)}
+				onChange={(value) => changeDefaultValue(value)}
 			/>
 			<Switch
 				size="xs"
