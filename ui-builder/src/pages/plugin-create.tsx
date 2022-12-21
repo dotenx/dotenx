@@ -10,9 +10,7 @@ import { createPlugin } from '../features/plugins/api'
 export function PluginCreatePage() {
 	const navigate = useNavigate()
 	const createMutation = useMutation(createPlugin, {
-		onSuccess: () => {
-			navigate('/plugins')
-		},
+		onSuccess: (data) => navigate(`/plugins/${data.data.id}`),
 	})
 	const [name, setName] = useInputState('')
 	const [html, setHtml] = useState('')
@@ -48,20 +46,23 @@ export function PluginCreatePage() {
 	)
 }
 
-function CodeEditor({
+export function CodeEditor({
 	title,
 	language,
 	onChange,
+	defaultValue,
 }: {
 	title: string
 	language: 'html' | 'javascript'
 	onChange: (value: string) => void
+	defaultValue?: string
 }) {
 	return (
 		<div>
 			<Title order={2}>{title}</Title>
 			<div className="rounded overflow-hidden">
 				<Editor
+					defaultValue={defaultValue}
 					defaultLanguage={language}
 					height="300px"
 					theme="vs-dark"
