@@ -22,29 +22,35 @@ export function PluginList() {
 }
 
 function PluginItem({ plugin }: { plugin: Plugin }) {
+	return (
+		<li className="flex justify-between items-center bg-gray-50 rounded px-2 py-1">
+			<Link to={`/plugins/${plugin.id}`} className="hover:underline">
+				{plugin.name}
+			</Link>
+			<PluginActions id={plugin.id} />
+		</li>
+	)
+}
+
+export function PluginActions({ id }: { id: string }) {
 	const queryClient = useQueryClient()
 	const deleteMutation = useMutation(deletePlugin, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.Plugins]),
 	})
 
 	return (
-		<li className="flex justify-between items-center bg-gray-50 rounded px-2 py-1">
-			<Link to={`/plugins/${plugin.id}`} className="hover:underline">
-				{plugin.name}
-			</Link>
-			<div className="flex gap-1">
-				<ActionIcon
-					onClick={() => deleteMutation.mutate({ id: plugin.id })}
-					loading={deleteMutation.isLoading}
-				>
-					<TbTrash />
+		<div className="flex gap-1">
+			<ActionIcon
+				onClick={() => deleteMutation.mutate({ id })}
+				loading={deleteMutation.isLoading}
+			>
+				<TbTrash />
+			</ActionIcon>
+			<Anchor component={Link} to={`/plugins-edit/${id}`}>
+				<ActionIcon>
+					<TbPencil />
 				</ActionIcon>
-				<Anchor component={Link} to={`/plugins-edit/${plugin.id}`}>
-					<ActionIcon>
-						<TbPencil />
-					</ActionIcon>
-				</Anchor>
-			</div>
-		</li>
+			</Anchor>
+		</div>
 	)
 }
