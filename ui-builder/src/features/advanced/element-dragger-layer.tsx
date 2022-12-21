@@ -26,7 +26,7 @@ export function ElementDraggerAndLayers() {
 			<Tabs.List grow>
 				<Tabs.Tab value="elements" icon={<TbComponents size={16} />} title="Elements" />
 				<Tabs.Tab value="layers" icon={<TbLayersDifference size={16} />} title="Layers" />
-				<Tabs.Tab value="plugins" icon={<TbPlug size={16} />} title="Layers" />
+				<Tabs.Tab value="plugins" icon={<TbPlug size={16} />} title="Plugins" />
 			</Tabs.List>
 
 			<Tabs.Panel value="elements" pt="xs">
