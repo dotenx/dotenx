@@ -4,7 +4,7 @@ import { uuid } from '../../utils'
 
 const plugins: Plugin[] = [
 	{
-		id: uuid(),
+		id: 'GhhcHy_XQCAGKxUv',
 		name: `counter`,
 		html: `<div>
 <p id="counter">counter: </p>
@@ -30,7 +30,19 @@ export const getPlugin = async (data: { id: string }) => {
 export const createPlugin = async (data: Omit<Plugin, 'id'>) => {
 	const plugin = { id: uuid(), ...data }
 	plugins.push(plugin)
-	return new Promise((resolve) => resolve(null))
+	return { data: plugin }
+	// return api.post<void>('/plugins', { name })
+}
+
+export const editPlugin = async (data: Plugin) => {
+	const plugin = plugins.find((plugin) => plugin.id === data.id)
+	if (plugin) {
+		plugin.name = data.name
+		plugin.html = data.html
+		plugin.js = data.js
+	}
+	console.log(plugins)
+	return { data: plugin }
 	// return api.post<void>('/plugins', { name })
 }
 
