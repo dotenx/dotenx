@@ -3,30 +3,33 @@ import { Prism } from '@mantine/prism'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { QueryKey } from '../api'
-import { getPlugin } from '../features/plugins/api'
+import { getPlugin, Plugin } from '../features/plugins/api'
+import { PluginActions } from '../features/plugins/plugin-list'
 import { BackToPlugins } from './plugin-create'
 
 export function PluginDetailsPage() {
 	const { id = '' } = useParams()
-
-	return (
-		<Container>
-			<div className="flex items-center justify-between">
-				<Title my="xl">Plugin {}</Title>
-				<BackToPlugins />
-			</div>
-			<Divider mb="xl" />
-			<PluginDetails id={id} />
-		</Container>
-	)
-}
-
-function PluginDetails({ id }: { id: string }) {
 	const pluginQuery = useQuery([QueryKey.Plugin, id], () => getPlugin({ id }), { enabled: !!id })
 	const plugin = pluginQuery.data?.data
 
 	if (pluginQuery.isLoading || !plugin) return <Loader size="xs" mx="auto" mt="xl" />
 
+	return (
+		<Container>
+			<div className="flex items-center justify-between">
+				<Title my="xl">{plugin?.name}</Title>
+				<div className="flex items-center gap-1">
+					<PluginActions id={id} />
+					<BackToPlugins />
+				</div>
+			</div>
+			<Divider mb="xl" />
+			<PluginDetails plugin={plugin} />
+		</Container>
+	)
+}
+
+function PluginDetails({ plugin }: { plugin: Plugin }) {
 	return (
 		<div className="space-y-4">
 			<div>
