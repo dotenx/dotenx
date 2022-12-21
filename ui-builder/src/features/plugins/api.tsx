@@ -15,6 +15,7 @@ const counter = document.getElementById('counter')
 const counterButton = document.getElementById('counter-button')
 
 counterButton.addEventListener('click', () => counter.textContent = \`counter: \${++count}\`)`,
+		head: '',
 	},
 ]
 export const getPlugins = async () => {
@@ -41,7 +42,6 @@ export const editPlugin = async (data: Plugin) => {
 		plugin.html = data.html
 		plugin.js = data.js
 	}
-	console.log(plugins)
 	return { data: plugin }
 	// return api.post<void>('/plugins', { name })
 }
@@ -61,4 +61,5 @@ export type Plugin = {
 	name: string
 	html: string
 	js: string
+	head: string
 }

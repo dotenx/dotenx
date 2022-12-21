@@ -15,6 +15,7 @@ export function PluginCreatePage() {
 	const [name, setName] = useInputState('')
 	const [html, setHtml] = useState('')
 	const [js, setJs] = useState('')
+	const [head, setHead] = useState('')
 
 	return (
 		<Container>
@@ -34,9 +35,10 @@ export function PluginCreatePage() {
 				/>
 				<CodeEditor title="HTML" language="html" onChange={setHtml} />
 				<CodeEditor title="JavaScript" language="javascript" onChange={setJs} />
+				<CodeEditor title="Head" language="html" onChange={setHead} />
 				<Button
 					px="xl"
-					onClick={() => createMutation.mutate({ name, html, js })}
+					onClick={() => createMutation.mutate({ name, html, js, head })}
 					loading={createMutation.isLoading}
 				>
 					Create

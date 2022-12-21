@@ -44,12 +44,14 @@ function EditPluginForm({ id }: { id: string }) {
 	const [name, setName] = useInputState('')
 	const [html, setHtml] = useState('')
 	const [js, setJs] = useState('')
+	const [head, setHead] = useState('')
 	const pluginQuery = useQuery([QueryKey.Plugin, id], () => getPlugin({ id }), {
 		enabled: !!id,
 		onSuccess: (data) => {
 			setName(data.data?.name)
 			setHtml(data.data?.html ?? '')
 			setJs(data.data?.js ?? '')
+			setHead(data.data?.head ?? '')
 		},
 	})
 	const plugin = pluginQuery.data?.data
@@ -78,9 +80,15 @@ function EditPluginForm({ id }: { id: string }) {
 				language="javascript"
 				onChange={setJs}
 			/>
+			<CodeEditor
+				defaultValue={plugin.head}
+				title="Head"
+				language="html"
+				onChange={setHead}
+			/>
 			<Button
 				px="xl"
-				onClick={() => editMutation.mutate({ name, html, js, id })}
+				onClick={() => editMutation.mutate({ name, html, js, id, head })}
 				loading={editMutation.isLoading}
 			>
 				Save

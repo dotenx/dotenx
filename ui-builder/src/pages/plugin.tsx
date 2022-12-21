@@ -49,6 +49,12 @@ function PluginDetails({ plugin }: { plugin: Plugin }) {
 					{plugin.js}
 				</Prism>
 			</div>
+			<div>
+				<Title order={4}>Head</Title>
+				<Prism colorScheme="dark" noCopy language="markup">
+					{plugin.head}
+				</Prism>
+			</div>
 		</div>
 	)
 }
