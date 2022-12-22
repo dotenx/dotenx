@@ -28,6 +28,10 @@ Docs:
 
 https://docs.dotenx.com
 
+<h2>Thanks for all the feedback and amazing support! We're working hard during the Christmas period to make all the improvements you've suggested to make the platform better fo you.</h2>
+
+<h1>In the meantime please continue your support by spreading the word and sharing our repository with others. Keep being awesome.</h1>
+
 
 Blog:
 
@@ -52,3 +56,9 @@ Run locally
 ```
 docker-compose up
 ```
+
+Developer guides:
+
+WIP - will be added as a high priority.
+
+Note - the documentation will be added to a saparate repository. ETA: 23rd Dec.
