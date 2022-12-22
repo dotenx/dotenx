@@ -13,6 +13,7 @@ import { CollapsibleElement } from './extensions/collapsible'
 import { ColumnsElement } from './extensions/columns'
 import { DividerElement } from './extensions/divider'
 import { DropdownElement } from './extensions/dropdown'
+import { ExtensionElement } from './extensions/extension'
 import { FormElement } from './extensions/form'
 import { IconElement } from './extensions/icon'
 import { ImageElement } from './extensions/image'
@@ -22,7 +23,6 @@ import { MenuButtonElement } from './extensions/nav/menu-button'
 import { NavMenuElement } from './extensions/nav/nav-menu'
 import { NavbarElement } from './extensions/nav/navbar'
 import { PictureElement } from './extensions/picture'
-import { PluginElement } from './extensions/plugin'
 import { SelectElement } from './extensions/select'
 import { SliderElement } from './extensions/slider'
 import { StackElement } from './extensions/stack'
@@ -108,5 +108,5 @@ export const ELEMENTS = [
 	BubbleChart,
 	MenuButtonElement,
 	NavMenuElement,
-	PluginElement
+	ExtensionElement,
 ]

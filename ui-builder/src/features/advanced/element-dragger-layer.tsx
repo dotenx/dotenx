@@ -5,10 +5,10 @@ import { TbComponents, TbLayersDifference, TbPlug, TbPuzzle } from 'react-icons/
 import { Link } from 'react-router-dom'
 import { QueryKey } from '../../api'
 import { Draggable, DraggableMode } from '../dnd/draggable'
-import { PluginElement } from '../elements/extensions/plugin'
+import { ExtensionElement } from '../elements/extensions/extension'
+import { getExtensions } from '../extensions/api'
 import { ComponentDragger } from '../marketplace/component-dragger'
 import { DesignSystems } from '../marketplace/design-systems'
-import { getPlugins } from '../plugins/api'
 import { ElementCard, ElementDragger } from './element-dragger'
 import { DndLayers } from './layers'
 
@@ -26,7 +26,7 @@ export function ElementDraggerAndLayers() {
 			<Tabs.List grow>
 				<Tabs.Tab value="elements" icon={<TbComponents size={16} />} title="Elements" />
 				<Tabs.Tab value="layers" icon={<TbLayersDifference size={16} />} title="Layers" />
-				<Tabs.Tab value="plugins" icon={<TbPlug size={16} />} title="Plugins" />
+				<Tabs.Tab value="extensions" icon={<TbPlug size={16} />} title="Extensions" />
 			</Tabs.List>
 
 			<Tabs.Panel value="elements" pt="xs">
@@ -35,8 +35,8 @@ export function ElementDraggerAndLayers() {
 			<Tabs.Panel value="layers" pt="xs">
 				<DndLayers />
 			</Tabs.Panel>
-			<Tabs.Panel value="plugins" pt="xs">
-				<PluginsTab />
+			<Tabs.Panel value="extensions" pt="xs">
+				<ExtensionsTab />
 			</Tabs.Panel>
 		</Tabs>
 	)
@@ -53,32 +53,32 @@ function ElementDraggerTab() {
 	)
 }
 
-function PluginsTab() {
+function ExtensionsTab() {
 	const setSidebar = useSetAtom(sidebarAtom)
-	const pluginsQuery = useQuery([QueryKey.Plugins], getPlugins)
-	const plugins = pluginsQuery.data?.data ?? []
+	const extensionsQuery = useQuery([QueryKey.Extensions], getExtensions)
+	const extensions = extensionsQuery.data?.data ?? []
 
-	if (pluginsQuery.isLoading) return <Loader size="xs" mx="auto" />
-	if (plugins.length === 0) return <p className="text-xs text-center">No plugins found</p>
+	if (extensionsQuery.isLoading) return <Loader size="xs" mx="auto" />
+	if (extensions.length === 0) return <p className="text-xs text-center">No extensions found</p>
 
 	return (
 		<div>
-			<Anchor component={Link} to="/plugins">
+			<Anchor component={Link} to="/extensions">
 				<Button size="xs" fullWidth>
-					Go to plugins
+					Go to extensions
 				</Button>
 			</Anchor>
 			<div className="grid grid-cols-2 gap-2 mt-4">
-				{plugins.map((plugin) => (
+				{extensions.map((extension) => (
 					<Draggable
-						key={plugin.id}
+						key={extension.id}
 						data={{
 							mode: DraggableMode.AddWithData,
-							data: PluginElement.create(plugin),
+							data: ExtensionElement.create(extension),
 						}}
 						onDrag={() => setSidebar({ tab: 'layers' })}
 					>
-						<ElementCard label={plugin.name} icon={<TbPuzzle />} />
+						<ElementCard label={extension.name} icon={<TbPuzzle />} />
 					</Draggable>
 				))}
 			</div>

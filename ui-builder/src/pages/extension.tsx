@@ -3,56 +3,58 @@ import { Prism } from '@mantine/prism'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { QueryKey } from '../api'
-import { getPlugin, Plugin } from '../features/plugins/api'
-import { PluginActions } from '../features/plugins/plugin-list'
-import { BackToPlugins } from './plugin-create'
+import { Extension, getExtension } from '../features/extensions/api'
+import { ExtensionActions } from '../features/extensions/extension-list'
+import { BackToExtensions } from './extension-create'
 
-export function PluginDetailsPage() {
+export function ExtensionDetailsPage() {
 	const { id = '' } = useParams()
-	const pluginQuery = useQuery([QueryKey.Plugin, id], () => getPlugin({ id }), { enabled: !!id })
-	const plugin = pluginQuery.data?.data
+	const extensionQuery = useQuery([QueryKey.Extension, id], () => getExtension({ id }), {
+		enabled: !!id,
+	})
+	const extension = extensionQuery.data?.data
 
-	if (pluginQuery.isLoading || !plugin) return <Loader size="xs" mx="auto" mt="xl" />
+	if (extensionQuery.isLoading || !extension) return <Loader size="xs" mx="auto" mt="xl" />
 
 	return (
 		<Container>
 			<div className="flex items-center justify-between">
-				<Title my="xl">{plugin?.name}</Title>
+				<Title my="xl">{extension?.name}</Title>
 				<div className="flex items-center gap-1">
-					<PluginActions id={id} />
-					<BackToPlugins />
+					<ExtensionActions id={id} />
+					<BackToExtensions />
 				</div>
 			</div>
 			<Divider mb="xl" />
-			<PluginDetails plugin={plugin} />
+			<ExtensionDetails extension={extension} />
 		</Container>
 	)
 }
 
-function PluginDetails({ plugin }: { plugin: Plugin }) {
+function ExtensionDetails({ extension }: { extension: Extension }) {
 	return (
 		<div className="space-y-4">
 			<div>
 				<Title order={4}>Name</Title>
-				<p>{plugin.name}</p>
+				<p>{extension.name}</p>
 			</div>
 
 			<div>
 				<Title order={4}>HTML</Title>
 				<Prism colorScheme="dark" noCopy language="markup">
-					{plugin.html}
+					{extension.html}
 				</Prism>
 			</div>
 			<div>
 				<Title order={4}>JavaScript</Title>
 				<Prism colorScheme="dark" noCopy language="javascript">
-					{plugin.js}
+					{extension.js}
 				</Prism>
 			</div>
 			<div>
 				<Title order={4}>Head</Title>
 				<Prism colorScheme="dark" noCopy language="markup">
-					{plugin.head}
+					{extension.head}
 				</Prism>
 			</div>
 		</div>

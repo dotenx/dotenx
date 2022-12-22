@@ -14,38 +14,38 @@ import { useState } from 'react'
 import { TbArrowLeft } from 'react-icons/tb'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { QueryKey } from '../api'
-import { editPlugin, getPlugin } from '../features/plugins/api'
-import { CodeEditor } from './plugin-create'
+import { editExtension, getExtension } from '../features/extensions/api'
+import { CodeEditor } from './extension-create'
 
-export function PluginEditPage() {
+export function ExtensionEditPage() {
 	const { id = '' } = useParams()
 
 	return (
 		<Container>
 			<div className="flex items-center justify-between">
-				<Title my="xl">Edit Plugin</Title>
-				<Anchor component={Link} to={`/plugins/${id}`}>
+				<Title my="xl">Edit Extension</Title>
+				<Anchor component={Link} to={`/extensions/${id}`}>
 					<ActionIcon>
 						<TbArrowLeft />
 					</ActionIcon>
 				</Anchor>
 			</div>
 			<Divider />
-			<EditPluginForm id={id} />
+			<EditExtensionForm id={id} />
 		</Container>
 	)
 }
 
-function EditPluginForm({ id }: { id: string }) {
+function EditExtensionForm({ id }: { id: string }) {
 	const navigate = useNavigate()
-	const editMutation = useMutation(editPlugin, {
-		onSuccess: (data) => navigate(`/plugins/${data.data?.id}`),
+	const editMutation = useMutation(editExtension, {
+		onSuccess: (data) => navigate(`/extensions/${data.data?.id}`),
 	})
 	const [name, setName] = useInputState('')
 	const [html, setHtml] = useState('')
 	const [js, setJs] = useState('')
 	const [head, setHead] = useState('')
-	const pluginQuery = useQuery([QueryKey.Plugin, id], () => getPlugin({ id }), {
+	const extensionQuery = useQuery([QueryKey.Extension, id], () => getExtension({ id }), {
 		enabled: !!id,
 		onSuccess: (data) => {
 			setName(data.data?.name)
@@ -54,34 +54,34 @@ function EditPluginForm({ id }: { id: string }) {
 			setHead(data.data?.head ?? '')
 		},
 	})
-	const plugin = pluginQuery.data?.data
+	const extension = extensionQuery.data?.data
 
-	if (pluginQuery.isLoading || !plugin) return <Loader mt="xl" size="xs" mx="auto" />
+	if (extensionQuery.isLoading || !extension) return <Loader mt="xl" size="xs" mx="auto" />
 
 	return (
 		<div className="space-y-6 pb-10">
 			<TextInput
 				mt="xl"
 				label="Name"
-				placeholder="Choose a name for the plugin"
+				placeholder="Choose a name for the extension"
 				value={name}
 				onChange={setName}
 				style={{ width: 300 }}
 			/>
 			<CodeEditor
-				defaultValue={plugin.html}
+				defaultValue={extension.html}
 				title="HTML"
 				language="html"
 				onChange={setHtml}
 			/>
 			<CodeEditor
-				defaultValue={plugin.js}
+				defaultValue={extension.js}
 				title="JavaScript"
 				language="javascript"
 				onChange={setJs}
 			/>
 			<CodeEditor
-				defaultValue={plugin.head}
+				defaultValue={extension.head}
 				title="Head"
 				language="html"
 				onChange={setHead}

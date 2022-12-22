@@ -1,26 +1,26 @@
 import { Anchor, Button, Container, Divider, Title } from '@mantine/core'
 import { TbPlus } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
-import { PluginList } from '../features/plugins/plugin-list'
+import { ExtensionList } from '../features/extensions/extension-list'
 
-export function PluginsPage() {
+export function ExtensionsPage() {
 	return (
 		<Container>
 			<div className="flex items-center justify-between">
-				<Title my="xl">Plugins</Title>
-				<AddPluginLink />
+				<Title my="xl">Extensions</Title>
+				<AddExtensionLink />
 			</div>
 			<Divider />
-			<PluginList />
+			<ExtensionList />
 		</Container>
 	)
 }
 
-function AddPluginLink() {
+function AddExtensionLink() {
 	return (
-		<Anchor component={Link} to="/plugins-create">
+		<Anchor component={Link} to="/extensions-create">
 			<Button size="xs" leftIcon={<TbPlus />}>
-				Plugin
+				Extension
 			</Button>
 		</Anchor>
 	)

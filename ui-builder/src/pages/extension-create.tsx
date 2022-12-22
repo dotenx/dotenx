@@ -5,12 +5,12 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { TbArrowLeft } from 'react-icons/tb'
 import { Link, useNavigate } from 'react-router-dom'
-import { createPlugin } from '../features/plugins/api'
+import { createExtension } from '../features/extensions/api'
 
-export function PluginCreatePage() {
+export function ExtensionCreatePage() {
 	const navigate = useNavigate()
-	const createMutation = useMutation(createPlugin, {
-		onSuccess: (data) => navigate(`/plugins/${data.data.id}`),
+	const createMutation = useMutation(createExtension, {
+		onSuccess: (data) => navigate(`/extensions/${data.data.id}`),
 	})
 	const [name, setName] = useInputState('')
 	const [html, setHtml] = useState('')
@@ -20,15 +20,15 @@ export function PluginCreatePage() {
 	return (
 		<Container>
 			<div className="flex items-center justify-between">
-				<Title my="xl">Create Plugin</Title>
-				<BackToPlugins />
+				<Title my="xl">Create Extension</Title>
+				<BackToExtensions />
 			</div>
 			<Divider />
 			<div className="space-y-6 pb-10">
 				<TextInput
 					mt="xl"
 					label="Name"
-					placeholder="Choose a name for the plugin"
+					placeholder="Choose a name for the extension"
 					value={name}
 					onChange={setName}
 					style={{ width: 300 }}
@@ -75,9 +75,9 @@ export function CodeEditor({
 	)
 }
 
-export function BackToPlugins() {
+export function BackToExtensions() {
 	return (
-		<Anchor component={Link} to="/plugins">
+		<Anchor component={Link} to="/extensions">
 			<ActionIcon>
 				<TbArrowLeft />
 			</ActionIcon>

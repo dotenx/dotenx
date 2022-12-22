@@ -50,8 +50,8 @@ export enum QueryKey {
 	Columns = 'columns',
 	GlobalStates = 'global-states',
 	Projects = 'projects',
-	Plugins = 'plugins',
-	Plugin = 'plugin',
+	Extensions = 'extensions',
+	Extension = 'extension',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {

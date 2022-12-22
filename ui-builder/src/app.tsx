@@ -5,11 +5,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
+import { ExtensionDetailsPage } from './pages/extension'
+import { ExtensionCreatePage } from './pages/extension-create'
+import { ExtensionEditPage } from './pages/extension-edit'
+import { ExtensionsPage } from './pages/extensions'
 import { NotFoundPage } from './pages/not-found'
-import { PluginDetailsPage } from './pages/plugin'
-import { PluginCreatePage } from './pages/plugin-create'
-import { PluginEditPage } from './pages/plugin-edit'
-import { PluginsPage } from './pages/plugins'
 
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { refetchOnWindowFocus: false, retry: false } },
@@ -60,10 +60,10 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
-				<Route path="/plugins-edit/:id" element={<PluginEditPage />} />
-				<Route path="/plugins-create" element={<PluginCreatePage />} />
-				<Route path="/plugins/:id" element={<PluginDetailsPage />} />
-				<Route path="/plugins" element={<PluginsPage />} />
+				<Route path="/extensions-edit/:id" element={<ExtensionEditPage />} />
+				<Route path="/extensions-create" element={<ExtensionCreatePage />} />
+				<Route path="/extensions/:id" element={<ExtensionDetailsPage />} />
+				<Route path="/extensions" element={<ExtensionsPage />} />
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
 				<Route path="/*" element={<NotFoundPage />} />
