@@ -2,9 +2,6 @@
 <p align="center">
 <img alt="BUILDER" src="https://app.dotenx.com/static/media/logo.678522740bc0af21222e.png" width="100" />
 </p>
-<h1 align="center">
-  No-code platform for building APIs, web applications, websites, forms, and automations
-</h1>
 <p align="center">
   DoTenX is an all-in-one, low-code platform for building scalable and powerful websites, web applications, landing pages, APIs, automations, forms, landing pages and more.
 </p>
