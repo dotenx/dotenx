@@ -6,16 +6,28 @@ const extensions: Extension[] = [
 	{
 		id: 'GhhcHy_XQCAGKxUv',
 		name: `counter`,
-		html: `<div>
-<p id="counter">counter: </p>
-<button type="button" id="counter-button">add</button>
+		body: {
+			inputs: [{ name: 'startingCount' }],
+			outputs: [{ name: 'count' }],
+			html: `<div>
+	<p id="counter">counter: </p>
+	<button type="button" id="counter-button">add</button>
 </div>`,
-		js: `let count = 0
+			js: `let count = 0
 const counter = document.getElementById('counter')
 const counterButton = document.getElementById('counter-button')
 
-counterButton.addEventListener('click', () => counter.textContent = \`counter: \${++count}\`)`,
-		head: '',
+function initialize(inputs, outputs) {
+	counter.textContent = inputs.startingCount
+	counterButton.addEventListener('click', () => {
+		count += 1
+		counter.textContent = count
+		outputs.setState('count', count)
+	})
+}
+			`,
+			head: '',
+		},
 	},
 ]
 export const getExtensions = async () => {
@@ -28,7 +40,7 @@ export const getExtension = async (data: { id: string }) => {
 	// return api.get<GetExtensionsResponse>('/extensions')
 }
 
-export const createExtension = async (data: Omit<Extension, 'id'>) => {
+export const createExtension = async (data: RawExtension) => {
 	const extension = { id: uuid(), ...data }
 	extensions.push(extension)
 	return { data: extension }
@@ -39,8 +51,7 @@ export const editExtension = async (data: Extension) => {
 	const extension = extensions.find((extension) => extension.id === data.id)
 	if (extension) {
 		extension.name = data.name
-		extension.html = data.html
-		extension.js = data.js
+		extension.body = data.body
 	}
 	return { data: extension }
 	// return api.post<void>('/extensions', { name })
@@ -56,10 +67,16 @@ export const deleteExtension = async (data: { id: string }) => {
 // 	extensions: Extension[]
 // }
 
+export type RawExtension = Omit<Extension, 'id'>
+
 export type Extension = {
 	id: string
 	name: string
-	html: string
-	js: string
-	head: string
+	body: {
+		inputs: { name: string }[]
+		outputs: { name: string }[]
+		html: string
+		js: string
+		head: string
+	}
 }

@@ -1,4 +1,4 @@
-import { Container, Divider, Loader, Title } from '@mantine/core'
+import { Code, Container, Divider, Loader, Title } from '@mantine/core'
 import { Prism } from '@mantine/prism'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -33,28 +33,47 @@ export function ExtensionDetailsPage() {
 
 function ExtensionDetails({ extension }: { extension: Extension }) {
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 pb-10">
 			<div>
 				<Title order={4}>Name</Title>
 				<p>{extension.name}</p>
 			</div>
-
+			<div>
+				<Title order={4} mb="xs">
+					Inputs
+				</Title>
+				<div className="flex flex-wrap gap-4">
+					{extension.body.inputs.map((input) => (
+						<Code key={input.name}>{input.name}</Code>
+					))}
+				</div>
+			</div>
+			<div>
+				<Title order={4} mb="xs">
+					Outputs
+				</Title>
+				<div className="flex flex-wrap gap-4">
+					{extension.body.outputs.map((output) => (
+						<Code key={output.name}>{output.name}</Code>
+					))}
+				</div>
+			</div>
 			<div>
 				<Title order={4}>HTML</Title>
 				<Prism colorScheme="dark" noCopy language="markup">
-					{extension.html}
+					{extension.body.html}
 				</Prism>
 			</div>
 			<div>
 				<Title order={4}>JavaScript</Title>
 				<Prism colorScheme="dark" noCopy language="javascript">
-					{extension.js}
+					{extension.body.js}
 				</Prism>
 			</div>
 			<div>
 				<Title order={4}>Head</Title>
 				<Prism colorScheme="dark" noCopy language="markup">
-					{extension.head}
+					{extension.body.head}
 				</Prism>
 			</div>
 		</div>
