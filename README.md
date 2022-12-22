@@ -6,7 +6,7 @@
   No-code platform for building APIs, web applications, websites, forms, and automations
 </h1>
 <p align="center">
-  With DoTenX you can build massively scalable and powerful websites, web applications, APIs, automations, forms, landing pages and more with no-code which are extendable with custom code.
+  DoTenX is an all-in-one, low-code platform for building scalable and powerful websites, web applications, landing pages, APIs, automations, forms, landing pages and more.
 </p>
 
 ---
@@ -26,7 +26,7 @@ https://discord.gg/kpCmHtKYHd
 
 Docs:
 
-https://docs.dotenx.com
+https://docs.dotenx.com (https://github.com/dotenx/dotenx-docs)
 
 <h2>Thanks for all the feedback and amazing support! We're working hard during the Christmas period to make all the improvements you've suggested to make the platform better fo you.</h2>
 
@@ -60,5 +60,3 @@ docker-compose up
 Developer guides:
 
 WIP - will be added as a high priority.
-
-Note - the documentation will be added to a saparate repository. ETA: 23rd Dec.
