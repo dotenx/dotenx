@@ -2,12 +2,16 @@
 import _ from 'lodash'
 import { uuid } from '../../utils'
 
+export enum InputKind {
+	Text = 'text',
+}
+
 const extensions: Extension[] = [
 	{
 		id: 'GhhcHy_XQCAGKxUv',
 		name: `counter`,
 		body: {
-			inputs: [{ name: 'startingCount' }],
+			inputs: [{ name: 'startingCount', kind: InputKind.Text }],
 			outputs: [{ name: 'count' }],
 			html: `<div>
 	<p id="counter">counter: </p>
@@ -73,7 +77,7 @@ export type Extension = {
 	id: string
 	name: string
 	body: {
-		inputs: { name: string }[]
+		inputs: { name: string; kind: InputKind }[]
 		outputs: { name: string }[]
 		html: string
 		js: string

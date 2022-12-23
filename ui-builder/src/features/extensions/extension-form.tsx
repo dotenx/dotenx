@@ -4,13 +4,14 @@ import Editor from '@monaco-editor/react'
 import { useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 import { z } from 'zod'
-import { RawExtension } from './api'
+import { InputKind, RawExtension } from './api'
 
 const schema = z.object({
 	name: z.string().min(1).max(100),
 	inputs: z.array(
 		z.object({
 			name: z.string().min(1).max(100),
+			kind: z.nativeEnum(InputKind),
 		})
 	),
 	outputs: z.array(
@@ -79,7 +80,7 @@ export function ExtensionForm({
 				))}
 			</div>
 			<Button
-				onClick={() => form.insertListItem('inputs', { name: '' })}
+				onClick={() => form.insertListItem('inputs', { name: '', kind: InputKind.Text })}
 				leftIcon={<TbPlus />}
 			>
 				Input
