@@ -1,0 +1,20 @@
+service: mailchimp
+type: Mailchimp new unsubscriber
+integrations: [mailchimp]
+image: hojjat12/mailchimp-new-unsubscriber:lambda
+deduplication_method: compare_with_list
+credentials:
+    - key: list_id
+      type: text
+      description: The unique ID for the list (go to your Audience page then navigate 'settings' -> 'Audience name and defaults' -> 'Audience ID')
+      display_name: list id
+    - key: passed_seconds
+      type: text
+      description: passed seconds from message
+      display_name: passed seconds
+outputs:
+
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/5968/5968879.png
+node_color: 8B8B8B
+description: Checks a subscriber unsubscribes from an audience (unsubscribes after given number of seconds), tiggers a specefic pipeline

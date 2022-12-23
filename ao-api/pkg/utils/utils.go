@@ -49,7 +49,7 @@ func GetAccountId(c *gin.Context) (string, error) {
 }
 
 // SpecialProviders are not supported by goth package (https://github.com/markbates/goth)
-var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay"}
+var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay", "mailchimp"}
 
 // TODO: ADD COMMENT!
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}

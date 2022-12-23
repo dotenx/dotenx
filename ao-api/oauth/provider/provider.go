@@ -142,6 +142,13 @@ func init() {
 		provider := linkedin.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
+	// ............................Added by Hojjat............................
+	// just a trick to fill mailchimp provider
+	ProviderNameInitializationMap["mailchimp"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
+		provider := google.New(key, secret, cbUrl, scopes...)
+		return provider
+	}
+	// ............................Added by Hojjat............................
 	ProviderNameInitializationMap["meetup"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
 		provider := meetup.New(key, secret, cbUrl, scopes...)
 		return provider
