@@ -51,6 +51,12 @@ Current stage: beta
 Run locally
 
 ```
+git clone https://github.com/dotenx/dotenx
+
+cd dotenx
+
+docker network create -d bridge --attachable dev
+
 docker-compose up
 ```
 
