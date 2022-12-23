@@ -39,6 +39,7 @@ var pageTemplate = `<!DOCTYPE html>
 	{{end}}
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 	<script  src="https://unpkg.com/alpinejs-intersect-class@1.x.x/dist/cdn.min.js"></script>
+	<script src="https://unpkg.com/@alpinejs/intersect@3.10.5/dist/cdn.min.js"></script>
 	<script  src="https://unpkg.com/@alpinejs/persist@3.10.3/dist/cdn.min.js"></script>
 	<script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 
@@ -218,6 +219,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertText(component, styleStore, functionStore)
 	case "Image":
 		return convertImage(component, styleStore, functionStore)
+	case "Picture":
+		return convertPicture(component, styleStore, functionStore)
 	case "Select":
 		return convertSelect(component, styleStore, functionStore)
 	case "Slider":
