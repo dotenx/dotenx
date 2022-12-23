@@ -1,4 +1,4 @@
-import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
+import { AppShell, Aside, Header, Image, Navbar, ScrollArea } from '@mantine/core'
 import { useClickOutside } from '@mantine/hooks'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { previewAtom, TopBar } from '../page/top-bar'
