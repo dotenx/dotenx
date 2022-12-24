@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A serverless application
+Globals:
+  Function:
+    Timeout: 3
+    Handler: main.go
+    Runtime: go1.x
+    Tracing: Active
+    Role: arn:aws:iam::994147050565:role/lambda-ex
+    Layers:
+      - !FindInMap [RegionMap, !Ref "AWS::Region", layer]
+
+Resources:
+  ServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: service/
+
+Outputs:
+  ServiceApi:
+    Description: "API Gateway endpoint URL for Prod stage for service function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

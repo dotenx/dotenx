@@ -1,15 +1,16 @@
 import { Select, Switch, TextInput } from '@mantine/core'
-import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbFileImport } from 'react-icons/tb'
+import { Expression } from '../../states/expression'
+import { SingleIntelinput } from '../../ui/intelinput'
 import { Element } from '../element'
-import { useElementsStore } from '../elements-store'
+import { useSetElement } from '../elements-store'
 
 export class InputElement extends Element {
 	name = 'Input'
 	icon = (<TbFileImport />)
 	data = {
-		defaultValue: '',
+		defaultValue: new Expression(),
 		name: '',
 		placeholder: '',
 		required: false,
@@ -19,7 +20,7 @@ export class InputElement extends Element {
 	render(): ReactNode {
 		return (
 			<input
-				defaultValue={this.data.defaultValue}
+				defaultValue={this.data.defaultValue.toString()}
 				name={this.data.name}
 				placeholder={this.data.placeholder}
 				type={this.data.type}
@@ -34,41 +35,21 @@ export class InputElement extends Element {
 }
 
 function InputOptions({ element }: { element: InputElement }) {
-	const set = useElementsStore((store) => store.set)
+	const set = useSetElement()
 	const changeType = (type: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.type = type
-			})
-		)
+		set(element, (draft) => (draft.data.type = type))
 	}
 	const changeRequired = (required: boolean) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.required = required
-			})
-		)
+		set(element, (draft) => (draft.data.required = required))
 	}
 	const changeName = (name: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.name = name
-			})
-		)
+		set(element, (draft) => (draft.data.name = name))
 	}
 	const changePlaceholder = (placeholder: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.placeholder = placeholder
-			})
-		)
+		set(element, (draft) => (draft.data.placeholder = placeholder))
 	}
-	const changeDefaultValue = (defaultValue: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.defaultValue = defaultValue
-			})
-		)
+	const changeDefaultValue = (defaultValue: Expression) => {
+		set(element, (draft) => (draft.data.defaultValue = defaultValue))
 	}
 
 	return (
@@ -111,11 +92,10 @@ function InputOptions({ element }: { element: InputElement }) {
 				value={element.data.placeholder}
 				onChange={(event) => changePlaceholder(event.target.value)}
 			/>
-			<TextInput
-				size="xs"
+			<SingleIntelinput
 				label="Default value"
 				value={element.data.defaultValue}
-				onChange={(event) => changeDefaultValue(event.target.value)}
+				onChange={(value) => changeDefaultValue(value)}
 			/>
 			<Switch
 				size="xs"

@@ -1,21 +1,22 @@
 import { Switch, TextInput } from '@mantine/core'
-import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbFileText } from 'react-icons/tb'
+import { Expression } from '../../states/expression'
+import { SingleIntelinput } from '../../ui/intelinput'
 import { Element } from '../element'
-import { useElementsStore } from '../elements-store'
+import { useSetElement } from '../elements-store'
 
 export class TextareaElement extends Element {
 	name = 'Textarea'
 	icon = (<TbFileText />)
-	data = { placeholder: '', defaultValue: '', required: false, name: '' }
+	data = { placeholder: '', defaultValue: new Expression(), required: false, name: '' }
 
 	render(): ReactNode {
 		return (
 			<textarea
 				className={this.generateClasses()}
 				placeholder={this.data.placeholder}
-				defaultValue={this.data.defaultValue}
+				defaultValue={this.data.defaultValue.toString()}
 				name={this.data.name}
 			/>
 		)
@@ -27,34 +28,18 @@ export class TextareaElement extends Element {
 }
 
 function TextareaOptions({ element }: { element: TextareaElement }) {
-	const set = useElementsStore((store) => store.set)
+	const set = useSetElement()
 	const changeRequired = (required: boolean) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.required = required
-			})
-		)
+		set(element, (draft) => (draft.data.required = required))
 	}
 	const changeName = (name: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.name = name
-			})
-		)
+		set(element, (draft) => (draft.data.name = name))
 	}
 	const changePlaceholder = (placeholder: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.placeholder = placeholder
-			})
-		)
+		set(element, (draft) => (draft.data.placeholder = placeholder))
 	}
-	const changeDefaultValue = (defaultValue: string) => {
-		set(
-			produce(element, (draft) => {
-				draft.data.defaultValue = defaultValue
-			})
-		)
+	const changeDefaultValue = (defaultValue: Expression) => {
+		set(element, (draft) => (draft.data.defaultValue = defaultValue))
 	}
 
 	return (
@@ -71,11 +56,10 @@ function TextareaOptions({ element }: { element: TextareaElement }) {
 				value={element.data.placeholder}
 				onChange={(event) => changePlaceholder(event.target.value)}
 			/>
-			<TextInput
-				size="xs"
+			<SingleIntelinput
 				label="Default value"
 				value={element.data.defaultValue}
-				onChange={(event) => changeDefaultValue(event.target.value)}
+				onChange={(value) => changeDefaultValue(value)}
 			/>
 			<Switch
 				size="xs"

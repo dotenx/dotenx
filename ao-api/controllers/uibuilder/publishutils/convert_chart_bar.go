@@ -59,7 +59,7 @@ type ChartBar struct {
 }
 
 const chartTemplate = `
-<canvas {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
+<canvas {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"></canvas>
 `
 
 const barChartEffectTemplate = `
@@ -74,7 +74,9 @@ Alpine.effect(() => {
 
 func convertChartBar(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
-		"renderBindings": RenderBindings,
+		"renderClassBinding": RenderClassBinding,
+		"renderEvents":       renderEvents,
+		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)
 	if err != nil {

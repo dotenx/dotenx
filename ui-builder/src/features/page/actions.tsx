@@ -2,6 +2,7 @@ import {
 	Anchor,
 	Button,
 	CloseButton,
+	Collapse,
 	Divider,
 	Loader,
 	Text,
@@ -9,17 +10,21 @@ import {
 	Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
+import { useClickOutside } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { useState } from 'react'
+import { FaLink } from 'react-icons/fa'
 import { IoSaveOutline } from 'react-icons/io5'
+import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
+	getPreviewLink,
 	GlobalStates,
 	publishPage,
 	QueryKey,
@@ -309,9 +314,13 @@ function SaveButton() {
 export const publishedUrlAtom = atom<string | null>(null)
 
 function PublishButton() {
-	const { pageName = '' } = useParams()
+	const { pageName = 'index' } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
 	const setPublishedUrl = useSetAtom(publishedUrlAtom)
+	const { data: previewUrl, isLoading } = useQuery([QueryKey.GetPreview], () =>
+		getPreviewLink({ projectTag, pageName })
+	)
+	const url = previewUrl?.data.url
 	const publishPageMutation = useMutation(publishPage, {
 		onSuccess: (data) => {
 			const publishedUrl = data.data.url
@@ -324,14 +333,97 @@ function PublishButton() {
 			})
 		},
 	})
+	const mode = useAtomValue(pageModeAtom)
+	const isSimple = mode === 'simple'
+	const setPageMode = useSetAtom(pageModeAtom)
+	const elements = useElementsStore((store) => store.elements)
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const classNames = useClassesStore((store) => store.classes)
+	const pageParams = useAtomValue(pageParamsAtom)
+	const globals = useAtomValue(globalStatesAtom)
+	const fonts = useAtomValue(fontsAtom)
+	const savePageMutation = useMutation(updatePage)
+	const customCodes = useAtomValue(customCodesAtom)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const publish = () => publishPageMutation.mutate({ projectTag, pageName })
+	const [open, setOpen] = useState(false)
+	const save = () => {
+		savePageMutation.mutate(
+			{
+				projectTag,
+				pageName,
+				elements,
+				dataSources,
+				classNames,
+				mode: isSimple ? 'simple' : 'advanced',
+				pageParams,
+				globals,
+				fonts,
+				customCodes,
+				statesDefaultValues,
+			},
+			{
+				onSuccess: () => {
+					publish(), setPageMode(isSimple ? 'simple' : 'advanced')
+				},
+			}
+		)
+	}
+	const outsideClickRef = useClickOutside(() => setOpen(false))
 
 	return (
-		<Tooltip withinPortal withArrow label={<Text size="xs">Publish Page</Text>}>
-			<Button onClick={publish} loading={publishPageMutation.isLoading} size="xs">
-				<TbWorldUpload className=" w-5 h-5" />
-			</Button>
-		</Tooltip>
+		<div className="cursor-default">
+			<Tooltip
+				withinPortal
+				openDelay={1000}
+				withArrow
+				label={<Text size="xs">Publish Page</Text>}
+			>
+				<Button
+					onClick={() => {
+						setOpen(!open)
+					}}
+					disabled={isLoading}
+					size="xs"
+				>
+					<TbWorldUpload className=" w-5 h-5" />
+				</Button>
+			</Tooltip>
+			<Collapse in={open}>
+				<div
+					ref={outsideClickRef}
+					className=" text-white shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md w-fit bg-rose-600 h-auto"
+				>
+					<div className="text-xl font-semibold">Publish page</div>
+					{url && (
+						<div className="flex-col items-start text-sm mt-2 mb-5 ">
+							<div>Preview link: </div>
+							<a
+								className="bg-slate-200 text-slate-900 flex gap-x-1 items-center transition-colors hover:bg-slate-100 p-1 text-xs rounded-md font-medium mt-1"
+								href={url}
+								target={'_blank'}
+								rel="noopener noreferrer"
+							>
+								{url}
+								<FaLink />
+							</a>
+						</div>
+					)}
+					<div className="rounded-md my-2 w-[450px]  p-3 text-sm border border-slate-50 h-20">
+						Click on Save & Publish button to apply the last changes to your website.
+					</div>
+					<Button
+						onClick={save}
+						loading={publishPageMutation.isLoading || savePageMutation.isLoading}
+						variant={'default'}
+						className={'!rounded-md float-right '}
+						size="sm"
+					>
+						Save & Publish
+					</Button>
+				</div>
+			</Collapse>
+		</div>
 	)
 }
 

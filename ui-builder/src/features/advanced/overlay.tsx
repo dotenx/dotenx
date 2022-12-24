@@ -41,10 +41,12 @@ export function ElementOverlay({
 	children,
 	element,
 	parentHidden,
+	withoutStyle,
 }: {
 	children: ReactNode
 	element: Element
 	parentHidden?: boolean
+	withoutStyle?: boolean
 }) {
 	const invisible = parentHidden || element.hidden
 	const viewPort = useAtomValue(viewportAtom)
@@ -80,7 +82,7 @@ export function ElementOverlay({
 		[element.events]
 	)
 
-	const classes = `${element.generateClasses()} ${animations}`
+	const classes = withoutStyle ? animations : `${element.generateClasses()} ${animations}`
 
 	const handleMouseOver = useCallback(
 		(event: MouseEvent) => {

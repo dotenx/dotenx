@@ -70,7 +70,9 @@ Alpine.effect(() => {
 
 func convertChartScatter(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
-		"renderBindings": RenderBindings,
+		"renderClassBinding": RenderClassBinding,
+		"renderEvents":       renderEvents,
+		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)
 	if err != nil {

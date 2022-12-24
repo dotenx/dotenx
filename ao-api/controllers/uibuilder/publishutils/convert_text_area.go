@@ -35,11 +35,13 @@ type TextArea struct {
 	} `json:"data"`
 }
 
-const textAreaTemplate = `<textarea {{if .Bindings.Show.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
+const textAreaTemplate = `<textarea {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} cols="{{.Data.Cols}}" rows="{{.Data.Rows}}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" placeholder="{{.Data.Placeholder}}" x-model="formData.{{.Data.Name}}" {{if .Data.DefaultValue}} x-init="formData.{{.Data.Name}}='{{.Data.DefaultValue}}'" {{end}}></textarea>`
 
 func convertTextArea(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
-		"renderBindings": RenderBindings,
+		"renderClassBinding": RenderClassBinding,
+		"renderEvents":       renderEvents,
+		"renderBindings":     RenderShowHideBindings,
 	}
 	b, err := json.Marshal(component)
 	if err != nil {

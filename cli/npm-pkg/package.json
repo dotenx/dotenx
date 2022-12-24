@@ -1,0 +1,29 @@
+{
+  "name": "dotenx",
+  "version": "0.1.2",
+  "description": "DoTenX CLI For Test & Deploy your Task And Trigger",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node postinstall.js install",
+    "preuninstall": "node postinstall.js uninstall"
+  },
+  "goBinary": {
+    "name": "dotenx",
+    "path": "./bin"
+  },
+  "keywords": [
+    "cli",
+    "DoTenX",
+    "task",
+    "trigger"
+  ],
+  "author": "Hojjat-12",
+  "license": "ISC",
+  "files": [
+    "dist",
+    "postinstall.js"
+  ],
+  "dependencies": {
+    "mkdirp": "^1.0.4"
+  }
+}
