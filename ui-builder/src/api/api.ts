@@ -49,6 +49,8 @@ export enum QueryKey {
 	Tables = 'tables',
 	Columns = 'columns',
 	GlobalStates = 'global-states',
+	GetPreview = 'get-preview',
+	Projects = 'projects',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {
@@ -244,4 +246,7 @@ export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequ
 
 export function getGlobalStates({ projectName }: { projectName: string }) {
 	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
+}
+export function getPreviewLink({ projectTag, pageName }: { projectTag: string, pageName: string }) {
+	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
 }
