@@ -2,11 +2,8 @@
 <p align="center">
 <img alt="BUILDER" src="https://app.dotenx.com/static/media/logo.678522740bc0af21222e.png" width="100" />
 </p>
-<h1 align="center">
-  No-code platform for building APIs, web applications, websites, forms, and automations
-</h1>
 <p align="center">
-  With DoTenX you can build massively scalable and powerful websites, web applications, APIs, automations, forms, landing pages and more with no-code which are extendable with custom code.
+  DoTenX is an all-in-one, low-code platform for building scalable and powerful websites, web applications, landing pages, APIs, automations, forms, landing pages and more.
 </p>
 
 ---
@@ -26,7 +23,11 @@ https://discord.gg/kpCmHtKYHd
 
 Docs:
 
-https://docs.dotenx.com
+https://docs.dotenx.com (https://github.com/dotenx/dotenx-docs)
+
+<h2>Thanks for all the feedback and amazing support! We're working hard during the Christmas period to make all the improvements you've suggested to make the platform better fo you.</h2>
+
+<h1>In the meantime please continue your support by spreading the word and sharing our repository with others. Keep being awesome.</h1>
 
 
 Blog:
@@ -50,5 +51,15 @@ Current stage: beta
 Run locally
 
 ```
+git clone https://github.com/dotenx/dotenx
+
+cd dotenx
+
+docker network create -d bridge --attachable dev
+
 docker-compose up
 ```
+
+Developer guides:
+
+WIP - will be added as a high priority.
