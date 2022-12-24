@@ -32,7 +32,6 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("slack response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +62,6 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("instagram response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -88,7 +86,6 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 
 	out, err, status, _ = helper.HttpRequest(http.MethodGet, refreshUrl, nil, nil, time.Minute, true)
 	log.Println("instagram response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -119,7 +116,6 @@ func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (s
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("typeform response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +149,6 @@ func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToke
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("ebay response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", "", err
 	}
@@ -184,7 +179,6 @@ func getMailchimpAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("mailchimp response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
