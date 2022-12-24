@@ -9,6 +9,8 @@
 # # awrmin/stripe-payment-completed:lambda6
 # # hojjat12/twitter-new-tweet:lambda5
 # # hojjat12/typeform-new-response:lambda5
+# # hojjat12/mailchimp-new-subscriber:lambda
+# # hojjat12/mailchimp-new-unsubscriber:lambda
 
 # export region="us-east-1"
 # export repository_name="awrmin/google-new-email"
@@ -86,6 +88,24 @@
 # export repository_name="hojjat12/typeform-new-response"
 # export tag="lambda5"
 # export directory_address="typeform-new-response"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/mailchimp-new-subscriber"
+# export tag="lambda"
+# export directory_address="mailchimp-new-subscriber"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/mailchimp-new-unsubscriber"
+# export tag="lambda"
+# export directory_address="mailchimp-new-unsubscriber"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name
