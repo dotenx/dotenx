@@ -34,6 +34,9 @@ var categories = map[string][]string{
 		"Resource Directories",
 		"Websites",
 		"Dashboards",
+		"Profile",
+		"Landing Page",
+		"Portfolio",
 		"Misc",
 	},
 	"component": {
