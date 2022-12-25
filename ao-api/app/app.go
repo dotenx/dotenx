@@ -418,7 +418,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplace.POST("/credential/temporary", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.GetTemporaryCredential())
 	marketplace.POST("/function", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.CreateFunction())
 	marketplace.PUT("/function", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.UpdateFunction())
-	// marketplace.POST("/category/list", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.ListCategories())
+	marketplace.POST("/category/list", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.ListCategories())
 	marketplace.GET("/function/:function_name", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.GetFunction())
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
 	public.GET("/marketplace", marketplaceController.ListItems())
