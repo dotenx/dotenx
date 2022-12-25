@@ -100,10 +100,13 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		return "", "", "", err
 	}
 
-	fonts, err := convertFonts(page["fonts"].(map[string]interface{}))
-	if err != nil {
-		logrus.Error(err.Error())
-		return "", "", "", err
+	fonts := "" // This is for backwards compatibility with the pages that don't have the fonts property
+	if pageFonts, ok := page["fonts"].(map[string]interface{}); ok {
+		fonts, err = convertFonts(pageFonts)
+		if err != nil {
+			logrus.Error(err.Error())
+			return "", "", "", err
+		}
 	}
 
 	p := Page{
