@@ -234,6 +234,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
+	// gitIntegration := r.Group("/git/integration")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)

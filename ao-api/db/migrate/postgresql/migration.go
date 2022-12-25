@@ -299,6 +299,10 @@ var migrations = []struct {
 		name: "add-csv-status-field-to-database-jobs-table",
 		stmt: addCsvStatusFieldToDatabaseJobsTable,
 	},
+	{
+		name: "create-git-integration-table",
+		stmt: createGitIntegrationTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -465,7 +469,7 @@ SET tp_account_id= 'no third party user';`
 var addExectuionTime = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
 
-//var dropTasks = `drop table tasks`
+// var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							INT NOT NULL,
@@ -584,7 +588,7 @@ SET project_name='AUTOMATION_STUDIO';`
 var addProjectNameForTriggers = `ALTER TABLE event_triggers
 ADD COLUMN IF NOT EXISTS project_name VARCHAR(128);`
 
-//todo: update this to use AUTOMATION_STUDIO
+// todo: update this to use AUTOMATION_STUDIO
 var updateProjectNameForTrigger = `
 ALTER TABLE event_triggers
 ALTER COLUMN project_name
@@ -839,4 +843,15 @@ ADD COLUMN IF NOT EXISTS csv_url_expiration_time BIGINT DEFAULT 0;
 var addCsvStatusFieldToDatabaseJobsTable = `
 ALTER TABLE database_jobs
 ADD COLUMN IF NOT EXISTS csv_status VARCHAR DEFAULT '';
+`
+
+var createGitIntegrationTable = `
+CREATE TABLE IF NOT EXISTS git_integration (
+account_id        VARCHAR(64) NOT NULL,
+git_account_id    VARCHAR(64) NOT NULL,
+git_username      VARCHAR NOT NULL,
+provider          VARCHAR(32) NOT NULL,
+secrets           JSONB,
+UNIQUE (account_id, git_account_id)
+)
 `
