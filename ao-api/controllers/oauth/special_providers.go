@@ -15,7 +15,7 @@ import (
 
 func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
 	var dto struct {
-		AccessToekn string `json:"access_token"`
+		AccessToken string `json:"access_token"`
 	}
 	data := "client_id=" + clientId
 	data += "&client_secret=" + clientSecret
@@ -32,7 +32,6 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("slack response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -40,7 +39,7 @@ func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (stri
 		return "", fmt.Errorf("not ok with status: %d", status)
 	}
 	err = json.Unmarshal(out, &dto)
-	return dto.AccessToekn, err
+	return dto.AccessToken, err
 }
 
 func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
@@ -63,7 +62,6 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("instagram response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -88,7 +86,6 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 
 	out, err, status, _ = helper.HttpRequest(http.MethodGet, refreshUrl, nil, nil, time.Minute, true)
 	log.Println("instagram response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -101,7 +98,7 @@ func getInstagramAccessToken(clientId, clientSecret, code, redirectUrl string) (
 
 func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
 	var dto struct {
-		AccessToekn string `json:"access_token"`
+		AccessToken string `json:"access_token"`
 	}
 	data := "client_id=" + clientId
 	data += "&client_secret=" + clientSecret
@@ -119,7 +116,6 @@ func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (s
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("typeform response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", err
 	}
@@ -127,12 +123,12 @@ func getTypeformAccessToken(clientId, clientSecret, code, redirectUrl string) (s
 		return "", errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &dto)
-	return dto.AccessToekn, err
+	return dto.AccessToken, err
 }
 
-func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToekn, refreshToken string, err error) {
+func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToken, refreshToken string, err error) {
 	var dto struct {
-		AccessToekn  string `json:"access_token"`
+		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 	}
 	data := "code=" + code
@@ -153,7 +149,6 @@ func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToek
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	log.Println("ebay response:", string(out))
-	log.Println("-----------------------------------------------------------")
 	if err != nil {
 		return "", "", err
 	}
@@ -161,5 +156,35 @@ func getEbayTokens(clientId, clientSecret, code, redirectUrl string) (accessToek
 		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &dto)
-	return dto.AccessToekn, dto.RefreshToken, err
+	return dto.AccessToken, dto.RefreshToken, err
+}
+
+func getMailchimpAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
+	var dto struct {
+		AccessToken string `json:"access_token"`
+	}
+	data := "client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&grant_type=authorization_code"
+	data += "&redirect_uri=" + redirectUrl
+	data += "&code=" + code
+	url := "https://login.mailchimp.com/oauth2/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("mailchimp response:", string(out))
+	if err != nil {
+		return "", err
+	}
+	if status != 200 {
+		return "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, err
 }

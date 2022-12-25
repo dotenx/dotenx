@@ -39,6 +39,12 @@
         "scopes": ["email", "identify", "messages.read"]
     },
     {
+        "name": "mailchimp",
+        "secret": "c6fdab34408bbdc32e9c83d104e67de5baaef1a78f18eb9cf6",
+        "key": "162852130044",
+        "direct_url": "https://login.mailchimp.com/oauth2/authorize?client_id=162852130044&response_type=code&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/mailchimp"
+    },
+    {
         "name": "slack",
         "secret": "7ced68760661e15695f6d8d16aba44fe",
         "key": "1390586298022.3553550438982",

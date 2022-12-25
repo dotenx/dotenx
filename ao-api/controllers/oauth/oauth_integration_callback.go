@@ -33,6 +33,8 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 			accessToken, err = getTypeformAccessToken(providers["typeform"].Key, providers["typeform"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/typeform")
 		case "ebay":
 			accessToken, refreshToken, err = getEbayTokens(providers["ebay"].Key, providers["ebay"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/ebay")
+		case "mailchimp":
+			accessToken, err = getMailchimpAccessToken(providers["mailchimp"].Key, providers["mailchimp"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/mailchimp")
 		}
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return
