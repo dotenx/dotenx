@@ -1,0 +1,25 @@
+service: mailchimp
+type: Add new subscriber to the list
+image: hojjat12/mailchimp-add-new-subscriber:lambda
+integrations: [mailchimp]
+fields:
+    - key: list_id
+      type: text
+      description: The unique ID for the list (go to your Audience page then navigate 'settings' -> 'Audience name and defaults' -> 'Audience ID')
+      display_name: list id
+    - key: email
+      type: text
+      description: Email address of new subscriber
+      display_name: email
+    - key: first_name
+      type: text
+      description: First name of new subscriber
+      display_name: first name (optional)
+    - key: last_name
+      type: text
+      description: Last name of new subscriber
+      display_name: last name (optional)
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/5968/5968879.png
+node_color: 8B8B8B
+description: Adds a new member to the list

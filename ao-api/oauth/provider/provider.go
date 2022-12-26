@@ -89,6 +89,7 @@ func init() {
 	}
 	// ............................Added by Hojjat............................
 	// just a trick to fill ebay provider
+	// we use goth package as oauth handler this package han't some oauth providers so we need this trick to maintain our code base
 	ProviderNameInitializationMap["ebay"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
 		provider := google.New(key, secret, cbUrl, scopes...)
 		return provider
@@ -142,6 +143,14 @@ func init() {
 		provider := linkedin.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
+	// ............................Added by Hojjat............................
+	// just a trick to fill mailchimp provider
+	// we use goth package as oauth handler this package han't some oauth providers so we need this trick to maintain our code base
+	ProviderNameInitializationMap["mailchimp"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
+		provider := google.New(key, secret, cbUrl, scopes...)
+		return provider
+	}
+	// ............................Added by Hojjat............................
 	ProviderNameInitializationMap["meetup"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
 		provider := meetup.New(key, secret, cbUrl, scopes...)
 		return provider

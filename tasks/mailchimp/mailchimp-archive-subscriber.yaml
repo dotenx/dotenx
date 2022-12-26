@@ -1,0 +1,17 @@
+service: mailchimp
+type: Delete (archive) a list member
+image: hojjat12/mailchimp-archive-subscriber:lambda
+integrations: [mailchimp]
+fields:
+    - key: list_id
+      type: text
+      description: The unique ID for the list (go to your Audience page then navigate 'settings' -> 'Audience name and defaults' -> 'Audience ID')
+      display_name: list id
+    - key: email
+      type: text
+      description: Email address of the subscriber
+      display_name: email
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/5968/5968879.png
+node_color: 8B8B8B
+description: Archive a list member (this task doesn't delete member permanently)
