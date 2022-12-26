@@ -74,7 +74,7 @@ func (controller *UIbuilderController) PublishPage() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 
-		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "published"); err != nil {
+		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "published", true, false); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

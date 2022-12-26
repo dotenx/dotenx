@@ -17,7 +17,7 @@ type UIbuilderService interface {
 	ListPages(accountId, projectTag string) ([]string, error)
 	ListAllPagesOfUser(accountId string) ([]string, error)
 	GetPage(accountId, projectTag, pageName string) (models.UIPage, error)
-	SetPageStatus(accountId, projectTag, pageName, status string) error
+	SetPageStatus(accountId, projectTag, pageName, status string, published, previewed bool) error
 	GetUiInfrastructure(accountId, projectTag string) (models.UiInfrastructure, error)
 	UpsertUiInfrastructure(uiInfra models.UiInfrastructure) error
 	// This function deletes all the pages of a project
