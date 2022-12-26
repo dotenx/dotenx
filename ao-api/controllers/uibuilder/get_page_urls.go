@@ -2,6 +2,7 @@ package uibuilder
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -80,12 +81,12 @@ func (controller *UIbuilderController) GetPageUrls() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"publish_url": map[string]interface{}{
 				"exist":   publishUrlExist,
-				"last_at": page.LastPublishedAt.String(),
+				"last_at": page.LastPublishedAt.Format(time.RFC3339),
 				"url":     publishUrl,
 			},
 			"preview_url": map[string]interface{}{
 				"exist":   previewUrlExist,
-				"last_at": page.LastPreviewPublishedAt.String(),
+				"last_at": page.LastPreviewPublishedAt.Format(time.RFC3339),
 				"url":     previewUrl,
 			},
 		})
