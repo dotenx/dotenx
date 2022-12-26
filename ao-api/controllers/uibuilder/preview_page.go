@@ -138,7 +138,10 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 		UploadFileToS3(bucket, []byte(scripts), prefix+pageName+".js", int64(len(scripts)), "application/javascript")
 		UploadFileToS3(bucket, []byte(styles), prefix+pageName+".css", int64(len(styles)), "text/css")
 
-		if err := controller.Service.SetPageStatus(accountId, projectTag, pageNameWithoutSuffix, "previewed", false, true); err != nil {
+		// TODO: currently status of page should be one of these values: ['published', 'modified']
+		// (note: this condition checks by postgres because this condition defined in creating table statement)
+		// we should use a better status for pages in future
+		if err := controller.Service.SetPageStatus(accountId, projectTag, pageNameWithoutSuffix, "modified", false, true); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
