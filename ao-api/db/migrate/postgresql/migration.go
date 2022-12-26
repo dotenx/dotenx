@@ -299,6 +299,18 @@ var migrations = []struct {
 		name: "add-csv-status-field-to-database-jobs-table",
 		stmt: addCsvStatusFieldToDatabaseJobsTable,
 	},
+	{
+		name: "create-ui-extension-table",
+		stmt: createUIExtensionTable,
+	},
+	{
+		name: "add-last-published-at-field-to-ui-pages-table",
+		stmt: addLastPublishedAtFieldToUIPagesTable,
+	},
+	{
+		name: "add-last-preview-published-at-field-to-ui-pages-table",
+		stmt: addLastPreviewPublishedAtFieldToUIPagesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -465,7 +477,7 @@ SET tp_account_id= 'no third party user';`
 var addExectuionTime = `ALTER TABLE executions
 ADD COLUMN IF NOT EXISTS execution_time INT DEFAULT 0;`
 
-//var dropTasks = `drop table tasks`
+// var dropTasks = `drop table tasks`
 var createTableExecutionsStatus = `
 CREATE TABLE IF NOT EXISTS executions_status (
 execution_id							INT NOT NULL,
@@ -584,7 +596,7 @@ SET project_name='AUTOMATION_STUDIO';`
 var addProjectNameForTriggers = `ALTER TABLE event_triggers
 ADD COLUMN IF NOT EXISTS project_name VARCHAR(128);`
 
-//todo: update this to use AUTOMATION_STUDIO
+// todo: update this to use AUTOMATION_STUDIO
 var updateProjectNameForTrigger = `
 ALTER TABLE event_triggers
 ALTER COLUMN project_name
@@ -839,4 +851,26 @@ ADD COLUMN IF NOT EXISTS csv_url_expiration_time BIGINT DEFAULT 0;
 var addCsvStatusFieldToDatabaseJobsTable = `
 ALTER TABLE database_jobs
 ADD COLUMN IF NOT EXISTS csv_status VARCHAR DEFAULT '';
+`
+
+var createUIExtensionTable = `
+CREATE TABLE IF NOT EXISTS ui_extension (
+name                     VARCHAR(64) NOT NULL,
+account_id               VARCHAR(64) NOT NULL,
+project_tag              VARCHAR(32) NOT NULL,
+content                  JSONB NOT NULL,
+status                   VARCHAR(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
+category                 VARCHAR(64) DEFAULT 'custom_component',
+UNIQUE (account_id, name, project_tag)
+)
+`
+
+var addLastPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
+`
+
+var addLastPreviewPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
 `
