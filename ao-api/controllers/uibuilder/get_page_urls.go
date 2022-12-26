@@ -15,7 +15,6 @@ func (controller *UIbuilderController) GetPageUrls() gin.HandlerFunc {
 		if a, ok := c.Get("accountId"); ok {
 			accountId = a.(string)
 		}
-
 		projectTag := c.Param("project_tag")
 		pageName := c.Param("page_name")
 
