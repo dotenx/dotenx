@@ -14,7 +14,10 @@ export const getStateNames = (elements: Element[]) => {
 				.map((action) => action.stateName.value),
 		]
 		if (element instanceof ExtensionElement)
-			states = [...states, ...(element.data.extension?.body.outputs.map((o) => o.name) ?? [])]
+			states = [
+				...states,
+				...(element.data.extension?.content.outputs.map((o) => o.name) ?? []),
+			]
 		states = [...states, ...getStateNames(element.children ?? [])]
 	}
 	return states

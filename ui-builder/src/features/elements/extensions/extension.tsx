@@ -20,7 +20,7 @@ export class ExtensionElement extends Element {
 
 	render() {
 		if (!this.data.extension) return null
-		return <div dangerouslySetInnerHTML={{ __html: this.data.extension.body.html }} />
+		return <div dangerouslySetInnerHTML={{ __html: this.data.extension.content.html }} />
 	}
 
 	renderOptions() {
@@ -37,7 +37,7 @@ function ExtensionOptions() {
 
 	return (
 		<div className="space-y-6">
-			{element.data.extension.body.inputs.map((input) => (
+			{element.data.extension.content.inputs.map((input) => (
 				<Intelinput
 					key={input.name}
 					label={input.name}

@@ -60,10 +60,10 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
-				<Route path="/extensions-edit/:id" element={<ExtensionEditPage />} />
-				<Route path="/extensions-create" element={<ExtensionCreatePage />} />
-				<Route path="/extensions/:id" element={<ExtensionDetailsPage />} />
-				<Route path="/extensions" element={<ExtensionsPage />} />
+				<Route path="/extensions-edit/:projectName/:name" element={<ExtensionEditPage />} />
+				<Route path="/extensions-create/:projectName" element={<ExtensionCreatePage />} />
+				<Route path="/extensions/:projectName/:name" element={<ExtensionDetailsPage />} />
+				<Route path="/extensions/:projectName" element={<ExtensionsPage />} />
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
 				<Route path="/*" element={<NotFoundPage />} />

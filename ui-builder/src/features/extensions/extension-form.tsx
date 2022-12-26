@@ -4,7 +4,7 @@ import Editor from '@monaco-editor/react'
 import { useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 import { z } from 'zod'
-import { InputKind, RawExtension } from './api'
+import { Extension, InputKind } from './api'
 
 const schema = z.object({
 	name: z.string().min(1).max(100),
@@ -27,38 +27,44 @@ export function ExtensionForm({
 	mode,
 	onSubmit,
 	submitting,
-	initialValues = { name: '', body: { inputs: [], outputs: [], html: '', js: '', head: '' } },
+	initialValues = {
+		name: '',
+		category: 'Misc',
+		content: { inputs: [], outputs: [], html: '', js: '', head: '' },
+	},
 }: {
 	mode: 'create' | 'edit'
-	onSubmit: (values: RawExtension) => void
+	onSubmit: (values: Extension) => void
 	submitting: boolean
-	initialValues?: RawExtension
+	initialValues?: Extension
 }) {
 	const form = useForm<Schema>({
 		initialValues: {
 			name: initialValues.name,
-			inputs: initialValues.body.inputs,
-			outputs: initialValues.body.outputs,
+			inputs: initialValues.content.inputs,
+			outputs: initialValues.content.outputs,
 		},
 	})
-	const [html, setHtml] = useState(initialValues.body.html)
-	const [js, setJs] = useState(initialValues.body.js)
-	const [head, setHead] = useState(initialValues.body.head)
+	const [html, setHtml] = useState(initialValues.content.html)
+	const [js, setJs] = useState(initialValues.content.js)
+	const [head, setHead] = useState(initialValues.content.head)
 	const handleSubmit = form.onSubmit((values) =>
 		onSubmit({
 			name: values.name,
-			body: { inputs: values.inputs, outputs: values.outputs, html, js, head },
+			content: { inputs: values.inputs, outputs: values.outputs, html, js, head },
+			category: 'Misc',
 		})
 	)
 
 	return (
-		<form onSubmit={handleSubmit} className="space-y-6 pb-10">
+		<form onSubmit={handleSubmit} className="pb-10 space-y-6">
 			<TextInput
 				mt="xl"
 				label="Extension name"
 				placeholder="Choose a name for the extension"
 				{...form.getInputProps('name')}
 				style={{ width: 300 }}
+				disabled={mode === 'edit'}
 			/>
 			<Divider label="Inputs" />
 			<div className="space-y-2">
@@ -112,19 +118,19 @@ export function ExtensionForm({
 			</Button>
 			<Divider label="Codes" />
 			<CodeEditor
-				defaultValue={initialValues.body.html}
+				defaultValue={initialValues.content.html}
 				title="HTML"
 				language="html"
 				onChange={setHtml}
 			/>
 			<CodeEditor
-				defaultValue={initialValues.body.js}
+				defaultValue={initialValues.content.js}
 				title="JavaScript"
 				language="javascript"
 				onChange={setJs}
 			/>
 			<CodeEditor
-				defaultValue={initialValues.body.head}
+				defaultValue={initialValues.content.head}
 				title="Head"
 				language="html"
 				onChange={setHead}
@@ -150,7 +156,7 @@ export function CodeEditor({
 	return (
 		<div>
 			<Title order={2}>{title}</Title>
-			<div className="rounded overflow-hidden">
+			<div className="overflow-hidden rounded">
 				<Editor
 					defaultValue={defaultValue}
 					defaultLanguage={language}

@@ -1,82 +1,31 @@
-// import { api } from '../../api'
-import _ from 'lodash'
-import { uuid } from '../../utils'
+import { api } from '../../api'
+
+export const getExtensions = ({ projectTag }: { projectTag: string }) => {
+	return api.get<Extension[] | null>(`/uibuilder/project/${projectTag}/extension`)
+}
+
+export const getExtension = ({ projectTag, name }: { projectTag: string; name: string }) => {
+	return api.get<Extension>(`/uibuilder/project/${projectTag}/extension/${name}`)
+}
+
+export const createExtension = ({ projectTag, data }: { projectTag: string; data: Extension }) => {
+	return api.post<void>(`/uibuilder/project/${projectTag}/extension`, data)
+}
+
+export const editExtension = createExtension
+
+export const deleteExtension = ({ projectTag, name }: { projectTag: string; name: string }) => {
+	return api.delete<void>(`/uibuilder/project/${projectTag}/extension/${name}`)
+}
 
 export enum InputKind {
 	Text = 'text',
 }
 
-const extensions: Extension[] = [
-	{
-		id: 'GhhcHy_XQCAGKxUv',
-		name: `counter`,
-		body: {
-			inputs: [{ name: 'startingCount', kind: InputKind.Text }],
-			outputs: [{ name: 'count' }],
-			html: `<div>
-	<p id="counter">counter: </p>
-	<button type="button" id="counter-button">add</button>
-</div>`,
-			js: `let count = 0
-const counter = document.getElementById('counter')
-const counterButton = document.getElementById('counter-button')
-
-function initialize(inputs, outputs) {
-	counter.textContent = inputs.startingCount
-	counterButton.addEventListener('click', () => {
-		count += 1
-		counter.textContent = count
-		outputs.setState('count', count)
-	})
-}
-			`,
-			head: '',
-		},
-	},
-]
-export const getExtensions = async () => {
-	return { data: extensions }
-	// return api.get<GetExtensionsResponse>('/extensions')
-}
-
-export const getExtension = async (data: { id: string }) => {
-	return { data: extensions.find((extension) => extension.id === data.id) }
-	// return api.get<GetExtensionsResponse>('/extensions')
-}
-
-export const createExtension = async (data: RawExtension) => {
-	const extension = { id: uuid(), ...data }
-	extensions.push(extension)
-	return { data: extension }
-	// return api.post<void>('/extensions', { name })
-}
-
-export const editExtension = async (data: Extension) => {
-	const extension = extensions.find((extension) => extension.id === data.id)
-	if (extension) {
-		extension.name = data.name
-		extension.body = data.body
-	}
-	return { data: extension }
-	// return api.post<void>('/extensions', { name })
-}
-
-export const deleteExtension = async (data: { id: string }) => {
-	_.remove(extensions, (extension) => extension.id === data.id)
-	return new Promise((resolve) => resolve(null))
-	// return api.delete<void>(`/extensions/${id}`)
-}
-
-// type GetExtensionsResponse = {
-// 	extensions: Extension[]
-// }
-
-export type RawExtension = Omit<Extension, 'id'>
-
 export type Extension = {
-	id: string
 	name: string
-	body: {
+	category: string
+	content: {
 		inputs: { name: string; kind: InputKind }[]
 		outputs: { name: string }[]
 		html: string

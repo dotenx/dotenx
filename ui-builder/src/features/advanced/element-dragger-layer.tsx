@@ -1,14 +1,15 @@
 import { Anchor, Button, Divider, Loader, Tabs } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { TbComponents, TbLayersDifference, TbPlug, TbPuzzle } from 'react-icons/tb'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { QueryKey } from '../../api'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { ExtensionElement } from '../elements/extensions/extension'
 import { getExtensions } from '../extensions/api'
 import { ComponentDragger } from '../marketplace/component-dragger'
 import { DesignSystems } from '../marketplace/design-systems'
+import { projectTagAtom } from '../page/top-bar'
 import { ElementCard, ElementDragger } from './element-dragger'
 import { DndLayers } from './layers'
 
@@ -54,34 +55,47 @@ function ElementDraggerTab() {
 }
 
 function ExtensionsTab() {
+	const { projectName = '' } = useParams()
+
+	return (
+		<div>
+			<Anchor component={Link} to={`/extensions/${projectName}`}>
+				<Button size="xs" fullWidth my="xs">
+					Go to extensions
+				</Button>
+			</Anchor>
+			<ExtensionList />
+		</div>
+	)
+}
+
+function ExtensionList() {
 	const setSidebar = useSetAtom(sidebarAtom)
-	const extensionsQuery = useQuery([QueryKey.Extensions], getExtensions)
+	const projectTag = useAtomValue(projectTagAtom)
+	const extensionsQuery = useQuery(
+		[QueryKey.Extensions, projectTag],
+		() => getExtensions({ projectTag }),
+		{ enabled: !!projectTag }
+	)
 	const extensions = extensionsQuery.data?.data ?? []
 
 	if (extensionsQuery.isLoading) return <Loader size="xs" mx="auto" />
 	if (extensions.length === 0) return <p className="text-xs text-center">No extensions found</p>
 
 	return (
-		<div>
-			<Anchor component={Link} to="/extensions">
-				<Button size="xs" fullWidth>
-					Go to extensions
-				</Button>
-			</Anchor>
-			<div className="grid grid-cols-2 gap-2 mt-4">
-				{extensions.map((extension) => (
-					<Draggable
-						key={extension.id}
-						data={{
-							mode: DraggableMode.AddWithData,
-							data: ExtensionElement.create(extension),
-						}}
-						onDrag={() => setSidebar({ tab: 'layers' })}
-					>
-						<ElementCard label={extension.name} icon={<TbPuzzle />} />
-					</Draggable>
-				))}
-			</div>
+		<div className="grid grid-cols-2 gap-2 mt-4">
+			{extensions.map((extension) => (
+				<Draggable
+					key={extension.name}
+					data={{
+						mode: DraggableMode.AddWithData,
+						data: ExtensionElement.create(extension),
+					}}
+					onDrag={() => setSidebar({ tab: 'layers' })}
+				>
+					<ElementCard label={extension.name} icon={<TbPuzzle />} />
+				</Draggable>
+			))}
 		</div>
 	)
 }
