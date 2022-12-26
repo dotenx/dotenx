@@ -372,7 +372,7 @@ function PublishButton() {
 	const outsideClickRef = useClickOutside(() => setOpen(false))
 
 	return (
-		<div className="cursor-default">
+		<div className="cursor-default" ref={outsideClickRef}>
 			<Tooltip
 				withinPortal
 				openDelay={1000}
@@ -389,40 +389,39 @@ function PublishButton() {
 					<TbWorldUpload className=" w-5 h-5" />
 				</Button>
 			</Tooltip>
-			<Collapse in={open}>
-				<div
-					ref={outsideClickRef}
-					className=" text-white shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md w-fit bg-rose-600 h-auto"
-				>
-					<div className="text-xl font-semibold">Publish page</div>
-					{url && (
-						<div className="flex-col items-start text-sm mt-2 mb-5 ">
-							<div>Preview link: </div>
-							<a
-								className="bg-slate-200 text-slate-900 flex gap-x-1 items-center transition-colors hover:bg-slate-100 p-1 text-xs rounded-md font-medium mt-1"
-								href={url}
-								target={'_blank'}
-								rel="noopener noreferrer"
-							>
-								{url}
-								<FaLink />
-							</a>
+			{open && (
+				<Collapse in={open}>
+					<div className=" text-slate-900  shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md w-fit bg-slate-50 h-auto">
+						<div className="text-xl font-semibold">Publish page</div>
+						{url && (
+							<div className="flex-col items-start text-sm mt-2 mb-5 ">
+								<div>Preview link: </div>
+								<a
+									className="bg-slate-200 text-slate-900 flex gap-x-1 items-center transition-colors hover:bg-slate-100 p-1 text-xs rounded-md font-medium mt-1"
+									href={url}
+									target={'_blank'}
+									rel="noopener noreferrer"
+								>
+									{url}
+									<FaLink />
+								</a>
+							</div>
+						)}
+						<div className="rounded-md my-2 w-[450px]  p-3 text-sm border border-slate-400 h-20">
+							Click on Save & Publish button to apply the last changes to your
+							website.
 						</div>
-					)}
-					<div className="rounded-md my-2 w-[450px]  p-3 text-sm border border-slate-50 h-20">
-						Click on Save & Publish button to apply the last changes to your website.
+						<Button
+							onClick={save}
+							loading={publishPageMutation.isLoading || savePageMutation.isLoading}
+							className={'!rounded-md float-right '}
+							size="sm"
+						>
+							Save & Publish
+						</Button>
 					</div>
-					<Button
-						onClick={save}
-						loading={publishPageMutation.isLoading || savePageMutation.isLoading}
-						variant={'default'}
-						className={'!rounded-md float-right '}
-						size="sm"
-					>
-						Save & Publish
-					</Button>
-				</div>
-			</Collapse>
+				</Collapse>
+			)}
 		</div>
 	)
 }

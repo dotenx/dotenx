@@ -49,4 +49,8 @@ var categories = map[string][]string{
 		"Dashboard",
 		"Misc",
 	},
+	"extension": {
+		"Design",
+		"Misc",
+	},
 }
