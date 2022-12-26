@@ -20,6 +20,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
+	"github.com/dotenx/dotenx/ao-api/controllers/uiExtension"
 	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder"
 	"github.com/dotenx/dotenx/ao-api/controllers/uicomponent"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
@@ -41,6 +42,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/queueService"
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
+	"github.com/dotenx/dotenx/ao-api/services/uiExtensionService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
@@ -55,6 +57,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uiComponentStore"
+	"github.com/dotenx/dotenx/ao-api/stores/uiExtensionStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uibuilderStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 	"github.com/dotenx/goth"
@@ -145,6 +148,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilderStore := uibuilderStore.New(db)
 	marketplaceStore := marketplaceStore.New(db)
 	componentStort := uiComponentStore.New(db)
+	extensionStore := uiExtensionStore.New(db)
 
 	// Services
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
@@ -160,6 +164,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilderService := uibuilderService.NewUIbuilderService(uibuilderStore)
 	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore, uibuilderStore)
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
+	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 
@@ -180,6 +185,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
+	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
 
 	// Routes
 	// endpoints with runner token
@@ -422,6 +428,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplace.GET("/function/:function_name", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.GetFunction())
 	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
 	public.GET("/marketplace", marketplaceController.ListItems())
+	// uiExtension router
+	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.UpsertExtension())
+	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.DeleteExtension())
+	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.ListExtensions())
+	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.GetExtension())
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
