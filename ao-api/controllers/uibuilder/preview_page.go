@@ -32,6 +32,7 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 			}
 			return
 		}
+		pageNameWithoutSuffix := page.Name
 		page.Name = page.Name + "-" + utils.GetMD5Hash(accountId)[:6]
 		pageName = page.Name
 
@@ -137,7 +138,7 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 		UploadFileToS3(bucket, []byte(scripts), prefix+pageName+".js", int64(len(scripts)), "application/javascript")
 		UploadFileToS3(bucket, []byte(styles), prefix+pageName+".css", int64(len(styles)), "text/css")
 
-		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "previewed", false, true); err != nil {
+		if err := controller.Service.SetPageStatus(accountId, projectTag, pageNameWithoutSuffix, "previewed", false, true); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
