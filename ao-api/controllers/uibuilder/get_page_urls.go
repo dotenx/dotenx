@@ -18,6 +18,13 @@ func (controller *UIbuilderController) GetPageUrls() gin.HandlerFunc {
 		projectTag := c.Param("project_tag")
 		pageName := c.Param("page_name")
 
+		page, err := controller.Service.GetPage(accountId, projectTag, pageName)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
 		// Check that from this project at least one page published or not (exist ProjectDomain)
 		projectDomain, err := controller.ProjectService.GetProjectDomain(accountId, projectTag)
 		if err != nil {
@@ -59,10 +66,28 @@ func (controller *UIbuilderController) GetPageUrls() gin.HandlerFunc {
 
 		publishUrl := "https://" + domain + "/" + pageName + ".html"
 		previewUrl := "https://" + domain + "/" + pageName + "-" + utils.GetMD5Hash(accountId)[:6] + ".html"
+		previewUrlExist, publishUrlExist := true, true
+		// by default date of published and previewed is set to unix start date: 1970-01-01
+		if page.LastPublishedAt.Year() == 1970 {
+			publishUrlExist = false
+			publishUrl = ""
+		}
+		if page.LastPreviewPublishedAt.Year() == 1970 {
+			previewUrlExist = false
+			previewUrl = ""
+		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"publish_url": publishUrl,
-			"preview_url": previewUrl,
+			"publish_url": map[string]interface{}{
+				"exist":   publishUrlExist,
+				"last_at": page.LastPublishedAt.String(),
+				"url":     publishUrl,
+			},
+			"preview_url": map[string]interface{}{
+				"exist":   previewUrlExist,
+				"last_at": page.LastPreviewPublishedAt.String(),
+				"url":     previewUrl,
+			},
 		})
 	}
 }

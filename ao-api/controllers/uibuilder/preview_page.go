@@ -137,6 +137,12 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 		UploadFileToS3(bucket, []byte(scripts), prefix+pageName+".js", int64(len(scripts)), "application/javascript")
 		UploadFileToS3(bucket, []byte(styles), prefix+pageName+".css", int64(len(styles)), "text/css")
 
+		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "previewed", false, true); err != nil {
+			logrus.Error(err.Error())
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{"url": "https://" + domain + "/" + pageName + ".html"})
 	}
 }
