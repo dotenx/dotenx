@@ -143,7 +143,7 @@ func (controller *UIbuilderController) PublishPage() gin.HandlerFunc {
 		UploadFileToS3(bucket, []byte(scripts), prefix+pageName+".js", int64(len(scripts)), "application/javascript")
 		UploadFileToS3(bucket, []byte(styles), prefix+pageName+".css", int64(len(styles)), "text/css")
 
-		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "published"); err != nil {
+		if err := controller.Service.SetPageStatus(accountId, projectTag, pageName, "published", true, false); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

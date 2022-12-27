@@ -303,6 +303,14 @@ var migrations = []struct {
 		name: "create-ui-extension-table",
 		stmt: createUIExtensionTable,
 	},
+	{
+		name: "add-last-published-at-field-to-ui-pages-table",
+		stmt: addLastPublishedAtFieldToUIPagesTable,
+	},
+	{
+		name: "add-last-preview-published-at-field-to-ui-pages-table",
+		stmt: addLastPreviewPublishedAtFieldToUIPagesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -855,4 +863,14 @@ status                   VARCHAR(16) CHECK(status IN ('published', 'modified')) 
 category                 VARCHAR(64) DEFAULT 'custom_component',
 UNIQUE (account_id, name, project_tag)
 )
+`
+
+var addLastPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
+`
+
+var addLastPreviewPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
 `
