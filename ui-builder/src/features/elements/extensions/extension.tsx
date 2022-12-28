@@ -1,4 +1,3 @@
-import { Text } from '@mantine/core'
 import { ReactNode } from 'react'
 import { TbPuzzle } from 'react-icons/tb'
 import { Extension } from '../../extensions/api'
@@ -25,25 +24,7 @@ export class ExtensionElement extends Element {
 
 	render(renderFn: RenderFn): ReactNode {
 		if (!this.data.extension) return null
-		return (
-			<div style={{ position: 'relative' }}>
-				<div
-					style={{
-						position: 'absolute',
-						top: 0,
-						right: 0,
-						writingMode: 'vertical-rl',
-						fontSize: 12,
-						backgroundColor: '#fff1f2',
-						borderRadius: 2,
-						padding: '6px 1px',
-					}}
-				>
-					{this.data.extension.name}
-				</div>
-				{renderFn(this)}
-			</div>
-		)
+		return renderFn(this)
 	}
 
 	renderOptions() {
@@ -57,18 +38,14 @@ function ExtensionOptions() {
 	const states = useGetStates()
 
 	if (!element.data.extension) return null
-	const inputs = element.data.extension.content.inputs
-
-	if (inputs.length === 0)
-		return (
-			<Text size="xs" align="center">
-				...
-			</Text>
-		)
 
 	return (
 		<div className="space-y-6">
-			{inputs.map((input) => (
+			<p className="flex justify-between">
+				<span className="font-bold">Extension name</span>
+				<span>{element.data.extension.name}</span>
+			</p>
+			{element.data.extension.content.inputs.map((input) => (
 				<Intelinput
 					key={input.name}
 					label={input.name}
