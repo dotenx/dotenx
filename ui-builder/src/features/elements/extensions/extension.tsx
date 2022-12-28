@@ -1,16 +1,21 @@
+import { Text } from '@mantine/core'
+import { ReactNode } from 'react'
 import { TbPuzzle } from 'react-icons/tb'
 import { Extension } from '../../extensions/api'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { Expression } from '../../states/expression'
 import { useGetStates } from '../../states/use-get-states'
 import { Intelinput } from '../../ui/intelinput'
-import { Element } from '../element'
+import { Element, RenderFn } from '../element'
 import { useSetElement } from '../elements-store'
+import { Style } from '../style'
 
 export class ExtensionElement extends Element {
 	name = 'Extension'
 	icon = (<TbPuzzle />)
 	data: { extension?: Extension; userInputs: Record<string, Expression> } = { userInputs: {} }
+	children: Element[] = []
+	style: Style = { desktop: { default: { minHeight: '150px' } } }
 
 	static create(extension: Extension) {
 		const element = new ExtensionElement()
@@ -18,9 +23,27 @@ export class ExtensionElement extends Element {
 		return element
 	}
 
-	render() {
+	render(renderFn: RenderFn): ReactNode {
 		if (!this.data.extension) return null
-		return <div dangerouslySetInnerHTML={{ __html: this.data.extension.content.html }} />
+		return (
+			<div style={{ position: 'relative' }}>
+				<div
+					style={{
+						position: 'absolute',
+						top: 0,
+						right: 0,
+						writingMode: 'vertical-rl',
+						fontSize: 12,
+						backgroundColor: '#fff1f2',
+						borderRadius: 2,
+						padding: '6px 1px',
+					}}
+				>
+					{this.data.extension.name}
+				</div>
+				{renderFn(this)}
+			</div>
+		)
 	}
 
 	renderOptions() {
@@ -34,10 +57,18 @@ function ExtensionOptions() {
 	const states = useGetStates()
 
 	if (!element.data.extension) return null
+	const inputs = element.data.extension.content.inputs
+
+	if (inputs.length === 0)
+		return (
+			<Text size="xs" align="center">
+				...
+			</Text>
+		)
 
 	return (
 		<div className="space-y-6">
-			{element.data.extension.content.inputs.map((input) => (
+			{inputs.map((input) => (
 				<Intelinput
 					key={input.name}
 					label={input.name}
