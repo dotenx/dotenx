@@ -23,6 +23,11 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
+const defaultInit = `function init({ data, root, fetchDataSource }) {
+	
+}
+`
+
 export function ExtensionForm({
 	mode,
 	onSubmit,
@@ -30,7 +35,14 @@ export function ExtensionForm({
 	initialValues = {
 		name: '',
 		category: 'Misc',
-		content: { inputs: [], outputs: [], html: '', js: '', head: '' },
+		content: {
+			inputs: [],
+			outputs: [],
+			html: '',
+			init: defaultInit,
+			action: '{\n\t\n}',
+			head: '',
+		},
 	},
 }: {
 	mode: 'create' | 'edit'
@@ -46,12 +58,13 @@ export function ExtensionForm({
 		},
 	})
 	const [html, setHtml] = useState(initialValues.content.html)
-	const [js, setJs] = useState(initialValues.content.js)
+	const [init, setInit] = useState(initialValues.content.init)
+	const [action, setAction] = useState(initialValues.content.action)
 	const [head, setHead] = useState(initialValues.content.head)
 	const handleSubmit = form.onSubmit((values) =>
 		onSubmit({
 			name: values.name,
-			content: { inputs: values.inputs, outputs: values.outputs, html, js, head },
+			content: { inputs: values.inputs, outputs: values.outputs, html, init, action, head },
 			category: 'Misc',
 		})
 	)
@@ -124,10 +137,16 @@ export function ExtensionForm({
 				onChange={setHtml}
 			/>
 			<CodeEditor
-				defaultValue={initialValues.content.js}
-				title="JavaScript"
+				defaultValue={initialValues.content.init}
+				title="Init"
 				language="javascript"
-				onChange={setJs}
+				onChange={setInit}
+			/>
+			<CodeEditor
+				defaultValue={initialValues.content.action}
+				title="Action"
+				language="javascript"
+				onChange={setAction}
 			/>
 			<CodeEditor
 				defaultValue={initialValues.content.head}

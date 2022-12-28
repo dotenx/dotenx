@@ -77,9 +77,15 @@ function ExtensionDetails({ extension }: { extension: Extension }) {
 				</Prism>
 			</div>
 			<div>
-				<Title order={4}>JavaScript</Title>
+				<Title order={4}>Init</Title>
 				<Prism colorScheme="dark" noCopy language="javascript">
-					{extension.content.js}
+					{extension.content.init}
+				</Prism>
+			</div>
+			<div>
+				<Title order={4}>Action</Title>
+				<Prism colorScheme="dark" noCopy language="javascript">
+					{extension.content.action}
 				</Prism>
 			</div>
 			<div>

@@ -29,7 +29,8 @@ export type Extension = {
 		inputs: { name: string; kind: InputKind }[]
 		outputs: { name: string }[]
 		html: string
-		js: string
+		init: string
+		action: string
 		head: string
 	}
 }
