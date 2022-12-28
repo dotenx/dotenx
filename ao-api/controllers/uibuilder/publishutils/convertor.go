@@ -264,6 +264,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		fallthrough
 	case "DropdownContent":
 		return convertCollapsibleContent(component, styleStore, functionStore)
+	case "Extension":
+		return convertExtension(component, styleStore, functionStore)
 	default:
 		return "", fmt.Errorf("Unknown component type: %s", component["kind"])
 	}

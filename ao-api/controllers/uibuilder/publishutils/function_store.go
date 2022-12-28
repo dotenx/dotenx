@@ -15,6 +15,7 @@ func NewFunctionStore() FunctionStore {
 		Events:     []Event{},
 		Script:     make([]string, 0),
 		ChartTypes: make(map[string]bool),
+		Extensions: make([]string, 0),
 	}
 }
 
@@ -23,6 +24,7 @@ type FunctionStore struct {
 	Events     []Event
 	Script     []string        // These are scripts that run inside a document.AddEventListener('alpine:init', function() { ... })
 	ChartTypes map[string]bool // These are the chart types that are used in the page. We use this to know which renderChart functions to include
+	Extensions []string        // These are the functions of the extensions and each of them run inside a separate document.AddEventListener('alpine:init', function() { ... })
 }
 
 func (i *FunctionStore) AddChart(ChartType string, Effect string) {
@@ -33,16 +35,18 @@ func (i *FunctionStore) AddChart(ChartType string, Effect string) {
 	i.Script = append(i.Script, Effect)
 }
 
-// Add the functionality to add new imports to the import store
 func (i *FunctionStore) AddEvents(events []Event) {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
 	i.Events = append(i.Events, events...)
+}
 
-	// print the events
-	fmt.Println("events", i.Events)
+func (i *FunctionStore) AddExtension(extension string) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
 
+	i.Extensions = append(i.Extensions, extension)
 }
 
 func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []string, statesDefaultValues map[string]interface{}) (string, error) {
@@ -94,6 +98,8 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 		return "", err
 	}
 	converted.WriteString("\n" + convertedScripts)
+
+	converted.WriteString("\n" + strings.Join(i.Extensions, "\n"))
 
 	// Todo: Do this only if there is a slider!
 	mountSplider := `
