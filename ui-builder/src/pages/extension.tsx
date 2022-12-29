@@ -13,9 +13,9 @@ export function ExtensionDetailsPage() {
 	const { name = '', projectName = '' } = useParams()
 	const projectTag = useGetProjectTag(projectName)
 	const extensionQuery = useQuery(
-		[QueryKey.Extension, name],
+		[QueryKey.Extension, name, projectTag],
 		() => getExtension({ name, projectTag }),
-		{ enabled: !!name }
+		{ enabled: !!name && !!projectTag }
 	)
 	const extension = extensionQuery.data?.data
 
