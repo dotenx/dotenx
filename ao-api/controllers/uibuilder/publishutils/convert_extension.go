@@ -150,7 +150,7 @@ func convertExtensionScript(id, init, action string, data map[string]struct {
 			root: '{{.Id}}',
 			data:  {
 				{{range $key, $value := .Data}}
-				{{$key}}: {{renderTextState $value.Value}},
+				{{$key}}: {{renderTextStates $value.Value}},
 				{{end}}
 			},
 			init: () => init({
