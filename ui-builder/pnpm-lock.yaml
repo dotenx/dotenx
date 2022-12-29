@@ -33,7 +33,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.47.1
   '@vitejs/plugin-react': ^3.0.0
   autoprefixer: ^10.4.13
-  axios: ^1.2.1
+  axios: ^1.2.2
   chart.js: ^4.1.1
   dnd-core: ^16.0.1
   eslint: ^8.30.0
@@ -56,7 +56,7 @@ specifiers:
   react-dnd-html5-backend: ^16.0.1
   react-dom: ^18.2.0
   react-frame-component: ^5.2.4
-  react-hook-form: ^7.41.1
+  react-hook-form: ^7.41.2
   react-icons: ^4.7.1
   react-is: ^18.2.0
   react-popper: ^2.3.0
@@ -95,7 +95,7 @@ dependencies:
   '@types/lodash': 4.14.191
   '@typescript-eslint/eslint-plugin': 5.47.1_txmweb6yn7coi7nfrp22gpyqmy
   '@typescript-eslint/parser': 5.47.1_lzzuuodtsqwxnvqeq4g4likcqa
-  axios: 1.2.1
+  axios: 1.2.2
   chart.js: 4.1.1
   dnd-core: 16.0.1
   eslint: 8.30.0
@@ -117,7 +117,7 @@ dependencies:
   react-dnd-html5-backend: 16.0.1
   react-dom: 18.2.0_react@18.2.0
   react-frame-component: 5.2.4_v2m5e27vhdewzwhryxwfaorcca
-  react-hook-form: 7.41.1_react@18.2.0
+  react-hook-form: 7.41.2_react@18.2.0
   react-icons: 4.7.1_react@18.2.0
   react-is: 18.2.0
   react-popper: 2.3.0_r6q5zrenym2zg7je7hgi674bti
@@ -1623,8 +1623,8 @@ packages:
       postcss-value-parser: 4.2.0
     dev: true
 
-  /axios/1.2.1:
-    resolution: {integrity: sha512-I88cFiGu9ryt/tfVEi4kX2SITsvDddTajXTOFmt2uK1ZVA8LytjtdeyefdQWEf5PU8w+4SSJDoYnggflB5tW4A==}
+  /axios/1.2.2:
+    resolution: {integrity: sha512-bz/J4gS2S3I7mpN/YZfGFTqhXTYzRho8Ay38w2otuuDR322KzFIWm/4W2K6gIwvWaws5n+mnb7D1lN9uD+QH6Q==}
     dependencies:
       follow-redirects: 1.15.1
       form-data: 4.0.0
@@ -3172,8 +3172,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /react-hook-form/7.41.1_react@18.2.0:
-    resolution: {integrity: sha512-IHUozfwuqE+P201KIJwotMd+UCKqzIprseR8UUjz1jRupkZeubg0xyeMLIaT192zHv7vBBu9bibpNV5cIB4E9g==}
+  /react-hook-form/7.41.2_react@18.2.0:
+    resolution: {integrity: sha512-Uz5kNlfkEZve0sr5y2LsxPDGN3eNDjjKb1XJgand1E5Ay0S3zWo8YcJQNGu88/Zs6JaFnrJqTXbSr6B2q7wllA==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
