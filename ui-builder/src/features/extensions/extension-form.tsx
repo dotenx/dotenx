@@ -138,16 +138,16 @@ export function ExtensionForm({
 			/>
 			<CodeEditor
 				defaultValue={initialValues.content.init}
-				title="Init"
+				title="JavaScript"
 				language="javascript"
 				onChange={setInit}
 			/>
-			<CodeEditor
+			{/* <CodeEditor
 				defaultValue={initialValues.content.action}
 				title="Action"
 				language="javascript"
 				onChange={setAction}
-			/>
+			/> */}
 			<CodeEditor
 				defaultValue={initialValues.content.head}
 				title="Head"
