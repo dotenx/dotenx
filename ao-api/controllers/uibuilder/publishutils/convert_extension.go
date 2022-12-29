@@ -131,6 +131,10 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 	// Add the rendered extension script to the function store to be rendered later
 	functionStore.AddExtension(convertedExtensionScript)
 
+	if len(extension.Data.Extension.Content.Head) > 0 {
+		functionStore.AddExtensionHead(extension.Data.Extension.Content.Head)
+	}
+
 	// Add the styles to the styleStore to be rendered later
 	styleStore.AddStyle(extension.Id, extension.Data.Style.Desktop, extension.Data.Style.Tablet, extension.Data.Style.Mobile)
 
