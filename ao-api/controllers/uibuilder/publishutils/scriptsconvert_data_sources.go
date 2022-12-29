@@ -33,7 +33,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 		isLoading: true,
 		data: null,
 		fetch: function ({
-			body={{if .Body.Value}}{{range .Body.Value}}{{renderTextSource .}}{{end}}{{else}}{}{{end}},
+			body={{if .Body.Value}}{{range .Body.Value}}{{renderTextSource .}}{{end}}{{else}}undefined{{end}},
 			url='{{range .Url.Value}}{{renderTextSource .}}{{end}}', 
 			headers={{if .Headers}}{{.Headers}}{{else}}{}{{end}}
 		}) {

@@ -161,10 +161,11 @@ func convertExtensionScript(id, init, action string, data map[string]struct {
 				init({
 					data: Alpine.store('{{.Id}}').data,
 					root: Alpine.store('{{.Id}}').root,
-					fetchDataSource: (name, {body, headers, url}) => Alpine.store(name).fetch({body, headers, url})
+					fetchDataSource: (name, {body, headers, url} = {}) => Alpine.store(name).fetch({body, headers, url}),
+					setPageState: (name, value, key) => Alpine.store('page').set(name, value, key),
+					setGlobalState: (name, value, key) => Alpine.store('global').set(name, value, key),
 				})
-			},
-			action: {{.Action}},
+			}
 		})
 	})
 	`
