@@ -153,11 +153,13 @@ func convertExtensionScript(id, init, action string, data map[string]struct {
 				{{$key}}: {{renderTextStates $value.Value}},
 				{{end}}
 			},
-			init: () => init({
-				data: Alpine.store('{{.Id}}').data,
-				root: Alpine.store('{{.Id}}').root,
-				fetchDataSource: (name, {body, headers, url}) => Alpine.store(name).fetch({body, headers, url})
-			}),
+			init() {
+				init({
+					data: Alpine.store('{{.Id}}').data,
+					root: Alpine.store('{{.Id}}').root,
+					fetchDataSource: (name, {body, headers, url}) => Alpine.store(name).fetch({body, headers, url})
+				})
+			},
 			action: {{.Action}},
 		})
 	})
