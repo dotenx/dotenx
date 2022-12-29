@@ -11,20 +11,22 @@ import (
 
 func NewFunctionStore() FunctionStore {
 	return FunctionStore{
-		lock:       new(sync.RWMutex),
-		Events:     []Event{},
-		Script:     make([]string, 0),
-		ChartTypes: make(map[string]bool),
-		Extensions: make([]string, 0),
+		lock:           new(sync.RWMutex),
+		Events:         []Event{},
+		Script:         make([]string, 0),
+		ChartTypes:     make(map[string]bool),
+		Extensions:     make([]string, 0),
+		ExtensionHeads: make([]string, 0),
 	}
 }
 
 type FunctionStore struct {
-	lock       *sync.RWMutex
-	Events     []Event
-	Script     []string        // These are scripts that run inside a document.AddEventListener('alpine:init', function() { ... })
-	ChartTypes map[string]bool // These are the chart types that are used in the page. We use this to know which renderChart functions to include
-	Extensions []string        // These are the functions of the extensions and each of them run inside a separate document.AddEventListener('alpine:init', function() { ... })
+	lock           *sync.RWMutex
+	Events         []Event
+	Script         []string        // These are scripts that run inside a document.AddEventListener('alpine:init', function() { ... })
+	ChartTypes     map[string]bool // These are the chart types that are used in the page. We use this to know which renderChart functions to include
+	Extensions     []string        // These are the functions of the extensions and each of them run inside a separate document.AddEventListener('alpine:init', function() { ... })
+	ExtensionHeads []string        // Each extension can have a head section that is added to the page. This holds the content of those heads.
 }
 
 func (i *FunctionStore) AddChart(ChartType string, Effect string) {
@@ -47,6 +49,13 @@ func (i *FunctionStore) AddExtension(extension string) {
 	defer i.lock.Unlock()
 
 	i.Extensions = append(i.Extensions, extension)
+}
+
+func (i *FunctionStore) AddExtensionHead(extensionHead string) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	i.ExtensionHeads = append(i.ExtensionHeads, extensionHead)
 }
 
 func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []string, statesDefaultValues map[string]interface{}) (string, error) {

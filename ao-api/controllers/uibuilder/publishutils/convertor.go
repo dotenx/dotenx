@@ -131,7 +131,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		CustomCodes: struct {
 			Head   string
 			Footer string
-		}{Head: customCodes.Head, Footer: customCodes.Footer},
+		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer},
 		Fonts: fonts,
 	}
 
