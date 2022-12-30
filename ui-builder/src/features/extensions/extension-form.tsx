@@ -1,19 +1,21 @@
-import { ActionIcon, Button, Divider, TextInput, Title } from '@mantine/core'
+import { ActionIcon, Button, Divider, Select, TextInput, Title } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import Editor from '@monaco-editor/react'
 import { useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 import { z } from 'zod'
-import { Extension, InputKind } from './api'
+import { Extension, InputKind, INPUT_KINDS } from './api'
+
+const extensionInput = z.object({
+	name: z.string().min(1).max(100),
+	kind: z.nativeEnum(InputKind),
+})
+
+export type ExtensionInput = z.infer<typeof extensionInput>
 
 const schema = z.object({
 	name: z.string().min(1).max(100),
-	inputs: z.array(
-		z.object({
-			name: z.string().min(1).max(100),
-			kind: z.nativeEnum(InputKind),
-		})
-	),
+	inputs: z.array(extensionInput),
 	outputs: z.array(
 		z.object({
 			name: z.string().min(1).max(100),
@@ -23,7 +25,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-const defaultInit = `function init({ data, root, fetchDataSource }) {
+const defaultInit = `function init({ data, root, fetchDataSource, setState }) {
 	
 }
 `
@@ -89,6 +91,11 @@ export function ExtensionForm({
 							{...form.getInputProps(`inputs.${index}.name`)}
 							style={{ width: 300 }}
 						/>
+						<Select
+							label="Kind"
+							data={INPUT_KINDS}
+							{...form.getInputProps(`inputs.${index}.kind`)}
+						/>
 						<ActionIcon
 							className="self-end"
 							onClick={() => form.removeListItem('inputs', index)}
@@ -142,12 +149,6 @@ export function ExtensionForm({
 				language="javascript"
 				onChange={setInit}
 			/>
-			{/* <CodeEditor
-				defaultValue={initialValues.content.action}
-				title="Action"
-				language="javascript"
-				onChange={setAction}
-			/> */}
 			<CodeEditor
 				defaultValue={initialValues.content.head}
 				title="Head"
