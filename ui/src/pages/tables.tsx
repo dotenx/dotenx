@@ -2,7 +2,7 @@ import { Button } from '@mantine/core'
 import { useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import { useQuery } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { getTables, QueryKey } from '../api'
 import { TableForm, TableList } from '../features/database'
 import ExportDatabase from '../features/database/export-database'
@@ -40,12 +40,12 @@ function Tables({ name }: { name: string }) {
 							This project does not have a database to add tables you need to create a
 							project <span className="underline">with</span> database
 						</div>
-						<Button size="sm">
-							<IoArrowBack className="mr-1" />
-							<a href="https://admin.dotenx.com/projects" rel="noopener noreferrer">
+						<Link to="/">
+							<Button size="sm">
+								<IoArrowBack className="mr-1" />
 								Projects
-							</a>
-						</Button>
+							</Button>
+						</Link>
 					</div>
 				) : (
 					<>

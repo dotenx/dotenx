@@ -6,6 +6,10 @@ import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
+import { ExtensionDetailsPage } from './pages/extension'
+import { ExtensionCreatePage } from './pages/extension-create'
+import { ExtensionEditPage } from './pages/extension-edit'
+import { ExtensionsPage } from './pages/extensions'
 import { NotFoundPage } from './pages/not-found'
 
 const queryClient = new QueryClient({
@@ -59,6 +63,10 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
+				<Route path="/extensions-edit/:projectName/:name" element={<ExtensionEditPage />} />
+				<Route path="/extensions-create/:projectName" element={<ExtensionCreatePage />} />
+				<Route path="/extensions/:projectName/:name" element={<ExtensionDetailsPage />} />
+				<Route path="/extensions/:projectName" element={<ExtensionsPage />} />
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
 				<Route path="/*" element={<NotFoundPage />} />

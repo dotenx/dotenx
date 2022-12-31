@@ -23,17 +23,13 @@ export class IconElement extends Element {
 			default: {
 				width: '50px',
 				height: '50px',
+				flexShrink: 0,
 			},
 		},
 	}
 
 	render(renderFn: RenderFn): ReactNode {
-		return (
-			<FontAwesomeIcon
-				className="w-5 h-5"
-				icon={[this.data.type as IconPrefix, this.data.name as IconName]}
-			/>
-		)
+		return <FontAwesomeIcon icon={[this.data.type as IconPrefix, this.data.name as IconName]} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
@@ -63,7 +59,7 @@ function IconHandler({ set, data }: { set: any; data: IconElement }) {
 								})
 							)
 						}}
-						className="active:animate-pulse active:scale-100 hover:z-50 active:bg-gray-100  p-1 w-16  rounded border bg-gray-50 hover:bg-white transition-all hover:scale-125"
+						className="w-16 p-1 transition-all border rounded active:animate-pulse active:scale-100 hover:z-50 active:bg-gray-100 bg-gray-50 hover:bg-white hover:scale-125"
 					>
 						<FontAwesomeIcon
 							className="text-xl "
@@ -103,7 +99,7 @@ function IconHandler({ set, data }: { set: any; data: IconElement }) {
 
 				<Tabs.Panel value="far" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={400}
@@ -118,7 +114,7 @@ function IconHandler({ set, data }: { set: any; data: IconElement }) {
 
 				<Tabs.Panel value="fas" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={400}
@@ -133,7 +129,7 @@ function IconHandler({ set, data }: { set: any; data: IconElement }) {
 
 				<Tabs.Panel value="fab" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={400}

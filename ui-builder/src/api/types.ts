@@ -149,6 +149,20 @@ export type GetTablesResponse = {
 export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
+export type GetUrlsResponde =
+	{
+		preview_url: {
+			exist: boolean,
+			last_at: string,
+			url: string
+		},
+		publish_url: {
+			exist: boolean,
+			last_at: string,
+			url: string
+		}
+	}
+
 
 export type GlobalStates = {
 	states: string[]
