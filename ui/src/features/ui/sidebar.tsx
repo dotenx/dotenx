@@ -114,38 +114,31 @@ export const Sidebar = memo(() => {
 				</div>
 			)}
 			<div className="flex flex-col justify-between grow">
-				<SidebarLinks links={isBuilder ? builderLinks : studioLinks} />
-				<Tour />
-				<div
-					className="flex mb-2	 items-center gap-2 mt-16 pl-8 py-4 cursor-pointer transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500 "
-					onClick={() => modal.open(Modals.AccessToken)}
-				>
-					<span className="text-xl">
-						<RiPantoneLine className="w-6 h-6" />
-					</span>
-					<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100 ">
-						Access Token
-					</span>
-				</div>
-				<div className="space-y-2">
-					<a
-						href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
-						target="_blank"
-						rel="noreferrer"
-						className="flex ui_builder items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
-					>
-						<div className="w-1 h-8 transition rounded-sm shrink-0" />
-						<div className="flex items-center gap-3 grow">
-							<span className="text-xl">
-								<BsFillGrid1X2Fill />
-							</span>
-							<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
-								UI Builder
-							</span>
+				<SidebarLinks links={isHome ? [] : isBuilder ? builderLinks : studioLinks} />
+
+				{!isHome && (
+					<>
+						<Tour />
+						<div className="space-y-2">
+							<a
+								href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
+								target="_blank"
+								rel="noreferrer"
+								className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition ui_builder outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+							>
+								<div className="w-1 h-8 transition rounded-sm shrink-0" />
+								<div className="flex items-center gap-3 grow">
+									<span className="text-xl">
+										<BsFillGrid1X2Fill />
+									</span>
+									<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+										UI Builder
+									</span>
+								</div>
+							</a>
 						</div>
-					</a>
-					{!IS_LOCAL && <Logout />}
-				</div>
+					</>
+				)}
 			</div>
 
 			<div className="pt-4 text-[10px] text-center opacity-0 group-hover:opacity-100 transition-opacity">

@@ -13,6 +13,7 @@ import { CollapsibleElement } from './extensions/collapsible'
 import { ColumnsElement } from './extensions/columns'
 import { DividerElement } from './extensions/divider'
 import { DropdownElement } from './extensions/dropdown'
+import { ExtensionElement } from './extensions/extension'
 import { FormElement } from './extensions/form'
 import { IconElement } from './extensions/icon'
 import { ImageElement } from './extensions/image'
@@ -107,4 +108,5 @@ export const ELEMENTS = [
 	BubbleChart,
 	MenuButtonElement,
 	NavMenuElement,
+	ExtensionElement,
 ]
