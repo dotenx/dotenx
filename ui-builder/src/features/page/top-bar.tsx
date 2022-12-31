@@ -50,26 +50,11 @@ export function TopBar() {
 				<AdvancedModeButton />
 			</Group>
 			<Group align="center" spacing="xl">
-				<PublishedUrl />
 				<PageScaling />
 				<UndoRedo />
 				<PageActions />
 			</Group>
 		</Group>
-	)
-}
-
-function PublishedUrl() {
-	const publishedUrl = useAtomValue(publishedUrlAtom)
-
-	if (!publishedUrl) return null
-
-	return (
-		<div>
-			<Anchor href={publishedUrl} target="_blank" size="xs">
-				View Published Page
-			</Anchor>
-		</div>
 	)
 }
 
@@ -217,7 +202,7 @@ function PreviewButton() {
 	return (
 		<Tooltip
 			withArrow
-			label={<Text size="xs">{isFullscreen ? 'Edit' : 'Preview'}</Text>}
+			label={<Text size="xs">{isFullscreen ? 'Edit' : 'Expand'}</Text>}
 			offset={10}
 		>
 			<ActionIcon onClick={handleClick}>
