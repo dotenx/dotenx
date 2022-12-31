@@ -400,6 +400,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
+	uibuilder.POST("/project/:project_tag/page/:page_name/preview", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PreviewPage())
+	uibuilder.GET("/project/:project_tag/page/:page_name/url", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPageUrls())
 	uibuilder.POST("/project/name/:project_name/state/global", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.UpsertGlobalStates())
 	uibuilder.GET("/project/name/:project_name/state/global", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetGlobalStates())
 
@@ -410,7 +412,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.GetComponent())
 
 	// uiExtension router
-	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.UpsertExtension())
+	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.UpsertExtension(marketplaceService))
 	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.DeleteExtension())
 	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.ListExtensions())
 	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.GetExtension())
