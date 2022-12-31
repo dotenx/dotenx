@@ -1,7 +1,6 @@
 import { htmlToElement, runScripts } from '../../utils'
 
 export function updateFrameHead(value: string) {
-	console.log(value)
 	const elements = htmlToElement(value)
 	const frame = window.frames[0]
 	const head = frame.document.head

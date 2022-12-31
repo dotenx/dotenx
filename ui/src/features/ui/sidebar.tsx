@@ -103,27 +103,29 @@ export const Sidebar = memo(() => {
 			)}
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isHome ? [] : isBuilder ? builderLinks : studioLinks} />
-				<Tour />
 
 				{!isHome && (
-					<div className="space-y-2">
-						<a
-							href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
-							target="_blank"
-							rel="noreferrer"
-							className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition ui_builder outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
-						>
-							<div className="w-1 h-8 transition rounded-sm shrink-0" />
-							<div className="flex items-center gap-3 grow">
-								<span className="text-xl">
-									<BsFillGrid1X2Fill />
-								</span>
-								<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
-									UI Builder
-								</span>
-							</div>
-						</a>
-					</div>
+					<>
+						<Tour />
+						<div className="space-y-2">
+							<a
+								href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
+								target="_blank"
+								rel="noreferrer"
+								className="flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition ui_builder outline-rose-500 hover:bg-rose-500 focus:bg-rose-500"
+							>
+								<div className="w-1 h-8 transition rounded-sm shrink-0" />
+								<div className="flex items-center gap-3 grow">
+									<span className="text-xl">
+										<BsFillGrid1X2Fill />
+									</span>
+									<span className="text-sm font-medium transition opacity-0 whitespace-nowrap group-hover:opacity-100">
+										UI Builder
+									</span>
+								</div>
+							</a>
+						</div>
+					</>
 				)}
 			</div>
 

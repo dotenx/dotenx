@@ -14,11 +14,7 @@ export class BoxElement extends Element {
 	name = 'Box'
 	icon = (<TbSquare />)
 	children: Element[] = []
-	style: Style = {
-		desktop: {
-			default: { minHeight: '150px' },
-		},
-	}
+	style: Style = { desktop: { default: { minHeight: '150px' } } }
 	data = { as: 'div' }
 
 	render(renderFn: RenderFn): ReactNode {
