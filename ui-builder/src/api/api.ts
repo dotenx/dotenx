@@ -23,6 +23,7 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	GetTablesResponse,
+	GetUrlsResponde,
 	GlobalStates,
 	ImportComponentRequest,
 	PublishPageRequest,
@@ -49,7 +50,7 @@ export enum QueryKey {
 	Tables = 'tables',
 	Columns = 'columns',
 	GlobalStates = 'global-states',
-	GetPreview = 'get-preview',
+	GetPageUrls = 'get-page-urls',
 	Projects = 'projects',
 }
 
@@ -151,6 +152,11 @@ export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 		`/uibuilder/project/${projectTag}/page/${pageName}/publish`
 	)
 }
+export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
+	return api.post<{ url: string }>(
+		`/uibuilder/project/${projectTag}/page/${pageName}/preview`
+	)
+}
 
 export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	const formData = new FormData()
@@ -247,6 +253,6 @@ export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequ
 export function getGlobalStates({ projectName }: { projectName: string }) {
 	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
 }
-export function getPreviewLink({ projectTag, pageName }: { projectTag: string, pageName: string }) {
-	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
+export function getPageURls({ projectTag, pageName }: { projectTag: string, pageName: string }) {
+	return api.get<GetUrlsResponde>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
 }

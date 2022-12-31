@@ -1,5 +1,4 @@
 import {
-	Anchor,
 	Button,
 	CloseButton,
 	Collapse,
@@ -10,22 +9,22 @@ import {
 	Tooltip,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useClickOutside } from '@mantine/hooks'
+import { useClickOutside, useClipboard } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
-import { showNotification } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useState } from 'react'
-import { FaLink } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import { FaCheck, FaCopy, FaExternalLinkAlt } from 'react-icons/fa'
 import { IoSaveOutline } from 'react-icons/io5'
-import { TbCheck, TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
-	getPreviewLink,
+	getPageURls,
 	GlobalStates,
+	previewPage,
 	publishPage,
 	QueryKey,
 	updatePage,
@@ -311,26 +310,23 @@ function SaveButton() {
 	)
 }
 
-export const publishedUrlAtom = atom<string | null>(null)
-
 function PublishButton() {
 	const { pageName = 'index' } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
-	const setPublishedUrl = useSetAtom(publishedUrlAtom)
-	const { data: previewUrl, isLoading } = useQuery([QueryKey.GetPreview], () =>
-		getPreviewLink({ projectTag, pageName })
+	const [previewUrl, setPreviewUrl] = useState('')
+	const [publishUrl, setPublishUrl] = useState('')
+	const { data: pageUrls, isLoading } = useQuery([QueryKey.GetPageUrls, pageName], () =>
+		getPageURls({ projectTag, pageName })
 	)
-	const url = previewUrl?.data.url
-	const publishPageMutation = useMutation(publishPage, {
+	useEffect(() => {
+		setPreviewUrl(pageUrls?.data.preview_url.url as string)
+		setPublishUrl(pageUrls?.data.publish_url.url as string)
+	}, [isLoading])
+
+	const publishPageMutation = useMutation(publishPage)
+	const previewPageMutation = useMutation(previewPage, {
 		onSuccess: (data) => {
-			const publishedUrl = data.data.url
-			setPublishedUrl(publishedUrl)
-			showNotification({
-				title: 'Page published',
-				message: <PublishedUrl url={publishedUrl} />,
-				color: 'green',
-				icon: <TbCheck size={18} />,
-			})
+			setPreviewUrl(data.data.url)
 		},
 	})
 	const mode = useAtomValue(pageModeAtom)
@@ -345,7 +341,15 @@ function PublishButton() {
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const publish = () => publishPageMutation.mutate({ projectTag, pageName })
+	const publish = () =>
+		publishPageMutation.mutate(
+			{ projectTag, pageName },
+			{
+				onSuccess: (data) => {
+					setPublishUrl(data.data.url)
+				},
+			}
+		)
 	const [open, setOpen] = useState(false)
 	const save = () => {
 		savePageMutation.mutate(
@@ -369,8 +373,32 @@ function PublishButton() {
 			}
 		)
 	}
+	const handleGetPreview = () => {
+		savePageMutation.mutate(
+			{
+				projectTag,
+				pageName,
+				elements,
+				dataSources,
+				classNames,
+				mode: isSimple ? 'simple' : 'advanced',
+				pageParams,
+				globals,
+				fonts,
+				customCodes,
+				statesDefaultValues,
+			},
+			{
+				onSuccess: () => {
+					previewPageMutation.mutate({ projectTag, pageName }),
+						setPageMode(isSimple ? 'simple' : 'advanced')
+				},
+			}
+		)
+	}
 	const outsideClickRef = useClickOutside(() => setOpen(false))
-
+	const copyPreview = useClipboard({ timeout: 1000 })
+	const copyPublish = useClipboard({ timeout: 1000 })
 	return (
 		<div className="cursor-default" ref={outsideClickRef}>
 			<Tooltip
@@ -391,31 +419,92 @@ function PublishButton() {
 			</Tooltip>
 			{open && (
 				<Collapse in={open}>
-					<div className=" text-slate-900  shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md w-fit bg-slate-50 h-auto">
-						<div className="text-xl font-semibold">Publish page</div>
-						{url && (
-							<div className="flex-col items-start text-sm mt-2 mb-5 ">
-								<div>Preview link: </div>
-								<a
-									className="bg-slate-200 text-slate-900 flex gap-x-1 items-center transition-colors hover:bg-slate-100 p-1 text-xs rounded-md font-medium mt-1"
-									href={url}
-									target={'_blank'}
-									rel="noopener noreferrer"
+					<div className=" text-slate-900 w-[300px] shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md  bg-slate-50 h-auto">
+						<div className="text-2xl font-semibold">Publish page</div>
+						{previewUrl ? (
+							<div className="w-fit my-6 cursor-pointer text-slate-800 text-md rounded-md bg-slate-300 flex items-center">
+								<Tooltip
+									withinPortal
+									withArrow
+									openDelay={1000}
+									label="Preview link is your latest saved changes and might not published on your website."
 								>
-									{url}
-									<FaLink />
-								</a>
+									<a
+										className="p-2 hover:text-slate-50 hover:bg-slate-400 rounded-l-md transition border-slate-400 border-r-2 flex  items-center  font-medium "
+										href={previewUrl}
+										target={'_blank'}
+										rel="noopener noreferrer"
+									>
+										<span className="w-[190px] text-lg">Preview link</span>{' '}
+										<FaExternalLinkAlt className="ml-2 mb-1" />
+									</a>
+								</Tooltip>
+								<Tooltip withinPortal withArrow openDelay={500} label="Copy link">
+									<div
+										onClick={() => copyPreview.copy(previewUrl)}
+										className="p-2 active:bg-slate-500 hover:text-slate-50 hover:bg-slate-400 transition rounded-r-md"
+									>
+										{copyPreview.copied ? (
+											<FaCheck className=" w-5 h-5 mb-1" />
+										) : (
+											<FaCopy className=" w-5 h-5 mb-1" />
+										)}
+									</div>
+								</Tooltip>
+							</div>
+						) : (
+							<Button
+								className="!rounded-md !w-[270px] my-6"
+								variant={'subtle'}
+								onClick={handleGetPreview}
+								disabled={savePageMutation.isLoading}
+								loading={previewPageMutation.isLoading}
+							>
+								Generate Preview link
+							</Button>
+						)}
+						{publishUrl ? (
+							<div className="w-fit my-4 cursor-pointer text-slate-50 text-md rounded-md bg-rose-600 flex items-center">
+								<Tooltip
+									withinPortal
+									withArrow
+									openDelay={1000}
+									label="Live link is latest published changes on your website."
+								>
+									<a
+										className="p-2 hover:text-white hover:bg-rose-700 rounded-l-md transition border-rose-700 border-r-2 flex  items-center  font-medium "
+										href={publishUrl}
+										target={'_blank'}
+										rel="noopener noreferrer"
+									>
+										<span className="w-[190px] text-lg">Live link</span>{' '}
+										<FaExternalLinkAlt className="ml-2 mb-1" />
+									</a>
+								</Tooltip>
+								<Tooltip withinPortal withArrow openDelay={500} label="Copy link">
+									<div
+										onClick={() => copyPublish.copy(publishUrl)}
+										className="p-2 active:bg-rose-800 hover:text-white hover:bg-rose-700 transition rounded-r-md"
+									>
+										{copyPublish.copied ? (
+											<FaCheck className=" w-5 h-5 mb-1" />
+										) : (
+											<FaCopy className=" w-5 h-5 mb-1" />
+										)}
+									</div>
+								</Tooltip>
+							</div>
+						) : (
+							<div className="w-[270px] text-center my-4 text-md ">
+								Publish page to see live link
 							</div>
 						)}
-						<div className="rounded-md my-2 w-[450px]  p-3 text-sm border border-slate-400 h-20">
-							Click on Save & Publish button to apply the last changes to your
-							website.
-						</div>
 						<Button
 							onClick={save}
-							loading={publishPageMutation.isLoading || savePageMutation.isLoading}
-							className={'!rounded-md float-right '}
-							size="sm"
+							disabled={savePageMutation.isLoading}
+							loading={publishPageMutation.isLoading}
+							className={'!rounded-md  !w-[270px] '}
+							size="md"
 						>
 							Save & Publish
 						</Button>
@@ -423,13 +512,5 @@ function PublishButton() {
 				</Collapse>
 			)}
 		</div>
-	)
-}
-
-function PublishedUrl({ url }: { url: string }) {
-	return (
-		<Anchor weight={500} target="_blank" size="xs" rel="noopener noreferrer" href={url}>
-			View
-		</Anchor>
 	)
 }
