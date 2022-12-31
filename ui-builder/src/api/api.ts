@@ -51,6 +51,8 @@ export enum QueryKey {
 	GlobalStates = 'global-states',
 	GetPreview = 'get-preview',
 	Projects = 'projects',
+	Extensions = 'extensions',
+	Extension = 'extension',
 }
 
 export const getProjectDetails = ({ projectName }: GetProjectDetailsRequest) => {

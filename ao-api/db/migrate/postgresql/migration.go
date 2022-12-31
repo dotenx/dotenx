@@ -303,6 +303,18 @@ var migrations = []struct {
 		name: "create-git-integration-table",
 		stmt: createGitIntegrationTable,
 	},
+	{
+		name: "create-ui-extension-table",
+		stmt: createUIExtensionTable,
+	},
+	{
+		name: "add-last-published-at-field-to-ui-pages-table",
+		stmt: addLastPublishedAtFieldToUIPagesTable,
+	},
+	{
+		name: "add-last-preview-published-at-field-to-ui-pages-table",
+		stmt: addLastPreviewPublishedAtFieldToUIPagesTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -854,4 +866,26 @@ provider          VARCHAR(32) NOT NULL,
 secrets           JSONB,
 UNIQUE (account_id, git_account_id)
 )
+`
+
+var createUIExtensionTable = `
+CREATE TABLE IF NOT EXISTS ui_extension (
+name                     VARCHAR(64) NOT NULL,
+account_id               VARCHAR(64) NOT NULL,
+project_tag              VARCHAR(32) NOT NULL,
+content                  JSONB NOT NULL,
+status                   VARCHAR(16) CHECK(status IN ('published', 'modified')) DEFAULT 'modified',
+category                 VARCHAR(64) DEFAULT 'custom_component',
+UNIQUE (account_id, name, project_tag)
+)
+`
+
+var addLastPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
+`
+
+var addLastPreviewPublishedAtFieldToUIPagesTable = `
+ALTER TABLE ui_pages
+ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
 `

@@ -100,10 +100,13 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		return "", "", "", err
 	}
 
-	fonts, err := convertFonts(page["fonts"].(map[string]interface{}))
-	if err != nil {
-		logrus.Error(err.Error())
-		return "", "", "", err
+	fonts := "" // This is for backwards compatibility with the pages that don't have the fonts property
+	if pageFonts, ok := page["fonts"].(map[string]interface{}); ok {
+		fonts, err = convertFonts(pageFonts)
+		if err != nil {
+			logrus.Error(err.Error())
+			return "", "", "", err
+		}
 	}
 
 	p := Page{
@@ -128,7 +131,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		CustomCodes: struct {
 			Head   string
 			Footer string
-		}{Head: customCodes.Head, Footer: customCodes.Footer},
+		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer},
 		Fonts: fonts,
 	}
 
@@ -261,6 +264,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		fallthrough
 	case "DropdownContent":
 		return convertCollapsibleContent(component, styleStore, functionStore)
+	case "Extension":
+		return convertExtension(component, styleStore, functionStore)
 	default:
 		return "", fmt.Errorf("Unknown component type: %s", component["kind"])
 	}

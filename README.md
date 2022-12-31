@@ -25,7 +25,7 @@ Docs:
 
 https://docs.dotenx.com (https://github.com/dotenx/dotenx-docs)
 
-<h2>Thanks for all the feedback and amazing support! We're working hard during the Christmas period to make all the improvements you've suggested to make the platform better fo you.</h2>
+<h2>Thanks for all the feedback and amazing support! We're working hard during the Christmas period to make all the improvements you've suggested to make the platform better for you.</h2>
 
 <h1>In the meantime please continue your support by spreading the word and sharing our repository with others. Keep being awesome.</h1>
 

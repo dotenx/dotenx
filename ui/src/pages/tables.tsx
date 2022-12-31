@@ -40,10 +40,12 @@ function Tables({ name }: { name: string }) {
 							This project does not have a database to add tables you need to create a
 							project <span className="underline">with</span> database
 						</div>
-						<Button size="sm">
-							<IoArrowBack className="mr-1" />
-							<Link to="/">Projects</Link>
-						</Button>
+						<Link to="/">
+							<Button size="sm">
+								<IoArrowBack className="mr-1" />
+								Projects
+							</Button>
+						</Link>
 					</div>
 				) : (
 					<>
