@@ -406,16 +406,16 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/name/:project_name/state/global", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetGlobalStates())
 
 	// uicomponent router
-	uibuilder.POST("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.UpsertComponent(marketplaceService))
-	uibuilder.DELETE("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.DeleteComponent())
-	uibuilder.GET("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.ListComponents())
-	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiComponentController.GetComponent())
+	uibuilder.POST("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.UpsertComponent(marketplaceService))
+	uibuilder.DELETE("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.DeleteComponent())
+	uibuilder.GET("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.ListComponents())
+	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.GetComponent())
 
 	// uiExtension router
-	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.UpsertExtension(marketplaceService))
-	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.DeleteExtension())
-	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.ListExtensions())
-	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), uiExtensionController.GetExtension())
+	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.UpsertExtension(marketplaceService))
+	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.DeleteExtension())
+	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.ListExtensions())
+	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.GetExtension())
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
