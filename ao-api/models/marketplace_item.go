@@ -27,6 +27,7 @@ type MarketplaceItem struct {
 	ProjectTag       string                   `db:"-" json:"project_tag"`
 	ProjectHasDb     bool                     `db:"-" json:"project_has_db"`
 	ComponentName    string                   `db:"component_name" json:"-"`
+	ExtensionName    string                   `db:"-" json:"-"`
 	S3Key            string                   `db:"s3_key" json:"-"`
 }
 
@@ -41,4 +42,5 @@ const (
 	CategoryTrigger        = "triggerItem"
 	CategoryUIComponent    = "uiComponentItem"
 	CategoryUIDesignSystem = "uiDesignSystemItem"
+	CategoryUIExtension    = "uiExtensionItem"
 )
