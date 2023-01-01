@@ -29,7 +29,7 @@ import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { customCodesAtom, globalStatesAtom, PageActions, publishedUrlAtom } from './actions'
+import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
 
@@ -115,7 +115,6 @@ export const useFetchPage = () => {
 	const navigate = useNavigate()
 	const setFonts = useSetAtom(fontsAtom)
 	const setCustomCodes = useSetAtom(customCodesAtom)
-	const setPublishedPage = useSetAtom(publishedUrlAtom)
 	const setStatesDefaultValues = useSetAtom(statesDefaultValuesAtom)
 
 	const query = useQuery(
@@ -131,7 +130,6 @@ export const useFetchPage = () => {
 				setSelectedPage(content.mode)
 				setFonts(content.fonts)
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
-				setPublishedPage(null)
 				setStatesDefaultValues(content.statesDefaultValues ?? {})
 				content.dataSources.map((source) =>
 					axios
