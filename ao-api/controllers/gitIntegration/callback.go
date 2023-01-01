@@ -2,9 +2,11 @@ package gitIntegration
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/goth"
@@ -32,29 +34,34 @@ func (controller *GitIntegrationController) Callback() gin.HandlerFunc {
 		}
 
 		userBytes, _ := json.Marshal(user)
-		logrus.Info("user:", string(userBytes))
+		fmt.Println("user:", string(userBytes))
+		// logrus.Trace("user:", string(userBytes))
 		logrus.Trace("user.AccessToken:", user.AccessToken)
 		logrus.Trace("user.AccessTokenSecret:", user.AccessTokenSecret)
 		logrus.Trace("user.RefreshToken:", user.RefreshToken)
 
-		// accountId, err := utils.GetAccountId(c)
-		// if utils.ShouldRedirectWithError(c, err, UI) {
-		// 	return
-		// }
-		// secrets := map[string]interface{}{
-		// 	"access_token":  user.AccessToken,
-		// 	"refresh_token": user.RefreshToken,
-		// }
-		// secretBytes, _ := json.Marshal(secrets)
-		// hasRefreshToken := user.RefreshToken != ""
-		// integration := models.GitIntegration{
-		// 	AccountId:    accountId,
-		// 	GitAccountId: user.UserID,
-		// 	// GitUsername: "",
-		// 	Provider:        providerStr,
-		// 	Secrets:         secretBytes,
-		// 	HasRefreshToken: hasRefreshToken,
-		// }
+		accountId, err := utils.GetAccountId(c)
+		if utils.ShouldRedirectWithError(c, err, UI) {
+			return
+		}
+		secrets := map[string]interface{}{
+			"access_token":  user.AccessToken,
+			"refresh_token": user.RefreshToken,
+		}
+		secretBytes, _ := json.Marshal(secrets)
+		hasRefreshToken := user.RefreshToken != ""
+		integration := models.GitIntegration{
+			AccountId:       accountId,
+			GitAccountId:    user.UserID,
+			GitUsername:     user.NickName,
+			Provider:        providerStr,
+			Secrets:         secretBytes,
+			HasRefreshToken: hasRefreshToken,
+		}
+		err = controller.Service.UpsertIntegration(integration)
+		if utils.ShouldRedirectWithError(c, err, UI) {
+			return
+		}
 
 		if user.RefreshToken != "" {
 			c.Redirect(http.StatusTemporaryRedirect, UI+"?access_token="+user.AccessToken+"&refresh_token="+user.RefreshToken)
