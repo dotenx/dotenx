@@ -5,15 +5,17 @@ import (
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func (controller *UIExtensionController) UpsertExtension() gin.HandlerFunc {
+func (controller *UIExtensionController) UpsertExtension(mService marketplaceService.MarketplaceService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type ExtensionDto struct {
 			Name     string          `json:"name" required:"true"`
+			ItemId   int             `json:"itemId"`
 			Content  json.RawMessage `json:"content" required:"true"`
 			Category string          `json:"category" required:"true"`
 		}
@@ -40,6 +42,15 @@ func (controller *UIExtensionController) UpsertExtension() gin.HandlerFunc {
 			Category:   extensionDto.Category,
 		}
 
+		if extensionDto.ItemId != 0 {
+			ext, err := mService.GetExtensionOfItem(extensionDto.ItemId)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			extension.Content = ext.Content
+		}
 		if err := controller.Service.UpsertExtension(extension); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)

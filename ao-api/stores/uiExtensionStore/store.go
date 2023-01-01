@@ -16,6 +16,7 @@ type UIExtensionStore interface {
 	DeleteExtension(ctx context.Context, accountId, projectTag, extensionName string) error
 	ListExtensions(ctx context.Context, accountId, projectTag string) ([]models.UIExtension, error)
 	GetExtension(ctx context.Context, accountId, projectTag, extensionName string) (models.UIExtension, error)
+	GetExportableExtensionByProjectName(ctx context.Context, accountId, projectName, extensionName string) (models.ExportableUIExtension, error)
 }
 
 type uiExtensionStore struct {
