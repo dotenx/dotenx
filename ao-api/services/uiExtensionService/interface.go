@@ -16,6 +16,7 @@ type UIExtensionService interface {
 	DeleteExtension(accountId, projectTag, extensionName string) error
 	ListExtensions(accountId, projectTag string) ([]models.UIExtension, error)
 	GetExtension(accountId, projectTag, extensionName string) (models.UIExtension, error)
+	GetExportableExtensionByProjectName(accountId, projectName, extensionName string) (models.ExportableUIExtension, error)
 }
 
 type uiExtensionService struct {
