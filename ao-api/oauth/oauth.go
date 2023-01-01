@@ -14,7 +14,9 @@ import (
 )
 
 var providers []models.OauthProvider
+var gitProviders []models.OauthProvider
 var gothProviders map[string]*goth.Provider
+var gitGothProviders map[string]*goth.Provider
 var gothNotSupported []string
 
 func init() {
@@ -33,6 +35,20 @@ func init() {
 	fmt.Println("############")
 	fmt.Println(providers)
 	fmt.Println("############")
+	initGitProviders()
+}
+
+func initGitProviders() {
+	jsonFile, err := os.Open("git_providers.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	err = json.Unmarshal(byteValue, &gitProviders)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // GetProviders returns a slice of providers formed from the corresponding config section
@@ -55,10 +71,37 @@ func GetProviders(cbURIBase string) (map[string]*goth.Provider, error) {
 	return gothProviders, nil
 }
 
+func GetGitProviders(cbURIBase string) (map[string]*goth.Provider, error) {
+	gitGothProviders = make(map[string]*goth.Provider)
+	if providers == nil {
+		return gitGothProviders, nil
+	}
+	for _, v := range gitProviders {
+		if utils.ContainsString(gothNotSupported, v.Name) {
+			continue
+		}
+		uri := cbURIBase + v.Name
+		p, err := provider.New(v.Name, &v.Secret, &v.Key, uri, v.Scopes...)
+		if err != nil {
+			return gitGothProviders, err
+		}
+		gitGothProviders[v.Name] = p
+	}
+	return gitGothProviders, nil
+}
+
 func GetProviderByName(name string) (*goth.Provider, error) {
 	p, ok := gothProviders[name]
 	if !ok {
 		return nil, errors.New("Provider not found")
+	}
+	return p, nil
+}
+
+func GetGitProviderByName(name string) (*goth.Provider, error) {
+	p, ok := gitGothProviders[name]
+	if !ok {
+		return nil, errors.New("provider not found")
 	}
 	return p, nil
 }

@@ -864,7 +864,8 @@ git_account_id    VARCHAR(64) NOT NULL,
 git_username      VARCHAR NOT NULL,
 provider          VARCHAR(32) NOT NULL,
 secrets           JSONB,
-UNIQUE (account_id, git_account_id)
+has_refresh_token BOOLEAN DEFAULT FALSE,
+UNIQUE (account_id, git_account_id, provider)
 )
 `
 
