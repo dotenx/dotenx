@@ -3,3 +3,4 @@
 release/
 vendor/
 providers.json
+git_providers.json
