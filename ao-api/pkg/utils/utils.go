@@ -13,7 +13,9 @@ import (
 
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 
 	"github.com/dgrijalva/jwt-go"
@@ -494,4 +496,9 @@ func GetFlatOfInterface(values interface{}, ended *bool) interface{} {
 	} else {
 		return values
 	}
+}
+
+func GetMD5Hash(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
 }
