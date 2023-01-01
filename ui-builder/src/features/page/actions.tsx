@@ -557,7 +557,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 								</div>
 							</div>
 						) : (
-							<div className="h-3 flex items-center">Your page is unpublished.</div>
+							<div className="h-3 flex items-center">Your page is not published yet.</div>
 						)}
 
 						<Button
