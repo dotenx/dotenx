@@ -16,9 +16,10 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
+	"github.com/dotenx/dotenx/ao-api/services/uiExtensionService"
 )
 
-func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService, componentService uiComponentService.UIcomponentService) error {
+func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService, componentService uiComponentService.UIcomponentService, extensionService uiExtensionService.UIExtensionService) error {
 	projectName := item.ProjectName
 
 	// Get an exportable form of the project
@@ -26,6 +27,8 @@ func (ps *marketplaceService) AddItem(item models.MarketplaceItem, dbService dat
 	var err error
 	if item.Category == models.CategoryUIComponent || item.Category == models.CategoryUIDesignSystem {
 		dto, err = ps.ExportComponent(item.AccountId, projectName, item.ComponentName, componentService)
+	} else if item.Category == models.CategoryUIExtension {
+		dto, err = ps.ExportUIExtension(item.AccountId, projectName, item.ExtensionName, extensionService)
 	} else {
 		dto, err = ps.ExportProject(item.AccountId, projectName, item.ProjectTag, item.ProjectHasDb, dbService, cService)
 	}

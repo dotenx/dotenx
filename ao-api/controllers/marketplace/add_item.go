@@ -8,11 +8,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
+	"github.com/dotenx/dotenx/ao-api/services/uiExtensionService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func (controller *MarketplaceController) AddItem(dbService databaseService.DatabaseService, cService crudService.CrudService, componentservice uiComponentService.UIcomponentService, pService projectService.ProjectService) gin.HandlerFunc {
+func (controller *MarketplaceController) AddItem(dbService databaseService.DatabaseService, cService crudService.CrudService, componentservice uiComponentService.UIcomponentService, pService projectService.ProjectService, extService uiExtensionService.UIExtensionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type itemDTO struct {
@@ -27,6 +28,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			Features         []models.MarketplaceItemFeature `json:"features"`
 			ProjectName      string                          `json:"projectName"`
 			ComponentName    string                          `json:"component_name"`
+			ExtensionName    string                          `json:"extension_name"`
 		}
 
 		var accountId string
@@ -63,9 +65,10 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			ProjectTag:       project.Tag,
 			ProjectHasDb:     project.HasDatabase,
 			ComponentName:    dto.ComponentName,
+			ExtensionName:    dto.ExtensionName,
 		}
 
-		if err := controller.Service.AddItem(item, dbService, cService, componentservice); err != nil {
+		if err := controller.Service.AddItem(item, dbService, cService, componentservice, extService); err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return

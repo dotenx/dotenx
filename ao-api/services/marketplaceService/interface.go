@@ -6,12 +6,13 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
+	"github.com/dotenx/dotenx/ao-api/services/uiExtensionService"
 	"github.com/dotenx/dotenx/ao-api/stores/marketplaceStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uibuilderStore"
 )
 
 type MarketplaceService interface {
-	AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService, componentService uiComponentService.UIcomponentService) error
+	AddItem(item models.MarketplaceItem, dbService databaseService.DatabaseService, cService crudService.CrudService, componentService uiComponentService.UIcomponentService, extensionService uiExtensionService.UIExtensionService) error
 	UpdateItem(item models.MarketplaceItem) error
 	DisableItem(item models.MarketplaceItem) error
 	EnableItem(item models.MarketplaceItem) error
@@ -23,6 +24,7 @@ type MarketplaceService interface {
 	ExportProject(accountId string, projectName, projectTag string, projectHasDb bool, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error)
 	GetProjectOfItem(id int) (projectDto models.ProjectDto, err error)
 	GetComponentOfItem(id int) (componentDto models.ExportableUIComponent, err error)
+	GetExtensionOfItem(id int) (models.ExportableUIExtension, error)
 	GetTemporaryCredential(useCase, accountId string) (credentials sts.Credentials, err error)
 	CreateFunction(function models.Function) error
 	UpdateFunction(function models.Function) error

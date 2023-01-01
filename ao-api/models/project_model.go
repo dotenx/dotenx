@@ -50,3 +50,9 @@ type ExportableUIComponent struct {
 	Content  json.RawMessage `db:"content" json:"content"`
 	Category string          `db:"category" json:"category"`
 }
+
+type ExportableUIExtension struct {
+	Name     string          `db:"name" json:"name"`
+	Content  json.RawMessage `db:"content" json:"content"`
+	Category string          `db:"category" json:"category"`
+}
