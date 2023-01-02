@@ -7,9 +7,11 @@ import { MarketplaceComponent } from './marketplace-item'
 export function Marketplace() {
 	const marketplaceQuery = useQuery([QueryKey.MarketplaceItems], getMarketplaceItems)
 	const components =
-		marketplaceQuery.data?.data.filter((item) => item.category === 'uiComponentItem') ?? []
+		marketplaceQuery.data?.data.filter((item) => item.type === 'uiComponent') ?? []
 	const designSystems =
-		marketplaceQuery.data?.data.filter((item) => item.category === 'uiDesignSystemItem') ?? []
+		marketplaceQuery.data?.data.filter((item) => item.type === 'uiDesignSystem') ?? []
+	const extensions =
+		marketplaceQuery.data?.data.filter((item) => item.type === 'uiExtension') ?? []
 
 	if (marketplaceQuery.isLoading) {
 		return (
@@ -27,6 +29,9 @@ export function Marketplace() {
 				</Tabs.Tab>
 				<Tabs.Tab value="design-systems" icon={<TbTable size={14} />}>
 					Design Systems
+				</Tabs.Tab>
+				<Tabs.Tab value="extensions" icon={<TbTable size={14} />}>
+					Extensions
 				</Tabs.Tab>
 			</Tabs.List>
 
@@ -46,6 +51,19 @@ export function Marketplace() {
 			<Tabs.Panel value="design-systems" pt="xs">
 				<div className="grid grid-cols-3 gap-2  h-[500px]   scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
 					{designSystems.map((c) => (
+						<MarketplaceComponent
+							imageUrl={c.imageUrl}
+							key={c.id}
+							id={c.id}
+							title={c.title}
+							category={c.category}
+						/>
+					))}
+				</div>
+			</Tabs.Panel>
+			<Tabs.Panel value="extensions" pt="xs">
+				<div className="grid grid-cols-3 gap-2  h-[500px]   scrollbar overflow-y-auto bg-gray-50 -mt-2.5 pt-2">
+					{extensions.map((c) => (
 						<MarketplaceComponent
 							imageUrl={c.imageUrl}
 							key={c.id}
