@@ -129,10 +129,11 @@ export type DesignSystem = {
 export type GetDesignSystemsResponse = DesignSystem[] | null
 
 export type GetMarketplaceItemsResponse = {
-	category: 'uiComponentItem' | 'uiDesignSystemItem'
+	category: string
 	id: number
 	title: string
 	imageUrl: string
+	type: "project" | "uiComponent" | "uiDesignSystem" | "uiExtension"
 }[]
 
 export type ImportComponentRequest = {
