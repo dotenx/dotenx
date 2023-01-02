@@ -25,12 +25,12 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-const defaultInit = `function init({ data, root, fetchDataSource, setState }) {
+const defaultInit = `function init(data, { root, fetchDataSource, setPageState, setGlobalState }) {
 	
 }
 `
 
-const defaultUpdate = `function update({ data, root, fetchDataSource, setState }) {
+const defaultUpdate = `function update(data, { root, fetchDataSource, setPageState, setGlobalState }) {
 	
 }
 `
