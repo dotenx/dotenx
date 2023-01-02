@@ -37,6 +37,7 @@ export type Extension = {
 		outputs: { name: string }[]
 		html: string
 		init: string
+		update: string
 		action: string
 		head: string
 	}

@@ -30,6 +30,11 @@ const defaultInit = `function init({ data, root, fetchDataSource, setState }) {
 }
 `
 
+const defaultUpdate = `function update({ data, root, fetchDataSource, setState }) {
+	
+}
+`
+
 export function ExtensionForm({
 	mode,
 	onSubmit,
@@ -42,6 +47,7 @@ export function ExtensionForm({
 			outputs: [],
 			html: '',
 			init: defaultInit,
+			update: defaultUpdate,
 			action: '{\n\t\n}',
 			head: '',
 		},
@@ -61,12 +67,21 @@ export function ExtensionForm({
 	})
 	const [html, setHtml] = useState(initialValues.content.html)
 	const [init, setInit] = useState(initialValues.content.init)
+	const [update, setUpdate] = useState(initialValues.content.update)
 	const [action, setAction] = useState(initialValues.content.action)
 	const [head, setHead] = useState(initialValues.content.head)
 	const handleSubmit = form.onSubmit((values) =>
 		onSubmit({
 			name: values.name,
-			content: { inputs: values.inputs, outputs: values.outputs, html, init, action, head },
+			content: {
+				inputs: values.inputs,
+				outputs: values.outputs,
+				html,
+				init,
+				action,
+				head,
+				update,
+			},
 			category: 'Misc',
 		})
 	)
@@ -145,9 +160,15 @@ export function ExtensionForm({
 			/>
 			<CodeEditor
 				defaultValue={initialValues.content.init}
-				title="JavaScript"
+				title="Init"
 				language="javascript"
 				onChange={setInit}
+			/>
+			<CodeEditor
+				defaultValue={initialValues.content.update}
+				title="Update"
+				language="javascript"
+				onChange={setUpdate}
 			/>
 			<CodeEditor
 				defaultValue={initialValues.content.head}
@@ -176,7 +197,7 @@ export function CodeEditor({
 	return (
 		<div>
 			<Title order={2}>{title}</Title>
-			<div className="overflow-hidden rounded">
+			<div className="rounded">
 				<Editor
 					defaultValue={defaultValue}
 					defaultLanguage={language}
