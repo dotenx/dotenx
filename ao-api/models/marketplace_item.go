@@ -37,10 +37,10 @@ type MarketplaceItemFeature struct {
 }
 
 const (
-	CategoryProject        = "projectItem"
-	CategoryTask           = "taskItem"
-	CategoryTrigger        = "triggerItem"
-	CategoryUIComponent    = "uiComponentItem"
-	CategoryUIDesignSystem = "uiDesignSystemItem"
-	CategoryUIExtension    = "uiExtensionItem"
+	ProjectItemType        = "project"
+	TaskItemType           = "task"
+	TriggerItemType        = "trigger"
+	UIComponentItemType    = "uiComponent"
+	UIDesignSystemItemType = "uiDesignSystem"
+	UIExtensionItemType    = "uiExtension"
 )
