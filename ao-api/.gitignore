@@ -2,5 +2,5 @@
 *.out
 release/
 vendor/
-providers.json
-git_providers.json
+# providers.json
+# .env.production
