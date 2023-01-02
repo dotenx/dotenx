@@ -123,7 +123,7 @@ export type DesignSystem = {
 	name: string
 	content: Component[]
 } & {
-	category: 'uiComponentItem' | 'uiDesignSystemItem'
+	category: string
 }
 
 export type GetDesignSystemsResponse = DesignSystem[] | null

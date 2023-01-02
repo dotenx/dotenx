@@ -122,6 +122,7 @@ export function DesignSystemMarketplaceForm({
 
 const componentSchema = z.object({
 	name: z.string().min(2),
+	category: z.string(),
 })
 
 type ComponentSchema = z.infer<typeof componentSchema>
