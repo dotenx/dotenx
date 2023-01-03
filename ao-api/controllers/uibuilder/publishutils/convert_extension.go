@@ -47,7 +47,7 @@ type Extension struct {
 }
 
 func convertExtension(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	const extensionTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div x-effect="$store.{{.Id}}.update({...$store.{{.Id}}.data, ...{ {{.DynamicInputs}} }})" {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}{{.Html}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+	const extensionTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="({{.RepeatFrom.Iterator}}, index) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div x-effect="$store.{{.Id}}.update({...$store.{{.Id}}.data, ...{ {{.DynamicInputs}} }})" {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}{{.Html}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 	funcMap := template.FuncMap{
 		"renderClassBinding":   RenderClassBinding,
@@ -158,24 +158,24 @@ func convertExtensionScript(id, init, update, action string, data map[string]int
 			root: '{{.Id}}',
 			data:  {
 				{{range $key, $value := .Data}}
-				{{$key}}: {{if isState $value}}{{stringifyRenderTextStates $value.Value}}{{else}}{{$value}}{{end}}},
+				{{$key}}: {{if isState $value}}{{stringifyRenderTextStates $value.Value}}{{else}}{{$value}}{{end}},
 				{{end}}
 			},
 			init() {
 				init({
 					data: Alpine.store('{{.Id}}').data,
 					context: {
-						root: Alpine.store('{{.Id}}').root,
+						root: '{{.Id}}',
 						fetchDataSource: (name, {body, headers, url} = {}) => Alpine.store(name).fetch({body, headers, url}),
 						setPageState: (name, value, key) => Alpine.store('page').set(name, value, key),
 						setGlobalState: (name, value, key) => Alpine.store('global').set(name, value, key),
 					}
 				})
 			},
-			update: ({data}) => update({
+			update: (data) => update({
 				data,
 				context: {
-					root: Alpine.store('{{.Id}}').root,
+					root: '{{.Id}}',
 					fetchDataSource: (name, {body, headers, url} = {}) => Alpine.store(name).fetch({body, headers, url}),
 					setPageState: (name, value, key) => Alpine.store('page').set(name, value, key),
 					setGlobalState: (name, value, key) => Alpine.store('global').set(name, value, key),

@@ -44,7 +44,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 				method: '{{.Method}}',
 				headers: headers,
 				body: JSON.stringify(body)
-			})
+			}={})
 				.then(response => response.json())
 				.then(data => {
 					this.data = data;
