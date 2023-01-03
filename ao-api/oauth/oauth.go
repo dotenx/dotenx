@@ -73,7 +73,7 @@ func GetProviders(cbURIBase string) (map[string]*goth.Provider, error) {
 
 func GetGitProviders(cbURIBase string) (map[string]*goth.Provider, error) {
 	gitGothProviders = make(map[string]*goth.Provider)
-	if providers == nil {
+	if gitProviders == nil {
 		return gitGothProviders, nil
 	}
 	for _, v := range gitProviders {

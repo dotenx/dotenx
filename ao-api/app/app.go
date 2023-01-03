@@ -435,6 +435,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	gitIntegration.GET("/callback/:provider", GitIntegrationController.Callback())
 	gitIntegration.GET("/provider/:provider/account", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListIntegrations())
 	gitIntegration.POST("/provider/:provider/repository", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListRepositories())
+	gitIntegration.POST("/provider/:provider/branch", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListBranches())
+	gitIntegration.POST("/provider/:provider/export", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ExportProject(marketplaceService, ProjectService, DatabaseService, crudServices))
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
