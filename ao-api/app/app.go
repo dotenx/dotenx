@@ -431,7 +431,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	if err != nil {
 		panic(err.Error())
 	}
-	gitIntegration.GET("/auth/:provider", GitIntegrationController.Authenticate())
+	gitIntegration.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), GitIntegrationController.Authenticate())
 	gitIntegration.GET("/callback/:provider", GitIntegrationController.Callback())
 	gitIntegration.GET("/provider/:provider/account", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListIntegrations())
 	gitIntegration.POST("/provider/:provider/repository", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListRepositories())

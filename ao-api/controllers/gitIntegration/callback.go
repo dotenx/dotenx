@@ -17,7 +17,7 @@ import (
 
 func (controller *GitIntegrationController) Callback() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		UI := config.Configs.Endpoints.UILocal + "/git/integration/callback"
+		UI := config.Configs.Endpoints.UILocal + "/builder/git/integration/callback"
 		q := c.Request.URL.Query()
 		providerStr := c.Param("provider")
 
