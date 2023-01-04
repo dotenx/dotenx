@@ -158,7 +158,7 @@ func convertExtensionScript(id, init, update, action string, data map[string]int
 			root: '{{.Id}}',
 			data:  {
 				{{range $key, $value := .Data}}
-				{{$key}}: {{if isState $value}}{{stringifyRenderTextStates $value.Value}}{{else}}{{$value}}{{end}},
+				{{$key}}: {{if isState $value}}{{stringifyRenderTextStates $value}}{{else}}{{$value}}{{end}},
 				{{end}}
 			},
 			init() {
@@ -250,8 +250,17 @@ func renderDynamicInputs(data map[string]interface{}) string {
 	return strings.Join(inputs, ",")
 }
 
-func stringifyRenderTextStates(textState []TextState) string {
-	return fmt.Sprintf("`%s`", renderTextStates(textState))
+func stringifyRenderTextStates(i interface{}) string {
+
+	type t struct {
+		Value []TextState `json:"value"`
+	}
+	var textStates t
+	b, _ := json.Marshal(i)
+	json.Unmarshal(b, &textStates)
+
+	s := renderTextStates(textStates.Value)
+	return fmt.Sprintf("`%s`", s)
 }
 
 func isState(mi interface{}) bool {
