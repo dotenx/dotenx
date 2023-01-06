@@ -30,7 +30,7 @@ import {
 	PublishPageResponse,
 	SetGlobalStatesRequest,
 	UploadImageRequest,
-	UploadImageResponse,
+	UploadImageResponse
 } from './types'
 
 export const API_URL = import.meta.env.VITE_API_URL
@@ -96,6 +96,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 					url: deserializeExpression(source.url),
 				})),
 				statesDefaultValues: response.data.content.statesDefaultValues,
+				animations: response.data.content.animations,
 			},
 		},
 	}
@@ -113,6 +114,7 @@ export const addPage = ({
 	fonts,
 	customCodes,
 	statesDefaultValues,
+	animations
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -139,6 +141,7 @@ export const addPage = ({
 			fonts,
 			customCodes,
 			statesDefaultValues,
+			animations
 		},
 	})
 }

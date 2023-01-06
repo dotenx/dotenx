@@ -1,3 +1,4 @@
+import { Animation } from '../features/animations/animations-editor'
 import { DataSource } from '../features/data-source/data-source-store'
 import { Element } from '../features/elements/element'
 import { CssSelector, Style } from '../features/elements/style'
@@ -37,6 +38,7 @@ export type AddPageRequest = {
 	fonts: Record<string, string>
 	customCodes: { head: string; footer: string }
 	statesDefaultValues: Record<string, string>
+	animations: Animation[]
 }
 
 export type PublishPageRequest = {
@@ -61,6 +63,7 @@ interface PageDetails {
 		fonts: Record<string, string>
 		customCodes: { head: string; footer: string }
 		statesDefaultValues: Record<string, string>
+		animations: Animation[]
 	}
 }
 
