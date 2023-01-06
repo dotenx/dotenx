@@ -1,5 +1,6 @@
 import { Tabs } from '@mantine/core'
-import { TbDatabase, TbDroplet, TbRuler } from 'react-icons/tb'
+import { TbBlur, TbDatabase, TbDroplet, TbRuler } from 'react-icons/tb'
+import { AnimationsEditor } from '../animations/animations-editor'
 import { DataEditor } from '../data-source/data-editor'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectedElement } from '../selection/use-selected-component'
@@ -14,14 +15,17 @@ export function ElementAdvancedSettings() {
 		<div className="text-xs">
 			<Tabs defaultValue="options">
 				<Tabs.List grow>
-					<Tabs.Tab value="options" icon={<TbRuler />}>
-						Options
+					<Tabs.Tab value="options" title="Options">
+						<TbRuler />
 					</Tabs.Tab>
-					<Tabs.Tab value="styles" icon={<TbDroplet />}>
-						Styles
+					<Tabs.Tab value="styles" title="Styles">
+						<TbDroplet />
 					</Tabs.Tab>
-					<Tabs.Tab value="data" icon={<TbDatabase />}>
-						Data
+					<Tabs.Tab value="data" title="Data">
+						<TbDatabase />
+					</Tabs.Tab>
+					<Tabs.Tab value="animations" title="Animations">
+						<TbBlur />
 					</Tabs.Tab>
 				</Tabs.List>
 
@@ -33,6 +37,9 @@ export function ElementAdvancedSettings() {
 				</Tabs.Panel>
 				<Tabs.Panel value="data" pt="xs">
 					<DataEditor />
+				</Tabs.Panel>
+				<Tabs.Panel value="animations" pt="xs">
+					<AnimationsEditor />
 				</Tabs.Panel>
 			</Tabs>
 		</div>
