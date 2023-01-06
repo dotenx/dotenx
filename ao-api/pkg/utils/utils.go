@@ -36,6 +36,7 @@ var ErrDatabaseJobIsPending = errors.New("datbase job status is pending")
 // constants
 const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)
 var GitIntegrationProviders = []string{"github", "gitlab", "bitbucket"}
+var UserDatabaseDefaultTables = []string{"user_info", "user_group", "security_code", "views"}
 
 func FailOnError(err error, msg string) {
 	if err != nil {

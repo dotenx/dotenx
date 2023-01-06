@@ -8,6 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
+	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/stores/gitIntegrationStore"
 )
 
@@ -18,6 +19,7 @@ type GitIntegrationService interface {
 	ListRepositories(accountId, gitAccountId, provider string) ([]repository, error)
 	ListBranches(accountId, gitAccountId, provider, repoFullName string) ([]branch, error)
 	ExportProject(accountId, gitAccountId, provider, repoFullName, branchName, commitMessage, projectName string, mService marketplaceService.MarketplaceService, pService projectService.ProjectService, dbService databaseService.DatabaseService, cService crudService.CrudService) error
+	ImportProject(accountId, gitAccountId, provider, repoFullName, branchName, projectName string, pService projectService.ProjectService, dbService databaseService.DatabaseService, cService crudService.CrudService, ubService uibuilderService.UIbuilderService) error
 }
 
 func NewGitIntegrationService(store gitIntegrationStore.GitIntegrationStore) GitIntegrationService {
