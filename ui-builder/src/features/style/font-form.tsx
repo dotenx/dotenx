@@ -4,6 +4,7 @@ import { closeAllModals } from '@mantine/modals'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtom, useAtomValue } from 'jotai'
 import { AddPageRequest, QueryKey, updatePage } from '../../api'
+import { animationsAtom } from '../animations/animations-editor'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { customCodesAtom, globalStatesAtom } from '../page/actions'
@@ -20,6 +21,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 	const classes = useClassesStore((state) => state.classes)
 	const globals = useAtomValue(globalStatesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
 	const savePageMutation = useMutation(updatePage, {
 		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
 	})
@@ -40,6 +42,7 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 				fonts,
 				customCodes,
 				statesDefaultValues,
+				animations,
 				...values,
 			},
 			options
