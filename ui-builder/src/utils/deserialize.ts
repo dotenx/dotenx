@@ -1,7 +1,10 @@
 import _ from 'lodash'
+import { uuid } from '.'
 import { mapStyleToCamelCaseStyle } from '../api/mapper'
 import { ACTIONS } from '../features/actions'
 import { Action, AnimationAction } from '../features/actions/action'
+import { Easing } from '../features/animations/options'
+import { Animation } from '../features/animations/schema'
 import { controllers } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
@@ -10,6 +13,7 @@ import { ImageElement } from '../features/elements/extensions/image'
 import { LinkElement } from '../features/elements/extensions/link'
 import { TextElement } from '../features/elements/extensions/text'
 import { Expression } from '../features/states/expression'
+import { SerializedAnimation } from './serialize'
 
 export function deserializeElement(serialized: any): Element {
 	const Constructor = ELEMENTS.find((Element) => {
@@ -93,4 +97,34 @@ export function deserializeAction(data: any) {
 
 export function deserializeExpression(data: any): Expression {
 	return _.assign(new Expression(), data)
+}
+
+export function deserializeAnimation(data: SerializedAnimation): Animation {
+	const { delay, duration, direction, stagger, loop, easing, ...cssProperties } = data.options
+	const easingFn = easing === 'linear' ? 'linear' : (easing.split('(')[0] as Easing)
+	const easingParams =
+		easing === 'linear'
+			? []
+			: easing
+					.split('(')[1]
+					.split(')')[0]
+					.split(',')
+					.map((param) => +param)
+
+	return {
+		id: data.id,
+		name: data.name,
+		delay,
+		duration,
+		direction,
+		stagger,
+		loop,
+		easing: easingFn,
+		easingParams,
+		properties: _.toPairs(cssProperties).map(([key, value]) => ({
+			id: uuid(),
+			name: key,
+			keyframes: value,
+		})),
+	}
 }
