@@ -31,10 +31,9 @@ func (dc *DatabaseController) GetTablesList(pService projectService.ProjectServi
 		}
 
 		// we should filter default tables
-		defaultTables := []string{"user_group", "user_info", "security_code", "views"}
 		filteredTables := make([]string, 0)
 		for _, t := range tables {
-			if utils.ContainsString(defaultTables, t) {
+			if utils.ContainsString(utils.UserDatabaseDefaultTables, t) {
 				continue
 			}
 			filteredTables = append(filteredTables, t)

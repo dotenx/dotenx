@@ -93,9 +93,11 @@ func init() {
 		address = "../tasks"
 	}
 	filepath.WalkDir(address, walkTasks)
-	err := walkS3Objects(config.Configs.TaskAndTrigger.S3Bucket)
-	if err != nil {
-		logrus.Error("can't read objects of s3 bucket for tasks, error message:", err.Error())
+	if !config.Configs.App.RunLocally {
+		err := walkS3Objects(config.Configs.TaskAndTrigger.S3Bucket)
+		if err != nil {
+			logrus.Error("can't read objects of s3 bucket for tasks, error message:", err.Error())
+		}
 	}
 }
 

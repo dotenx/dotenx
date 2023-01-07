@@ -66,9 +66,11 @@ func (tr EventTrigger) IsValid() bool {
 func init() {
 	AvaliableTriggers = make(map[string]TriggerDefinition)
 	filepath.WalkDir("triggers", walkTriggers)
-	err := walkS3Objects(config.Configs.TaskAndTrigger.S3Bucket)
-	if err != nil {
-		logrus.Error("can't read objects of s3 bucket for triggers, error message:", err.Error())
+	if !config.Configs.App.RunLocally {
+		err := walkS3Objects(config.Configs.TaskAndTrigger.S3Bucket)
+		if err != nil {
+			logrus.Error("can't read objects of s3 bucket for triggers, error message:", err.Error())
+		}
 	}
 }
 

@@ -300,6 +300,10 @@ var migrations = []struct {
 		stmt: addCsvStatusFieldToDatabaseJobsTable,
 	},
 	{
+		name: "create-git-integration-table",
+		stmt: createGitIntegrationTable,
+	},
+	{
 		name: "create-ui-extension-table",
 		stmt: createUIExtensionTable,
 	},
@@ -851,6 +855,18 @@ ADD COLUMN IF NOT EXISTS csv_url_expiration_time BIGINT DEFAULT 0;
 var addCsvStatusFieldToDatabaseJobsTable = `
 ALTER TABLE database_jobs
 ADD COLUMN IF NOT EXISTS csv_status VARCHAR DEFAULT '';
+`
+
+var createGitIntegrationTable = `
+CREATE TABLE IF NOT EXISTS git_integration (
+account_id        VARCHAR(64) NOT NULL,
+git_account_id    VARCHAR(64) NOT NULL,
+git_username      VARCHAR NOT NULL,
+provider          VARCHAR(32) NOT NULL,
+secrets           JSONB,
+has_refresh_token BOOLEAN DEFAULT FALSE,
+UNIQUE (account_id, git_account_id, provider)
+)
 `
 
 var createUIExtensionTable = `

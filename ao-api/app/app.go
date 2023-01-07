@@ -9,6 +9,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/database"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
+	"github.com/dotenx/dotenx/ao-api/controllers/gitIntegration"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	internalController "github.com/dotenx/dotenx/ao-api/controllers/internalController"
@@ -24,12 +25,13 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/uicomponent"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
 	"github.com/dotenx/dotenx/ao-api/db"
-	"github.com/dotenx/dotenx/ao-api/oauth"
+	oauthPkg "github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/middlewares"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/executionService"
+	"github.com/dotenx/dotenx/ao-api/services/gitIntegrationService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/dotenx/dotenx/ao-api/services/internalService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
@@ -47,6 +49,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
 	"github.com/dotenx/dotenx/ao-api/stores/authorStore"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
+	"github.com/dotenx/dotenx/ao-api/stores/gitIntegrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/dotenx/dotenx/ao-api/stores/marketplaceStore"
 	"github.com/dotenx/dotenx/ao-api/stores/oauthStore"
@@ -148,6 +151,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplaceStore := marketplaceStore.New(db)
 	componentStort := uiComponentStore.New(db)
 	extensionStore := uiExtensionStore.New(db)
+	gitIntegrationStore := gitIntegrationStore.New(db)
 
 	// Services
 	UtopiopsService := utopiopsService.NewutopiopsService(AuthorStore)
@@ -166,6 +170,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
+	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
 
 	// Controllers
 	crudController := crud.CRUDController{Service: crudServices, TriggerServic: TriggerService}
@@ -184,6 +189,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
+	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
 
 	// Routes
 	// endpoints with runner token
@@ -240,6 +246,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement := r.Group("/user/group/management")
 	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
+	gitIntegration := r.Group("/git/integration")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
@@ -319,7 +326,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// authentication settings
 	gothic.Store = store
 	integrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/oauth/integration/callbacks/"
-	providers, err := oauth.GetProviders(integrationCallbackUrl)
+	providers, err := oauthPkg.GetProviders(integrationCallbackUrl)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -417,6 +424,21 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.DeleteExtension())
 	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.ListExtensions())
 	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.GetExtension())
+
+	// gitIntegration router
+	gothic.Store = store
+	gitIntegrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/git/integration/callback/"
+	_, err = oauthPkg.GetGitProviders(gitIntegrationCallbackUrl)
+	if err != nil {
+		panic(err.Error())
+	}
+	gitIntegration.GET("/auth/:provider", sessions.Sessions("dotenx_session", store), GitIntegrationController.Authenticate())
+	gitIntegration.GET("/callback/:provider", GitIntegrationController.Callback())
+	gitIntegration.GET("/provider/:provider/account", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListIntegrations())
+	gitIntegration.POST("/provider/:provider/repository", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListRepositories())
+	gitIntegration.POST("/provider/:provider/branch", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListBranches())
+	gitIntegration.POST("/provider/:provider/export", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ExportProject(marketplaceService, ProjectService, DatabaseService, crudServices))
+	gitIntegration.POST("/provider/:provider/import", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ImportProject(marketplaceService, ProjectService, DatabaseService, crudServices, uibuilderService))
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
