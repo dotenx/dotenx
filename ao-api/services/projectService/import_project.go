@@ -2,6 +2,7 @@ package projectService
 
 import (
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
@@ -24,7 +25,7 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 		return err
 	}
 	for _, table := range project.DataBaseTables {
-		if table.Name == "user_info" || table.Name == "user_group" || table.Name == "security_code" || table.Name == "views" {
+		if utils.ContainsString(utils.UserDatabaseDefaultTables, table.Name) {
 			continue
 		}
 		err := dbService.AddTable(accountId, newProjectName, table.Name, table.IsPublic, table.IsWritePublic)
