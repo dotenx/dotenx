@@ -1,8 +1,8 @@
 [
     {
         "name": "github",
-        "secret": "56e1314d9ff008132c0f42a296786a6ae09132b8",
-        "key": "6a8c4ef61ca954da5a33",
+        "secret": "4b9090cbcb8407f6942d32d795bb7636fccfd3c9",
+        "key": "2e5b99bd97cc72c208b8",
         "scopes": ["user", "repo"]
     },
     {
