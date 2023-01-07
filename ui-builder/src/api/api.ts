@@ -23,14 +23,14 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	GetTablesResponse,
-	GetUrlsResponde,
+	GetUrlsResponse,
 	GlobalStates,
 	ImportComponentRequest,
 	PublishPageRequest,
 	PublishPageResponse,
 	SetGlobalStatesRequest,
 	UploadImageRequest,
-	UploadImageResponse
+	UploadImageResponse,
 } from './types'
 
 export const API_URL = import.meta.env.VITE_API_URL
@@ -114,7 +114,7 @@ export const addPage = ({
 	fonts,
 	customCodes,
 	statesDefaultValues,
-	animations
+	animations,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -141,7 +141,7 @@ export const addPage = ({
 			fonts,
 			customCodes,
 			statesDefaultValues,
-			animations
+			animations,
 		},
 	})
 }
@@ -158,9 +158,7 @@ export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	)
 }
 export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
-	return api.post<{ url: string }>(
-		`/uibuilder/project/${projectTag}/page/${pageName}/preview`
-	)
+	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
 }
 
 export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
@@ -258,6 +256,6 @@ export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequ
 export function getGlobalStates({ projectName }: { projectName: string }) {
 	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
 }
-export function getPageURls({ projectTag, pageName }: { projectTag: string, pageName: string }) {
-	return api.get<GetUrlsResponde>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
+export function getPageURls({ projectTag, pageName }: { projectTag: string; pageName: string }) {
+	return api.get<GetUrlsResponse>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
 }
