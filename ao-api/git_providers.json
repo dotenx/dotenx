@@ -1,0 +1,18 @@
+[
+    {
+        "name": "github",
+        "secret": "56e1314d9ff008132c0f42a296786a6ae09132b8",
+        "key": "6a8c4ef61ca954da5a33",
+        "scopes": ["user", "repo"]
+    },
+    {
+        "name": "gitlab",
+        "secret": "secret",
+        "key": "key"
+    },
+    {
+        "name": "bitbucket",
+        "secret": "secret",
+        "key": "key"
+    }
+]
