@@ -117,34 +117,49 @@ function AnimationEditor({
 		onClose()
 	})
 
+	const deleteAnimation = () => {
+		setAnimations((animations) => animations.filter((a) => a.id !== initialValues?.id))
+		onClose()
+	}
+	const presets = PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))
+
+	const onPresetChange = (value: string | null): void => {
+		const preset = PRESETS.find((p) => p.id === value)
+		if (preset) form.setValues(preset)
+	}
+
+	const addProperty = () =>
+		form.insertListItem('properties', {
+			id: uuid(),
+			name: '',
+			keyframes: [{ id: uuid(), value: '' }],
+		})
+	const onStaggerChange = (value: boolean) => {
+		if (value) {
+			animationInstance.current?.pause()
+			animationInstance.current?.restart()
+			animationInstance.current?.pause()
+			const children = [...(animationElement.current?.children ?? [])]
+			children.forEach((child) => child.removeAttribute('style'))
+		}
+	}
+	const onEasingChange = (value: Easing) => {
+		form.getInputProps('easing').onChange(value)
+		const params = EASING_PARAMS[value]
+		form.setFieldValue('easingParams', params)
+	}
+	
 	return (
 		<div className="pb-10">
 			<div className="flex justify-end gap-2">
 				{mode === 'edit' && (
-					<ActionIcon
-						size="xs"
-						title="Delete animation"
-						onClick={() => {
-							setAnimations((animations) =>
-								animations.filter((a) => a.id !== initialValues?.id)
-							)
-							onClose()
-						}}
-					>
+					<ActionIcon size="xs" title="Delete animation" onClick={deleteAnimation}>
 						<TbTrash size={12} />
 					</ActionIcon>
 				)}
 				<CloseButton size="xs" onClick={onClose} title="Close animation" />
 			</div>
-			<Select
-				data={PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))}
-				label="Preset"
-				onChange={(value) => {
-					const preset = PRESETS.find((p) => p.id === value)
-					if (preset) form.setValues(preset)
-				}}
-				size="xs"
-			/>
+			<Select data={presets} label="Preset" onChange={onPresetChange} size="xs" />
 			<div ref={animationElement} className="my-6 space-y-2 border rounded py-28">
 				{_.range(form.values.stagger ? 3 : 1).map((i) => (
 					<div key={i} className="w-6 h-6 mx-auto rounded bg-rose-400" />
@@ -168,16 +183,7 @@ function AnimationEditor({
 				<TextInput size="xs" label="Name" {...form.getInputProps('name')} mt="xs" />
 				<div className="flex items-baseline gap-2">
 					<Divider label="Properties" mb="xs" className="grow" mt="xl" />
-					<ActionIcon
-						size="xs"
-						onClick={() =>
-							form.insertListItem('properties', {
-								id: uuid(),
-								name: '',
-								keyframes: [{ id: uuid(), value: '' }],
-							})
-						}
-					>
+					<ActionIcon size="xs" onClick={addProperty}>
 						<TbPlus size={12} />
 					</ActionIcon>
 				</div>
@@ -314,13 +320,7 @@ function AnimationEditor({
 							{...form.getInputProps('stagger', { type: 'checkbox' })}
 							onChange={(event) => {
 								form.getInputProps('stagger').onChange(event)
-								if (event.target.checked) {
-									animationInstance.current?.pause()
-									animationInstance.current?.restart()
-									animationInstance.current?.pause()
-									const children = [...(animationElement.current?.children ?? [])]
-									children.forEach((child) => child.removeAttribute('style'))
-								}
+								onStaggerChange(event.target.checked)
 							}}
 						/>
 					</div>
@@ -334,11 +334,7 @@ function AnimationEditor({
 					mb="xs"
 					data={EASINGS as unknown as string[]}
 					{...form.getInputProps('easing')}
-					onChange={(value: Easing) => {
-						form.getInputProps('easing').onChange(value)
-						const params = EASING_PARAMS[value]
-						form.setFieldValue('easingParams', params)
-					}}
+					onChange={onEasingChange}
 				/>
 				{form.values.easing === 'spring' && (
 					<div className="grid grid-cols-2 gap-2">
