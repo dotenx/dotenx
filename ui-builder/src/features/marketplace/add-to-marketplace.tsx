@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core'
+import { Button, Select } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 import { useMutation } from '@tanstack/react-query'
@@ -122,6 +122,7 @@ export function DesignSystemMarketplaceForm({
 
 const componentSchema = z.object({
 	name: z.string().min(2),
+	category: z.string(),
 })
 
 type ComponentSchema = z.infer<typeof componentSchema>
@@ -164,9 +165,10 @@ export function ComponentMarketplaceForm({
 			}
 		}
 	}, [file])
+	const catagoryList = ['Charts', 'Misc']
 	return (
 		<form
-			onSubmit={form.onSubmit(() => {
+			onSubmit={form.onSubmit((v) => {
 				const formData = new FormData()
 				formData.append('file', file ? file : '')
 				mutateUploadProjectImage(formData, {
@@ -174,7 +176,7 @@ export function ComponentMarketplaceForm({
 						addToMarketplaceMutation.mutate({
 							componentName: component.name,
 							projectName,
-							category: 'uiComponentItem',
+							category: v.category,
 							imageUrl: data.data.url,
 						})
 					},
@@ -185,6 +187,12 @@ export function ComponentMarketplaceForm({
 				Add <span className="text-slate-500">{component.name}</span> component to the
 				Marketplace
 			</div>
+			<Select
+				label="Category"
+				defaultValue={'Misc'}
+				data={catagoryList}
+				{...form.getInputProps('category')}
+			/>
 			<div>
 				<div className="font-medium mt-3 mb-1 text-sm">Upload preview image: </div>
 				<label
