@@ -22,6 +22,13 @@ func (dc *DatabaseController) DeleteTable() gin.HandlerFunc {
 		projectName := c.Param("project_name")
 		tableName := c.Param("table_name")
 
+		if utils.ContainsString(utils.UserDatabaseDefaultTables, tableName) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "you can't delete default tables",
+			})
+			return
+		}
+
 		err := dc.Service.DeleteTable(accountId, projectName, tableName)
 		if err != nil {
 			logrus.Error(err.Error())
