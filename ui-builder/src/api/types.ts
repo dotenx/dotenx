@@ -2,6 +2,7 @@ import { Animation } from '../features/animations/schema'
 import { DataSource } from '../features/data-source/data-source-store'
 import { Element } from '../features/elements/element'
 import { CssSelector, Style } from '../features/elements/style'
+import { SerializedAnimation } from '../utils/serialize'
 
 export type GetProjectDetailsRequest = {
 	projectName: string
@@ -63,7 +64,7 @@ interface PageDetails {
 		fonts: Record<string, string>
 		customCodes: { head: string; footer: string }
 		statesDefaultValues: Record<string, string>
-		animations: Animation[]
+		animations?: SerializedAnimation[]
 	}
 }
 

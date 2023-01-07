@@ -2,7 +2,13 @@ import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
 import { addControllers } from '../utils/controller-utils'
-import { deserializeAction, deserializeElement, deserializeExpression } from '../utils/deserialize'
+import {
+	deserializeAction,
+	deserializeAnimation,
+	deserializeElement,
+	deserializeExpression,
+} from '../utils/deserialize'
+import { serializeAnimation } from '../utils/serialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
 	AddPageRequest,
@@ -96,7 +102,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 					url: deserializeExpression(source.url),
 				})),
 				statesDefaultValues: response.data.content.statesDefaultValues,
-				animations: response.data.content.animations,
+				animations: response.data.content.animations?.map(deserializeAnimation) ?? [],
 			},
 		},
 	}
@@ -141,7 +147,7 @@ export const addPage = ({
 			fonts,
 			customCodes,
 			statesDefaultValues,
-			animations,
+			animations: animations.map(serializeAnimation),
 		},
 	})
 }
