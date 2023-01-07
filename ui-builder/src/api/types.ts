@@ -1,4 +1,4 @@
-import { Animation } from '../features/animations/animations-editor'
+import { Animation } from '../features/animations/schema'
 import { DataSource } from '../features/data-source/data-source-store'
 import { Element } from '../features/elements/element'
 import { CssSelector, Style } from '../features/elements/style'
@@ -136,7 +136,7 @@ export type GetMarketplaceItemsResponse = {
 	id: number
 	title: string
 	imageUrl: string
-	type: "project" | "uiComponent" | "uiDesignSystem" | "uiExtension"
+	type: 'project' | 'uiComponent' | 'uiDesignSystem' | 'uiExtension'
 }[]
 
 export type ImportComponentRequest = {
@@ -153,20 +153,18 @@ export type GetTablesResponse = {
 export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
-export type GetUrlsResponde =
-	{
-		preview_url: {
-			exist: boolean,
-			last_at: string,
-			url: string
-		},
-		publish_url: {
-			exist: boolean,
-			last_at: string,
-			url: string
-		}
+export type GetUrlsResponse = {
+	preview_url: {
+		exist: boolean
+		last_at: string
+		url: string
 	}
-
+	publish_url: {
+		exist: boolean
+		last_at: string
+		url: string
+	}
+}
 
 export type GlobalStates = {
 	states: string[]
