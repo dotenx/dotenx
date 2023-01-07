@@ -10,10 +10,10 @@ import {
 	Select,
 	Switch,
 	Text,
-	TextInput,
+	TextInput
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import anime from 'animejs'
+import anime, { AnimeInstance } from 'animejs'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { useEffect, useRef, useState } from 'react'
@@ -43,11 +43,7 @@ export function AnimationsEditor() {
 			{isAdding && (
 				<AnimationEditor
 					initialValues={selectedAnimation ?? undefined}
-					onFinish={() => {
-						setIsAdding(false)
-						setSelectedAnimation(null)
-					}}
-					onCancel={() => {
+					onClose={() => {
 						setIsAdding(false)
 						setSelectedAnimation(null)
 					}}
@@ -91,71 +87,25 @@ function AnimationList({
 
 function AnimationEditor({
 	initialValues,
-	onFinish,
-	onCancel,
+	onClose,
 }: {
 	initialValues?: Animation
-	onFinish: () => void
-	onCancel: () => void
+	onClose: () => void
 }) {
-	const ref = useRef<HTMLDivElement>(null)
-	const animation = useRef<anime.AnimeInstance | null>(null)
+	const animationInstance = useRef<AnimeInstance | null>(null)
+	const animationElement = useRef<HTMLDivElement | null>(null)
 	const setAnimations = useSetAtom(animationsAtom)
-	const form = useForm<Animation>({
-		initialValues: initialValues
-			? initialValues
-			: {
-					id: uuid(),
-					name: '',
-					properties: [
-						{
-							id: uuid(),
-							name: '',
-							keyframes: [{ id: uuid(), value: '' }],
-						},
-					],
-					duration: 1000,
-					delay: 0,
-					easing: 'spring',
-					direction: 'normal',
-					easingParams: [1, 80, 10, 0],
-					loop: false,
-					stagger: false,
-			  },
-		validate: zodResolver(animationSchema),
-	})
-	const setValues = form.setValues
+	const form = useAnimationForm(initialValues)
 	const mode = initialValues ? 'edit' : 'add'
 
-	useEffect(() => {
-		if (initialValues) setValues(initialValues)
-	}, [initialValues, setValues])
-
-	const playAnimation = () => {
-		const values = form.values
-		const properties = _.fromPairs(
-			values.properties.map((p) => [p.name, p.keyframes.map((k) => _.omit(k, 'id'))])
-		)
-		animation.current?.pause()
-		animation.current?.restart()
-		animation.current?.pause()
-		const children = [...(ref.current?.children ?? [])]
-		children.forEach((child) => child.removeAttribute('style'))
-		animation.current = anime({
-			targets: ref.current?.children,
-			autoplay: false,
-			duration: values.duration,
-			delay: values.stagger ? anime.stagger(values.delay) : values.delay,
-			easing:
-				values.easing === 'linear'
-					? 'linear'
-					: `${values.easing}(${values.easingParams.join(',')})`,
-			direction: values.direction,
-			loop: values.direction === 'alternate' ? values.loop || 1 : values.loop,
-			...properties,
-		})
-		animation.current?.restart()
-		animation.current?.play()
+	const play = () => {
+		if (!animationElement.current) return
+		const animation = animationInstance.current
+		animation?.pause()
+		animation?.restart()
+		animation?.pause()
+		const newAnimation = playAnimation(form.values, animationElement.current)
+		animationInstance.current = newAnimation
 	}
 
 	const onSubmit = form.onSubmit((values) => {
@@ -164,7 +114,7 @@ function AnimationEditor({
 		} else {
 			setAnimations((animations) => animations.map((a) => (a.id === values.id ? values : a)))
 		}
-		onFinish()
+		onClose()
 	})
 
 	return (
@@ -178,13 +128,13 @@ function AnimationEditor({
 							setAnimations((animations) =>
 								animations.filter((a) => a.id !== initialValues?.id)
 							)
-							onFinish()
+							onClose()
 						}}
 					>
 						<TbTrash size={12} />
 					</ActionIcon>
 				)}
-				<CloseButton size="xs" onClick={onCancel} title="Close animation" />
+				<CloseButton size="xs" onClick={onClose} title="Close animation" />
 			</div>
 			<Select
 				data={PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))}
@@ -195,7 +145,7 @@ function AnimationEditor({
 				}}
 				size="xs"
 			/>
-			<div ref={ref} className="my-6 space-y-2 border rounded py-28">
+			<div ref={animationElement} className="my-6 space-y-2 border rounded py-28">
 				{_.range(form.values.stagger ? 3 : 1).map((i) => (
 					<div key={i} className="w-6 h-6 mx-auto rounded bg-rose-400" />
 				))}
@@ -207,7 +157,7 @@ function AnimationEditor({
 						size="xs"
 						leftIcon={<TbPlayerPlay />}
 						variant="outline"
-						onClick={playAnimation}
+						onClick={play}
 					>
 						Play
 					</Button>
@@ -365,10 +315,10 @@ function AnimationEditor({
 							onChange={(event) => {
 								form.getInputProps('stagger').onChange(event)
 								if (event.target.checked) {
-									animation.current?.pause()
-									animation.current?.restart()
-									animation.current?.pause()
-									const children = [...(ref.current?.children ?? [])]
+									animationInstance.current?.pause()
+									animationInstance.current?.restart()
+									animationInstance.current?.pause()
+									const children = [...(animationElement.current?.children ?? [])]
 									children.forEach((child) => child.removeAttribute('style'))
 								}
 							}}
@@ -457,4 +407,61 @@ function AnimationEditor({
 			</form>
 		</div>
 	)
+}
+
+const useAnimationForm = (initialValues?: Animation) => {
+	const form = useForm<Animation>({
+		initialValues: initialValues
+			? initialValues
+			: {
+					id: uuid(),
+					name: '',
+					properties: [
+						{
+							id: uuid(),
+							name: '',
+							keyframes: [{ id: uuid(), value: '' }],
+						},
+					],
+					duration: 1000,
+					delay: 0,
+					easing: 'spring',
+					direction: 'normal',
+					easingParams: [1, 80, 10, 0],
+					loop: false,
+					stagger: false,
+			  },
+		validate: zodResolver(animationSchema),
+	})
+
+	const setValues = form.setValues
+	useEffect(() => {
+		if (initialValues) setValues(initialValues)
+	}, [initialValues, setValues])
+
+	return form
+}
+
+const playAnimation = (options: Animation, target: HTMLElement) => {
+	const properties = _.fromPairs(
+		options.properties.map((p) => [p.name, p.keyframes.map((k) => _.omit(k, 'id'))])
+	)
+	const children = [...target.children]
+	children.forEach((child) => child.removeAttribute('style'))
+	const animation = anime({
+		targets: target.children,
+		autoplay: false,
+		duration: options.duration,
+		delay: options.stagger ? anime.stagger(options.delay) : options.delay,
+		easing:
+			options.easing === 'linear'
+				? 'linear'
+				: `${options.easing}(${options.easingParams.join(',')})`,
+		direction: options.direction,
+		loop: options.direction === 'alternate' ? options.loop || 1 : options.loop,
+		...properties,
+	})
+	animation.restart()
+	animation.play()
+	return animation
 }
