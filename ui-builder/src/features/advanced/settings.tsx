@@ -1,6 +1,6 @@
 import { Tabs } from '@mantine/core'
 import { TbBlur, TbDatabase, TbDroplet, TbRuler } from 'react-icons/tb'
-import { AnimationsEditor } from '../animations/animations-editor'
+import { AnimationsEditor } from '../animations/editor'
 import { DataEditor } from '../data-source/data-editor'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectedElement } from '../selection/use-selected-component'
