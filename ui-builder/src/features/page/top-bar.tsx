@@ -11,7 +11,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut,
+	TbZoomOut
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePag
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { toggleFullScreen } from '../../utils/toggle-fullscreen'
-import { animationsAtom } from '../animations/animations-editor'
+import { animationsAtom } from '../atoms'
 import { evaluateExpression } from '../data-source/data-source-form'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'

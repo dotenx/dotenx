@@ -29,7 +29,7 @@ import {
 	QueryKey,
 	updatePage,
 } from '../../api'
-import { animationsAtom } from '../animations/animations-editor'
+import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
