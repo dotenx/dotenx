@@ -70,7 +70,9 @@ function deserializeController(data: any): Controller {
 
 export function deserializeAction(data: any) {
 	if (data.kind === 'Animation') {
-		return new AnimationAction(data.animationName)
+		const animation = new AnimationAction(data.animationName)
+		animation.target = data.target
+		return animation
 	}
 	const Constructor = ACTIONS.find((action) => new action().name === data.kind)
 	if (!Constructor) throw new Error(`Action ${data.name} not found`)
