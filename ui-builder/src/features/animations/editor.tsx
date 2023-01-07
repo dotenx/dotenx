@@ -13,11 +13,10 @@ import {
 	TextInput,
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import { useInputState } from '@mantine/hooks'
 import anime from 'animejs'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TbPlayerPlay, TbPlus, TbSettings, TbTrash } from 'react-icons/tb'
 import { uuid } from '../../utils'
 import { animationsAtom } from '../atoms'
@@ -27,56 +26,65 @@ import { PRESETS } from './presets'
 import { Animation, animationSchema } from './schema'
 
 export function AnimationsEditor() {
-	const animations = useAtomValue(animationsAtom)
-	const [selectedAnimationId, setSelectedAnimationId] = useInputState<string | null>(null)
-	const [isAdding, setIsAdding] = useInputState(false)
+	const [selectedAnimation, setSelectedAnimation] = useState<Animation | null>(null)
+	const [isAdding, setIsAdding] = useState(false)
 
 	return (
 		<div className="space-y-4">
 			{!isAdding && (
-				<>
-					<div className="space-y-4">
-						<p className="font-medium">Animations</p>
-						{animations.map((animation) => (
-							<Button
-								key={animation.id}
-								variant="light"
-								size="xs"
-								fullWidth
-								onClick={() => {
-									setSelectedAnimationId(animation.id)
-									setIsAdding(true)
-								}}
-							>
-								{animation.name}
-							</Button>
-						))}
-					</div>
-					<Button
-						size="xs"
-						fullWidth
-						leftIcon={<TbPlus />}
-						onClick={() => setIsAdding(true)}
-					>
-						Animation
-					</Button>
-				</>
+				<AnimationList
+					onClick={(animation) => {
+						setSelectedAnimation(animation)
+						setIsAdding(true)
+					}}
+					onAdd={() => setIsAdding(true)}
+				/>
 			)}
 			{isAdding && (
 				<AnimationEditor
-					initialValues={animations.find(
-						(animation) => animation.id === selectedAnimationId
-					)}
+					initialValues={selectedAnimation ?? undefined}
 					onFinish={() => {
 						setIsAdding(false)
-						setSelectedAnimationId(null)
+						setSelectedAnimation(null)
 					}}
 					onCancel={() => {
 						setIsAdding(false)
-						setSelectedAnimationId(null)
+						setSelectedAnimation(null)
 					}}
 				/>
 			)}
+		</div>
+	)
+}
+
+function AnimationList({
+	onClick,
+	onAdd,
+}: {
+	onClick: (animation: Animation) => void
+	onAdd: () => void
+}) {
+	const animations = useAtomValue(animationsAtom)
+
+	return (
+		<div>
+			<div className="space-y-4">
+				<p className="font-medium">Animations</p>
+				{animations.map((animation) => (
+					<Button
+						key={animation.id}
+						variant="light"
+						size="xs"
+						fullWidth
+						onClick={() => onClick(animation)}
+					>
+						{animation.name}
+					</Button>
+				))}
+			</div>
+			<Button mt="xl" size="xs" fullWidth leftIcon={<TbPlus />} onClick={onAdd}>
+				Animation
+			</Button>
 		</div>
 	)
 }
