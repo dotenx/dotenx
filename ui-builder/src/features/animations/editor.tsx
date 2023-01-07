@@ -18,7 +18,7 @@ import anime from 'animejs'
 import { useAtomValue, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { useEffect, useRef } from 'react'
-import { TbPlayerPlay, TbPlus, TbSettings } from 'react-icons/tb'
+import { TbPlayerPlay, TbPlus, TbSettings, TbTrash } from 'react-icons/tb'
 import { uuid } from '../../utils'
 import { animationsAtom } from '../atoms'
 import { CollapseLine } from '../ui/collapse-line'
@@ -117,6 +117,7 @@ function AnimationEditor({
 		validate: zodResolver(animationSchema),
 	})
 	const setValues = form.setValues
+	const mode = initialValues ? 'edit' : 'add'
 
 	useEffect(() => {
 		if (initialValues) setValues(initialValues)
@@ -150,7 +151,6 @@ function AnimationEditor({
 	}
 
 	const onSubmit = form.onSubmit((values) => {
-		const mode = initialValues ? 'edit' : 'add'
 		if (mode === 'add') {
 			setAnimations((animations) => [...animations, values])
 		} else {
@@ -161,7 +161,23 @@ function AnimationEditor({
 
 	return (
 		<div className="pb-10">
-			<CloseButton size="xs" onClick={onCancel} ml="auto" />
+			<div className="flex justify-end gap-2">
+				{mode === 'edit' && (
+					<ActionIcon
+						size="xs"
+						title="Delete animation"
+						onClick={() => {
+							setAnimations((animations) =>
+								animations.filter((a) => a.id !== initialValues?.id)
+							)
+							onFinish()
+						}}
+					>
+						<TbTrash size={12} />
+					</ActionIcon>
+				)}
+				<CloseButton size="xs" onClick={onCancel} title="Close animation" />
+			</div>
 			<Select
 				data={PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))}
 				label="Preset"
