@@ -38,11 +38,15 @@ import {
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
 	GetUserGroupResponse,
+	GetGitAccountsResponse,
+	GetRepoListResponse,
+	GetBranchesListResponse,
 	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
 	GetViewDataResponse,
 	GetViewDetailsResponse,
 	GetViewsResponse,
+	gitProviders,
 	Provider,
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
@@ -511,6 +515,51 @@ export function getUserGroup(projectTag: string, userGroupName: string) {
 		`/user/group/management/project/${projectTag}/userGroup?name=${userGroupName}`
 	)
 }
+
+export function getGitAccounts(provider: gitProviders) {
+	return api.get<GetGitAccountsResponse>(
+		`/git/integration/provider/${provider}/account`
+	)
+}
+
+export function getRepoList({ provider, gitId }: { provider: gitProviders, gitId: string }) {
+	return api.post<GetRepoListResponse>(`/git/integration/provider/${provider}/repository`, {
+		git_account_id: gitId
+	})
+}
+export function exportProject({ provider, gitId, projectName, repoName, branchName, commitMessage }: { provider: gitProviders, gitId: string, projectName: string, repoName: string, branchName: string, commitMessage: string }) {
+	return api.post(`/git/integration/provider/${provider}/export`, {
+		git_account_id: gitId,
+		project_name: projectName,
+		repo_full_name: repoName,
+		branch_name: branchName,
+		commit_message: commitMessage
+	})
+
+}
+
+export function importProject({ provider, gitId, projectName, repoName, branchName }: { provider: gitProviders, gitId: string, projectName: string, repoName: string, branchName: string, }) {
+	return api.post(`/git/integration/provider/${provider}/import`, {
+		git_account_id: gitId,
+		project_name: projectName,
+		repo_full_name: repoName,
+		branch_name: branchName,
+	})
+}
+
+
+
+
+
+export function getBranchList({ provider, gitId, repoName }: { provider: gitProviders, gitId: string, repoName: string }) {
+	return api.post<GetBranchesListResponse>(`/git/integration/provider/${provider}/branch`, {
+		git_account_id: gitId,
+		repo_full_name: repoName
+	})
+}
+
+
+
 
 export function testTask(payload: TestTaskRequest) {
 	return api.post<TestTaskResponse>(`/execution/type/task/step/task`, {

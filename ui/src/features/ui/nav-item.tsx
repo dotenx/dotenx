@@ -15,7 +15,7 @@ export function NavItem({ to, children, tourSelector }: NavItemProps) {
 		<Link
 			to={to}
 			className={clsx(
-				'flex items-center justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500 ',
+				'flex items-center w-full justify-between h-8 gap-6 py-6 pl-1 pr-8 transition outline-rose-500 hover:bg-rose-500 focus:bg-rose-500 ',
 				tourSelector
 			)}
 		>
