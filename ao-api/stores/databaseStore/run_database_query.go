@@ -38,7 +38,7 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 	// Execute the query
 	result, err := db.Connection.Exec(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Determine the number of affected rows
