@@ -33,6 +33,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.48.0
   '@typescript-eslint/parser': ^5.48.0
   '@vitejs/plugin-react': ^3.0.1
+  animejs: ^3.2.1
   autoprefixer: ^10.4.13
   axios: ^1.2.2
   chart.js: ^4.1.2
@@ -96,6 +97,7 @@ dependencies:
   '@types/lodash': 4.14.191
   '@typescript-eslint/eslint-plugin': 5.48.0_k73wpmdolxikpyqun3p36akaaq
   '@typescript-eslint/parser': 5.48.0_iukboom6ndih5an6iafl45j2fe
+  animejs: 3.2.1
   axios: 1.2.2
   chart.js: 4.1.2
   dnd-core: 16.0.1
@@ -1526,6 +1528,10 @@ packages:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+    dev: false
+
+  /animejs/3.2.1:
+    resolution: {integrity: sha512-sWno3ugFryK5nhiDm/2BKeFCpZv7vzerWUcUPyAZLDhMek3+S/p418ldZJbJXo5ZUOpfm2kP2XRO4NJcULMy9A==}
     dev: false
 
   /ansi-regex/5.0.1:

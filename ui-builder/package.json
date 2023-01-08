@@ -37,6 +37,7 @@
 		"@types/lodash": "^4.14.191",
 		"@typescript-eslint/eslint-plugin": "^5.48.0",
 		"@typescript-eslint/parser": "^5.48.0",
+		"animejs": "^3.2.1",
 		"axios": "^1.2.2",
 		"chart.js": "^4.1.2",
 		"dnd-core": "^16.0.1",
