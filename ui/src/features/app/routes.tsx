@@ -26,6 +26,8 @@ import UserGroupsPage from '../../pages/user-groups'
 import UserManagementPage from '../../pages/user-management'
 import { ViewPage } from '../../pages/view'
 import { Layout } from '../ui'
+import GitIntegrationPage from '../../pages/git/git'
+import GitRedirectPage from '../../pages/git/git-redirect'
 
 const routes = [
 	{ path: '/builder/projects/:projectName/views/:viewName', element: <ViewPage /> },
@@ -34,6 +36,9 @@ const routes = [
 	{ path: '/builder/projects/:projectName/tables/:tableName', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables/:tableName/:isPublic', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
+	{ path: '/builder/projects/:projectName/git', element: <GitIntegrationPage /> },
+	{ path: '/git/integration/callback', element: <GitRedirectPage /> },
+
 	{
 		path: '/builder/projects/:projectName/interactions/:name/executions/:id',
 		element: <ExecutionPage kind="interaction" />,
