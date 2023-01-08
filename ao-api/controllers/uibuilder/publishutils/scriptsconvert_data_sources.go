@@ -33,14 +33,22 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 		isLoading: true,
 		data: null,
 		fetch: function ({
-			body={{if .Body.Value}}{{range .Body.Value}}{{renderTextSource .}}{{end}}{{else}}undefined{{end}},
-			url='{{range .Url.Value}}{{renderTextSource .}}{{end}}', 
-			headers={{if .Headers}}{{.Headers}}{{else}}{}{{end}}
+			body,
+			url,
+			headers
+		} = {
+			body:{{if .Body.Value}}{{range .Body.Value}}{{renderTextSource .}}{{end}}{{else}}undefined{{end}},
+			url:'{{range .Url.Value}}{{renderTextSource .}}{{end}}', 
+			headers:{{if .Headers}}{{.Headers}}{{else}}{}{{end}}
 		}) {
 
 			{{if .IsPrivate}}headers = {...headers, Authorization: 'Bearer ' + Alpine.store('global')?.token };{{end}}
 
 			fetch(url, {
+				body,
+				url,
+				headers
+			} = {
 				method: '{{.Method}}',
 				headers: headers,
 				body: JSON.stringify(body)
