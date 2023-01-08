@@ -3,7 +3,6 @@ import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-full-width.png'
 
 import { deserializeElement } from '../../utils/deserialize'
-import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
@@ -38,7 +37,6 @@ function HeroFullWidthOptions({ options }: SimpleComponentOptionsProps) {
 	const subTitle = options.element.children?.[0].children?.[1] as TextElement
 	const cta = options.element.children?.[0].children?.[2] as LinkElement
 	const ctaText = cta.children?.[0] as TextElement
-	const set = useSetElement()
 
 	return (
 		<div className="space-y-6">
