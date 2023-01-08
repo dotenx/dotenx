@@ -1,4 +1,3 @@
-import { Element } from '../elements/element'
 import { useSetWithElement } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'
 import { Expression } from '../states/expression'
@@ -20,7 +19,7 @@ export function ImageElementInput({ element }: { element: ImageElement }) {
 	)
 }
 
-function StyleEditor({ element }: { element: Element }) {
+function StyleEditor({ element }: { element: ImageElement }) {
 	return (
 		<InputStyler>
 			<div className="space-y-6 text-xs">

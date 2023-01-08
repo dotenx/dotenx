@@ -9,7 +9,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
+import { ImageElementInput } from '../ui/image-element-input'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
@@ -87,16 +87,7 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 	return (
 		<div className="space-y-6">
 			<ComponentName name="About us with details on the left" />
-			<ImageDrop
-				onChange={(src) =>
-					options.set(
-						produce(heroImage, (draft) => {
-							draft.data.src = Expression.fromString(src)
-						})
-					)
-				}
-				src={heroImage.data.src.toString()}
-			/>
+			<ImageElementInput element={heroImage} />
 			<Intelinput
 				label="Title"
 				name="title"
