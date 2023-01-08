@@ -57,7 +57,11 @@ export function InputWithUnit({
 
 	return (
 		<div className="flex items-center gap-3">
-			{label && <Text className="whitespace-nowrap">{label}</Text>}
+			{label && (
+				<Text className="whitespace-nowrap" weight={500}>
+					{label}
+				</Text>
+			)}
 			<NumberInput
 				size="xs"
 				value={unit === 'auto' ? undefined : number}
