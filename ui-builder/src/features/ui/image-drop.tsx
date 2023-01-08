@@ -11,9 +11,11 @@ import { SingleIntelinput } from './intelinput'
 export function ImageDrop({
 	src,
 	onChange,
+	label,
 }: {
 	src: string | null
 	onChange: (src: string) => void
+	label?: string
 }) {
 	const uploadImageMutation = useMutation(uploadImage)
 	const projectTag = useAtomValue(projectTagAtom)
@@ -61,7 +63,10 @@ export function ImageDrop({
 
 	return (
 		<div className="space-y-4">
-			{imagePart}
+			<div>
+				{label && <p className="mb-0.5 font-medium">{label}</p>}
+				{imagePart}
+			</div>
 			<TextInput
 				size="xs"
 				label="Source"

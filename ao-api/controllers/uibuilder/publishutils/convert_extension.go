@@ -28,15 +28,17 @@ type Extension struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
-		UserInputs map[string]struct {
-			Value []TextState `json:"value"`
-		} `json:"userInputs"`
-		Extension struct {
+		// UserInputs map[string]struct {
+		// 	Value []TextState `json:"value"`
+		// } `json:"userInputs"`
+		UserInputs map[string]interface{} `json:"userInputs"`
+		Extension  struct {
 			Name    string `json:"name"`
 			Content struct {
 				Html   string `json:"html"`
 				Init   string `json:"init"`
 				Action string `json:"action"`
+				Update string `json:"update"`
 				Head   string `json:"head"`
 			} `json:"content"`
 		} `json:"extension"`
@@ -45,7 +47,7 @@ type Extension struct {
 }
 
 func convertExtension(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	const extensionTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}{{.Html}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+	const extensionTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="({{.RepeatFrom.Iterator}}, index) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div x-effect="$store.{{.Id}}.update({...$store.{{.Id}}.data, ...{ {{.DynamicInputs}} }})" {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}{{.Html}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 	funcMap := template.FuncMap{
 		"renderClassBinding":   RenderClassBinding,
@@ -99,7 +101,8 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 		Events     []Event
 		ClassNames []string
 		VisibleAnimation
-		Html string
+		Html          string
+		DynamicInputs string
 	}{
 		RenderedChildren: childrenTemplate,
 		Id:               extension.Id,
@@ -110,6 +113,7 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 		ClassNames:       extension.ClassNames,
 		VisibleAnimation: visibleAnimation,
 		Html:             extension.Data.Extension.Content.Html,
+		DynamicInputs:    renderDynamicInputs(extension.Data.UserInputs),
 	}
 
 	var out bytes.Buffer
@@ -122,7 +126,7 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 	// Add the events to the function store to be rendered later
 	functionStore.AddEvents(extension.Events)
 
-	convertedExtensionScript, err := convertExtensionScript(extension.Id, extension.Data.Extension.Content.Init, extension.Data.Extension.Content.Action, extension.Data.UserInputs)
+	convertedExtensionScript, err := convertExtensionScript(extension.Id, extension.Data.Extension.Content.Init, extension.Data.Extension.Content.Update, extension.Data.Extension.Content.Action, extension.Data.UserInputs)
 	if err != nil {
 		logrus.Error(err)
 		return "", err
@@ -141,37 +145,49 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 	return out.String(), nil
 }
 
-func convertExtensionScript(id, init, action string, data map[string]struct {
-	Value []TextState `json:"value"`
-}) (string, error) {
+func convertExtensionScript(id, init, update, action string, data map[string]interface{}) (string, error) {
 
 	const extensionScriptTemplate = `
 	document.addEventListener("alpine:init", () => {
 
 		const init = {{.Init}}
 
+		const update = {{.Update}}
+
 		Alpine.store('{{.Id}}', {
 			root: '{{.Id}}',
 			data:  {
 				{{range $key, $value := .Data}}
-				{{$key}}: {{renderTextStates $value.Value}},
+				{{$key}}: {{if isState $value}}{{stringifyRenderTextStates $value}}{{else}}{{$value}}{{end}},
 				{{end}}
 			},
 			init() {
 				init({
 					data: Alpine.store('{{.Id}}').data,
-					root: Alpine.store('{{.Id}}').root,
+					context: {
+						root: '{{.Id}}',
+						fetchDataSource: (name, {body, headers, url} = {}) => Alpine.store(name).fetch({body, headers, url}),
+						setPageState: (name, value, key) => Alpine.store('page').set(name, value, key),
+						setGlobalState: (name, value, key) => Alpine.store('global').set(name, value, key),
+					}
+				})
+			},
+			update: (data) => update({
+				data,
+				context: {
+					root: '{{.Id}}',
 					fetchDataSource: (name, {body, headers, url} = {}) => Alpine.store(name).fetch({body, headers, url}),
 					setPageState: (name, value, key) => Alpine.store('page').set(name, value, key),
 					setGlobalState: (name, value, key) => Alpine.store('global').set(name, value, key),
-				})
-			}
+				}
+			})
 		})
 	})
 	`
 
 	funcMap := template.FuncMap{
-		"renderTextStates": renderTextStates,
+		"stringifyRenderTextStates": stringifyRenderTextStates,
+		"isState":                   isState,
 	}
 
 	tmpl, err := template.New("extensionScript").Funcs(funcMap).Parse(extensionScriptTemplate)
@@ -183,13 +199,13 @@ func convertExtensionScript(id, init, action string, data map[string]struct {
 	params := struct {
 		Id     string
 		Init   string
+		Update string
 		Action string
-		Data   map[string]struct {
-			Value []TextState `json:"value"`
-		}
+		Data   map[string]interface{}
 	}{
 		Id:     id,
 		Init:   init,
+		Update: update,
 		Action: action,
 		Data:   data,
 	}
@@ -202,4 +218,65 @@ func convertExtensionScript(id, init, action string, data map[string]struct {
 	}
 
 	return out.String(), nil
+}
+
+// This function filters out the dynamic inputs and returns a key:`value`, string for them
+func renderDynamicInputs(data map[string]interface{}) string {
+
+	type t struct {
+		Value []TextState `json:"value"`
+	}
+
+	var inputs []string
+	for key, value := range data {
+
+		// Check if the value is a state
+		var tmp t
+		b, _ := json.Marshal(value)
+		err := json.Unmarshal(b, &tmp)
+		if err != nil {
+			continue
+		}
+
+		r := make([]string, len(tmp.Value))
+		for i, v := range tmp.Value {
+			r[i] = renderTextSource(TextSource{
+				Kind:  v.Kind,
+				Value: v.Value,
+			})
+		}
+		inputs = append(inputs, fmt.Sprintf("%s: `%s`", key, strings.Join(r, "")))
+	}
+	return strings.Join(inputs, ",")
+}
+
+func stringifyRenderTextStates(i interface{}) string {
+
+	type t struct {
+		Value []TextState `json:"value"`
+	}
+	var textStates t
+	b, _ := json.Marshal(i)
+	json.Unmarshal(b, &textStates)
+
+	s := renderTextStates(textStates.Value)
+	return fmt.Sprintf("`%s`", s)
+}
+
+func isState(mi interface{}) bool {
+
+	type t struct {
+		Value []TextState `json:"value"`
+	}
+	var tmp t
+
+	b, _ := json.Marshal(mi)
+
+	err := json.Unmarshal(b, &tmp)
+
+	if err != nil {
+		return false
+	}
+	return true
+
 }

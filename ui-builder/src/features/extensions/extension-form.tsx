@@ -1,19 +1,21 @@
-import { ActionIcon, Button, Divider, TextInput, Title } from '@mantine/core'
+import { ActionIcon, Button, Divider, Select, TextInput, Title } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import Editor from '@monaco-editor/react'
 import { useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 import { z } from 'zod'
-import { Extension, InputKind } from './api'
+import { Extension, InputKind, INPUT_KINDS } from './api'
+
+const extensionInput = z.object({
+	name: z.string().min(1).max(100),
+	kind: z.nativeEnum(InputKind),
+})
+
+export type ExtensionInput = z.infer<typeof extensionInput>
 
 const schema = z.object({
 	name: z.string().min(1).max(100),
-	inputs: z.array(
-		z.object({
-			name: z.string().min(1).max(100),
-			kind: z.nativeEnum(InputKind),
-		})
-	),
+	inputs: z.array(extensionInput),
 	outputs: z.array(
 		z.object({
 			name: z.string().min(1).max(100),
@@ -23,7 +25,12 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-const defaultInit = `function init({ data, root, fetchDataSource }) {
+const defaultInit = `function init({ data, context: { root, fetchDataSource, setPageState, setGlobalState } }) {
+	
+}
+`
+
+const defaultUpdate = `function update({ data, context: { root, fetchDataSource, setPageState, setGlobalState } }) {
 	
 }
 `
@@ -40,6 +47,7 @@ export function ExtensionForm({
 			outputs: [],
 			html: '',
 			init: defaultInit,
+			update: defaultUpdate,
 			action: '{\n\t\n}',
 			head: '',
 		},
@@ -59,12 +67,21 @@ export function ExtensionForm({
 	})
 	const [html, setHtml] = useState(initialValues.content.html)
 	const [init, setInit] = useState(initialValues.content.init)
+	const [update, setUpdate] = useState(initialValues.content.update)
 	const [action, setAction] = useState(initialValues.content.action)
 	const [head, setHead] = useState(initialValues.content.head)
 	const handleSubmit = form.onSubmit((values) =>
 		onSubmit({
 			name: values.name,
-			content: { inputs: values.inputs, outputs: values.outputs, html, init, action, head },
+			content: {
+				inputs: values.inputs,
+				outputs: values.outputs,
+				html,
+				init,
+				action,
+				head,
+				update,
+			},
 			category: 'Misc',
 		})
 	)
@@ -88,6 +105,11 @@ export function ExtensionForm({
 							placeholder="Choose a name for the input"
 							{...form.getInputProps(`inputs.${index}.name`)}
 							style={{ width: 300 }}
+						/>
+						<Select
+							label="Kind"
+							data={INPUT_KINDS}
+							{...form.getInputProps(`inputs.${index}.kind`)}
 						/>
 						<ActionIcon
 							className="self-end"
@@ -138,16 +160,16 @@ export function ExtensionForm({
 			/>
 			<CodeEditor
 				defaultValue={initialValues.content.init}
-				title="JavaScript"
+				title="Init"
 				language="javascript"
 				onChange={setInit}
 			/>
-			{/* <CodeEditor
-				defaultValue={initialValues.content.action}
-				title="Action"
+			<CodeEditor
+				defaultValue={initialValues.content.update}
+				title="Update"
 				language="javascript"
-				onChange={setAction}
-			/> */}
+				onChange={setUpdate}
+			/>
 			<CodeEditor
 				defaultValue={initialValues.content.head}
 				title="Head"
@@ -175,7 +197,7 @@ export function CodeEditor({
 	return (
 		<div>
 			<Title order={2}>{title}</Title>
-			<div className="overflow-hidden rounded">
+			<div className="rounded">
 				<Editor
 					defaultValue={defaultValue}
 					defaultLanguage={language}
