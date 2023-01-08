@@ -30,7 +30,7 @@ type Collapsible struct {
 	} `json:"data"`
 }
 
-const collapsibleTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-data="{active: -1, toggle: {{.IsToggle}}, isOpen:{}}">{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const collapsibleTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"   {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-data="{active: -1, toggle: {{.IsToggle}}, isOpen:{}}">{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertCollapsible(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
@@ -51,9 +51,6 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(collapsible.Events)
-	collapsible.Events = events
 
 	var renderedChildren []string
 
@@ -87,8 +84,8 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 		RepeatFrom:       collapsible.RepeatFrom,
 		Events:           collapsible.Events,
 		ClassNames:       collapsible.ClassNames,
-		VisibleAnimation: visibleAnimation,
-		IsToggle:         collapsible.Data.IsToggle,
+
+		IsToggle: collapsible.Data.IsToggle,
 	}
 
 	var out bytes.Buffer

@@ -32,7 +32,7 @@ type Picture struct {
 	} `json:"data"`
 }
 
-const pictureTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<picture {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}">
+const pictureTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<picture {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}">
 {{if .Data.TabletSrc}}<source media="(max-width: 767px)" srcset="{{.Data.TabletSrc}}">{{end}}
 {{if .Data.MobileSrc}}<source media="(max-width: 478px)" srcset="{{.Data.MobileSrc}}">{{end}}
 <img src={{.Data.DesktopSrc}}>
@@ -61,15 +61,10 @@ func convertPicture(component map[string]interface{}, styleStore *StyleStore, fu
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(picture.Events)
-	picture.Events = events
-
 	params := struct {
 		Picture
-		VisibleAnimation VisibleAnimation
 	}{
 		picture,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

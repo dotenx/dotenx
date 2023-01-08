@@ -53,10 +53,8 @@ var pageTemplate = `<!DOCTYPE html>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 	<link rel="stylesheet" href="./{{.Name}}.css">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
 
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 	{{if .Fonts}}{{.Fonts}}{{end}}

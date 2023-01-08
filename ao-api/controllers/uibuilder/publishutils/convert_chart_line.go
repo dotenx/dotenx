@@ -88,15 +88,10 @@ func convertChartLine(component map[string]interface{}, styleStore *StyleStore, 
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(chart.Events)
-	chart.Events = events
-
 	params := struct {
 		ChartLine
-		VisibleAnimation VisibleAnimation
 	}{
 		chart,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

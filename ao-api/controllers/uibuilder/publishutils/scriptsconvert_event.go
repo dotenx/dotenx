@@ -110,7 +110,7 @@ func convertAction(action EventAction) (string, error) {
 	const fetchTemplate = `
 	Alpine.store({{.DataSourceName}}).fetch({{.Body}});
 	`
-	const animateTemplate = `
+	const old_animationTemplate = `
 	function {{.Id}}(dtx_event){
 		new Promise((resolve, reject) => {
 			const prefix = "animate__";
@@ -132,6 +132,25 @@ func convertAction(action EventAction) (string, error) {
 	{{.Id}}(dtx_event);
 	`
 
+	const animationTemplate = `
+	function {{.Id}}(event) {
+		let target = {{.Target}}
+		let params = {{.Options}}
+		if (params.stagger) {
+			params.delay = anime.stagger(params.delay)
+		}
+		if (target === "self") {
+			params.targets = event.target;
+		} else if (target === "children") {
+			params.targets = event.target.children;
+		} else {
+			params.targets = classNames.join(" ");
+		}
+		anime(params);
+	}
+	{{.Id}}(dtx_event);
+	`
+
 	var actionTemplate string
 	switch action.Kind {
 	case "Toggle State":
@@ -149,7 +168,7 @@ func convertAction(action EventAction) (string, error) {
 	case "Fetch":
 		actionTemplate = fetchTemplate
 	case "Animation":
-		actionTemplate = animateTemplate
+		actionTemplate = animationTemplate
 	case "Navigate":
 		actionTemplate = navigateTemplate
 

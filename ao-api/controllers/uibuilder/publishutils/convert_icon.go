@@ -30,7 +30,7 @@ type Icon struct {
 	} `json:"data"`
 }
 
-const iconTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<i {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{.Data.Type}} fa-{{.Data.Name}} {{range .ClassNames}}{{.}} {{end}}"></i>{{if .RepeatFrom.Name}}</template>{{end}}`
+const iconTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<i {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{.Data.Type}} fa-{{.Data.Name}} {{range .ClassNames}}{{.}} {{end}}"></i>{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertIcon(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
@@ -52,15 +52,10 @@ func convertIcon(component map[string]interface{}, styleStore *StyleStore, funct
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(icon.Events)
-	icon.Events = events
-
 	params := struct {
 		Icon
-		VisibleAnimation VisibleAnimation
 	}{
 		icon,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

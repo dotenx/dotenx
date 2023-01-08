@@ -23,10 +23,13 @@ type EventAction struct {
 	DataSourceName string      `json:"dataSourceName"`
 	Body           string      `json:"body"`
 	Params         string      `json:"params"`
-	AnimationName  string      `json:"animationName"`
 	To             struct {
 		Value []TextState `json:"value"`
 	} `json:"to"`
+	Animation struct {
+		Targets interface{} `json:"targets"`
+		Options interface{} `json:"options"`
+	} `json:"animation"`
 }
 
 type TextState struct {

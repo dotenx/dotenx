@@ -29,7 +29,7 @@ type CollapsibleHeaderOpened struct {
 	} `json:"data"`
 }
 
-const collapsibleHeaderOpenedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active != $el.parentElement.id : !isOpen[$el.parentElement.id]' @click='toggle ? active = $el.parentElement.id : isOpen[$el.parentElement.id] = true'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const collapsibleHeaderOpenedTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<div id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"   {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} x-show='toggle ? active != $el.parentElement.id : !isOpen[$el.parentElement.id]' @click='toggle ? active = $el.parentElement.id : isOpen[$el.parentElement.id] = true'>{{.RenderedChildren}}</div>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
@@ -47,9 +47,6 @@ func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(collapsibleHeaderOpened.Events)
-	collapsibleHeaderOpened.Events = events
 
 	var renderedChildren []string
 
@@ -80,7 +77,6 @@ func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore
 		RepeatFrom:       collapsibleHeaderOpened.RepeatFrom,
 		Events:           collapsibleHeaderOpened.Events,
 		ClassNames:       collapsibleHeaderOpened.ClassNames,
-		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer

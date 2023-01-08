@@ -32,7 +32,7 @@ type Image struct {
 	} `json:"data"`
 }
 
-const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<img {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}" x-bind:src="` + "`{{range .Data.Src.Value}}{{renderTextSource .}}{{end}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
+const imageTemplate = `{{if .RepeatFrom.Name}}<template x-for="(index, {{.RepeatFrom.Iterator}}) in {{renderRepeatFromName .RepeatFrom.Name}}">{{end}}<img {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" alt="{{.Data.Alt}}" x-bind:src="` + "`{{range .Data.Src.Value}}{{renderTextSource .}}{{end}}`" + `" />{{if .RepeatFrom.Name}}</template>{{end}}`
 
 func convertImage(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
@@ -57,15 +57,10 @@ func convertImage(component map[string]interface{}, styleStore *StyleStore, func
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(image.Events)
-	image.Events = events
-
 	params := struct {
 		Image
-		VisibleAnimation VisibleAnimation
 	}{
 		image,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer
