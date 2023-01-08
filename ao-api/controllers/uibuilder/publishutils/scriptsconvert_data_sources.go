@@ -65,7 +65,7 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 				.finally(() => this.isLoading = false);
 		}
 	})
-	{{if .FetchOnload}}Alpine.store('{{.StateName}}').fetch({});{{end}}
+	{{if .FetchOnload}}Alpine.store('{{.StateName}}').fetch();{{end}}
 	{{end}}
 })
 `
