@@ -1,6 +1,7 @@
 import { ColorInput, SegmentedControl } from '@mantine/core'
 import { TbLineDashed, TbLineDotted, TbMinus, TbX } from 'react-icons/tb'
 import { toCenter } from '../../utils/center'
+import { Element } from '../elements/element'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'
@@ -12,8 +13,8 @@ const borderStyles = [
 	{ label: <TbLineDotted />, title: 'Dotted', value: 'dotted' },
 ].map(toCenter)
 
-export function BordersEditor({ simple }: { simple?: boolean }) {
-	const { style: styles, editStyle } = useEditStyle()
+export function BordersEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+	const { style: styles, editStyle } = useEditStyle(element)
 
 	const nonSimple = (
 		<>
