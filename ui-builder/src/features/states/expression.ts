@@ -25,6 +25,12 @@ export class Expression {
 		return expression
 	}
 
+	static fromObject(obj: { value: Value[] }) {
+		const expression = new Expression()
+		expression.value = obj.value
+		return expression
+	}
+
 	toString() {
 		return this.value
 			.map((part) => (part.kind === ExpressionKind.State ? part.value : part.value))
