@@ -2,6 +2,8 @@ import { QueryBuilderValues } from '../features/database'
 
 export enum QueryKey {
 	GetUserManagementData = 'get-user-management-data',
+	GetGitAccounts = 'get-git-accounts',
+	GetBranchList = 'get-branch-list',
 	GetAutomations = 'get-automation',
 	GetTemplateAutomations = 'get-template-automations',
 	GetTasks = 'get-tasks',
@@ -39,6 +41,8 @@ export enum QueryKey {
 	GetViewDetails = 'get-view-details',
 	GetViewData = 'get-view-data',
 }
+
+export type gitProviders = 'github' | 'gitlab' | 'bitbucket'
 
 export enum TaskExecutionStatus {
 	Success = 'success',
@@ -560,7 +564,14 @@ export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
 
+export type GetGitAccountsResponse =
+	{ git_account_id: string, git_username: string }[]
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
+
+export interface GetRepoListResponse { repositories: Array<{ full_name: string, clone_url: string }> }
+
+export interface GetBranchesListResponse { branches: Array<{ name: string }> }
+
 
 export interface JsonMap {
 	[key: string]: AnyJson
