@@ -11,6 +11,7 @@ import {
 	BsTable,
 	BsWindowSidebar,
 } from 'react-icons/bs'
+import { BiGitBranch } from 'react-icons/bi'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import { Link, useMatch, useParams } from 'react-router-dom'
@@ -101,6 +102,16 @@ export const Sidebar = memo(() => {
 					</Link>
 				</div>
 			)}
+			<div className="flex  mt-6">
+				<NavItem to={`/builder/projects/${projectName}/git`}>
+					<span className="text-lg">
+						<BiGitBranch />
+					</span>
+					<span className="text-sm font-medium transition  opacity-0 whitespace-nowrap group-hover:opacity-100 ">
+						Git integration
+					</span>
+				</NavItem>
+			</div>
 			<div className="flex flex-col justify-between grow">
 				<SidebarLinks links={isHome ? [] : isBuilder ? builderLinks : studioLinks} />
 
