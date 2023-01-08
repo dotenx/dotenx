@@ -135,7 +135,7 @@ func convertAction(action EventAction) (string, error) {
 	const animationTemplate = `
 	function {{.Id}}(event) {
 		let target = {{.Target}}
-		let params = {{.Options}}
+		let params = {{.AnimationOptions}}
 		if (params.stagger) {
 			params.delay = anime.stagger(params.delay)
 		}

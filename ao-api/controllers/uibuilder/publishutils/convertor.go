@@ -71,7 +71,11 @@ var pageTemplate = `<!DOCTYPE html>
 
 func convertToHTML(page map[string]interface{}, name string) (renderedPage, renderedScripts, renderStyles string, err error) {
 	styleStore := NewStyleStore()
-	functionStore := NewFunctionStore()
+	functionStore, err := NewFunctionStore(page["animations"].([]interface{}))
+	if err != nil {
+		logrus.Error(err.Error())
+		return "", "", "", err
+	}
 
 	code, err := convertBodyToHTML(page["layout"].([]interface{}), &styleStore, &functionStore)
 	if err != nil {

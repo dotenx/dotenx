@@ -1,6 +1,7 @@
 package publishutils
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -9,7 +10,31 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewFunctionStore() FunctionStore {
+func NewFunctionStore(animations []interface{}) (FunctionStore, error) {
+
+	animationsToMap := func() (m map[string]Animation, err error) {
+		m = make(map[string]Animation)
+		for _, animationInterface := range animations {
+			b, err := json.Marshal(animationInterface)
+			if err != nil {
+				return nil, err
+			}
+			var animation Animation
+			err = json.Unmarshal(b, &animation)
+			if err != nil {
+				return nil, err
+			}
+			m[animation.Name] = animation
+		}
+		return
+	}
+
+	animationsMap, err := animationsToMap()
+	if err != nil {
+		logrus.Error(err.Error())
+		return FunctionStore{}, err
+	}
+
 	return FunctionStore{
 		lock:           new(sync.RWMutex),
 		Events:         []Event{},
@@ -17,7 +42,8 @@ func NewFunctionStore() FunctionStore {
 		ChartTypes:     make(map[string]bool),
 		Extensions:     make([]string, 0),
 		ExtensionHeads: make([]string, 0),
-	}
+		Animations:     animationsMap,
+	}, nil
 }
 
 type FunctionStore struct {
@@ -27,6 +53,7 @@ type FunctionStore struct {
 	ChartTypes     map[string]bool // These are the chart types that are used in the page. We use this to know which renderChart functions to include
 	Extensions     []string        // These are the functions of the extensions and each of them run inside a separate document.AddEventListener('alpine:init', function() { ... })
 	ExtensionHeads []string        // Each extension can have a head section that is added to the page. This holds the content of those heads.
+	Animations     map[string]Animation
 }
 
 func (i *FunctionStore) AddChart(ChartType string, Effect string) {
@@ -40,6 +67,14 @@ func (i *FunctionStore) AddChart(ChartType string, Effect string) {
 func (i *FunctionStore) AddEvents(events []Event) {
 	i.lock.Lock()
 	defer i.lock.Unlock()
+
+	for _, event := range events {
+		for _, action := range event.Actions {
+			if action.Kind == "Animation" {
+				action.AnimationOptions = i.Animations[action.AnimationName]
+			}
+		}
+	}
 
 	i.Events = append(i.Events, events...)
 }
@@ -67,7 +102,7 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 
 	// page, url and global stores must be added first
 	converted.WriteString(pageUrlStore)
-	tmpl, err := template.New("button").Parse(pageGlobals)
+	tmpl, err := template.New("page_globals").Parse(pageGlobals)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
