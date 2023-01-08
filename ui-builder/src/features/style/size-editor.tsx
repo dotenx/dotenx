@@ -1,6 +1,7 @@
 import { SegmentedControl, Select } from '@mantine/core'
 import { TbArrowAutofitHeight, TbEye, TbEyeOff } from 'react-icons/tb'
 import { toCenter } from '../../utils/center'
+import { Element } from '../elements/element'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'
@@ -12,8 +13,8 @@ export const overflows = [
 	{ label: <p className="text-xs leading-none">Auto</p>, title: 'Auto', value: 'auto' },
 ].map(toCenter)
 
-export function SizeEditor({ simple }: { simple?: boolean }) {
-	const { style: styles, editStyle } = useEditStyle()
+export function SizeEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+	const { style: styles, editStyle } = useEditStyle(element)
 
 	const widthInput = (
 		<>
