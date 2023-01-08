@@ -20,7 +20,14 @@ export const deleteExtension = ({ projectTag, name }: { projectTag: string; name
 
 export enum InputKind {
 	Text = 'text',
+	Number = 'number',
+	Boolean = 'boolean',
+	Color = 'color',
+	Size = 'size',
+	File = 'file',
 }
+
+export const INPUT_KINDS = Object.values(InputKind)
 
 export type Extension = {
 	name: string
@@ -30,6 +37,7 @@ export type Extension = {
 		outputs: { name: string }[]
 		html: string
 		init: string
+		update: string
 		action: string
 		head: string
 	}
