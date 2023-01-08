@@ -20,6 +20,7 @@ type DatabaseService interface {
 	DeleteTableColumn(accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(accountId string, projectName string) ([]string, error)
 	ListTableColumns(accountId string, projectName string, tableName string) ([]models.PgColumn, error)
+	RunDatabaseQuery(projectTag string, query string) (map[string]interface{}, error)
 
 	DeleteDatabase(accountId string, projectName string) error
 	DeleteDatabaseUser(accountId string, projectName string) error

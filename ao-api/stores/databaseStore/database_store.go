@@ -22,6 +22,7 @@ type DatabaseStore interface {
 	DeleteTableColumn(ctx context.Context, accountId string, projectName string, tableName string, columnName string) error
 	GetTablesList(ctx context.Context, accountId string, projectName string) ([]string, error)
 	ListTableColumns(ctx context.Context, accountId string, projectName string, tableName string) ([]models.PgColumn, error)
+	RunDatabaseQuery(ctx context.Context, projectTag string, query string) (map[string]interface{}, error)
 
 	DeleteDatabase(ctx context.Context, accountId string, projectName string) error
 	DeleteDatabaseUser(ctx context.Context, accountId string, projectName string) error
