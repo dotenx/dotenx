@@ -29,7 +29,7 @@ export abstract class Action {
 		return <>{sourceId}</>
 	}
 	serialize() {
-		return { kind: this.name }
+		return { kind: this.name, id: this.id }
 	}
 }
 
@@ -51,7 +51,12 @@ export class AnimationAction extends Action {
 		return <AnimationEditor />
 	}
 	serialize() {
-		return { kind: this.name, animationName: this.animationName, target: this.target }
+		return {
+			kind: this.name,
+			animationName: this.animationName,
+			target: this.target,
+			id: this.id,
+		}
 	}
 }
 

@@ -10,7 +10,7 @@ import {
 	Ids,
 	SourceIds,
 	useAction,
-	useDataSourceAction,
+	useDataSourceAction
 } from './action'
 
 export class NavigateAction extends Action {
@@ -20,7 +20,7 @@ export class NavigateAction extends Action {
 		return <NavigateSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, to: this.to }
+		return { kind: this.name, to: this.to, id: this.id }
 	}
 	renderDataSourceSettings(sourceId: string) {
 		return <NavigateDataSource ids={{ source: sourceId, action: this.id }} />

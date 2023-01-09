@@ -22,7 +22,7 @@ export class FetchAction extends Action {
 		return <FetchSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, body: this.body }
+		return { kind: this.name, body: this.body, id: this.id }
 	}
 	renderDataSourceSettings(sourceId: string) {
 		return <FetchDataSource ids={{ source: sourceId, action: this.id }} />
