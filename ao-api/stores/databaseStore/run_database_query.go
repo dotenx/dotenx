@@ -35,6 +35,12 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 		return nil, err
 	}
 
+	// Adding some limitation to user's queries
+	_, err = db.Connection.Exec("SET statement_timeout = 10000;")
+	if err != nil {
+		return nil, err
+	}
+
 	// Execute the query
 	result, err := db.Connection.Exec(query)
 	if err != nil {
