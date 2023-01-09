@@ -31,14 +31,13 @@ export class AboutLeft extends Controller {
 // =============  renderOptions =============
 
 function AboutLeftOptions() {
-	const container = useSelectedElement()
-
-	const wrapper = container as BoxElement
-	const heroImage = container?.children?.[1] as ImageElement
-	const title = container?.children?.[0].children?.[0] as TextElement
-	const subTitle = container?.children?.[0].children?.[1] as TextElement
-	const featureLinesWrapper = container?.children?.[0].children?.[2] as BoxElement
-	const cta = container?.children?.[0].children?.[3] as LinkElement
+	const component = useSelectedElement()
+	const wrapper = component as BoxElement
+	const heroImage = component?.children?.[1] as ImageElement
+	const title = component?.children?.[0].children?.[0] as TextElement
+	const subTitle = component?.children?.[0].children?.[1] as TextElement
+	const featureLinesWrapper = component?.children?.[0].children?.[2] as BoxElement
+	const cta = component?.children?.[0].children?.[3] as LinkElement
 	const ctaText = cta.children?.[0] as TextElement
 
 	return (
