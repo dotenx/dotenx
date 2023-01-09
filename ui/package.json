@@ -20,6 +20,7 @@
 		"@mantine/modals": "^5.8.4",
 		"@mantine/notifications": "^5.8.4",
 		"@mantine/prism": "^5.8.4",
+		"@monaco-editor/react": "^4.4.6",
 		"@tabler/icons": "^1.114.0",
 		"@types/use-persisted-state": "^0.3.1",
 		"@uiball/loaders": "^1.2.6",
