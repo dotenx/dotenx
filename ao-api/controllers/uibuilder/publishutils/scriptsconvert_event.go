@@ -143,9 +143,9 @@ func convertAction(action EventAction) (string, error) {
 		if (params.stagger) {
 			params.delay = anime.stagger(params.delay)
 		}
-		if (target === "self") {
+		if (target.kind === "self") {
 			params.targets = event.target;
-		} else if (target === "children") {
+		} else if (target.kind === "children") {
 			params.targets = event.target.children;
 		} else {
 			params.targets = classNames.join(" ");
