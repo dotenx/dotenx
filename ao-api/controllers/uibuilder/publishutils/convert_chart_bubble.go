@@ -88,15 +88,10 @@ func convertChartBubble(component map[string]interface{}, styleStore *StyleStore
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(chart.Events)
-	chart.Events = events
-
 	params := struct {
 		ChartBubble
-		VisibleAnimation VisibleAnimation
 	}{
 		chart,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

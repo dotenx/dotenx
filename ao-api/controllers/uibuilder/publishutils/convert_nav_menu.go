@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-const navMenuTemplate = `<div @resize.window="const width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 640) {isOpen = true}"  :style='{display: isOpen ?"flex":"none" }' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>`
+const navMenuTemplate = `<div @resize.window="const width = (window.innerWidth > 0) ? window.innerWidth : screen.width; if (width > 640) {isOpen = true}"  :style='{display: isOpen ?"flex":"none" }' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"   {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</div>`
 
 // Exactly same as box, just a slightly different template
 func convertNavMenu(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
@@ -24,9 +24,6 @@ func convertNavMenu(component map[string]interface{}, styleStore *StyleStore, fu
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(box.Events)
-	box.Events = events
 
 	var renderedChildren []string
 
@@ -57,7 +54,6 @@ func convertNavMenu(component map[string]interface{}, styleStore *StyleStore, fu
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
-		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer

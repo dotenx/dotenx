@@ -88,15 +88,10 @@ func convertChartScatter(component map[string]interface{}, styleStore *StyleStor
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(chart.Events)
-	chart.Events = events
-
 	params := struct {
 		ChartScatter
-		VisibleAnimation VisibleAnimation
 	}{
 		chart,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

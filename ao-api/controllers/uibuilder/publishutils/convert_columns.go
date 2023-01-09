@@ -36,7 +36,7 @@ type Columns struct {
 	} `json:"data"`
 }
 
-const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const columnsTemplate = `{{if .RepeatFrom.Iterator}}<template {{if .RepeatFrom.Name}}x-for="{{.RepeatFrom.Iterator}} in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertColumns(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	funcMap := template.FuncMap{
@@ -64,9 +64,6 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		renderedChildren = append(renderedChildren, renderedChild)
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(columns.Events)
-	columns.Events = events
-
 	as := "div"
 	if columns.Data.As != "" {
 		as = columns.Data.As
@@ -93,8 +90,8 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		RepeatFrom:       columns.RepeatFrom,
 		Events:           columns.Events,
 		ClassNames:       columns.ClassNames,
-		VisibleAnimation: visibleAnimation,
-		As:               as,
+
+		As: as,
 	}
 
 	// Render the component and its children

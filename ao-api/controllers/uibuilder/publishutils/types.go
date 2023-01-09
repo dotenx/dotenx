@@ -23,10 +23,12 @@ type EventAction struct {
 	DataSourceName string      `json:"dataSourceName"`
 	Body           string      `json:"body"`
 	Params         string      `json:"params"`
-	AnimationName  string      `json:"animationName"`
 	To             struct {
 		Value []TextState `json:"value"`
 	} `json:"to"`
+	AnimationName    string                 `json:"animationName"`
+	Target           map[string]interface{} `json:"target"`
+	AnimationOptions map[string]interface{}
 }
 
 type TextState struct {
@@ -47,4 +49,10 @@ type Bindings struct {
 	Hide  Binding `json:"hide"`
 	Show  Binding `json:"show"`
 	Class Binding `json:"class"`
+}
+
+type Animation struct {
+	Id      string                 `json:"id"`
+	Name    string                 `json:"name"`
+	Options map[string]interface{} `json:"options"`
 }
