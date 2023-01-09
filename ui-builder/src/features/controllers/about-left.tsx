@@ -8,6 +8,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Intelinput, inteliText } from '../ui/intelinput'
 import { LinkElementInput } from '../ui/link-element-input'
@@ -94,30 +95,8 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: wrapper,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subTitle,
-					title: 'Subtitle color',
-				})}
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: cta,
-					title: 'Button background color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: cta,
-					title: 'Button text color',
-				})}
+				<BoxElementInput label="Background color" element={wrapper} />
+				<BoxElementInput label="Button background color" element={cta} />
 			</DividerCollapsible>
 
 			<DraggableTabs

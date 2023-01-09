@@ -28,7 +28,7 @@ function StyleEditor({ element }: { element: TextElement }) {
 	return (
 		<InputStyler>
 			<div className="space-y-6 text-xs">
-				<TypographyEditor simple element={element} />
+				<TypographyEditor element={element} simple />
 				<SpacingEditor element={element} />
 			</div>
 		</InputStyler>
