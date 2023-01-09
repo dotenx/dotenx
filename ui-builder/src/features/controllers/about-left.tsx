@@ -17,7 +17,8 @@ import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { DndTabs } from './helpers/dnd-tabs'
+import { DraggableTab } from './helpers/draggable-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class AboutLeft extends Controller {
@@ -58,9 +59,7 @@ function AboutLeftOptions() {
 					</OptionsWrapper>
 				),
 				onTabDelete: () => {
-					set(featureLinesWrapper, (draft) => {
-						draft.children.splice(index, 1)
-					})
+					set(featureLinesWrapper, (draft) => draft.children.splice(index, 1))
 				},
 			}
 		})
@@ -78,26 +77,10 @@ function AboutLeftOptions() {
 				<BoxElementInput label="Background color" element={wrapper} />
 				<BoxElementInput label="Button background color" element={cta} />
 			</DividerCollapsible>
-
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						set(featureLinesWrapper, (draft) => {
-							const temp = draft.children![oldIndex]
-							draft.children![oldIndex] = draft.children![newIndex]
-							draft.children![newIndex] = temp
-						})
-					}
-				}}
-				onAddNewTab={() => {
-					set(featureLinesWrapper, (draft) => {
-						draft.children.push(createLine('Lorem ipsum dolor sit amet'))
-					})
-				}}
+			<DndTabs
 				tabs={tabsList}
+				containerElement={featureLinesWrapper}
+				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
 			/>
 		</OptionsWrapper>
 	)
