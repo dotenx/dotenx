@@ -33,19 +33,19 @@ export class AboutLeft extends Controller {
 function AboutLeftOptions() {
 	const component = useSelectedElement()
 	const wrapper = component as BoxElement
-	const heroImage = component?.children?.[1] as ImageElement
-	const title = component?.children?.[0].children?.[0] as TextElement
-	const subTitle = component?.children?.[0].children?.[1] as TextElement
-	const featureLinesWrapper = component?.children?.[0].children?.[2] as BoxElement
-	const cta = component?.children?.[0].children?.[3] as LinkElement
-	const ctaText = cta.children?.[0] as TextElement
+	const heroImage = wrapper.findByTagId<ImageElement>(tagIds.heroImage)!
+	const title = wrapper.findByTagId<TextElement>(tagIds.title)!
+	const subtitle = wrapper.findByTagId<TextElement>(tagIds.subtitle)!
+	const featureLinesWrapper = wrapper.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
+	const cta = wrapper.findByTagId<LinkElement>(tagIds.cta)!
+	const ctaText = cta.findByTagId<TextElement>(tagIds.ctaText)!
 
 	return (
 		<OptionsWrapper>
 			<ComponentName name="About us with details on the left" />
 			<ImageElementInput element={heroImage} />
 			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subTitle} />
+			<TextElementInput label="Subtitle" element={subtitle} />
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
@@ -74,6 +74,15 @@ function ItemOptions({ item }: { item: BoxElement }) {
 }
 
 // =============  defaultData =============
+
+const tagIds = {
+	heroImage: 'heroImage',
+	title: 'title',
+	subtitle: 'subtitle',
+	featureLinesWrapper: 'featureLinesWrapper',
+	cta: 'cta',
+	ctaText: 'ctaText',
+}
 
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -116,6 +125,7 @@ const heroImage = produce(new ImageElement(), (draft) => {
 	draft.data.src = Expression.fromString(
 		'https://files.dotenx.com/68c53d72-a5b6-4be5-b0b4-498bd6b43bfd.png'
 	)
+	draft.tagId = tagIds.heroImage
 }).serialize()
 
 const detailsWrapper = produce(new BoxElement(), (draft) => {
@@ -162,9 +172,10 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = Expression.fromString('Simplify your business')
+	draft.tagId = tagIds.title
 }).serialize()
 
-const subTitle = produce(new TextElement(), (draft) => {
+const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '18px',
@@ -180,6 +191,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
+	draft.tagId = tagIds.subtitle
 }).serialize()
 
 const featureLinesWrapper = produce(new BoxElement(), (draft) => {
@@ -197,6 +209,7 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 			fontSize: '12px',
 		},
 	}
+	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
 const createFeatureLine = () =>
@@ -301,11 +314,13 @@ const cta = produce(new LinkElement(), (draft) => {
 
 	const element = new TextElement()
 	element.data.text = Expression.fromString('Get Started')
+	element.tagId = tagIds.ctaText
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 
 	draft.children = [element]
+	draft.tagId = tagIds.cta
 }).serialize()
 
 const defaultData = {
@@ -315,7 +330,7 @@ const defaultData = {
 			...detailsWrapper,
 			components: [
 				title,
-				subTitle,
+				subtitle,
 				{
 					...featureLinesWrapper,
 					components: featureLines,
