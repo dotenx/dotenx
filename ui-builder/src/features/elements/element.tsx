@@ -81,12 +81,12 @@ export abstract class Element {
 		}
 	}
 
-	private findByTagIdRecursive(tagId: string) {
+	private findByTagIdRecursive(tagId: string): Element | undefined {
 		if (this.tagId === tagId) return this
 
 		if (this.children) {
 			for (const child of this.children) {
-				const found = child.findByTagId(tagId)
+				const found = child.findByTagIdRecursive(tagId)
 				if (found) return found
 			}
 		}
