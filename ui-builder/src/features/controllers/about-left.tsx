@@ -1,7 +1,6 @@
 import produce from 'immer'
-import { ReactNode, useMemo } from 'react'
+import { useMemo } from 'react'
 import imageUrl from '../../assets/components/about-left.png'
-
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
@@ -11,6 +10,8 @@ import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
@@ -21,7 +22,7 @@ export class AboutLeft extends Controller {
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ElementOptions): ReactNode {
+	renderOptions(options: ElementOptions) {
 		return <AboutLeftOptions options={options} />
 	}
 }
@@ -88,58 +89,10 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 		<div className="space-y-6">
 			<ComponentName name="About us with details on the left" />
 			<ImageElementInput element={heroImage} />
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Sub-title"
-				name="subtitle"
-				size="xs"
-				value={subTitle.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subTitle, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA"
-				name="cta"
-				size="xs"
-				value={ctaText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(ctaText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA Link"
-				name="ctaLink"
-				size="xs"
-				value={cta.data.href}
-				onChange={(value) =>
-					options.set(
-						produce(cta, (draft) => {
-							draft.data.href = value
-						})
-					)
-				}
-			/>
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subTitle} />
+			<TextElementInput label="CTA" element={ctaText} />
+			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
 				{ColorOptions.getBackgroundOption({
 					options,
@@ -213,7 +166,6 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			paddingBottom: '40px',
 		},
 	}
-
 	draft.style.tablet = {
 		default: {
 			height: 'auto',
@@ -227,6 +179,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 		},
 	}
 }).serialize()
+
 const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -239,6 +192,7 @@ const heroImage = produce(new ImageElement(), (draft) => {
 		'https://files.dotenx.com/68c53d72-a5b6-4be5-b0b4-498bd6b43bfd.png'
 	)
 }).serialize()
+
 const detailsWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -259,7 +213,6 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			lineHeight: '1.3',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			lineHeight: '1.2',
@@ -276,7 +229,6 @@ const title = produce(new TextElement(), (draft) => {
 			color: '#333333',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			fontSize: '30px',
@@ -378,7 +330,8 @@ const createFeatureLine = () =>
 
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
-		;(draft.children[1]! as TextElement).data.text = inteliText(text)
+		const textElement = draft.children[1]! as TextElement
+		textElement.data.text = inteliText(text)
 	})
 }
 
@@ -411,7 +364,6 @@ const cta = produce(new LinkElement(), (draft) => {
 			justifySelf: 'center',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			marginTop: '8px',
