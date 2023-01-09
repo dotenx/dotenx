@@ -1,8 +1,6 @@
 import produce from 'immer'
-import { useMemo } from 'react'
 import imageUrl from '../../assets/components/about-left.png'
 import { deserializeElement } from '../../utils/deserialize'
-import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
@@ -18,7 +16,6 @@ import { TextElementInput } from '../ui/text-element-input'
 import { Controller } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
-import { DraggableTab } from './helpers/draggable-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class AboutLeft extends Controller {
@@ -35,35 +32,14 @@ export class AboutLeft extends Controller {
 
 function AboutLeftOptions() {
 	const container = useSelectedElement()
-	const set = useSetElement()
 
 	const wrapper = container as BoxElement
 	const heroImage = container?.children?.[1] as ImageElement
 	const title = container?.children?.[0].children?.[0] as TextElement
 	const subTitle = container?.children?.[0].children?.[1] as TextElement
 	const featureLinesWrapper = container?.children?.[0].children?.[2] as BoxElement
-	const featureLines = featureLinesWrapper.children as BoxElement[]
 	const cta = container?.children?.[0].children?.[3] as LinkElement
 	const ctaText = cta.children?.[0] as TextElement
-
-	const tabsList: DraggableTab[] | null[] = useMemo(() => {
-		return featureLines.map((featureLine, index) => {
-			const icon = featureLine.children?.[0] as IconElement
-			const text = featureLine.children?.[1] as TextElement
-			return {
-				id: featureLine.id,
-				content: (
-					<OptionsWrapper key={index}>
-						<TextElementInput label="Title" element={text} />
-						<IconElementInput label="Icon color" element={icon} />
-					</OptionsWrapper>
-				),
-				onTabDelete: () => {
-					set(featureLinesWrapper, (draft) => draft.children.splice(index, 1))
-				},
-			}
-		})
-	}, [featureLines])
 
 	return (
 		<OptionsWrapper>
@@ -78,10 +54,21 @@ function AboutLeftOptions() {
 				<BoxElementInput label="Button background color" element={cta} />
 			</DividerCollapsible>
 			<DndTabs
-				tabs={tabsList}
 				containerElement={featureLinesWrapper}
+				renderItemOptions={(item) => <ItemOptions item={item} />}
 				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
 			/>
+		</OptionsWrapper>
+	)
+}
+
+function ItemOptions({ item }: { item: BoxElement }) {
+	const icon = item.children?.[0] as IconElement
+	const text = item.children?.[1] as TextElement
+	return (
+		<OptionsWrapper>
+			<TextElementInput label="Title" element={text} />
+			<IconElementInput label="Icon color" element={icon} />
 		</OptionsWrapper>
 	)
 }
