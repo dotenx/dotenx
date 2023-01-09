@@ -2,42 +2,47 @@ import produce from 'immer'
 import { useMemo } from 'react'
 import imageUrl from '../../assets/components/about-left.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { BoxElementInput } from '../ui/box-element-input'
+import { IconElementInput } from '../ui/icon-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
-import { Intelinput } from '../ui/intelinput'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
-import ColorOptions from './basic-components/color-options'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { Controller } from './controller'
+import { ComponentName, DividerCollapsible } from './helpers'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class AboutLeft extends Controller {
 	name = 'About us with details on the left'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ElementOptions) {
-		return <AboutLeftOptions options={options} />
+	renderOptions() {
+		return <AboutLeftOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
-	const wrapper = options.element as BoxElement
-	const heroImage = options.element.children?.[1] as ImageElement
-	const title = options.element.children?.[0].children?.[0] as TextElement
-	const subTitle = options.element.children?.[0].children?.[1] as TextElement
-	const featureLinesWrapper = options.element.children?.[0].children?.[2] as BoxElement
+function AboutLeftOptions() {
+	const container = useSelectedElement()
+	const set = useSetElement()
+
+	const wrapper = container as BoxElement
+	const heroImage = container?.children?.[1] as ImageElement
+	const title = container?.children?.[0].children?.[0] as TextElement
+	const subTitle = container?.children?.[0].children?.[1] as TextElement
+	const featureLinesWrapper = container?.children?.[0].children?.[2] as BoxElement
 	const featureLines = featureLinesWrapper.children as BoxElement[]
-	const cta = options.element.children?.[0].children?.[3] as LinkElement
+	const cta = container?.children?.[0].children?.[3] as LinkElement
 	const ctaText = cta.children?.[0] as TextElement
 
 	const tabsList: DraggableTab[] | null[] = useMemo(() => {
@@ -47,47 +52,22 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 			return {
 				id: featureLine.id,
 				content: (
-					<div key={index}>
-						<Intelinput
-							label="Title"
-							name="title"
-							size="xs"
-							value={text.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(text, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						<DividerCollapsible closed title="details color">
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: icon,
-								title: 'Icon color',
-							})}
-							{ColorOptions.getTextColorOption({
-								wrapperDiv: text,
-								options,
-								title: 'text color',
-							})}
-						</DividerCollapsible>
-					</div>
+					<OptionsWrapper key={index}>
+						<TextElementInput label="Title" element={text} />
+						<IconElementInput label="Icon color" element={icon} />
+					</OptionsWrapper>
 				),
 				onTabDelete: () => {
-					options.set(
-						produce(featureLinesWrapper, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
+					set(featureLinesWrapper, (draft) => {
+						draft.children.splice(index, 1)
+					})
 				},
 			}
 		})
 	}, [featureLines])
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="About us with details on the left" />
 			<ImageElementInput element={heroImage} />
 			<TextElementInput label="Title" element={title} />
@@ -105,25 +85,21 @@ function AboutLeftOptions({ options }: SimpleComponentOptionsProps) {
 					if (active.id !== over?.id) {
 						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
 						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(featureLinesWrapper, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
+						set(featureLinesWrapper, (draft) => {
+							const temp = draft.children![oldIndex]
+							draft.children![oldIndex] = draft.children![newIndex]
+							draft.children![newIndex] = temp
+						})
 					}
 				}}
 				onAddNewTab={() => {
-					options.set(
-						produce(featureLinesWrapper, (draft) => {
-							draft.children.push(createLine('Lorem ipsum dolor sit amet'))
-						})
-					)
+					set(featureLinesWrapper, (draft) => {
+						draft.children.push(createLine('Lorem ipsum dolor sit amet'))
+					})
 				}}
 				tabs={tabsList}
 			/>
-		</div>
+		</OptionsWrapper>
 	)
 }
 
