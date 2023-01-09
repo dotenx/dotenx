@@ -23,10 +23,11 @@ export function extractUrl(url: string): string {
 export const Divider = ({ title }: { title: string }) => {
 	return (
 		<div className={`mt-6 mb-2 flex items-center `}>
-			<span className="whitespace-nowrap mr-1">{title}</span> <hr className=" w-full" />
+			<span className="mr-1 whitespace-nowrap">{title}</span> <hr className="w-full " />
 		</div>
 	)
 }
+
 export const DividerCollapsible = ({
 	closed,
 	title,
@@ -39,21 +40,21 @@ export const DividerCollapsible = ({
 	const [opened, setOpened] = useState(closed ? !closed : true)
 
 	return (
-		<div className="my-2 space-y-4 bg-slate-50 bg-opacity-40 p-2 ">
+		<div className="p-2 my-2 bg-slate-50 bg-opacity-40 ">
 			<div
-				className=" flex items-center cursor-pointer hover:bg-slate-100 transition-colors active:opacity-70 active:text-violet-500 shadow-sm rounded p-1 px-2"
+				className="flex items-center p-1 px-2 transition-colors rounded shadow-sm cursor-pointer select-none hover:bg-slate-100 active:opacity-70 active:text-violet-500"
 				onClick={() => setOpened((o) => !o)}
 			>
-				<span className="whitespace-nowrap mr-1 w-full">{title}</span>
+				<span className="w-full mr-1 whitespace-nowrap">{title}</span>
 				<BsChevronUp className={`w-4 ${opened ? ' ' : 'rotate-180'}`} />
 			</div>
 			<Collapse in={opened}>
-				<div className="space-y-4">{children}</div>
+				<div className="pt-4 space-y-4">{children}</div>
 			</Collapse>
 		</div>
 	)
 }
 
 export const ComponentName = ({ name }: { name: string }) => (
-	<div className="p-2 my-1 rounded-md bg-slate-50 font-medium">{name}</div>
+	<div className="p-2 my-1 font-medium rounded-md bg-slate-50">{name}</div>
 )

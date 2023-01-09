@@ -1,4 +1,5 @@
 import { ColorInput, Select } from '@mantine/core'
+import { Element } from '../elements/element'
 import { CollapseLine } from '../ui/collapse-line'
 import { useEditStyle } from './use-edit-style'
 
@@ -9,8 +10,8 @@ const backgroundClippings = [
 	{ label: 'Text', value: 'text' },
 ]
 
-export function BackgroundsEditor({ simple }: { simple?: boolean }) {
-	const { style: styles, editStyle } = useEditStyle()
+export function BackgroundsEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (
 		<CollapseLine label="Backgrounds" defaultClosed>
