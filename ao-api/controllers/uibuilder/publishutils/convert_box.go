@@ -206,9 +206,10 @@ func renderEvents(events []Event) string {
 
 	for _, event := range events {
 		if event.Kind == "intersection" {
-			renderedEvents.WriteString(fmt.Sprintf(`x-intersect="%s(event) "`, event.Id))
+			// x-intersect doesn't have access to $event so we fake it by passing {target: $el}
+			renderedEvents.WriteString(fmt.Sprintf(`x-intersect="%s({target: $el}) "`, event.Id))
 		} else {
-			renderedEvents.WriteString(fmt.Sprintf(`x-on:%s="%s(event) "`, event.Kind, event.Id))
+			renderedEvents.WriteString(fmt.Sprintf(`x-on:%s="%s($event) "`, event.Kind, event.Id))
 			if event.Kind == "load" { // TODO: Remove this if it's not used.
 				renderedEvents.WriteString(fmt.Sprintf(`x-init="{$nextTick => %s()}" `, event.Id))
 			}

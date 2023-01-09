@@ -56,41 +56,42 @@ type FunctionStore struct {
 	Animations     map[string]Animation
 }
 
-func (i *FunctionStore) AddChart(ChartType string, Effect string) {
-	i.lock.Lock()
-	defer i.lock.Unlock()
+func (fs *FunctionStore) AddChart(ChartType string, Effect string) {
+	fs.lock.Lock()
+	defer fs.lock.Unlock()
 
-	i.ChartTypes[ChartType] = true
-	i.Script = append(i.Script, Effect)
+	fs.ChartTypes[ChartType] = true
+	fs.Script = append(fs.Script, Effect)
 }
 
-func (i *FunctionStore) AddEvents(events []Event) {
-	i.lock.Lock()
-	defer i.lock.Unlock()
-
-	for _, event := range events {
-		for _, action := range event.Actions {
+func (fs *FunctionStore) AddEvents(events []Event) {
+	fs.lock.Lock()
+	defer fs.lock.Unlock()
+	for i, event := range events {
+		for j, action := range event.Actions {
 			if action.Kind == "Animation" {
-				action.AnimationOptions = i.Animations[action.AnimationName]
+				action.AnimationOptions = fs.Animations[action.AnimationName].Options
+				event.Actions[j] = action
 			}
 		}
+		events[i] = event
 	}
 
-	i.Events = append(i.Events, events...)
+	fs.Events = append(fs.Events, events...)
 }
 
-func (i *FunctionStore) AddExtension(extension string) {
-	i.lock.Lock()
-	defer i.lock.Unlock()
+func (fs *FunctionStore) AddExtension(extension string) {
+	fs.lock.Lock()
+	defer fs.lock.Unlock()
 
-	i.Extensions = append(i.Extensions, extension)
+	fs.Extensions = append(fs.Extensions, extension)
 }
 
-func (i *FunctionStore) AddExtensionHead(extensionHead string) {
-	i.lock.Lock()
-	defer i.lock.Unlock()
+func (fs *FunctionStore) AddExtensionHead(extensionHead string) {
+	fs.lock.Lock()
+	defer fs.lock.Unlock()
 
-	i.ExtensionHeads = append(i.ExtensionHeads, extensionHead)
+	fs.ExtensionHeads = append(fs.ExtensionHeads, extensionHead)
 }
 
 func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []string, statesDefaultValues map[string]interface{}) (string, error) {

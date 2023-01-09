@@ -2,6 +2,7 @@ package publishutils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"text/template"
@@ -53,8 +54,11 @@ func convertAction(action EventAction) (string, error) {
 
 	funcMap := template.FuncMap{
 
+		"json": func(v interface{}) string {
+			a, _ := json.Marshal(v)
+			return string(a)
+		},
 		"renderTextStates": renderTextStates,
-
 		"renderValueSource": func(valueSource ValueSource) string {
 
 			if valueSource.Value == "" {
@@ -134,8 +138,8 @@ func convertAction(action EventAction) (string, error) {
 
 	const animationTemplate = `
 	function {{.Id}}(event) {
-		let target = {{.Target}}
-		let params = {{.AnimationOptions}}
+		let target = {{printf "%s" (json .Target)}}
+		let params = {{printf "%s" (json .AnimationOptions)}}
 		if (params.stagger) {
 			params.delay = anime.stagger(params.delay)
 		}
