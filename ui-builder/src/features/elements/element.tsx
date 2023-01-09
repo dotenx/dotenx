@@ -75,18 +75,18 @@ export abstract class Element {
 	findByTagId<T extends Element = Element>(tagId: string): T | undefined {
 		if (this.children) {
 			for (const child of this.children) {
-				const found = child.findByTagIdRecursive(tagId)
+				const found = child._findByTagIdRecursive(tagId)
 				if (found) return found as T
 			}
 		}
 	}
 
-	private findByTagIdRecursive(tagId: string): Element | undefined {
+	_findByTagIdRecursive(tagId: string): Element | undefined {
 		if (this.tagId === tagId) return this
 
 		if (this.children) {
 			for (const child of this.children) {
-				const found = child.findByTagIdRecursive(tagId)
+				const found = child._findByTagIdRecursive(tagId)
 				if (found) return found
 			}
 		}
