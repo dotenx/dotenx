@@ -10,7 +10,7 @@ import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
 import { BoxElementInput } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { Intelinput } from '../ui/intelinput'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
@@ -215,8 +215,7 @@ const title = produce(new TextElement(), (draft) => {
 			color: '#333333',
 		},
 	}
-
-	draft.data.text = inteliText('Simplify your business')
+	draft.data.text = Expression.fromString('Simplify your business')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -232,7 +231,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = inteliText(
+	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
 }).serialize()
@@ -301,7 +300,9 @@ const createFeatureLine = () =>
 					color: '#717171',
 				},
 			}
-			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+			draft.data.text = Expression.fromString(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			)
 		})
 
 		draft.children = [icon, text]
@@ -310,7 +311,7 @@ const createFeatureLine = () =>
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
 		const textElement = draft.children[1]! as TextElement
-		textElement.data.text = inteliText(text)
+		textElement.data.text = Expression.fromString(text)
 	})
 }
 
@@ -353,7 +354,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = inteliText('Get Started')
+	element.data.text = Expression.fromString('Get Started')
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
