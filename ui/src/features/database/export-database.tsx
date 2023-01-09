@@ -1,9 +1,10 @@
-import { Button } from '@mantine/core'
+import { Button, Tooltip } from '@mantine/core'
 import { useRef, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { exportDatabase, runExportDatabase } from '../../api'
 import { MdOutlineMoreVert } from 'react-icons/md'
 import { useOutsideClick } from '../hooks'
+import { TbFileDownload, TbFileExport } from 'react-icons/tb'
 type Format = 'dump' | 'csv'
 export default function ExportDatabase({ projectName }: { projectName: string }) {
 	const [url, setUrl] = useState('')
@@ -52,30 +53,40 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 		},
 	})
 	return (
-		<div ref={ref} className="w-full flex justify-end items-center">
-			{showDownload ? (
-				<Button loading={isLoading || mutationRun.isLoading || url === ''} variant="subtle">
-					<a href={url} download>
-						Download {format} file
-					</a>
-				</Button>
-			) : (
-				<Button
-					loading={isLoading || mutationRun.isLoading}
-					variant="subtle"
-					onClick={() => {
-						mutationRun.mutate()
-					}}
-				>
-					Export as {format} file
-				</Button>
-			)}
-			<MdOutlineMoreVert
-				className="w-10 h-10 cursor-pointer hover:bg-gray-50 p-2 transition-all rounded-md"
-				onClick={() => setOpenOptions(!openOptions)}
-			/>
+		<div ref={ref} className="flex items-center">
+			<Button.Group>
+				{showDownload ? (
+					<Button
+						rightIcon={<TbFileDownload className="w-5 h-5" />}
+						loading={isLoading || mutationRun.isLoading || url === ''}
+					>
+						<a href={url} download>
+							Download {format} file
+						</a>
+					</Button>
+				) : (
+					<Button
+						rightIcon={<TbFileExport className="w-5 h-5" />}
+						loading={isLoading || mutationRun.isLoading}
+						onClick={() => {
+							mutationRun.mutate()
+						}}
+					>
+						Export as {format} file
+					</Button>
+				)}
+				<Tooltip openDelay={500} withinPortal withArrow label="Change export format">
+					<Button
+						className={`!p-1 ${openOptions && '!bg-rose-800'}`}
+						onClick={() => setOpenOptions(!openOptions)}
+					>
+						<MdOutlineMoreVert className="w-5 h-5 " />
+					</Button>
+				</Tooltip>
+			</Button.Group>
 			{openOptions && (
 				<div className="cursor-pointer p-1 absolute z-10 bg-white top-[95px] py-3 rounded-md shadow-md">
+					<div className="mb-2 text-sm px-1">Select file format</div>
 					{['dump', 'csv'].map((o, index) => (
 						<div
 							key={index}
@@ -83,7 +94,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 								setFormat(o as Format)
 								setOpenOptions(false)
 							}}
-							className="transition-all hover:text-white rounded-md px-2 py-1 hover:bg-red-500 font-medium"
+							className="transition-all hover:text-white rounded-md px-2 py-1 hover:bg-rose-500 font-medium"
 						>
 							{o}
 						</div>
