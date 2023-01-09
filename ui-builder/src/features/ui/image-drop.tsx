@@ -22,7 +22,7 @@ export function ImageDrop({
 	const projectTag = useAtomValue(projectTagAtom)
 
 	const imagePart = src ? (
-		<div>
+		<div className="h-[200px]">
 			<CloseButton
 				onClick={() => onChange('')}
 				mb="xs"
@@ -30,7 +30,7 @@ export function ImageDrop({
 				ml="auto"
 				title="Clear image"
 			/>
-			<Image radius="xs" src={src} />
+			<Image height={172} radius="xs" src={src} />
 		</div>
 	) : (
 		<Dropzone
@@ -42,6 +42,8 @@ export function ImageDrop({
 			}
 			accept={IMAGE_MIME_TYPE}
 			loading={uploadImageMutation.isLoading}
+			h={200}
+			sx={{ display: 'flex', alignItems: 'center' }}
 		>
 			<Group position="center" spacing="xl" py="xl" style={{ pointerEvents: 'none' }}>
 				<Dropzone.Accept>
