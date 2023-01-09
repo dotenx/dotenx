@@ -64,6 +64,7 @@ function AboutLeftOptions() {
 function ItemOptions({ item }: { item: BoxElement }) {
 	const icon = item.children?.[0] as IconElement
 	const text = item.children?.[1] as TextElement
+	
 	return (
 		<OptionsWrapper>
 			<TextElementInput label="Title" element={text} />
