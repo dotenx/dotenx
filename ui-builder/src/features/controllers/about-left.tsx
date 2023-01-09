@@ -31,14 +31,13 @@ export class AboutLeft extends Controller {
 // =============  renderOptions =============
 
 function AboutLeftOptions() {
-	const component = useSelectedElement()
-	const wrapper = component as BoxElement
-	const heroImage = wrapper.findByTagId<ImageElement>(tagIds.heroImage)!
-	const title = wrapper.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = wrapper.findByTagId<TextElement>(tagIds.subtitle)!
-	const featureLinesWrapper = wrapper.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = wrapper.findByTagId<LinkElement>(tagIds.cta)!
-	const ctaText = cta.findByTagId<TextElement>(tagIds.ctaText)!
+	const component = useSelectedElement<BoxElement>()!
+	const heroImage = component.findByTagId<ImageElement>(tagIds.heroImage)!
+	const title = component.findByTagId<TextElement>(tagIds.title)!
+	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
+	const featureLinesWrapper = component.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
+	const cta = component.findByTagId<LinkElement>(tagIds.cta)!
+	const ctaText = component.findByTagId<TextElement>(tagIds.ctaText)!
 
 	return (
 		<OptionsWrapper>
@@ -49,7 +48,7 @@ function AboutLeftOptions() {
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				<BoxElementInput label="Background color" element={wrapper} />
+				<BoxElementInput label="Background color" element={component} />
 				<BoxElementInput label="Button background color" element={cta} />
 			</DividerCollapsible>
 			<DndTabs
@@ -84,7 +83,7 @@ const tagIds = {
 	ctaText: 'ctaText',
 }
 
-const wrapper = produce(new BoxElement(), (draft) => {
+const component = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
@@ -324,7 +323,7 @@ const cta = produce(new LinkElement(), (draft) => {
 }).serialize()
 
 const defaultData = {
-	...wrapper,
+	...component,
 	components: [
 		{
 			...detailsWrapper,
