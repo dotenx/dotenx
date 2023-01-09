@@ -32,6 +32,7 @@ export function deserializeElement(serialized: any): Element {
 	element.bindings = serialized.bindings ?? {}
 	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
 	element.data = serialized.data ?? {}
+	element.tagId = serialized.tagId
 	if (element instanceof ImageElement) {
 		const src = serialized.data?.src ?? ''
 		element.data.src = _.isString(src)

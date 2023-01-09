@@ -26,6 +26,7 @@ export abstract class Element {
 	controller: Controller | null = null
 	data?: Record<string, unknown>
 	elementId?: string
+	tagId?: string
 	hidden?: boolean
 
 	isContainer() {
@@ -51,6 +52,7 @@ export abstract class Element {
 			controller: this.controller?.serialize(),
 			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style) },
 			elementId: this.elementId,
+			tagId: this.tagId,
 		}
 	}
 
@@ -68,6 +70,26 @@ export abstract class Element {
 
 	onDelete() {
 		// noop
+	}
+
+	findByTagId<T extends Element = Element>(tagId: string): T | undefined {
+		if (this.children) {
+			for (const child of this.children) {
+				const found = child.findByTagIdRecursive(tagId)
+				if (found) return found as T
+			}
+		}
+	}
+
+	private findByTagIdRecursive(tagId: string) {
+		if (this.tagId === tagId) return this
+
+		if (this.children) {
+			for (const child of this.children) {
+				const found = child.findByTagId(tagId)
+				if (found) return found
+			}
+		}
 	}
 }
 
