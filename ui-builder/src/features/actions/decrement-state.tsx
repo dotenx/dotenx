@@ -24,6 +24,7 @@ export class DecrementStateAction extends Action {
 			kind: this.name,
 			stateName: serializeInteliState(this.stateName),
 			key: serializeInteliState(this.key),
+			id: this.id,
 		}
 	}
 	renderDataSourceSettings(sourceId: string) {

@@ -24,6 +24,7 @@ export class PushStateAction extends Action {
 			kind: this.name,
 			stateName: serializeInteliState(this.stateName),
 			value: serializeInteliState(this.value),
+			id: this.id,
 		}
 	}
 	renderDataSourceSettings(sourceId: string) {

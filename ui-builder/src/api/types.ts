@@ -1,6 +1,8 @@
+import { Animation } from '../features/animations/schema'
 import { DataSource } from '../features/data-source/data-source-store'
 import { Element } from '../features/elements/element'
 import { CssSelector, Style } from '../features/elements/style'
+import { SerializedAnimation } from '../utils/serialize'
 
 export type GetProjectDetailsRequest = {
 	projectName: string
@@ -37,6 +39,7 @@ export type AddPageRequest = {
 	fonts: Record<string, string>
 	customCodes: { head: string; footer: string }
 	statesDefaultValues: Record<string, string>
+	animations: Animation[]
 }
 
 export type PublishPageRequest = {
@@ -61,6 +64,7 @@ interface PageDetails {
 		fonts: Record<string, string>
 		customCodes: { head: string; footer: string }
 		statesDefaultValues: Record<string, string>
+		animations?: SerializedAnimation[]
 	}
 }
 
@@ -133,7 +137,7 @@ export type GetMarketplaceItemsResponse = {
 	id: number
 	title: string
 	imageUrl: string
-	type: "project" | "uiComponent" | "uiDesignSystem" | "uiExtension"
+	type: 'project' | 'uiComponent' | 'uiDesignSystem' | 'uiExtension'
 }[]
 
 export type ImportComponentRequest = {
@@ -150,20 +154,18 @@ export type GetTablesResponse = {
 export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
-export type GetUrlsResponde =
-	{
-		preview_url: {
-			exist: boolean,
-			last_at: string,
-			url: string
-		},
-		publish_url: {
-			exist: boolean,
-			last_at: string,
-			url: string
-		}
+export type GetUrlsResponse = {
+	preview_url: {
+		exist: boolean
+		last_at: string
+		url: string
 	}
-
+	publish_url: {
+		exist: boolean
+		last_at: string
+		url: string
+	}
+}
 
 export type GlobalStates = {
 	states: string[]
