@@ -471,6 +471,12 @@ export type GetRecordsResponse = {
 	totalRows: number
 } | null
 
+export type RunCustomQueryResponse = {
+	rows: [],
+	rows_affected: number,
+	successful: boolean,
+	total_rows: number
+}
 export type AddRecordRequest = TableRecord
 
 export type UpdateRecordRequest = TableRecord
