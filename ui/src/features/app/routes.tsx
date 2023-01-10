@@ -37,7 +37,7 @@ const routes = [
 	{ path: '/builder/projects/:projectName/tables/:tableName/:isPublic', element: <TablePage /> },
 	{ path: '/builder/projects/:projectName/tables', element: <TablesPage /> },
 	{ path: '/builder/projects/:projectName/git', element: <GitIntegrationPage /> },
-	{ path: '/git/integration/callback', element: <GitRedirectPage /> },
+	{ path: '/builder/git/integration/callback', element: <GitRedirectPage /> },
 
 	{
 		path: '/builder/projects/:projectName/interactions/:name/executions/:id',
