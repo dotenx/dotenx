@@ -1,23 +1,23 @@
 import { Button, ColorInput, Select, Switch } from '@mantine/core'
 import produce from 'immer'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useMemo, useState } from 'react'
+import _ from 'lodash'
+import { ReactNode, useState } from 'react'
+import { TbMinus, TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/comparison-table-simple.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxElementInput } from '../ui/box-element-input'
+import { inteliText } from '../ui/intelinput'
+import { TextElementInput } from '../ui/text-element-input'
 import { viewportAtom } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import {
-	ComponentName,
-	Divider,
-	DividerCollapsible,
-	repeatObject,
-	SimpleComponentOptionsProps,
-} from './helpers'
+import { ComponentName, Divider, DividerCollapsible, repeatObject } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class ComparisonTableSimple extends Controller {
 	name = 'Simple comparison table'
@@ -25,213 +25,170 @@ export class ComparisonTableSimple extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <ComparisonTableSimpleOptions options={options} />
+		return <ComparisonTableSimpleOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) {
+function ComparisonTableSimpleOptions() {
+	const set = useSetElement()
+	const component = useSelectedElement<BoxElement>()!
 	const viewport = useAtomValue(viewportAtom)
-	const gridDiv = options.element as BoxElement
 	const [selectedRow, setSelectedRow] = useState(1)
 	const [selectedColumn, setSelectedColumn] = useState(1)
 	const [isRow, setIsRow] = useState(true)
 
-	const rows = useMemo(() => {
-		const totalCells = gridDiv.children.length
-		const colsCount = gridDiv.style
-			.desktop!.default!.gridTemplateColumns!.toString()
-			.split('1fr').length
-		return repeatObject(0, totalCells / colsCount).map((_, i) => i + 1 + '')
-	}, [gridDiv.children.length, gridDiv.style.desktop!.default!.gridTemplateColumns])
-	const cols = useMemo(() => {
-		const colsCount = gridDiv.style
-			.desktop!.default!.gridTemplateColumns!.toString()
-			.split('1fr').length
-		return repeatObject(0, colsCount).map((_, i) => i + 1 + '')
-	}, [gridDiv.style.desktop!.default!.gridTemplateColumns])
+	const totalCells = component.children.length
+	const columnsCount = component.style
+		.desktop!.default!.gridTemplateColumns!.toString()
+		.split('1fr').length
+	const rows = repeatObject(0, totalCells / columnsCount).map((_, i) => i + 1 + '')
+	const columns = repeatObject(0, columnsCount).map((_, i) => i + 1 + '')
+	const selectedTile = (selectedRow - 1) * columns.length + selectedColumn - 1
+	const disableDelete = isRow ? selectedRow === 1 || rows.length === 1 : columns.length === 1
+	const disableAdd = !isRow && columns.length === 6
+	const cellContent = component.children?.[selectedTile]?.children?.[0] as TextElement
 
-	const selectedTile = useMemo(() => {
-		return (selectedRow - 1) * cols.length + selectedColumn - 1
-	}, [selectedColumn, selectedRow, cols.length])
-
-	if (viewport === 'mobile') {
-		return <div>Not displayed in mobile mode</div>
+	const handleDelete = () => {
+		set(component, (draft) => {
+			if (isRow) {
+				draft.children?.splice((selectedRow - 1) * columns.length, columns.length)
+			} else {
+				const remaining: Element[] = []
+				draft.children.map((child, i) => {
+					if ((i - (selectedColumn - 1)) % columns.length != 0) remaining.push(child)
+					draft.children = remaining
+				})
+				// Remove one 1fr from the gridTemplateColumns
+				const templateColumns = draft.style
+					.desktop!.default!.gridTemplateColumns!.toString()
+					.split('1fr')
+				templateColumns.splice(templateColumns.length - 1, 1) // We know that always the last one is 1fr
+				draft.style.desktop!.default!.gridTemplateColumns = templateColumns.join('1fr')
+			}
+		})
+		setSelectedColumn(1)
+		setSelectedRow(1)
 	}
 
+	const handleAdd = () => {
+		set(component, (draft) => {
+			if (isRow) {
+				for (let i = 0; i < columns.length; i++) {
+					draft.children.push(createElement('New Cell'))
+				}
+			} else {
+				const children: Element[] = []
+				for (let i = 0; i < rows.length; i++) {
+					children.push(
+						...draft.children.slice(i * columns.length, (i + 1) * columns.length)
+					)
+					if (i === 0) children.push(createTitle('New Column'))
+					else children.push(createElement('New Cell'))
+				}
+				draft.children = children
+				draft.style.desktop!.default!.gridTemplateColumns = `${
+					draft.style.desktop!.default!.gridTemplateColumns
+				} 1fr`
+			}
+		})
+	}
+
+	const setBorderColor = (value: string) => {
+		set(component, (draft) => (draft.style.desktop!.default!.borderColor = value))
+	}
+
+	if (viewport === 'mobile') return <p>Not displayed in mobile mode</p>
+
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Simple comparison table" />
 			<Divider title="Layout" />
 			<Switch
-				size="lg"
-				onLabel="Row"
-				offLabel="Column"
+				size="xs"
+				label={isRow ? 'Row' : 'Column'}
 				checked={isRow}
 				onChange={(event) => setIsRow(event.currentTarget.checked)}
 			/>
 			{isRow ? (
 				<Select
+					size="xs"
 					label="Row"
 					placeholder="Select a row"
 					data={rows}
-					onChange={(val) => {
-						setSelectedRow(parseInt(val ?? '0'))
-					}}
-					value={selectedRow + ''}
+					onChange={(value) => setSelectedRow(_.parseInt(value ?? '0'))}
+					value={selectedRow.toString()}
 				/>
 			) : (
 				<Select
+					size="xs"
 					label="Column"
 					placeholder="Select a column"
-					data={cols}
-					onChange={(val) => {
-						setSelectedColumn(parseInt(val ?? '0'))
-					}}
-					value={selectedColumn + ''}
+					data={columns}
+					onChange={(value) => setSelectedColumn(_.parseInt(value ?? '0'))}
+					value={selectedColumn.toString()}
 				/>
 			)}
 			<div className="flex justify-between">
 				<Button
 					className="mt-2"
 					size="xs"
-					disabled={isRow ? selectedRow === 1 || rows.length === 1 : cols.length === 1}
-					onClick={() => {
-						options.set(
-							produce(gridDiv, (draft) => {
-								if (isRow) {
-									draft.children?.splice(
-										(selectedRow - 1) * cols.length,
-										cols.length
-									)
-								} else {
-									const remaining: Element[] = []
-									draft.children.map((child, i) => {
-										if ((i - (selectedColumn - 1)) % cols.length != 0) {
-											remaining.push(child)
-										}
-										draft.children = remaining
-									})
-
-									// Remove one 1fr from the gridTemplateColumns
-									const templateColumns = draft.style
-										.desktop!.default!.gridTemplateColumns!.toString()
-										.split('1fr')
-									templateColumns.splice(templateColumns.length - 1, 1) // We know that always the last one is 1fr
-									draft.style.desktop!.default!.gridTemplateColumns =
-										templateColumns.join('1fr')
-								}
-							})
-						)
-						setSelectedColumn(1)
-						setSelectedRow(1)
-					}}
+					disabled={disableDelete}
+					onClick={handleDelete}
+					leftIcon={<TbMinus />}
 				>
-					X Delete {isRow ? 'row' : 'column'}
+					Delete {isRow ? 'row' : 'column'}
 				</Button>
 				<Button
-					disabled={!isRow && cols.length === 6}
+					disabled={disableAdd}
 					className="mt-2"
 					size="xs"
-					onClick={() => {
-						options.set(
-							produce(gridDiv, (draft) => {
-								if (isRow) {
-									for (let i = 0; i < cols.length; i++) {
-										draft.children.push(createElement('New Cell'))
-									}
-								} else {
-									const children: Element[] = []
-									for (let i = 0; i < rows.length; i++) {
-										children.push(
-											...draft.children.slice(
-												i * cols.length,
-												(i + 1) * cols.length
-											)
-										)
-										if (i === 0) {
-											children.push(createTitle('New Column'))
-										} else {
-											children.push(createElement('New Cell'))
-										}
-									}
-									draft.children = children
-									draft.style.desktop!.default!.gridTemplateColumns = `${
-										draft.style.desktop!.default!.gridTemplateColumns
-									} 1fr`
-								}
-							})
-						)
-					}}
+					onClick={handleAdd}
+					leftIcon={<TbPlus />}
 				>
 					Add {isRow ? 'row' : 'column'}
 				</Button>
 			</div>
 			<Divider title="Cell" />
-			<div className="flex">
+			<div className="flex gap-6">
 				<Select
+					size="xs"
 					label="Row"
 					placeholder="Select a row"
 					data={rows}
-					onChange={(val) => {
-						setSelectedRow(parseInt(val ?? '0'))
-					}}
-					value={selectedRow + ''}
+					onChange={(value) => setSelectedRow(_.parseInt(value ?? '0'))}
+					value={selectedRow.toString()}
 				/>
 				<Select
+					size="xs"
 					label="Column"
 					placeholder="Select a column"
-					data={cols}
-					onChange={(val) => {
-						setSelectedColumn(parseInt(val ?? '0'))
-					}}
-					value={selectedColumn + ''}
+					data={columns}
+					onChange={(value) => setSelectedColumn(_.parseInt(value ?? '0'))}
+					value={selectedColumn.toString()}
 				/>
 			</div>
-			<Intelinput
+			<TextElementInput
 				label="Cell content"
-				placeholder="Cell content"
-				onChange={(value) => {
-					options.set(
-						produce(
-							gridDiv.children?.[selectedTile]?.children?.[0] as TextElement,
-							(draft) => {
-								draft.data.text = value
-							}
-						)
-					)
-				}}
-				value={(gridDiv.children?.[selectedTile].children?.[0] as TextElement).data.text}
+				element={cellContent}
 			/>
 			<DividerCollapsible closed title="color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: options.element,
-					title: 'Text color',
-				})}
+				<BoxElementInput element={component} label="Background color" />
 				<ColorInput
-					value={gridDiv.style.desktop!.default!.borderColor}
+					value={component.style.desktop?.default?.borderColor}
 					label="Border color"
-					onChange={(value: any) => {
-						options.set(
-							produce(gridDiv as BoxElement, (draft) => {
-								draft.style.desktop!.default!.borderColor = value
-							})
-						)
-					}}
-					className="col-span-9"
+					onChange={setBorderColor}
 					size="xs"
 					format="hsla"
 				/>
 			</DividerCollapsible>
-		</div>
+		</OptionsWrapper>
 	)
 }
 
 /*
-This component renders a table with a grid of divs.
+This component renders a table with a grid of boxes.
 */
 
 const wrapperDiv = produce(new BoxElement(), (draft) => {
