@@ -1,6 +1,8 @@
 import produce from 'immer'
+import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
@@ -13,7 +15,7 @@ import { IconElementInput } from '../ui/icon-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
-import { Controller } from './controller'
+import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -23,7 +25,7 @@ export class AboutRight extends Controller {
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions() {
+	renderOptions(options: ElementOptions): ReactNode {
 		return <AboutRightOptions />
 	}
 }
@@ -60,7 +62,7 @@ function AboutRightOptions() {
 	)
 }
 
-function ItemOptions({ item }: { item: BoxElement }) {
+function ItemOptions({ item }: { item: Element }) {
 	const icon = item.children?.[0] as IconElement
 	const text = item.children?.[1] as TextElement
 
