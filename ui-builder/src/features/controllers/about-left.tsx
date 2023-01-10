@@ -72,8 +72,6 @@ function ItemOptions({ item }: { item: BoxElement }) {
 	)
 }
 
-// =============  defaultData =============
-
 const tagIds = {
 	heroImage: 'heroImage',
 	title: 'title',
@@ -82,6 +80,8 @@ const tagIds = {
 	cta: 'cta',
 	ctaText: 'ctaText',
 }
+
+// =============  defaultData =============
 
 const component = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
