@@ -29,7 +29,7 @@ type MenuButton struct {
 	} `json:"data"`
 }
 
-const menuButtonTemplate = `<button @click='isOpen = !isOpen' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</button>`
+const menuButtonTemplate = `<button @click='isOpen = !isOpen' id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"   {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</button>`
 
 func convertMenuButton(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 	b, err := json.Marshal(component)
@@ -44,9 +44,6 @@ func convertMenuButton(component map[string]interface{}, styleStore *StyleStore,
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(menuButton.Events)
-	menuButton.Events = events
 
 	var renderedChildren []string
 
@@ -77,7 +74,6 @@ func convertMenuButton(component map[string]interface{}, styleStore *StyleStore,
 		RepeatFrom:       menuButton.RepeatFrom,
 		Events:           menuButton.Events,
 		ClassNames:       menuButton.ClassNames,
-		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer

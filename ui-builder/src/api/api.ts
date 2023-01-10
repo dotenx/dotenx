@@ -2,7 +2,13 @@ import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
 import { addControllers } from '../utils/controller-utils'
-import { deserializeAction, deserializeElement, deserializeExpression } from '../utils/deserialize'
+import {
+	deserializeAction,
+	deserializeAnimation,
+	deserializeElement,
+	deserializeExpression,
+} from '../utils/deserialize'
+import { serializeAnimation } from '../utils/serialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
 	AddPageRequest,
@@ -23,7 +29,7 @@ import {
 	GetProjectDetailsRequest,
 	GetProjectDetailsResponse,
 	GetTablesResponse,
-	GetUrlsResponde,
+	GetUrlsResponse,
 	GlobalStates,
 	ImportComponentRequest,
 	PublishPageRequest,
@@ -96,6 +102,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 					url: deserializeExpression(source.url),
 				})),
 				statesDefaultValues: response.data.content.statesDefaultValues,
+				animations: response.data.content.animations?.map(deserializeAnimation) ?? [],
 			},
 		},
 	}
@@ -113,6 +120,7 @@ export const addPage = ({
 	fonts,
 	customCodes,
 	statesDefaultValues,
+	animations,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -139,6 +147,7 @@ export const addPage = ({
 			fonts,
 			customCodes,
 			statesDefaultValues,
+			animations: animations.map(serializeAnimation),
 		},
 	})
 }
@@ -155,9 +164,7 @@ export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	)
 }
 export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
-	return api.post<{ url: string }>(
-		`/uibuilder/project/${projectTag}/page/${pageName}/preview`
-	)
+	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
 }
 
 export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
@@ -255,6 +262,6 @@ export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequ
 export function getGlobalStates({ projectName }: { projectName: string }) {
 	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
 }
-export function getPageURls({ projectTag, pageName }: { projectTag: string, pageName: string }) {
-	return api.get<GetUrlsResponde>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
+export function getPageURls({ projectTag, pageName }: { projectTag: string; pageName: string }) {
+	return api.get<GetUrlsResponse>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
 }

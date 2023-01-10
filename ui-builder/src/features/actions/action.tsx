@@ -29,12 +29,21 @@ export abstract class Action {
 		return <>{sourceId}</>
 	}
 	serialize() {
-		return { kind: this.name }
+		return { kind: this.name, id: this.id }
 	}
 }
 
 export class AnimationAction extends Action {
 	name = 'Animation'
+	target:
+		| {
+				kind: 'self' | 'children'
+		  }
+		| {
+				kind: 'class'
+				classNames: string[]
+		  } = { kind: 'self' }
+
 	constructor(public animationName: string) {
 		super()
 	}
@@ -42,7 +51,12 @@ export class AnimationAction extends Action {
 		return <AnimationEditor />
 	}
 	serialize() {
-		return { kind: this.name, animationName: this.animationName }
+		return {
+			kind: this.name,
+			animationName: this.animationName,
+			target: this.target,
+			id: this.id,
+		}
 	}
 }
 

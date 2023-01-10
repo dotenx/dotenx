@@ -87,15 +87,10 @@ func convertChartPolarArea(component map[string]interface{}, styleStore *StyleSt
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(chart.Events)
-	chart.Events = events
-
 	params := struct {
 		ChartPolarArea
-		VisibleAnimation VisibleAnimation
 	}{
 		chart,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

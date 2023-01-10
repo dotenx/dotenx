@@ -88,7 +88,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 								)
 							)
 						}
-						className="active:animate-pulse text-xl  active:scale-100 hover:z-50 active:bg-gray-100  p-1 w-16  rounded border bg-gray-50 hover:bg-white transition-all hover:scale-125"
+						className="w-16 p-1 text-xl transition-all border rounded active:animate-pulse active:scale-100 hover:z-50 active:bg-gray-100 bg-gray-50 hover:bg-white hover:scale-125"
 					>
 						<FontAwesomeIcon
 							className="text-xl "
@@ -397,7 +397,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="far" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -412,7 +412,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="fas" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -427,7 +427,7 @@ function FeatureCenterOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="fab" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -515,9 +515,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 	}
 	draft.data.text = inteliText('With our platform you can do this and that')
 }).serialize()
-{
-	;<div className="tex"> </div>
-}
+
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
