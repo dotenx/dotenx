@@ -8,14 +8,17 @@ import { runCustomQuery } from '../../api'
 import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import { IoIosArrowBack } from 'react-icons/io'
+import { Table } from '../ui'
 
 export default function CustomQuery() {
 	const [openModal, setOpenModal] = useState(false)
 	const [showResault, setShowResault] = useState(false)
 	const [query, setQuery] = useState('')
 	const [error, setError] = useState('')
+	const [currentPage, setCurrentPage] = useState(1)
 	const [rowsffected, setRowsffected] = useState<number>()
 	const [responseRows, setResponseRows] = useState<any>()
+	const [columns, setColumns] = useState<any>([])
 	const { projectTag, isLoading: projectTagisLoading } = useGetProjectTag()
 	const mutationRun = useMutation(() => runCustomQuery(projectTag, query), {
 		onSuccess: (d) => {
@@ -27,7 +30,36 @@ export default function CustomQuery() {
 				})
 				setRowsffected(res.rows_affected)
 			} else {
-				setResponseRows(res.rows), setShowResault(true)
+				const columns = Object.keys(res.rows[0]).map((k) => {
+					return {
+						Header: k,
+						accessor: k,
+						Cell: ({ value }: { value: any }) => (
+							<div>
+								<span>{value === null ? '-' : value.toString()}</span>
+							</div>
+						),
+					}
+				})
+				columns.splice(
+					0,
+					0,
+					columns.splice(
+						columns.findIndex((x) => x.Header === 'id'),
+						1
+					)[0]
+				)
+				columns.splice(
+					1,
+					0,
+					columns.splice(
+						columns.findIndex((x) => x.Header === 'creator_id'),
+						1
+					)[0]
+				)
+
+				setResponseRows(res.rows)
+				setColumns(columns), setShowResault(true)
 			}
 		},
 		onError: (e: any) => {
@@ -66,38 +98,20 @@ export default function CustomQuery() {
 							New query
 						</Button>
 						<div className="max-h-[650px] overflow-y-auto p-2">
-							<div className="font-normal">Total rows: {responseRows.length}</div>
-							{responseRows.map((r: any, index: number) => {
-								const formatJSON = (val: string) => {
-									try {
-										const res = JSON.parse(val)
-										return JSON.stringify(res, null, 2)
-									} catch {
-										const errorJson = {
-											error: `${val}`,
-										}
-										return JSON.stringify(errorJson, null, 2)
-									}
-								}
-								return (
-									<>
-										<span className="text-sm text-gray-600">
-											row: {index + 1}
-										</span>
-										<Editor
-											theme="vs-dark"
-											className="my-2"
-											key={index}
-											defaultValue={formatJSON(JSON.stringify(r))}
-											defaultLanguage={'json'}
-											height="300px"
-											options={{
-												readOnly: true,
-											}}
-										/>
-									</>
-								)
-							})}
+							<div className="font-normal -mb-5">
+								Total rows: {responseRows.length}
+							</div>
+							<div className="overflow-x-auto w-full">
+								<Table
+									withoutSearch
+									withPagination
+									currentPage={currentPage}
+									nPages={Math.ceil(responseRows.length / 10)}
+									setCurrentPage={setCurrentPage}
+									columns={columns}
+									data={responseRows}
+								/>
+							</div>
 						</div>
 					</div>
 				) : (
@@ -113,11 +127,14 @@ export default function CustomQuery() {
 							}}
 						/>
 						{error && <div className="my-2 text-sm text-rose-500">{error}</div>}
-						{rowsffected && (
+						{rowsffected === 0 && (
+							<div className="mt-2 text-sm">no rows in the result.</div>
+						)}
+						{rowsffected && rowsffected > 0 ? (
 							<div className="text-green-800 mt-2 text-sm">
 								Number of affected rows: {rowsffected}
 							</div>
-						)}
+						) : null}
 						<div className="flex w-full justify-end">
 							<Button
 								disabled={!query || projectTagisLoading}
