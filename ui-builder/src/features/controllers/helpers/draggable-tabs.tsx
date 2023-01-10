@@ -1,16 +1,16 @@
 import {
-	DndContext,
 	closestCenter,
+	DndContext,
+	DragEndEvent,
 	PointerSensor,
+	UniqueIdentifier,
 	useSensor,
 	useSensors,
-	DragEndEvent,
-	UniqueIdentifier,
 } from '@dnd-kit/core'
 import { horizontalListSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
-import { ReactNode } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 import { ActionIcon, Tabs } from '@mantine/core'
+import { ReactNode } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 
 export type DraggableTabsProps = {
