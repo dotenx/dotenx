@@ -168,3 +168,15 @@ export function useSetElement() {
 	}
 	return setter
 }
+
+export function useSetWithElement<E extends Element = Element>(targetElement: E) {
+	const set = useElementsStore((store) => store.set)
+	function setter(fn: (draft: Draft<E>) => void) {
+		set(
+			produce(targetElement, (draft) => {
+				fn(draft)
+			})
+		)
+	}
+	return setter
+}

@@ -1,10 +1,11 @@
 import { Text } from '@mantine/core'
+import { Element } from '../elements/element'
 import { CollapseLine } from '../ui/collapse-line'
 import { MarginPaddingInput } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'
 
-export function SpacingEditor() {
-	const { style: styles, editStyle } = useEditStyle()
+export function SpacingEditor({ element }: { element?: Element }) {
+	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (
 		<CollapseLine label="Spacing" defaultClosed>

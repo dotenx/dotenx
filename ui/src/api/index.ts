@@ -56,6 +56,7 @@ import {
 	TestTriggerResponse,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
+	RunCustomQueryResponse,
 } from './types'
 export * from './types'
 
@@ -371,6 +372,12 @@ export function runExportDatabase(projectName: string, format: string) {
 	})
 }
 
+export function runCustomQuery(projectTag: string, query: string) {
+	return api.post<RunCustomQueryResponse>(`/database/query/arbitrary/project/${projectTag}`, {
+		"query": query
+
+	})
+}
 export function uploadFile(projectTag: string, formData: FormData) {
 	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
 		headers: {

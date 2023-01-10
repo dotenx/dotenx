@@ -6,6 +6,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { getTables, QueryKey } from '../api'
 import { TableForm, TableList } from '../features/database'
 import ExportDatabase from '../features/database/export-database'
+import CustomQuery from '../features/database/custom-query'
 import { Modals } from '../features/hooks'
 import { ContentWrapper, Loader, NewModal } from '../features/ui'
 import { ViewList } from '../features/views/view-list'
@@ -49,7 +50,10 @@ function Tables({ name }: { name: string }) {
 					</div>
 				) : (
 					<>
-						<ExportDatabase projectName={name} />
+						<div className="w-full flex items-center justify-end gap-x-5">
+							<CustomQuery />
+							<ExportDatabase projectName={name} />
+						</div>
 						<TableList projectName={name} query={query} />
 						<ViewList projectName={name} />
 					</>

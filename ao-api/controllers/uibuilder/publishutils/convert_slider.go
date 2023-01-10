@@ -26,7 +26,7 @@ type Slider struct {
 }
 
 const sliderTemplate = `<div {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="splide {{range .ClassNames}}{{.}} {{end}}" 
-{{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} 
+ 
 {{renderEvents .Events}} 
 >
 <div class="splide__track">
@@ -59,9 +59,6 @@ func convertSlider(component map[string]interface{}, styleStore *StyleStore, fun
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(slider.Events)
-	slider.Events = events
-
 	var renderedChildren []string
 
 	for _, child := range slider.Components {
@@ -88,7 +85,6 @@ func convertSlider(component map[string]interface{}, styleStore *StyleStore, fun
 		Bindings:         slider.Bindings,
 		Events:           slider.Events,
 		ClassNames:       slider.ClassNames,
-		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer

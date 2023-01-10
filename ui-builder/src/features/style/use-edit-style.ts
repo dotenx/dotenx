@@ -11,8 +11,9 @@ import { useClassesStore } from './classes-store'
 
 export type EditStyle = (style: keyof CSSProperties, value: string | null, prev?: string) => void
 
-export const useEditStyle = () => {
-	const element = useSelectedElement()
+export const useEditStyle = (target?: Element) => {
+	const selectedElement = useSelectedElement()
+	const element = target ?? selectedElement
 	const viewport = useAtomValue(viewportAtom)
 	const editSingleStyle = useEditElementStyle(element)
 	const selectedClassName = useAtomValue(selectedClassAtom)

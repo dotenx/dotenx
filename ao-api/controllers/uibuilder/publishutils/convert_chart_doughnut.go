@@ -87,15 +87,10 @@ func convertChartDoughnut(component map[string]interface{}, styleStore *StyleSto
 		return "", err
 	}
 
-	visibleAnimation, events := PullVisibleAnimation(chart.Events)
-	chart.Events = events
-
 	params := struct {
 		ChartDoughnut
-		VisibleAnimation VisibleAnimation
 	}{
 		chart,
-		visibleAnimation,
 	}
 
 	var out bytes.Buffer

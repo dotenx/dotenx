@@ -9,6 +9,7 @@ import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput, inteliText } from '../ui/intelinput'
+import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import {
@@ -51,19 +52,7 @@ function HeroFullWidthOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
+			<TextElementInput label="Title" element={title} />
 			<Intelinput
 				label="Sub-title"
 				name="subtitle"

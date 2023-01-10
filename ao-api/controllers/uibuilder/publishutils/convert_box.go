@@ -31,7 +31,7 @@ type Box struct {
 	} `json:"data"`
 }
 
-const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="({{.RepeatFrom.Iterator}}, index) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}} {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
+const boxTemplate = `{{if .RepeatFrom.Iterator}}<template x-show="!{{.RepeatFrom.Name}}.isLoading" {{if .RepeatFrom.Name}}x-for="({{.RepeatFrom.Iterator}}, index) in {{renderRepeatFromName .RepeatFrom.Name}}"{{end}}>{{end}}<{{.As}} {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} {{if or .Bindings.Show.FromStateName .Bindings.Hide.FromStateName}}x-show="{{renderBindings .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</{{.As}}>{{if .RepeatFrom.Iterator}}</template>{{end}}`
 
 func convertBox(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
@@ -54,9 +54,6 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(box.Events)
-	box.Events = events
 
 	var renderedChildren []string
 
@@ -95,7 +92,6 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
-		VisibleAnimation: visibleAnimation,
 		As:               as,
 	}
 
@@ -118,24 +114,6 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 type VisibleAnimation struct {
 	AnimationName string
 	Once          bool
-}
-
-func PullVisibleAnimation(events []Event) (VisibleAnimation, []Event) {
-	// Note: if user chooses visible and visibleOnce, one of them will be ignored (ideally UI should prevent this)
-	visibleAnimation := VisibleAnimation{}
-	var newEvents []Event
-	for _, event := range events {
-		if event.Kind == "visible" { // Important: Only for visible and visibleOnce events we accept one and only one action which is an animation too
-			visibleAnimation.AnimationName = event.Actions[0].AnimationName
-			visibleAnimation.Once = false
-		} else if event.Kind == "visibleOnce" {
-			visibleAnimation.AnimationName = event.Actions[0].AnimationName
-			visibleAnimation.Once = true
-		} else {
-			newEvents = append(newEvents, event)
-		}
-	}
-	return visibleAnimation, newEvents
 }
 
 func renderRepeatFromName(name string) string {
@@ -228,9 +206,10 @@ func renderEvents(events []Event) string {
 
 	for _, event := range events {
 		if event.Kind == "intersection" {
-			renderedEvents.WriteString(fmt.Sprintf(`x-intersect="%s(null) "`, event.Id))
+			// x-intersect doesn't have access to $event so we fake it by passing {target: $el}
+			renderedEvents.WriteString(fmt.Sprintf(`x-intersect="%s({target: $el}) "`, event.Id))
 		} else {
-			renderedEvents.WriteString(fmt.Sprintf(`x-on:%s="%s(null) "`, event.Kind, event.Id))
+			renderedEvents.WriteString(fmt.Sprintf(`x-on:%s="%s($event) "`, event.Kind, event.Id))
 			if event.Kind == "load" { // TODO: Remove this if it's not used.
 				renderedEvents.WriteString(fmt.Sprintf(`x-init="{$nextTick => %s()}" `, event.Id))
 			}
