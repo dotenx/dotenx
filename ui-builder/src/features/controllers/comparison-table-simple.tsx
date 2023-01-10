@@ -1,10 +1,15 @@
-import { Button, Select, Switch, ColorInput } from '@mantine/core'
+import { Button, ColorInput, Select, Switch } from '@mantine/core'
 import produce from 'immer'
-import React, { ReactNode, useMemo } from 'react'
+import { useAtomValue } from 'jotai'
+import { ReactNode, useMemo, useState } from 'react'
 import imageUrl from '../../assets/components/comparison-table-simple.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
+import { Intelinput, inteliText } from '../ui/intelinput'
+import { viewportAtom } from '../viewport/viewport-store'
+import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
@@ -13,12 +18,6 @@ import {
 	repeatObject,
 	SimpleComponentOptionsProps,
 } from './helpers'
-
-import { Element } from '../elements/element'
-import { useAtomValue } from 'jotai'
-import { viewportAtom } from '../viewport/viewport-store'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
 
 export class ComparisonTableSimple extends Controller {
 	name = 'Simple comparison table'
@@ -34,11 +33,10 @@ export class ComparisonTableSimple extends Controller {
 
 function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	const viewport = useAtomValue(viewportAtom)
-
 	const gridDiv = options.element as BoxElement
-
-	const [selectedRow, setSelectedRow] = React.useState(1)
-	const [selectedColumn, setSelectedColumn] = React.useState(1)
+	const [selectedRow, setSelectedRow] = useState(1)
+	const [selectedColumn, setSelectedColumn] = useState(1)
+	const [isRow, setIsRow] = useState(true)
 
 	const rows = useMemo(() => {
 		const totalCells = gridDiv.children.length
@@ -57,8 +55,6 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 	const selectedTile = useMemo(() => {
 		return (selectedRow - 1) * cols.length + selectedColumn - 1
 	}, [selectedColumn, selectedRow, cols.length])
-
-	const [isRow, setIsRow] = React.useState(true)
 
 	if (viewport === 'mobile') {
 		return <div>Not displayed in mobile mode</div>
@@ -193,7 +189,6 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 					value={selectedColumn + ''}
 				/>
 			</div>
-
 			<Intelinput
 				label="Cell content"
 				placeholder="Cell content"
@@ -234,8 +229,6 @@ function ComparisonTableSimpleOptions({ options }: SimpleComponentOptionsProps) 
 		</div>
 	)
 }
-
-// #region defaultData
 
 /*
 This component renders a table with a grid of divs.
@@ -280,7 +273,6 @@ const newElement = (element: BoxElement): BoxElement =>
 				wordBreak: 'break-all',
 			},
 		}
-
 		const text = produce(new TextElement(), (draft) => {
 			draft.data.text = inteliText('Feature')
 		})
@@ -301,12 +293,14 @@ const title = produce(newElement(new BoxElement()), (draft) => {
 
 const createTitle = (text: string) =>
 	produce(title, (draft) => {
-		;(draft.children[0] as TextElement).data.text = inteliText(text)
+		const textElement = draft.children[0] as TextElement
+		textElement.data.text = inteliText(text)
 	})
 
 const createElement = (text: string) =>
 	produce(newElement(new BoxElement()), (draft) => {
-		;(draft.children[0] as TextElement).data.text = inteliText(text)
+		const textElement = draft.children[0] as TextElement
+		textElement.data.text = inteliText(text)
 	})
 
 const titleRow = [
@@ -353,5 +347,3 @@ const defaultData = {
 	...wrapperDiv,
 	components: [...titleRow, ...row1, ...row2, ...row3, ...row4],
 }
-
-// #endregion
