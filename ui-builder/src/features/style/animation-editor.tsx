@@ -1,117 +1,25 @@
-import { Button, CloseButton, Select, Text } from '@mantine/core'
+import { Button, CloseButton, MultiSelect, Select, Text } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
+import _ from 'lodash'
 import { TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
 import { AnimationAction } from '../actions/action'
+import { animationsAtom } from '../atoms'
 import { eventOptions } from '../data-source/data-editor'
 import { useElementsStore } from '../elements/elements-store'
 import { EventKind } from '../elements/event'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { CollapseLine } from '../ui/collapse-line'
-
-const cssAnimations = [
-	'bounce',
-	'flash',
-	'pulse',
-	'rubberBand',
-	'shakeX',
-	'shakeY',
-	'headShake',
-	'swing',
-	'tada',
-	'wobble',
-	'jello',
-	'heartBeat',
-	'backInDown',
-	'backInLeft',
-	'backInRight',
-	'backInUp',
-	'backOutDown',
-	'backOutLeft',
-	'backOutRight',
-	'backOutUp',
-	'bounceIn',
-	'bounceInDown',
-	'bounceInLeft',
-	'bounceInRight',
-	'bounceInUp',
-	'bounceOut',
-	'bounceOutDown',
-	'bounceOutLeft',
-	'bounceOutRight',
-	'bounceOutUp',
-	'fadeIn',
-	'fadeInDown',
-	'fadeInDownBig',
-	'fadeInLeft',
-	'fadeInLeftBig',
-	'fadeInRight',
-	'fadeInRightBig',
-	'fadeInUp',
-	'fadeInUpBig',
-	'fadeInTopLeft',
-	'fadeInTopRight',
-	'fadeInBottomLeft',
-	'fadeInBottomRight',
-	'fadeOut',
-	'fadeOutDown',
-	'fadeOutDownBig',
-	'fadeOutLeft',
-	'fadeOutLeftBig',
-	'fadeOutRight',
-	'fadeOutRightBig',
-	'fadeOutUp',
-	'fadeOutUpBig',
-	'fadeOutTopLeft',
-	'fadeOutTopRight',
-	'fadeOutBottomRight',
-	'fadeOutBottomLeft',
-	'flip',
-	'flipInX',
-	'flipInY',
-	'flipOutX',
-	'flipOutY',
-	'lightSpeedInRight',
-	'lightSpeedInLeft',
-	'lightSpeedOutRight',
-	'lightSpeedOutLeft',
-	'rotateIn',
-	'rotateInDownLeft',
-	'rotateInDownRight',
-	'rotateInUpLeft',
-	'rotateInUpRight',
-	'rotateOut',
-	'rotateOutDownLeft',
-	'rotateOutDownRight',
-	'rotateOutUpLeft',
-	'rotateOutUpRight',
-	'hinge',
-	'jackInTheBox',
-	'rollIn',
-	'rollOut',
-	'zoomIn',
-	'zoomInDown',
-	'zoomInLeft',
-	'zoomInRight',
-	'zoomInUp',
-	'zoomOut',
-	'zoomOutDown',
-	'zoomOutLeft',
-	'zoomOutRight',
-	'zoomOutUp',
-	'slideInDown',
-	'slideInLeft',
-	'slideInRight',
-	'slideInUp',
-	'slideOutDown',
-	'slideOutLeft',
-	'slideOutRight',
-	'slideOutUp',
-]
+import { useClassesStore } from './classes-store'
 
 export function AnimationEditor() {
 	const selectedElement = useSelectedElement()
+	const availableAnimations = useAtomValue(animationsAtom)
 	const setElement = useElementsStore((store) => store.set)
+	const classNames = useClassesStore((store) => store.classes)
+	const addClassName = useClassesStore((store) => store.add)
+	const classNameList = _.keys(classNames)
 	if (!selectedElement) return null
 
 	const addNewAnimation = () => {
@@ -120,7 +28,7 @@ export function AnimationEditor() {
 				draft.events.push({
 					id: uuid(),
 					kind: EventKind.Intersection,
-					actions: [new AnimationAction(cssAnimations[0])],
+					actions: [new AnimationAction(availableAnimations[0]?.name ?? '')],
 				})
 			})
 		)
@@ -172,7 +80,7 @@ export function AnimationEditor() {
 						<Text className="w-14">Animate</Text>
 						<Select
 							size="xs"
-							data={cssAnimations}
+							data={availableAnimations.map((animation) => animation.name)}
 							className="grow"
 							value={animation.animationName}
 							onChange={(value) =>
@@ -186,6 +94,52 @@ export function AnimationEditor() {
 							}
 						/>
 					</div>
+					<div className="flex items-center gap-2">
+						<Text className="w-14">Target</Text>
+						<Select
+							size="xs"
+							className="grow"
+							data={['self', 'children', 'class']}
+							value={animation.target.kind}
+							onChange={(value: 'self' | 'children' | 'class') =>
+								editAnimation(
+									event.id,
+									animation.id,
+									produce(animation, (draft) => {
+										draft.target.kind = value
+									})
+								)
+							}
+						/>
+					</div>
+					{animation.target.kind === 'class' && (
+						<div className="flex items-center gap-2">
+							<Text className="w-14 shrink-0">Class</Text>
+							<MultiSelect
+								className="grow"
+								data={classNameList}
+								getCreateLabel={(query) => `+ Create new class ${query} `}
+								onCreate={(query) => {
+									addClassName(query)
+									return query
+								}}
+								size="xs"
+								searchable
+								creatable
+								value={animation.target.classNames}
+								onChange={(value) =>
+									editAnimation(
+										event.id,
+										animation.id,
+										produce(animation, (draft) => {
+											if (draft.target.kind === 'class')
+												draft.target.classNames = value
+										})
+									)
+								}
+							/>
+						</div>
+					)}
 				</div>
 			))
 	)
@@ -193,7 +147,7 @@ export function AnimationEditor() {
 	return (
 		<CollapseLine label="Animation" defaultClosed>
 			<div>
-				<div className="space-y-4">{animations}</div>
+				<div className="space-y-4 text-xs">{animations}</div>
 				<Button mt="xl" size="xs" leftIcon={<TbPlus />} onClick={addNewAnimation}>
 					Animation
 				</Button>

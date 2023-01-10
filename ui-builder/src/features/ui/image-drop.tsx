@@ -2,6 +2,7 @@ import { CloseButton, Group, Image, TextInput } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useMutation } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
+import { ReactNode } from 'react'
 import { TbPhoto, TbUpload, TbX } from 'react-icons/tb'
 import { uploadImage } from '../../api'
 import { projectTagAtom } from '../page/top-bar'
@@ -11,17 +12,19 @@ import { SingleIntelinput } from './intelinput'
 export function ImageDrop({
 	src,
 	onChange,
+	rightSection,
 	label,
 }: {
 	src: string | null
 	onChange: (src: string) => void
+	rightSection?: ReactNode
 	label?: string
 }) {
 	const uploadImageMutation = useMutation(uploadImage)
 	const projectTag = useAtomValue(projectTagAtom)
 
 	const imagePart = src ? (
-		<div>
+		<div className="h-[200px]">
 			<CloseButton
 				onClick={() => onChange('')}
 				mb="xs"
@@ -29,7 +32,7 @@ export function ImageDrop({
 				ml="auto"
 				title="Clear image"
 			/>
-			<Image radius="xs" src={src} />
+			<Image height={172} radius="xs" src={src} />
 		</div>
 	) : (
 		<Dropzone
@@ -41,6 +44,8 @@ export function ImageDrop({
 			}
 			accept={IMAGE_MIME_TYPE}
 			loading={uploadImageMutation.isLoading}
+			h={200}
+			sx={{ display: 'flex', alignItems: 'center' }}
 		>
 			<Group position="center" spacing="xl" py="xl" style={{ pointerEvents: 'none' }}>
 				<Dropzone.Accept>
@@ -72,6 +77,7 @@ export function ImageDrop({
 				label="Source"
 				value={src ?? ''}
 				onChange={(event) => onChange(event.target.value)}
+				rightSection={rightSection}
 			/>
 		</div>
 	)

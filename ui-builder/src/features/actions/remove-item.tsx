@@ -19,7 +19,7 @@ export class RemoveItemAction extends Action {
 		return <RemoveItemSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, stateName: serializeInteliState(this.stateName) }
+		return { kind: this.name, stateName: serializeInteliState(this.stateName), id: this.id }
 	}
 	renderDataSourceSettings(sourceId: string) {
 		return <RemoveItemDataSource ids={{ source: sourceId, action: this.id }} />

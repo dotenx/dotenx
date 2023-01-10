@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/lib/pq"
 )
@@ -35,6 +36,12 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 		return nil, err
 	}
 
+	// Adding some limitation to user's queries
+	_, err = db.Connection.Exec(fmt.Sprintf("SET statement_timeout = %s;", config.Configs.App.CustomQueryTimeLimit))
+	if err != nil {
+		return nil, err
+	}
+
 	// Execute the query
 	result, err := db.Connection.Exec(query)
 	if err != nil {
@@ -47,27 +54,20 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 		return nil, err
 	}
 
-	var cnt = 0
-	irows, err := db.Connection.Queryx(query)
+	var queryReturnRows = false
+	rows, err := db.Connection.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
-	defer irows.Close()
-	for irows.Next() {
-		cnt++
-		break
+	defer rows.Close()
+	if rows.Next() {
+		queryReturnRows = true
 	}
 
 	var results []map[string]interface{}
 	// If the query is a SELECT statement, fetch the rows
-	if cnt != 0 {
+	if queryReturnRows {
 		rowsAffected = 0
-		rows, err := db.Connection.Queryx(query)
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-
 		columns, err := rows.Columns()
 		if err != nil {
 			return nil, err
@@ -104,7 +104,8 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 			}
 		}
 
-		for rows.Next() {
+		// This is a do-while loop because first call of rows.Next() was called before this loop
+		for {
 			if err := rows.Scan(values...); err != nil {
 				return nil, err
 			}
@@ -128,6 +129,10 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 				}
 			}
 			results = append(results, dest)
+
+			if !rows.Next() {
+				break
+			}
 		}
 	}
 

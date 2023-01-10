@@ -27,6 +27,7 @@ export class SetStateAction extends Action {
 			stateName: serializeInteliState(this.stateName),
 			key: serializeInteliState(this.key),
 			value: serializeInteliState(this.value),
+			id: this.id,
 		}
 	}
 	renderDataSourceSettings(sourceId: string) {

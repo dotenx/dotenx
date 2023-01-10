@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-const navbarTemplate = `<nav x-data="{isOpen:window.innerWidth > 640}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{if .VisibleAnimation.AnimationName}}x-intersect-class{{if .VisibleAnimation.Once}}.once{{end}}="animate__animated animate__{{.VisibleAnimation.AnimationName}}"{{end}}  {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</nav>`
+const navbarTemplate = `<nav x-data="{isOpen:window.innerWidth > 640}" id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}"   {{renderEvents .Events}} {{if .RepeatFrom.Name}}:key="index"{{end}}>{{.RenderedChildren}}</nav>`
 
 // Exactly same as box, just a slightly different template
 func convertNavbar(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
@@ -24,9 +24,6 @@ func convertNavbar(component map[string]interface{}, styleStore *StyleStore, fun
 		fmt.Println(err)
 		return "", err
 	}
-
-	visibleAnimation, events := PullVisibleAnimation(box.Events)
-	box.Events = events
 
 	var renderedChildren []string
 
@@ -57,7 +54,6 @@ func convertNavbar(component map[string]interface{}, styleStore *StyleStore, fun
 		RepeatFrom:       box.RepeatFrom,
 		Events:           box.Events,
 		ClassNames:       box.ClassNames,
-		VisibleAnimation: visibleAnimation,
 	}
 
 	var out bytes.Buffer

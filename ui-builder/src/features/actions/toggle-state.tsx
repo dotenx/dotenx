@@ -9,7 +9,7 @@ import {
 	Ids,
 	SourceIds,
 	useAction,
-	useDataSourceAction,
+	useDataSourceAction
 } from './action'
 
 export class ToggleStateAction extends Action {
@@ -19,7 +19,7 @@ export class ToggleStateAction extends Action {
 		return <ToggleStateSettings ids={ids} />
 	}
 	serialize() {
-		return { kind: this.name, stateName: serializeInteliState(this.stateName) }
+		return { kind: this.name, stateName: serializeInteliState(this.stateName), id: this.id }
 	}
 	renderDataSourceSettings(sourceId: string) {
 		return <ToggleStateDataSource ids={{ source: sourceId, action: this.id }} />

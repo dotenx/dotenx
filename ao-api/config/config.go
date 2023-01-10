@@ -32,6 +32,7 @@ type (
 		InteractionBodyKey   string `envconfig:"AOA_INTERACTION_BODY_KEY"`
 		LogLevel             string `envconfig:"AOA_APP_LOG_LEVEL"`
 		UiBuilderPublishPath string `envconfig:"AOA_UI_BUILDER_PUBLISH_PATH"`
+		CustomQueryTimeLimit string `envconfig:"AOA_CUSTOM_QUERY_TIME_LIMIT_IN_MILLISECONDS"`
 	}
 
 	Queue struct {

@@ -29,6 +29,7 @@ import {
 	QueryKey,
 	updatePage,
 } from '../../api'
+import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
@@ -200,6 +201,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 	const fonts = useAtomValue(fontsAtom)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
 
 	return (
 		<form
@@ -217,6 +219,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 					fonts,
 					customCodes,
 					statesDefaultValues,
+					animations,
 				})
 			)}
 		>
@@ -287,6 +290,7 @@ function SaveButton() {
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
 
 	const save = () => {
 		savePageMutation.mutate(
@@ -302,6 +306,7 @@ function SaveButton() {
 				fonts,
 				customCodes,
 				statesDefaultValues,
+				animations,
 			},
 			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
 		)
@@ -343,6 +348,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
 
 	const [open, setOpen] = useState(false)
 
@@ -360,6 +366,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 				fonts,
 				customCodes,
 				statesDefaultValues,
+				animations,
 			},
 			{
 				onSuccess: () => {
@@ -383,39 +390,39 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 					variant="light"
 					size="xs"
 				>
-					<FaPlay className=" w-4 h-4" />
+					<FaPlay className="w-4 h-4 " />
 				</Button>
 			</Tooltip>
 			{open && (
 				<Collapse in={open}>
 					<div className=" text-slate-900 w-[300px] shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md  bg-slate-50 h-auto">
-						<div className="text-sm font-semibold mb-4 ">
+						<div className="mb-4 text-sm font-semibold ">
 							Publish your temporary preview that you can share with others
 						</div>
 						{previewUrl && (
 							<div>
 								Preview url:
-								<div className="w-fit  cursor-pointer text-slate-50 text-md rounded-md bg-rose-600 flex items-center">
+								<div className="flex items-center rounded-md cursor-pointer w-fit text-slate-50 text-md bg-rose-600">
 									<div className="  p-2 w-[190px] rounded-l-md text-xs h-10 flex items-center truncate  cursor-text">
 										<span className="w-[170px]"> {previewUrl}</span>
 									</div>
 									<div
 										onClick={() => copyPreview.copy(previewUrl)}
-										className="p-2 active:bg-rose-800 hover:text-white hover:bg-rose-700 transition border-x-2 border-rose-700"
+										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPreview.copied ? (
-											<FaCheck className=" w-5 h-5 mb-1" />
+											<FaCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className=" w-5 h-5 mb-1" />
+											<FaCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
 										href={previewUrl}
 										target={'_blank'}
 										rel="noopener noreferrer"
-										className="p-2 active:bg-rose-800 hover:text-white hover:bg-rose-700 transition rounded-r-md"
+										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className=" w-5 h-5 mb-1 " />
+										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>
@@ -459,6 +466,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
 	const publish = () =>
 		publishPageMutation.mutate(
 			{ projectTag, pageName },
@@ -483,6 +491,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 				fonts,
 				customCodes,
 				statesDefaultValues,
+				animations,
 			},
 			{
 				onSuccess: () => {
@@ -510,13 +519,13 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 					disabled={isLoading}
 					size="xs"
 				>
-					<TbWorldUpload className=" w-5 h-5" />
+					<TbWorldUpload className="w-5 h-5 " />
 				</Button>
 			</Tooltip>
 			{open && (
 				<Collapse in={open}>
 					<div className=" text-slate-900 w-[300px] shadow-md outline-1 absolute top-12 right-16 p-5 flex-col items-center justify-center rounded-md  bg-slate-50 h-auto">
-						<div className="text-md font-semibold ">
+						<div className="font-semibold text-md ">
 							Publish your page to make it live
 						</div>
 						<div className="my-[14px]">
@@ -532,32 +541,34 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 						{publishUrl ? (
 							<div>
 								Page url:
-								<div className="w-fit  cursor-pointer text-slate-50 text-md rounded-md bg-rose-600 flex items-center">
+								<div className="flex items-center rounded-md cursor-pointer w-fit text-slate-50 text-md bg-rose-600">
 									<div className="  p-2 w-[190px] rounded-l-md text-xs h-10 flex items-center truncate  cursor-text">
 										<span className="w-[170px]"> {publishUrl}</span>
 									</div>
 									<div
 										onClick={() => copyPublish.copy(publishUrl)}
-										className="p-2 active:bg-rose-800 hover:text-white hover:bg-rose-700 transition border-x-2 border-rose-700"
+										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPublish.copied ? (
-											<FaCheck className=" w-5 h-5 mb-1" />
+											<FaCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className=" w-5 h-5 mb-1" />
+											<FaCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
 										href={publishUrl}
 										target={'_blank'}
 										rel="noopener noreferrer"
-										className="p-2 active:bg-rose-800 hover:text-white hover:bg-rose-700 transition rounded-r-md"
+										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className=" w-5 h-5 mb-1 " />
+										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>
 						) : (
-							<div className="h-3 flex items-center">Your page is not published yet.</div>
+							<div className="flex items-center h-3">
+								Your page is not published yet.
+							</div>
 						)}
 
 						<Button
