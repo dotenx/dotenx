@@ -9,13 +9,14 @@ import { HelpDetails, HelpPopover } from './help-popover'
 import { Loader } from './loader'
 
 interface TableProps<D extends object = Record<string, string>> {
-	title: string
+	title?: string
 	subtitle?: string
 	actionBar?: ReactNode
 	emptyText?: string
 	columns: Column<D>[]
 	data: D[] | undefined
 	loading?: boolean
+	withoutSearch?: boolean
 	helpDetails?: HelpDetails
 	withPagination?: boolean
 	currentPage?: number
@@ -25,6 +26,7 @@ interface TableProps<D extends object = Record<string, string>> {
 
 export function Table<D extends object = Record<string, string>>({
 	title,
+	withoutSearch,
 	subtitle,
 	currentPage,
 	setCurrentPage,
@@ -60,17 +62,19 @@ export function Table<D extends object = Record<string, string>>({
 
 	return (
 		<div className="flex flex-col gap-10">
-			<div className="flex justify-between ">
-				<div className="flex justify-start">
-					<Title order={2} sx={{ display: 'inline-flex' }}>
-						{title}
-					</Title>
+			{title && (
+				<div className="flex justify-between ">
+					<div className="flex justify-start">
+						<Title order={2} sx={{ display: 'inline-flex' }}>
+							{title}
+						</Title>
 
-					{helpDetails && <HelpPopover helpDetails={helpDetails} />}
+						{helpDetails && <HelpPopover helpDetails={helpDetails} />}
+					</div>
+
+					{data.length !== 0 && <span>{actionBar}</span>}
 				</div>
-
-				{data.length !== 0 && <span>{actionBar}</span>}
-			</div>
+			)}
 			<div className="flex justify-start bg-red-200">
 				<div className="text-sm -mt-8 font-medium">{subtitle}</div>
 			</div>
@@ -83,13 +87,15 @@ export function Table<D extends object = Record<string, string>>({
 			)}
 			{(data.length !== 0 || !emptyText) && (
 				<div className="flex flex-col gap-6 grow">
-					<TextInput
-						icon={<IoSearch className="text-xl" />}
-						value={search}
-						placeholder="Search..."
-						onChange={(e) => setSearch(e.target.value)}
-						className="max-w-xs"
-					/>
+					{!withoutSearch && (
+						<TextInput
+							icon={<IoSearch className="text-xl" />}
+							value={search}
+							placeholder="Search..."
+							onChange={(e) => setSearch(e.target.value)}
+							className="max-w-xs"
+						/>
+					)}
 					<div className="max-w-full overflow-auto scrollbar-thin scrollbar-track-rounded-sm scrollbar-corner-rounded-sm scrollbar-thumb-rounded-sm scrollbar-thumb-gray-900 scrollbar-track-gray-100 pb-4">
 						<MantineTable
 							verticalSpacing={1}
@@ -105,7 +111,7 @@ export function Table<D extends object = Record<string, string>>({
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="!font-medium !text-slate-900"
+												className="!font-medium !text-slate-900 !whitespace-nowrap"
 												{...column.getHeaderProps()}
 											>
 												{column.render('Header')}
