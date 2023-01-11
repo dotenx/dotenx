@@ -16,15 +16,18 @@ import { memo, ReactNode, useState } from 'react'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import imageUrl from '../../assets/components/feature-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { Intelinput } from '../ui/intelinput'
 import { viewportAtom } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName } from './helpers'
 
 export class FeatureCenterGrid extends Controller {
 	name = 'Feature Center Grid'
@@ -32,21 +35,20 @@ export class FeatureCenterGrid extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FeatureCenterGridOptions options={options} />
+		return <FeatureCenterGridOptions />
 		// return <div></div>
 	}
 }
 
 // =============  renderOptions =============
 
-function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
+function FeatureCenterGridOptions() {
 	const [selectedTile, setSelectedTile] = useState(0)
-	const wrapper = options.element as BoxElement
-
-	const titleText = options.element.children?.[0].children?.[0] as TextElement
-	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
-
-	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
+	const set = useSetElement()
+	const component = useSelectedElement<BoxElement>()!
+	const titleText = component.children?.[0].children?.[0] as TextElement
+	const subtitleText = component.children?.[0].children?.[1] as TextElement
+	const containerDiv = component.children?.[1].children?.[0] as BoxElement
 	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
 	const viewport = useAtomValue(viewportAtom)
 
@@ -77,19 +79,14 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 					<button
 						onClick={() =>
 							// eslint-disable-next-line react/prop-types
-							options.set(
-								produce(
-									getSelectedTileDiv().children?.[0] as IconElement,
-									(draft) => {
-										draft.data.type = iconType
-										draft.data.name = icon
-										draft.style.desktop!.default!.color = iconColor
-										draft.style.desktop!.default!.color = iconColor
-									}
-								)
-							)
+							set(getSelectedTileDiv().children?.[0] as IconElement, (draft) => {
+								draft.data.type = iconType
+								draft.data.name = icon
+								draft.style.desktop!.default!.color = iconColor
+								draft.style.desktop!.default!.color = iconColor
+							})
 						}
-						className="active:animate-pulse text-xl  active:scale-100 hover:z-50 active:bg-gray-100  p-1 w-16  rounded border bg-gray-50 hover:bg-white transition-all hover:scale-125"
+						className="w-16 p-1 text-xl transition-all border rounded active:animate-pulse active:scale-100 hover:z-50 active:bg-gray-100 bg-gray-50 hover:bg-white hover:scale-125"
 					>
 						<FontAwesomeIcon
 							className="text-xl "
@@ -115,17 +112,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('desktop')}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.desktop = {
+									default: {
+										...draft.style.desktop?.default,
+										// prettier-ignore
+										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+									},
+								}
+							})
 						}}
 					/>
 					<p>Gap</p>
@@ -135,17 +130,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.desktop = {
+									default: {
+										...draft.style.desktop?.default,
+										// prettier-ignore
+										...{ gap: `${val}px`},
+									},
+								}
+							})
 						}}
 					/>
 				</>
@@ -160,17 +153,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('tablet')}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.tablet = {
+									default: {
+										...draft.style.tablet?.default,
+										// prettier-ignore
+										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+									},
+								}
+							})
 						}}
 					/>
 					<p>Gap</p>
@@ -180,17 +171,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.tablet = {
+									default: {
+										...draft.style.tablet?.default,
+										// prettier-ignore
+										...{ gap: `${val}px`},
+									},
+								}
+							})
 						}}
 					/>
 				</>
@@ -205,17 +194,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('mobile')}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.mobile = {
+									default: {
+										...draft.style.mobile?.default,
+										// prettier-ignore
+										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
+									},
+								}
+							})
 						}}
 					/>
 					<p>Gap</p>
@@ -226,17 +213,15 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={1}
 						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
+							set(containerDiv, (draft) => {
+								draft.style.mobile = {
+									default: {
+										...draft.style.mobile?.default,
+										// prettier-ignore
+										...{ gap: `${val}px`},
+									},
+								}
+							})
 						}}
 					/>
 				</>
@@ -247,11 +232,9 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 				size="xs"
 				value={titleText.data.text}
 				onChange={(value) =>
-					options.set(
-						produce(titleText, (draft) => {
-							draft.data.text = value
-						})
-					)
+					set(titleText, (draft) => {
+						draft.data.text = value
+					})
 				}
 			/>
 			<Intelinput
@@ -260,41 +243,24 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 				size="xs"
 				value={subtitleText.data.text}
 				onChange={(value) =>
-					options.set(
-						produce(subtitleText, (draft) => {
-							draft.data.text = value
-						})
-					)
+					set(subtitleText, (draft) => {
+						draft.data.text = value
+					})
 				}
 			/>
-			<DividerCollapsible closed title="Color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: titleText,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subtitleText,
-					title: 'Subtitle color',
-				})}
-			</DividerCollapsible>
-
+			<BoxElementInput label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth
 				variant="outline"
 				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.push(
-								deserializeElement({
-									...tile.serialize(),
-								})
-							)
-						})
-					)
+					set(containerDiv, (draft) => {
+						draft.children?.push(
+							deserializeElement({
+								...tile.serialize(),
+							})
+						)
+					})
 				}}
 			>
 				+ Add feature
@@ -320,11 +286,9 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 				size="xs"
 				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
 				onChange={(value) =>
-					options.set(
-						produce(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-							draft.data.text = value
-						})
-					)
+					set(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
+						draft.data.text = value
+					})
 				}
 			/>
 			<Intelinput
@@ -335,35 +299,17 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 				maxRows={10}
 				value={(getSelectedTileDiv().children?.[2] as TextElement).data.text}
 				onChange={(value) =>
-					options.set(
-						produce(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
-							draft.data.text = value
-						})
-					)
+					set(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
+						draft.data.text = value
+					})
 				}
 			/>
-			<DividerCollapsible closed title="Tiles color">
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: containerDiv.children?.[0].children?.[1],
-					title: ' title color',
-					mapDiv: containerDiv.children,
-					childIndex: 1,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: containerDiv.children?.[0].children?.[2],
-					title: 'description color',
-					mapDiv: containerDiv.children,
-					childIndex: 2,
-				})}
-			</DividerCollapsible>
 			<Tabs
 				onTabChange={(name) => setIconType(name as string)}
 				variant="pills"
 				defaultValue="far"
 			>
-				<p className="mb-2 mt-3 flex items-center">
+				<p className="flex items-center mt-3 mb-2">
 					Icon <hr className="w-full pl-2" />
 				</p>
 				<TextInput
@@ -373,7 +319,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 					value={searchValue}
 					onChange={(e) => setSearchValue(e.target.value)}
 				/>
-				<p className="mb-1 mt-2">Color</p>
+				<p className="mt-2 mb-1">Color</p>
 				<ColorInput
 					value={iconColor}
 					onChange={(value) => setIconColor(value)}
@@ -395,7 +341,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="far" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -410,7 +356,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="fas" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -425,7 +371,7 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 
 				<Tabs.Panel value="fab" pt="xs">
 					<Grid
-						className="border my-2 py-1 rounded text-center items-center content-center place-content-center"
+						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
 						columnCount={3}
 						columnWidth={75}
 						height={300}
@@ -444,11 +390,9 @@ function FeatureCenterGridOptions({ options }: SimpleComponentOptionsProps) {
 				fullWidth
 				variant="outline"
 				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
+					set(containerDiv, (draft) => {
+						draft.children?.splice(selectedTile, 1)
+					})
 					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
 				}}
 			>
@@ -500,7 +444,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = inteliText('Features')
+	draft.data.text = Expression.fromString('Features')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -510,7 +454,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = inteliText('With our platform you can do this and that')
+	draft.data.text = Expression.fromString('With our platform you can do this and that')
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
@@ -520,7 +464,7 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '18px',
 		},
 	}
-	draft.data.text = inteliText('Feature')
+	draft.data.text = Expression.fromString('Feature')
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
@@ -529,7 +473,7 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			fontSize: '14px',
 		},
 	}
-	draft.data.text = inteliText('Feature description goes here')
+	draft.data.text = Expression.fromString('Feature description goes here')
 })
 
 const tileIcon = produce(new IconElement(), (draft) => {
@@ -571,8 +515,10 @@ function createTile({
 		iconElement.data.name = icon.name
 		iconElement.data.type = icon.type
 		iconElement.style.desktop!.default!.color = icon.color
-		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
-		;(draft.children?.[2] as TextElement).data.text = inteliText(description)
+		const titleElement = draft.children?.[1] as TextElement
+		titleElement.data.text = Expression.fromString(title)
+		const descriptionElement = draft.children?.[2] as TextElement
+		descriptionElement.data.text = Expression.fromString(description)
 	})
 }
 
