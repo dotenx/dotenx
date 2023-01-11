@@ -9,8 +9,8 @@ import { useModal } from '../hooks'
 import { Field, Form, NewSelect } from '../ui'
 
 const schema = z.object({
-	columnName: z.string().min(1),
-	columnType: z.string().min(1),
+	columnName: z.string().min(1, 'Name is required.'),
+	columnType: z.string().min(1, 'Type is required.'),
 })
 
 type Schema = z.infer<typeof schema>

@@ -157,10 +157,10 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 						<div>
 							<Tooltip
 								withinPortal
-								openDelay={500}
+								openDelay={700}
 								label="Link your DoTenX account with your Git account to save your project and import it again."
 							>
-								<div className="flex cursor-default items-center mt-4 mb-2 text-base">
+								<div className="flex w-fit  cursor-default items-center mt-4 mb-2 text-base">
 									Repositories <ImInfo className="w-3 h-3 ml-1 mb-2 " />
 								</div>
 							</Tooltip>
