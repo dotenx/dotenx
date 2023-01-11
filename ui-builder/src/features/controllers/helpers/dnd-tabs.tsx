@@ -12,7 +12,7 @@ export function DndTabs({
 	insertElement,
 }: {
 	containerElement: BoxElement
-	renderItemOptions: (item: BoxElement) => ReactNode
+	renderItemOptions: (item: Element) => ReactNode
 	insertElement: () => Element
 }) {
 	const set = useSetWithElement(containerElement)
