@@ -1,21 +1,14 @@
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-	Button,
-	ColorInput,
-	Select,
-	SelectItem,
-	Slider,
-	Tabs,
-	TextInput,
-	Tooltip,
-} from '@mantine/core'
+import { Button, ColorInput, Select, Tabs, TextInput, Tooltip } from '@mantine/core'
 import produce from 'immer'
-import { useAtomValue } from 'jotai'
+import _ from 'lodash'
 import { memo, ReactNode, useState } from 'react'
+import { TbMinus, TbPlus } from 'react-icons/tb'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import imageUrl from '../../assets/components/feature-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { regenElement } from '../clipboard/copy-paste'
 import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
@@ -25,8 +18,8 @@ import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { BoxElementInput } from '../ui/box-element-input'
-import { Intelinput } from '../ui/intelinput'
-import { viewportAtom } from '../viewport/viewport-store'
+import { ColumnsElementInput } from '../ui/columns-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -45,34 +38,19 @@ export class FeatureCenterGrid extends Controller {
 // =============  renderOptions =============
 
 function FeatureCenterGridOptions() {
-	const [selectedTile, setSelectedTile] = useState(0)
+	const [selectedTileNumber, setSelectedTileNumber] = useState(0)
 	const set = useSetElement()
 	const component = useSelectedElement<BoxElement>()!
 	const title = component.findByTagId<TextElement>(tagIds.title)!
 	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
 	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
-	const viewport = useAtomValue(viewportAtom)
 	const [searchValue, setSearchValue] = useState('')
 	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
 	const [iconType, setIconType] = useState('far')
+	const selectedTile = grid.children?.[selectedTileNumber] as BoxElement
 
-	const getSelectedTileDiv = () => grid.children?.[selectedTile] as BoxElement
-	const countGridTemplateColumns = (mode: string) => {
-		switch (mode) {
-			case 'desktop':
-				// prettier-ignore
-				return ((grid.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			case 'tablet':
-				// prettier-ignore
-				return ((grid.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			default:
-				// prettier-ignore
-				return ((grid.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-		}
-	}
-
-	const Row = memo((r: any) => {
-		const { data: iconNames, columnIndex, rowIndex, style } = r
+	const Row = memo((props: any) => {
+		const { data: iconNames, columnIndex, rowIndex, style } = props
 		const singleColumnIndex = columnIndex + rowIndex * 3
 		const icon = iconNames[singleColumnIndex]
 		if (!icon) return null
@@ -81,8 +59,7 @@ function FeatureCenterGridOptions() {
 				<div style={style}>
 					<button
 						onClick={() =>
-							// eslint-disable-next-line react/prop-types
-							set(getSelectedTileDiv().children?.[0] as IconElement, (draft) => {
+							set(selectedTile.children?.[0] as IconElement, (draft) => {
 								draft.data.type = iconType
 								draft.data.name = icon
 								draft.style.desktop!.default!.color = iconColor
@@ -102,210 +79,49 @@ function FeatureCenterGridOptions() {
 	}, areEqual)
 	Row.displayName = 'Row'
 
+	const addFeature = () => {
+		set(grid, (draft) => draft.children?.push(regenElement(tile)))
+	}
+
+	const deleteFeature = () => {
+		set(grid, (draft) => draft.children?.splice(selectedTileNumber, 1))
+		setSelectedTileNumber(selectedTileNumber > 0 ? selectedTileNumber - 1 : 0)
+	}
+
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature Center Grid" />
-			{viewport === 'desktop' && (
-				<>
-					<p>Desktop mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('desktop')}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.desktop = {
-									default: {
-										...draft.style.desktop?.default,
-										// prettier-ignore
-										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-									},
-								}
-							})
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.desktop = {
-									default: {
-										...draft.style.desktop?.default,
-										// prettier-ignore
-										...{ gap: `${val}px`},
-									},
-								}
-							})
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'tablet' && (
-				<>
-					<p>Tablet mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('tablet')}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.tablet = {
-									default: {
-										...draft.style.tablet?.default,
-										// prettier-ignore
-										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-									},
-								}
-							})
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.tablet = {
-									default: {
-										...draft.style.tablet?.default,
-										// prettier-ignore
-										...{ gap: `${val}px`},
-									},
-								}
-							})
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'mobile' && (
-				<>
-					<p>Mobile mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('mobile')}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.mobile = {
-									default: {
-										...draft.style.mobile?.default,
-										// prettier-ignore
-										...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-									},
-								}
-							})
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={1}
-						onChange={(val) => {
-							set(grid, (draft) => {
-								draft.style.mobile = {
-									default: {
-										...draft.style.mobile?.default,
-										// prettier-ignore
-										...{ gap: `${val}px`},
-									},
-								}
-							})
-						}}
-					/>
-				</>
-			)}
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					set(title, (draft) => {
-						draft.data.text = value
-					})
-				}
-			/>
-			<Intelinput
-				label="Subtitle"
-				name="title"
-				size="xs"
-				value={subtitle.data.text}
-				onChange={(value) =>
-					set(subtitle, (draft) => {
-						draft.data.text = value
-					})
-				}
-			/>
+			<ColumnsElementInput element={grid} />
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
 			<BoxElementInput label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth
 				variant="outline"
-				onClick={() => {
-					set(grid, (draft) => {
-						draft.children?.push(
-							deserializeElement({
-								...tile.serialize(),
-							})
-						)
-					})
-				}}
+				onClick={addFeature}
+				leftIcon={<TbPlus />}
 			>
-				+ Add feature
+				Add feature
 			</Button>
 			<Select
 				label="Tiles"
+				size="xs"
 				placeholder="Select a tile"
-				data={grid.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				data={grid.children?.map((_child, index) => ({
+					label: `Tile ${index + 1}`,
+					value: index.toString(),
+				}))}
+				onChange={(value) => setSelectedTileNumber(_.parseInt(value ?? '0'))}
+				value={selectedTileNumber.toString()}
 			/>
-			<Intelinput
+			<TextElementInput
 				label="Feature title"
-				name="title"
-				size="xs"
-				value={(getSelectedTileDiv().children?.[1] as TextElement).data.text}
-				onChange={(value) =>
-					set(getSelectedTileDiv().children?.[1] as TextElement, (draft) => {
-						draft.data.text = value
-					})
-				}
+				element={selectedTile.children?.[1] as TextElement}
 			/>
-			<Intelinput
+			<TextElementInput
 				label="Feature description"
-				name="description"
-				size="xs"
-				autosize
-				maxRows={10}
-				value={(getSelectedTileDiv().children?.[2] as TextElement).data.text}
-				onChange={(value) =>
-					set(getSelectedTileDiv().children?.[2] as TextElement, (draft) => {
-						draft.data.text = value
-					})
-				}
+				element={selectedTile.children?.[2] as TextElement}
 			/>
 			<Tabs
 				onTabChange={(name) => setIconType(name as string)}
@@ -356,7 +172,6 @@ function FeatureCenterGridOptions() {
 						{Row}
 					</Grid>
 				</Tabs.Panel>
-
 				<Tabs.Panel value="fas" pt="xs">
 					<Grid
 						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
@@ -371,7 +186,6 @@ function FeatureCenterGridOptions() {
 						{Row}
 					</Grid>
 				</Tabs.Panel>
-
 				<Tabs.Panel value="fab" pt="xs">
 					<Grid
 						className="items-center content-center py-1 my-2 text-center border rounded place-content-center"
@@ -392,14 +206,10 @@ function FeatureCenterGridOptions() {
 				size="xs"
 				fullWidth
 				variant="outline"
-				onClick={() => {
-					set(grid, (draft) => {
-						draft.children?.splice(selectedTile, 1)
-					})
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
+				onClick={deleteFeature}
+				leftIcon={<TbMinus />}
 			>
-				+ Delete feature
+				Delete feature
 			</Button>
 		</OptionsWrapper>
 	)
