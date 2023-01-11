@@ -472,7 +472,7 @@ export type GetRecordsResponse = {
 } | null
 
 export type RunCustomQueryResponse = {
-	rows: [],
+	rows: Array<object>,
 	rows_affected: number,
 	successful: boolean,
 	total_rows: number
