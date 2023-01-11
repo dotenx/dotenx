@@ -383,7 +383,7 @@ const tiles = [
 	}),
 ]
 
-const grid = produce(new BoxElement(), (draft) => {
+const grid = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
