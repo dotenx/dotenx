@@ -205,7 +205,6 @@ func (controller *OauthController) getAirtableTokens(clientId, clientSecret, cod
 	data := "code=" + code
 	data += "&grant_type=authorization_code"
 	data += "&code_verifier=" + codeVerifier
-	data += "&client_id=" + clientId
 	data += "&redirect_uri=" + redirectUrl
 	url := "https://airtable.com/oauth2/v1/token"
 	headers := []utils.Header{
@@ -237,7 +236,7 @@ func (controller *OauthController) getAirtableTokens(clientId, clientSecret, cod
 	if err != nil {
 		return "", "", err
 	}
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusCreated {
 		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &dto)
