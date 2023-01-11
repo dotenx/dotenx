@@ -43,7 +43,7 @@ specifiers:
   eslint-plugin-react: ^7.31.11
   eslint-plugin-react-hooks: ^4.6.0
   immer: ^9.0.17
-  jotai: ^1.12.1
+  jotai: ^1.13.0
   js-cookie: ^3.0.1
   known-css-properties: ^0.26.0
   lodash: ^4.17.21
@@ -69,7 +69,7 @@ specifiers:
   typescript: ^4.9.4
   vite: ^4.0.4
   zod: ^3.20.2
-  zustand: ^4.2.0
+  zustand: ^4.3.1
 
 dependencies:
   '@babel/core': 7.20.12
@@ -106,7 +106,7 @@ dependencies:
   eslint-plugin-react: 7.31.11_eslint@8.31.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.31.0
   immer: 9.0.17
-  jotai: 1.12.1_2exiyaescjxorpwwmy4ejghgte
+  jotai: 1.13.0_2exiyaescjxorpwwmy4ejghgte
   js-cookie: 3.0.1
   known-css-properties: 0.26.0
   lodash: 4.17.21
@@ -128,7 +128,7 @@ dependencies:
   react-window: 1.8.8_biqbaboplfbrettd7655fr4n2y
   styled-components: 5.3.6_7i5myeigehqah43i5u7wbekgba
   zod: 3.20.2
-  zustand: 4.2.0_immer@9.0.17+react@18.2.0
+  zustand: 4.3.1_immer@9.0.17+react@18.2.0
 
 devDependencies:
   '@types/animejs': 3.1.6
@@ -2603,12 +2603,13 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: false
 
-  /jotai/1.12.1_2exiyaescjxorpwwmy4ejghgte:
-    resolution: {integrity: sha512-t6gsYM1WkQHMOazaZYLykCA+fh9KPDGrA+tDYzDeV0268QsCqmX6S4lO46uswgt1LGUeG0EDFGuMd9ac8cWNTA==}
+  /jotai/1.13.0_2exiyaescjxorpwwmy4ejghgte:
+    resolution: {integrity: sha512-SPTO46Jw1aJTp2i18tiKgk++nKNKJTMNw4qYFy9QRTydceWvD2Eys+YgB7cb1S6pzbM9i0Ik/y7Yl7IH8k9Lig==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@babel/core': '*'
       '@babel/template': '*'
+      jotai-devtools: '*'
       jotai-immer: '*'
       jotai-optics: '*'
       jotai-redux: '*'
@@ -2622,6 +2623,8 @@ packages:
       '@babel/core':
         optional: true
       '@babel/template':
+        optional: true
+      jotai-devtools:
         optional: true
       jotai-immer:
         optional: true
@@ -3786,8 +3789,8 @@ packages:
     resolution: {integrity: sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==}
     dev: false
 
-  /zustand/4.2.0_immer@9.0.17+react@18.2.0:
-    resolution: {integrity: sha512-eNwaDoD2FYVnMgtNxiMUhTJO780wonZUzJrPQTLYI0erSIMZF8cniWFW22kGQUECd8rdHRJ/ZJL2XO54c9Ttuw==}
+  /zustand/4.3.1_immer@9.0.17+react@18.2.0:
+    resolution: {integrity: sha512-EVyo/eLlOTcJm/X5M00rwtbYFXwRVTaRteSvhtbTZUCQFJkNfIyHPiJ6Ke68MSWzcKHpPzvqNH4gC2ZS/sbNqw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       immer: '>=9.0'

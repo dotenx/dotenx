@@ -46,7 +46,7 @@
 		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"immer": "^9.0.17",
-		"jotai": "^1.12.1",
+		"jotai": "^1.13.0",
 		"js-cookie": "^3.0.1",
 		"known-css-properties": "^0.26.0",
 		"lodash": "^4.17.21",
@@ -68,7 +68,7 @@
 		"react-window": "^1.8.8",
 		"styled-components": "^5.3.6",
 		"zod": "^3.20.2",
-		"zustand": "^4.2.0"
+		"zustand": "^4.3.1"
 	},
 	"devDependencies": {
 		"@types/animejs": "^3.1.6",
