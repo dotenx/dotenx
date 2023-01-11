@@ -18,6 +18,7 @@ import imageUrl from '../../assets/components/feature-center-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { ColumnsElement } from '../elements/extensions/columns'
 import { IconElement } from '../elements/extensions/icon'
 import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
@@ -28,6 +29,7 @@ import { Intelinput } from '../ui/intelinput'
 import { viewportAtom } from '../viewport/viewport-store'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class FeatureCenterGrid extends Controller {
 	name = 'Feature Center Grid'
@@ -46,28 +48,29 @@ function FeatureCenterGridOptions() {
 	const [selectedTile, setSelectedTile] = useState(0)
 	const set = useSetElement()
 	const component = useSelectedElement<BoxElement>()!
-	const titleText = component.children?.[0].children?.[0] as TextElement
-	const subtitleText = component.children?.[0].children?.[1] as TextElement
-	const containerDiv = component.children?.[1].children?.[0] as BoxElement
-	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
+	const title = component.findByTagId<TextElement>(tagIds.title)!
+	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
+	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
 	const viewport = useAtomValue(viewportAtom)
+	const [searchValue, setSearchValue] = useState('')
+	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
+	const [iconType, setIconType] = useState('far')
 
+	const getSelectedTileDiv = () => grid.children?.[selectedTile] as BoxElement
 	const countGridTemplateColumns = (mode: string) => {
 		switch (mode) {
 			case 'desktop':
 				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
+				return ((grid.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			case 'tablet':
 				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
+				return ((grid.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 			default:
 				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
+				return ((grid.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
 		}
 	}
-	const [searchValue, setSearchValue] = useState('')
-	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
-	const [iconType, setIconType] = useState('far')
+
 	const Row = memo((r: any) => {
 		const { data: iconNames, columnIndex, rowIndex, style } = r
 		const singleColumnIndex = columnIndex + rowIndex * 3
@@ -98,10 +101,10 @@ function FeatureCenterGridOptions() {
 		)
 	}, areEqual)
 	Row.displayName = 'Row'
-	return (
-		<div className="space-y-6">
-			<ComponentName name="Feature Center Grid" />
 
+	return (
+		<OptionsWrapper>
+			<ComponentName name="Feature Center Grid" />
 			{viewport === 'desktop' && (
 				<>
 					<p>Desktop mode columns</p>
@@ -112,7 +115,7 @@ function FeatureCenterGridOptions() {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('desktop')}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.desktop = {
 									default: {
 										...draft.style.desktop?.default,
@@ -130,7 +133,7 @@ function FeatureCenterGridOptions() {
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.desktop = {
 									default: {
 										...draft.style.desktop?.default,
@@ -153,7 +156,7 @@ function FeatureCenterGridOptions() {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('tablet')}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.tablet = {
 									default: {
 										...draft.style.tablet?.default,
@@ -171,7 +174,7 @@ function FeatureCenterGridOptions() {
 						step={1}
 						styles={{ markLabel: { display: 'none' } }}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.tablet = {
 									default: {
 										...draft.style.tablet?.default,
@@ -194,7 +197,7 @@ function FeatureCenterGridOptions() {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={countGridTemplateColumns('mobile')}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.mobile = {
 									default: {
 										...draft.style.mobile?.default,
@@ -213,7 +216,7 @@ function FeatureCenterGridOptions() {
 						styles={{ markLabel: { display: 'none' } }}
 						defaultValue={1}
 						onChange={(val) => {
-							set(containerDiv, (draft) => {
+							set(grid, (draft) => {
 								draft.style.mobile = {
 									default: {
 										...draft.style.mobile?.default,
@@ -230,9 +233,9 @@ function FeatureCenterGridOptions() {
 				label="Title"
 				name="title"
 				size="xs"
-				value={titleText.data.text}
+				value={title.data.text}
 				onChange={(value) =>
-					set(titleText, (draft) => {
+					set(title, (draft) => {
 						draft.data.text = value
 					})
 				}
@@ -241,9 +244,9 @@ function FeatureCenterGridOptions() {
 				label="Subtitle"
 				name="title"
 				size="xs"
-				value={subtitleText.data.text}
+				value={subtitle.data.text}
 				onChange={(value) =>
-					set(subtitleText, (draft) => {
+					set(subtitle, (draft) => {
 						draft.data.text = value
 					})
 				}
@@ -254,7 +257,7 @@ function FeatureCenterGridOptions() {
 				fullWidth
 				variant="outline"
 				onClick={() => {
-					set(containerDiv, (draft) => {
+					set(grid, (draft) => {
 						draft.children?.push(
 							deserializeElement({
 								...tile.serialize(),
@@ -268,7 +271,7 @@ function FeatureCenterGridOptions() {
 			<Select
 				label="Tiles"
 				placeholder="Select a tile"
-				data={containerDiv.children?.map(
+				data={grid.children?.map(
 					(child, index) =>
 						({
 							label: `Tile ${index + 1}`,
@@ -385,12 +388,12 @@ function FeatureCenterGridOptions() {
 				</Tabs.Panel>
 			</Tabs>
 			<Button
-				disabled={containerDiv.children?.length === 1}
+				disabled={grid.children?.length === 1}
 				size="xs"
 				fullWidth
 				variant="outline"
 				onClick={() => {
-					set(containerDiv, (draft) => {
+					set(grid, (draft) => {
 						draft.children?.splice(selectedTile, 1)
 					})
 					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
@@ -398,11 +401,17 @@ function FeatureCenterGridOptions() {
 			>
 				+ Delete feature
 			</Button>
-		</div>
+		</OptionsWrapper>
 	)
 }
 
 // =============  defaultData =============
+
+const tagIds = {
+	title: 'title',
+	subtitle: 'subtitle',
+	grid: 'grid',
+}
 
 const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -445,9 +454,10 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = Expression.fromString('Features')
+	draft.tagId = tagIds.title
 }).serialize()
 
-const subTitle = produce(new TextElement(), (draft) => {
+const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '24px',
@@ -455,6 +465,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = Expression.fromString('With our platform you can do this and that')
+	draft.tagId = tagIds.subtitle
 }).serialize()
 
 const tileTitle = produce(new TextElement(), (draft) => {
@@ -555,7 +566,7 @@ const tiles = [
 	}),
 ]
 
-const grid = produce(new BoxElement(), (draft) => {
+const grid = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
@@ -574,6 +585,7 @@ const grid = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 		},
 	}
+	draft.tagId = tagIds.grid
 }).serialize()
 
 const defaultData = {
@@ -581,7 +593,7 @@ const defaultData = {
 	components: [
 		{
 			...topDiv,
-			components: [title, subTitle],
+			components: [title, subtitle],
 		},
 		{
 			...divFlex,
