@@ -52,7 +52,7 @@ export function ColumnsElementInput({ element }: { element: ColumnsElement }) {
 				<SliderNoMemo
 					size="xs"
 					label={(val) => val + 'px'}
-					max={20}
+					max={40}
 					step={1}
 					styles={{ markLabel: { display: 'none' } }}
 					value={gap}

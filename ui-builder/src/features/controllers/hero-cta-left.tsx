@@ -3,20 +3,19 @@ import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-cta-left.png'
 
 import { deserializeElement } from '../../utils/deserialize'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
 import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import {
-	ComponentName,
-	DividerCollapsible,
-	extractUrl,
-	SimpleComponentOptionsProps,
-} from './helpers'
+import { ComponentName, extractUrl } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class HeroCtaLeft extends Controller {
 	name = 'Hero with CTA on the left'
@@ -24,108 +23,38 @@ export class HeroCtaLeft extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <HeroCtaLeftOptions options={options} />
+		return <HeroCtaLeftOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function HeroCtaLeftOptions({ options }: SimpleComponentOptionsProps) {
-	const wrapper = options.element as BoxElement
-	const title = options.element.children?.[0].children?.[0] as TextElement
-	const subTitle = options.element.children?.[0].children?.[1] as TextElement
-	const cta = options.element.children?.[0].children?.[2] as LinkElement
+function HeroCtaLeftOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const title = component.children?.[0].children?.[0] as TextElement
+	const subtitle = component.children?.[0].children?.[1] as TextElement
+	const cta = component.children?.[0].children?.[2] as LinkElement
 	const ctaText = cta.children?.[0] as TextElement
+	const set = useSetElement()
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Hero with CTA on the left" />
 			<ImageDrop
 				onChange={(src) =>
-					options.set(
-						produce(wrapper, (draft) => {
-							draft.style.desktop!.default!.backgroundImage = `url(${src})`
-						})
+					set(
+						component,
+						(draft) => (draft.style.desktop!.default!.backgroundImage = `url(${src})`)
 					)
 				}
-				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
+				src={extractUrl(component.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Subtitle"
-				name="subtitle"
-				size="xs"
-				value={subTitle.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subTitle, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<DividerCollapsible closed title="Color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subTitle,
-					title: 'Subtitle color',
-				})}
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: cta,
-					title: 'CTA background color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: cta,
-					title: 'CTA text color',
-				})}
-			</DividerCollapsible>
-			<Intelinput
-				label="CTA"
-				name="cta"
-				size="xs"
-				value={ctaText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(ctaText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA Link"
-				name="ctaLink"
-				size="xs"
-				value={cta.data.href}
-				onChange={(value) =>
-					options.set(
-						produce(cta, (draft) => {
-							draft.data.href = value
-						})
-					)
-				}
-			/>
-		</div>
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
+			<BoxElementInput label="Background color" element={component} />
+			<TextElementInput label="CTA" element={ctaText} />
+			<LinkElementInput label="CTA Link" element={cta} />
+		</OptionsWrapper>
 	)
 }
 
@@ -203,7 +132,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = inteliText('Simplify your business')
+	draft.data.text = Expression.fromString('Simplify your business')
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -220,7 +149,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '20px',
 		},
 	}
-	draft.data.text = inteliText(
+	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
 }).serialize()
@@ -243,7 +172,6 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			padding: '10px',
@@ -256,13 +184,14 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = inteliText('Get Started')
+	element.data.text = Expression.fromString('Get Started')
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 
 	draft.children = [element]
 }).serialize()
+
 const defaultData = {
 	...wrapper,
 	components: [
