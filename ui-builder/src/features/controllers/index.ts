@@ -34,9 +34,6 @@ import { HeroFullWidth } from './hero-full-width'
 import { HeroParallax } from './hero-parallax'
 import { ListCard } from './list-card'
 import { Navbar } from './navbar'
-import { NavbarWithAuth } from './navbar-with-auth'
-import { NavbarWithCTA } from './navbar-with-cta'
-import { NavbarWithProfile } from './navbar-with-profile'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { SignInBasic } from './sign-in-basic'
@@ -88,7 +85,7 @@ export const controllers = [
 		title: 'Hero',
 		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax],
 	},
-	{ title: 'Navbar', items: [Navbar, NavbarWithAuth, NavbarWithCTA, NavbarWithProfile] },
+	{ title: 'Navbar', items: [Navbar] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
