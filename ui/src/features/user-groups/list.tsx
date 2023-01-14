@@ -41,6 +41,7 @@ export function UserGroups({
 						name={name}
 						details={details}
 						onEdit={onEdit}
+						deleteLoeading={deleteUserGroupMutation.isLoading}
 						onDelete={() => deleteUserGroupMutation.mutate(name)}
 						onSelect={(name) => setSelectedUserGroup(name)}
 					/>
@@ -58,11 +59,13 @@ export function UserGroups({
 function UserGroupItem({
 	name,
 	details,
+	deleteLoeading,
 	onEdit,
 	onDelete,
 	onSelect,
 }: {
 	name: string
+	deleteLoeading: boolean
 	details: UserGroup
 	onEdit: (data: UserGroupValues) => void
 	onDelete: () => void
@@ -141,7 +144,11 @@ function UserGroupItem({
 									<p className="text-sm">
 										Are you sure you want to delete this user group?
 									</p>
-									<Button type="button" onClick={onDelete}>
+									<Button
+										loading={deleteLoeading}
+										type="button"
+										onClick={onDelete}
+									>
 										Confirm Delete
 									</Button>
 								</div>
