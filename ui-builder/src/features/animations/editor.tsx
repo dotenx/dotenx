@@ -10,7 +10,7 @@ import {
 	Select,
 	Switch,
 	Text,
-	TextInput
+	TextInput,
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import anime, { AnimeInstance } from 'animejs'
@@ -148,7 +148,7 @@ function AnimationEditor({
 		const params = EASING_PARAMS[value]
 		form.setFieldValue('easingParams', params)
 	}
-	
+
 	return (
 		<div className="pb-10">
 			<div className="flex justify-end gap-2">
