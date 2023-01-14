@@ -1,21 +1,21 @@
 import produce from 'immer'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'
 import profile4Url from '../../assets/components/profile4.jpg'
 import imageUrl from '../../assets/components/team-round-center.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
-import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
-
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
+import { ImageElementInput } from '../ui/image-element-input'
 import Bio from './basic-components/bio'
-import ColorOptions from './basic-components/color-options'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { Controller, ElementOptions } from './controller'
+import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class TeamRoundCenter extends Controller {
 	name = 'Team with round profiles centered'
@@ -32,94 +32,33 @@ export class TeamRoundCenter extends Controller {
 function TeamRoundCenterOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element as BoxElement
 
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return containerDiv.children.map((column, index) => {
-			const image = column.children![0] as ImageElement
-			const bioRoot = column.children![1] as BoxElement
-
-			return {
-				id: column.id,
-				content: (
-					<div className="flex flex-col justify-stretch gap-y-4 pt-4">
-						<ImageDrop
-							src={image.data.src.toString()}
-							onChange={(value) =>
-								options.set(
-									produce(image, (draft) => {
-										draft.data.src = Expression.fromString(value)
-									})
-								)
-							}
-						/>
-						{Bio.getOptions({ set: options.set, root: bioRoot })}
-						<DividerCollapsible closed title="Color">
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: column.children![1].children![0],
-								title: 'Title',
-							})}
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: column.children![1].children![1],
-								title: 'Description',
-							})}
-						</DividerCollapsible>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [containerDiv.children, options.set])
-
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Team with round profiles centered" />
-
-			{/* todo: add this after it's fixed */}
-			{/* <GridColumnSlider
-				set={options.set}
-				containerDiv={containerDiv}
-				columnLimit={{
-					desktop: { min: 2, max: 4 },
-					tablet: { min: 2, max: 3 },
-					mobile: { min: 1, max: 2 },
-				}}
-			/> */}
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(containerDiv, (draft) => {
-								const [removed] = draft.children.splice(oldIndex, 1)
-								draft.children.splice(newIndex, 0, removed)
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					const newItem = createBioWithImage({
+			<DndTabs
+				containerElement={containerDiv}
+				insertElement={() =>
+					createBioWithImage({
 						image: profile4Url,
 						name: 'Alex Smith',
 						description: 'All rounder no-code developer with 10+ years of experience',
 					})
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children.push(newItem)
-						})
-					)
-				}}
-				tabs={tabsList}
+				}
+				renderItemOptions={(item) => <ItemOptions item={item} options={options} />}
 			/>
-		</div>
+		</OptionsWrapper>
+	)
+}
+
+function ItemOptions({ item, options }: { item: Element; options: ElementOptions }) {
+	const image = item.children![0] as ImageElement
+	const bioRoot = item.children![1] as BoxElement
+
+	return (
+		<OptionsWrapper>
+			<ImageElementInput element={image} />
+			{Bio.getOptions({ set: options.set, root: bioRoot })}
+		</OptionsWrapper>
 	)
 }
 

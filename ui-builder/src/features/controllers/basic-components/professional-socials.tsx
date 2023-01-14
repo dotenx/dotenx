@@ -9,7 +9,7 @@ import { BoxElement } from '../../elements/extensions/box'
 import { IconElement } from '../../elements/extensions/icon'
 import { LinkElement } from '../../elements/extensions/link'
 import { Expression } from '../../states/expression'
-import { Intelinput } from '../../ui/intelinput'
+import { LinkElementInput } from '../../ui/link-element-input'
 import VerticalOptions from '../helpers/vertical-options'
 
 const iconsSet = {
@@ -98,19 +98,7 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 										icon.data.name as IconName,
 									]}
 								/>
-								<Intelinput
-									placeholder="Link"
-									name="link"
-									size="xs"
-									value={link.data.href}
-									onChange={(value) =>
-										set(
-											produce(link, (draft) => {
-												draft.data.href = value
-											})
-										)
-									}
-								/>
+								<LinkElementInput placeholder="Link" element={link} />
 								<FontAwesomeIcon
 									className="w-3 h-3 text-red-500 cursor-pointer"
 									icon={['fas', 'trash']}
