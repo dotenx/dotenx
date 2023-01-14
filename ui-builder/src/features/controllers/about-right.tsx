@@ -1,20 +1,24 @@
 import produce from 'immer'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/about-right.png'
-
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
+import { BoxElementInput } from '../ui/box-element-input'
+import { IconElementInput } from '../ui/icon-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { ComponentName, DividerCollapsible } from './helpers'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class AboutRight extends Controller {
 	name = 'About us with details on the right'
@@ -22,186 +26,61 @@ export class AboutRight extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <AboutRightOptions options={options} />
+		return <AboutRightOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function AboutRightOptions({ options }: SimpleComponentOptionsProps) {
-	const wrapper = options.element as BoxElement
-	const heroImage = options.element.children?.[0] as ImageElement
-	const title = options.element.children?.[1].children?.[0] as TextElement
-	const subTitle = options.element.children?.[1].children?.[1] as TextElement
-	const featureLinesWrapper = options.element.children?.[1].children?.[2] as BoxElement
-	const featureLines = featureLinesWrapper.children as BoxElement[]
-	const cta = options.element.children?.[1].children?.[3] as LinkElement
-	const ctaText = cta.children?.[0] as TextElement
-
-	const tabsList: DraggableTab[] | null[] = useMemo(() => {
-		return featureLines.map((featureLine, index) => {
-			const icon = featureLine.children?.[0] as IconElement
-			const text = featureLine.children?.[1] as TextElement
-			return {
-				id: featureLine.id,
-				content: (
-					<div key={index}>
-						<Intelinput
-							label="Title"
-							name="title"
-							size="xs"
-							value={text.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(text, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						<DividerCollapsible closed title="color">
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: icon,
-								title: 'Icon color',
-							})}
-							{ColorOptions.getTextColorOption({
-								wrapperDiv: text,
-								options,
-								title: 'text color',
-							})}
-						</DividerCollapsible>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(featureLinesWrapper, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [featureLines])
+function AboutRightOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const heroImage = component.findByTagId<ImageElement>(tagIds.heroImage)!
+	const title = component.findByTagId<TextElement>(tagIds.title)!
+	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
+	const featureLinesWrapper = component.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
+	const cta = component.findByTagId<LinkElement>(tagIds.cta)!
+	const ctaText = component.findByTagId<TextElement>(tagIds.ctaText)!
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="About us with details on the right" />
-			<ImageDrop
-				onChange={(src) =>
-					options.set(
-						produce(heroImage, (draft) => {
-							draft.data.src = Expression.fromString(src)
-						})
-					)
-				}
-				src={heroImage.data.src.toString()}
-			/>
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Sub-title"
-				name="subtitle"
-				size="xs"
-				value={subTitle.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subTitle, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA"
-				name="cta"
-				size="xs"
-				value={ctaText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(ctaText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA Link"
-				name="ctaLink"
-				size="xs"
-				value={cta.data.href}
-				onChange={(value) =>
-					options.set(
-						produce(cta, (draft) => {
-							draft.data.href = value
-						})
-					)
-				}
-			/>
+			<ImageElementInput element={heroImage} />
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
+			<TextElementInput label="CTA" element={ctaText} />
+			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: wrapper,
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subTitle,
-					title: 'Subtitle color',
-				})}
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: cta,
-					title: 'Button background color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: cta,
-					title: 'Button text color',
-				})}
+				<BoxElementInput label="Background color" element={component} />
+				<BoxElementInput label="Button background color" element={cta} />
 			</DividerCollapsible>
-
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(featureLinesWrapper, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					options.set(
-						produce(featureLinesWrapper, (draft) => {
-							draft.children.push(createLine('Lorem ipsum dolor sit amet'))
-						})
-					)
-				}}
-				tabs={tabsList}
+			<DndTabs
+				containerElement={featureLinesWrapper}
+				renderItemOptions={(item) => <ItemOptions item={item} />}
+				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
 			/>
-		</div>
+		</OptionsWrapper>
 	)
+}
+
+function ItemOptions({ item }: { item: Element }) {
+	const icon = item.children?.[0] as IconElement
+	const text = item.children?.[1] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<TextElementInput label="Title" element={text} />
+			<IconElementInput label="Icon color" element={icon} />
+		</OptionsWrapper>
+	)
+}
+
+const tagIds = {
+	heroImage: 'heroImage',
+	title: 'title',
+	subtitle: 'subtitle',
+	featureLinesWrapper: 'featureLinesWrapper',
+	cta: 'cta',
+	ctaText: 'ctaText',
 }
 
 // =============  defaultData =============
@@ -222,7 +101,6 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			paddingBottom: '40px',
 		},
 	}
-
 	draft.style.tablet = {
 		default: {
 			height: 'auto',
@@ -236,6 +114,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 		},
 	}
 }).serialize()
+
 const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -247,7 +126,9 @@ const heroImage = produce(new ImageElement(), (draft) => {
 	draft.data.src = Expression.fromString(
 		'https://files.dotenx.com/68c53d72-a5b6-4be5-b0b4-498bd6b43bfd.png'
 	)
+	draft.tagId = tagIds.heroImage
 }).serialize()
+
 const detailsWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -268,7 +149,6 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			lineHeight: '1.3',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			lineHeight: '1.2',
@@ -285,7 +165,6 @@ const title = produce(new TextElement(), (draft) => {
 			color: '#333333',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			fontSize: '30px',
@@ -294,10 +173,11 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = inteliText('Simplify your business')
+	draft.data.text = Expression.fromString('Simplify your business')
+	draft.tagId = tagIds.title
 }).serialize()
 
-const subTitle = produce(new TextElement(), (draft) => {
+const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '18px',
@@ -310,9 +190,11 @@ const subTitle = produce(new TextElement(), (draft) => {
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = inteliText(
+	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
+
+	draft.tagId = tagIds.subtitle
 }).serialize()
 
 const featureLinesWrapper = produce(new BoxElement(), (draft) => {
@@ -330,6 +212,8 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 			fontSize: '12px',
 		},
 	}
+
+	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
 const createFeatureLine = () =>
@@ -344,6 +228,7 @@ const createFeatureLine = () =>
 				marginRight: '0px',
 			},
 		}
+
 		const icon = produce(new IconElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
@@ -379,7 +264,10 @@ const createFeatureLine = () =>
 					color: '#717171',
 				},
 			}
-			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+
+			draft.data.text = Expression.fromString(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			)
 		})
 
 		draft.children = [icon, text]
@@ -387,7 +275,8 @@ const createFeatureLine = () =>
 
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
-		;(draft.children[1]! as TextElement).data.text = inteliText(text)
+		const textElement = draft.children[1]! as TextElement
+		textElement.data.text = Expression.fromString(text)
 	})
 }
 
@@ -420,7 +309,6 @@ const cta = produce(new LinkElement(), (draft) => {
 			justifySelf: 'center',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			marginTop: '8px',
@@ -431,12 +319,14 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = inteliText('Get Started')
+	element.data.text = Expression.fromString('Get Started')
+	element.tagId = tagIds.ctaText
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 
 	draft.children = [element]
+	draft.tagId = tagIds.cta
 }).serialize()
 
 const defaultData = {
@@ -447,7 +337,7 @@ const defaultData = {
 			...detailsWrapper,
 			components: [
 				title,
-				subTitle,
+				subtitle,
 				{
 					...featureLinesWrapper,
 					components: featureLines,

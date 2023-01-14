@@ -1,18 +1,22 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
 import produce from 'immer'
-import { useAtomValue } from 'jotai'
-import { ReactNode, useMemo, useState } from 'react'
+import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/customer-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
+import { ColumnsElement } from '../elements/extensions/columns'
+import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
-import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import { viewportAtom } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ColumnsElementInput } from '../ui/columns-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { inteliText } from '../ui/intelinput'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { ComponentName } from './helpers'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class CustomersGrid extends Controller {
 	name = 'Customers grid'
@@ -20,286 +24,41 @@ export class CustomersGrid extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <CustomersGridOptions options={options} />
+		return <CustomersGridOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function CustomersGridOptions({ options }: SimpleComponentOptionsProps) {
-	const viewport = useAtomValue(viewportAtom)
-	const titleText = options.element.children?.[0].children?.[0] as TextElement
-	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
+function CustomersGridOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const titleText = component.findByTagId<TextElement>(tagIds.titleText)!
+	const subtitleText = component.findByTagId<TextElement>(tagIds.subtitleText)!
+	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
 
-	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
-	const logos = containerDiv.children
+	const addGridItem = () =>
+		createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png')
 
-	const countGridTemplateColumns = (mode: string) => {
-		switch (mode) {
-			case 'desktop':
-				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			case 'tablet':
-				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			default:
-				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-		}
-	}
-
-	const tabsList: DraggableTab[] | null[] = useMemo(() => {
-		return logos.map((logo, index) => {
-			return {
-				id: logo.id,
-				content: (
-					<div key={index}>
-						<ImageDrop
-							onChange={(src) => {
-								options.set(
-									produce(logo, (draft) => {
-										draft.style.desktop = {
-											default: {
-												...draft.style.desktop?.default,
-												...{ backgroundImage: `url(${src})` },
-											},
-										}
-									})
-								)
-							}}
-							src={
-								// remove the url() part
-								logo?.style.desktop?.default?.backgroundImage?.trim().length === 5 // This means that the url is empty
-									? ''
-									: logo?.style.desktop?.default?.backgroundImage?.substring(
-											4,
-											(logo?.style.desktop?.default?.backgroundImage?.trim()
-												.length ?? 0) - 1 // Remove the trailing )
-									  ) ?? ''
-							}
-						/>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [logos])
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Customers grid" />
-			{viewport === 'desktop' && (
-				<>
-					<p>Desktop mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('desktop')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'tablet' && (
-				<>
-					<p>Tablet mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('tablet')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'mobile' && (
-				<>
-					<p>Mobile mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('mobile')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={1}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-
-			<DividerCollapsible closed title="Color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: titleText,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subtitleText,
-					title: 'Subitle color',
-				})}
-			</DividerCollapsible>
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={titleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(titleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
+			<ColumnsElementInput element={grid} />
+			<BoxElementInput label="Background color" element={component} />
+			<TextElementInput label="Title" element={titleText} />
+			<TextElementInput label="Subtitle" element={subtitleText} />
+			<DndTabs
+				containerElement={grid}
+				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}
+				insertElement={addGridItem}
 			/>
-			<Intelinput
-				label="Subtitle"
-				name="title"
-				size="xs"
-				value={subtitleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subtitleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(containerDiv, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children.push(
-								createTile({
-									image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png',
-								})
-							)
-						})
-					)
-				}}
-				tabs={tabsList}
-			/>
-		</div>
+		</OptionsWrapper>
 	)
+}
+
+const tagIds = {
+	titleText: 'titleText',
+	subtitleText: 'subtitleText',
+	grid: 'grid',
 }
 
 // =============  defaultData =============
@@ -345,9 +104,10 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = inteliText('Trusted by the world’s best')
+	draft.tagId = tagIds.titleText
 }).serialize()
 
-const subTitle = produce(new TextElement(), (draft) => {
+const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			fontSize: '24px',
@@ -355,9 +115,10 @@ const subTitle = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
+	draft.tagId = tagIds.subtitleText
 }).serialize()
 
-const tile = produce(new BoxElement(), (draft) => {
+const tile = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'flex',
@@ -365,46 +126,37 @@ const tile = produce(new BoxElement(), (draft) => {
 			justifyContent: 'center',
 			alignItems: 'center',
 			aspectRatio: '1',
-			backgroundImage: `url(https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/87_Diaspora_logo_logos-256.png)`, //NOTE: inside url() do not use single quotes.
-			backgroundSize: 'cover',
-			backgroundPosition: 'center center',
 		},
 	}
+	draft.data.src = Expression.fromString(
+		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/87_Diaspora_logo_logos-256.png'
+	)
 })
-function createTile({ image }: { image: string }) {
+
+const createTile = (image: string) => {
 	return produce(tile, (draft) => {
-		draft.style.desktop = {
-			default: {
-				...draft.style.desktop?.default,
-				backgroundImage: `url(${image})`,
-			},
-		}
+		draft.data.src = Expression.fromString(image)
 	})
 }
 
 const tiles = [
-	createTile({
-		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/117-Evernote-256.png',
-	}),
-
-	createTile({
-		image: 'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/11_Airbnb_logo_logos-256.png',
-	}),
-	createTile({
-		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/53-pandora-256.png',
-	}),
-	createTile({
-		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/50-picasa-256.png',
-	}),
-	createTile({
-		image: 'https://cdn0.iconfinder.com/data/icons/brands-flat-2/187/vimeo-social-network-brand-logo-256.png',
-	}),
-	createTile({
-		image: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png',
-	}),
+	createTile(
+		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/117-Evernote-256.png'
+	),
+	createTile(
+		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/11_Airbnb_logo_logos-256.png'
+	),
+	createTile(
+		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/53-pandora-256.png'
+	),
+	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/50-picasa-256.png'),
+	createTile(
+		'https://cdn0.iconfinder.com/data/icons/brands-flat-2/187/vimeo-social-network-brand-logo-256.png'
+	),
+	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png'),
 ]
 
-const grid = produce(new BoxElement(), (draft) => {
+const grid = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
@@ -423,6 +175,7 @@ const grid = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 		},
 	}
+	draft.tagId = tagIds.grid
 }).serialize()
 
 const defaultData = {
@@ -430,7 +183,7 @@ const defaultData = {
 	components: [
 		{
 			...topDiv,
-			components: [title, subTitle],
+			components: [title, subtitle],
 		},
 		{
 			...divFlex,
