@@ -13,6 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	pg_query "github.com/pganalyze/pg_query_go/v2"
+	"github.com/sirupsen/logrus"
 )
 
 func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string, query string) (map[string]interface{}, error) {
@@ -54,8 +55,7 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(parseResultStr)
-	fmt.Println(parseResultMap)
+	logrus.Info(parseResultStr)
 	if len(parseResultMap.(map[string]interface{})["stmts"].([]interface{})) != 1 {
 		return nil, errors.New("you can run just one query at each time")
 	}
