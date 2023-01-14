@@ -1,18 +1,24 @@
-import { Button, Select, SelectItem, Slider } from '@mantine/core'
+import { Button, Select } from '@mantine/core'
 import produce from 'immer'
-import { useAtomValue } from 'jotai'
+import _ from 'lodash'
 import { ReactNode, useState } from 'react'
+import { TbMinus, TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/gallery-with-title.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { regenElement } from '../clipboard/copy-paste'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import { viewportAtom } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName, extractUrl } from './helpers'
 
 export class GalleryWithTitle extends Controller {
 	name = 'Gallery with title on images'
@@ -20,236 +26,57 @@ export class GalleryWithTitle extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryWithTitleOptions options={options} />
+		return <GalleryWithTitleOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryWithTitleOptions({ options }: SimpleComponentOptionsProps) {
+function GalleryWithTitleOptions() {
 	const [selectedTile, setSelectedTile] = useState(0)
+	const component = useSelectedElement<BoxElement>()!
+	const set = useSetElement()
+	const grid = component.children?.[0].children?.[0] as ColumnsElement
+	const selectedItem = grid.children?.[selectedTile] as BoxElement
+	const selectedTileImage = selectedItem.children?.[0] as ImageElement
+	const tiles = grid.children?.map((_child, index) => ({
+		label: `Tile ${index + 1}`,
+		value: index.toString(),
+	}))
 
-	const wrapper = options.element
-	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
-	const getSelectedTileDiv = () => containerDiv.children?.[selectedTile] as BoxElement
-	const viewport = useAtomValue(viewportAtom)
-
-	const countGridTemplateColumns = (mode: string) => {
-		switch (mode) {
-			case 'desktop':
-				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			case 'tablet':
-				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			default:
-				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-		}
+	const addTile = () => {
+		set(grid, (draft) => draft.children?.push(regenElement(tile)))
 	}
-	const selectedTileImage = getSelectedTileDiv().children?.[0] as ImageElement
+
+	const deleteTile = () => {
+		set(grid, (draft) => draft.children?.splice(selectedTile, 1))
+		setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
+	}
+
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Gallery with title on images" />
-			{viewport === 'desktop' && (
-				<>
-					<p>Desktop mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('desktop')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'tablet' && (
-				<>
-					<p>Tablet mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('tablet')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'mobile' && (
-				<>
-					<p>Mobile mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('mobile')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={1}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-
-			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.push(
-								deserializeElement({
-									...tile.serialize(),
-								})
-							)
-						})
-					)
-				}}
-			>
-				+ Add feature
+			<ColumnsElementInput element={grid} />
+			<BoxElementInput label="Background color" element={component} />
+			<Button size="xs" fullWidth variant="outline" onClick={addTile} leftIcon={<TbPlus />}>
+				Add feature
 			</Button>
 			<Select
 				label="Tiles"
 				placeholder="Select a tile"
-				data={containerDiv.children?.map(
-					(child, index) =>
-						({
-							label: `Tile ${index + 1}`,
-							value: index + '',
-						} as SelectItem)
-				)}
-				onChange={(val) => {
-					setSelectedTile(parseInt(val ?? '0'))
-				}}
-				value={selectedTile + ''}
+				data={tiles}
+				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
+				value={selectedTile.toString()}
 			/>
-			<Intelinput
+			<TextElementInput
 				label="Image title"
-				name="title"
-				size="xs"
-				value={(getSelectedTileDiv().children?.[0].children?.[0] as TextElement).data.text}
-				onChange={(value) =>
-					options.set(
-						produce(
-							getSelectedTileDiv().children?.[0].children?.[0] as TextElement,
-							(draft) => {
-								draft.data.text = value
-							}
-						)
-					)
-				}
+				element={selectedItem.children?.[0].children?.[0] as TextElement}
 			/>
-			{ColorOptions.getTextColorOption({
-				options,
-				wrapperDiv: selectedTileImage,
-				title: 'Color',
-			})}
-
 			<ImageDrop
 				onChange={(src) =>
-					options.set(
-						produce(selectedTileImage, (draft) => {
-							draft.style.desktop!.default!.backgroundImage = `url(${src})`
-						})
+					set(
+						selectedTileImage,
+						(draft) => (draft.style.desktop!.default!.backgroundImage = `url(${src})`)
 					)
 				}
 				src={extractUrl(
@@ -257,20 +84,14 @@ function GalleryWithTitleOptions({ options }: SimpleComponentOptionsProps) {
 				)}
 			/>
 			<Button
-				disabled={containerDiv.children?.length === 1}
+				disabled={grid.children?.length === 1}
 				size="xs"
 				fullWidth
 				variant="outline"
-				onClick={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.splice(selectedTile, 1)
-						})
-					)
-					setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-				}}
+				onClick={deleteTile}
+				leftIcon={<TbMinus />}
 			>
-				+ Delete feature
+				Delete feature
 			</Button>
 		</div>
 	)
@@ -315,24 +136,24 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			color: 'inherit',
 		},
 	}
-	draft.data.text = inteliText('Title')
+	draft.data.text = Expression.fromString('Title')
 })
 
 const tileImage = produce(new BoxElement(), (draft) => {
-	// prettier-ignore
 	draft.style.desktop = {
 		default: {
 			width: '100%',
 			maxHeight: '400px',
 			height: '100%',
-			minHeight:'300px',
+			minHeight: '300px',
 			objectFit: 'cover',
 			objectPosition: 'center center',
-			color:'white',
-			backgroundImage:'url(https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56)'
+			color: 'white',
+			backgroundImage:
+				'url(https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56)',
 		},
-	},
-		draft.children = [tileTitle]
+	}
+	draft.children = [tileTitle]
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -354,7 +175,7 @@ function createTile({ src, title }: { src: string; title: string }) {
 	return produce(tile, (draft) => {
 		const iconElement = draft.children[0] as BoxElement
 		iconElement.style.desktop!.default!.backgroundImage = `url(${src})`
-		;(draft.children?.[0].children?.[0] as TextElement).data.text = inteliText(title)
+		;(draft.children?.[0].children?.[0] as TextElement).data.text = Expression.fromString(title)
 	})
 }
 const tiles = [
@@ -384,7 +205,7 @@ const tiles = [
 	}),
 ]
 
-const grid = produce(new BoxElement(), (draft) => {
+const grid = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',

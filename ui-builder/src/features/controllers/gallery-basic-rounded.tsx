@@ -17,6 +17,7 @@ import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, repeatObject } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class GalleryBasicRounded extends Controller {
 	name = 'Basic Gallery rounded'
@@ -50,7 +51,7 @@ function GalleryBasicRoundedOptions() {
 		setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
 	}
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Basic Gallery rounded" />
 			<ColumnsElementInput element={grid} />
 			<Button size="xs" fullWidth variant="outline" onClick={addImage} leftIcon={<TbPlus />}>
@@ -76,7 +77,7 @@ function GalleryBasicRoundedOptions() {
 			>
 				Delete image
 			</Button>
-		</div>
+		</OptionsWrapper>
 	)
 }
 
