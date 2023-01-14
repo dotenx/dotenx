@@ -1,19 +1,20 @@
-import { Checkbox } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/feature-details-left.png'
-
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { ComponentName, Divider } from './helpers'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class FeatureDetailsLeft extends Controller {
 	name = 'Features with details on the left'
@@ -21,141 +22,50 @@ export class FeatureDetailsLeft extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FeatureDetailsLeftOptions options={options} />
+		return <FeatureDetailsLeftOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function FeatureDetailsLeftOptions({ options }: SimpleComponentOptionsProps) {
-	const imageDiv = options.element.children?.[1] as ImageElement
-
-	const featureRowsWrapper = options.element.children?.[0].children?.[0] as BoxElement
-	const featureRows = featureRowsWrapper.children as BoxElement[]
-
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return featureRows.map((featureRow, index) => {
-			const title = featureRow.children?.[0] as TextElement
-			const details = featureRow.children?.[1] as TextElement
-			return {
-				id: featureRow.id,
-				content: (
-					<div key={index} className="space-y-4">
-						<Intelinput
-							label="Title"
-							name="title"
-							size="xs"
-							value={title.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(title, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						<Intelinput
-							label="Details"
-							name="details"
-							size="xs"
-							value={details.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(details, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						<DividerCollapsible closed title="color">
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: title,
-								title: 'Title color',
-							})}
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: details,
-								title: 'Details color',
-							})}
-						</DividerCollapsible>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(featureRowsWrapper, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [featureRows])
+function FeatureDetailsLeftOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const image = component.findByTagId<ImageElement>(tagIds.image)!
+	const features = component.findByTagId<BoxElement>(tagIds.features)!
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Feature with details on the left" />
-			<Divider title="Image" />
-			<ImageDrop
-				onChange={(src) =>
-					options.set(
-						produce(imageDiv, (draft) => {
-							draft.data.src = Expression.fromString(src)
-						})
-					)
-				}
-				src={imageDiv.data.src.toString()}
-			/>
-			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-			<Checkbox
-				label={'Round corners'}
-				onChange={(event: any) => {
-					if (event.currentTarget.checked) {
-						options.set(
-							produce(imageDiv, (draft) => {
-								draft.style.desktop!.default!.borderRadius = '10px'
-							})
-						)
-					} else
-						options.set(
-							produce(imageDiv, (draft) => {
-								draft.style.desktop!.default!.borderRadius = '0px'
-							})
-						)
-				}}
-				checked={imageDiv.style.desktop?.default?.borderRadius === '10px'}
-			/>
+			<ImageElementInput element={image} />
+			<BoxElementInput label="Background color" element={component} />
 			<Divider title="Rows" />
-
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(featureRowsWrapper, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					options.set(
-						produce(featureRowsWrapper, (draft) => {
-							draft.children.push(createRow('title', 'Lorem ipsum dolor sit amet'))
-						})
-					)
-				}}
-				tabs={tabsList}
+			<DndTabs
+				containerElement={features}
+				renderItemOptions={(item) => <FeatureOptions item={item} />}
+				insertElement={() => createRow('title', 'Lorem ipsum dolor sit amet')}
 			/>
-		</div>
+		</OptionsWrapper>
+	)
+}
+
+function FeatureOptions({ item }: { item: Element }) {
+	const title = item.children?.[0] as TextElement
+	const details = item.children?.[1] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Details" element={details} />
+		</OptionsWrapper>
 	)
 }
 
 // =============  defaultData =============
+
+const tagIds = {
+	image: 'image',
+	features: 'features',
+}
 
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -198,7 +108,6 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			lineHeight: '1.3',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			maxWidth: '100%',
@@ -207,6 +116,7 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		},
 	}
 }).serialize()
+
 const imageContainer = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -217,7 +127,6 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 			objectPosition: 'center center',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
 			order: 0,
@@ -226,6 +135,7 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 	draft.data.src = Expression.fromString(
 		'https://img.freepik.com/free-vector/blue-marketing-charts-design-template_52683-24522.jpg?w=740&t=st=1666791210~exp=1666791810~hmac=42932320db4bb7c5f36815c67c56445ee01765aca6caaf5306415f1811690352'
 	)
+	draft.tagId = tagIds.image
 }).serialize()
 
 const featureRowsWrapper = produce(new BoxElement(), (draft) => {
@@ -243,6 +153,7 @@ const featureRowsWrapper = produce(new BoxElement(), (draft) => {
 			fontSize: '10px',
 		},
 	}
+	draft.tagId = tagIds.features
 }).serialize()
 
 const createFeatureRow = () =>
@@ -264,7 +175,7 @@ const createFeatureRow = () =>
 					color: 'rgb(17, 24, 39)',
 				},
 			}
-			draft.data.text = inteliText('title')
+			draft.data.text = Expression.fromString('title')
 		})
 		const details = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
@@ -274,16 +185,19 @@ const createFeatureRow = () =>
 					fontWeight: '400',
 				},
 			}
-			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+			draft.data.text = Expression.fromString(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			)
 		})
-
 		draft.children = [title, details]
 	})
 
 const createRow = (title: string, details: string) => {
 	return produce(createFeatureRow(), (draft) => {
-		;(draft.children[0]! as TextElement).data.text = inteliText(title)
-		;(draft.children[1]! as TextElement).data.text = inteliText(details)
+		const titleElement = draft.children[0]! as TextElement
+		titleElement.data.text = Expression.fromString(title)
+		const detailsElement = draft.children[1]! as TextElement
+		detailsElement.data.text = Expression.fromString(details)
 	})
 }
 

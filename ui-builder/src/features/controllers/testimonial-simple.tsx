@@ -1,22 +1,23 @@
 import produce from 'immer'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import profile1Url from '../../assets/components/profile1.jpg'
 import profile2Url from '../../assets/components/profile2.jpg'
 import profile3Url from '../../assets/components/profile3.jpg'
 import profile4Url from '../../assets/components/profile4.jpg'
 import imageUrl from '../../assets/components/testimonial-simple.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
+import { TextElement } from '../elements/extensions/text'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
-
-import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
-import ColorOptions from './basic-components/color-options'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
-import { TextElement } from '../elements/extensions/text'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class TestimonialSimple extends Controller {
 	name = 'Simple testimonial'
@@ -33,183 +34,51 @@ export class TestimonialSimple extends Controller {
 function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element as BoxElement
 	const title = containerDiv.children?.[0] as TextElement
-	const subTite = containerDiv.children?.[1] as TextElement
+	const subtitle = containerDiv.children?.[1] as TextElement
 	const gridContainer = containerDiv.children?.[2] as BoxElement
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return gridContainer.children.map((column, index) => {
-			const image = column.children![0] as ImageElement
-			const name = column.children![1] as TextElement
-			const title = column.children![2] as TextElement
-			const description = column.children![3] as TextElement
 
-			return {
-				id: column.id,
-				content: (
-					<div className="flex flex-col justify-stretch gap-y-4 pt-4">
-						<ImageDrop
-							src={image.data.src.toString()}
-							onChange={(value) =>
-								options.set(
-									produce(image, (draft) => {
-										draft.data.src = Expression.fromString(value)
-									})
-								)
-							}
-						/>
-						<div className="p-3 rounded border">
-							<Intelinput
-								label="Name"
-								name="Name"
-								size="xs"
-								value={name.data.text}
-								onChange={(value) =>
-									options.set(
-										produce(name, (draft) => {
-											draft.data.text = value
-										})
-									)
-								}
-							/>
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: name,
-								title: '',
-							})}
-						</div>
-						<div className="p-3 rounded border">
-							<Intelinput
-								label="Title"
-								name="Title"
-								size="xs"
-								value={title.data.text}
-								onChange={(value) =>
-									options.set(
-										produce(title, (draft) => {
-											draft.data.text = value
-										})
-									)
-								}
-							/>
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: title,
-								title: '',
-							})}
-						</div>
-						<div className="p-3 rounded border">
-							<Intelinput
-								label="Description"
-								name="Description"
-								size="xs"
-								value={description.data.text}
-								onChange={(value) =>
-									options.set(
-										produce(description, (draft) => {
-											draft.data.text = value
-										})
-									)
-								}
-							/>
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: description,
-								title: '',
-							})}
-						</div>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(gridContainer, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [gridContainer.children, options.set])
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Simple testimonial" />
-			<div className="p-3 rounded border">
-				<Intelinput
-					label="Title"
-					name="Title"
-					size="xs"
-					value={title.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(title, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: '',
-				})}
-			</div>
-			<div className="p-3 rounded border">
-				<Intelinput
-					label="SubTite"
-					name="SubTite"
-					size="xs"
-					value={subTite.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(subTite, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subTite,
-					title: '',
-				})}
-			</div>
-			{ColorOptions.getBackgroundOption({
-				options,
-				wrapperDiv: containerDiv,
-			})}
-			<Divider title="Testimonials"></Divider>
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(gridContainer, (draft) => {
-								const [removed] = draft.children.splice(oldIndex, 1)
-								draft.children.splice(newIndex, 0, removed)
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					const newItem = createBioWithImage({
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
+			<BoxElementInput label="Background color" element={containerDiv} />
+			<Divider title="Testimonials" />
+			<DndTabs
+				containerElement={gridContainer}
+				insertElement={() =>
+					createBioWithImage({
 						image: profile4Url,
 						name: 'Alex Smith',
 						description:
 							' Vitae suscipit tellus mauris a diam maecenas sed enim ut. Mauris augue neque gravida in fermentum.',
 						title: 'Co-Founder & CTO',
 					})
-					options.set(
-						produce(gridContainer, (draft) => {
-							draft.children.push(newItem)
-						})
-					)
-				}}
-				tabs={tabsList}
+				}
+				renderItemOptions={(item) => <ItemOptions item={item} />}
 			/>
-		</div>
+		</OptionsWrapper>
 	)
 }
+
+function ItemOptions({ item }: { item: Element }) {
+	const image = item.children![0] as ImageElement
+	const name = item.children![1] as TextElement
+	const title = item.children![2] as TextElement
+	const description = item.children![3] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<ImageElementInput element={image} />
+			<TextElementInput label="Name" element={name} />
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Description" element={description} />
+		</OptionsWrapper>
+	)
+}
+
 // =============  defaultData =============
+
 const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -294,7 +163,7 @@ const title = produce(new TextElement(), (draft) => {
 			fontSize: '30px',
 		},
 	}
-	draft.data.text = inteliText('What Clients Say')
+	draft.data.text = Expression.fromString('What Clients Say')
 }).serialize()
 const description = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
@@ -312,7 +181,7 @@ const description = produce(new TextElement(), (draft) => {
 			maxWidth: '100%',
 		},
 	}
-	draft.data.text = inteliText(
+	draft.data.text = Expression.fromString(
 		'we place huge value on strong relationships and have seen the benefits they bring to our business. Customers feedback is vital in helping us to get it right'
 	)
 }).serialize()
@@ -370,7 +239,7 @@ const createBioWithImage = ({
 					fontSize: '14px',
 				},
 			}
-			draft.data.text = inteliText(name)
+			draft.data.text = Expression.fromString(name)
 		})
 		const titleText = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
@@ -383,7 +252,7 @@ const createBioWithImage = ({
 					fontSize: '18px',
 				},
 			}
-			draft.data.text = inteliText(title)
+			draft.data.text = Expression.fromString(title)
 		})
 		const descriptionText = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
@@ -397,7 +266,7 @@ const createBioWithImage = ({
 					fontSize: '14px',
 				},
 			}
-			draft.data.text = inteliText(description)
+			draft.data.text = Expression.fromString(description)
 		})
 
 		draft.children = [imageElement, nameText, titleText, descriptionText]

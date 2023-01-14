@@ -10,7 +10,7 @@ import {
 	Ids,
 	SourceIds,
 	useAction,
-	useDataSourceAction
+	useDataSourceAction,
 } from './action'
 
 export class NavigateAction extends Action {

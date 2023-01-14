@@ -4,6 +4,7 @@ import { ReactNode, useMemo } from 'react'
 import { Element } from '../../elements/element'
 import { useSetWithElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
+import { NavMenuElement } from '../../elements/extensions/nav/nav-menu'
 import { DraggableTabs } from './draggable-tabs'
 
 export function DndTabs({
@@ -11,7 +12,7 @@ export function DndTabs({
 	renderItemOptions,
 	insertElement,
 }: {
-	containerElement: BoxElement
+	containerElement: BoxElement | NavMenuElement
 	renderItemOptions: (item: Element) => ReactNode
 	insertElement: () => Element
 }) {

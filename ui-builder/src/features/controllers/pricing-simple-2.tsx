@@ -1,6 +1,6 @@
-import { Button, Slider } from '@mantine/core'
+import { Button } from '@mantine/core'
 import produce from 'immer'
-import React, { ReactNode, useMemo } from 'react'
+import React, { ReactNode } from 'react'
 import imageUrl from '../../assets/components/pricing-simple-2.jpg'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
@@ -9,15 +9,18 @@ import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useAtomValue } from 'jotai'
+import { regenElement } from '../clipboard/copy-paste'
 import { Element } from '../elements/element'
+import { ColumnsElement } from '../elements/extensions/columns'
 import { IconElement } from '../elements/extensions/icon'
 import { LinkElement } from '../elements/extensions/link'
 import { Expression } from '../states/expression'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import { viewportAtom, ViewportDevice } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ColumnsElementInput } from '../ui/columns-element-input'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 import VerticalOptions from './helpers/vertical-options'
 
 export class PricingSimple2 extends Controller {
@@ -33,305 +36,53 @@ export class PricingSimple2 extends Controller {
 // =============  renderOptions =============
 
 function PricingSimple2Options({ options }: SimpleComponentOptionsProps) {
-	const viewport = useAtomValue(viewportAtom)
-	const gridDiv = options.element.children?.[0] as BoxElement
-
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return gridDiv.children.map((column, index) => {
-			return {
-				id: column.id,
-				content: (
-					<div className="flex flex-col justify-stretch">
-						<MemTabOptions
-							options={options}
-							set={options.set}
-							tileDiv={column as BoxElement}
-						/>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(gridDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [gridDiv.children, options.set])
+	const gridDiv = options.element.children?.[0] as ColumnsElement
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Simple pricing 2" />
-
-			<MemGridOptions set={options.set} viewport={viewport} containerDiv={gridDiv} />
+			<ColumnsElementInput element={gridDiv} />
 			<Divider title="Price columns" />
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(gridDiv, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					const newTile = createTile({
-						title: 'Starter',
-						yearlyPrice: '$9.99',
-						monthlyPrice: '$10',
-						lines: ['1 user', '10GB storage'],
-					})
-					options.set(
-						produce(gridDiv, (draft) => {
-							draft.children.push(newTile)
+			<DndTabs
+				containerElement={gridDiv}
+				insertElement={() =>
+					regenElement(
+						createTile({
+							title: 'Starter',
+							yearlyPrice: '$9.99',
+							monthlyPrice: '$10',
+							lines: ['1 user', '10GB storage'],
 						})
 					)
-				}}
-				tabs={tabsList}
+				}
+				renderItemOptions={(item) => (
+					<MemTabOptions set={options.set} tileDiv={item as BoxElement} />
+				)}
 			/>
-		</div>
-	)
-}
-
-const MemGridOptions = React.memo(GridOptions)
-
-type GridOptionsProps = {
-	viewport: ViewportDevice
-	set: (element: BoxElement) => void
-	containerDiv: BoxElement
-}
-
-function GridOptions({ set, containerDiv, viewport }: GridOptionsProps): JSX.Element {
-	const countGridTemplateColumns = (mode: 'desktop' | 'tablet' | 'mobile') => {
-		return (
-			(containerDiv.style[mode]?.default?.gridTemplateColumns?.toString() || '').split('1fr')
-				.length - 1
-		)
-	}
-
-	return (
-		<>
-			{viewport === 'desktop' && (
-				<>
-					<p>Desktop mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('desktop')}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'tablet' && (
-				<>
-					<p>Tablet mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('tablet')}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'mobile' && (
-				<>
-					<p>Mobile mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('mobile')}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={1}
-						onChange={(val) => {
-							set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-		</>
+		</OptionsWrapper>
 	)
 }
 
 type TabOptionsProps = {
 	set: (element: Element) => void
 	tileDiv: BoxElement
-	options: any
 }
 
-const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
+const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 	const title = tileDiv.children[0] as TextElement
 	const yearlyPrice = tileDiv.children[1].children![0].children![0] as TextElement
 	const monthlyPrice = tileDiv.children[1].children![1].children![0] as TextElement
 	const ctaLink = tileDiv.children[3] as LinkElement
 	const ctaText = ctaLink.children?.[0] as TextElement
 	const featureLinesWrapper = tileDiv.children[2] as BoxElement
+
 	return (
 		<div className="flex flex-col items-stretch gap-y-2">
 			<DividerCollapsible closed title="price">
-				<Intelinput
-					label="Title"
-					placeholder="Title"
-					name="title"
-					size="xs"
-					value={title.data.text}
-					onChange={(value) =>
-						set(
-							produce(title, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				<Intelinput
-					label="Yearly price"
-					name="yearlyPrice"
-					size="xs"
-					value={yearlyPrice.data.text}
-					onChange={(value) =>
-						set(
-							produce(yearlyPrice, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				<Intelinput
-					label="Monthly price"
-					name="MonthlyPrice"
-					size="xs"
-					value={monthlyPrice.data.text}
-					onChange={(value) =>
-						set(
-							produce(monthlyPrice, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				<DividerCollapsible closed title="Color">
-					{ColorOptions.getBackgroundOption({ options, wrapperDiv: tileDiv })}
-					{ColorOptions.getTextColorOption({
-						options,
-						wrapperDiv: title,
-						title: 'Title',
-					})}
-					{ColorOptions.getTextColorOption({
-						options,
-						wrapperDiv: tileDiv.children[1].children![0],
-						title: 'Yearly price',
-					})}
-					{ColorOptions.getTextColorOption({
-						options,
-						wrapperDiv: tileDiv.children[1].children![1],
-						title: 'Monthly price',
-					})}
-				</DividerCollapsible>
+				<TextElementInput label="Title" element={title} />
+				<TextElementInput label="Yearly price" element={yearlyPrice} />
+				<TextElementInput label="Monthly price" element={monthlyPrice} />
+				<BoxElementInput label="Background color" element={tileDiv} />
 			</DividerCollapsible>
 
 			<DividerCollapsible closed title="Features">
@@ -343,28 +94,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 						const text = child.children?.[1] as TextElement
 						return {
 							id: child.id,
-							content: (
-								<>
-									<Intelinput
-										label="Title"
-										name="title"
-										size="xs"
-										value={text.data.text}
-										onChange={(value) =>
-											set(
-												produce(text, (draft) => {
-													draft.data.text = value
-												})
-											)
-										}
-									/>
-									{ColorOptions.getTextColorOption({
-										options,
-										wrapperDiv: text,
-										title: '',
-									})}
-								</>
-							),
+							content: <TextElementInput label="Title" element={text} />,
 						}
 					})}
 				/>
@@ -374,7 +104,7 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 					onClick={() => {
 						set(
 							produce(featureLinesWrapper, (draft) => {
-								draft.children?.push(createLine('new feature')) // TODO: Assign a new id
+								draft.children?.push(regenElement(createLine('new feature')))
 							})
 						)
 					}}
@@ -383,41 +113,8 @@ const TabOptions = ({ tileDiv, set, options }: TabOptionsProps) => {
 				</Button>
 			</DividerCollapsible>
 			<Divider title="CTA" />
-			<Intelinput
-				placeholder="CTA"
-				label="Text"
-				name="cta"
-				size="xs"
-				value={ctaText.data.text}
-				onChange={(value) =>
-					set(
-						produce(ctaText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				placeholder="Link"
-				label="Link"
-				name="ctaLink"
-				size="xs"
-				value={ctaLink.data.href}
-				onChange={(value) =>
-					set(
-						produce(ctaLink, (draft) => {
-							draft.data.href = value
-						})
-					)
-				}
-			/>
-			<DividerCollapsible closed title="CTA color">
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: ctaText,
-					title: 'Text',
-				})}
-			</DividerCollapsible>
+			<TextElementInput placeholder="CTA" label="Text" element={ctaText} />
+			<LinkElementInput placeholder="Link" label="Link" element={ctaLink} />
 		</div>
 	)
 }
@@ -450,7 +147,7 @@ const createTileTitle = () =>
 				fontWeight: 'bold',
 			},
 		}
-		draft.data.text = inteliText('Standard')
+		draft.data.text = Expression.fromString('Standard')
 	})
 
 const createFeatureLine = () =>
@@ -501,7 +198,9 @@ const createFeatureLine = () =>
 					color: '#717171',
 				},
 			}
-			draft.data.text = inteliText('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+			draft.data.text = Expression.fromString(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+			)
 		})
 
 		draft.children = [icon, text]
@@ -509,7 +208,7 @@ const createFeatureLine = () =>
 
 const createLine = (text: string) => {
 	return produce(createFeatureLine(), (draft) => {
-		;(draft.children[1]! as TextElement).data.text = inteliText(text)
+		;(draft.children[1]! as TextElement).data.text = Expression.fromString(text)
 	})
 }
 
@@ -550,7 +249,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = inteliText('$9.99')
+		draft.data.text = Expression.fromString('$9.99')
 	})
 
 	const termLarge = produce(new TextElement(), (draft) => {
@@ -562,7 +261,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = inteliText('per month')
+		draft.data.text = Expression.fromString('per month')
 	})
 
 	const largePriceWrapper = produce(new BoxElement(), (draft) => {
@@ -584,7 +283,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = inteliText('$10')
+		draft.data.text = Expression.fromString('$10')
 	})
 
 	const termSmall = produce(new TextElement(), (draft) => {
@@ -596,7 +295,7 @@ const tileDetailsPrice = produce(new BoxElement(), (draft) => {
 				margin: '0px',
 			},
 		}
-		draft.data.text = inteliText('monthly')
+		draft.data.text = Expression.fromString('monthly')
 	})
 	const smallPriceWrapper = produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
@@ -638,7 +337,7 @@ const tileCta = produce(new LinkElement(), (draft) => {
 	}
 
 	const text = produce(new TextElement(), (draft) => {
-		draft.data.text = inteliText('Learn more')
+		draft.data.text = Expression.fromString('Learn more')
 	})
 
 	draft.data.href = Expression.fromString('#')
@@ -677,11 +376,11 @@ function createTile({
 }) {
 	return produce(newTile(), (draft) => {
 		const featureLines = lines.map((line) => createLine(line))
-		;(draft.children[0]! as TextElement).data!.text = inteliText(title)
+		;(draft.children[0]! as TextElement).data!.text = Expression.fromString(title)
 		;(draft.children[1]! as BoxElement).children![0].children![0].data!.text =
-			inteliText(yearlyPrice)
+			Expression.fromString(yearlyPrice)
 		;(draft.children[1]! as BoxElement).children![1].children![0].data!.text =
-			inteliText(monthlyPrice)
+			Expression.fromString(monthlyPrice)
 		;(draft.children[2]! as BoxElement).children = featureLines
 	})
 }

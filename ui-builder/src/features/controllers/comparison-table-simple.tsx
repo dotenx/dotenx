@@ -169,10 +169,7 @@ function ComparisonTableSimpleOptions() {
 					value={selectedColumn.toString()}
 				/>
 			</div>
-			<TextElementInput
-				label="Cell content"
-				element={cellContent}
-			/>
+			<TextElementInput label="Cell content" element={cellContent} />
 			<DividerCollapsible closed title="color">
 				<BoxElementInput element={component} label="Background color" />
 				<ColorInput
