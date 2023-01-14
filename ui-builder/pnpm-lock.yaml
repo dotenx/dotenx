@@ -40,7 +40,7 @@ specifiers:
   dnd-core: ^16.0.1
   eslint: ^8.31.0
   eslint-config-prettier: ^8.6.0
-  eslint-plugin-react: ^7.31.11
+  eslint-plugin-react: ^7.32.0
   eslint-plugin-react-hooks: ^4.6.0
   immer: ^9.0.17
   jotai: ^1.13.0
@@ -50,7 +50,7 @@ specifiers:
   monaco-editor: ^0.34.1
   nanoid: ^4.0.0
   postcss: ^8.4.21
-  prettier: ^2.8.2
+  prettier: ^2.8.3
   prop-types: ^15.8.1
   react: ^18.2.0
   react-chartjs-2: ^5.2.0
@@ -58,7 +58,7 @@ specifiers:
   react-dnd-html5-backend: ^16.0.1
   react-dom: ^18.2.0
   react-frame-component: ^5.2.5
-  react-hook-form: ^7.41.5
+  react-hook-form: ^7.42.0
   react-icons: ^4.7.1
   react-is: ^18.2.0
   react-popper: ^2.3.0
@@ -69,7 +69,7 @@ specifiers:
   typescript: ^4.9.4
   vite: ^4.0.4
   zod: ^3.20.2
-  zustand: ^4.3.1
+  zustand: ^4.3.2
 
 dependencies:
   '@babel/core': 7.20.12
@@ -103,7 +103,7 @@ dependencies:
   dnd-core: 16.0.1
   eslint: 8.31.0
   eslint-config-prettier: 8.6.0_eslint@8.31.0
-  eslint-plugin-react: 7.31.11_eslint@8.31.0
+  eslint-plugin-react: 7.32.0_eslint@8.31.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.31.0
   immer: 9.0.17
   jotai: 1.13.0_2exiyaescjxorpwwmy4ejghgte
@@ -112,7 +112,7 @@ dependencies:
   lodash: 4.17.21
   monaco-editor: 0.34.1
   nanoid: 4.0.0
-  prettier: 2.8.2
+  prettier: 2.8.3
   prop-types: 15.8.1
   react: 18.2.0
   react-chartjs-2: 5.2.0_mfjxiilvrceiwtanada6fxhije
@@ -120,7 +120,7 @@ dependencies:
   react-dnd-html5-backend: 16.0.1
   react-dom: 18.2.0_react@18.2.0
   react-frame-component: 5.2.5_v2m5e27vhdewzwhryxwfaorcca
-  react-hook-form: 7.41.5_react@18.2.0
+  react-hook-form: 7.42.0_react@18.2.0
   react-icons: 4.7.1_react@18.2.0
   react-is: 18.2.0
   react-popper: 2.3.0_r6q5zrenym2zg7je7hgi674bti
@@ -128,7 +128,7 @@ dependencies:
   react-window: 1.8.8_biqbaboplfbrettd7655fr4n2y
   styled-components: 5.3.6_7i5myeigehqah43i5u7wbekgba
   zod: 3.20.2
-  zustand: 4.3.1_immer@9.0.17+react@18.2.0
+  zustand: 4.3.2_immer@9.0.17+react@18.2.0
 
 devDependencies:
   '@types/animejs': 3.1.6
@@ -2069,8 +2069,8 @@ packages:
       eslint: 8.31.0
     dev: false
 
-  /eslint-plugin-react/7.31.11_eslint@8.31.0:
-    resolution: {integrity: sha512-TTvq5JsT5v56wPa9OYHzsrOlHzKZKjV+aLgS+55NJP/cuzdiQPC7PfYoUjMoxlffKtvijpk7vA/jmuqRb9nohw==}
+  /eslint-plugin-react/7.32.0_eslint@8.31.0:
+    resolution: {integrity: sha512-vSBi1+SrPiLZCGvxpiZIa28fMEUaMjXtCplrvxcIxGzmFiYdsXQDwInEjuv5/i/2CTTxbkS87tE8lsQ0Qxinbw==}
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
@@ -2693,7 +2693,7 @@ packages:
     engines: {node: '>=4.0'}
     dependencies:
       array-includes: 3.1.6
-      object.assign: 4.1.2
+      object.assign: 4.1.4
     dev: false
 
   /klona/2.0.5:
@@ -2857,16 +2857,6 @@ packages:
   /object-keys/1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
-    dev: false
-
-  /object.assign/4.1.2:
-    resolution: {integrity: sha512-ixT2L5THXsApyiUPYKmW+2EHpXXe5Ii3M+f4e+aJFAHao5amFRW6J0OO6c/LU8Be47utCx2GL89hxGB6XSmKuQ==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      define-properties: 1.1.4
-      has-symbols: 1.0.3
-      object-keys: 1.1.1
     dev: false
 
   /object.assign/4.1.4:
@@ -3071,8 +3061,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: false
 
-  /prettier/2.8.2:
-    resolution: {integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==}
+  /prettier/2.8.3:
+    resolution: {integrity: sha512-tJ/oJ4amDihPoufT5sM0Z1SKEuKay8LfVAMlbbhnnkvt6BUserZylqo2PN+p9KeljLr0OHa2rXHU1T8reeoTrw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: false
@@ -3188,8 +3178,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /react-hook-form/7.41.5_react@18.2.0:
-    resolution: {integrity: sha512-DAKjSJ7X9f16oQrP3TW2/eD9N6HOgrmIahP4LOdFphEWVfGZ2LulFd6f6AQ/YS/0cx/5oc4j8a1PXxuaurWp/Q==}
+  /react-hook-form/7.42.0_react@18.2.0:
+    resolution: {integrity: sha512-XDEjSUZmT68FOSv2FaD3XlN1sa2HB9vIQ9SVKsogGrHUY43o2aANQDC9LgHa4zusqCMKLG3qitpTcEhpYWHBFw==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
@@ -3789,8 +3779,8 @@ packages:
     resolution: {integrity: sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==}
     dev: false
 
-  /zustand/4.3.1_immer@9.0.17+react@18.2.0:
-    resolution: {integrity: sha512-EVyo/eLlOTcJm/X5M00rwtbYFXwRVTaRteSvhtbTZUCQFJkNfIyHPiJ6Ke68MSWzcKHpPzvqNH4gC2ZS/sbNqw==}
+  /zustand/4.3.2_immer@9.0.17+react@18.2.0:
+    resolution: {integrity: sha512-rd4haDmlwMTVWVqwvgy00ny8rtti/klRoZjFbL/MAcDnmD5qSw/RZc+Vddstdv90M5Lv6RPgWvm1Hivyn0QgJw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       immer: '>=9.0'
