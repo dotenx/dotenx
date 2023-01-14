@@ -19,10 +19,8 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { BoxElementInput } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
-import { Intelinput } from '../ui/intelinput'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
-import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
@@ -109,39 +107,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 			</DividerCollapsible>
 			{/* Secondary footer */}
 			<DividerCollapsible closed title="Secondary footer">
-				<Intelinput
-					label="text"
-					name="text"
-					size="xs"
-					value={secondFooterTextComponent.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(secondFooterTextComponent, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				{/* Add new icon */}
-				<ActionIcon
-					onClick={() => setAddIconOpened((o) => !o)}
-					variant="transparent"
-					disabled={unusedIcons.length === 0}
-				>
-					<TbPlus
-						size={16}
-						className={
-							unusedIcons.length !== 0
-								? 'text-red-500 rounded-full border-red-500 border'
-								: ''
-						}
-					/>
-				</ActionIcon>
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: secondFooterTextComponent,
-					title: 'Text color',
-				})}
+				<TextElementInput label="text" element={secondFooterTextComponent} />
 				{/* Add new icon */}
 				<ActionIcon
 					onClick={() => setAddIconOpened((o) => !o)}
@@ -199,19 +165,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 												icon.data.name as IconName,
 											]}
 										/>
-										<Intelinput
-											placeholder="Link"
-											name="link"
-											size="xs"
-											value={item.data.href}
-											onChange={(value) =>
-												options.set(
-													produce(item, (draft) => {
-														draft.data.href = value
-													})
-												)
-											}
-										/>
+										<LinkElementInput placeholder="Link" element={item} />
 										<FontAwesomeIcon
 											className="w-3 h-3 text-red-500 cursor-pointer"
 											icon={['fas', 'trash']}
@@ -353,24 +307,18 @@ function ColumnLines({ column }: ColumnLinesProps): JSX.Element {
 					if (index > columnLines.length - 1) return // TODO: This part is nonsense, but it works. Ideally the items should be updated when the columnLines are updated. useMemo should help
 					const item = columnLines?.[index] as LinkElement
 					const label = item.children?.[0] as TextElement
+					const onDelete = () => {
+						setItems((items) => items.splice(index, 1))
+						set(column, (draft) => {
+							draft.children?.splice(index + 1, 1)
+						})
+					}
 					return (
 						<SortableItem key={id} id={id}>
-							<div className="flex flex-col items-stretch justify-center w-full h-full py-2 pr-1 gap-y-1 gap-x-1">
-								<div className="relative w-full h-4">
-									<span className="absolute top-0 right-0">
-										<ActionIcon
-											size="xs"
-											onClick={() => {
-												setItems((items) => items.splice(index, 1))
-												set(column, (draft) => {
-													draft.children?.splice(index + 1, 1)
-												})
-											}}
-										>
-											<TbX />
-										</ActionIcon>
-									</span>
-								</div>
+							<ActionIcon ml="auto" size="xs" onClick={onDelete}>
+								<TbX />
+							</ActionIcon>
+							<div className="space-y-2">
 								<TextElementInput label="Text" element={label} />
 								<LinkElementInput label="Link" element={item} />
 							</div>
