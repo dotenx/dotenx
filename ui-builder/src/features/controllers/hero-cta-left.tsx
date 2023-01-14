@@ -15,6 +15,7 @@ import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class HeroCtaLeft extends Controller {
 	name = 'Hero with CTA on the left'
@@ -37,7 +38,7 @@ function HeroCtaLeftOptions() {
 	const set = useSetElement()
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Hero with CTA on the left" />
 			<ImageDrop
 				onChange={(src) =>
@@ -53,7 +54,7 @@ function HeroCtaLeftOptions() {
 			<BoxElementInput label="Background color" element={component} />
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
-		</div>
+		</OptionsWrapper>
 	)
 }
 

@@ -15,6 +15,7 @@ import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class HeroFullWidth extends Controller {
 	name = 'Full width background hero'
@@ -37,7 +38,7 @@ function HeroFullWidthOptions() {
 	const set = useSetElement()
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Full width background hero" />
 			<ImageDrop
 				onChange={(src) =>
@@ -54,7 +55,7 @@ function HeroFullWidthOptions() {
 			<BoxElementInput label="CTA background color" element={component} />
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
-		</div>
+		</OptionsWrapper>
 	)
 }
 
