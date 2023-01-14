@@ -17,7 +17,8 @@ import { TextElement } from '../elements/extensions/text'
 import { useProjectStore } from '../page/project-store'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
@@ -41,19 +42,7 @@ export class SignInBasic extends Controller {
 		return (
 			<div className="space-y-6">
 				<ComponentName name="Sign In Basic" />
-				<Intelinput
-					label="Title"
-					name="title"
-					size="xs"
-					value={title.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(title, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
+				<TextElementInput label="Title" element={title} />
 				<TextInput
 					label="Button Text"
 					name="buttonText"
@@ -89,19 +78,7 @@ export class SignInBasic extends Controller {
 							: ''
 					}
 				/>
-				<Intelinput
-					label="Sign-up link"
-					name="signUpLink"
-					size="xs"
-					value={signUpLink.data.href}
-					onChange={(value) =>
-						options.set(
-							produce(signUpLink, (draft) => {
-								draft.data.href = value
-							})
-						)
-					}
-				/>
+				<LinkElementInput label="Sign-up link" element={signUpLink} />
 			</div>
 		)
 	}
@@ -115,7 +92,7 @@ export class SignInBasic extends Controller {
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
-		const url = inteliText(`${API_URL}/user/management/project/${projectTag}/login`)
+		const url = Expression.fromString(`${API_URL}/user/management/project/${projectTag}/login`)
 		const dataSourceName = `signin_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
 		navigateAction.to = Expression.fromString('/index.html')
