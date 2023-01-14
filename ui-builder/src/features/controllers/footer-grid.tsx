@@ -4,10 +4,11 @@ import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ActionIcon, Button, Collapse } from '@mantine/core'
 import produce from 'immer'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { TbPlus, TbX } from 'react-icons/tb'
 import imageUrl from '../../assets/components/footer-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
@@ -19,6 +20,7 @@ import { Expression } from '../states/expression'
 import { BoxElementInput } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Intelinput } from '../ui/intelinput'
+import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
@@ -28,7 +30,8 @@ import {
 	repeatObject,
 	SimpleComponentOptionsProps,
 } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 import { SortableItem, VerticalSortable } from './vertical-sortable'
 
 export class FooterGrid extends Controller {
@@ -45,7 +48,6 @@ export class FooterGrid extends Controller {
 
 function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 	const [items, setSocialIconItems] = useState<string[]>([])
-
 	const [addIconOpened, setAddIconOpened] = useState(false)
 
 	const icons = {
@@ -103,7 +105,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 				<LogoColumn />
 			</DividerCollapsible>
 			<DividerCollapsible closed title="Link Columns">
-				<ColumnsOptions options={options} />
+				<ColumnsOptions />
 			</DividerCollapsible>
 			{/* Secondary footer */}
 			<DividerCollapsible closed title="Secondary footer">
@@ -262,110 +264,63 @@ function LogoColumn() {
 	)
 }
 
-function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
-	const rightDiv = options.element.children?.[0].children?.[1] as BoxElement
+function ColumnsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const rightDiv = component.children?.[0].children?.[1] as BoxElement
 
-	// const tabsList =
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return rightDiv.children.map((column, index) => {
-			const columnLines = column.children
-			const title = columnLines?.[0] as TextElement
-			return {
-				id: column.id,
-				content: (
-					<div className="flex flex-col justify-stretch">
-						<Intelinput
-							key={index}
-							label="Title"
-							placeholder="Text"
-							name="text"
-							size="xs"
-							value={title.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(title, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						{ColorOptions.getTextColorOption({
-							options,
-							wrapperDiv: title,
-							title: 'Title color',
-						})}
-						<ColumnLines column={column as BoxElement} options={options} />
-						<Button
-							className="mt-2"
-							size="xs"
-							onClick={() => {
-								options.set(
-									produce(column, (draft) => {
-										draft.children?.push(createColumnLine('New Link', '')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
-									})
-								)
-							}}
-						>
-							<FontAwesomeIcon icon={['fas', 'plus']} /> Add Link
-						</Button>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(rightDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [rightDiv])
+	const addTab = () => {
+		const columnLines = [
+			createColumnLine('About us', ''),
+			createColumnLine('Our services', ''),
+			createColumnLine('Our products', ''),
+			createColumnLine('Contact us', ''),
+		]
+		const newTabElement = new BoxElement()
+		newTabElement.children = [createColumnTitle('Column title'), ...columnLines]
+		return newTabElement
+	}
 
 	return (
-		<DraggableTabs
-			onDragEnd={(event) => {
-				const { active, over } = event
-				if (active.id !== over?.id) {
-					const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-					const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-					options.set(
-						produce(rightDiv, (draft) => {
-							const temp = draft.children![oldIndex]
-							draft.children![oldIndex] = draft.children![newIndex]
-							draft.children![newIndex] = temp
-						})
-					)
-				}
-			}}
-			onAddNewTab={() => {
-				const columnLines = [
-					createColumnLine('About us', ''),
-					createColumnLine('Our services', ''),
-					createColumnLine('Our products', ''),
-					createColumnLine('Contact us', ''),
-				]
-				const b = new BoxElement()
-				b.children = [createColumnTitle('Column title'), ...columnLines]
-
-				options.set(
-					produce(rightDiv, (draft) => {
-						draft.children!.push(b)
-					})
-				)
-			}}
-			tabs={tabsList}
+		<DndTabs
+			containerElement={rightDiv}
+			insertElement={addTab}
+			renderItemOptions={(item) => <ColumnItemOptions item={item} />}
 		/>
 	)
 }
 
+function ColumnItemOptions({ item }: { item: Element }) {
+	const set = useSetElement()
+	const columnLines = item.children
+	const title = columnLines?.[0] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<TextElementInput label="Title" element={title} />
+			<ColumnLines column={item as BoxElement} />
+			<Button
+				className="mt-2"
+				size="xs"
+				onClick={() => {
+					set(column, (draft) => {
+						draft.children?.push(createColumnLine('New Link', '')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
+					})
+				}}
+				leftIcon={<TbPlus />}
+			>
+				Add Link
+			</Button>
+		</OptionsWrapper>
+	)
+}
+
 type ColumnLinesProps = {
-	options: ElementOptions
 	column: BoxElement
 }
 
-function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
+function ColumnLines({ column }: ColumnLinesProps): JSX.Element {
+	const set = useSetElement()
 	const columnLines = column.children?.slice(1) as LinkElement[]
-
 	const [items, setItems] = useState<string[]>([])
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -377,21 +332,19 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 			setItems((items) => {
 				return arrayMove(items, oldIndex, newIndex)
 			})
-			options.set(
-				produce(column, (draft) => {
-					draft.children = [
-						column.children![0],
-						...arrayMove(columnLines, oldIndex, newIndex),
-					]
-				})
-			)
+			set(column, (draft) => {
+				draft.children = [
+					column.children![0],
+					...arrayMove(columnLines, oldIndex, newIndex),
+				]
+			})
 		}
 	}
 
 	useEffect(() => {
 		const itemsTemp = columnLines.map((item) => item.id)
 		setItems(itemsTemp)
-	}, [columnLines, options, column])
+	}, [columnLines])
 
 	return (
 		<VerticalSortable items={items} onDragEnd={handleDragEnd}>
@@ -409,51 +362,18 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 											size="xs"
 											onClick={() => {
 												setItems((items) => items.splice(index, 1))
-
-												options.set(
-													produce(column, (draft) => {
-														draft.children?.splice(index + 1, 1)
-													})
-												)
+												set(column, (draft) => {
+													draft.children?.splice(index + 1, 1)
+												})
 											}}
 										>
 											<TbX />
 										</ActionIcon>
 									</span>
 								</div>
-
-								<Intelinput
-									label="Text"
-									name="text"
-									size="xs"
-									value={label.data.text}
-									onChange={(value) =>
-										options.set(
-											produce(label, (draft) => {
-												draft.data.text = value
-											})
-										)
-									}
-								/>
-								<Intelinput
-									placeholder="Link"
-									name="link"
-									size="xs"
-									value={item.data.href}
-									onChange={(value) =>
-										options.set(
-											produce(item, (draft) => {
-												draft.data.href = value
-											})
-										)
-									}
-								/>
+								<TextElementInput label="Text" element={label} />
+								<LinkElementInput label="Link" element={item} />
 							</div>
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: item,
-								title: '',
-							})}
 						</SortableItem>
 					)
 				})}
@@ -494,27 +414,18 @@ function LogoColumnLines({ column }: { column: BoxElement }): JSX.Element {
 				{items.map((id, index) => {
 					if (index > columnLines.length - 1) return // TODO: This part is nonsense, but it works. Ideally the items should be updated when the columnLines are updated. useMemo should help
 					const item = columnLines?.[index] as TextElement
+					const deleteColumn = () => {
+						setItems((items) => items.splice(index, 1))
+						set(column, (draft) => {
+							draft.children?.splice(index + 1, 1)
+						})
+					}
 					return (
 						<SortableItem key={id} id={id}>
-							<div className="flex flex-col items-stretch justify-center w-full h-full py-2 pr-1 gap-y-1 gap-x-1">
-								<div className="relative w-full h-4">
-									<span className="absolute top-0 right-0">
-										<ActionIcon
-											size="xs"
-											onClick={() => {
-												setItems((items) => items.splice(index, 1))
-												set(column, (draft) => {
-													draft.children?.splice(index + 1, 1)
-												})
-											}}
-										>
-											<TbX />
-										</ActionIcon>
-									</span>
-								</div>
-
-								<TextElementInput label="Text" element={item} />
-							</div>
+							<ActionIcon ml="auto" size="xs" onClick={deleteColumn}>
+								<TbX />
+							</ActionIcon>
+							<TextElementInput label="Text" element={item} />
 						</SortableItem>
 					)
 				})}
