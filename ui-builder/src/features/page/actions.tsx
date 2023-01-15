@@ -187,6 +187,7 @@ function PersistedStatesForm({ projectName }: { projectName: string }) {
 }
 
 function QueryParamsForm({ pageName }: { pageName: string }) {
+	const setSaved = useElementsStore((store) => store.save)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const form = useForm<{ params: string[] }>({ initialValues: { params: pageParams ?? [] } })
 	const queryClient = useQueryClient()
@@ -196,7 +197,10 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 	const classes = useClassesStore((state) => state.classes)
 	const globals = useAtomValue(globalStatesAtom)
 	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
+		onSuccess: () => {
+			queryClient.invalidateQueries([QueryKey.PageDetails])
+			setSaved()
+		},
 	})
 	const fonts = useAtomValue(fontsAtom)
 	const customCodes = useAtomValue(customCodesAtom)
@@ -276,6 +280,7 @@ function DeletePageButton() {
 }
 
 function SaveButton() {
+	const setSaved = useElementsStore((store) => store.save)
 	const { pageName = '' } = useParams()
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
@@ -308,7 +313,12 @@ function SaveButton() {
 				statesDefaultValues,
 				animations,
 			},
-			{ onSuccess: () => setPageMode(isSimple ? 'simple' : 'advanced') }
+			{
+				onSuccess: () => {
+					setPageMode(isSimple ? 'simple' : 'advanced')
+					setSaved()
+				},
+			}
 		)
 	}
 
@@ -346,6 +356,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 	const globals = useAtomValue(globalStatesAtom)
 	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
+	const setSaved = useElementsStore((store) => store.save)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = useAtomValue(animationsAtom)
@@ -370,8 +381,9 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 			},
 			{
 				onSuccess: () => {
-					previewPageMutation.mutate({ projectTag, pageName }),
-						setPageMode(isSimple ? 'simple' : 'advanced')
+					previewPageMutation.mutate({ projectTag, pageName })
+					setPageMode(isSimple ? 'simple' : 'advanced')
+					setSaved()
 				},
 			}
 		)
@@ -464,6 +476,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 	const globals = useAtomValue(globalStatesAtom)
 	const fonts = useAtomValue(fontsAtom)
 	const savePageMutation = useMutation(updatePage)
+	const setSaved = useElementsStore((store) => store.save)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = useAtomValue(animationsAtom)
@@ -473,6 +486,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 			{
 				onSuccess: (data) => {
 					setPublishUrl(data.data.url)
+					setSaved()
 				},
 			}
 		)
