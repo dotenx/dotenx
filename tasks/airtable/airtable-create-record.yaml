@@ -1,0 +1,23 @@
+service: airtable
+type: Create record in Airtable
+image: hojjat12/airtable-create-record:lambda
+integrations: [airtable]
+fields:
+    - key: base_id
+      type: text
+      display_name: Base id
+      description: Base id which used to create the record
+
+    - key: table_id_or_name
+      type: text
+      display_name: Table name or id
+      description: Name or id of your table that be used to create record on it
+
+    - key: column_values
+      type: object
+      display_name: Column values
+      description: A json format field that keys are column names and values are record values
+author: Hojjat-1
+icon: https://www.svgrepo.com/show/353383/airtable.svg
+node_color: FFAE2A
+description: Creates a new record in your Airtable table
