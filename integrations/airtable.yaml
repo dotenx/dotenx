@@ -1,0 +1,7 @@
+type: airtable
+secrets:
+  - name: Airtable OAuth2 access token
+    key: ACCESS_TOKEN 
+  - name: Airtable OAuth2 refresh token
+    key: REFRESH_TOKEN 
+oauth_provider: airtable
