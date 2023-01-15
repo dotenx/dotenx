@@ -42,6 +42,13 @@ func convertDataSources(dataSources []interface{}) (string, error) {
 			headers:{{if .Headers}}{{.Headers}}{{else}}{}{{end}}
 		}) {
 
+			if (!url) {
+				url = '{{range .Url.Value}}{{renderTextSource .}}{{end}}';
+			}
+			if (!headers) {
+				headers = {{if .Headers}}{{.Headers}}{{else}}{}{{end}}
+			}
+
 			{{if .IsPrivate}}headers = {...headers, Authorization: 'Bearer ' + Alpine.store('global')?.token };{{end}}
 
 			fetch(url, {
