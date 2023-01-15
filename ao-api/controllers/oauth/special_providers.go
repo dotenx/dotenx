@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func getSlackAccessToken(clientId, clientSecret, code, redirectUrl string) (string, error) {
@@ -187,4 +188,46 @@ func getMailchimpAccessToken(clientId, clientSecret, code, redirectUrl string) (
 	}
 	err = json.Unmarshal(out, &dto)
 	return dto.AccessToken, err
+}
+
+func (controller *OauthController) getAirtableTokens(clientId, clientSecret, code, state, redirectUrl string) (accessToken, refreshToken string, err error) {
+	exist, codeVerifier, err := controller.Service.GetRedisPairValue(state)
+	if err != nil {
+		return "", "", err
+	}
+	if !exist {
+		return "", "", errors.New("code challenge was expired or state is invalid")
+	}
+	var dto struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+	}
+	data := "code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&code_verifier=" + codeVerifier
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://airtable.com/oauth2/v1/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+		{
+			Key:   "Authorization",
+			Value: "Basic " + base64.StdEncoding.EncodeToString([]byte(clientId+":"+clientSecret)),
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	logrus.Info("airtable response:", string(out))
+
+	if err != nil {
+		return "", "", err
+	}
+	if status != http.StatusOK && status != http.StatusCreated {
+		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, dto.RefreshToken, err
 }

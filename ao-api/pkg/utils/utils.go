@@ -53,7 +53,7 @@ func GetAccountId(c *gin.Context) (string, error) {
 }
 
 // SpecialProviders are not supported by goth package (https://github.com/markbates/goth)
-var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay", "mailchimp"}
+var SpecialProviders = []string{"slack", "instagram", "typeform", "ebay", "mailchimp", "airtable"}
 
 // TODO: ADD COMMENT!
 var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
@@ -215,6 +215,14 @@ func RandStringRunes(n int, letterRunes []rune) string {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
+}
+
+func Base64URLBytesEncode(str []byte) string {
+	encoded := base64.StdEncoding.EncodeToString(str)
+	encoded = strings.Replace(encoded, "+", "-", -1)
+	encoded = strings.Replace(encoded, "/", "_", -1)
+	encoded = strings.Replace(encoded, "=", "", -1)
+	return encoded
 }
 
 // GenerateJwtToken function generates a jwt token based on HS256 algorithm

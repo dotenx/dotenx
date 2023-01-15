@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth"
@@ -97,7 +96,7 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 			integration.Provider = ""
 		}
 
-		accessToken := integration.Secrets["ACCESS_TOKEN"]
+		// accessToken := integration.Secrets["ACCESS_TOKEN"]
 		accessTokenSecret, hasSecret := integration.Secrets["ACCESS_TOKEN_SECRET"]
 		refreshToken, ok := integration.Secrets["REFRESH_TOKEN"]
 		if hasSecret && accessTokenSecret != "" {
@@ -128,16 +127,16 @@ func (controller *IntegrationController) AddIntegration() gin.HandlerFunc {
 		}
 		if ok && refreshToken != "" {
 			integration.HasRefreshToken = true
-			redisAccessTokenKey := "ao-api|" + accountId + "|" + integration.Name + "|access_token"
+			// redisAccessTokenKey := "ao-api|" + accountId + "|" + integration.Name + "|access_token"
 			redisRefreshTokenKey := "ao-api|" + accountId + "|" + integration.Name + "|refresh_token"
-			redisErr := controller.Service.SetRedisPair(redisAccessTokenKey, accessToken, 60*time.Minute)
-			if redisErr != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"err": redisErr.Error(),
-				})
-				return
-			}
-			redisErr = controller.Service.SetRedisPair(redisRefreshTokenKey, refreshToken, 0)
+			// redisErr := controller.Service.SetRedisPair(redisAccessTokenKey, accessToken, 60*time.Minute)
+			// if redisErr != nil {
+			// 	c.JSON(http.StatusBadRequest, gin.H{
+			// 		"err": redisErr.Error(),
+			// 	})
+			// 	return
+			// }
+			redisErr := controller.Service.SetRedisPair(redisRefreshTokenKey, refreshToken, 0)
 			if redisErr != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"err": redisErr.Error(),

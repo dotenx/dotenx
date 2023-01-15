@@ -15,11 +15,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/goth"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 )
 
 // ExchangeRefreshToken tries to get access and refresh tokens from redis (this method needs refresh token when access token expired)
-func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthProvider, integrationName, accountID string, redisStore redisStore.RedisStore) (accessToekn, refreshToken string, err error) {
+func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthProvider, integrationName, accountID string, redisStore redisStore.RedisStore) (accessToken, refreshToken string, err error) {
 	if !gProvider.RefreshTokenAvailable() {
 		return "", "", errors.New("this provider doesn't support refresh token")
 	}
@@ -39,7 +40,7 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 		if exist && oldAccessToken != "" && oldAccessToken != "pending" {
 			log.Println("access token already exist")
 			log.Println("oldAccessToken:", oldAccessToken)
-			accessToekn = oldAccessToken
+			accessToken = oldAccessToken
 			refreshToken = oldRefreshToken
 			success = true
 			break
@@ -60,11 +61,12 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 				return "", "", errors.New("Failed to get refresh token from redis")
 			}
 			var newToken *oauth2.Token
-			var expIn float64
+			var expIn, refreshExpIn float64
+			refreshExpIn = 0
 			if utils.ContainsString(utils.SpecialProviders, oauthProvider.Name) {
 				newToken = &oauth2.Token{}
 				var accessToken, refreshToken string
-				var expInInt int
+				var expInInt, refreshExpInInt int64
 				var err error
 				switch oauthProvider.Name {
 				case "ebay":
@@ -76,12 +78,15 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 					if parseErr != nil {
 						return "", "", err
 					}
-					accessToken, expInInt, err = ebayRefreshToekn(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken, url.QueryEscape(qParams.Get("scope")))
+					accessToken, expInInt, err = ebayRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken, url.QueryEscape(qParams.Get("scope")))
+				case "airtable":
+					accessToken, refreshToken, expInInt, refreshExpInInt, err = airtableRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
 				}
 				if err != nil {
 					return "", "", err
 				}
 				expIn = float64(expInInt)
+				refreshExpIn = float64(refreshExpInInt)
 				newToken.AccessToken = accessToken
 				newToken.RefreshToken = refreshToken
 			} else {
@@ -99,7 +104,7 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 				return "", "", redisErr
 			}
 			if newRefreshToken != "" {
-				redisErr = redisStore.SetRedisPair(redisRefreshTokenKey, newRefreshToken, 0)
+				redisErr = redisStore.SetRedisPair(redisRefreshTokenKey, newRefreshToken, time.Duration(refreshExpIn*float64(time.Second)))
 				if redisErr != nil {
 					return "", "", redisErr
 				}
@@ -107,7 +112,7 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 			} else {
 				refreshToken = oldRefreshToken
 			}
-			accessToekn = newAccessToken
+			accessToken = newAccessToken
 			success = true
 			break
 		}
@@ -119,10 +124,10 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 	return
 }
 
-func ebayRefreshToekn(clientId, clientSecret, refreshToken, scopes string) (accessToekn string, expIn int, err error) {
+func ebayRefreshToken(clientId, clientSecret, refreshToken, scopes string) (accessToken string, expIn int64, err error) {
 	var dto struct {
-		AccessToekn string `json:"access_token"`
-		ExpiresIn   int    `json:"expires_in"`
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int64  `json:"expires_in"`
 	}
 	data := "refresh_token=" + refreshToken
 	data += "&grant_type=refresh_token"
@@ -141,8 +146,7 @@ func ebayRefreshToekn(clientId, clientSecret, refreshToken, scopes string) (acce
 	body := bytes.NewBuffer([]byte(data))
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
 	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
-	log.Println("ebay response:", string(out))
-	log.Println("-----------------------------------------------------------")
+	logrus.Info("ebay response:", string(out))
 	if err != nil {
 		return "", 0, err
 	}
@@ -150,5 +154,39 @@ func ebayRefreshToekn(clientId, clientSecret, refreshToken, scopes string) (acce
 		return "", 0, errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &dto)
-	return dto.AccessToekn, dto.ExpiresIn, err
+	return dto.AccessToken, dto.ExpiresIn, err
+}
+
+func airtableRefreshToken(clientId, clientSecret, refreshToken string) (accessToken, newRefreshToken string, expIn, refreshExpIn int64, err error) {
+	var dto struct {
+		AccessToken      string `json:"access_token"`
+		RefreshToken     string `json:"refresh_token"`
+		ExpiresIn        int64  `json:"expires_in"`
+		RefreshExpiresIn int64  `json:"refresh_expires_in"`
+	}
+	data := "refresh_token=" + refreshToken
+	data += "&grant_type=refresh_token"
+	url := "https://airtable.com/oauth2/v1/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+		{
+			Key:   "Authorization",
+			Value: "Basic " + base64.StdEncoding.EncodeToString([]byte(clientId+":"+clientSecret)),
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	logrus.Info("airtable response:", string(out))
+	if err != nil {
+		return "", "", 0, 0, err
+	}
+	if status != http.StatusOK && status != http.StatusCreated {
+		return "", "", 0, 0, errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, dto.RefreshToken, dto.ExpiresIn, dto.RefreshExpiresIn, err
 }
