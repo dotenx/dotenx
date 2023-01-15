@@ -188,7 +188,7 @@ func airtableRefreshToken(clientId, clientSecret, refreshToken string) (accessTo
 	if err != nil {
 		return "", "", 0, 0, err
 	}
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusCreated {
 		return "", "", 0, 0, errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &dto)
