@@ -1,10 +1,9 @@
-import { TextInput } from '@mantine/core'
 import produce from 'immer'
-import { WritableDraft } from 'immer/dist/internal'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
-import { Intelinput, inteliText } from '../../ui/intelinput'
+import { Expression } from '../../states/expression'
+import { TextElementInput } from '../../ui/text-element-input'
 import ProfessionalSocials from './professional-socials'
 
 const createLayout = (name: string, description: string, align: 'left' | 'center') =>
@@ -36,7 +35,7 @@ const createLayout = (name: string, description: string, align: 'left' | 'center
 					marginTop: '10px',
 				},
 			}
-			draft.data.text = inteliText(name)
+			draft.data.text = Expression.fromString(name)
 		})
 
 		const descriptionText = produce(new TextElement(), (draft) => {
@@ -47,7 +46,7 @@ const createLayout = (name: string, description: string, align: 'left' | 'center
 					marginBottom: '20px',
 				},
 			}
-			draft.data.text = inteliText(description)
+			draft.data.text = Expression.fromString(description)
 		})
 
 		const socialsWrapper = produce(new BoxElement(), (draft) => {
@@ -73,32 +72,8 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 	const socialsRoot = root.children[2] as BoxElement
 	return (
 		<>
-			<Intelinput
-				label="Name"
-				name="name"
-				size="xs"
-				value={nameText.data.text}
-				onChange={(value) =>
-					set(
-						produce(nameText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Description"
-				name="description"
-				size="xs"
-				value={descriptionText.data.text}
-				onChange={(value) =>
-					set(
-						produce(descriptionText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
+			<TextElementInput label="Name" element={nameText} />
+			<TextElementInput label="Description" element={descriptionText} />
 			{ProfessionalSocials.getOptions({ set, root: socialsRoot })}
 		</>
 	)

@@ -1,10 +1,11 @@
 import produce from 'immer'
-import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { Expression } from '../../states/expression'
-import { Intelinput, inteliText } from '../../ui/intelinput'
+import { inteliText } from '../../ui/intelinput'
+import { LinkElementInput } from '../../ui/link-element-input'
+import { TextElementInput } from '../../ui/text-element-input'
 
 const layout = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -64,11 +65,10 @@ const layout = produce(new BoxElement(), (draft) => {
 })
 
 type OptionsProps = {
-	set: (element: Element) => void
 	root: BoxElement
 }
 
-function Options({ set, root }: OptionsProps): JSX.Element {
+function Options({ root }: OptionsProps): JSX.Element {
 	const title = root.children[0] as TextElement
 	const subtitle = root.children[1] as TextElement
 	const ctaLink = root.children[2] as LinkElement
@@ -76,62 +76,10 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 
 	return (
 		<>
-			<Intelinput
-				label="Title"
-				placeholder="Title"
-				name="title"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Subtitle"
-				placeholder="Subtitle"
-				name="subtitle"
-				size="xs"
-				value={subtitle.data.text}
-				onChange={(value) =>
-					set(
-						produce(subtitle, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA Link"
-				placeholder="CTA link"
-				name="cta"
-				size="xs"
-				value={ctaLink.data.href}
-				onChange={(value) =>
-					set(
-						produce(ctaLink, (draft) => {
-							draft.data.href = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="CTA Text"
-				placeholder="CTA text"
-				name="cta"
-				size="xs"
-				value={ctaText.data.text}
-				onChange={(value) =>
-					set(
-						produce(ctaText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
+			<LinkElementInput label="CTA Link" element={ctaLink} />
+			<TextElementInput label="CTA Text" element={ctaText} />
 		</>
 	)
 }
@@ -143,7 +91,5 @@ export default class TitleSubtitleCta {
 	getCtaLink = () => layout.children[2] as LinkElement
 	getCtaText = () => this.getCtaLink().children[0] as TextElement
 	getComponent = () => layout
-	getOptions = ({ set, root }: { set: (element: Element) => void; root: BoxElement }) => (
-		<Options set={set} root={root} />
-	)
+	getOptions = ({ root }: { root: BoxElement }) => <Options root={root} />
 }

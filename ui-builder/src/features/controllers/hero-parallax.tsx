@@ -4,23 +4,17 @@ import imageUrl from '../../assets/components/hero-parallax.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { Controller, ElementOptions } from './controller'
-import {
-	ComponentName,
-	DividerCollapsible,
-	extractUrl,
-	SimpleComponentOptionsProps,
-} from './helpers'
+import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 
 import { ImageDrop } from '../ui/image-drop'
-import ColorOptions from './basic-components/color-options'
 import TitleSubtitleCta from './basic-components/title-subtitle-cta'
+import { OptionsWrapper } from './helpers/options-wrapper'
 export class HeroParallax extends Controller {
 	name = 'Hero with parallax'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		// return <div>options</div>
 		return <HeroParallaxOptions options={options} />
 	}
 }
@@ -30,14 +24,11 @@ export class HeroParallax extends Controller {
 function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 	const wrapper = options.element as BoxElement
 	const titleSubtitleCtaOptions = titleSubtitleCta.getOptions({
-		set: options.set,
 		root: wrapper.children![0] as BoxElement,
 	})
-	const title = wrapper.children?.[0].children?.[0]
-	const details = wrapper.children?.[0].children?.[1]
-	const cta = wrapper.children?.[0].children?.[2]
+
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Hero with parallax" />
 			<ImageDrop
 				onChange={(src) =>
@@ -49,30 +40,8 @@ function HeroParallaxOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				src={extractUrl(wrapper.style.desktop!.default!.backgroundImage as string)}
 			/>
-			{titleSubtitleCtaOptions}
-			<DividerCollapsible closed title="Color">
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: details,
-					title: 'Details color',
-				})}
-				{ColorOptions.getBackgroundOption({
-					options,
-					wrapperDiv: cta,
-					title: 'CTA background color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: cta,
-					title: 'CTA text color',
-				})}
-			</DividerCollapsible>
-		</div>
+			<>{titleSubtitleCtaOptions}</>
+		</OptionsWrapper>
 	)
 }
 

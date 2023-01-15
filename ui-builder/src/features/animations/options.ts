@@ -38,4 +38,4 @@ export const EASING_PARAMS = {
 	steps: [5],
 }
 
-export type Easing = typeof EASINGS[number]
+export type Easing = (typeof EASINGS)[number]

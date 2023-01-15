@@ -11,7 +11,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut
+	TbZoomOut,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 

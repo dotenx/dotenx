@@ -9,7 +9,7 @@ export const getStyleNumber = (style?: string) => {
 }
 
 const units = ['px', 'rem', 'em', '%', 'vw', 'vh', 'auto'] as const
-type Unit = typeof units[number]
+type Unit = (typeof units)[number]
 
 export function InputWithUnit({
 	label,

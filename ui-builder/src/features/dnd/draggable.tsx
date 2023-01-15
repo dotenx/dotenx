@@ -5,7 +5,7 @@ import { ELEMENTS } from '../elements'
 import { Element } from '../elements/element'
 
 export type DraggableData =
-	| { mode: DraggableMode.Add; ElementClass: typeof ELEMENTS[number] }
+	| { mode: DraggableMode.Add; ElementClass: (typeof ELEMENTS)[number] }
 	| { mode: DraggableMode.Move; elementId: string }
 	| { mode: DraggableMode.AddWithData; data: Element }
 

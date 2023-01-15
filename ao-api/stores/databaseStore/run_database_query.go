@@ -10,7 +10,10 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	pg_query "github.com/pganalyze/pg_query_go/v2"
+	"github.com/sirupsen/logrus"
 )
 
 func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string, query string) (map[string]interface{}, error) {
@@ -42,26 +45,53 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 		return nil, err
 	}
 
-	// Execute the query
-	result, err := db.Connection.Exec(query)
+	// we use this parser to parse query: https://github.com/pganalyze/pg_query_go
+	parseResultStr, err := pg_query.ParseToJSON(query)
 	if err != nil {
 		return nil, err
+	}
+	var parseResultMap interface{}
+	err = json.Unmarshal([]byte(parseResultStr), &parseResultMap)
+	if err != nil {
+		return nil, err
+	}
+	logrus.Info(parseResultStr)
+	if len(parseResultMap.(map[string]interface{})["stmts"].([]interface{})) != 1 {
+		return nil, errors.New("you can run just one query at each time")
+	}
+	parseResultMap = parseResultMap.(map[string]interface{})["stmts"].([]interface{})[0].(map[string]interface{})
+	parsedStmt := parseResultMap.(map[string]interface{})["stmt"]
+	queryReturnRows := false
+	i := 0
+	for stmtType, _ := range parsedStmt.(map[string]interface{}) {
+		if stmtType != "SelectStmt" && stmtType != "DeleteStmt" && stmtType != "UpdateStmt" && stmtType != "InsertStmt" {
+			return nil, errors.New("you can run just these type of queries: ['insert', 'select', 'update', 'delete']")
+		}
+		if i == 0 && stmtType == "SelectStmt" {
+			queryReturnRows = true
+		}
+		i++
 	}
 
-	// Determine the number of affected rows
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return nil, err
-	}
-
-	var queryReturnRows = false
-	rows, err := db.Connection.Queryx(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		queryReturnRows = true
+	var rows *sqlx.Rows
+	var rowsAffected int64
+	if !queryReturnRows {
+		// Execute the query
+		result, err := db.Connection.Exec(query)
+		if err != nil {
+			return nil, err
+		}
+		// Determine the number of affected rows
+		rowsAffected, err = result.RowsAffected()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		rows, err = db.Connection.Queryx(query)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
 	}
 
 	var results []map[string]interface{}
@@ -104,8 +134,7 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 			}
 		}
 
-		// This is a do-while loop because first call of rows.Next() was called before this loop
-		for {
+		for rows.Next() {
 			if err := rows.Scan(values...); err != nil {
 				return nil, err
 			}
@@ -129,10 +158,6 @@ func (ds *databaseStore) RunDatabaseQuery(ctx context.Context, projectTag string
 				}
 			}
 			results = append(results, dest)
-
-			if !rows.Next() {
-				break
-			}
 		}
 	}
 

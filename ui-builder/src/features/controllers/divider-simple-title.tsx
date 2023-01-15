@@ -4,10 +4,13 @@ import imageUrl from '../../assets/components/divider-simple-title.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxElementInput } from '../ui/box-element-input'
+import { inteliText } from '../ui/intelinput'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { ComponentName } from './helpers'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class DividerSimpleTitle extends Controller {
 	name = 'Divider simple title'
@@ -15,65 +18,33 @@ export class DividerSimpleTitle extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <DividerSimpleTitleOptions options={options} />
+		return <DividerSimpleTitleOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function DividerSimpleTitleOptions({ options }: SimpleComponentOptionsProps) {
-	const wrapper = options.element as BoxElement
-	const titleText = options.element.children?.[0].children?.[0] as TextElement
-	const subtitleText = options.element.children?.[0].children?.[1] as TextElement
+function DividerSimpleTitleOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const title = component.findByTagId(tagIds.title) as TextElement
+	const subtitle = component.findByTagId(tagIds.subtitle) as TextElement
 
 	return (
-		<div className="space-y-6">
+		<OptionsWrapper>
 			<ComponentName name="Divider simple title" />
-			<Divider title="Text" />
-			<Intelinput
-				label="Title"
-				name="title"
-				size="xs"
-				value={titleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(titleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<Intelinput
-				label="Subtitle"
-				name="title"
-				size="xs"
-				value={subtitleText.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(subtitleText, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			<DividerCollapsible closed title="Color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: wrapper })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: titleText,
-					title: 'title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: subtitleText,
-					title: 'subtitle color',
-				})}
-			</DividerCollapsible>
-		</div>
+			<TextElementInput label="Title" element={title} />
+			<TextElementInput label="Subtitle" element={subtitle} />
+			<BoxElementInput label="Background color" element={component} />
+		</OptionsWrapper>
 	)
 }
 
 // =============  defaultData =============
+
+const tagIds = {
+	title: 'title',
+	subtitle: 'subtitle',
+}
 
 const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -107,6 +78,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = inteliText('Trusted by the world’s best')
+	draft.tagId = tagIds.title
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -119,6 +91,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 		},
 	}
 	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
+	draft.tagId = tagIds.subtitle
 }).serialize()
 
 const defaultData = {

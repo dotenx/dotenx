@@ -1,19 +1,24 @@
-import { Slider } from '@mantine/core'
+import { Button, Select } from '@mantine/core'
 import produce from 'immer'
-import { useAtomValue } from 'jotai'
-import { ReactNode, useMemo, useState } from 'react'
+import _ from 'lodash'
+import { ReactNode, useState } from 'react'
+import { TbMinus, TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/gelly-with-caption.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { regenElement } from '../clipboard/copy-paste'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
-import { ImageDrop } from '../ui/image-drop'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import { viewportAtom } from '../viewport/viewport-store'
-import ColorOptions from './basic-components/color-options'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ColumnsElementInput } from '../ui/columns-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
-import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { ComponentName } from './helpers'
 
 export class GalleryWithCaptions extends Controller {
 	name = 'Gallery with image captions'
@@ -21,249 +26,70 @@ export class GalleryWithCaptions extends Controller {
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <GalleryWithCaptionsOptions options={options} />
+		return <GalleryWithCaptionsOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function GalleryWithCaptionsOptions({ options }: SimpleComponentOptionsProps) {
-	const containerDiv = options.element.children?.[0].children?.[0] as BoxElement
-	const viewport = useAtomValue(viewportAtom)
+function GalleryWithCaptionsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const [selectedTile, setSelectedTile] = useState(0)
+	const set = useSetElement()
+	const grid = component.children?.[0].children?.[0] as ColumnsElement
+	const selectedItem = grid.children?.[selectedTile] as BoxElement
+	const selectedTileImage = selectedItem.children?.[0] as ImageElement
+	const tiles = grid.children?.map((_child, index) => ({
+		label: `Tile ${index + 1}`,
+		value: index.toString(),
+	}))
 
-	const countGridTemplateColumns = (mode: string) => {
-		switch (mode) {
-			case 'desktop':
-				// prettier-ignore
-				return ((containerDiv.style.desktop?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			case 'tablet':
-				// prettier-ignore
-				return ((containerDiv.style.tablet?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-			default:
-				// prettier-ignore
-				return ((containerDiv.style.mobile?.default?.gridTemplateColumns?.toString() || '').split('1fr').length - 1)
-		}
+	const addFeature = () => {
+		set(grid, (draft) => draft.children?.push(regenElement(tile)))
 	}
 
-	const tabsList: DraggableTab[] | null[] = useMemo(() => {
-		return containerDiv.children?.map((tile, index) => {
-			const selectedTileImage = tile.children?.[0] as ImageElement
-			return {
-				id: tile.id,
-				content: (
-					<div key={index}>
-						<Intelinput
-							label="Image caption"
-							name="title"
-							size="xs"
-							value={(tile.children?.[1] as TextElement).data.text}
-							onChange={(value) =>
-								options.set(
-									produce(tile.children?.[1] as TextElement, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						{ColorOptions.getTextColorOption({
-							options,
-							wrapperDiv: tile.children?.[1] as TextElement,
-							title: 'Color',
-						})}
+	const deleteFeature = () => {
+		set(grid, (draft) => draft.children?.splice(selectedTile, 1))
+		setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
+	}
 
-						<ImageDrop
-							onChange={(src) =>
-								options.set(
-									produce(selectedTileImage, (draft) => {
-										draft.style.desktop!.default!.backgroundImage = `url(${src})`
-									})
-								)
-							}
-							src={extractUrl(
-								selectedTileImage.style.desktop!.default!.backgroundImage as string
-							)}
-						/>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [containerDiv.children])
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Gallery with image captions" />
-			{viewport === 'desktop' && (
-				<>
-					<p>Desktop mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('desktop')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.desktop = {
-										default: {
-											...draft.style.desktop?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'tablet' && (
-				<>
-					<p>Tablet mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('tablet')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.tablet = {
-										default: {
-											...draft.style.tablet?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-			{viewport === 'mobile' && (
-				<>
-					<p>Mobile mode columns</p>
-					<Slider
-						step={1}
-						min={1}
-						max={10}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={countGridTemplateColumns('mobile')}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gridTemplateColumns: '1fr '.repeat(val).trimEnd() },
-										},
-									}
-								})
-							)
-						}}
-					/>
-					<p>Gap</p>
-					<Slider
-						label={(val) => val + 'px'}
-						max={20}
-						step={1}
-						styles={{ markLabel: { display: 'none' } }}
-						defaultValue={1}
-						onChange={(val) => {
-							options.set(
-								produce(containerDiv, (draft) => {
-									draft.style.mobile = {
-										default: {
-											...draft.style.mobile?.default,
-											// prettier-ignore
-											...{ gap: `${val}px`},
-										},
-									}
-								})
-							)
-						}}
-					/>
-				</>
-			)}
-
-			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-			<DraggableTabs
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-						const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-						options.set(
-							produce(containerDiv, (draft) => {
-								const temp = draft.children![oldIndex]
-								draft.children![oldIndex] = draft.children![newIndex]
-								draft.children![newIndex] = temp
-							})
-						)
-					}
-				}}
-				onAddNewTab={() => {
-					options.set(
-						produce(containerDiv, (draft) => {
-							draft.children?.push(
-								deserializeElement({
-									...tile.serialize(),
-								})
-							)
-						})
-					)
-				}}
-				tabs={tabsList}
+			<ColumnsElementInput element={grid} />
+			<BoxElementInput label="Background color" element={component} />
+			<Button
+				size="xs"
+				fullWidth
+				variant="outline"
+				onClick={addFeature}
+				leftIcon={<TbPlus />}
+			>
+				Add feature
+			</Button>
+			<Select
+				label="Tiles"
+				size="xs"
+				placeholder="Select a tile"
+				data={tiles}
+				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
+				value={selectedTile.toString()}
 			/>
+			<TextElementInput
+				label="Image caption"
+				element={selectedItem.children?.[1] as TextElement}
+			/>
+			<ImageElementInput element={selectedTileImage} />
+			<Button
+				disabled={grid.children?.length === 1}
+				size="xs"
+				fullWidth
+				variant="outline"
+				onClick={deleteFeature}
+				leftIcon={<TbMinus />}
+			>
+				Delete feature
+			</Button>
 		</div>
 	)
 }
@@ -304,22 +130,23 @@ const tileTitle = produce(new TextElement(), (draft) => {
 			color: 'black',
 		},
 	}
-	draft.data.text = inteliText('Caption')
+	draft.data.text = Expression.fromString('Caption')
 })
 
-const tileImage = produce(new BoxElement(), (draft) => {
-	// prettier-ignore
+const tileImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '100%',
 			maxHeight: '400px',
 			height: '100%',
-			minHeight:'300px',
+			minHeight: '300px',
 			objectFit: 'cover',
 			objectPosition: 'center center',
-			backgroundImage:'url(https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56)'
 		},
 	}
+	draft.data.src = Expression.fromString(
+		'https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56'
+	)
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -339,9 +166,10 @@ const tile = produce(new BoxElement(), (draft) => {
 
 function createTile({ src, title }: { src: string; title: string }) {
 	return produce(tile, (draft) => {
-		const iconElement = draft.children[0] as BoxElement
-		iconElement.style.desktop!.default!.backgroundImage = `url(${src})`
-		;(draft.children?.[1] as TextElement).data.text = inteliText(title)
+		const imageElement = draft.children[0] as ImageElement
+		imageElement.data.src = Expression.fromString(src)
+		const titleElement = draft.children?.[1] as TextElement
+		titleElement.data.text = Expression.fromString(title)
 	})
 }
 const tiles = [

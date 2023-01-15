@@ -2,7 +2,7 @@ import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/navbar.png'
 import { deserializeElement } from '../../utils/deserialize'
-import { useSetElement } from '../elements/elements-store'
+import { Element } from '../elements/element'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { NavMenuElement } from '../elements/extensions/nav/nav-menu'
@@ -11,86 +11,49 @@ import { TextElement } from '../elements/extensions/text'
 import { navLink } from '../elements/utils'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
-import { Intelinput } from '../ui/intelinput'
-import { Controller } from './controller'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { ImageElementInput } from '../ui/image-element-input'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
+import { Controller, ElementOptions } from './controller'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class Navbar extends Controller {
 	name = 'Navbar'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(): ReactNode {
+	renderOptions(options: ElementOptions): ReactNode {
 		return <NavbarOptions />
 	}
 }
 
 function NavbarOptions() {
-	const set = useSetElement()
 	const root = useSelectedElement<NavbarElement>()!
 	const logo = root.children[0].children?.[0] as ImageElement
 	const navMenu = root.children[1] as NavMenuElement
-	const navMenuItems = navMenu.children as LinkElement[]
-
-	const linksTabs: DraggableTab[] = navMenuItems
-		.filter((item): item is LinkElement => item instanceof LinkElement)
-		.map((link, index) => {
-			const text = link.children[0] as TextElement
-			return {
-				id: link.id,
-				content: (
-					<div key={index} className="space-y-6">
-						<Intelinput
-							label="Link URL"
-							name="url"
-							size="xs"
-							value={link.data.href}
-							onChange={(value) => set(link, (draft) => (draft.data.href = value))}
-						/>
-						<Intelinput
-							label="Text"
-							name="text"
-							size="xs"
-							value={text.data.text}
-							onChange={(value) => set(text, (draft) => (draft.data.text = value))}
-						/>
-					</div>
-				),
-				onTabDelete: () => set(navMenu, (draft) => draft.children.splice(index, 1)),
-			}
-		})
 
 	return (
-		<div className="space-y-6">
-			<ImageDrop
-				src={logo.data.src.toString()}
-				onChange={(value) =>
-					set(logo, (draft) => (draft.data.src = Expression.fromString(value)))
-				}
+		<OptionsWrapper>
+			<ImageElementInput element={logo} />
+			<DndTabs
+				containerElement={navMenu}
+				insertElement={navLink}
+				renderItemOptions={(item) => <ItemOptions item={item} />}
 			/>
+		</OptionsWrapper>
+	)
+}
 
-			<DraggableTabs
-				tabs={linksTabs}
-				onDragEnd={(event) => {
-					const { active, over } = event
-					if (active.id !== over?.id) {
-						const oldIndex = linksTabs.findIndex((tab) => tab.id === active?.id)
-						const newIndex = linksTabs.findIndex((tab) => tab.id === over?.id)
-						set(navMenu, (draft) => {
-							const temp = draft.children![oldIndex]
-							draft.children![oldIndex] = draft.children![newIndex]
-							draft.children![newIndex] = temp
-						})
-					}
-				}}
-				onAddNewTab={() => {
-					set(navMenu, (draft) => {
-						draft.children.push(navLink())
-					})
-				}}
-			/>
-		</div>
+function ItemOptions({ item }: { item: Element }) {
+	const link = item as LinkElement
+	const text = link.children[0] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<LinkElementInput label="Link URL" element={link} />
+			<TextElementInput label="Text" element={text} />
+		</OptionsWrapper>
 	)
 }
 

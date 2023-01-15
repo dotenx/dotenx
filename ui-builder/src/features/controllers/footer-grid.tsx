@@ -1,17 +1,26 @@
-import { ActionIcon, Button, Collapse } from '@mantine/core'
-import produce from 'immer'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import imageUrl from '../../assets/components/footer-grid.png'
-
+import { DragEndEvent } from '@dnd-kit/core'
+import { arrayMove } from '@dnd-kit/sortable'
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { ActionIcon, Button, Collapse } from '@mantine/core'
+import produce from 'immer'
+import { ReactNode, useEffect, useState } from 'react'
+import { TbPlus, TbX } from 'react-icons/tb'
+import imageUrl from '../../assets/components/footer-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
-import { ImageDrop } from '../ui/image-drop'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { Expression } from '../states/expression'
+import { BoxElementInput } from '../ui/box-element-input'
+import { ImageElementInput } from '../ui/image-element-input'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
@@ -19,15 +28,8 @@ import {
 	repeatObject,
 	SimpleComponentOptionsProps,
 } from './helpers'
-
-import { arrayMove } from '@dnd-kit/sortable'
-
-import { DragEndEvent } from '@dnd-kit/core'
-import { TbPlus, TbX } from 'react-icons/tb'
-import { Expression } from '../states/expression'
-import { Intelinput, inteliText } from '../ui/intelinput'
-import ColorOptions from './basic-components/color-options'
-import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 import { SortableItem, VerticalSortable } from './vertical-sortable'
 
 export class FooterGrid extends Controller {
@@ -44,7 +46,6 @@ export class FooterGrid extends Controller {
 
 function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
 	const [items, setSocialIconItems] = useState<string[]>([])
-
 	const [addIconOpened, setAddIconOpened] = useState(false)
 
 	const icons = {
@@ -99,46 +100,14 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 		<>
 			<ComponentName name="Footer grid" />
 			<DividerCollapsible closed title="Logo column">
-				<LogoColumn options={options} />
+				<LogoColumn />
 			</DividerCollapsible>
 			<DividerCollapsible closed title="Link Columns">
-				<ColumnsOptions options={options} />
+				<ColumnsOptions />
 			</DividerCollapsible>
 			{/* Secondary footer */}
 			<DividerCollapsible closed title="Secondary footer">
-				<Intelinput
-					label="text"
-					name="text"
-					size="xs"
-					value={secondFooterTextComponent.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(secondFooterTextComponent, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
-				{/* Add new icon */}
-				<ActionIcon
-					onClick={() => setAddIconOpened((o) => !o)}
-					variant="transparent"
-					disabled={unusedIcons.length === 0}
-				>
-					<TbPlus
-						size={16}
-						className={
-							unusedIcons.length !== 0
-								? 'text-red-500 rounded-full border-red-500 border'
-								: ''
-						}
-					/>
-				</ActionIcon>
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: secondFooterTextComponent,
-					title: 'Text color',
-				})}
+				<TextElementInput label="text" element={secondFooterTextComponent} />
 				{/* Add new icon */}
 				<ActionIcon
 					onClick={() => setAddIconOpened((o) => !o)}
@@ -155,7 +124,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 					/>
 				</ActionIcon>
 				<Collapse in={addIconOpened}>
-					<div className="flex w-full gap-x-1 my-2">
+					<div className="flex w-full my-2 gap-x-1">
 						{unusedIcons.map((u: SocialIcon) => (
 							<FontAwesomeIcon
 								className="w-5 h-5 cursor-pointer"
@@ -185,7 +154,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 							const icon = item.children?.[0] as IconElement
 							return (
 								<SortableItem key={id} id={id}>
-									<div className="flex justify-stretch h-full w-full gap-x-1 items-center mx-2">
+									<div className="flex items-center w-full h-full mx-2 justify-stretch gap-x-1">
 										<FontAwesomeIcon
 											style={{
 												color: icon.style.desktop!.default!.color,
@@ -196,19 +165,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 												icon.data.name as IconName,
 											]}
 										/>
-										<Intelinput
-											placeholder="Link"
-											name="link"
-											size="xs"
-											value={item.data.href}
-											onChange={(value) =>
-												options.set(
-													produce(item, (draft) => {
-														draft.data.href = value
-													})
-												)
-											}
-										/>
+										<LinkElementInput placeholder="Link" element={item} />
 										<FontAwesomeIcon
 											className="w-3 h-3 text-red-500 cursor-pointer"
 											icon={['fas', 'trash']}
@@ -238,176 +195,86 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 	)
 }
 
-function LogoColumn({ options }: SimpleComponentOptionsProps) {
-	const column = options.element.children?.[0].children?.[0] as BoxElement
-
+function LogoColumn() {
+	const set = useSetElement()
+	const component = useSelectedElement<BoxElement>()!
+	const column = component.children?.[0].children?.[0] as BoxElement
 	const logo = column.children?.[0].children?.[0] as ImageElement
 	const title = column.children?.[0].children?.[1] as TextElement
 
+	const addLine = () => {
+		set(column, (draft) => draft.children?.push(createLeftTextLine('New line')))
+	}
 	return (
-		<div className="flex flex-col justify-stretch space-y-4">
-			<ImageDrop
-				onChange={(src) =>
-					options.set(
-						produce(logo, (draft) => {
-							draft.data.src = Expression.fromString(src)
-						})
-					)
-				}
-				src={logo.data.src.toString()}
-			/>
-			{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-
-			<Intelinput
-				label="Title"
-				placeholder="Text"
-				name="text"
-				size="xs"
-				value={title.data.text}
-				onChange={(value) =>
-					options.set(
-						produce(title, (draft) => {
-							draft.data.text = value
-						})
-					)
-				}
-			/>
-			{ColorOptions.getTextColorOption({ options, wrapperDiv: title, title: '' })}
-			<LogoColumnLines column={column as BoxElement} options={options} />
-			<Button
-				className="mt-2"
-				size="xs"
-				onClick={() => {
-					options.set(
-						produce(column, (draft) => {
-							draft.children?.push(createLeftTextLine('New line')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
-						})
-					)
-				}}
-			>
-				<FontAwesomeIcon icon={['fas', 'plus']} /> Add line
+		<div className="flex flex-col space-y-4 justify-stretch">
+			<ImageElementInput element={logo} />
+			<BoxElementInput label="Background color" element={component} />
+			<TextElementInput label="Title" element={title} />
+			<LogoColumnLines column={column as BoxElement} />
+			<Button className="mt-2" size="xs" onClick={addLine} leftIcon={<TbPlus />}>
+				Add line
 			</Button>
-			<DividerCollapsible closed title="color">
-				{ColorOptions.getBackgroundOption({ options, wrapperDiv: options.element })}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: title,
-					title: 'Title color',
-				})}
-				{ColorOptions.getTextColorOption({
-					options,
-					wrapperDiv: column,
-					title: 'Column color',
-				})}
-			</DividerCollapsible>
 		</div>
 	)
 }
 
-function ColumnsOptions({ options }: SimpleComponentOptionsProps): JSX.Element {
-	const rightDiv = options.element.children?.[0].children?.[1] as BoxElement
+function ColumnsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const rightDiv = component.children?.[0].children?.[1] as BoxElement
 
-	// const tabsList =
-	const tabsList: DraggableTab[] = useMemo(() => {
-		return rightDiv.children.map((column, index) => {
-			const columnLines = column.children
-			const title = columnLines?.[0] as TextElement
-			return {
-				id: column.id,
-				content: (
-					<div className="flex flex-col justify-stretch">
-						<Intelinput
-							key={index}
-							label="Title"
-							placeholder="Text"
-							name="text"
-							size="xs"
-							value={title.data.text}
-							onChange={(value) =>
-								options.set(
-									produce(title, (draft) => {
-										draft.data.text = value
-									})
-								)
-							}
-						/>
-						{ColorOptions.getTextColorOption({
-							options,
-							wrapperDiv: title,
-							title: 'Title color',
-						})}
-						<ColumnLines column={column as BoxElement} options={options} />
-						<Button
-							className="mt-2"
-							size="xs"
-							onClick={() => {
-								options.set(
-									produce(column, (draft) => {
-										draft.children?.push(createColumnLine('New Link', '')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
-									})
-								)
-							}}
-						>
-							<FontAwesomeIcon icon={['fas', 'plus']} /> Add Link
-						</Button>
-					</div>
-				),
-				onTabDelete: () => {
-					options.set(
-						produce(rightDiv, (draft) => {
-							draft.children.splice(index, 1)
-						})
-					)
-				},
-			}
-		})
-	}, [rightDiv])
+	const addTab = () => {
+		const columnLines = [
+			createColumnLine('About us', ''),
+			createColumnLine('Our services', ''),
+			createColumnLine('Our products', ''),
+			createColumnLine('Contact us', ''),
+		]
+		const newTabElement = new BoxElement()
+		newTabElement.children = [createColumnTitle('Column title'), ...columnLines]
+		return newTabElement
+	}
 
 	return (
-		<DraggableTabs
-			onDragEnd={(event) => {
-				const { active, over } = event
-				if (active.id !== over?.id) {
-					const oldIndex = tabsList.findIndex((tab) => tab.id === active?.id)
-					const newIndex = tabsList.findIndex((tab) => tab.id === over?.id)
-					options.set(
-						produce(rightDiv, (draft) => {
-							const temp = draft.children![oldIndex]
-							draft.children![oldIndex] = draft.children![newIndex]
-							draft.children![newIndex] = temp
-						})
-					)
-				}
-			}}
-			onAddNewTab={() => {
-				const columnLines = [
-					createColumnLine('About us', ''),
-					createColumnLine('Our services', ''),
-					createColumnLine('Our products', ''),
-					createColumnLine('Contact us', ''),
-				]
-				const b = new BoxElement()
-				b.children = [createColumnTitle('Column title'), ...columnLines]
-
-				options.set(
-					produce(rightDiv, (draft) => {
-						draft.children!.push(b)
-					})
-				)
-			}}
-			tabs={tabsList}
+		<DndTabs
+			containerElement={rightDiv}
+			insertElement={addTab}
+			renderItemOptions={(item) => <ColumnItemOptions item={item} />}
 		/>
 	)
 }
 
+function ColumnItemOptions({ item }: { item: Element }) {
+	const set = useSetElement()
+	const columnLines = item.children
+	const title = columnLines?.[0] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<TextElementInput label="Title" element={title} />
+			<ColumnLines column={item as BoxElement} />
+			<Button
+				className="mt-2"
+				size="xs"
+				onClick={() => {
+					set(column, (draft) => {
+						draft.children?.push(createColumnLine('New Link', '')) // TODO: Assign a new id (it currently assigns the same link to each item causing issues)
+					})
+				}}
+				leftIcon={<TbPlus />}
+			>
+				Add Link
+			</Button>
+		</OptionsWrapper>
+	)
+}
+
 type ColumnLinesProps = {
-	options: ElementOptions
 	column: BoxElement
 }
 
-function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
+function ColumnLines({ column }: ColumnLinesProps): JSX.Element {
+	const set = useSetElement()
 	const columnLines = column.children?.slice(1) as LinkElement[]
-
 	const [items, setItems] = useState<string[]>([])
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -419,83 +286,42 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 			setItems((items) => {
 				return arrayMove(items, oldIndex, newIndex)
 			})
-			options.set(
-				produce(column, (draft) => {
-					draft.children = [
-						column.children![0],
-						...arrayMove(columnLines, oldIndex, newIndex),
-					]
-				})
-			)
+			set(column, (draft) => {
+				draft.children = [
+					column.children![0],
+					...arrayMove(columnLines, oldIndex, newIndex),
+				]
+			})
 		}
 	}
 
 	useEffect(() => {
 		const itemsTemp = columnLines.map((item) => item.id)
 		setItems(itemsTemp)
-	}, [columnLines, options, column])
+	}, [columnLines])
 
 	return (
 		<VerticalSortable items={items} onDragEnd={handleDragEnd}>
-			<div className="flex flex-col justify-items-stretch gap-y-2 w-full px-1">
+			<div className="flex flex-col w-full px-1 justify-items-stretch gap-y-2">
 				{items.map((id, index) => {
 					if (index > columnLines.length - 1) return // TODO: This part is nonsense, but it works. Ideally the items should be updated when the columnLines are updated. useMemo should help
 					const item = columnLines?.[index] as LinkElement
 					const label = item.children?.[0] as TextElement
+					const onDelete = () => {
+						setItems((items) => items.splice(index, 1))
+						set(column, (draft) => {
+							draft.children?.splice(index + 1, 1)
+						})
+					}
 					return (
 						<SortableItem key={id} id={id}>
-							<div className="flex flex-col justify-center gap-y-1 h-full w-full gap-x-1 items-stretch pr-1 py-2">
-								<div className="w-full relative h-4">
-									<span className="absolute top-0 right-0">
-										<ActionIcon
-											size="xs"
-											onClick={() => {
-												setItems((items) => items.splice(index, 1))
-
-												options.set(
-													produce(column, (draft) => {
-														draft.children?.splice(index + 1, 1)
-													})
-												)
-											}}
-										>
-											<TbX />
-										</ActionIcon>
-									</span>
-								</div>
-
-								<Intelinput
-									label="Text"
-									name="text"
-									size="xs"
-									value={label.data.text}
-									onChange={(value) =>
-										options.set(
-											produce(label, (draft) => {
-												draft.data.text = value
-											})
-										)
-									}
-								/>
-								<Intelinput
-									placeholder="Link"
-									name="link"
-									size="xs"
-									value={item.data.href}
-									onChange={(value) =>
-										options.set(
-											produce(item, (draft) => {
-												draft.data.href = value
-											})
-										)
-									}
-								/>
+							<ActionIcon ml="auto" size="xs" onClick={onDelete}>
+								<TbX />
+							</ActionIcon>
+							<div className="space-y-2">
+								<TextElementInput label="Text" element={label} />
+								<LinkElementInput label="Link" element={item} />
 							</div>
-							{ColorOptions.getTextColorOption({
-								options,
-								wrapperDiv: item,
-								title: '',
-							})}
 						</SortableItem>
 					)
 				})}
@@ -504,9 +330,9 @@ function ColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 	)
 }
 
-function LogoColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
+function LogoColumnLines({ column }: { column: BoxElement }): JSX.Element {
+	const set = useSetElement()
 	const columnLines = column.children?.slice(1) as TextElement[]
-
 	const [items, setItems] = useState<string[]>([])
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -515,73 +341,39 @@ function LogoColumnLines({ options, column }: ColumnLinesProps): JSX.Element {
 		if (active.id !== over?.id) {
 			const oldIndex = items.indexOf(active?.id as string)
 			const newIndex = items.indexOf(over?.id as string)
-			setItems((items) => {
-				return arrayMove(items, oldIndex, newIndex)
+			setItems((items) => arrayMove(items, oldIndex, newIndex))
+			set(column, (draft) => {
+				draft.children = [
+					column.children![0],
+					...arrayMove(columnLines, oldIndex, newIndex),
+				]
 			})
-			options.set(
-				produce(column, (draft) => {
-					draft.children = [
-						column.children![0],
-						...arrayMove(columnLines, oldIndex, newIndex),
-					]
-				})
-			)
 		}
 	}
 
 	useEffect(() => {
 		const itemsTemp = columnLines.map((item) => item.id)
 		setItems(itemsTemp)
-	}, [columnLines, options, column])
+	}, [columnLines])
 
 	return (
 		<VerticalSortable items={items} onDragEnd={handleDragEnd}>
-			<div className="flex flex-col justify-items-stretch gap-y-2 w-full px-1">
+			<div className="flex flex-col w-full px-1 justify-items-stretch gap-y-2">
 				{items.map((id, index) => {
 					if (index > columnLines.length - 1) return // TODO: This part is nonsense, but it works. Ideally the items should be updated when the columnLines are updated. useMemo should help
 					const item = columnLines?.[index] as TextElement
+					const deleteColumn = () => {
+						setItems((items) => items.splice(index, 1))
+						set(column, (draft) => {
+							draft.children?.splice(index + 1, 1)
+						})
+					}
 					return (
 						<SortableItem key={id} id={id}>
-							<div className="flex flex-col justify-center gap-y-1 h-full w-full gap-x-1 items-stretch pr-1 py-2">
-								<div className="w-full relative h-4">
-									<span className="absolute top-0 right-0">
-										<ActionIcon
-											size="xs"
-											onClick={() => {
-												setItems((items) => items.splice(index, 1))
-
-												options.set(
-													produce(column, (draft) => {
-														draft.children?.splice(index + 1, 1)
-													})
-												)
-											}}
-										>
-											<TbX />
-										</ActionIcon>
-									</span>
-								</div>
-
-								<Intelinput
-									label="Text"
-									name="text"
-									size="xs"
-									value={item.data.text}
-									onChange={(value) =>
-										options.set(
-											produce(item, (draft) => {
-												draft.data.text = value
-											})
-										)
-									}
-								/>
-
-								{ColorOptions.getTextColorOption({
-									options,
-									wrapperDiv: item,
-									title: '',
-								})}
-							</div>
+							<ActionIcon ml="auto" size="xs" onClick={deleteColumn}>
+								<TbX />
+							</ActionIcon>
+							<TextElementInput label="Text" element={item} />
 						</SortableItem>
 					)
 				})}
@@ -657,7 +449,6 @@ const logoImage = produce(new ImageElement(), (draft) => {
 			objectPosition: 'center center',
 		},
 	}
-
 	draft.data.src = Expression.fromString(
 		'https://images.unsplash.com/photo-1484256017452-47f3e80eae7c?dpr=1&auto=format&fit=crop&w=2850&q=60&cs=tinysrgb'
 	)
@@ -672,8 +463,7 @@ const logoText = produce(new TextElement(), (draft) => {
 			paddingLeft: '20px',
 		},
 	}
-
-	draft.data.text = inteliText('Company name')
+	draft.data.text = Expression.fromString('Company name')
 }).serialize()
 
 const createLeftTextLine = (text: string) =>
@@ -681,7 +471,7 @@ const createLeftTextLine = (text: string) =>
 		draft.style.desktop = {
 			default: {},
 		}
-		draft.data.text = inteliText(text)
+		draft.data.text = Expression.fromString(text)
 	})
 
 const leftTextLines = [
@@ -722,7 +512,7 @@ const createColumnTitle = (text: string) =>
 				fontWeight: 'bold',
 			},
 		}
-		draft.data.text = inteliText(text)
+		draft.data.text = Expression.fromString(text)
 	})
 
 const createColumnLine = (text: string, href: string) =>
@@ -730,11 +520,9 @@ const createColumnLine = (text: string, href: string) =>
 		draft.style.desktop = {
 			default: { marginTop: '15px' },
 		}
-
 		const element = produce(new TextElement(), (draft) => {
-			draft.data.text = inteliText(text)
+			draft.data.text = Expression.fromString(text)
 		})
-
 		draft.data.href = Expression.fromString(href)
 		draft.children = [element]
 	})
@@ -764,7 +552,7 @@ const secondaryFooterLeft = produce(new TextElement(), (draft) => {
 			fontSize: 'small',
 		},
 	}
-	draft.data.text = inteliText('©2030 Company name. All rights reserved.')
+	draft.data.text = Expression.fromString('©2030 Company name. All rights reserved.')
 }).serialize()
 
 const socials = produce(new BoxElement(), (draft) => {
