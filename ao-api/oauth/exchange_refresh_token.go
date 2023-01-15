@@ -89,10 +89,6 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 				refreshExpIn = float64(refreshExpInInt)
 				newToken.AccessToken = accessToken
 				newToken.RefreshToken = refreshToken
-			} else if oauthProvider.Name == "airtable" {
-
-				newToken.AccessToken = accessToken
-				newToken.RefreshToken = refreshToken
 			} else {
 				newToken, err = gProvider.RefreshToken(oldRefreshToken)
 				if err != nil {
