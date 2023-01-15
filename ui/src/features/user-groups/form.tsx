@@ -15,7 +15,7 @@ import { useModal } from '../hooks'
 import { Form } from '../ui'
 
 const schema = z.object({
-	name: z.string().min(1),
+	name: z.string().min(1, 'Name is required'),
 	description: z.string(),
 	select: z.array(z.string().min(1)),
 	update: z.array(z.string().min(1)),
@@ -57,7 +57,10 @@ export function UserGroupsForm({
 		}
 	)
 	const tablesQuery = useQuery([QueryKey.GetTables, projectName], () => getTables(projectName))
-	const tables = tablesQuery.data?.data.tables ?? []
+	const tables =
+		tablesQuery.data?.data.tables.map((t) => {
+			return t.name
+		}) ?? []
 	const form = useForm<UserGroupValues>({
 		validate: zodResolver(schema),
 		initialValues: defaultValues,
@@ -82,7 +85,7 @@ export function UserGroupsForm({
 				insert: _.fromPairs(values.insert.map((tableName) => [tableName, tableName])),
 			})
 	})
-
+	console.log(tables, 'tables')
 	return (
 		<Form onSubmit={onSubmit}>
 			<div className="space-y-5">

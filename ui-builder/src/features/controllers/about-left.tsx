@@ -1,6 +1,8 @@
 import produce from 'immer'
+import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/about-left.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
@@ -13,7 +15,7 @@ import { IconElementInput } from '../ui/icon-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
-import { Controller } from './controller'
+import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -23,7 +25,7 @@ export class AboutLeft extends Controller {
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions() {
+	renderOptions(options: ElementOptions): ReactNode {
 		return <AboutLeftOptions />
 	}
 }
@@ -60,7 +62,7 @@ function AboutLeftOptions() {
 	)
 }
 
-function ItemOptions({ item }: { item: BoxElement }) {
+function ItemOptions({ item }: { item: Element }) {
 	const icon = item.children?.[0] as IconElement
 	const text = item.children?.[1] as TextElement
 
@@ -72,8 +74,6 @@ function ItemOptions({ item }: { item: BoxElement }) {
 	)
 }
 
-// =============  defaultData =============
-
 const tagIds = {
 	heroImage: 'heroImage',
 	title: 'title',
@@ -82,6 +82,8 @@ const tagIds = {
 	cta: 'cta',
 	ctaText: 'ctaText',
 }
+
+// =============  defaultData =============
 
 const component = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {

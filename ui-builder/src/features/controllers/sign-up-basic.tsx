@@ -1,27 +1,27 @@
 import { TextInput } from '@mantine/core'
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/sc-sign-in-basic.png'
-import { deserializeElement } from '../../utils/deserialize'
-import { BoxElement } from '../elements/extensions/box'
-import { ButtonElement } from '../elements/extensions/button'
-import { TextElement } from '../elements/extensions/text'
-import { ImageDrop } from '../ui/image-drop'
-import { Controller, ElementOptions } from './controller'
-
 import { API_URL } from '../../api'
+import imageUrl from '../../assets/components/sc-sign-in-basic.png'
 import { uuid } from '../../utils'
+import { deserializeElement } from '../../utils/deserialize'
 import { NavigateAction } from '../actions/navigate'
 import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
 import { Element } from '../elements/element'
+import { BoxElement } from '../elements/extensions/box'
+import { ButtonElement } from '../elements/extensions/button'
 import { FormElement } from '../elements/extensions/form'
 import { LinkElement } from '../elements/extensions/link'
+import { TextElement } from '../elements/extensions/text'
 import { useProjectStore } from '../page/project-store'
 import { Expression } from '../states/expression'
-import { Intelinput, inteliText } from '../ui/intelinput'
+import { ImageDrop } from '../ui/image-drop'
+import { LinkElementInput } from '../ui/link-element-input'
+import { TextElementInput } from '../ui/text-element-input'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
+import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 
 export class SignUpBasic extends Controller {
@@ -45,19 +45,7 @@ export class SignUpBasic extends Controller {
 		return (
 			<div className="space-y-6">
 				<ComponentName name="Sign Up Basic" />
-				<Intelinput
-					label="Title"
-					name="title"
-					size="xs"
-					value={title.data.text}
-					onChange={(value) =>
-						options.set(
-							produce(title, (draft) => {
-								draft.data.text = value
-							})
-						)
-					}
-				/>
+				<TextElementInput label="Title" element={title} />
 				<TextInput
 					label="Button Text"
 					name="buttonText"
@@ -93,45 +81,9 @@ export class SignUpBasic extends Controller {
 							: ''
 					}
 				/>
-				<Intelinput
-					label="Terms of service link"
-					name="tcLink"
-					size="xs"
-					value={tcLink.data.href}
-					onChange={(value) =>
-						options.set(
-							produce(tcLink, (draft) => {
-								draft.data.href = value
-							})
-						)
-					}
-				/>
-				<Intelinput
-					label="Privacy policy link"
-					name="ppLink"
-					size="xs"
-					value={ppLink.data.href}
-					onChange={(value) =>
-						options.set(
-							produce(ppLink, (draft) => {
-								draft.data.href = value
-							})
-						)
-					}
-				/>
-				<Intelinput
-					label="Sign-in link"
-					name="signInLink"
-					size="xs"
-					value={signInLink.data.href}
-					onChange={(value) =>
-						options.set(
-							produce(signInLink, (draft) => {
-								draft.data.href = value
-							})
-						)
-					}
-				/>
+				<LinkElementInput label="Terms of service link" element={tcLink} />
+				<LinkElementInput label="Privacy policy link" element={ppLink} />
+				<LinkElementInput label="Sign-in link" element={signInLink} />
 			</div>
 		)
 	}
@@ -145,7 +97,9 @@ export class SignUpBasic extends Controller {
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
-		const url = inteliText(`${API_URL}/user/management/project/${projectTag}/register`)
+		const url = Expression.fromString(
+			`${API_URL}/user/management/project/${projectTag}/register`
+		)
 		const dataSourceName = `signup_${id}` // State name cannot contain space
 		const navigateAction = new NavigateAction()
 		navigateAction.to = Expression.fromString('/login.html')

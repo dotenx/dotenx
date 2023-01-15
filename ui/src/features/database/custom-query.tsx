@@ -140,6 +140,7 @@ export default function CustomQuery() {
 								disabled={!query || projectTagisLoading}
 								onClick={() => {
 									setError('')
+									setRowsffected(undefined)
 									mutationRun.mutate()
 								}}
 								loading={mutationRun.isLoading}

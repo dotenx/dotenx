@@ -51,7 +51,7 @@ export function ElementOverlay({
 	const backgroundImage = backgroundUrl
 		? {
 				backgroundImage: `url(${backgroundUrl})`,
-				backgroundSize: 'contain',
+				backgroundSize: element.style.desktop?.default?.objectFit ?? 'cover',
 				backgroundRepeat: 'no-repeat',
 				backgroundPosition: 'center',
 		  }

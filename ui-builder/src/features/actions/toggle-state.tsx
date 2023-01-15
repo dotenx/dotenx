@@ -9,7 +9,7 @@ import {
 	Ids,
 	SourceIds,
 	useAction,
-	useDataSourceAction
+	useDataSourceAction,
 } from './action'
 
 export class ToggleStateAction extends Action {
