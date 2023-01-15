@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import hash from 'object-hash'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -13,7 +13,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut
+	TbZoomOut,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
@@ -67,8 +67,19 @@ function UnsavedMessage() {
 
 	const savedHash = useMemo(() => hash(saved), [saved])
 	const currentHash = useMemo(() => hash(elements), [elements])
+	const unsaved = savedHash !== currentHash
 
-	if (savedHash === currentHash) return null
+	useEffect(() => {
+		const beforeUnloadListener = (event: BeforeUnloadEvent): string => {
+			event.preventDefault()
+			return (event.returnValue = '')
+		}
+		if (!unsaved) return
+		addEventListener('beforeunload', beforeUnloadListener, { capture: true })
+		return () => removeEventListener('beforeunload', beforeUnloadListener, { capture: true })
+	}, [unsaved])
+
+	if (!unsaved) return null
 
 	return (
 		<Text color="dimmed" size="xs">
