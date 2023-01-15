@@ -219,19 +219,8 @@ func (controller *OauthController) getAirtableTokens(clientId, clientSecret, cod
 	}
 	body := bytes.NewBuffer([]byte(data))
 	helper := utils.NewHttpHelper(utils.NewHttpClient())
-	out, err, status, respHeaders := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
 	logrus.Info("airtable response:", string(out))
-
-	// --------------------jsut for debugging logs--------------------
-	reqHeadersBytes, _ := json.Marshal(headers)
-	log.Printf("request headers:\n%v\n", string(reqHeadersBytes))
-	log.Printf("request data:\n%v\n", data)
-	log.Printf("request error:\n%v\n", err)
-	respHeadersBytes, _ := json.Marshal(respHeaders)
-	log.Printf("response headers:\n%s\n", string(respHeadersBytes))
-	log.Printf("response status code:\n%d\n", status)
-	log.Printf("response error:\n%v\n", err)
-	// --------------------jsut for debugging logs--------------------
 
 	if err != nil {
 		return "", "", err
