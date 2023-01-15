@@ -15,6 +15,7 @@ type Project struct {
 // TODO: Add UI Pages
 type ProjectDto struct {
 	Name           string               `json:"name"`
+	AccountId      string               `json:"account_id"`
 	Pipelines      []PipelineProjectDto `json:"pipelines"`
 	DataBaseTables []DatabaseTable      `json:"database_tables"`
 	UIPages        []ExportableUIPage   `json:"ui_pages"`
