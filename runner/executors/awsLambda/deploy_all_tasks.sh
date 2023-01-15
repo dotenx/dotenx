@@ -20,6 +20,7 @@
 # # stripe/stripe-create-payment-link:lambda2
 # # hojjat12/mailchimp-add-new-subscriber:lambda
 # # hojjat12/mailchimp-archive-subscriber:lambda
+# # hojjat12/airtable-create-record:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -196,6 +197,15 @@
 # export repository_name="hojjat12/mailchimp-archive-subscriber"
 # export tag="lambda"
 # export directory_address="mailchimp-archive-subscriber"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/airtable-create-record"
+# export tag="lambda"
+# export directory_address="airtable-create-record"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name

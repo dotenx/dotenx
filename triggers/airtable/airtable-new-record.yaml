@@ -1,0 +1,27 @@
+service: airtable
+type: Airtable new record
+integrations: [airtable]
+image: hojjat12/airtable-new-record:lambda
+deduplication_method: compare_with_list
+credentials:
+    - key: base_id
+      type: text
+      display_name: Base id
+      description: Base id which used to check new record existence
+
+    - key: table_id_or_name
+      type: text
+      display_name: Table name or id
+      description: Name or id of your table that be used to check new record existence on it
+
+    - key: passed_seconds
+      type: text
+      description: Number of passed seconds from creation time of record
+      display_name: Passed seconds
+
+outputs:
+
+author: Hojjat-1
+icon: https://www.svgrepo.com/show/353383/airtable.svg
+node_color: FFAE2A
+description: Checks if there is new record in your Airtable table (from [passed seconds] ago until now) tiggers a specefic pipeline
