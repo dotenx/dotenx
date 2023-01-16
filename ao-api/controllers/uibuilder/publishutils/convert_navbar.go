@@ -17,9 +17,14 @@ func convertNavbar(component map[string]interface{}, styleStore *StyleStore, fun
 		fmt.Println(err)
 		return "", err
 	}
+
+	funcMap := template.FuncMap{
+		"renderEvents": renderEvents,
+	}
+
 	var box Box
 	json.Unmarshal(b, &box)
-	tmpl, err := template.New("box").Parse(navbarTemplate)
+	tmpl, err := template.New("navbar").Funcs(funcMap).Parse(navbarTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
