@@ -16,7 +16,7 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { FaCheck, FaCopy, FaExternalLinkAlt, FaPlay } from 'react-icons/fa'
 import { IoSaveOutline } from 'react-icons/io5'
-import { TbCode, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import { TbCode, TbCopy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
@@ -53,6 +53,7 @@ export function PageActions() {
 	return (
 		<Button.Group>
 			{!isSimple && <PageSettingsButton />}
+			<DuplicatePageButton />
 			<DeletePageButton />
 			<SaveButton />
 			<PreviewButton url={pageUrls?.data.preview_url.url || ''} isLoading={isLoading} />
@@ -244,6 +245,91 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 			</Button>
 			<Button fullWidth type="submit" loading={savePageMutation.isLoading}>
 				Save
+			</Button>
+		</form>
+	)
+}
+
+function DuplicatePageButton() {
+	const { projectName = '' } = useParams()
+	const navigate = useNavigate()
+
+	return (
+		<Tooltip withinPortal withArrow label={<Text size="xs">Duplicate Page</Text>}>
+			<Button
+				size="xs"
+				variant="default"
+				onClick={() => {
+					openModal({
+						title: 'Duplicate Page',
+						children: (
+							<DuplicatePageForm
+								onSuccess={(pageName) =>
+									navigate(`/projects/${projectName}/${pageName}`)
+								}
+							/>
+						),
+					})
+				}}
+			>
+				<TbCopy className="w-5 h-5" />
+			</Button>
+		</Tooltip>
+	)
+}
+
+function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => void }) {
+	const setSaved = useElementsStore((store) => store.save)
+	const mode = useAtomValue(pageModeAtom)
+	const isSimple = mode === 'simple'
+	const projectTag = useAtomValue(projectTagAtom)
+	const setPageMode = useSetAtom(pageModeAtom)
+	const elements = useElementsStore((store) => store.elements)
+	const dataSources = useDataSourceStore((store) => store.sources)
+	const classNames = useClassesStore((store) => store.classes)
+	const pageParams = useAtomValue(pageParamsAtom)
+	const globals = useAtomValue(globalStatesAtom)
+	const fonts = useAtomValue(fontsAtom)
+	const savePageMutation = useMutation(updatePage)
+	const customCodes = useAtomValue(customCodesAtom)
+	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const animations = useAtomValue(animationsAtom)
+	const form = useForm<{ name: string }>({ initialValues: { name: '' } })
+	const queryClient = useQueryClient()
+
+	const onSubmit = form.onSubmit((value) => {
+		savePageMutation.mutate(
+			{
+				projectTag,
+				pageName: value.name,
+				elements,
+				dataSources,
+				classNames,
+				mode: isSimple ? 'simple' : 'advanced',
+				pageParams,
+				globals,
+				fonts,
+				customCodes,
+				statesDefaultValues,
+				animations,
+			},
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries([QueryKey.Pages])
+					setPageMode(isSimple ? 'simple' : 'advanced')
+					setSaved()
+					closeAllModals()
+					onSuccess(value.name)
+				},
+			}
+		)
+	})
+
+	return (
+		<form onSubmit={onSubmit}>
+			<TextInput label="Page name" {...form.getInputProps('name')} />
+			<Button mt="xl" fullWidth type="submit" loading={savePageMutation.isLoading}>
+				Duplicate page
 			</Button>
 		</form>
 	)
