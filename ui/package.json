@@ -10,15 +10,12 @@
 		"lint": "prettier --check ./src && eslint ./src --ext .js,.jsx,.ts,.tsx && tsc"
 	},
 	"dependencies": {
-		"@emotion/react": "^11.10.5",
-		"@emotion/server": "^11.10.0",
 		"@hookform/error-message": "^2.0.1",
 		"@hookform/resolvers": "^2.9.10",
 		"@mantine/core": "^5.8.4",
 		"@mantine/form": "^5.8.4",
 		"@mantine/hooks": "^5.8.4",
 		"@mantine/modals": "^5.8.4",
-		"@mantine/notifications": "^5.8.4",
 		"@mantine/prism": "^5.8.4",
 		"@monaco-editor/react": "^4.4.6",
 		"@tabler/icons": "^1.114.0",
@@ -34,7 +31,6 @@
 		"fuse.js": "^6.6.2",
 		"immer": "^9.0.16",
 		"jotai": "^1.10.0",
-		"js-cookie": "^3.0.1",
 		"lodash": "^4.17.21",
 		"nanoid": "^4.0.0",
 		"react": "^17.0.2",
