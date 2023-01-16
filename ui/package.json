@@ -6,7 +6,7 @@
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"fmt": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
+		"fmt": "prettier --write .",
 		"lint": "prettier --check ./src && eslint ./src --ext .js,.jsx,.ts,.tsx && tsc"
 	},
 	"dependencies": {
