@@ -18,7 +18,6 @@ import { Link, useMatch, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 import { UI_BUILDER_ADDRESS } from "../../constants"
 import { NavItem } from "./nav-item"
-import { Tour } from "./tour"
 const studioLinks = [
 	{ to: "/automations", label: "Automation", icon: <BsFillDiagram3Fill /> },
 	{ to: "/integrations", label: "Integrations", icon: <BsHddNetworkFill /> },
@@ -117,7 +116,6 @@ export const Sidebar = memo(() => {
 
 				{!isHome && (
 					<>
-						<Tour />
 						<div className="space-y-2">
 							<a
 								href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
