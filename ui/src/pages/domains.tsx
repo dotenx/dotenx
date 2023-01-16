@@ -46,7 +46,7 @@ export default function DomainsPage() {
 			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
 				<Loader className="mx-auto" />
 			) : (
-				<div className="mx-auto py-10  px-20 max-w-4xl ">
+				<div className="max-w-4xl px-20 py-10 mx-auto ">
 					{isDomainAdded ? (
 						<Domain projectTag={projectTag} domainData={getDomainsQuery?.data?.data} />
 					) : (
@@ -78,18 +78,18 @@ const Domain = ({
 	})
 	return (
 		<div className="grid grid-cols-1 gap-3 ">
-			<div className="border-2 rounded-md text-left p-3  ">
+			<div className="p-3 text-left border-2 rounded-md ">
 				<h1 className="font-semibold">Domain</h1>
 				<a
 					target={'_blank'}
 					rel="noreferrer"
 					href={'//' + domainData?.external_domain}
-					className="text-cyan-600 text-lg hover:text-cyan-500 transition-colors"
+					className="text-lg transition-colors text-cyan-600 hover:text-cyan-500"
 				>
 					{domainData?.external_domain}
 				</a>
 				{domainData && !!domainData.tls_arn ? (
-					<span className="text-green-500 float-right font-medium">verified</span>
+					<span className="float-right font-medium text-green-500">verified</span>
 				) : (
 					<Button
 						type="button"
@@ -101,7 +101,7 @@ const Domain = ({
 					</Button>
 				)}
 			</div>
-			<div className="border-2 rounded-md text-left p-3 ">
+			<div className="p-3 text-left border-2 rounded-md ">
 				<NSList nsList={domainData?.ns_records} />
 			</div>
 		</div>
@@ -130,7 +130,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		},
 	})
 	return (
-		<div className="font-medium border-2 rounded-md p-3">
+		<div className="p-3 font-medium border-2 rounded-md">
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>
@@ -141,7 +141,6 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 					label="Add your domain"
 					type="text"
 					required
-					value=""
 					placeholder="www.example.com"
 					className="pt-1 pb-2"
 					{...form.getInputProps('externalDomain')}
@@ -165,7 +164,7 @@ const NSList = ({ nsList = [] }: { nsList: string[] | undefined }) => {
 			<h3 className="mt-2 mb-1 text-base ">
 				Point your domain&apos;s name servers to Dotenx
 			</h3>
-			<p className="text-zinc-500 mb-3 text-sm font-medium">
+			<p className="mb-3 text-sm font-medium text-zinc-500">
 				To use Dotenx DNS, go to your domain registrar and change your domain&apos;s name
 				server to the following custom host hostnames assigned to your DNS zone.
 			</p>
