@@ -1,8 +1,8 @@
-import { useAtom } from 'jotai'
-import { slidingPaneAtom } from '../atoms'
+import { useAtom } from "jotai"
+import { slidingPaneAtom } from "../atoms"
 
 export enum SlidingPanes {
-	Integration = 'integration',
+	Integration = "integration",
 }
 
 export function useSlidingPane() {

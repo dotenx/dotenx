@@ -1,40 +1,40 @@
-import { Button, Tooltip } from '@mantine/core'
-import { useRef, useState } from 'react'
-import { useMutation, useQuery } from 'react-query'
-import { exportDatabase, runExportDatabase } from '../../api'
-import { MdOutlineMoreVert } from 'react-icons/md'
-import { useOutsideClick } from '../hooks'
-import { TbFileDownload, TbFileExport } from 'react-icons/tb'
-type Format = 'dump' | 'csv'
+import { Button, Tooltip } from "@mantine/core"
+import { useRef, useState } from "react"
+import { useMutation, useQuery } from "react-query"
+import { exportDatabase, runExportDatabase } from "../../api"
+import { MdOutlineMoreVert } from "react-icons/md"
+import { useOutsideClick } from "../hooks"
+import { TbFileDownload, TbFileExport } from "react-icons/tb"
+type Format = "dump" | "csv"
 export default function ExportDatabase({ projectName }: { projectName: string }) {
-	const [url, setUrl] = useState('')
-	const [format, setFormat] = useState<Format>('dump')
+	const [url, setUrl] = useState("")
+	const [format, setFormat] = useState<Format>("dump")
 	const [showDownload, setShowDownload] = useState(false)
 	const [openOptions, setOpenOptions] = useState(false)
 	const ref = useRef(null)
 	useOutsideClick(ref, () => setOpenOptions(false))
 
 	const { isLoading, refetch: refetchRes } = useQuery(
-		['res-export-database', format],
+		["res-export-database", format],
 		() => exportDatabase(projectName, format),
 		{
 			onSuccess: (d) => {
 				setShowDownload(true)
-				setUrl('')
-				if (format === 'dump') {
-					if (d.data.db_job.pg_dump_status === 'pending') {
+				setUrl("")
+				if (format === "dump") {
+					if (d.data.db_job.pg_dump_status === "pending") {
 						setTimeout(() => {
 							refetchRes()
 						}, 500)
-					} else if (d.data.db_job.pg_dump_status === 'completed') {
+					} else if (d.data.db_job.pg_dump_status === "completed") {
 						setUrl(d.data.db_job.pg_dump_url)
 					}
-				} else if (format === 'csv') {
-					if (d.data.db_job.csv_status === 'pending') {
+				} else if (format === "csv") {
+					if (d.data.db_job.csv_status === "pending") {
 						setTimeout(() => {
 							refetchRes()
 						}, 500)
-					} else if (d.data.db_job.csv_status === 'completed') {
+					} else if (d.data.db_job.csv_status === "completed") {
 						setUrl(d.data.db_job.csv_url)
 					}
 				}
@@ -58,7 +58,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 				{showDownload ? (
 					<Button
 						rightIcon={<TbFileDownload className="w-5 h-5" />}
-						loading={isLoading || mutationRun.isLoading || url === ''}
+						loading={isLoading || mutationRun.isLoading || url === ""}
 					>
 						<a href={url} download>
 							Download {format} file
@@ -77,7 +77,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 				)}
 				<Tooltip openDelay={500} withinPortal withArrow label="Change export format">
 					<Button
-						className={`!p-1 ${openOptions && '!bg-rose-800'}`}
+						className={`!p-1 ${openOptions && "!bg-rose-800"}`}
 						onClick={() => setOpenOptions(!openOptions)}
 					>
 						<MdOutlineMoreVert className="w-5 h-5 " />
@@ -87,7 +87,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 			{openOptions && (
 				<div className="cursor-pointer p-1 absolute z-10 bg-white top-[95px] py-3 rounded-md shadow-md">
 					<div className="mb-2 text-sm px-1">Select file format</div>
-					{['dump', 'csv'].map((o, index) => (
+					{["dump", "csv"].map((o, index) => (
 						<div
 							key={index}
 							onClick={() => {

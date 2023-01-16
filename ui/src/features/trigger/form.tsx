@@ -1,12 +1,12 @@
-import { Button } from '@mantine/core'
-import { SelectIntegration } from '../integration'
-import { TestTrigger } from '../task/test-step'
-import { Description, Field, Form, GroupSelect, Loader, NewSelect } from '../ui'
-import { UseTriggerForm } from './use-form'
+import { Button } from "@mantine/core"
+import { SelectIntegration } from "../integration"
+import { TestTrigger } from "../task/test-step"
+import { Description, Field, Form, GroupSelect, Loader, NewSelect } from "../ui"
+import { UseTriggerForm } from "./use-form"
 
 interface TriggerFormProps {
 	triggerForm: UseTriggerForm
-	mode: 'new' | 'settings'
+	mode: "new" | "settings"
 	onAddIntegration?: () => void
 	disableSubmit?: boolean
 	submitting?: boolean
@@ -56,7 +56,7 @@ export function TriggerForm({
 					/>
 					<div className="text-xs mt-1.5">{selectedTriggerType?.description}</div>
 				</div>
-				{mode === 'new' && (
+				{mode === "new" && (
 					<NewSelect
 						label="Automation"
 						name="pipeline_name"
@@ -91,7 +91,7 @@ export function TriggerForm({
 			</div>
 			<TestTrigger trigger={formData} />
 			<Button loading={submitting} disabled={disableSubmit} type="submit">
-				{mode === 'new' ? 'Add' : 'Save'}
+				{mode === "new" ? "Add" : "Save"}
 			</Button>
 		</Form>
 	)

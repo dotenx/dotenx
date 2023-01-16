@@ -1,7 +1,7 @@
-import { Modal, ModalProps } from '@mantine/core'
-import { Modals, useModal } from '../hooks'
+import { Modal, ModalProps } from "@mantine/core"
+import { Modals, useModal } from "../hooks"
 
-interface DrawerProps extends Omit<ModalProps, 'opened' | 'onClose'> {
+interface DrawerProps extends Omit<ModalProps, "opened" | "onClose"> {
 	kind: Modals
 }
 
@@ -15,7 +15,7 @@ export function NewModal({ kind, children, ...rest }: DrawerProps) {
 			onClose={modal.close}
 			padding="xl"
 			classNames={{
-				root: 'text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700',
+				root: "text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700",
 			}}
 		>
 			{children}

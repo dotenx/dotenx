@@ -1,17 +1,17 @@
-import { Button } from '@mantine/core'
-import CodeEditor from '@uiw/react-textarea-code-editor'
-import { useState } from 'react'
-import { useMutation } from 'react-query'
-import { useNavigate, useParams } from 'react-router-dom'
-import { createAutomationYaml } from '../api'
-import { AUTOMATION_PROJECT_NAME } from './automation'
+import { Button } from "@mantine/core"
+import CodeEditor from "@uiw/react-textarea-code-editor"
+import { useState } from "react"
+import { useMutation } from "react-query"
+import { useNavigate, useParams } from "react-router-dom"
+import { createAutomationYaml } from "../api"
+import { AUTOMATION_PROJECT_NAME } from "./automation"
 
 export default function ImportYamlPage() {
 	const navigate = useNavigate()
 	const { mutate, isLoading } = useMutation(createAutomationYaml, {
 		onSuccess: ({ data }) => navigate(`/automations/${data.name}`),
 	})
-	const [code, setCode] = useState('')
+	const [code, setCode] = useState("")
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 
 	return (
@@ -29,7 +29,7 @@ export default function ImportYamlPage() {
 						value={code}
 						language="yaml"
 						onChange={(event) => setCode(event.target.value)}
-						style={{ fontFamily: 'monospace', flexGrow: 1, overflowY: 'auto' }}
+						style={{ fontFamily: "monospace", flexGrow: 1, overflowY: "auto" }}
 						className="rounded-md"
 					/>
 					<Button loading={isLoading} type="submit">

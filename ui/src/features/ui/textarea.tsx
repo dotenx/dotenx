@@ -4,9 +4,9 @@ import {
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import { ComplexFieldValue } from './complex-field'
-import { FieldError } from './field'
+} from "react-hook-form"
+import { ComplexFieldValue } from "./complex-field"
+import { FieldError } from "./field"
 
 interface TextareaProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
@@ -42,7 +42,7 @@ export function Textarea<TFieldValues extends FieldValues, TName extends FieldPa
 	)
 }
 
-Textarea.displayName = 'Textarea'
+Textarea.displayName = "Textarea"
 
 function RawTextarea({
 	name,
@@ -60,14 +60,14 @@ function RawTextarea({
 			className="px-2 py-1 border rounded-lg border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
 			id={name}
 			onChange={(e) =>
-				raw ? onChange(e.target.value) : onChange({ kind: 'json', data: e.target.value })
+				raw ? onChange(e.target.value) : onChange({ kind: "json", data: e.target.value })
 			}
 			value={
 				raw
 					? (value as string)
-					: value && typeof value === 'object' && 'data' in value
+					: value && typeof value === "object" && "data" in value
 					? value.data
-					: ''
+					: ""
 			}
 			autoComplete="off"
 			name={name}

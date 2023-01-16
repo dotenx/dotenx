@@ -1,16 +1,16 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@mantine/core'
-import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from 'react-query'
-import { z } from 'zod'
-import { addColumn, AddColumnRequest, QueryKey } from '../../api'
-import { columnTypeOptions } from '../../constants'
-import { useModal } from '../hooks'
-import { Field, Form, NewSelect } from '../ui'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@mantine/core"
+import { useForm } from "react-hook-form"
+import { useMutation, useQueryClient } from "react-query"
+import { z } from "zod"
+import { addColumn, AddColumnRequest, QueryKey } from "../../api"
+import { columnTypeOptions } from "../../constants"
+import { useModal } from "../hooks"
+import { Field, Form, NewSelect } from "../ui"
 
 const schema = z.object({
-	columnName: z.string().min(1, 'Name is required.'),
-	columnType: z.string().min(1, 'Type is required.'),
+	columnName: z.string().min(1, "Name is required."),
+	columnType: z.string().min(1, "Type is required."),
 })
 
 type Schema = z.infer<typeof schema>
@@ -19,7 +19,7 @@ export function ColumnForm({ projectName, tableName }: { projectName: string; ta
 	const modal = useModal()
 	const client = useQueryClient()
 	const form = useForm<Schema>({
-		defaultValues: { columnName: '', columnType: '' },
+		defaultValues: { columnName: "", columnType: "" },
 		resolver: zodResolver(schema),
 	})
 	const mutation = useMutation(

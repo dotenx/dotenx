@@ -1,9 +1,9 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useEffect } from 'react'
-import { Node } from 'react-flow-renderer'
-import { API_URL, AutomationEventMessage } from '../../api'
-import { flowAtom, listenAtom, selectedAutomationDataAtom } from '../atoms'
-import { TaskNodeData, useClearStatus } from '../flow'
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useCallback, useEffect } from "react"
+import { Node } from "reactflow"
+import { API_URL, AutomationEventMessage } from "../../api"
+import { flowAtom, listenAtom, selectedAutomationDataAtom } from "../atoms"
+import { TaskNodeData, useClearStatus } from "../flow"
 
 export function useTaskStatus(executionId?: string) {
 	const [selected, setSelected] = useAtom(selectedAutomationDataAtom)
@@ -29,7 +29,7 @@ export function useTaskStatus(executionId?: string) {
 							name: updated.name,
 							executionId: data.execution_id,
 						},
-					}
+					} as any
 				})
 			)
 		},
@@ -42,10 +42,10 @@ export function useTaskStatus(executionId?: string) {
 		const eventSource = new EventSource(`${API_URL}/execution/name/${selected.name}/status`, {
 			withCredentials: true,
 		})
-		eventSource.addEventListener('message', handleReceiveMessage)
-		eventSource.addEventListener('end', () => eventSource.close())
+		eventSource.addEventListener("message", handleReceiveMessage)
+		eventSource.addEventListener("end", () => eventSource.close())
 		return () => {
-			eventSource.removeEventListener('message', handleReceiveMessage)
+			eventSource.removeEventListener("message", handleReceiveMessage)
 			eventSource.close()
 		}
 	}, [executionId, handleReceiveMessage, selected, listen])
@@ -56,10 +56,10 @@ export function useTaskStatus(executionId?: string) {
 		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`, {
 			withCredentials: true,
 		})
-		eventSource.addEventListener('message', handleReceiveMessage)
-		eventSource.addEventListener('end', () => eventSource.close())
+		eventSource.addEventListener("message", handleReceiveMessage)
+		eventSource.addEventListener("end", () => eventSource.close())
 		return () => {
-			eventSource.removeEventListener('message', handleReceiveMessage)
+			eventSource.removeEventListener("message", handleReceiveMessage)
 			eventSource.close()
 		}
 	}, [clearStatus, executionId, handleReceiveMessage])

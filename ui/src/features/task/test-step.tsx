@@ -1,15 +1,15 @@
-import { ActionIcon, Button, Collapse, ScrollArea } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import { atom, useAtom, useSetAtom } from 'jotai'
-import _ from 'lodash'
-import { IoCheckmark, IoChevronDown, IoChevronUp } from 'react-icons/io5'
-import { useMutation } from 'react-query'
-import { AnyJson, testTask, TestTaskRequest, testTrigger, TestTriggerRequest } from '../../api'
-import { TriggerSchema } from '../trigger/use-form'
-import { InputOrSelectKind, JsonCode } from '../ui'
-import { ComplexFieldValue } from '../ui/complex-field'
-import { EditorObjectValue } from '../ui/json-editor'
-import { TaskSettingsSchema } from './use-settings'
+import { ActionIcon, Button, Collapse, ScrollArea } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks"
+import { atom, useAtom, useSetAtom } from "jotai"
+import _ from "lodash"
+import { IoCheckmark, IoChevronDown, IoChevronUp } from "react-icons/io5"
+import { useMutation } from "react-query"
+import { AnyJson, testTask, TestTaskRequest, testTrigger, TestTriggerRequest } from "../../api"
+import { TriggerSchema } from "../trigger/use-form"
+import { InputOrSelectKind, JsonCode } from "../ui"
+import { ComplexFieldValue } from "../ui/complex-field"
+import { EditorObjectValue } from "../ui/json-editor"
+import { TaskSettingsSchema } from "./use-settings"
 
 type Outputs = Record<string, Property[]>
 
@@ -37,7 +37,7 @@ export function TestTask({ task }: { task: TaskSettingsSchema }) {
 					loading={testTaskMutation.isLoading}
 					disabled={result?.successfull}
 				>
-					{result?.successfull ? <IoCheckmark size={20} /> : 'Test'}
+					{result?.successfull ? <IoCheckmark size={20} /> : "Test"}
 				</Button>
 				<ActionIcon onClick={showResultHandlers.toggle}>
 					{showResult ? <IoChevronDown /> : <IoChevronUp />}
@@ -79,7 +79,7 @@ export function TestTrigger({ trigger }: { trigger: TriggerSchema }) {
 					loading={testTriggerMutation.isLoading}
 					disabled={result?.triggered}
 				>
-					{result?.triggered ? <IoCheckmark size={20} /> : 'Test'}
+					{result?.triggered ? <IoCheckmark size={20} /> : "Test"}
 				</Button>
 				<ActionIcon onClick={showResultHandlers.toggle}>
 					{showResult ? <IoChevronDown /> : <IoChevronUp />}
@@ -102,7 +102,7 @@ const mapTriggerValuesToPrimitives = (trigger: TriggerSchema): TestTriggerReques
 			triggers: {
 				trigger: {
 					type: trigger.type,
-					integration: trigger.integration ?? '',
+					integration: trigger.integration ?? "",
 					credentials: trigger.credentials,
 				},
 			},
@@ -116,7 +116,7 @@ const mapTaskValuesToPrimitives = (task: TaskSettingsSchema, outputs: Outputs): 
 			tasks: {
 				task: {
 					type: task.type,
-					integration: task.integration ?? '',
+					integration: task.integration ?? "",
 					body: mapTaskBodyToPrimitives(task.others, outputs),
 				},
 			},
@@ -125,7 +125,7 @@ const mapTaskValuesToPrimitives = (task: TaskSettingsSchema, outputs: Outputs): 
 }
 
 export const mapTaskBodyToPrimitives = (
-	taskBody: TaskSettingsSchema['others'],
+	taskBody: TaskSettingsSchema["others"],
 	outputs: Outputs
 ): Record<string, AnyJson> => {
 	return _.fromPairs(
@@ -144,18 +144,18 @@ const mapFieldValueToPrimitive = (
 	outputs: Outputs
 ): AnyJson => {
 	if (_.isArray(fieldValue)) return mapJsonEditorToJsonValue(fieldValue, outputs)
-	if (_.isObject(fieldValue) && 'data' in fieldValue) {
-		if ('type' in fieldValue) {
+	if (_.isObject(fieldValue) && "data" in fieldValue) {
+		if ("type" in fieldValue) {
 			if (fieldValue.type === InputOrSelectKind.Option) {
-				const taskName = (fieldValue.data as string).split('.')[0]
+				const taskName = (fieldValue.data as string).split(".")[0]
 				const literalValue =
-					outputs[taskName].find((output) => output.path === fieldValue.data)?.value ?? ''
+					outputs[taskName].find((output) => output.path === fieldValue.data)?.value ?? ""
 				return literalValue
 			}
 		}
 		return fieldValue.data
 	}
-	return ''
+	return ""
 }
 
 function mapJsonEditorToJsonValue(jsonEditorData: EditorObjectValue[], outputs: Outputs): AnyJson {
@@ -164,7 +164,7 @@ function mapJsonEditorToJsonValue(jsonEditorData: EditorObjectValue[], outputs: 
 			property.name,
 			!_.isArray(property.value)
 				? mapFieldValueToPrimitive(property.value, outputs)
-				: typeof property.value[0] === 'string'
+				: typeof property.value[0] === "string"
 				? (property.value as string[])
 				: mapJsonEditorToJsonValue(property.value as EditorObjectValue[], outputs),
 		])
@@ -201,9 +201,9 @@ export interface Property {
 }
 
 export enum PropertyKind {
-	Array = 'Array',
-	String = 'String',
-	Number = 'Number',
-	Boolean = 'Boolean',
-	Unknown = 'Unknown',
+	Array = "Array",
+	String = "String",
+	Number = "Number",
+	Boolean = "Boolean",
+	Unknown = "Unknown",
 }

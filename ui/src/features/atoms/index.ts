@@ -1,17 +1,15 @@
-import { atom } from 'jotai'
-import { nanoid } from 'nanoid'
-import { Elements } from 'react-flow-renderer'
-import { Automation, AutomationData } from '../../api'
-import { EdgeData, TaskNodeData } from '../flow'
-import { NodeType } from '../flow/types'
-import { Modals } from '../hooks'
-import { SlidingPanes } from '../hooks/use-sliding-pane'
+import { atom } from "jotai"
+import { nanoid } from "nanoid"
+import { Automation, AutomationData } from "../../api"
+import { NodeType } from "../flow/types"
+import { Modals } from "../hooks"
+import { SlidingPanes } from "../hooks/use-sliding-pane"
 
-export const initialElements: Elements<TaskNodeData | EdgeData> = [
+export const initialElements = [
 	{
 		id: nanoid(),
 		type: NodeType.Task,
-		data: { name: 'task', type: '' },
+		data: { name: "task", type: "" },
 		position: { x: 0, y: 0 },
 	},
 ]

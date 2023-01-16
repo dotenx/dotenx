@@ -1,17 +1,16 @@
-import { atom, useAtom } from 'jotai'
-import _ from 'lodash'
-import { useEffect, useState } from 'react'
-import ReactFlow, { useZoomPanHelper } from 'react-flow-renderer'
-import { AutomationKind } from '../../api'
-import { EdgeSettings } from '../automation'
-import { Modals, useModal } from '../hooks'
-import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from '../task'
-import { TriggerSettingsModal } from '../trigger/settings'
-import { InputOrSelectKind, Modal } from '../ui'
-import { EdgeData, EdgeEntity, PipeEdge } from './edge'
-import { TaskEntity, TaskNode, TaskNodeData } from './task-node'
-import { TriggerNode } from './trigger-node'
-import { useFlow } from './use-flow'
+import { atom, useAtom } from "jotai"
+import _ from "lodash"
+import { useEffect, useState } from "react"
+import ReactFlow from "reactflow"
+import { AutomationKind } from "../../api"
+import { EdgeSettings } from "../automation"
+import { Modals, useModal } from "../hooks"
+import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from "../task"
+import { InputOrSelectKind, Modal } from "../ui"
+import { EdgeData, EdgeEntity, PipeEdge } from "./edge"
+import { TaskEntity, TaskNode, TaskNodeData } from "./task-node"
+import { TriggerNode } from "./trigger-node"
+import { useFlow } from "./use-flow"
 
 const nodeTypes = {
 	task: TaskNode,
@@ -24,22 +23,7 @@ const edgeTypes = {
 
 export function Flow({ isEditable = true }: { isEditable?: boolean; kind: AutomationKind }) {
 	const withIntegration = true
-	const {
-		reactFlowWrapper,
-		elements,
-		onConnect,
-		onDragOver,
-		onDrop,
-		onElementsRemove,
-		onLoad,
-		updateElement,
-	} = useFlow()
-
-	const { fitView } = useZoomPanHelper()
-
-	useEffect(() => {
-		fitView()
-	}, [fitView])
+	const { reactFlowWrapper, elements, onDragOver, onDrop } = useFlow()
 
 	return (
 		<>
@@ -47,19 +31,11 @@ export function Flow({ isEditable = true }: { isEditable?: boolean; kind: Automa
 				<ReactFlow
 					nodeTypes={nodeTypes}
 					edgeTypes={edgeTypes}
-					elements={elements}
-					onConnect={isEditable ? onConnect : undefined}
-					onElementsRemove={isEditable ? onElementsRemove : undefined}
-					onLoad={onLoad}
 					onDragOver={isEditable ? onDragOver : undefined}
 					onDrop={isEditable ? onDrop : undefined}
 					nodesConnectable={isEditable}
 				/>
 			</div>
-
-			<TaskSettingsModal withIntegration={withIntegration} updateNode={updateElement} />
-			<TriggerSettingsModal withIntegration={withIntegration} updateNode={updateElement} />
-			<EdgeSettingsModal updateEdge={updateElement} />
 			<TaskLogModal />
 		</>
 	)
@@ -93,7 +69,7 @@ function TaskSettingsModal({ updateNode, withIntegration }: NodeSettingsModalPro
 	const [taskCode, setTaskCode] = useAtom(taskCodeState)
 	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
 	const modalSize =
-		taskCode.isOpen || taskBuilder.opened ? 'xl' : isAddingIntegration ? 'lg' : 'lg'
+		taskCode.isOpen || taskBuilder.opened ? "xl" : isAddingIntegration ? "lg" : "lg"
 
 	useEffect(() => {
 		if (!modal.isOpen) {
@@ -114,7 +90,7 @@ function TaskSettingsModal({ updateNode, withIntegration }: NodeSettingsModalPro
 							others: _.fromPairs(
 								_.toPairs(values.others).map(([key, value]) => [
 									key,
-									value ?? { type: InputOrSelectKind.Text, data: '' },
+									value ?? { type: InputOrSelectKind.Text, data: "" },
 								])
 							),
 						})

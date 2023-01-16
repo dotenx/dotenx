@@ -1,11 +1,11 @@
-import { useAtom } from 'jotai'
-import { useNavigate } from 'react-router-dom'
+import { useAtom } from "jotai"
+import { useNavigate } from "react-router-dom"
 import {
 	flowAtom,
 	initialElements,
 	selectedAutomationAtom,
 	selectedAutomationDataAtom,
-} from '../atoms'
+} from "../atoms"
 
 export function useNewAutomation(where: string) {
 	const setSelected = useAtom(selectedAutomationDataAtom)[1]

@@ -1,19 +1,19 @@
-import { ActionIcon, Button, Divider } from '@mantine/core'
-import { useToggle } from '@mantine/hooks'
-import clsx from 'clsx'
-import _ from 'lodash'
-import { nanoid } from 'nanoid'
-import { useEffect, useRef } from 'react'
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
-import { FormProvider, useFieldArray, useForm, useFormContext, useWatch } from 'react-hook-form'
-import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { TestTaskRequest } from '../api'
-import { SlidingPanes, useSlidingPane } from '../features/hooks/use-sliding-pane'
-import { IntegrationForm } from '../features/integration'
-import { TaskSettings } from '../features/task'
-import { mapTaskBodyToPrimitives } from '../features/task/test-step'
-import { TaskSettingsSchema, useTaskSettings } from '../features/task/use-settings'
+import { ActionIcon, Button, Divider } from "@mantine/core"
+import { useToggle } from "@mantine/hooks"
+import clsx from "clsx"
+import _ from "lodash"
+import { nanoid } from "nanoid"
+import { useEffect, useRef } from "react"
+import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd"
+import { FormProvider, useFieldArray, useForm, useFormContext, useWatch } from "react-hook-form"
+import { IoAdd, IoChevronDown, IoChevronUp, IoClose } from "react-icons/io5"
+import { useQuery } from "react-query"
+import { TestTaskRequest } from "../api"
+import { SlidingPanes, useSlidingPane } from "../features/hooks/use-sliding-pane"
+import { IntegrationForm } from "../features/integration"
+import { TaskSettings } from "../features/task"
+import { mapTaskBodyToPrimitives } from "../features/task/test-step"
+import { TaskSettingsSchema, useTaskSettings } from "../features/task/use-settings"
 import {
 	Description,
 	Form,
@@ -24,9 +24,9 @@ import {
 	InputValue,
 	NewSelect,
 	SlidingPane,
-} from '../features/ui'
-import { getTaskBuilderFunctions, InternalQueryKey } from './internal-api'
-import { StepsSummary } from './steps-summary'
+} from "../features/ui"
+import { getTaskBuilderFunctions, InternalQueryKey } from "./internal-api"
+import { StepsSummary } from "./steps-summary"
 
 interface Assignment {
 	name: InputOrSelectValue
@@ -73,25 +73,25 @@ interface ExecuteTask {
 }
 
 const stepTypes = [
-	'assignment',
-	'if',
-	'repeat',
-	'foreach',
-	'function_call',
-	'output',
-	'var_declaration',
-	'execute_task',
+	"assignment",
+	"if",
+	"repeat",
+	"foreach",
+	"function_call",
+	"output",
+	"var_declaration",
+	"execute_task",
 ] as const
 
 export type Step = { id: string; opened: boolean } & (
-	| { type: 'assignment'; params: Assignment }
-	| { type: 'if'; params: Conditional }
-	| { type: 'repeat'; params: Repeat }
-	| { type: 'foreach'; params: Foreach }
-	| { type: 'function_call'; params: FunctionCall }
-	| { type: 'output'; params: OutputParams }
-	| { type: 'var_declaration'; params: VarDeclaration }
-	| { type: 'execute_task'; params: ExecuteTask }
+	| { type: "assignment"; params: Assignment }
+	| { type: "if"; params: Conditional }
+	| { type: "repeat"; params: Repeat }
+	| { type: "foreach"; params: Foreach }
+	| { type: "function_call"; params: FunctionCall }
+	| { type: "output"; params: OutputParams }
+	| { type: "var_declaration"; params: VarDeclaration }
+	| { type: "execute_task"; params: ExecuteTask }
 )
 
 export type TaskBuilderValues = {
@@ -102,24 +102,24 @@ export type TaskBuilderValues = {
 export type BuilderSteps = Step[]
 
 const stepTypeOptions = [
-	{ label: 'Assignment', value: 'assignment' },
-	{ label: 'If', value: 'if' },
-	{ label: 'Repeat', value: 'repeat' },
-	{ label: 'Foreach', value: 'foreach' },
-	{ label: 'Function Call', value: 'function_call' },
-	{ label: 'Output', value: 'output' },
-	{ label: 'Variable Declaration', value: 'var_declaration' },
-	{ label: 'Execute Task', value: 'execute_task' },
+	{ label: "Assignment", value: "assignment" },
+	{ label: "If", value: "if" },
+	{ label: "Repeat", value: "repeat" },
+	{ label: "Foreach", value: "foreach" },
+	{ label: "Function Call", value: "function_call" },
+	{ label: "Output", value: "output" },
+	{ label: "Variable Declaration", value: "var_declaration" },
+	{ label: "Execute Task", value: "execute_task" },
 ]
 
 const getStepTypeLabel = (type: (typeof stepTypes)[number]) =>
-	stepTypeOptions.find((option) => option.value === type)?.label ?? ''
+	stepTypeOptions.find((option) => option.value === type)?.label ?? ""
 
 const defaultStep = {
-	type: 'assignment',
+	type: "assignment",
 	params: {
-		name: { type: InputOrSelectKind.Text, data: '' },
-		value: { type: InputOrSelectKind.Text, data: '' },
+		name: { type: InputOrSelectKind.Text, data: "" },
+		value: { type: InputOrSelectKind.Text, data: "" },
 	},
 	opened: true,
 } as const
@@ -143,27 +143,27 @@ export function TaskBuilder({
 }) {
 	const form = useForm<TaskBuilderValues>({
 		// defaultValues: { prop: 'value', steps: defaultValues },
-		defaultValues: { prop: 'value', steps: [] },
+		defaultValues: { prop: "value", steps: [] },
 		shouldUnregister: false,
 	})
 	const reset = form.reset
 
 	useEffect(() => {
-		reset({ prop: 'value', steps: defaultValues ?? [{ ...defaultStep, id: nanoid() }] })
+		reset({ prop: "value", steps: defaultValues ?? [{ ...defaultStep, id: nanoid() }] })
 	}, [defaultValues, reset])
 
 	const steps = form.watch().steps
 	const handleSubmit = form.handleSubmit((values) => onSubmit(values))
-	const [view, toggleView] = useToggle<'detailed' | 'summary'>(['detailed', 'summary'])
+	const [view, toggleView] = useToggle<"detailed" | "summary">(["detailed", "summary"])
 
 	return (
 		<div className="flex flex-col gap-4">
 			<Button type="button" variant="light" className="self-end" onClick={() => toggleView()}>
-				{view === 'detailed' ? 'Summary' : 'Detailed'}
+				{view === "detailed" ? "Summary" : "Detailed"}
 			</Button>
 			<FormProvider {...form}>
 				<Form onSubmit={handleSubmit}>
-					<div hidden={view === 'summary'}>
+					<div hidden={view === "summary"}>
 						{/* TODO: pass `otherTasksOutputs` when backend can handle it */}
 						<Steps
 							name="steps"
@@ -172,7 +172,7 @@ export function TaskBuilder({
 							prefixNumber=""
 						/>
 					</div>
-					{view === 'summary' && <StepsSummary steps={steps} prefixNumber="" />}
+					{view === "summary" && <StepsSummary steps={steps} prefixNumber="" />}
 					<Button type="submit">Save Task</Button>
 				</Form>
 			</FormProvider>
@@ -237,9 +237,9 @@ function Steps({
 										</ActionIcon>
 										<div
 											className={clsx(
-												'w-0.5 h-3 mx-auto bg-gray-200',
+												"w-0.5 h-3 mx-auto bg-gray-200",
 												index === stepsFieldArray.fields.length - 1 &&
-													'opacity-0'
+													"opacity-0"
 											)}
 										/>
 									</div>
@@ -322,7 +322,7 @@ function Step({
 		<div className="bg-white border rounded">
 			<TopActionBar
 				number={number}
-				label={getStepTypeLabel(step?.type ?? 'assignment')}
+				label={getStepTypeLabel(step?.type ?? "assignment")}
 				opened={step?.opened ?? false}
 				toggle={() => setValue(`${name}.opened`, step?.opened ? false : true)}
 				onRemove={onRemove}
@@ -334,10 +334,10 @@ function Step({
 					options={stepTypeOptions}
 					control={control}
 				/>
-				{step?.type === 'assignment' && (
+				{step?.type === "assignment" && (
 					<AssignmentFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
-				{step?.type === 'if' && (
+				{step?.type === "if" && (
 					<ConditionalFields
 						name={paramsName}
 						branches={step.params?.branches?.map((branch) => branch?.body) ?? []}
@@ -346,7 +346,7 @@ function Step({
 						prefixNumber={number}
 					/>
 				)}
-				{step?.type === 'repeat' && (
+				{step?.type === "repeat" && (
 					<RepeatFields
 						name={paramsName}
 						body={step.params?.body ?? []}
@@ -354,7 +354,7 @@ function Step({
 						prefixNumber={number}
 					/>
 				)}
-				{step?.type === 'foreach' && (
+				{step?.type === "foreach" && (
 					<ForeachFields
 						name={paramsName}
 						body={step.params?.body ?? []}
@@ -362,16 +362,16 @@ function Step({
 						prefixNumber={number}
 					/>
 				)}
-				{step?.type === 'function_call' && (
+				{step?.type === "function_call" && (
 					<FunctionCallFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
-				{step?.type === 'execute_task' && (
+				{step?.type === "execute_task" && (
 					<ExecuteTaskFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
-				{step?.type === 'output' && (
+				{step?.type === "output" && (
 					<OutputFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
-				{step?.type === 'var_declaration' && (
+				{step?.type === "var_declaration" && (
 					<VarDeclarationFields name={paramsName} otherTasksOutputs={otherTasksOutputs} />
 				)}
 			</div>
@@ -423,7 +423,7 @@ function ConditionalFields({
 	const branchesFieldArray = useFieldArray({ name: `${name}.branches`, control })
 	const addBranch = () =>
 		branchesFieldArray.append({
-			condition: { type: InputOrSelectKind.Text, data: '' },
+			condition: { type: InputOrSelectKind.Text, data: "" },
 			body: [],
 		})
 
@@ -639,7 +639,7 @@ function ExecuteTaskFields({
 
 	const taskForm = useTaskSettings({
 		defaultValues: {
-			name: 'task',
+			name: "task",
 			type: defaultValue?.body?.manifest.tasks.task.type,
 			integration: defaultValue?.body?.manifest.tasks.task.integration,
 			others: mapObjectToComplexFields(defaultValue?.body?.manifest.tasks.task.body),
@@ -651,16 +651,16 @@ function ExecuteTaskFields({
 		const subscription = taskForm.watch((value) => {
 			const formValues = getValues(name)
 			const modifiedValue = {
-				url: `${process.env.REACT_APP_API_URL}/execution/type/task/step/task`,
-				method: 'POST',
+				url: `${import.meta.env.VITE_API_URL}/execution/type/task/step/task`,
+				method: "POST",
 				body: {
 					manifest: {
 						tasks: {
 							task: {
 								type: value.type,
-								integration: value.integration ?? '',
+								integration: value.integration ?? "",
 								body: mapTaskBodyToPrimitives(
-									value.others as TaskSettingsSchema['others'],
+									value.others as TaskSettingsSchema["others"],
 									{}
 								),
 							},
@@ -708,7 +708,7 @@ function ExecuteTaskFields({
 						integrationKind={taskForm.selectedTaskIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							slidingPane.close()
-							taskForm.setValue('integration', addedIntegrationName)
+							taskForm.setValue("integration", addedIntegrationName)
 						}}
 					/>
 				</div>
@@ -788,7 +788,7 @@ function TopActionBar({
 					color="gray"
 					size="sm"
 					type="button"
-					title={opened ? 'Hide step' : 'Show step'}
+					title={opened ? "Hide step" : "Show step"}
 					onClick={toggle}
 				>
 					{opened ? <IoChevronUp /> : <IoChevronDown />}

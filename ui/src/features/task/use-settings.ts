@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useDidUpdate } from '@mantine/hooks'
-import { useAtomValue } from 'jotai'
-import _ from 'lodash'
-import { useMemo } from 'react'
-import { useForm } from 'react-hook-form'
-import { useQuery } from 'react-query'
-import { z } from 'zod'
-import { getTaskFields, getTaskKinds, QueryKey } from '../../api'
-import { GroupData } from '../ui'
-import { InputOrSelectKind } from '../ui/input-or-select'
-import { outputsAtom, PropertyKind } from './test-step'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useDidUpdate } from "@mantine/hooks"
+import { useAtomValue } from "jotai"
+import _ from "lodash"
+import { useMemo } from "react"
+import { useForm } from "react-hook-form"
+import { useQuery } from "react-query"
+import { z } from "zod"
+import { getTaskFields, getTaskKinds, QueryKey } from "../../api"
+import { GroupData } from "../ui"
+import { InputOrSelectKind } from "../ui/input-or-select"
+import { outputsAtom, PropertyKind } from "./test-step"
 
 const textValue = {
 	type: z.literal(InputOrSelectKind.Text),
@@ -25,9 +25,9 @@ const inputOrSelectValue = z.object(textValue).or(selectValue)
 const fnValue = z.object({ fn: z.string(), args: z.array(inputOrSelectValue) })
 const complexValue = inputOrSelectValue
 	.or(fnValue)
-	.or(z.object({ kind: z.literal('nested'), data: z.string() }))
-	.or(z.object({ kind: z.literal('json'), data: z.string() }))
-	.or(z.object({ kind: z.literal('json-array'), data: z.string() }))
+	.or(z.object({ kind: z.literal("nested"), data: z.string() }))
+	.or(z.object({ kind: z.literal("json"), data: z.string() }))
+	.or(z.object({ kind: z.literal("json-array"), data: z.string() }))
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -58,8 +58,8 @@ export function useTaskSettings({
 		resolver: zodResolver(schema),
 		defaultValues: _.cloneDeep(defaultValues),
 	})
-	const taskType = watch('type')
-	const taskName = watch('name')
+	const taskType = watch("type")
+	const taskName = watch("name")
 	const tasksQuery = useQuery(QueryKey.GetTasks, getTaskKinds)
 	const tasks = tasksQuery.data?.data?.tasks
 	const tasksOptions = _.entries(tasks).map(([group, tasks]) => ({
@@ -110,7 +110,7 @@ export function useTaskSettings({
 	})
 
 	useDidUpdate(() => {
-		if (taskType) unregister(['integration', 'others', 'vars', 'outputs'])
+		if (taskType) unregister(["integration", "others", "vars", "outputs"])
 	}, [taskType, unregister])
 
 	return {

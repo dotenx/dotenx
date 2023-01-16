@@ -1,6 +1,6 @@
-import { useRef } from 'react'
-import { useOutsideClick } from '../hooks'
-import { Fade } from '../ui'
+import { useRef } from "react"
+import { useOutsideClick } from "../hooks"
+import { Fade } from "../ui"
 
 interface ContextMenuProps {
 	onClose: () => void

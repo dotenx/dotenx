@@ -1,5 +1,5 @@
-import { useSetAtom } from 'jotai'
-import { flowAtom } from '../atoms'
+import { useSetAtom } from "jotai"
+import { flowAtom } from "../atoms"
 
 export function useDeleteNode() {
 	const setElements = useSetAtom(flowAtom)

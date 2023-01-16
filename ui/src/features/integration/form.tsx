@@ -1,8 +1,8 @@
-import { Button } from '@mantine/core'
-import { useState } from 'react'
-import { IoArrowBack } from 'react-icons/io5'
-import { Field, Form, Loader, NewSelect, Toggle } from '../ui'
-import { useNewIntegration } from './use-create-form'
+import { Button } from "@mantine/core"
+import { useState } from "react"
+import { IoArrowBack } from "react-icons/io5"
+import { Field, Form, Loader, NewSelect, Toggle } from "../ui"
+import { useNewIntegration } from "./use-create-form"
 
 interface IntegrationFormProps {
 	integrationKind?: string
@@ -67,9 +67,9 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 						type="button"
 						disabled={oauth.isSuccess}
 						onClick={() => oauth.connect(integrationTypeFields.oauth_provider)}
-						color={oauth.isSuccess ? 'green' : 'rose'}
+						color={oauth.isSuccess ? "green" : "rose"}
 					>
-						{oauth.isSuccess ? 'Connected' : 'Connect'}
+						{oauth.isSuccess ? "Connected" : "Connect"}
 					</Button>
 				)}
 				{integrationTypeFields?.secrets
@@ -95,5 +95,5 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 }
 
 function isTokenKey(key: string): unknown {
-	return key !== 'ACCESS_TOKEN' && key !== 'REFRESH_TOKEN' && key !== 'ACCESS_TOKEN_SECRET'
+	return key !== "ACCESS_TOKEN" && key !== "REFRESH_TOKEN" && key !== "ACCESS_TOKEN_SECRET"
 }

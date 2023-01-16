@@ -1,7 +1,7 @@
-import { useQuery } from 'react-query'
-import { Automation, getAutomations, QueryKey } from '../api'
-import { AutomationList } from '../features/automation'
-import { AUTOMATION_PROJECT_NAME } from './automation'
+import { useQuery } from "react-query"
+import { Automation, getAutomations, QueryKey } from "../api"
+import { AutomationList } from "../features/automation"
+import { AUTOMATION_PROJECT_NAME } from "./automation"
 
 export default function AutomationsPage() {
 	const automationsQuery = useQuery(QueryKey.GetAutomations, () =>

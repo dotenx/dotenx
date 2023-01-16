@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode } from 'react'
+import { AnimatePresence, motion } from "framer-motion"
+import { ReactNode } from "react"
 
 interface FadeProps {
 	isOpen: boolean

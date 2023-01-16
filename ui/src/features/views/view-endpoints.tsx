@@ -1,5 +1,5 @@
-import { API_URL } from '../../api'
-import { Endpoint } from '../ui'
+import { API_URL } from "../../api"
+import { Endpoint } from "../ui"
 
 export function ViewEndpoints({
 	viewName,

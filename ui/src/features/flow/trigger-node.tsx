@@ -1,11 +1,11 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { NodeProps } from 'react-flow-renderer'
-import { BsGearFill } from 'react-icons/bs'
-import { TriggerData } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { ContextMenu } from './context-menu'
-import { useDeleteNode } from './use-delete-node'
+import { motion } from "framer-motion"
+import { useState } from "react"
+import { BsGearFill } from "react-icons/bs"
+import { NodeProps } from "reactflow"
+import { TriggerData } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { ContextMenu } from "./context-menu"
+import { useDeleteNode } from "./use-delete-node"
 
 export interface TriggerEntity {
 	id: string
@@ -22,7 +22,7 @@ export function TriggerNode({ id, data, isConnectable }: NodeProps<TriggerData>)
 		<motion.div
 			initial={{ scale: 0 }}
 			animate={{ scale: 1 }}
-			transition={{ type: 'spring', bounce: 0.5 }}
+			transition={{ type: "spring", bounce: 0.5 }}
 		>
 			<div
 				className="flex gap-0.5 group items-center relative justify-between bg-orange-600 text-[10px] text-white rounded px-3 py-1.5 transition-all hover:ring-4 ring-orange-100 focus:ring-4 outline-none"
