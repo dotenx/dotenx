@@ -68,8 +68,8 @@ export default function GitIntegrationPage() {
 	return (
 		<ContentWrapper>
 			<div className="flex justify-start">
-					<Title order={2}>Git integration</Title>
-				</div>
+				<Title order={2}>Git integration</Title>
+			</div>
 			{selectedProvider === 'github' && (
 				<GithubIntegration resetProvider={() => setSelectedProvider(undefined)} />
 			)}

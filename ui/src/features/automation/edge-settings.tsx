@@ -5,7 +5,7 @@ import * as z from 'zod'
 import { Form, Select } from '../ui'
 
 const triggers = ['failed', 'completed'] as const
-export type EdgeCondition = typeof triggers[number]
+export type EdgeCondition = (typeof triggers)[number]
 const options = triggers.map((option) => ({ label: option, value: option }))
 
 const schema = z.object({

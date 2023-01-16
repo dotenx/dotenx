@@ -112,7 +112,7 @@ const stepTypeOptions = [
 	{ label: 'Execute Task', value: 'execute_task' },
 ]
 
-const getStepTypeLabel = (type: typeof stepTypes[number]) =>
+const getStepTypeLabel = (type: (typeof stepTypes)[number]) =>
 	stepTypeOptions.find((option) => option.value === type)?.label ?? ''
 
 const defaultStep = {

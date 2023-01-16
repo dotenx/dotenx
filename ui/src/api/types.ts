@@ -92,7 +92,7 @@ export interface ExportDatabaseResponse {
 		account_id: string
 		project_name: string
 		pg_dump_url: string
-		pg_dump_status: string,
+		pg_dump_status: string
 		pg_dump_url_expiration_time: number
 		csv_url: string
 		csv_status: string
@@ -472,9 +472,9 @@ export type GetRecordsResponse = {
 } | null
 
 export type RunCustomQueryResponse = {
-	rows: Array<object>,
-	rows_affected: number,
-	successful: boolean,
+	rows: Array<object>
+	rows_affected: number
+	successful: boolean
 	total_rows: number
 }
 export type AddRecordRequest = TableRecord
@@ -570,14 +570,16 @@ export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
 
-export type GetGitAccountsResponse =
-	{ git_account_id: string, git_username: string }[]
+export type GetGitAccountsResponse = { git_account_id: string; git_username: string }[]
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 
-export interface GetRepoListResponse { repositories: Array<{ full_name: string, clone_url: string }> }
+export interface GetRepoListResponse {
+	repositories: Array<{ full_name: string; clone_url: string }>
+}
 
-export interface GetBranchesListResponse { branches: Array<{ name: string }> }
-
+export interface GetBranchesListResponse {
+	branches: Array<{ name: string }>
+}
 
 export interface JsonMap {
 	[key: string]: AnyJson
