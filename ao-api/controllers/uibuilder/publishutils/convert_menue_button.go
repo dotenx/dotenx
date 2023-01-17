@@ -37,9 +37,12 @@ func convertMenuButton(component map[string]interface{}, styleStore *StyleStore,
 		fmt.Println(err)
 		return "", err
 	}
+	funcMap := template.FuncMap{
+		"renderEvents": renderEvents,
+	}
 	var menuButton MenuButton
 	json.Unmarshal(b, &menuButton)
-	tmpl, err := template.New("menuButton").Parse(menuButtonTemplate)
+	tmpl, err := template.New("menuButton").Funcs(funcMap).Parse(menuButtonTemplate)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
