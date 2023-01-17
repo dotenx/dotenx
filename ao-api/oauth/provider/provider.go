@@ -127,6 +127,14 @@ func init() {
 		provider := google.New(key, secret, cbUrl, scopes...)
 		return provider
 	}
+	// ............................Added by Hojjat............................
+	// just a trick to fill gumroad provider
+	// we use goth package as oauth handler this package hasn't some oauth providers so we need this trick to maintain our code base
+	ProviderNameInitializationMap["gumroad"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
+		provider := google.New(key, secret, cbUrl, scopes...)
+		return provider
+	}
+	// ............................Added by Hojjat............................
 	ProviderNameInitializationMap["heroku"] = func(key, secret, cbUrl string, scopes ...string) goth.Provider {
 		provider := heroku.New(key, secret, cbUrl, scopes...)
 		return provider

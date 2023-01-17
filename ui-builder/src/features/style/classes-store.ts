@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { CSSProperties } from 'react'
-import create from 'zustand'
+import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { CssSelector, Style } from '../elements/style'
 import { ViewportDevice } from '../viewport/viewport-store'

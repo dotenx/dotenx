@@ -1,0 +1,7 @@
+type: gumroad
+secrets:
+  - name: Gumroad OAuth2 access token
+    key: ACCESS_TOKEN 
+  - name: Gumroad OAuth2 refresh token
+    key: REFRESH_TOKEN 
+oauth_provider: gumroad
