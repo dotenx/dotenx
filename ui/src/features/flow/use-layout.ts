@@ -14,8 +14,8 @@ export function useLayout() {
 	const nodeHeight: number = node ? node.__rf.height : NODE_HEIGHT
 
 	const onLayout = (direction: string) => {
-		const layedElements = getLaidOutElements(elements, direction, nodeWidth, nodeHeight)
-		setElements(layedElements)
+		const layoutedElements = getLaidOutElements(elements, direction, nodeWidth, nodeHeight)
+		setElements(layoutedElements)
 	}
 
 	return { onLayout }

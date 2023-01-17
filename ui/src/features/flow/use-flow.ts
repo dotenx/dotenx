@@ -1,29 +1,32 @@
-import { useAtom } from "jotai"
 import _ from "lodash"
 import { nanoid } from "nanoid"
-import { DragEventHandler, useEffect, useRef } from "react"
+import { DragEventHandler, useCallback, useRef } from "react"
+import { addEdge, Node, OnConnect, useEdgesState, useNodesState, useReactFlow } from "reactflow"
 import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from "../../api"
 import { BuilderSteps } from "../../internal/task-builder"
-import { flowAtom, selectedAutomationAtom } from "../atoms"
 import { EdgeCondition } from "../automation/edge-settings"
+import { EdgeData, TaskNodeData } from "../flow"
 import { InputOrSelectKind, InputOrSelectValue } from "../ui"
 import { ComplexFieldValue } from "../ui/complex-field"
 import { EditorInput, EditorObjectValue, JsonEditorFieldValue } from "../ui/json-editor"
 import { NodeType } from "./types"
-import { getLaidOutElements, NODE_HEIGHT, NODE_WIDTH } from "./use-layout"
 
 export function useFlow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null)
-	const [elements, setElements] = useAtom(flowAtom)
-	const [automation] = useAtom(selectedAutomationAtom)
-
-	useEffect(() => {
-		if (!automation) return
-		const elements = mapAutomationToElements(automation)
-		const triggers = mapTriggersToElements(automation.manifest.triggers)
-		const layout = getLaidOutElements([...elements, ...triggers], "TB", NODE_WIDTH, NODE_HEIGHT)
-		setElements(layout)
-	}, [automation, setElements])
+	const reactFlowInstance = useReactFlow()
+	const [nodes, setNodes, onNodesChange] = useNodesState<TaskNodeData>([
+		{
+			id: nanoid(),
+			type: NodeType.Task,
+			data: { name: "task", type: "" },
+			position: { x: 0, y: 0 },
+		},
+	])
+	const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeData>([])
+	const onConnect: OnConnect = useCallback(
+		(params) => setEdges((edges) => addEdge(params, edges)),
+		[setEdges]
+	)
 
 	const onDragOver: DragEventHandler<HTMLDivElement> = (event) => {
 		event.preventDefault()
@@ -32,15 +35,41 @@ export function useFlow() {
 
 	const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
 		event.preventDefault()
+		const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect()
 		const type = event.dataTransfer.getData("application/reactflow")
-		if (!type) return
+		if (!type || !reactFlowInstance || !reactFlowBounds) return
+		const position = reactFlowInstance.project({
+			x: event.clientX - reactFlowBounds.left - 45,
+			y: event.clientY - reactFlowBounds.top - 24,
+		})
+		const newNode: Node<TaskNodeData> = {
+			id: nanoid(),
+			type,
+			position,
+			data: { name: type === NodeType.Task ? "task" : "trigger", type: "" },
+		}
+		setNodes((nodes) => [...nodes, newNode])
+	}
+
+	const updateNode = (id: string, data: TaskNodeData) => {
+		setNodes((nodes) => nodes.map((el) => (el.id === id ? { ...el, data } : el)))
+	}
+
+	const updateEdge = (id: string, data: EdgeData) => {
+		setEdges((nodes) => nodes.map((el) => (el.id === id ? { ...el, data } : el)))
 	}
 
 	return {
 		reactFlowWrapper,
-		elements,
 		onDragOver,
 		onDrop,
+		nodes,
+		onNodesChange,
+		edges,
+		onEdgesChange,
+		onConnect,
+		updateNode,
+		updateEdge,
 	}
 }
 
@@ -72,6 +101,7 @@ function mapAutomationToElements(automation: AutomationData) {
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
 				others: hasOutputs ? _.omit(body, "outputs") : body,
+				// TODO: THIS IS HARDCODED :(
 				vars: hasOutputs ? vars : undefined,
 				outputs:
 					value.body.outputs?.type === "customOutputs"

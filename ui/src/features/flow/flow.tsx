@@ -1,11 +1,12 @@
 import { atom, useAtom } from "jotai"
 import _ from "lodash"
 import { useEffect, useState } from "react"
-import ReactFlow from "reactflow"
+import ReactFlow, { useReactFlow } from "reactflow"
 import { AutomationKind } from "../../api"
 import { EdgeSettings } from "../automation"
 import { Modals, useModal } from "../hooks"
 import { TaskLog, TaskLogProps, TaskSettingsWithIntegration } from "../task"
+import { TriggerSettingsModal } from "../trigger/settings"
 import { InputOrSelectKind, Modal } from "../ui"
 import { EdgeData, EdgeEntity, PipeEdge } from "./edge"
 import { TaskEntity, TaskNode, TaskNodeData } from "./task-node"
@@ -23,7 +24,20 @@ const edgeTypes = {
 
 export function Flow({ isEditable = true }: { isEditable?: boolean; kind: AutomationKind }) {
 	const withIntegration = true
-	const { reactFlowWrapper, elements, onDragOver, onDrop } = useFlow()
+	const {
+		reactFlowWrapper,
+		onConnect,
+		onDragOver,
+		onDrop,
+		edges,
+		nodes,
+		onEdgesChange,
+		onNodesChange,
+		updateEdge,
+		updateNode,
+	} = useFlow()
+
+	const { fitView } = useReactFlow()
 
 	return (
 		<>
@@ -34,8 +48,21 @@ export function Flow({ isEditable = true }: { isEditable?: boolean; kind: Automa
 					onDragOver={isEditable ? onDragOver : undefined}
 					onDrop={isEditable ? onDrop : undefined}
 					nodesConnectable={isEditable}
+					proOptions={{ hideAttribution: true }}
+					nodes={nodes}
+					edges={edges}
+					onNodesChange={onNodesChange}
+					onEdgesChange={onEdgesChange}
+					onConnect={onConnect}
+					onInit={() => {
+						fitView()
+					}}
 				/>
 			</div>
+
+			<TaskSettingsModal withIntegration={withIntegration} updateNode={updateNode} />
+			<TriggerSettingsModal withIntegration={withIntegration} updateNode={updateNode} />
+			<EdgeSettingsModal updateEdge={updateEdge} />
 			<TaskLogModal />
 		</>
 	)
