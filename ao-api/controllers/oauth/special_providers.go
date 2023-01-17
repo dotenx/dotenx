@@ -231,3 +231,34 @@ func (controller *OauthController) getAirtableTokens(clientId, clientSecret, cod
 	err = json.Unmarshal(out, &dto)
 	return dto.AccessToken, dto.RefreshToken, err
 }
+
+func getGumroadTokens(clientId, clientSecret, code, redirectUrl string) (accessToken, refreshToken string, err error) {
+	var dto struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+	}
+	data := "code=" + code
+	data += "&grant_type=authorization_code"
+	data += "&client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	data += "&redirect_uri=" + redirectUrl
+	url := "https://api.gumroad.com/oauth/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	log.Println("gumroad response:", string(out))
+	if err != nil {
+		return "", "", err
+	}
+	if status != 200 {
+		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, dto.RefreshToken, err
+}

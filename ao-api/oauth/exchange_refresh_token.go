@@ -81,6 +81,9 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 					accessToken, expInInt, err = ebayRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken, url.QueryEscape(qParams.Get("scope")))
 				case "airtable":
 					accessToken, refreshToken, expInInt, refreshExpInInt, err = airtableRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
+				case "gumroad":
+					accessToken, refreshToken, err = gumroadRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
+					expInInt = 24 * 60 * 60
 				}
 				if err != nil {
 					return "", "", err
@@ -189,4 +192,34 @@ func airtableRefreshToken(clientId, clientSecret, refreshToken string) (accessTo
 	}
 	err = json.Unmarshal(out, &dto)
 	return dto.AccessToken, dto.RefreshToken, dto.ExpiresIn, dto.RefreshExpiresIn, err
+}
+
+func gumroadRefreshToken(clientId, clientSecret, refreshToken string) (accessToken, newRefreshToken string, err error) {
+	var dto struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+	}
+	data := "refresh_token=" + refreshToken
+	data += "&grant_type=refresh_token"
+	data += "&client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	url := "https://api.gumroad.com/oauth/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	logrus.Info("gumroad response:", string(out))
+	if err != nil {
+		return "", "", err
+	}
+	if status != http.StatusOK && status != http.StatusCreated {
+		return "", "", errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, dto.RefreshToken, err
 }
