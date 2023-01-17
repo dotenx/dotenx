@@ -26,6 +26,7 @@ specifiers:
   '@types/animejs': ^3.1.6
   '@types/js-cookie': ^3.0.2
   '@types/lodash': ^4.14.191
+  '@types/object-hash': ^3.0.2
   '@types/react': ^18.0.26
   '@types/react-dom': ^18.0.10
   '@types/react-window': ^1.8.5
@@ -49,6 +50,7 @@ specifiers:
   lodash: ^4.17.21
   monaco-editor: ^0.34.1
   nanoid: ^4.0.0
+  object-hash: ^3.0.0
   postcss: ^8.4.21
   prettier: ^2.8.3
   prop-types: ^15.8.1
@@ -112,6 +114,7 @@ dependencies:
   lodash: 4.17.21
   monaco-editor: 0.34.1
   nanoid: 4.0.0
+  object-hash: 3.0.0
   prettier: 2.8.3
   prop-types: 15.8.1
   react: 18.2.0
@@ -133,6 +136,7 @@ dependencies:
 devDependencies:
   '@types/animejs': 3.1.6
   '@types/js-cookie': 3.0.2
+  '@types/object-hash': 3.0.2
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.10
   '@types/react-window': 1.8.5
@@ -1301,6 +1305,10 @@ packages:
   /@types/lodash/4.14.191:
     resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: false
+
+  /@types/object-hash/3.0.2:
+    resolution: {integrity: sha512-tfyXl1JPCf2hzIDK29gO7qGqJjThKBzg/Cn3bA68R9NmWdOx+f7k5mm4to/n43BHspCwcoUC6FU4NpUoK/h9bQ==}
+    dev: true
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
@@ -2848,7 +2856,6 @@ packages:
   /object-hash/3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
-    dev: true
 
   /object-inspect/1.12.2:
     resolution: {integrity: sha512-z+cPxW0QGUp0mcqcsgQyLVRDoXFQbXOwBaqyF7VIgI4TWNQsDHrBpUQslRmIfAoYWdYzs6UlKJtB2XJpTaNSpQ==}

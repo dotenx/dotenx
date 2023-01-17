@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 import { AnyJson } from '../../utils'
 
 interface PageStates {

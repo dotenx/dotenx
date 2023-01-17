@@ -22,8 +22,12 @@ function useUpdatePage({ pageName }: { pageName: string }, options?: { onSuccess
 	const globals = useAtomValue(globalStatesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = useAtomValue(animationsAtom)
+	const setSaved = useElementsStore((store) => store.save)
 	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
+		onSuccess: () => {
+			queryClient.invalidateQueries([QueryKey.PageDetails])
+			setSaved()
+		},
 	})
 	const pageParams = useAtomValue(pageParamsAtom)
 	const fonts = useAtomValue(fontsAtom)
