@@ -33,7 +33,7 @@ specifiers:
   date-fns: ^2.29.3
   eslint: ^8.32.0
   eslint-config-prettier: ^8.6.0
-  eslint-plugin-react: ^7.32.0
+  eslint-plugin-react: ^7.32.1
   framer-motion: ^8.4.3
   fuse.js: ^6.6.2
   immer: ^9.0.18
@@ -122,7 +122,7 @@ devDependencies:
   autoprefixer: 10.4.13_postcss@8.4.21
   eslint: 8.32.0
   eslint-config-prettier: 8.6.0_eslint@8.32.0
-  eslint-plugin-react: 7.32.0_eslint@8.32.0
+  eslint-plugin-react: 7.32.1_eslint@8.32.0
   postcss: 8.4.21
   prettier: 2.8.3
   tailwind-scrollbar: 2.1.0_tailwindcss@3.2.4
@@ -2338,8 +2338,8 @@ packages:
       eslint: 8.32.0
     dev: true
 
-  /eslint-plugin-react/7.32.0_eslint@8.32.0:
-    resolution: {integrity: sha512-vSBi1+SrPiLZCGvxpiZIa28fMEUaMjXtCplrvxcIxGzmFiYdsXQDwInEjuv5/i/2CTTxbkS87tE8lsQ0Qxinbw==}
+  /eslint-plugin-react/7.32.1_eslint@8.32.0:
+    resolution: {integrity: sha512-vOjdgyd0ZHBXNsmvU+785xY8Bfe57EFbTYYk8XrROzWpr9QBvpjITvAXt9xqcE6+8cjR/g1+mfumPToxsl1www==}
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
