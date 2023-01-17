@@ -317,7 +317,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	integration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
 
 	// trigger router
-	// todo : delete in a future release
+	// todo: delete in a future release
 	// trigger.POST("", TriggerController.AddTriggers())
 	// trigger.PUT("", TriggerController.UpdateTriggers())
 	trigger.GET("", TriggerController.GetAllTriggers())
