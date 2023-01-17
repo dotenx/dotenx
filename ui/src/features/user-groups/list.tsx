@@ -1,16 +1,16 @@
-import { ActionIcon, Badge, Button, Popover } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import _ from 'lodash'
-import { useState } from 'react'
-import { IoClose, IoPencil } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteUserGroup, getUserGroups, QueryKey, UserGroup } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { NewModal } from '../ui'
-import { UserGroupDetails } from './details'
-import { UserGroupValues } from './form'
+import { ActionIcon, Badge, Button, Popover } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks"
+import _ from "lodash"
+import { useState } from "react"
+import { IoClose, IoPencil } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { deleteUserGroup, getUserGroups, QueryKey, UserGroup } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { NewModal } from "../ui"
+import { UserGroupDetails } from "./details"
+import { UserGroupValues } from "./form"
 
-const defaultUserGroups = ['editors', 'users', 'readers', 'writers']
+const defaultUserGroups = ["editors", "users", "readers", "writers"]
 
 export function UserGroups({
 	projectTag,
@@ -82,7 +82,7 @@ function UserGroupItem({
 	}
 	_.toPairs(details.privilages).forEach(([table, permissions]) => {
 		permissions.forEach((permission) => {
-			const permissionField = defaultValues[permission as 'select' | 'update' | 'delete']
+			const permissionField = defaultValues[permission as "select" | "update" | "delete"]
 			if (permissionField) permissionField.push(table)
 		})
 	})

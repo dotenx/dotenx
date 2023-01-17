@@ -1,10 +1,10 @@
-import { Button, Checkbox, MultiSelect } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { useClipboard } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
-import { IoCheckmark, IoCopy, IoReload } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
+import { Button, Checkbox, MultiSelect } from "@mantine/core"
+import { useForm } from "@mantine/form"
+import { useClipboard } from "@mantine/hooks"
+import { useEffect, useState } from "react"
+import { IoCheckmark, IoCopy, IoReload } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Navigate, useParams } from "react-router-dom"
 import {
 	getFiles,
 	getProject,
@@ -12,10 +12,10 @@ import {
 	QueryKey,
 	setFilesAccess,
 	setFileUserGroup,
-} from '../api'
-import { Modals, useModal } from '../features/hooks'
-import { ContentWrapper, Form, Modal, NewModal, Table } from '../features/ui'
-import { UploadFileForm } from '../internal/upload-file-form'
+} from "../api"
+import { Modals, useModal } from "../features/hooks"
+import { ContentWrapper, Form, Modal, NewModal, Table } from "../features/ui"
+import { UploadFileForm } from "../internal/upload-file-form"
 
 export default function Files() {
 	const { projectName } = useParams()
@@ -25,7 +25,7 @@ export default function Files() {
 
 function FilesTableContent({ projectName }: { projectName: string }) {
 	const modal = useModal()
-	const [rowData, setRowData] = useState({ isPublic: false, name: '', projectTag: '' })
+	const [rowData, setRowData] = useState({ isPublic: false, name: "", projectTag: "" })
 
 	const client = useQueryClient()
 	const { mutate, isLoading: changeAccessisLoading } = useMutation(setFilesAccess, {
@@ -33,13 +33,13 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	})
 
 	const clipboard = useClipboard({ timeout: 3000 })
-	const [clicked, setClicked] = useState('')
+	const [clicked, setClicked] = useState("")
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
 		() => getProject(projectName)
 	)
 
-	const projectTag = projectDetails?.data.tag ?? ''
+	const projectTag = projectDetails?.data.tag ?? ""
 
 	const { data: filesData, isLoading: filesDataLoading } = useQuery(
 		QueryKey.GetFiles,
@@ -52,7 +52,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	useEffect(() => {
 		form.setValues({ userGroups: defaultUserGroups })
 	}, [defaultUserGroups])
-	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: '', value: '' }])
+	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: "", value: "" }])
 
 	const { mutate: mutateFileUserGroup, isLoading: isUserGroupLoading } = useMutation(
 		setFileUserGroup,
@@ -72,11 +72,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 
 	const tableData = filesData?.data ?? []
 	const helpDetails = {
-		title: 'You can upload files to your project or allow your users to upload files',
+		title: "You can upload files to your project or allow your users to upload files",
 		description:
-			'The files uploaded in your project can have different access levels. You can allow your users to upload files or upload files yourself.',
-		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
-		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+			"The files uploaded in your project can have different access levels. You can allow your users to upload files or upload files yourself.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
 
 	return (
@@ -89,15 +89,15 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					emptyText="Your files will be displayed here"
 					columns={[
 						{
-							Header: 'Name',
-							accessor: 'key',
+							Header: "Name",
+							accessor: "key",
 							Cell: ({ value }: { value: string }) => (
 								<span className="text-xs truncate">{value}</span>
 							),
 						},
 						{
-							Header: 'Size',
-							accessor: 'size',
+							Header: "Size",
+							accessor: "size",
 							Cell: ({ value }: { value: number }) => (
 								<span className="whitespace-nowrap">
 									{(value / 1000).toFixed(1)} kb
@@ -106,8 +106,8 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						},
 
 						{
-							Header: 'Public',
-							accessor: 'is_public',
+							Header: "Public",
+							accessor: "is_public",
 							Cell: ({ value, row }: { value: boolean; row: any }) => (
 								<Checkbox
 									readOnly
@@ -125,14 +125,14 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						},
 
 						{
-							Header: 'User groups',
-							accessor: 'user_groups',
+							Header: "User groups",
+							accessor: "user_groups",
 							Cell: ({ value, row }: { value: string[]; row: any }) => (
 								<div
 									className={`text-slate-700 ${
 										row.original.is_public
-											? 'pointer-events-none pl-6'
-											: 'cursor-pointer hover:opacity-80 text-xs font-medium '
+											? "pointer-events-none pl-6"
+											: "cursor-pointer hover:opacity-80 text-xs font-medium "
 									}`}
 									onClick={() => {
 										setDefaultUserGroups(row.original.user_groups)
@@ -142,13 +142,13 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 										})
 									}}
 								>
-									{row.original.is_public ? '_' : 'Show / Edit'}
+									{row.original.is_public ? "_" : "Show / Edit"}
 								</div>
 							),
 						},
 						{
-							Header: 'URL',
-							accessor: 'url',
+							Header: "URL",
+							accessor: "url",
 							Cell: ({ value }: { value: string }) => (
 								<div
 									className="text-xs flex items-center justify-end cursor-pointer hover:text-cyan-800"
@@ -172,9 +172,9 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 			</ContentWrapper>
 			<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
 				<h2>
-					Are you sure you want to change{' '}
-					<span className="text-sky-900">{rowData.name}</span> access to{' '}
-					{rowData.isPublic ? 'private' : 'public'}?
+					Are you sure you want to change{" "}
+					<span className="text-sky-900">{rowData.name}</span> access to{" "}
+					{rowData.isPublic ? "private" : "public"}?
 				</h2>
 				<div className="flex items-center justify-end">
 					<Button
@@ -220,7 +220,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 									clearable
 									label="Select"
 									data={userGroupsOptions}
-									{...form.getInputProps('userGroups')}
+									{...form.getInputProps("userGroups")}
 								/>
 							</div>
 							<Button loading={isUserGroupLoading} className="w-full" type="submit">

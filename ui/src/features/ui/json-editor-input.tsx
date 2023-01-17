@@ -1,9 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { ActionIcon, JsonInput } from '@mantine/core'
-import { useInputState } from '@mantine/hooks'
-import _ from 'lodash'
-import { nanoid } from 'nanoid'
-import { useState } from 'react'
+import { ActionIcon, JsonInput } from "@mantine/core"
+import { useInputState } from "@mantine/hooks"
+import _ from "lodash"
+import { nanoid } from "nanoid"
+import { useState } from "react"
 import {
 	Controller,
 	FieldErrors,
@@ -11,12 +11,12 @@ import {
 	FieldValues,
 	useController,
 	UseControllerProps,
-} from 'react-hook-form'
-import { IoSwapHorizontal } from 'react-icons/io5'
-import { AnyJson } from '../../api'
-import { FieldError } from './field'
-import { GroupData, InputOrSelectKind, InputOrSelectValue } from './input-or-select'
-import { Object } from './json-editor'
+} from "react-hook-form"
+import { IoSwapHorizontal } from "react-icons/io5"
+import { AnyJson } from "../../api"
+import { FieldError } from "./field"
+import { GroupData, InputOrSelectKind, InputOrSelectValue } from "./input-or-select"
+import { Object } from "./json-editor"
 
 export interface JsonEditorInputProps<
 	TFieldValues extends FieldValues,
@@ -46,11 +46,11 @@ export function JsonEditorInput<
 	} = useController({ control, name: rest.name })
 	const defaultMode =
 		onlySimple || simpleInput
-			? 'input'
-			: _.isObject(value) && 'type' in value && value.type === InputOrSelectKind.Text
-			? 'input'
-			: 'editor'
-	const [mode, setMode] = useState<'editor' | 'input'>(defaultMode)
+			? "input"
+			: _.isObject(value) && "type" in value && value.type === InputOrSelectKind.Text
+			? "input"
+			: "editor"
+	const [mode, setMode] = useState<"editor" | "input">(defaultMode)
 	return (
 		<div className="flex flex-col gap-1">
 			{label && (
@@ -62,13 +62,13 @@ export function JsonEditorInput<
 						<ActionIcon
 							size="sm"
 							onClick={() => {
-								setMode((mode) => (mode === 'editor' ? 'input' : 'editor'))
-								onChange('')
+								setMode((mode) => (mode === "editor" ? "input" : "editor"))
+								onChange("")
 							}}
 						>
 							<IoSwapHorizontal
 								size={14}
-								title={mode === 'editor' ? 'Swap to input' : 'Swap to editor'}
+								title={mode === "editor" ? "Swap to input" : "Swap to editor"}
 							/>
 						</ActionIcon>
 					)}
@@ -78,7 +78,7 @@ export function JsonEditorInput<
 				control={control}
 				name={rest.name}
 				render={({ field: { onChange, value } }) => {
-					if (mode === 'input') {
+					if (mode === "input") {
 						const valueData = (value as InputOrSelectValue)?.data ?? undefined
 						return (
 							<JsonInputReal
@@ -98,10 +98,10 @@ export function JsonEditorInput<
 										? [
 												{
 													id: nanoid(),
-													name: '',
+													name: "",
 													value: {
 														type: InputOrSelectKind.Text,
-														data: '',
+														data: "",
 													},
 												},
 										  ]
@@ -137,7 +137,7 @@ function JsonInputReal({
 				input: { backgroundColor: theme.colors.gray[0] },
 				invalid: {
 					borderColor: theme.colors.gray[5],
-					color: 'inherit',
+					color: "inherit",
 				},
 			})}
 		/>

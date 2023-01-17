@@ -1,12 +1,12 @@
-import { useAtom } from 'jotai'
-import { useMutation, useQueryClient } from 'react-query'
-import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { QueryKey, updateAutomation } from '../../api'
-import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
-import { flowAtom } from '../atoms'
-import { SaveFormSchema } from './save-form'
-import { mapElementsToPayload } from './use-save'
+import { useAtom } from "jotai"
+import { useMutation, useQueryClient } from "react-query"
+import { useParams } from "react-router-dom"
+import { toast } from "react-toastify"
+import { QueryKey, updateAutomation } from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
+import { flowAtom } from "../atoms"
+import { SaveFormSchema } from "./save-form"
+import { mapElementsToPayload } from "./use-save"
 
 export function useUpdateAutomation() {
 	const client = useQueryClient()
@@ -21,7 +21,7 @@ export function useUpdateAutomation() {
 			{
 				onSuccess: () => {
 					client.invalidateQueries(QueryKey.GetAutomation)
-					toast('Automation saved', { type: 'success' })
+					toast("Automation saved", { type: "success" })
 				},
 			}
 		)

@@ -1,11 +1,11 @@
-import { api } from './index'
+import { api } from "./index"
 
 export const createProject = (data: CreateProjectRequest) => {
-	return api.post('/project', data)
+	return api.post("/project", data)
 }
 
 export const getProjects = () => {
-	return api.get<Project[]>('/project')
+	return api.get<Project[]>("/project")
 }
 
 export const deleteProject = ({ projectTag }: { projectTag: string }) => {

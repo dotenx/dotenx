@@ -1,14 +1,14 @@
-import clsx from 'clsx'
-import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
-import { TriggerData } from '../../api'
-import { selectedAutomationDataAtom } from '../atoms'
-import { TaskNodeData, TriggerEntity } from '../flow'
-import { Modals, useModal } from '../hooks'
-import { IntegrationForm } from '../integration'
-import { Modal } from '../ui'
-import { TriggerForm } from './form'
-import { useTriggerForm } from './use-form'
+import clsx from "clsx"
+import { useAtom } from "jotai"
+import { useEffect, useState } from "react"
+import { TriggerData } from "../../api"
+import { selectedAutomationDataAtom } from "../atoms"
+import { TaskNodeData, TriggerEntity } from "../flow"
+import { Modals, useModal } from "../hooks"
+import { IntegrationForm } from "../integration"
+import { Modal } from "../ui"
+import { TriggerForm } from "./form"
+import { useTriggerForm } from "./use-form"
 
 interface TriggerSettingsModalProps {
 	updateNode: (id: string, data: TaskNodeData) => void
@@ -26,7 +26,7 @@ export function TriggerSettingsModal({ updateNode, withIntegration }: TriggerSet
 		<Modal
 			title="Trigger Settings"
 			kind={Modals.TriggerSettings}
-			size={isAddingIntegration ? 'lg' : 'md'}
+			size={isAddingIntegration ? "lg" : "md"}
 		>
 			{({ id, data }: TriggerEntity) => (
 				<TriggerSettings
@@ -68,7 +68,7 @@ function TriggerSettings({
 		},
 		defaultValues: {
 			...data,
-			pipeline_name: automation?.name ?? 'default',
+			pipeline_name: automation?.name ?? "default",
 		},
 	})
 
@@ -77,8 +77,8 @@ function TriggerSettings({
 	}, [setIsAddingIntegration, triggerForm.triggerType])
 
 	return (
-		<div className={clsx('grid h-full', isAddingIntegration && 'grid-cols-2')}>
-			<div className={clsx(isAddingIntegration && 'pr-10')}>
+		<div className={clsx("grid h-full", isAddingIntegration && "grid-cols-2")}>
+			<div className={clsx(isAddingIntegration && "pr-10")}>
 				<TriggerForm
 					triggerForm={triggerForm}
 					mode="settings"
@@ -94,7 +94,7 @@ function TriggerSettings({
 						integrationKind={triggerForm.selectedTriggerIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							setIsAddingIntegration(false)
-							triggerForm.setValue('integration', addedIntegrationName)
+							triggerForm.setValue("integration", addedIntegrationName)
 						}}
 					/>
 				</div>

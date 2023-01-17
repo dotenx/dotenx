@@ -1,5 +1,5 @@
-import { Popover, Text, Button, ActionIcon, Stack, Box, Center, AspectRatio } from '@mantine/core'
-import { IconFileSymlink, IconHelp } from '@tabler/icons'
+import { Popover, Text, Button, ActionIcon, Stack, Box, Center, AspectRatio } from "@mantine/core"
+import { IconFileSymlink, IconHelp } from "@tabler/icons"
 
 export interface HelpDetails {
 	title: string
@@ -9,7 +9,7 @@ export interface HelpDetails {
 }
 
 export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
-	helpDetails.videoUrl = '' // TODO: Remove this line when the video is ready
+	helpDetails.videoUrl = "" // TODO: Remove this line when the video is ready
 	return (
 		<Popover position="bottom" withArrow shadow="md">
 			<Popover.Target>
@@ -20,15 +20,15 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 			<Popover.Dropdown>
 				<Stack
 					sx={{
-						width: '500px',
+						width: "500px",
 					}}
 				>
 					{/* Title bar */}
 					<div
 						className={
 							helpDetails.videoUrl
-								? 'flex justify-between'
-								: 'flex justify-between border-b-2 border-dashed rounded border-rose-400 pb-3'
+								? "flex justify-between"
+								: "flex justify-between border-b-2 border-dashed rounded border-rose-400 pb-3"
 						}
 					>
 						<Text>{helpDetails.title}</Text>
@@ -47,9 +47,9 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 									paddingLeft: 20,
 									paddingRight: 20,
 
-									'&:hover': {
+									"&:hover": {
 										backgroundColor: theme.colors.rose[9],
-										color: 'white',
+										color: "white",
 									},
 								},
 
@@ -65,7 +65,7 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 					{helpDetails.videoUrl ? (
 						<Box
 							sx={{
-								width: '100%',
+								width: "100%",
 							}}
 						>
 							<AspectRatio ratio={16 / 9}>
@@ -81,7 +81,7 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 						</Box>
 					) : null}
 					{/* Description */}
-					<Text className={helpDetails.videoUrl ? '' : 'border-t-1 border-black pt-3'}>
+					<Text className={helpDetails.videoUrl ? "" : "border-t-1 border-black pt-3"}>
 						{helpDetails.description}
 					</Text>
 				</Stack>

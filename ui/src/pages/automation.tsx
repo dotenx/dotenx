@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom'
-import { Automation } from '../features/automation'
+import { useParams } from "react-router-dom"
+import { Automation } from "../features/automation"
 
-export const AUTOMATION_PROJECT_NAME = 'AUTOMATION_STUDIO'
+export const AUTOMATION_PROJECT_NAME = "AUTOMATION_STUDIO"
 
 export default function AutomationPage() {
 	const { name } = useParams()

@@ -1,14 +1,14 @@
-import dagre from 'dagre'
-import { useAtom } from 'jotai'
-import { Elements, isNode, Position, useStoreState } from 'react-flow-renderer'
-import { flowAtom } from '../atoms'
+import dagre from "dagre"
+import { useAtom } from "jotai"
+import { isNode, Position } from "reactflow"
+import { flowAtom } from "../atoms"
 
 export const NODE_WIDTH = 172
 export const NODE_HEIGHT = 36
 
 export function useLayout() {
 	const [elements, setElements] = useAtom(flowAtom)
-	const nodes = useStoreState((state) => state.nodes)
+	const nodes: any[] = []
 	const node = nodes[0]
 	const nodeWidth: number = node ? node.__rf.width : NODE_WIDTH
 	const nodeHeight: number = node ? node.__rf.height : NODE_HEIGHT
@@ -22,15 +22,15 @@ export function useLayout() {
 }
 
 export function getLaidOutElements(
-	elements: Elements,
-	direction = 'TB',
+	elements: any[],
+	direction = "TB",
 	nodeWidth: number,
 	nodeHeight: number
 ) {
 	const dagreGraph = new dagre.graphlib.Graph()
 
 	dagreGraph.setDefaultEdgeLabel(() => ({}))
-	const isHorizontal = direction === 'LR'
+	const isHorizontal = direction === "LR"
 	dagreGraph.setGraph({ rankdir: direction })
 
 	elements.forEach((el) => {

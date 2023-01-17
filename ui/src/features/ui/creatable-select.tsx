@@ -1,8 +1,8 @@
-import _ from 'lodash'
-import { KeyboardEventHandler, useState } from 'react'
-import { Controller, FieldPath, FieldValues, UseControllerProps } from 'react-hook-form'
-import { OnChangeValue } from 'react-select'
-import ReactCreatableSelect from 'react-select/creatable'
+import _ from "lodash"
+import { KeyboardEventHandler, useState } from "react"
+import { Controller, FieldPath, FieldValues, UseControllerProps } from "react-hook-form"
+import { OnChangeValue } from "react-select"
+import ReactCreatableSelect from "react-select/creatable"
 
 interface CreatableProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
@@ -46,16 +46,16 @@ interface CreatableRawProps {
 	placeholder?: string
 }
 function CreatableRaw({ onChange, value, placeholder }: CreatableRawProps) {
-	const [inputValue, setInputValue] = useState('')
+	const [inputValue, setInputValue] = useState("")
 	const handleInputChange = (newValue: string) => setInputValue(newValue)
 
 	const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
 		if (!inputValue) return
 		switch (event.key) {
-			case 'Enter':
-			case 'Tab':
+			case "Enter":
+			case "Tab":
 				onChange([...value, inputValue])
-				setInputValue('')
+				setInputValue("")
 				event.preventDefault()
 		}
 	}

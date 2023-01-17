@@ -1,8 +1,8 @@
-import { MouseEvent } from 'react'
-import { EdgeProps, getBezierPath, getEdgeCenter } from 'react-flow-renderer'
-import { BsGearFill } from 'react-icons/bs'
-import { EdgeCondition } from '../automation'
-import { Modals, useModal } from '../hooks'
+import { MouseEvent } from "react"
+import { BsGearFill } from "react-icons/bs"
+import { EdgeProps, getBezierPath } from "reactflow"
+import { EdgeCondition } from "../automation"
+import { Modals, useModal } from "../hooks"
 
 export interface EdgeData {
 	triggers: EdgeCondition[]
@@ -25,19 +25,13 @@ export function PipeEdge({
 	targetPosition,
 	data,
 }: EdgeProps) {
-	const edgePath = getBezierPath({
+	const [edgePath, edgeCenterX, edgeCenterY] = getBezierPath({
 		sourceX,
 		sourceY,
 		sourcePosition,
 		targetX,
 		targetY,
 		targetPosition,
-	})
-	const [edgeCenterX, edgeCenterY] = getEdgeCenter({
-		sourceX,
-		sourceY,
-		targetX,
-		targetY,
 	})
 	const modal = useModal()
 	const edgeEntity: EdgeEntity = { id, data }

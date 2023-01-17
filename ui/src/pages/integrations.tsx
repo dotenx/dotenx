@@ -1,6 +1,6 @@
-import { Modals, useModal } from '../features/hooks'
-import { IntegrationForm, IntegrationList } from '../features/integration'
-import { ContentWrapper, Modal } from '../features/ui'
+import { Modals, useModal } from "../features/hooks"
+import { IntegrationForm, IntegrationList } from "../features/integration"
+import { ContentWrapper, Modal } from "../features/ui"
 
 export default function IntegrationsPage() {
 	const modal = useModal()

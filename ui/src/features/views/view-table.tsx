@@ -1,6 +1,6 @@
-import { Table } from '@mantine/core'
-import _ from 'lodash'
-import { JsonMap } from '../../api'
+import { Table } from "@mantine/core"
+import _ from "lodash"
+import { JsonMap } from "../../api"
 
 export function ViewTable({ items }: { items: JsonMap[] }) {
 	const headers = items.length > 0 ? _.keys(items[0]) : []

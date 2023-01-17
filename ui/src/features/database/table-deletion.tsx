@@ -1,9 +1,9 @@
-import { Button, Popover } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import { IoTrash } from 'react-icons/io5'
-import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
-import { deleteTable } from '../../api'
+import { Button, Popover } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks"
+import { IoTrash } from "react-icons/io5"
+import { useMutation } from "react-query"
+import { useNavigate } from "react-router-dom"
+import { deleteTable } from "../../api"
 
 interface TableDeletionProps {
 	projectName: string

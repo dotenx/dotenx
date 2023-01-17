@@ -1,7 +1,7 @@
-import { Button } from '@mantine/core'
-import CodeEditor from '@uiw/react-textarea-code-editor'
-import { useEffect, useState } from 'react'
-import { IoArrowBack } from 'react-icons/io5'
+import { Button } from "@mantine/core"
+import CodeEditor from "@uiw/react-textarea-code-editor"
+import { useEffect, useState } from "react"
+import { IoArrowBack } from "react-icons/io5"
 
 interface CodeFieldProps {
 	defaultValue?: string
@@ -14,8 +14,8 @@ interface CodeFieldProps {
 export function CodeField({
 	onBack,
 	onSubmit,
-	submitText = 'add',
-	defaultValue = '',
+	submitText = "add",
+	defaultValue = "",
 	language,
 }: CodeFieldProps) {
 	const [code, setCode] = useState(defaultValue)
@@ -30,7 +30,7 @@ export function CodeField({
 				language={language}
 				placeholder="..."
 				onChange={(event) => setCode(event.target.value)}
-				style={{ fontFamily: 'monospace', flexGrow: 1, overflowY: 'auto' }}
+				style={{ fontFamily: "monospace", flexGrow: 1, overflowY: "auto" }}
 				className="rounded-md"
 			/>
 			<Button type="button" onClick={() => onSubmit(code)}>

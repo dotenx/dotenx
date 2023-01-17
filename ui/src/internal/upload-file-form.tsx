@@ -1,13 +1,13 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Checkbox } from '@mantine/core'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { BsFillFolderSymlinkFill } from 'react-icons/bs'
-import { useMutation, useQueryClient } from 'react-query'
-import { z } from 'zod'
-import { QueryKey, uploadFile } from '../api'
-import { useModal } from '../features/hooks'
-import { Form } from '../features/ui'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Checkbox } from "@mantine/core"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { BsFillFolderSymlinkFill } from "react-icons/bs"
+import { useMutation, useQueryClient } from "react-query"
+import { z } from "zod"
+import { QueryKey, uploadFile } from "../api"
+import { useModal } from "../features/hooks"
+import { Form } from "../features/ui"
 
 const schema = z.object({
 	file: z.any(),
@@ -30,8 +30,8 @@ export function UploadFileForm({ tag }: { tag: string }) {
 	const mutation = useMutation(
 		() => {
 			const formData = new FormData()
-			formData.append('file', file ? file : '')
-			formData.append('is_public', JSON.stringify(isPublic))
+			formData.append("file", file ? file : "")
+			formData.append("is_public", JSON.stringify(isPublic))
 			return uploadFile(tag, formData)
 		},
 		{
@@ -72,7 +72,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 						<span className="font-medium">file name: </span>
 						<span className="truncate">{file?.name}</span>
 						<br /> <span className="font-medium">file size: </span>
-						{(file?.size / 1000).toFixed(1) + 'kb'}
+						{(file?.size / 1000).toFixed(1) + "kb"}
 					</div>
 				) : (
 					<div></div>

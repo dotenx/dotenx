@@ -1,6 +1,6 @@
-import { useQuery } from 'react-query'
-import { getExecutionResult, QueryKey } from '../../api'
-import { Loader } from '../ui'
+import { useQuery } from "react-query"
+import { getExecutionResult, QueryKey } from "../../api"
+import { Loader } from "../ui"
 
 export interface TaskLogProps {
 	executionId?: string
@@ -21,7 +21,7 @@ export function TaskLog({ executionId, taskName }: TaskLogProps) {
 
 	return (
 		<div>
-			<p className="font-mono">{log ? log : 'No log is available'}</p>
+			<p className="font-mono">{log ? log : "No log is available"}</p>
 		</div>
 	)
 }

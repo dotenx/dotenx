@@ -1,10 +1,10 @@
-import { Button } from '@mantine/core'
-import { openModal } from '@mantine/modals'
-import { IoList, IoTrash } from 'react-icons/io5'
-import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
-import { deleteView } from '../../api'
-import { ViewEndpoints } from './view-endpoints'
+import { Button } from "@mantine/core"
+import { openModal } from "@mantine/modals"
+import { IoList, IoTrash } from "react-icons/io5"
+import { useMutation } from "react-query"
+import { useNavigate } from "react-router-dom"
+import { deleteView } from "../../api"
+import { ViewEndpoints } from "./view-endpoints"
 
 export function ViewActions({
 	projectName,
@@ -27,7 +27,7 @@ export function ViewActions({
 	}
 	const showEndpoints = () => {
 		openModal({
-			title: 'Endpoints',
+			title: "Endpoints",
 			fullScreen: true,
 			children: (
 				<ViewEndpoints projectTag={projectTag} viewName={viewName} isPublic={isPublic} />

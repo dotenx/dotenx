@@ -1,20 +1,20 @@
-import { useAtom } from 'jotai'
-import _ from 'lodash'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useAtom } from "jotai"
+import _ from "lodash"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
 import {
 	AutomationKind,
 	deleteAutomation,
 	getInteractionEndpointFields,
 	QueryKey,
 	startAutomation,
-} from '../../api'
-import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
-import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
-import { useClearStatus, useLayout } from '../flow'
-import { Modals, useModal } from '../hooks'
-import { useNewAutomation } from './use-new'
+} from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
+import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from "../atoms"
+import { useClearStatus, useLayout } from "../flow"
+import { Modals, useModal } from "../hooks"
+import { useNewAutomation } from "./use-new"
 
 export function useActionBar(kind: AutomationKind) {
 	const { onLayout } = useLayout()
@@ -24,7 +24,7 @@ export function useActionBar(kind: AutomationKind) {
 	const setListen = useAtom(listenAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)
 	const deleteAutomationMutation = useMutation(deleteAutomation)
-	const newAutomation = useNewAutomation('/automations/new')
+	const newAutomation = useNewAutomation("/automations/new")
 	const navigate = useNavigate()
 	const modal = useModal()
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
@@ -32,17 +32,17 @@ export function useActionBar(kind: AutomationKind) {
 		[QueryKey.GetInteractionEndpointFields, selectedAutomationData?.name],
 		() =>
 			getInteractionEndpointFields({
-				interactionName: selectedAutomationData?.name ?? '',
+				interactionName: selectedAutomationData?.name ?? "",
 				projectName,
 			}),
-		{ enabled: !!selectedAutomationData?.name && kind === 'interaction' }
+		{ enabled: !!selectedAutomationData?.name && kind === "interaction" }
 	)
 
 	const runMutation = useMutation(startAutomation)
 
 	const onRun = () => {
 		if (selectedAutomationData)
-			if (kind === 'automation') {
+			if (kind === "automation") {
 				runMutation.mutate(
 					{ automationName: selectedAutomationData.name, projectName },
 					{
@@ -56,7 +56,7 @@ export function useActionBar(kind: AutomationKind) {
 						},
 
 						onError: (e: any) => {
-							toast(e.response.data.message, { type: 'error', autoClose: 2000 })
+							toast(e.response.data.message, { type: "error", autoClose: 2000 })
 						},
 					}
 				)
@@ -71,7 +71,7 @@ export function useActionBar(kind: AutomationKind) {
 							},
 							onError: (e: any) => {
 								toast(e.response.data.message, {
-									type: 'error',
+									type: "error",
 									autoClose: 2000,
 								})
 							},
@@ -79,7 +79,7 @@ export function useActionBar(kind: AutomationKind) {
 					)
 			}
 		else {
-			console.error('No automation is selected')
+			console.error("No automation is selected")
 		}
 	}
 

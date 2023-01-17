@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
-import ReactSlidingPane from 'react-sliding-pane'
-import 'react-sliding-pane/dist/react-sliding-pane.css'
-import { SlidingPanes, useSlidingPane } from '../hooks/use-sliding-pane'
+import { ReactNode } from "react"
+import ReactSlidingPane from "react-sliding-pane"
+import "react-sliding-pane/dist/react-sliding-pane.css"
+import { SlidingPanes, useSlidingPane } from "../hooks/use-sliding-pane"
 
 type RenderChildren = (data: unknown) => ReactNode
 
@@ -10,7 +10,7 @@ interface SlidingPaneProps {
 	title?: string
 	subTitle?: string
 	children: ReactNode | RenderChildren
-	from?: 'left' | 'right' | 'bottom'
+	from?: "left" | "right" | "bottom"
 	width?: string
 	hideHeader?: boolean
 }
@@ -30,14 +30,14 @@ export function SlidingPane({
 			className=""
 			overlayClassName="z-10"
 			title={title}
-			subtitle={subTitle ?? ''}
-			from={from ?? 'right'}
-			width={width ?? '400px'}
+			subtitle={subTitle ?? ""}
+			from={from ?? "right"}
+			width={width ?? "400px"}
 			isOpen={slidingPane.isOpen && kind === slidingPane.kind}
 			onRequestClose={slidingPane.close}
 			hideHeader={hideHeader}
 		>
-			{children}
+			{children as any}
 		</ReactSlidingPane>
 	)
 }
