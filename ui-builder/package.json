@@ -52,6 +52,7 @@
 		"lodash": "^4.17.21",
 		"monaco-editor": "^0.34.1",
 		"nanoid": "^4.0.0",
+		"object-hash": "^3.0.0",
 		"prettier": "^2.8.3",
 		"prop-types": "^15.8.1",
 		"react": "^18.2.0",
@@ -73,6 +74,7 @@
 	"devDependencies": {
 		"@types/animejs": "^3.1.6",
 		"@types/js-cookie": "^3.0.2",
+		"@types/object-hash": "^3.0.2",
 		"@types/react": "^18.0.26",
 		"@types/react-dom": "^18.0.10",
 		"@types/react-window": "^1.8.5",
