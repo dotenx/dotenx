@@ -52,6 +52,12 @@
         "direct_url": "https://login.mailchimp.com/oauth2/authorize?client_id=162852130044&response_type=code&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/mailchimp"
     },
     {
+        "name": "gumroad",
+        "secret": "C7yHYhzcRCvE-LhVdNg6zH_NbwFlEmzY2uWLx9vKH9I",
+        "key": "2mOzjijZO9WPcV3fX9pmSmogCNY669VqyjuHcadcz7w",
+        "direct_url": "https://gumroad.com/oauth/authorize?client_id=2mOzjijZO9WPcV3fX9pmSmogCNY669VqyjuHcadcz7w&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/gumroad&scope=view_profile+edit_products+view_sales+mark_sales_as_shipped"
+    },
+    {
         "name": "slack",
         "secret": "7ced68760661e15695f6d8d16aba44fe",
         "key": "1390586298022.3553550438982",
