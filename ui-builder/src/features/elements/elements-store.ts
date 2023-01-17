@@ -1,6 +1,6 @@
 import produce, { Draft } from 'immer'
 import _ from 'lodash'
-import create from 'zustand'
+import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { Element } from './element'
 
@@ -21,6 +21,7 @@ interface ElementsState {
 	reset: (elements?: Element[]) => void
 	undo: () => void
 	redo: () => void
+	save: () => void
 }
 
 export const useElementsStore = create<ElementsState>()(
@@ -90,6 +91,11 @@ export const useElementsStore = create<ElementsState>()(
 				if (state.historyIndex >= state.history.length - 1) return
 				state.elements = state.history[state.historyIndex + 1]
 				state.historyIndex = state.historyIndex + 1
+			})
+		},
+		save: () => {
+			set((state) => {
+				state.saved = state.elements
 			})
 		},
 	}))
