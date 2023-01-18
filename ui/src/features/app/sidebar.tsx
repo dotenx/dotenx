@@ -34,16 +34,16 @@ export function Sidebar({ closable }: { closable: boolean }) {
 	const sidebar = useSidebar()
 	const { ref, hovered } = useHover()
 	const closed = closable && !hovered
+	const opened = !closable || (closable && hovered)
 
 	return (
 		<aside
 			ref={ref}
 			className={clsx(
 				"flex flex-col h-screen bg-rose-600 overflow-hidden",
-				!closable && "w-80",
-				closable && "fixed z-50",
-				closable && !hovered && "w-20",
-				closable && hovered && "w-80"
+				opened && "w-80",
+				closed && "w-20",
+				closable && "fixed z-50"
 			)}
 		>
 			<div className="px-4 pt-16 grow">
