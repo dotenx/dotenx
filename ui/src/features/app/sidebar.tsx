@@ -1,3 +1,5 @@
+import { useHover } from "@mantine/hooks"
+import clsx from "clsx"
 import { ReactNode } from "react"
 import {
 	BsBoxSeam,
@@ -9,7 +11,7 @@ import {
 	BsGlobe,
 	BsHddNetworkFill,
 	BsPeopleFill,
-	BsTable,
+	BsTable
 } from "react-icons/bs"
 import { Link } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
@@ -50,55 +52,75 @@ const sidebarData: SidebarData = {
 	],
 }
 
-export function Sidebar() {
+export function Sidebar({ closable }: { closable: boolean }) {
+	const { ref, hovered } = useHover()
+
 	return (
-		<aside className="flex flex-col h-screen bg-rose-600 w-80">
+		<aside
+			ref={ref}
+			className={clsx(
+				"flex flex-col h-screen bg-rose-600 overflow-hidden",
+				!closable && "w-80",
+				closable && "fixed",
+				closable && !hovered && "w-20",
+				closable && hovered && "w-80"
+			)}
+		>
 			<div className="px-4 pt-16 grow">
 				<img src={logo} className="w-12 h-12 rounded-md" />
 				<div className="mt-6">
-					<BackToProjects />
+					<BackToProjects closed={!hovered} />
 				</div>
 				<div className="mt-10">
-					<NavLinks />
+					<NavLinks closed={!hovered} />
 				</div>
 			</div>
 			<div className="flex flex-col items-center py-6 border-t border-white">
-				<SubLinks />
+				<div className={clsx(!hovered && "invisible")}>
+					<SubLinks />
+				</div>
 			</div>
 		</aside>
 	)
 }
 
-function BackToProjects() {
+function BackToProjects({ closed }: { closed: boolean }) {
+	const firstLetter = sidebarData.projectName[0]
+	
 	return (
 		<Link
 			to={sidebarData.projectsPage}
-			className="text-lg bg-white w-full rounded-md flex items-center py-0.5 font-medium gap-2 hover:bg-rose-100 px-4"
+			className="text-lg bg-white w-full rounded-md flex items-center h-8 font-medium gap-2 hover:bg-rose-100 px-4 whitespace-nowrap"
 		>
-			<BsChevronLeft className="text-xl" />
-			<span>{sidebarData.projectName}</span>
+			{!closed && (
+				<>
+					<BsChevronLeft className="text-xl" />
+					<span>{sidebarData.projectName}</span>
+				</>
+			)}
+			{closed && <span className="w-full text-center">{firstLetter}</span>}
 		</Link>
 	)
 }
 
-function NavLinks() {
+function NavLinks({ closed }: { closed: boolean }) {
 	return (
 		<nav className="space-y-6">
 			{sidebarData.navLinks.map((link) => (
-				<NavLink key={link.to} link={link} />
+				<NavLink key={link.to} link={link} closed={closed} />
 			))}
 		</nav>
 	)
 }
 
-function NavLink({ link }: { link: NavLinkData }) {
+function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 	return (
 		<Link
 			to={link.to}
-			className="flex items-center gap-4 px-2 py-3 text-lg text-white rounded-md hover:bg-rose-700"
+			className="flex items-center gap-4 px-2 h-12 text-lg text-white rounded-md hover:bg-rose-700 whitespace-nowrap"
 		>
-			<span>{link.icon}</span>
-			<span>{link.label}</span>
+			<span className="pl-2">{link.icon}</span>
+			{!closed && <span>{link.label}</span>}
 		</Link>
 	)
 }
