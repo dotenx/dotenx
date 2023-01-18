@@ -1,17 +1,17 @@
-import clsx from 'clsx'
-import { useRef, useState } from 'react'
+import clsx from "clsx"
+import { useRef, useState } from "react"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import { IoChevronDown } from 'react-icons/io5'
-import { useOutsideClick } from '../hooks'
-import { Fade } from './animation/fade'
-import { FieldError } from './field'
-import { Loader } from './loader'
+} from "react-hook-form"
+import { IoChevronDown } from "react-icons/io5"
+import { useOutsideClick } from "../hooks"
+import { Fade } from "./animation/fade"
+import { FieldError } from "./field"
+import { Loader } from "./loader"
 
 interface Option {
 	label: string
@@ -75,8 +75,8 @@ function SelectController<TFieldValues extends FieldValues, TName extends FieldP
 						onChange={(newValue) => onChange((newValue as Option)?.value)}
 						value={
 							options?.find((option) => option.value === value) ?? {
-								label: '',
-								value: '',
+								label: "",
+								value: "",
 							}
 						}
 						options={options ?? []}
@@ -111,8 +111,8 @@ function RawSelect({
 			<button
 				type="button"
 				className={clsx(
-					'flex items-center justify-between w-full px-2 py-1 border rounded cursor-pointer border-slate-400 outline-rose-500',
-					isOpen && 'outline outline-2 outline-offset-[-1px]'
+					"flex items-center justify-between w-full px-2 py-1 border rounded cursor-pointer border-slate-400 outline-rose-500",
+					isOpen && "outline outline-2 outline-offset-[-1px]"
 				)}
 				onClick={() => setIsOpen((isOpen) => !isOpen)}
 			>

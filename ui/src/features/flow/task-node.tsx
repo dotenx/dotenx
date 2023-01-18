@@ -1,20 +1,19 @@
-import clsx from 'clsx'
-import Color from 'color'
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { Handle, NodeProps, Position } from 'react-flow-renderer'
-import { BsGearFill, BsReceipt as LogIcon } from 'react-icons/bs'
-import { TaskExecutionStatus } from '../../api'
-import { BuilderSteps } from '../../internal/task-builder'
-import { Modals, useModal } from '../hooks'
-import { ComplexFieldValue } from '../ui/complex-field'
-import { ContextMenu } from './context-menu'
-import { useDeleteNode } from './use-delete-node'
-import { useIsAcyclic } from './use-is-acyclic'
+import clsx from "clsx"
+import Color from "color"
+import { motion } from "framer-motion"
+import { useState } from "react"
+import { BsGearFill, BsReceipt as LogIcon } from "react-icons/bs"
+import { Handle, NodeProps, Position } from "reactflow"
+import { TaskExecutionStatus } from "../../api"
+import { BuilderSteps } from "../../internal/task-builder"
+import { Modals, useModal } from "../hooks"
+import { ComplexFieldValue } from "../ui/complex-field"
+import { ContextMenu } from "./context-menu"
+import { useFlowStore } from "./flow-store"
 
 export interface TaskNodeData {
 	name: string
-	type: string
+	type?: string
 	integration?: string
 	status?: TaskExecutionStatus
 	executionId?: string
@@ -35,15 +34,14 @@ export interface TaskEntity {
 export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 	const modal = useModal()
 	const nodeEntity: TaskEntity = { id, data }
-	const isAcyclic = useIsAcyclic()
-	const color = nodeEntity.data.color || '#059669'
+	const color = nodeEntity.data.color || "#059669"
 	const lightColor = Color(color).lightness(90).string()
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
-	const deleteNode = useDeleteNode()
+	const deleteNode = useFlowStore((state) => state.deleteNode)
 
 	const wrapperStyle = {
 		backgroundColor: color,
-		'--tw-ring-color': lightColor,
+		"--tw-ring-color": lightColor,
 	}
 
 	const settingsButtonStyle = {
@@ -63,7 +61,7 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 			<motion.div
 				initial={{ scale: 0 }}
 				animate={{ scale: 1 }}
-				transition={{ type: 'spring', bounce: 0.5 }}
+				transition={{ type: "spring", bounce: 0.5 }}
 			>
 				<div
 					className="flex gap-0.5 group items-center relative justify-between text-[10px] text-white rounded px-3 py-1.5 transition-all group-hover:ring-4  focus:ring-4 outline-none"
@@ -86,7 +84,7 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 							<div className="flex gap-1 text-[8px] items-center justify-between mt-1">
 								<p
 									className={clsx(
-										'rounded py-px px-1',
+										"rounded py-px px-1",
 										getStatusColor(data.status)
 									)}
 								>
@@ -128,7 +126,6 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 						className="transition opacity-0 group-hover:opacity-100"
 						type="source"
 						position={Position.Bottom}
-						isValidConnection={({ source, target }) => isAcyclic.check(source, target)}
 					/>
 					<ContextMenu
 						onClose={() => setMenuIsOpen(false)}
@@ -144,20 +141,20 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 function getStatusColor(status?: TaskExecutionStatus) {
 	switch (status) {
 		case TaskExecutionStatus.Cancelled:
-			return 'bg-gray-700'
+			return "bg-gray-700"
 		case TaskExecutionStatus.Completed:
-			return 'bg-green-700'
+			return "bg-green-700"
 		case TaskExecutionStatus.Failed:
-			return 'bg-red-700'
+			return "bg-red-700"
 		case TaskExecutionStatus.Started:
-			return 'bg-blue-700'
+			return "bg-blue-700"
 		case TaskExecutionStatus.Success:
-			return 'bg-green-700'
+			return "bg-green-700"
 		case TaskExecutionStatus.Timedout:
-			return 'bg-red-700'
+			return "bg-red-700"
 		case TaskExecutionStatus.Waiting:
-			return 'bg-gray-700'
+			return "bg-gray-700"
 		default:
-			return 'bg-gray-700'
+			return "bg-gray-700"
 	}
 }

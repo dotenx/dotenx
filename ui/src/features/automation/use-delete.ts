@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from 'react-query'
-import { deleteAutomation, QueryKey } from '../../api'
+import { useMutation, useQueryClient } from "react-query"
+import { deleteAutomation, QueryKey } from "../../api"
 
 export function useDeleteAutomation() {
 	const client = useQueryClient()

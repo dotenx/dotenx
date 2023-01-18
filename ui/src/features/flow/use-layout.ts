@@ -1,60 +1,53 @@
-import dagre from 'dagre'
-import { useAtom } from 'jotai'
-import { Elements, isNode, Position, useStoreState } from 'react-flow-renderer'
-import { flowAtom } from '../atoms'
+import dagre from "dagre"
+import { Position } from "reactflow"
+import { FlowEdge, FlowNode, useFlowStore } from "./flow-store"
 
 export const NODE_WIDTH = 172
 export const NODE_HEIGHT = 36
 
 export function useLayout() {
-	const [elements, setElements] = useAtom(flowAtom)
-	const nodes = useStoreState((state) => state.nodes)
+	const nodes = useFlowStore((store) => store.nodes)
+	const setNodes = useFlowStore((store) => store.setNodes)
+	const edges = useFlowStore((store) => store.edges)
+
 	const node = nodes[0]
-	const nodeWidth: number = node ? node.__rf.width : NODE_WIDTH
-	const nodeHeight: number = node ? node.__rf.height : NODE_HEIGHT
+	const nodeWidth: number = node.width ? node.width : NODE_WIDTH
+	const nodeHeight: number = node.height ? node.height : NODE_HEIGHT
 
 	const onLayout = (direction: string) => {
-		const layoutedElements = getLaidOutElements(elements, direction, nodeWidth, nodeHeight)
-		setElements(layoutedElements)
+		const layedOutNodes = getLayedOutElements(nodes, edges, direction, nodeWidth, nodeHeight)
+		setNodes(layedOutNodes)
 	}
 
 	return { onLayout }
 }
 
-export function getLaidOutElements(
-	elements: Elements,
-	direction = 'TB',
+export function getLayedOutElements(
+	nodes: FlowNode[],
+	edges: FlowEdge[],
+	direction = "TB",
 	nodeWidth: number,
 	nodeHeight: number
 ) {
 	const dagreGraph = new dagre.graphlib.Graph()
-
 	dagreGraph.setDefaultEdgeLabel(() => ({}))
-	const isHorizontal = direction === 'LR'
+	const isHorizontal = direction === "LR"
 	dagreGraph.setGraph({ rankdir: direction })
 
-	elements.forEach((el) => {
-		if (isNode(el)) {
-			dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight })
-		} else {
-			dagreGraph.setEdge(el.source, el.target)
-		}
-	})
-
+	nodes.forEach((node) => dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight }))
+	edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target))
 	dagre.layout(dagreGraph)
 
-	return elements.map((el) => {
-		if (isNode(el)) {
-			const nodeWithPosition = dagreGraph.node(el.id)
-			el.targetPosition = isHorizontal ? Position.Left : Position.Top
-			el.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
-
-			el.position = {
-				x: nodeWithPosition.x - nodeWidth / 2 + Math.random() / 1000,
-				y: nodeWithPosition.y - nodeHeight / 2,
-			}
+	const newNodes = nodes.map((el) => {
+		const nodeWithPosition = dagreGraph.node(el.id)
+		el.targetPosition = isHorizontal ? Position.Left : Position.Top
+		el.sourcePosition = isHorizontal ? Position.Right : Position.Bottom
+		el.position = {
+			x: nodeWithPosition.x - nodeWidth / 2 + Math.random() / 1000,
+			y: nodeWithPosition.y - nodeHeight / 2,
 		}
-
 		return el
 	})
+
+	return newNodes
 }

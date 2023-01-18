@@ -1,11 +1,11 @@
-import { IoArrowBack } from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { useNavigate, useParams } from 'react-router-dom'
-import { getTemplateAutomations, QueryKey } from '../api'
-import { AutomationList } from '../features/automation'
+import { IoArrowBack } from "react-icons/io5"
+import { useQuery } from "react-query"
+import { useNavigate, useParams } from "react-router-dom"
+import { getTemplateAutomations, QueryKey } from "../api"
+import { AutomationList } from "../features/automation"
 
 export default function TemplateAutomationsPage() {
-	const { name = '', projectName = '' } = useParams()
+	const { name = "", projectName = "" } = useParams()
 	const templateAutomationsQuery = useQuery(
 		QueryKey.GetTemplateAutomations,
 		() => getTemplateAutomations(name, projectName),

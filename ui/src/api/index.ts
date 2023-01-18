@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios"
 import {
 	AddColumnRequest,
 	AddRecordRequest,
@@ -16,10 +16,12 @@ import {
 	GetAutomationResponse,
 	GetAutomationsResponse,
 	GetAutomationTriggersResponse,
+	GetBranchesListResponse,
 	GetColumnsResponse,
 	GetExecutionResultResponse,
 	GetFilesDataResponse,
 	GetFormatterFunctionsResponse,
+	GetGitAccountsResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
@@ -30,6 +32,7 @@ import {
 	GetProviderResponse,
 	GetProvidersResponse,
 	GetRecordsResponse,
+	GetRepoListResponse,
 	GetTableRecordsRequest,
 	GetTablesResponse,
 	GetTaskFieldsResponse,
@@ -38,9 +41,6 @@ import {
 	GetTriggerKindsResponse,
 	GetTriggersResponse,
 	GetUserGroupResponse,
-	GetGitAccountsResponse,
-	GetRepoListResponse,
-	GetBranchesListResponse,
 	GetUserGroupsResponse,
 	GetUserManagementDataResponse,
 	GetViewDataResponse,
@@ -48,6 +48,7 @@ import {
 	GetViewsResponse,
 	gitProviders,
 	Provider,
+	RunCustomQueryResponse,
 	SetDefaultUserGroupRequest,
 	StartAutomationRequest,
 	TestTaskRequest,
@@ -56,11 +57,10 @@ import {
 	TestTriggerResponse,
 	UpdateRecordRequest,
 	UpdateUserGroupRequest,
-	RunCustomQueryResponse,
-} from './types'
-export * from './types'
+} from "./types"
+export * from "./types"
 
-export const API_URL = process.env.REACT_APP_API_URL
+export const API_URL = import.meta.env.VITE_API_URL
 
 export const api = axios.create({
 	baseURL: API_URL,
@@ -85,7 +85,7 @@ export function createAutomationYaml({
 	payload: string
 }) {
 	return api.post<{ name: string }>(`/pipeline/project/${projectName}`, payload, {
-		headers: { accept: 'application/x-yaml' },
+		headers: { accept: "application/x-yaml" },
 	})
 }
 
@@ -113,7 +113,7 @@ export function getAutomation({ name, projectName }: { projectName: string; name
 
 export function getAutomationYaml({ name, projectName }: { name: string; projectName: string }) {
 	return api.get<string>(`/pipeline/project/${projectName}/name/${name}`, {
-		headers: { accept: 'application/x-yaml' },
+		headers: { accept: "application/x-yaml" },
 	})
 }
 
@@ -200,7 +200,7 @@ export function deleteAutomation({ name, projectName }: { name: string; projectN
 }
 
 export function createIntegration(payload: CreateIntegrationRequest) {
-	return api.post<void>('/integration', payload)
+	return api.post<void>("/integration", payload)
 }
 
 export function getIntegrations() {
@@ -208,7 +208,7 @@ export function getIntegrations() {
 }
 
 export function getIntegrationKinds() {
-	return api.get<GetIntegrationKindsResponse>('/integration/avaliable')
+	return api.get<GetIntegrationKindsResponse>("/integration/avaliable")
 }
 
 export function getIntegrationsByKinds(kinds: string[]) {
@@ -225,15 +225,15 @@ export function deleteIntegration(name: string) {
 }
 
 export function createTrigger(payload: CreateTriggerRequest) {
-	return api.post<void>('/trigger', payload)
+	return api.post<void>("/trigger", payload)
 }
 
 export function updateTrigger(payload: CreateTriggerRequest) {
-	return api.put<void>('/trigger', payload)
+	return api.put<void>("/trigger", payload)
 }
 
 export function getTriggers() {
-	return api.get<GetTriggersResponse>('/trigger')
+	return api.get<GetTriggersResponse>("/trigger")
 }
 
 export function getAutomationTriggers(name: string) {
@@ -241,7 +241,7 @@ export function getAutomationTriggers(name: string) {
 }
 
 export function getTriggerKinds() {
-	return api.get<GetTriggerKindsResponse>('/trigger/avaliable')
+	return api.get<GetTriggerKindsResponse>("/trigger/avaliable")
 }
 
 export function getTriggerDefinition(kind: string) {
@@ -253,7 +253,7 @@ export function deleteTrigger(name: string, automationName: string) {
 }
 
 export function getTaskKinds() {
-	return api.get<GetTaskKindsResponse>('/task')
+	return api.get<GetTaskKindsResponse>("/task")
 }
 
 export function getTaskFields(kind: string) {
@@ -291,11 +291,11 @@ export function getExecution(id: string) {
 }
 
 export function createProvider(payload: Provider) {
-	return api.post<void>('/oauth/user/provider', payload)
+	return api.post<void>("/oauth/user/provider", payload)
 }
 
 export function getProviders() {
-	return api.get<GetProvidersResponse>('/oauth/user/provider/list')
+	return api.get<GetProvidersResponse>("/oauth/user/provider/list")
 }
 
 export function getProvider(name: string) {
@@ -307,15 +307,15 @@ export function deleteProvider(name: string) {
 }
 
 export function getFormatterFunctions() {
-	return api.get<GetFormatterFunctionsResponse>('/funcs')
+	return api.get<GetFormatterFunctionsResponse>("/funcs")
 }
 
 export function createProject(payload: CreateProjectRequest) {
-	return api.post<void>('/project', payload)
+	return api.post<void>("/project", payload)
 }
 
 export function getProjects() {
-	return api.get<GetProjectsResponse>('/project')
+	return api.get<GetProjectsResponse>("/project")
 }
 
 export function getProject(name: string) {
@@ -352,20 +352,20 @@ export function deleteView({ projectName, viewName }: { projectName: string; vie
 }
 
 export function createView(payload: CreateViewRequest) {
-	return api.post<void>('/database/view', payload)
+	return api.post<void>("/database/view", payload)
 }
 
 export function createTable(projectName: string, payload: CreateTableRequest) {
-	return api.post<void>('/database/table', { projectName, ...payload })
+	return api.post<void>("/database/table", { projectName, ...payload })
 }
 export function exportDatabase(projectName: string, format: string) {
-	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+	const jobFormat = format === "dump" ? "pg_dump" : "csv"
 	return api.post<ExportDatabaseResponse>(`/database/job/project/${projectName}/result`, {
 		job: jobFormat,
 	})
 }
 export function runExportDatabase(projectName: string, format: string) {
-	const jobFormat = format === 'dump' ? 'pg_dump' : 'csv'
+	const jobFormat = format === "dump" ? "pg_dump" : "csv"
 
 	return api.post<void>(`/database/job/project/${projectName}/run`, {
 		job: jobFormat,
@@ -374,20 +374,19 @@ export function runExportDatabase(projectName: string, format: string) {
 
 export function runCustomQuery(projectTag: string, query: string) {
 	return api.post<RunCustomQueryResponse>(`/database/query/arbitrary/project/${projectTag}`, {
-		"query": query
-
+		query: query,
 	})
 }
 export function uploadFile(projectTag: string, formData: FormData) {
 	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
 		headers: {
-			'Content-Type': 'multipart/form-data',
+			"Content-Type": "multipart/form-data",
 		},
 	})
 }
 
 export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
-	return api.post<void>('/database/table/column', { projectName, tableName, ...payload })
+	return api.post<void>("/database/table/column", { projectName, tableName, ...payload })
 }
 
 export function deleteTable(projectName: string, tableName: string) {
@@ -429,7 +428,7 @@ export function getColumns(projectName: string, tableName: string) {
 export function getUserManagementData(projectTag: string, page: number) {
 	return api.post<GetUserManagementDataResponse | null>(
 		`/database/query/select/project/${projectTag}/table/user_info`,
-		{ columns: ['account_id', 'created_at', 'email', 'fullname', 'user_group'] },
+		{ columns: ["account_id", "created_at", "email", "fullname", "user_group"] },
 		{
 			headers: {
 				page: page,
@@ -524,28 +523,51 @@ export function getUserGroup(projectTag: string, userGroupName: string) {
 }
 
 export function getGitAccounts(provider: gitProviders) {
-	return api.get<GetGitAccountsResponse>(
-		`/git/integration/provider/${provider}/account`
-	)
+	return api.get<GetGitAccountsResponse>(`/git/integration/provider/${provider}/account`)
 }
 
-export function getRepoList({ provider, gitId }: { provider: gitProviders, gitId: string }) {
+export function getRepoList({ provider, gitId }: { provider: gitProviders; gitId: string }) {
 	return api.post<GetRepoListResponse>(`/git/integration/provider/${provider}/repository`, {
-		git_account_id: gitId
+		git_account_id: gitId,
 	})
 }
-export function exportProject({ provider, gitId, projectName, repoName, branchName, commitMessage }: { provider: gitProviders, gitId: string, projectName: string, repoName: string, branchName: string, commitMessage: string }) {
+export function exportProject({
+	provider,
+	gitId,
+	projectName,
+	repoName,
+	branchName,
+	commitMessage,
+}: {
+	provider: gitProviders
+	gitId: string
+	projectName: string
+	repoName: string
+	branchName: string
+	commitMessage: string
+}) {
 	return api.post(`/git/integration/provider/${provider}/export`, {
 		git_account_id: gitId,
 		project_name: projectName,
 		repo_full_name: repoName,
 		branch_name: branchName,
-		commit_message: commitMessage
+		commit_message: commitMessage,
 	})
-
 }
 
-export function importProject({ provider, gitId, projectName, repoName, branchName }: { provider: gitProviders, gitId: string, projectName: string, repoName: string, branchName: string, }) {
+export function importProject({
+	provider,
+	gitId,
+	projectName,
+	repoName,
+	branchName,
+}: {
+	provider: gitProviders
+	gitId: string
+	projectName: string
+	repoName: string
+	branchName: string
+}) {
 	return api.post(`/git/integration/provider/${provider}/import`, {
 		git_account_id: gitId,
 		project_name: projectName,
@@ -554,19 +576,20 @@ export function importProject({ provider, gitId, projectName, repoName, branchNa
 	})
 }
 
-
-
-
-
-export function getBranchList({ provider, gitId, repoName }: { provider: gitProviders, gitId: string, repoName: string }) {
+export function getBranchList({
+	provider,
+	gitId,
+	repoName,
+}: {
+	provider: gitProviders
+	gitId: string
+	repoName: string
+}) {
 	return api.post<GetBranchesListResponse>(`/git/integration/provider/${provider}/branch`, {
 		git_account_id: gitId,
-		repo_full_name: repoName
+		repo_full_name: repoName,
 	})
 }
-
-
-
 
 export function testTask(payload: TestTaskRequest) {
 	return api.post<TestTaskResponse>(`/execution/type/task/step/task`, {

@@ -94,7 +94,7 @@ build ui: &build_ui
   variables:
     environment: prod
     folder: ui
-    build_dest: build
+    build_dest: dist
   script:
     - cd ${folder}
     - cp .env.${environment} .env.production

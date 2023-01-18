@@ -1,20 +1,20 @@
-import { Button, TextInput } from '@mantine/core'
-import _ from 'lodash'
-import { Controller, useForm } from 'react-hook-form'
-import { useMutation, useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
+import { Button, TextInput } from "@mantine/core"
+import _ from "lodash"
+import { Controller, useForm } from "react-hook-form"
+import { useMutation, useQuery } from "react-query"
+import { useParams } from "react-router-dom"
 import {
 	FieldType,
 	getInteractionEndpointFields,
 	QueryKey,
 	startAutomation,
 	StartAutomationRequest,
-} from '../../api'
-import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
-import { Modals, useModal } from '../hooks'
-import { Form, Loader } from '../ui'
-import { ComplexField } from '../ui/complex-field'
-import { JsonEditorInput } from '../ui/json-editor-input'
+} from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
+import { Modals, useModal } from "../hooks"
+import { Form, Loader } from "../ui"
+import { ComplexField } from "../ui/complex-field"
+import { JsonEditorInput } from "../ui/json-editor-input"
 
 export function RunInteractionForm({ interactionName }: { interactionName: string }) {
 	const modal = useModal()
@@ -40,19 +40,19 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		function compactObject(data: any) {
-			if (typeof data !== 'object') {
+			if (typeof data !== "object") {
 				return data as any
 			}
 
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			return Object.keys(data).reduce(function (accumulator, key) {
-				const isObject = typeof data[key] === ('object' as string)
+				const isObject = typeof data[key] === ("object" as string)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				const value = isObject ? compactObject(data[key]) : data[key]
 				const isEmptyObject = isObject && !Object.keys(value).length
-				if (value === undefined || isEmptyObject || '') {
+				if (value === undefined || isEmptyObject || "") {
 					return accumulator
 				}
 				return Object.assign(accumulator, { [key]: value })
@@ -65,11 +65,11 @@ export function RunInteractionForm({ interactionName }: { interactionName: strin
 
 		Object.keys(types).map((key) => {
 			defaults[key] = types[key].reduce((acc, { key, type }) => {
-				if (type === 'text') {
+				if (type === "text") {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					acc[key] = ''
-				} else if (type === 'object') {
+					acc[key] = ""
+				} else if (type === "object") {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					acc[key] = {}
@@ -118,7 +118,7 @@ const getFieldComponentRun = (props: any) => {
 						control={props.control}
 						name={props.name}
 						render={({ field: { onChange, value } }) => (
-							<TextInput value={value ?? ''} {...props} onChange={onChange} />
+							<TextInput value={value ?? ""} {...props} onChange={onChange} />
 						)}
 					/>
 				</div>

@@ -1,8 +1,8 @@
-import { Button } from '@mantine/core'
-import * as z from 'zod'
-import { AutomationKind } from '../../api'
-import { Field, Form } from '../ui'
-import { useSaveForm } from './use-save'
+import { Button } from "@mantine/core"
+import * as z from "zod"
+import { AutomationKind } from "../../api"
+import { Field, Form } from "../ui"
+import { useSaveForm } from "./use-save"
 
 export const saveFormSchema = z.object({
 	name: z.string().min(1),
@@ -17,7 +17,7 @@ export function SaveForm({ kind }: { kind: AutomationKind }) {
 			<div className="flex flex-col gap-5 grow">
 				<Field
 					name="name"
-					label={`${kind === 'interaction' ? 'Interaction' : 'Automation'} name`}
+					label={`${kind === "interaction" ? "Interaction" : "Automation"} name`}
 					control={control}
 					errors={errors}
 				/>

@@ -1,6 +1,6 @@
-import { Button, Checkbox } from '@mantine/core'
-import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from 'react-query'
+import { Button, Checkbox } from "@mantine/core"
+import { useForm } from "react-hook-form"
+import { useMutation, useQueryClient } from "react-query"
 import {
 	addRecord,
 	AddRecordRequest,
@@ -8,9 +8,9 @@ import {
 	TableRecord,
 	updateRecord,
 	UpdateRecordRequest,
-} from '../../api'
-import { useModal } from '../hooks'
-import { CreatableSelect, Field, Form, Textarea } from '../ui'
+} from "../../api"
+import { useModal } from "../hooks"
+import { CreatableSelect, Field, Form, Textarea } from "../ui"
 
 export function RecordForm({
 	columns,
@@ -39,13 +39,13 @@ export function RecordForm({
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
 				{columns.map((column) =>
-					column.type === 'yes_no' ? (
+					column.type === "yes_no" ? (
 						<Checkbox
 							key={column.name}
 							label={column.name}
 							{...form.register(column.name)}
 						/>
-					) : column.type.includes('array') ? (
+					) : column.type.includes("array") ? (
 						<CreatableSelect
 							key={column.name}
 							control={form.control}
@@ -53,7 +53,7 @@ export function RecordForm({
 							label={column.name}
 							placeholder=""
 						/>
-					) : column.type === 'dtx_json' ? (
+					) : column.type === "dtx_json" ? (
 						<Textarea
 							key={column.name}
 							raw
@@ -109,13 +109,13 @@ export function EditRecordForm({
 		<Form className="h-full" onSubmit={onSubmit}>
 			<div className="space-y-5 grow">
 				{columns.map((column) =>
-					column.type === 'yes_no' ? (
+					column.type === "yes_no" ? (
 						<Checkbox
 							key={column.name}
 							label={column.name}
 							{...form.register(column.name)}
 						/>
-					) : column.type.includes('array') ? (
+					) : column.type.includes("array") ? (
 						<CreatableSelect
 							key={column.name}
 							control={form.control}
@@ -123,7 +123,7 @@ export function EditRecordForm({
 							label={column.name}
 							placeholder=""
 						/>
-					) : column.type === 'dtx_json' ? (
+					) : column.type === "dtx_json" ? (
 						<Textarea
 							key={column.name}
 							raw

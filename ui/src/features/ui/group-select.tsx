@@ -1,18 +1,18 @@
-import clsx from 'clsx'
-import Fuse from 'fuse.js'
-import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
+import clsx from "clsx"
+import Fuse from "fuse.js"
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from "react"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import { IoChevronDown, IoSearch } from 'react-icons/io5'
-import { useOutsideClick } from '../hooks'
-import { Fade } from './animation/fade'
-import { FieldError } from './field'
-import { Loader } from './loader'
+} from "react-hook-form"
+import { IoChevronDown, IoSearch } from "react-icons/io5"
+import { useOutsideClick } from "../hooks"
+import { Fade } from "./animation/fade"
+import { FieldError } from "./field"
+import { Loader } from "./loader"
 
 export interface GroupSelectOption {
 	value: string
@@ -64,8 +64,8 @@ export function ControlledGroupSelect<
 								.map((group) => group.options)
 								.flat()
 								.find((option) => option.value === value) ?? {
-								label: '',
-								value: '',
+								label: "",
+								value: "",
 							}
 						}
 						options={options}
@@ -101,11 +101,11 @@ function GroupSelectInner({
 	loading,
 }: GroupSelectInnerProps) {
 	const [isOpen, setIsOpen] = useState(false)
-	const [searchText, setSearchText] = useState('')
+	const [searchText, setSearchText] = useState("")
 	const [selectedGroup, setSelectedGroup] = useState<GroupOption>()
-	const groupsSearch = useMemo(() => new Fuse(options, { keys: ['group'] }), [options])
+	const groupsSearch = useMemo(() => new Fuse(options, { keys: ["group"] }), [options])
 	const itemOptions = useMemo(() => selectedGroup?.options ?? [], [selectedGroup?.options])
-	const itemsSearch = useMemo(() => new Fuse(itemOptions, { keys: ['value'] }), [itemOptions])
+	const itemsSearch = useMemo(() => new Fuse(itemOptions, { keys: ["value"] }), [itemOptions])
 
 	const searchedGroups = useMemo(() => {
 		const result = groupsSearch.search(searchText)
@@ -121,7 +121,7 @@ function GroupSelectInner({
 
 	const close = () => {
 		setIsOpen(false)
-		setSearchText('')
+		setSearchText("")
 		setSelectedGroup(undefined)
 	}
 
@@ -132,8 +132,8 @@ function GroupSelectInner({
 		<div className="relative" ref={wrapperRef}>
 			<button
 				className={clsx(
-					'flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded cursor-pointer outline-rose-500 border-slate-400',
-					isOpen && 'outline outline-offset-[-1px] outline-2'
+					"flex items-center justify-between w-full px-2 py-1 text-left bg-white border rounded cursor-pointer outline-rose-500 border-slate-400",
+					isOpen && "outline outline-offset-[-1px] outline-2"
 				)}
 				type="button"
 				onClick={() => (!isOpen ? setIsOpen(true) : close())}
@@ -227,7 +227,7 @@ function OpenedMenu({
 								iconUrl={item.options[0].iconUrl}
 								onSelect={() => {
 									setSelectedGroup(item)
-									setSearchText('')
+									setSearchText("")
 									searchRef.current?.focus()
 								}}
 							/>

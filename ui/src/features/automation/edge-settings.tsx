@@ -1,11 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@mantine/core'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Form, Select } from '../ui'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@mantine/core"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Form, Select } from "../ui"
 
-const triggers = ['failed', 'completed'] as const
-export type EdgeCondition = typeof triggers[number]
+const triggers = ["failed", "completed"] as const
+export type EdgeCondition = (typeof triggers)[number]
 const options = triggers.map((option) => ({ label: option, value: option }))
 
 const schema = z.object({

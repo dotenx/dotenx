@@ -1,4 +1,4 @@
 export enum NodeType {
-	Task = 'task',
-	Trigger = 'trigger',
+	Task = "task",
+	Trigger = "trigger",
 }

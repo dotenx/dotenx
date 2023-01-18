@@ -33,11 +33,11 @@ export default function DomainsPage() {
 	if (!projectName) return <Navigate to="/" replace />
 
 	const helpDetails = {
-		title: 'Set a custom domain for your application instead of using the default domain',
+		title: "Set a custom domain for your application instead of using the default domain",
 		description:
-			'You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.',
-		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
-		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/domains',
+			"You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/domains",
 	}
 
 	return (
@@ -46,7 +46,7 @@ export default function DomainsPage() {
 			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
 				<Loader className="mx-auto" />
 			) : (
-				<div className="mx-auto py-10  px-20 max-w-4xl ">
+				<div className="max-w-4xl px-20 py-10 mx-auto ">
 					{isDomainAdded ? (
 						<Domain projectTag={projectTag} domainData={getDomainsQuery?.data?.data} />
 					) : (
@@ -69,27 +69,27 @@ const Domain = ({
 
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
-			toast('Domain verified successfuly', { type: 'success', autoClose: 2000 }),
+			toast("Domain verified successfuly", { type: "success", autoClose: 2000 }),
 				client.invalidateQueries(QueryKey.GetDomains)
 		},
 		onError: () => {
-			toast('External domain is not verified', { type: 'error', autoClose: 2000 })
+			toast("External domain is not verified", { type: "error", autoClose: 2000 })
 		},
 	})
 	return (
 		<div className="grid grid-cols-1 gap-3 ">
-			<div className="border-2 rounded-md text-left p-3  ">
+			<div className="p-3 text-left border-2 rounded-md ">
 				<h1 className="font-semibold">Domain</h1>
 				<a
-					target={'_blank'}
+					target={"_blank"}
 					rel="noreferrer"
-					href={'//' + domainData?.external_domain}
-					className="text-cyan-600 text-lg hover:text-cyan-500 transition-colors"
+					href={"//" + domainData?.external_domain}
+					className="text-lg transition-colors text-cyan-600 hover:text-cyan-500"
 				>
 					{domainData?.external_domain}
 				</a>
 				{domainData && !!domainData.tls_arn ? (
-					<span className="text-green-500 float-right font-medium">verified</span>
+					<span className="float-right font-medium text-green-500">verified</span>
 				) : (
 					<Button
 						type="button"
@@ -101,7 +101,7 @@ const Domain = ({
 					</Button>
 				)}
 			</div>
-			<div className="border-2 rounded-md text-left p-3 ">
+			<div className="p-3 text-left border-2 rounded-md ">
 				<NSList nsList={domainData?.ns_records} />
 			</div>
 		</div>
@@ -114,7 +114,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		externalDomain: z
 			.string()
 			.regex(/^[a-zA-Z0-9]*[a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/, {
-				message: 'Please add a valid domain.',
+				message: "Please add a valid domain.",
 			}),
 	})
 	const { onSubmit, ...form } = useForm({
@@ -147,7 +147,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		},
 	})
 	return (
-		<div className="font-medium border-2 rounded-md p-3">
+		<div className="p-3 font-medium border-2 rounded-md">
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>
@@ -158,10 +158,9 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 					label="Add your domain"
 					type="text"
 					required
-					value=""
 					placeholder="www.example.com"
 					className="pt-1 pb-2"
-					{...form.getInputProps('externalDomain')}
+					{...form.getInputProps("externalDomain")}
 				/>
 				<div className="flex justify-end">
 					<Button loading={isLoading} type="submit">
@@ -175,14 +174,14 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 
 const NSList = ({ nsList = [] }: { nsList: string[] | undefined }) => {
 	const clipboard = useClipboard({ timeout: 3000 })
-	const [copiedValue, setCopiedValue] = useState('')
+	const [copiedValue, setCopiedValue] = useState("")
 	return (
 		<div className="font-semibold">
 			<h1 className="text-lg">Name Servers</h1>
 			<h3 className="mt-2 mb-1 text-base ">
 				Point your domain&apos;s name servers to Dotenx
 			</h3>
-			<p className="text-zinc-500 mb-3 text-sm font-medium">
+			<p className="mb-3 text-sm font-medium text-zinc-500">
 				To use Dotenx DNS, go to your domain registrar and change your domain&apos;s name
 				server to the following custom host hostnames assigned to your DNS zone.
 			</p>
@@ -192,7 +191,7 @@ const NSList = ({ nsList = [] }: { nsList: string[] | undefined }) => {
 						setCopiedValue(ns), clipboard.copy(ns)
 					}}
 					className={` p-2 px-4 hover:bg-cyan-200 transition-colors cursor-pointer flex items-center justify-between ${
-						index % 2 !== 0 && 'bg-slate-100'
+						index % 2 !== 0 && "bg-slate-100"
 					} `}
 					key={index}
 				>
