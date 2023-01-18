@@ -11,7 +11,7 @@ export function Layout({ children }: LayoutProps) {
 			<div className="flex grow">
 				<Sidebar />
 
-				<div className="container flex mx-auto grow">{children}</div>
+				<div className=" bg-[#ECECEC] w-full">{children}</div>
 			</div>
 		</div>
 	)

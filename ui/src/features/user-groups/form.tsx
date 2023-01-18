@@ -57,7 +57,10 @@ export function UserGroupsForm({
 		}
 	)
 	const tablesQuery = useQuery([QueryKey.GetTables, projectName], () => getTables(projectName))
-	const tables = tablesQuery.data?.data.tables ?? []
+	const tables =
+		tablesQuery.data?.data.tables.map((t) => {
+			return t.name
+		}) ?? []
 	const form = useForm<UserGroupValues>({
 		validate: zodResolver(schema),
 		initialValues: defaultValues,

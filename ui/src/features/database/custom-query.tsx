@@ -8,7 +8,7 @@ import { runCustomQuery } from '../../api'
 import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import { IoIosArrowBack } from 'react-icons/io'
-import { Table } from '../ui'
+import { PrimaryButton, Table } from '../ui'
 
 export default function CustomQuery() {
 	const [openModal, setOpenModal] = useState(false)
@@ -75,12 +75,11 @@ export default function CustomQuery() {
 
 	return (
 		<div className="flex items-center">
-			<Button
-				onClick={() => setOpenModal(true)}
-				rightIcon={<TbCodeMinus className="w-5 h-5" />}
-			>
-				Run Custom Query
-			</Button>
+			<PrimaryButton
+				icon={<TbCodeMinus className="w-5 h-5" />}
+				text="Run Custom Query"
+				handleClick={() => setOpenModal(true)}
+			/>
 			<Modal
 				size="xl"
 				title="Run custom query"

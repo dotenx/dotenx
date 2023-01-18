@@ -53,11 +53,13 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 		},
 	})
 	return (
-		<div ref={ref} className="flex items-center">
+		<div ref={ref} className="flex  items-center">
 			<Button.Group>
 				{showDownload ? (
 					<Button
-						rightIcon={<TbFileDownload className="w-5 h-5" />}
+						variant="default"
+						className="!rounded-l-[10px] !h-10"
+						leftIcon={<TbFileDownload className="w-6 h-6" />}
 						loading={isLoading || mutationRun.isLoading || url === ''}
 					>
 						<a href={url} download>
@@ -66,7 +68,9 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 					</Button>
 				) : (
 					<Button
-						rightIcon={<TbFileExport className="w-5 h-5" />}
+						className="!rounded-l-[10px] !h-10"
+						variant="default"
+						leftIcon={<TbFileExport className="w-6 h-6" />}
 						loading={isLoading || mutationRun.isLoading}
 						onClick={() => {
 							mutationRun.mutate()
@@ -77,15 +81,16 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 				)}
 				<Tooltip openDelay={500} withinPortal withArrow label="Change export format">
 					<Button
-						className={`!p-1 ${openOptions && '!bg-rose-800'}`}
+						variant="default"
+						className={` !rounded-r-[10px] !h-10 ${openOptions && '!bg-gray-100'}`}
 						onClick={() => setOpenOptions(!openOptions)}
 					>
-						<MdOutlineMoreVert className="w-5 h-5 " />
+						<MdOutlineMoreVert className="w-6 h-6 " />
 					</Button>
 				</Tooltip>
 			</Button.Group>
 			{openOptions && (
-				<div className="cursor-pointer p-1 absolute z-10 bg-white top-[95px] py-3 rounded-md shadow-md">
+				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[270px] top-[206px] py-3 rounded-[10px] shadow-md">
 					<div className="mb-2 text-sm px-1">Select file format</div>
 					{['dump', 'csv'].map((o, index) => (
 						<div

@@ -1,15 +1,13 @@
-import { Button } from '@mantine/core'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { getProject, QueryKey } from '../api'
 import { Modals, useModal } from '../features/hooks'
-import { ContentWrapper, NewModal } from '../features/ui'
-import { PageTitle } from '../features/ui/page-title'
+import { AddButton, NewModal } from '../features/ui'
 import { UserGroups, UserGroupsForm, UserGroupValues } from '../features/user-groups'
 import { AUTOMATION_PROJECT_NAME } from './automation'
 
-export default function UserGroupsPage() {
+export default function UserGroupsWrapper() {
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
 	const projectTag = projectQuery.data?.data.tag ?? ''
@@ -26,22 +24,17 @@ export default function UserGroupsPage() {
 	}
 
 	return (
-		<>
-			<ContentWrapper>
-				<div className="flex justify-between">
-					<PageTitle title="User Groups" helpDetails={helpDetails} />
-					<Button
-						type="button"
-						onClick={() => {
-							modals.open(Modals.CreateUserGroup)
-							setDefaultValues(undefined)
-						}}
-					>
-						Create User Group
-					</Button>
-				</div>
-				<UserGroups projectTag={projectTag} onEdit={setDefaultValues} />
-			</ContentWrapper>
+		<div>
+			<div className="w-full mb-5	">
+				<AddButton
+					handleClick={() => {
+						modals.open(Modals.CreateUserGroup)
+						setDefaultValues(undefined)
+					}}
+					text="Add User Group"
+				/>
+			</div>
+			<UserGroups projectTag={projectTag} onEdit={setDefaultValues} />
 			<NewModal size="md" kind={Modals.CreateUserGroup} title={title}>
 				<UserGroupsForm
 					projectName={projectName}
@@ -50,6 +43,6 @@ export default function UserGroupsPage() {
 					kind={defaultValues ? 'update' : 'create'}
 				/>
 			</NewModal>
-		</>
+		</div>
 	)
 }

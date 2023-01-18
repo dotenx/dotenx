@@ -10,7 +10,7 @@ import { HomePage } from '../../pages/home'
 import ImportYamlPage from '../../pages/import-yaml'
 import IntegrationsPage from '../../pages/integrations'
 import InteractionPage from '../../pages/interaction'
-import InteractionsPage from '../../pages/interactions'
+import WorkflowsPage from '../../pages/workflows'
 import NotFoundPage from '../../pages/not-found'
 import OauthPage from '../../pages/oauth'
 import ProviderPage from '../../pages/provider'
@@ -40,17 +40,17 @@ const routes = [
 	{ path: '/builder/git/integration/callback', element: <GitRedirectPage /> },
 
 	{
-		path: '/builder/projects/:projectName/interactions/:name/executions/:id',
+		path: '/builder/projects/:projectName/workflows/:name/executions/:id',
 		element: <ExecutionPage kind="interaction" />,
 	},
 	{
-		path: '/builder/projects/:projectName/interactions/:name/executions',
+		path: '/builder/projects/:projectName/workflows/:name/executions',
 		element: <HistoryPage kind="interaction" />,
 	},
-	{ path: '/builder/projects/:projectName/interactions/new', element: <InteractionPage /> },
-	{ path: '/builder/projects/:projectName/interactions/:name', element: <InteractionPage /> },
-	{ path: '/builder/projects/:projectName/interactions', element: <InteractionsPage /> },
-	{ path: '/builder/projects/:projectName/templates/new', element: <TemplatePage /> },
+	{ path: '/builder/projects/:projectName/workflows/interaction', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/workflows/:name', element: <InteractionPage /> },
+	{ path: '/builder/projects/:projectName/workflows', element: <WorkflowsPage /> },
+	{ path: '/builder/projects/:projectName/templates/template', element: <TemplatePage /> },
 	{ path: '/builder/projects/:projectName/templates/:name', element: <TemplatePage /> },
 	{
 		path: '/builder/projects/:projectName/templates/:name/automations',
