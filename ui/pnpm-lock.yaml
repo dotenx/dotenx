@@ -5,11 +5,11 @@ specifiers:
   '@emotion/react': ^11.10.5
   '@hookform/error-message': ^2.0.1
   '@hookform/resolvers': ^2.9.10
-  '@mantine/core': ^5.10.0
-  '@mantine/form': ^5.10.0
-  '@mantine/hooks': ^5.10.0
-  '@mantine/modals': ^5.10.0
-  '@mantine/prism': ^5.10.0
+  '@mantine/core': ^5.10.1
+  '@mantine/form': ^5.10.1
+  '@mantine/hooks': ^5.10.1
+  '@mantine/modals': ^5.10.1
+  '@mantine/prism': ^5.10.1
   '@monaco-editor/react': ^4.4.6
   '@tabler/icons': ^1.119.0
   '@types/color': ^3.0.3
@@ -26,7 +26,7 @@ specifiers:
   '@uiw/react-textarea-code-editor': ^2.0.6
   '@vitejs/plugin-react': ^3.0.1
   autoprefixer: ^10.4.13
-  axios: ^1.2.2
+  axios: ^1.2.3
   clsx: ^1.2.1
   color: ^4.2.3
   dagre: ^0.8.5
@@ -35,7 +35,7 @@ specifiers:
   eslint-config-prettier: ^8.6.0
   eslint-plugin-react: ^7.32.1
   eslint-plugin-react-hooks: ^4.6.0
-  framer-motion: ^8.4.3
+  framer-motion: ^8.4.6
   fuse.js: ^6.6.2
   immer: ^9.0.18
   jotai: ^1.13.1
@@ -64,27 +64,28 @@ specifiers:
   typescript: ^4.9.4
   vite: ^4.0.4
   zod: ^3.20.2
+  zustand: ^4.3.2
 
 dependencies:
   '@babel/core': 7.20.12
   '@emotion/react': 11.10.5_jp5qgyg6plq757v5hojp7ls2oe
   '@hookform/error-message': 2.0.1_uno7536xd2i6xn2dtvbywz2sva
   '@hookform/resolvers': 2.9.10_react-hook-form@7.42.1
-  '@mantine/core': 5.10.0_lbfixegkxal6rwioqxubxet6s4
-  '@mantine/form': 5.10.0_react@18.2.0
-  '@mantine/hooks': 5.10.0_react@18.2.0
-  '@mantine/modals': 5.10.0_3m53ouna3laykmqkiimzgz4i2m
-  '@mantine/prism': 5.10.0_3m53ouna3laykmqkiimzgz4i2m
+  '@mantine/core': 5.10.1_vmfc4eynrtlwqan3hg7ts62b2m
+  '@mantine/form': 5.10.1_react@18.2.0
+  '@mantine/hooks': 5.10.1_react@18.2.0
+  '@mantine/modals': 5.10.1_ynz4r3bmi75slbqnmaycv7w7wa
+  '@mantine/prism': 5.10.1_ynz4r3bmi75slbqnmaycv7w7wa
   '@monaco-editor/react': 4.4.6_6vrjaj6ridxbohi43n7zt4gn7q
   '@tabler/icons': 1.119.0_biqbaboplfbrettd7655fr4n2y
   '@uiball/loaders': 1.2.6_biqbaboplfbrettd7655fr4n2y
   '@uiw/react-textarea-code-editor': 2.0.6_biqbaboplfbrettd7655fr4n2y
-  axios: 1.2.2
+  axios: 1.2.3
   clsx: 1.2.1
   color: 4.2.3
   dagre: 0.8.5
   date-fns: 2.29.3
-  framer-motion: 8.4.3_biqbaboplfbrettd7655fr4n2y
+  framer-motion: 8.4.6_biqbaboplfbrettd7655fr4n2y
   fuse.js: 6.6.2
   immer: 9.0.18
   jotai: 1.13.1_2exiyaescjxorpwwmy4ejghgte
@@ -107,6 +108,7 @@ dependencies:
   react-use-clipboard: 1.0.9_biqbaboplfbrettd7655fr4n2y
   reactflow: 11.4.2_ec54bobn2gmcr3prt56t3hp2ga
   zod: 3.20.2
+  zustand: 4.3.2_immer@9.0.18+react@18.2.0
 
 devDependencies:
   '@types/color': 3.0.3
@@ -788,17 +790,17 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
-  /@mantine/core/5.10.0_lbfixegkxal6rwioqxubxet6s4:
-    resolution: {integrity: sha512-if272RiYPK0nQQdGNwcCSY7bCPJW9455qXlRhnYOr021xh89T8WFVPeDw4uwcxoXsXdKRV5GAi9irSnsUqsjJQ==}
+  /@mantine/core/5.10.1_vmfc4eynrtlwqan3hg7ts62b2m:
+    resolution: {integrity: sha512-ZVVrakV8QUFxAUNh8LCyJS6gKKpQbXSh2OQ757L/Q07aYNaYFvgwuSyI7+p32oGrgc+RZ53KroB7zZUVj/hvEw==}
     peerDependencies:
-      '@mantine/hooks': 5.10.0
+      '@mantine/hooks': 5.10.1
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
       '@floating-ui/react-dom-interactions': 0.10.3_ib3m5ricvtkl2cll7qpr2f6lvq
-      '@mantine/hooks': 5.10.0_react@18.2.0
-      '@mantine/styles': 5.10.0_sogmqz4enknxtkxk3k5s6bqwnq
-      '@mantine/utils': 5.10.0_react@18.2.0
+      '@mantine/hooks': 5.10.1_react@18.2.0
+      '@mantine/styles': 5.10.1_sogmqz4enknxtkxk3k5s6bqwnq
+      '@mantine/utils': 5.10.1_react@18.2.0
       '@radix-ui/react-scroll-area': 1.0.2_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -808,8 +810,8 @@ packages:
       - '@types/react'
     dev: false
 
-  /@mantine/form/5.10.0_react@18.2.0:
-    resolution: {integrity: sha512-4X9RR75Aaq0fxu+kJ/mL/CAOPlgHNhbUY657hGJlfwqWJFwibnhyCe1s5lpZ7Sm8F3hNsSMpWzdA687gvhw4Lw==}
+  /@mantine/form/5.10.1_react@18.2.0:
+    resolution: {integrity: sha512-KGKAcVURVAHVr+KbNyqvt0L8ROdpyFxCR8fh2TCIkGeFgQXWLcXF4JOeNSx2KCXf0wbEEXgp49BXV+tmeLHoiA==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
@@ -818,47 +820,47 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@mantine/hooks/5.10.0_react@18.2.0:
-    resolution: {integrity: sha512-dAefxpvqjFtXNeKse+awkIa4U1XGnMMOqWg1+07Y2Ino2G6EiT8AEnYqQyTXgcPoNaWwG9533Q/DDadmyweqaQ==}
+  /@mantine/hooks/5.10.1_react@18.2.0:
+    resolution: {integrity: sha512-Fhl2f5z/F+NVzZgPUPP9tP4NUUMeTBpmlmlo3mPuQztw1kmXdxtBjD1MzRS7A84FuaJNo2wxLhQ+Gnjtf3hZ8A==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
       react: 18.2.0
     dev: false
 
-  /@mantine/modals/5.10.0_3m53ouna3laykmqkiimzgz4i2m:
-    resolution: {integrity: sha512-SP9mPoa7FlfGkVzjVMUZ36i7YmYMh7p/9CoeWT/0Rcy7WmOfotNBbs/H/9CXdMNVNZTkehEeHoKeVy9oEkk2zg==}
+  /@mantine/modals/5.10.1_ynz4r3bmi75slbqnmaycv7w7wa:
+    resolution: {integrity: sha512-bYeyzQg2rUoB0DGby3D4Q95aphqZncEKtcsRvDVn83gwsoZzvKuok/NWgM7oydS3Njj/EQsBJsoOsQWfOCTP6A==}
     peerDependencies:
-      '@mantine/core': 5.10.0
-      '@mantine/hooks': 5.10.0
+      '@mantine/core': 5.10.1
+      '@mantine/hooks': 5.10.1
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@mantine/core': 5.10.0_lbfixegkxal6rwioqxubxet6s4
-      '@mantine/hooks': 5.10.0_react@18.2.0
-      '@mantine/utils': 5.10.0_react@18.2.0
+      '@mantine/core': 5.10.1_vmfc4eynrtlwqan3hg7ts62b2m
+      '@mantine/hooks': 5.10.1_react@18.2.0
+      '@mantine/utils': 5.10.1_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@mantine/prism/5.10.0_3m53ouna3laykmqkiimzgz4i2m:
-    resolution: {integrity: sha512-27WvnbjmWtxICqhmWYBbo2bhyd/W+zJQuVJu15KCJMUgMUxaTETUgHFsY1ki0+Ha9UypQu2VRSfZTaLV3y9e7Q==}
+  /@mantine/prism/5.10.1_ynz4r3bmi75slbqnmaycv7w7wa:
+    resolution: {integrity: sha512-E2bxsiuTLsMHd4209uO0RJmjuJwKI+3K2Jg/B0WmEPGY5Je/CBDxaDzZTazfQAuLZXVD16/BdWMTl840ZzCQrQ==}
     peerDependencies:
-      '@mantine/core': 5.10.0
-      '@mantine/hooks': 5.10.0
+      '@mantine/core': 5.10.1
+      '@mantine/hooks': 5.10.1
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@mantine/core': 5.10.0_lbfixegkxal6rwioqxubxet6s4
-      '@mantine/hooks': 5.10.0_react@18.2.0
-      '@mantine/utils': 5.10.0_react@18.2.0
+      '@mantine/core': 5.10.1_vmfc4eynrtlwqan3hg7ts62b2m
+      '@mantine/hooks': 5.10.1_react@18.2.0
+      '@mantine/utils': 5.10.1_react@18.2.0
       prism-react-renderer: 1.3.5_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@mantine/styles/5.10.0_sogmqz4enknxtkxk3k5s6bqwnq:
-    resolution: {integrity: sha512-3JBM5LWJHb4Yk7jymPiSuaBJRoe2CgA7KoyYWgabwBP115GlHPb1rQCcavJsobHV4U+wFfZEEUnVBpaAaXqgmw==}
+  /@mantine/styles/5.10.1_sogmqz4enknxtkxk3k5s6bqwnq:
+    resolution: {integrity: sha512-sKJG+shOJMEYlnpLuRd1Qlu0kK9GHpYd85+q+3Wa5/IZ9jLkOeYVxLV1vnhSnhVrIxbQzrti2klSKHZBg3KpIw==}
     peerDependencies:
       '@emotion/react': '>=11.9.0'
       react: '>=16.8.0'
@@ -871,8 +873,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@mantine/utils/5.10.0_react@18.2.0:
-    resolution: {integrity: sha512-mHnNm0ajIa8qLAIEwv82N6+7YKecynOA3I8vzgBHXS2x4HwGsHITFYGmMh2LNpx5dRL034tObfEFYZXqncyEDw==}
+  /@mantine/utils/5.10.1_react@18.2.0:
+    resolution: {integrity: sha512-PfzSpbipAwF5g5zoyC2Htxf2b9TFFwP6c9dK1jlrBzqtkeQK1axZ72Vbc1jKjGWYutVBbOWuk40GKUwYoDFVTw==}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:
@@ -1802,8 +1804,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios/1.2.2:
-    resolution: {integrity: sha512-bz/J4gS2S3I7mpN/YZfGFTqhXTYzRho8Ay38w2otuuDR322KzFIWm/4W2K6gIwvWaws5n+mnb7D1lN9uD+QH6Q==}
+  /axios/1.2.3:
+    resolution: {integrity: sha512-pdDkMYJeuXLZ6Xj/Q5J3Phpe+jbGdsSzlQaFVkMQzRUL05+6+tetX8TV3p4HrU4kzuO9bt+io/yGQxuyxA/xcw==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -2598,8 +2600,8 @@ packages:
     resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
     dev: true
 
-  /framer-motion/8.4.3_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-UMfJ8hEOlIObdJgI+U/VgaSSKY+W9/E0YtnFHPDsIE9rNPglaFZ+oycB0gj8ERuRBInGaIgNCFsil8iaJHZFgA==}
+  /framer-motion/8.4.6_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-0GkpTQnhDysG5SiD2VbANtAs8yCXVQLasynVABDTZYI+Qcx1krWg+rfyveM8W78q7AX+8RTsiMz/LJ7YIRZvFw==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0

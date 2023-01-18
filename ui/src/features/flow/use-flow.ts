@@ -1,32 +1,50 @@
+import { useAtom } from "jotai"
 import _ from "lodash"
 import { nanoid } from "nanoid"
-import { DragEventHandler, useCallback, useRef } from "react"
-import { addEdge, Node, OnConnect, useEdgesState, useNodesState, useReactFlow } from "reactflow"
+import { DragEventHandler, useEffect, useRef } from "react"
+import { Node, useReactFlow } from "reactflow"
 import { Arg, AutomationData, BuilderStep, TaskFieldValue, Triggers } from "../../api"
 import { BuilderSteps } from "../../internal/task-builder"
+import { selectedAutomationAtom } from "../atoms"
 import { EdgeCondition } from "../automation/edge-settings"
-import { EdgeData, TaskNodeData } from "../flow"
+import { getLayedOutElements, NODE_HEIGHT, NODE_WIDTH, TaskNodeData } from "../flow"
 import { InputOrSelectKind, InputOrSelectValue } from "../ui"
 import { ComplexFieldValue } from "../ui/complex-field"
 import { EditorInput, EditorObjectValue, JsonEditorFieldValue } from "../ui/json-editor"
+import { FlowEdge, FlowNode, useFlowStore } from "./flow-store"
 import { NodeType } from "./types"
 
 export function useFlow() {
 	const reactFlowWrapper = useRef<HTMLDivElement>(null)
 	const reactFlowInstance = useReactFlow()
-	const [nodes, setNodes, onNodesChange] = useNodesState<TaskNodeData>([
-		{
-			id: nanoid(),
-			type: NodeType.Task,
-			data: { name: "task", type: "" },
-			position: { x: 0, y: 0 },
-		},
-	])
-	const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeData>([])
-	const onConnect: OnConnect = useCallback(
-		(params) => setEdges((edges) => addEdge(params, edges)),
-		[setEdges]
-	)
+	const [automation] = useAtom(selectedAutomationAtom)
+	const {
+		nodes,
+		edges,
+		onNodesChange,
+		addNode,
+		onEdgesChange,
+		onConnect,
+		updateEdge,
+		updateNode,
+		setNodes,
+		setEdges,
+	} = useFlowStore()
+
+	useEffect(() => {
+		if (!automation) return
+		const [nodes, edges] = mapAutomationToElements(automation)
+		const triggers = mapTriggersToElements(automation.manifest.triggers)
+		const layout = getLayedOutElements(
+			[...nodes, ...triggers],
+			edges,
+			"TB",
+			NODE_WIDTH,
+			NODE_HEIGHT
+		)
+		setNodes(layout)
+		setEdges(edges)
+	}, [automation, setEdges, setNodes])
 
 	const onDragOver: DragEventHandler<HTMLDivElement> = (event) => {
 		event.preventDefault()
@@ -48,15 +66,7 @@ export function useFlow() {
 			position,
 			data: { name: type === NodeType.Task ? "task" : "trigger", type: "" },
 		}
-		setNodes((nodes) => [...nodes, newNode])
-	}
-
-	const updateNode = (id: string, data: TaskNodeData) => {
-		setNodes((nodes) => nodes.map((el) => (el.id === id ? { ...el, data } : el)))
-	}
-
-	const updateEdge = (id: string, data: EdgeData) => {
-		setEdges((nodes) => nodes.map((el) => (el.id === id ? { ...el, data } : el)))
+		addNode(newNode)
 	}
 
 	return {
@@ -73,7 +83,7 @@ export function useFlow() {
 	}
 }
 
-function mapAutomationToElements(automation: AutomationData) {
+function mapAutomationToElements(automation: AutomationData): [FlowNode[], FlowEdge[]] {
 	const nodes = Object.entries(automation.manifest.tasks).map(([key, value]) => {
 		const bodyEntries = _.toPairs(value.body)
 			.filter(([, fieldValue]) => !!fieldValue)
@@ -101,7 +111,6 @@ function mapAutomationToElements(automation: AutomationData) {
 				iconUrl: value.meta_data?.icon,
 				color: value.meta_data?.node_color,
 				others: hasOutputs ? _.omit(body, "outputs") : body,
-				// TODO: THIS IS HARDCODED :(
 				vars: hasOutputs ? vars : undefined,
 				outputs:
 					value.body.outputs?.type === "customOutputs"
@@ -110,6 +119,7 @@ function mapAutomationToElements(automation: AutomationData) {
 			},
 		}
 	})
+
 	const edges = Object.entries(automation.manifest.tasks).flatMap(([target, task]) =>
 		Object.entries(task.executeAfter).map(([source, triggers]) => ({
 			id: `${source}to${target}`,
@@ -121,7 +131,7 @@ function mapAutomationToElements(automation: AutomationData) {
 		}))
 	)
 
-	return [...nodes, ...edges]
+	return [nodes, edges]
 }
 
 function isTaskBuilder(value: any) {
@@ -216,7 +226,7 @@ function mapTriggersToElements(triggers: Triggers | undefined) {
 		id: name,
 		position: { x: 0, y: 0 },
 		type: NodeType.Trigger,
-		data: { ...triggerData, iconUrl: triggerData.meta_data.icon },
+		data: { ...triggerData, iconUrl: triggerData.meta_data?.icon },
 	}))
 
 	return triggerNodes

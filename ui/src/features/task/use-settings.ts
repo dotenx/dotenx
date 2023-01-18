@@ -31,7 +31,7 @@ const complexValue = inputOrSelectValue
 
 const schema = z.object({
 	name: z.string().min(1),
-	type: z.string().min(1),
+	type: z.string().min(1).optional(),
 	integration: z.string().optional(),
 	others: z.record(complexValue.or(z.array(z.any())).optional()).optional(),
 	vars: z.any(),

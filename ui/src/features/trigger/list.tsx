@@ -12,9 +12,7 @@ function useTriggerList() {
 	const deleteMutation = useMutation(
 		(payload: { triggerName: string; automationName: string }) =>
 			deleteTrigger(payload.triggerName, payload.automationName),
-		{
-			onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers),
-		}
+		{ onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers) }
 	)
 	const triggers = query.data?.data
 
@@ -53,7 +51,7 @@ export function TriggerList() {
 								onClick={() =>
 									deleteMutation.mutate({
 										triggerName: props.row.original.name,
-										automationName: props.row.original.pipeline_name,
+										automationName: props.row.original.pipeline_name ?? "",
 									})
 								}
 								className="ml-auto"

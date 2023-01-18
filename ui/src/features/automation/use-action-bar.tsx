@@ -12,14 +12,15 @@ import {
 } from "../../api"
 import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
 import { listenAtom, selectedAutomationAtom, selectedAutomationDataAtom } from "../atoms"
-import { useClearStatus, useLayout } from "../flow"
+import { useLayout } from "../flow"
+import { useFlowStore } from "../flow/flow-store"
 import { Modals, useModal } from "../hooks"
 import { useNewAutomation } from "./use-new"
 
 export function useActionBar(kind: AutomationKind) {
 	const { onLayout } = useLayout()
 	const [selectedAutomation] = useAtom(selectedAutomationAtom)
-	const clearStatus = useClearStatus()
+	const clearStatus = useFlowStore((store) => store.clearAllStatus)
 	const client = useQueryClient()
 	const setListen = useAtom(listenAtom)[1]
 	const [selectedAutomationData] = useAtom(selectedAutomationDataAtom)

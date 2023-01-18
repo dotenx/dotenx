@@ -1,25 +1,25 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useCallback, useEffect } from "react"
-import { Node } from "reactflow"
 import { API_URL, AutomationEventMessage } from "../../api"
-import { flowAtom, listenAtom, selectedAutomationDataAtom } from "../atoms"
-import { TaskNodeData, useClearStatus } from "../flow"
+import { listenAtom, selectedAutomationDataAtom } from "../atoms"
+import { FlowNode, useFlowStore } from "../flow/flow-store"
 
 export function useTaskStatus(executionId?: string) {
 	const [selected, setSelected] = useAtom(selectedAutomationDataAtom)
-	const setElements = useSetAtom(flowAtom)
-	const clearStatus = useClearStatus()
+	const nodes = useFlowStore((store) => store.nodes)
+	const setNodes = useFlowStore((store) => store.setNodes)
+	const clearStatus = useFlowStore((store) => store.clearAllStatus)
 	const listen = useAtomValue(listenAtom)
 
 	const handleReceiveMessage = useCallback(
 		(event: MessageEvent<string>) => {
 			const data: AutomationEventMessage = JSON.parse(event.data)
 
-			setElements((elements) =>
-				elements.map((element) => {
+			setNodes(
+				nodes.map((element) => {
 					const updated = data.tasks.find((task) => task.name === element.id)
 					if (!updated) return element
-					const node = element as Node<TaskNodeData>
+					const node = element as FlowNode
 					if (!node.data) return node
 					return {
 						...node,
@@ -29,11 +29,11 @@ export function useTaskStatus(executionId?: string) {
 							name: updated.name,
 							executionId: data.execution_id,
 						},
-					} as any
+					}
 				})
 			)
 		},
-		[setElements]
+		[nodes, setNodes]
 	)
 
 	useEffect(() => {
