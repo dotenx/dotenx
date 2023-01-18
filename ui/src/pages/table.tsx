@@ -105,7 +105,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 
 	return (
 		<>
-			<main className="lg:pr-32 pl-24 py-6 lg:pl-52 lg:py-16 space-y-10 grow px-4 max-w-[100vw] flex flex-col">
+			<main className="space-y-10 grow max-w-[100vw] flex flex-col">
 				<Table
 					withPagination
 					currentPage={currentPage}
