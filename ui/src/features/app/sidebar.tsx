@@ -2,23 +2,19 @@ import { useHover } from "@mantine/hooks"
 import clsx from "clsx"
 import { ReactNode } from "react"
 import {
-	BsBoxSeam,
 	BsChevronLeft,
 	BsFiles,
 	BsFillDiagram2Fill,
 	BsFillDiagram3Fill,
-	BsFillExclamationCircleFill,
 	BsGlobe,
 	BsHddNetworkFill,
 	BsPeopleFill,
-	BsTable
+	BsTable,
 } from "react-icons/bs"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 
 type SidebarData = {
-	projectName: string
-	projectsPage: string
 	navLinks: NavLinkData[]
 	subLinks: SubLinkData[]
 }
@@ -34,79 +30,107 @@ type SubLinkData = {
 	to: string
 }
 
-const sidebarData: SidebarData = {
-	projectName: "Project name",
-	projectsPage: "/",
-	navLinks: [
-		{ label: "Workflows", icon: <BsFillDiagram3Fill />, to: "/" },
-		{ label: "Tables", icon: <BsTable />, to: "/" },
-		{ label: "User management", icon: <BsPeopleFill />, to: "/" },
-		{ label: "Providers", icon: <BsHddNetworkFill />, to: "/" },
-		{ label: "Files", icon: <BsFiles />, to: "/" },
-		{ label: "Domains", icon: <BsGlobe />, to: "/" },
-	],
-	subLinks: [
-		{ icon: <BsBoxSeam />, to: "/" },
-		{ icon: <BsFillDiagram2Fill />, to: "/" },
-		{ icon: <BsFillExclamationCircleFill />, to: "/" },
-	],
-}
-
 export function Sidebar({ closable }: { closable: boolean }) {
+	const sidebar = useSidebar()
 	const { ref, hovered } = useHover()
+	const closed = closable && !hovered
+	const opened = !closable || (closable && hovered)
 
 	return (
 		<aside
 			ref={ref}
 			className={clsx(
 				"flex flex-col h-screen bg-rose-600 overflow-hidden",
-				!closable && "w-80",
-				closable && "fixed",
-				closable && !hovered && "w-20",
-				closable && hovered && "w-80"
+				opened && "w-80",
+				closed && "w-20",
+				closable && "fixed z-50"
 			)}
 		>
 			<div className="px-4 pt-16 grow">
 				<img src={logo} className="w-12 h-12 rounded-md" />
 				<div className="mt-6">
-					<BackToProjects closed={!hovered} />
+					<BackToProjects closed={closed} />
 				</div>
 				<div className="mt-10">
-					<NavLinks closed={!hovered} />
+					<NavLinks closed={closed} links={sidebar.navLinks} />
 				</div>
 			</div>
 			<div className="flex flex-col items-center py-6 border-t border-white">
-				<div className={clsx(!hovered && "invisible")}>
-					<SubLinks />
+				<div className={clsx(closed && "invisible")}>
+					<SubLinks links={sidebar.subLinks} />
 				</div>
 			</div>
 		</aside>
 	)
 }
 
+const useSidebar = () => {
+	const { projectName } = useParams()
+
+	const sidebar: SidebarData = {
+		navLinks: [
+			{
+				label: "Workflows",
+				icon: <BsFillDiagram3Fill />,
+				to: `/builder/projects/${projectName}/interactions`,
+			},
+			{ label: "Tables", icon: <BsTable />, to: `/builder/projects/${projectName}/tables` },
+			{
+				label: "User management",
+				icon: <BsPeopleFill />,
+				to: `/builder/projects/${projectName}/user-management`,
+			},
+			{
+				label: "Providers",
+				icon: <BsHddNetworkFill />,
+				to: `/builder/projects/${projectName}/providers`,
+			},
+			{
+				label: "Files",
+				icon: <BsFiles />,
+				to: `/builder/projects/${projectName}/files`,
+			},
+			{
+				label: "Domains",
+				icon: <BsGlobe />,
+				to: `/builder/projects/${projectName}/domains`,
+			},
+		],
+		subLinks: [
+			{
+				icon: <BsFillDiagram2Fill />,
+				to: `/builder/projects/${projectName}/git`,
+			},
+		],
+	}
+
+	return sidebar
+}
+
 function BackToProjects({ closed }: { closed: boolean }) {
-	const firstLetter = sidebarData.projectName[0]
-	
+	const { projectName = "" } = useParams()
+	const projectFirstLetter = projectName[0]
+
 	return (
 		<Link
-			to={sidebarData.projectsPage}
+			to="/"
 			className="text-lg bg-white w-full rounded-md flex items-center h-8 font-medium gap-2 hover:bg-rose-100 px-4 whitespace-nowrap"
 		>
 			{!closed && (
 				<>
 					<BsChevronLeft className="text-xl" />
-					<span>{sidebarData.projectName}</span>
+					<span>{projectName}</span>
 				</>
 			)}
-			{closed && <span className="w-full text-center">{firstLetter}</span>}
+			{closed && <span className="w-full text-center">{projectFirstLetter}</span>}
 		</Link>
 	)
 }
 
-function NavLinks({ closed }: { closed: boolean }) {
+function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) {
 	return (
 		<nav className="space-y-6">
-			{sidebarData.navLinks.map((link) => (
+			{links.map((link) => (
 				<NavLink key={link.to} link={link} closed={closed} />
 			))}
 		</nav>
@@ -125,10 +149,10 @@ function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 	)
 }
 
-function SubLinks() {
+function SubLinks({ links }: { links: SubLinkData[] }) {
 	return (
 		<nav className="flex gap-2">
-			{sidebarData.subLinks.map((link) => (
+			{links.map((link) => (
 				<SubLink key={link.to} link={link} />
 			))}
 		</nav>
