@@ -1,12 +1,10 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAtom } from "jotai"
 import _ from "lodash"
 import { useForm } from "react-hook-form"
 import { useMutation, useQueryClient } from "react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
-import { Edge, isEdge, isNode, Node } from "reactflow"
 import {
 	Arg,
 	AutomationKind,
@@ -22,8 +20,7 @@ import {
 } from "../../api"
 import { BuilderSteps } from "../../internal/task-builder"
 import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
-import { flowAtom } from "../atoms"
-import { EdgeData, TaskNodeData } from "../flow"
+import { FlowEdge, FlowNode, useFlowStore } from "../flow/flow-store"
 import { NodeType } from "../flow/types"
 import { useModal } from "../hooks"
 import { InputOrSelectKind } from "../ui"
@@ -43,7 +40,8 @@ export function useSaveForm(kind: AutomationKind) {
 	const addAutomationMutation = useMutation(createAutomation)
 	const navigate = useNavigate()
 	const client = useQueryClient()
-	const [elements] = useAtom(flowAtom)
+	const nodes = useFlowStore((store) => store.nodes)
+	const edges = useFlowStore((store) => store.edges)
 
 	const onSave = (values: SaveFormSchema) => {
 		addAutomationMutation.mutate(
@@ -51,7 +49,7 @@ export function useSaveForm(kind: AutomationKind) {
 				projectName,
 				payload: {
 					name: values.name,
-					manifest: mapElementsToPayload(elements),
+					manifest: mapElementsToPayload(nodes, edges),
 					is_template: kind === "template",
 					is_interaction: kind === "interaction",
 				},
@@ -81,14 +79,8 @@ export function useSaveForm(kind: AutomationKind) {
 	}
 }
 
-export function mapElementsToPayload(elements: any): Manifest {
+export function mapElementsToPayload(nodes: FlowNode[], edges: FlowEdge[]): Manifest {
 	const tasks: Tasks = {}
-
-	const nodes = elements
-		.filter(isNode)
-		.filter((node: any) => node.type === NodeType.Task) as Node<TaskNodeData>[]
-	const edges = elements.filter(isEdge) as Edge<EdgeData>[]
-
 	nodes.forEach((node) => {
 		if (!node.data?.name) return console.error("Node data does not exists")
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
@@ -106,18 +98,15 @@ export function mapElementsToPayload(elements: any): Manifest {
 			const fieldValue = taskFields[fieldName]
 			body[fieldName] = toBackendData(fieldValue)
 		}
-		// node.data.vars?.forEach((variable) => {
-		// 	body[variable.key] = toBackendData(variable.value)
-		// })
 		tasks[node.data.name] = {
-			type: node.data.type,
+			type: node.data.type ?? "",
 			body,
 			integration: node.data.integration ?? "",
-			executeAfter: mapEdgesToExecuteAfter(connectedEdges, elements),
+			executeAfter: mapEdgesToExecuteAfter(nodes, connectedEdges),
 		}
 	})
 
-	const triggers = mapElementsToTriggers(elements)
+	const triggers = mapNodesToTriggers(nodes)
 
 	return { tasks, triggers }
 }
@@ -197,12 +186,12 @@ function mapJsonEditorToJsonValue(
 	)
 }
 
-function mapEdgesToExecuteAfter(edges: Edge<EdgeData>[], elements: any): Record<string, string[]> {
+function mapEdgesToExecuteAfter(nodes: FlowNode[], edges: FlowEdge[]): Record<string, string[]> {
 	const executeAfter: Record<string, string[]> = {}
 
 	edges.forEach((edge) => {
-		const source = elements.find((node: any) => node.id === edge.source) as Node<TaskNodeData>
-		if (!source.data) return console.error("Source data does not exists")
+		const source = nodes.find((node) => node.id === edge.source)
+		if (!source?.data) return console.error("Source data does not exists")
 		if (!edge.data) return console.error("Edge data does not exists")
 		executeAfter[source.data.name] = edge.data.triggers
 	})
@@ -210,14 +199,13 @@ function mapEdgesToExecuteAfter(edges: Edge<EdgeData>[], elements: any): Record<
 	return executeAfter
 }
 
-function mapElementsToTriggers(elements: any[]) {
-	const triggers = elements
-		.filter(isNode)
+function mapNodesToTriggers(nodes: FlowNode[]) {
+	const triggers = nodes
 		.filter((node) => node.type === NodeType.Trigger)
 		.map<Trigger>((node) => node.data)
 
 	const automationTriggers: Triggers = {}
-	triggers.forEach((trigger: any) => (automationTriggers[trigger.name] = trigger))
+	triggers.forEach((trigger) => (automationTriggers[trigger.name] = trigger))
 	return automationTriggers
 }
 

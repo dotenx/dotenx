@@ -69,12 +69,12 @@ export interface TriggerKindData {
 export interface Trigger {
 	name: string
 	account_id?: string
-	type: string
+	type?: string
 	endpoint?: string
-	pipeline_name: string
+	pipeline_name?: string
 	integration?: string
-	credentials: Record<string, string>
-	meta_data: Metadata
+	credentials?: Record<string, string>
+	meta_data?: Metadata
 }
 
 export interface Integration {
@@ -270,10 +270,10 @@ export type GetAutomationExecutionsResponse = Execution[]
 
 export interface TriggerData {
 	name: string
-	type: string
-	pipeline_name: string
+	type?: string
+	pipeline_name?: string
 	integration?: string
-	credentials: Record<string, string>
+	credentials?: Record<string, string>
 	iconUrl?: string
 }
 
@@ -593,7 +593,7 @@ type TestTaskData = {
 	manifest: {
 		tasks: {
 			task: {
-				type: string
+				type?: string
 				integration: string
 				body: Record<string, AnyJson>
 			}

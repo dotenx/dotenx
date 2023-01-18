@@ -5,7 +5,7 @@ import { NodeProps } from "reactflow"
 import { TriggerData } from "../../api"
 import { Modals, useModal } from "../hooks"
 import { ContextMenu } from "./context-menu"
-import { useDeleteNode } from "./use-delete-node"
+import { useFlowStore } from "./flow-store"
 
 export interface TriggerEntity {
 	id: string
@@ -16,7 +16,7 @@ export function TriggerNode({ id, data, isConnectable }: NodeProps<TriggerData>)
 	const modal = useModal()
 	const triggerEntity: TriggerEntity = { id, data }
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
-	const deleteNode = useDeleteNode()
+	const deleteNode = useFlowStore((store) => store.deleteNode)
 
 	return (
 		<motion.div

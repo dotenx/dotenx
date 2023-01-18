@@ -255,7 +255,7 @@ const getFieldComponent = (
 		onClick: () => void
 		description: string
 	} & { openBuilder: () => void },
-	type: string,
+	type?: string,
 	mode?: string
 ) => {
 	if (type === "Custom task" && props.label === "tasks") {

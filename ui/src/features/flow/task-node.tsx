@@ -9,11 +9,11 @@ import { BuilderSteps } from "../../internal/task-builder"
 import { Modals, useModal } from "../hooks"
 import { ComplexFieldValue } from "../ui/complex-field"
 import { ContextMenu } from "./context-menu"
-import { useDeleteNode } from "./use-delete-node"
+import { useFlowStore } from "./flow-store"
 
 export interface TaskNodeData {
 	name: string
-	type: string
+	type?: string
 	integration?: string
 	status?: TaskExecutionStatus
 	executionId?: string
@@ -37,7 +37,7 @@ export function TaskNode({ id, data, isConnectable }: NodeProps<TaskNodeData>) {
 	const color = nodeEntity.data.color || "#059669"
 	const lightColor = Color(color).lightness(90).string()
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
-	const deleteNode = useDeleteNode()
+	const deleteNode = useFlowStore((state) => state.deleteNode)
 
 	const wrapperStyle = {
 		backgroundColor: color,
