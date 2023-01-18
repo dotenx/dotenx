@@ -1,5 +1,5 @@
-import { useAtom } from 'jotai'
-import { modalAtom } from '../atoms'
+import { useAtom } from "jotai"
+import { modalAtom } from "../atoms"
 
 export enum Modals {
 	UploadFile = 'upload-file',

@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { Loader } from '../features/ui'
+import { useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
+import { Loader } from "../features/ui"
 
 export interface OAuthMessage {
 	error: string | null
@@ -10,17 +10,17 @@ export interface OAuthMessage {
 }
 
 export default function OauthPage() {
-	const [searchParams] = useSearchParams({ access_token: '', error: '' })
+	const [searchParams] = useSearchParams({ access_token: "", error: "" })
 
 	useEffect(() => {
-		const error = searchParams.get('error')
-		const accessToken = searchParams.get('access_token')
-		const refreshToken = searchParams.get('refresh_token')
-		const accessTokenSecret = searchParams.get('access_token_secret')
+		const error = searchParams.get("error")
+		const accessToken = searchParams.get("access_token")
+		const refreshToken = searchParams.get("refresh_token")
+		const accessTokenSecret = searchParams.get("access_token_secret")
 		if (!error && !accessToken) return
 		const data: OAuthMessage = { error, accessToken, refreshToken, accessTokenSecret }
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		window.opener.postMessage(data, process.env.REACT_APP_URL!)
+		window.opener.postMessage(data, import.meta.env.VITE_URL!)
 		window.close()
 	}, [searchParams])
 

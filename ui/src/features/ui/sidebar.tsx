@@ -1,4 +1,5 @@
-import { memo, ReactNode } from 'react'
+import { memo, ReactNode } from "react"
+import { BiGitBranch } from "react-icons/bi"
 import {
 	BsBricks,
 	BsFileEarmarkPdf,
@@ -11,7 +12,6 @@ import {
 	BsTable,
 	BsWindowSidebar,
 } from 'react-icons/bs'
-import { BiGitBranch } from 'react-icons/bi'
 import { FaUsers } from 'react-icons/fa'
 import { IoArrowBack, IoExit } from 'react-icons/io5'
 import { useMutation } from 'react-query'
@@ -21,66 +21,63 @@ import logo from '../../assets/images/logo.png'
 import {
 	ADMIN_URL,
 	IS_LOCAL,
-	PRIVATE_VERSION,
-	PUBLIC_VERSION,
 	UI_BUILDER_ADDRESS,
 } from '../../constants'
 import { NavItem } from './nav-item'
-import { Tour } from './tour'
 import { Button } from '@mantine/core'
 import { Modals, useModal } from '../hooks'
 const studioLinks = [
-	{ to: '/automations', label: 'Automation', icon: <BsFillDiagram3Fill /> },
-	{ to: '/integrations', label: 'Integrations', icon: <BsHddNetworkFill /> },
-	{ to: '/triggers', label: 'Triggers', icon: <BsFillCalendar3WeekFill /> },
+	{ to: "/automations", label: "Automation", icon: <BsFillDiagram3Fill /> },
+	{ to: "/integrations", label: "Integrations", icon: <BsHddNetworkFill /> },
+	{ to: "/triggers", label: "Triggers", icon: <BsFillCalendar3WeekFill /> },
 ]
 
 export const Sidebar = memo(() => {
-	const isBuilder = useMatch('/builder/*')
-	const isHome = useMatch('/')
+	const isBuilder = useMatch("/builder/*")
+	const isHome = useMatch("/")
 	const { projectName } = useParams()
 
 	const builderLinks = [
 		{
 			to: `/builder/projects/${projectName}/user-management`,
-			label: 'User management',
-			tourSelector: 'user_management',
+			label: "User management",
+			tourSelector: "user_management",
 			icon: <FaUsers />,
 		},
 		{
 			to: `/builder/projects/${projectName}/tables`,
-			label: 'Tables',
-			tourSelector: 'tables',
+			label: "Tables",
+			tourSelector: "tables",
 			icon: <BsTable />,
 		},
 		{
 			to: `/builder/projects/${projectName}/interactions`,
-			label: 'Interactions',
-			tourSelector: 'interactions',
+			label: "Interactions",
+			tourSelector: "interactions",
 			icon: <BsBricks />,
 		},
 		{
 			to: `/builder/projects/${projectName}/templates`,
-			label: 'Automation Templates',
-			tourSelector: 'automation_Templates',
+			label: "Automation Templates",
+			tourSelector: "automation_Templates",
 			icon: <BsWindowSidebar />,
 		},
 		{
 			to: `/builder/projects/${projectName}/providers`,
-			label: 'Providers',
-			tourSelector: 'providers',
+			label: "Providers",
+			tourSelector: "providers",
 			icon: <BsFillXDiamondFill />,
 		},
 		{
 			to: `/builder/projects/${projectName}/files`,
-			label: 'Files',
-			tourSelector: 'files',
+			label: "Files",
+			tourSelector: "files",
 			icon: <BsFileEarmarkPdf />,
 		},
 		{
 			to: `/builder/projects/${projectName}/domains`,
-			label: 'Domains',
-			tourSelector: 'domains',
+			label: "Domains",
+			tourSelector: "domains",
 			icon: <BsGlobe2 />,
 		},
 	]
@@ -92,7 +89,7 @@ export const Sidebar = memo(() => {
 				<img className="w-10 rounded " src={logo} alt="logo" />
 				<div className="space-y-1 transition opacity-0 group-hover:opacity-100">
 					<h1>DoTenX</h1>
-					<h2 className="text-xs">{isBuilder ? 'Builder' : 'Studio'}</h2>
+					<h2 className="text-xs">{isBuilder ? "Builder" : "Studio"}</h2>
 				</div>
 			</div>
 			{projectName && (
@@ -128,7 +125,6 @@ export const Sidebar = memo(() => {
 
 				{!isHome && (
 					<>
-						<Tour />
 						<div className="space-y-2">
 							<a
 								href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}
@@ -147,16 +143,6 @@ export const Sidebar = memo(() => {
 								</div>
 							</a>
 						</div>
-					</>
-				)}
-			</div>
-
-			<div className="pt-4 text-[10px] text-center opacity-0 group-hover:opacity-100 transition-opacity">
-				<span title="Public Version">v{PUBLIC_VERSION}</span>
-				{PRIVATE_VERSION && (
-					<>
-						<span> - </span>
-						<span title="Internal Version">{PRIVATE_VERSION}</span>
 					</>
 				)}
 			</div>

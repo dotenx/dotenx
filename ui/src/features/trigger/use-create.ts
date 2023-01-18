@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from 'react-query'
-import { createTrigger, QueryKey, TriggerData } from '../../api'
-import { useModal } from '../hooks'
+import { useMutation, useQueryClient } from "react-query"
+import { createTrigger, QueryKey, TriggerData } from "../../api"
+import { useModal } from "../hooks"
 
 export function useCreateTrigger() {
 	const mutation = useMutation(createTrigger)

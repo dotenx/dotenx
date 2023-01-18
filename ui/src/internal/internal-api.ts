@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ADMIN_API_URL } from '../constants'
 
-const API_URL = process.env.REACT_APP_API_URL
+const API_URL = import.meta.env.VITE_API_URL
 
 const api = axios.create({
 	baseURL: API_URL,
@@ -14,12 +14,12 @@ const adminApi = axios.create({
 })
 
 export enum InternalQueryKey {
-	GetTaskBuilderFunctions = 'get-task-builder-functions',
-	GetAccessToken = 'get-access-token',
+	GetTaskBuilderFunctions = "get-task-builder-functions",
+	GetAccessToken = "get-access-token",
 }
 
 export function getTaskBuilderFunctions() {
-	return api.get<TaskBuilderFunctionsResponse>('/mini/task')
+	return api.get<TaskBuilderFunctionsResponse>("/mini/task")
 }
 
 export function setAccessToken() {
@@ -76,10 +76,10 @@ export interface InOutPut {
 }
 
 export enum Type {
-	Array = 'array',
-	Boolean = 'boolean',
-	Float = 'float',
-	Integer = 'integer',
-	Object = 'object',
-	String = 'string',
+	Array = "array",
+	Boolean = "boolean",
+	Float = "float",
+	Integer = "integer",
+	Object = "object",
+	String = "string",
 }

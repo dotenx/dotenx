@@ -1,14 +1,14 @@
-import { Title } from '@mantine/core'
-import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
-import { getViewData, getViewDetails, QueryKey } from '../api'
-import { ContentWrapper, Loader } from '../features/ui'
-import { useGetProjectTag } from '../features/ui/hooks/use-get-project-tag'
-import { ViewActions } from '../features/views/view-actions'
-import { ViewTable } from '../features/views/view-table'
+import { Title } from "@mantine/core"
+import { useQuery } from "react-query"
+import { useParams } from "react-router-dom"
+import { getViewData, getViewDetails, QueryKey } from "../api"
+import { ContentWrapper, Loader } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
+import { ViewActions } from "../features/views/view-actions"
+import { ViewTable } from "../features/views/view-table"
 
 export function ViewPage() {
-	const { projectName = '', viewName = '' } = useParams()
+	const { projectName = "", viewName = "" } = useParams()
 	const { projectTag } = useGetProjectTag()
 	const detailsQuery = useQuery(
 		[QueryKey.GetViewDetails, projectName, viewName],

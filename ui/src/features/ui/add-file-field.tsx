@@ -1,13 +1,13 @@
-import { ErrorMessage } from '@hookform/error-message'
+import { ErrorMessage } from "@hookform/error-message"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
+} from "react-hook-form"
 
-import { BsFillFolderSymlinkFill } from 'react-icons/bs'
+import { BsFillFolderSymlinkFill } from "react-icons/bs"
 interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
 	label: string
@@ -38,7 +38,7 @@ export function AddFileField<
 						className="hidden"
 						id={rest.name}
 						onChange={onChange}
-						value={value ?? ''}
+						value={value ?? ""}
 						ref={ref}
 						autoComplete="off"
 						{...rest}
@@ -51,7 +51,7 @@ export function AddFileField<
 	)
 }
 
-AddFileField.displayName = 'AddFileField'
+AddFileField.displayName = "AddFileField"
 
 interface FieldErrorProps {
 	errors?: FieldErrors

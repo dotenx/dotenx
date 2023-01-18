@@ -1,11 +1,11 @@
-import { useSetAtom } from 'jotai'
-import { ReactFlowProvider } from 'react-flow-renderer'
-import { useQuery } from 'react-query'
-import { AutomationKind, getAutomation, QueryKey } from '../../api'
-import { selectedAutomationAtom, selectedAutomationDataAtom } from '../atoms'
-import { Flow } from '../flow'
-import { Loader } from '../ui'
-import { ActionBar } from './action-bar'
+import { useSetAtom } from "jotai"
+import { useQuery } from "react-query"
+import { ReactFlowProvider } from "reactflow"
+import { AutomationKind, getAutomation, QueryKey } from "../../api"
+import { selectedAutomationAtom, selectedAutomationDataAtom } from "../atoms"
+import { Flow } from "../flow"
+import { Loader } from "../ui"
+import { ActionBar } from "./action-bar"
 
 interface AutomationProps {
 	name?: string

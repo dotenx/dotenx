@@ -7,20 +7,20 @@ import {
 	Switch,
 	Textarea,
 	TextInput,
-} from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { closeAllModals, openModal } from '@mantine/modals'
-import { TbPlus, TbTrash } from 'react-icons/tb'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Link } from 'react-router-dom'
-import { z } from 'zod'
-import { QueryKey } from '../api'
-import { createProject, deleteProject, getProjects } from '../api/project'
-import { ContentWrapper } from '../features/ui'
+} from "@mantine/core"
+import { useForm } from "@mantine/form"
+import { closeAllModals, openModal } from "@mantine/modals"
+import { TbPlus, TbTrash } from "react-icons/tb"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Link } from "react-router-dom"
+import { z } from "zod"
+import { QueryKey } from "../api"
+import { createProject, deleteProject, getProjects } from "../api/project"
+import { ContentWrapper } from "../features/ui"
 
 export function HomePage() {
 	const onClickAddProject = () => {
-		openModal({ title: 'Create Project', children: <ProjectForm /> })
+		openModal({ title: "Create Project", children: <ProjectForm /> })
 	}
 
 	return (
@@ -99,7 +99,7 @@ type Schema = z.infer<typeof schema>
 function ProjectForm() {
 	const createProjectMutation = useMutation(createProject)
 	const form = useForm<Schema>({
-		initialValues: { name: '', description: '', hasDatabase: false },
+		initialValues: { name: "", description: "", hasDatabase: false },
 	})
 	const queryClient = useQueryClient()
 
@@ -114,9 +114,9 @@ function ProjectForm() {
 
 	return (
 		<form onSubmit={onSubmit} className="space-y-6">
-			<TextInput label="Name" withAsterisk {...form.getInputProps('name')} />
-			<Textarea label="Description" {...form.getInputProps('description')} />
-			<Switch label="Create database" {...form.getInputProps('hasDatabase')} />
+			<TextInput label="Name" withAsterisk {...form.getInputProps("name")} />
+			<Textarea label="Description" {...form.getInputProps("description")} />
+			<Switch label="Create database" {...form.getInputProps("hasDatabase")} />
 			<Button loading={createProjectMutation.isLoading} type="submit" fullWidth>
 				Create Project
 			</Button>

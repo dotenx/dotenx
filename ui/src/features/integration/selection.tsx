@@ -1,8 +1,8 @@
-import { Button } from '@mantine/core'
-import { FieldErrors, FieldPath, FieldValues, UseControllerProps } from 'react-hook-form'
-import { useQuery } from 'react-query'
-import { getIntegrationsByKinds, QueryKey } from '../../api'
-import { NewSelect } from '../ui'
+import { Button } from "@mantine/core"
+import { FieldErrors, FieldPath, FieldValues, UseControllerProps } from "react-hook-form"
+import { useQuery } from "react-query"
+import { getIntegrationsByKinds, QueryKey } from "../../api"
+import { NewSelect } from "../ui"
 
 interface SelectIntegrationProps<
 	TFieldValues extends FieldValues,

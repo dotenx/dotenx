@@ -28,7 +28,7 @@ const schema = z.object({
 		.max(20)
 		.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
 			message:
-				'Name should start with a letter and contain only letters, numbers, and underscores',
+				"Name should start with a letter and contain only letters, numbers, and underscores",
 		}),
 	type: z.string().min(1),
 	key: z.string().min(1),
@@ -95,19 +95,19 @@ export function ProviderForm() {
 	})
 	const form = useForm<Schema>({
 		defaultValues: {
-			name: '',
-			type: '',
-			key: '',
-			secret: '',
+			name: "",
+			type: "",
+			key: "",
+			secret: "",
 			scopes: [],
-			front_end_url: '',
+			front_end_url: "",
 		},
 		resolver: zodResolver(schema),
 	})
 	form.setValue('type', typeValue as string)
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
-	const providerName = form.watch('name')
+	const providerName = form.watch("name")
 
 	interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 		image: string
@@ -212,10 +212,10 @@ function CallbackUrls({
 	projectName: string
 	providerName: string
 }) {
-	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
+	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ""), {
 		enabled: !!projectName,
 	})
-	const projectTag = projectQuery.data?.data?.tag ?? ''
+	const projectTag = projectQuery.data?.data?.tag ?? ""
 	const profileQuery = useQuery(
 		[QueryKey.GetProfile, projectTag],
 		() => getProfile({ projectTag }),

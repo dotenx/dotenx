@@ -1,20 +1,20 @@
-import { ActionIcon, Button } from '@mantine/core'
-import clsx from 'clsx'
-import { useAtom, useSetAtom } from 'jotai'
-import _ from 'lodash'
-import { useEffect } from 'react'
-import { Control, FieldErrors, FieldPath, useFieldArray } from 'react-hook-form'
-import { IoAdd, IoArrowBack, IoClose } from 'react-icons/io5'
-import { FieldType } from '../../api'
-import { TaskBuilder } from '../../internal/task-builder'
-import { taskBuilderState, taskCodeState } from '../flow'
-import { IntegrationForm, SelectIntegration } from '../integration'
-import { Description, Field, GroupData, GroupSelect, InputOrSelectKind, Loader } from '../ui'
-import { ComplexField, ComplexFieldProps } from '../ui/complex-field'
-import { JsonEditorInput } from '../ui/json-editor-input'
-import { CodeField } from './code-field'
-import { TestTask } from './test-step'
-import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from './use-settings'
+import { ActionIcon, Button } from "@mantine/core"
+import clsx from "clsx"
+import { useAtom, useSetAtom } from "jotai"
+import _ from "lodash"
+import { useEffect } from "react"
+import { Control, FieldErrors, FieldPath, useFieldArray } from "react-hook-form"
+import { IoAdd, IoArrowBack, IoClose } from "react-icons/io5"
+import { FieldType } from "../../api"
+import { TaskBuilder } from "../../internal/task-builder"
+import { taskBuilderState, taskCodeState } from "../flow"
+import { IntegrationForm, SelectIntegration } from "../integration"
+import { Description, Field, GroupData, GroupSelect, InputOrSelectKind, Loader } from "../ui"
+import { ComplexField, ComplexFieldProps } from "../ui/complex-field"
+import { JsonEditorInput } from "../ui/json-editor-input"
+import { CodeField } from "./code-field"
+import { TestTask } from "./test-step"
+import { TaskSettingsSchema, UseTaskForm, useTaskSettings } from "./use-settings"
 
 interface TaskSettingsWithIntegrationProps {
 	defaultValues: TaskSettingsSchema
@@ -39,12 +39,12 @@ export function TaskSettingsWithIntegration({
 	const [taskBuilder, setTaskBuilder] = useAtom(taskBuilderState)
 	const hasSecondPanel = isAddingIntegration || taskCode.isOpen || taskBuilder.opened
 	const codeFieldValue = taskForm.watch(`others.${taskCode.key}`)
-	const taskBuilderValues = taskForm.watch('others.tasks')
+	const taskBuilderValues = taskForm.watch("others.tasks")
 
 	// todo: filter out Custom task if mode is 'custom_task'
 
 	useEffect(() => {
-		if (defaultValues?.type === 'Custom task') {
+		if (defaultValues?.type === "Custom task") {
 			setTaskBuilder({ opened: true })
 		}
 	}, [defaultValues?.type])
@@ -57,8 +57,8 @@ export function TaskSettingsWithIntegration({
 	}, [setIsAddingIntegration, setTaskBuilder, setTaskCode, taskForm.taskType])
 
 	return (
-		<div className={clsx('grid h-full', hasSecondPanel && 'grid-cols-2')}>
-			<div className={clsx(hasSecondPanel && 'pr-10')}>
+		<div className={clsx("grid h-full", hasSecondPanel && "grid-cols-2")}>
+			<div className={clsx(hasSecondPanel && "pr-10")}>
 				<TaskSettings
 					mode={mode}
 					taskForm={taskForm}
@@ -74,7 +74,7 @@ export function TaskSettingsWithIntegration({
 						integrationKind={taskForm.selectedTaskIntegrationKind}
 						onSuccess={(addedIntegrationName) => {
 							setIsAddingIntegration(false)
-							taskForm.setValue('integration', addedIntegrationName)
+							taskForm.setValue("integration", addedIntegrationName)
 						}}
 					/>
 				</div>
@@ -82,7 +82,7 @@ export function TaskSettingsWithIntegration({
 			{taskCode.isOpen && (
 				<CodeField
 					// TODO: PLEASE CHANGE THIS WHEN BACKEND SOMEHOW SENDS THE TYPE!
-					language={taskCode.label?.includes('code') ? 'js' : 'yaml'}
+					language={taskCode.label?.includes("code") ? "js" : "yaml"}
 					submitText={taskCode.label}
 					onBack={() => setTaskCode({ isOpen: false })}
 					onSubmit={(code) => {
@@ -93,7 +93,7 @@ export function TaskSettingsWithIntegration({
 						setTaskCode({ isOpen: false })
 					}}
 					defaultValue={
-						typeof codeFieldValue === 'object' && 'data' in codeFieldValue
+						typeof codeFieldValue === "object" && "data" in codeFieldValue
 							? codeFieldValue.data
 							: undefined
 					}
@@ -155,25 +155,25 @@ export function TaskSettings({
 	} = taskForm
 	const setTaskCode = useSetAtom(taskCodeState)
 	const setTaskBuilder = useSetAtom(taskBuilderState)
-	const taskBuilderValues = taskForm.watch('others.tasks')
+	const taskBuilderValues = taskForm.watch("others.tasks")
 	const formData = taskForm.watch()
 	return (
 		<div className="flex flex-col h-full gap-10">
 			<div className="flex flex-col gap-5 grow">
 				{/* If the component is used in a custom task, we use `task` as the name, so this field becomes redundant */}
-				{mode !== 'custom_task' && (
+				{mode !== "custom_task" && (
 					<Field label="Name" name="name" control={control} errors={errors} />
 				)}
 				<div>
 					{/* The dropdown for selecting the task */}
 					<GroupSelect
 						options={
-							mode === 'custom_task'
+							mode === "custom_task"
 								? tasksOptions.map((task) => {
 										return {
 											...task,
 											options: task.options.filter(
-												(option) => option.value !== 'Custom task'
+												(option) => option.value !== "Custom task"
 											),
 										}
 										// eslint-disable-next-line no-mixed-spaces-and-tabs
@@ -200,7 +200,7 @@ export function TaskSettings({
 							errors: errors,
 							label: label,
 							name: `others.${taskField.key}`,
-							groups: mode !== 'custom_task' ? outputGroups : [],
+							groups: mode !== "custom_task" ? outputGroups : [],
 							description: taskField.description,
 							onClick: () =>
 								setTaskCode({
@@ -227,12 +227,12 @@ export function TaskSettings({
 					<Variables
 						control={control}
 						errors={errors}
-						outputGroups={mode !== 'custom_task' ? outputGroups : []}
+						outputGroups={mode !== "custom_task" ? outputGroups : []}
 					/>
 				)}
 			</div>
 
-			{mode !== 'custom_task' && (
+			{mode !== "custom_task" && (
 				<>
 					<TestTask task={formData} />
 					<Button fullWidth disabled={disableSubmit} onClick={onSubmit}>
@@ -255,13 +255,13 @@ const getFieldComponent = (
 		onClick: () => void
 		description: string
 	} & { openBuilder: () => void },
-	type: string,
+	type?: string,
 	mode?: string
 ) => {
-	if (type === 'Custom task' && props.label === 'tasks') {
+	if (type === "Custom task" && props.label === "tasks") {
 		return (
 			<Button key={props.key} type="button" variant="default" onClick={props.openBuilder}>
-				{props.taskBuilderValues ? 'Edit Task' : 'Build A Task'}
+				{props.taskBuilderValues ? "Edit Task" : "Build A Task"}
 			</Button>
 		)
 	}
@@ -270,7 +270,7 @@ const getFieldComponent = (
 		case FieldType.Text:
 			return (
 				<div key={props.key}>
-					<ComplexField {...props} valueKinds={['input-or-select']} />
+					<ComplexField {...props} valueKinds={["input-or-select"]} />
 					<Description>{props.description}</Description>
 				</div>
 			)
@@ -283,7 +283,7 @@ const getFieldComponent = (
 		case FieldType.Object:
 			return (
 				<div key={props.key}>
-					<JsonEditorInput {...props} onlySimple={mode === 'custom_task'} />
+					<JsonEditorInput {...props} onlySimple={mode === "custom_task"} />
 					<Description>{props.description}</Description>
 				</div>
 			)
@@ -307,7 +307,7 @@ interface VariablesProps {
 }
 
 function Variables({ control, errors, outputGroups }: VariablesProps) {
-	const { fields, append, remove } = useFieldArray({ control, name: 'vars' })
+	const { fields, append, remove } = useFieldArray({ control, name: "vars" })
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -355,7 +355,7 @@ interface OutputsProps {
 	errors: FieldErrors<TaskSettingsSchema>
 }
 function Outputs({ control, errors }: OutputsProps) {
-	const { fields, append, remove } = useFieldArray({ control, name: 'outputs' })
+	const { fields, append, remove } = useFieldArray({ control, name: "outputs" })
 
 	return (
 		<div className="flex flex-col gap-2">

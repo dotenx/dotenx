@@ -1,33 +1,33 @@
-import _ from 'lodash'
-import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
-import { API_URL, getColumns, QueryKey } from '../../api'
-import { columnTypeKinds } from '../../constants'
-import { Endpoint, Loader } from '../ui'
+import _ from "lodash"
+import { useQuery } from "react-query"
+import { useParams } from "react-router-dom"
+import { API_URL, getColumns, QueryKey } from "../../api"
+import { columnTypeKinds } from "../../constants"
+import { Endpoint, Loader } from "../ui"
 
 interface TableEndpointsProps {
 	projectTag: string
 }
 
 export function TableEndpoints({ projectTag }: TableEndpointsProps) {
-	const { tableName = '', isPublic } = useParams()
+	const { tableName = "", isPublic } = useParams()
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectTag, tableName))
 	const columns = query.data?.data.columns ?? []
 	const body = _.fromPairs(
 		columns
-			.filter((column) => column.name !== 'id' && column.name !== 'creator_id')
+			.filter((column) => column.name !== "id" && column.name !== "creator_id")
 			.map((column) => {
 				const colKind =
-					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? 'none'
+					columnTypeKinds.find((kind) => kind.types.includes(column.type))?.kind ?? "none"
 				return [
 					column.name,
-					colKind === 'number'
+					colKind === "number"
 						? 0
-						: colKind === 'boolean'
+						: colKind === "boolean"
 						? false
-						: column.type.includes('array')
+						: column.type.includes("array")
 						? []
-						: '',
+						: "",
 				]
 			})
 	)
@@ -36,7 +36,7 @@ export function TableEndpoints({ projectTag }: TableEndpointsProps) {
 
 	return (
 		<div className="space-y-8 ">
-			{isPublic === 'public' && (
+			{isPublic === "public" && (
 				<Endpoint
 					label="Public access"
 					url={`${API_URL}/public/database/query/select/project/${projectTag}/table/${tableName}`}
@@ -66,7 +66,7 @@ export function TableEndpoints({ projectTag }: TableEndpointsProps) {
 				label="Delete a record by ID"
 				url={`${API_URL}/database/query/delete/project/${projectTag}/table/${tableName}`}
 				method="DELETE"
-				code={{ rowId: '<id>' }}
+				code={{ rowId: "<id>" }}
 			/>
 		</div>
 	)

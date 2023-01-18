@@ -1,11 +1,11 @@
-import { ErrorMessage } from '@hookform/error-message'
+import { ErrorMessage } from "@hookform/error-message"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
+} from "react-hook-form"
 
 export interface FieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
 	extends UseControllerProps<TFieldValues, TName> {
@@ -38,7 +38,7 @@ export function Field<TFieldValues extends FieldValues, TName extends FieldPath<
 							className="px-2 py-1 border rounded border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
 							id={rest.name}
 							onChange={onChange}
-							value={value ?? ''}
+							value={value ?? ""}
 							ref={ref}
 							autoComplete="off"
 							{...rest}
@@ -55,7 +55,7 @@ export function Field<TFieldValues extends FieldValues, TName extends FieldPath<
 							className="px-2 py-1 border rounded border-slate-400 placeholder:text-slate-500 outline-rose-500 focus:ring-0 focus:border-slate-400 form-input focus:outline outline-2 outline-offset-[-1px]"
 							id={rest.name}
 							onChange={(e) => onChange({ text: e.target.value })}
-							value={value ?? ''}
+							value={value ?? ""}
 							ref={ref}
 							autoComplete="off"
 							{...rest}
@@ -70,7 +70,7 @@ export function Field<TFieldValues extends FieldValues, TName extends FieldPath<
 	)
 }
 
-Field.displayName = 'Field'
+Field.displayName = "Field"
 
 interface FieldErrorProps {
 	errors?: FieldErrors

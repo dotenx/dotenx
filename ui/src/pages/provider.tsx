@@ -1,21 +1,21 @@
-import { ActionIcon, Anchor, Code } from '@mantine/core'
-import { useClipboard } from '@mantine/hooks'
-import { ReactNode } from 'react'
-import { IoArrowBack, IoCheckmark, IoCopy, IoLink } from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
-import { API_URL, getProfile, getProject, getProvider, QueryKey } from '../api'
-import { ContentWrapper, Loader } from '../features/ui'
+import { ActionIcon, Anchor, Code } from "@mantine/core"
+import { useClipboard } from "@mantine/hooks"
+import { ReactNode } from "react"
+import { IoArrowBack, IoCheckmark, IoCopy, IoLink } from "react-icons/io5"
+import { useQuery } from "react-query"
+import { Link, useParams } from "react-router-dom"
+import { API_URL, getProfile, getProject, getProvider, QueryKey } from "../api"
+import { ContentWrapper, Loader } from "../features/ui"
 
 export default function ProviderPage() {
 	const { providerName } = useParams()
-	const query = useQuery(QueryKey.GetProvider, () => getProvider(providerName ?? ''))
+	const query = useQuery(QueryKey.GetProvider, () => getProvider(providerName ?? ""))
 	const provider = query.data?.data.provider
 	const { projectName } = useParams()
-	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
+	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ""), {
 		enabled: !!projectName,
 	})
-	const projectTag = projectQuery.data?.data?.tag ?? ''
+	const projectTag = projectQuery.data?.data?.tag ?? ""
 	const profileQuery = useQuery(
 		[QueryKey.GetProfile, projectTag],
 		() => getProfile({ projectTag }),
@@ -65,7 +65,7 @@ export default function ProviderPage() {
 							</ExternalLink>
 						}
 					/>
-					<Detail label="Tag" value={provider.tag || 'Some tag'} />
+					<Detail label="Tag" value={provider.tag || "Some tag"} />
 					<Detail label="Secret" value={provider.secret} />
 					<Detail label="Key" value={provider.key} />
 				</div>
@@ -78,20 +78,20 @@ export default function ProviderPage() {
 function Detail({
 	label,
 	value,
-	kind = 'text',
+	kind = "text",
 }: {
 	label: string
 	value: string | ReactNode
-	kind?: 'text' | 'url'
+	kind?: "text" | "url"
 }) {
 	const clipboard = useClipboard({ timeout: 3000 })
 
 	return (
 		<div className="space-y-1">
 			<p className="text-xs font-medium text-slate-500">{label}</p>
-			{kind === 'text' && <p className="break-words">{value || 'No value'}</p>}
+			{kind === "text" && <p className="break-words">{value || "No value"}</p>}
 
-			{kind === 'url' && (
+			{kind === "url" && (
 				<div className="flex items-center gap-2">
 					<Code>{value}</Code>
 					<ActionIcon

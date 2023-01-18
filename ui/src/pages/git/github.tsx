@@ -1,8 +1,8 @@
-import { Button, Group, Loader, Modal, Select, Text, TextInput, Tooltip } from '@mantine/core'
-import { forwardRef, ReactElement, useEffect, useState } from 'react'
-import { ImInfo, ImWarning } from 'react-icons/im'
-import { FaBars, FaPlus } from 'react-icons/fa'
-import { useMutation, useQuery } from 'react-query'
+import { Button, Group, Loader, Modal, Select, Text, TextInput, Tooltip } from "@mantine/core"
+import { forwardRef, ReactElement, useEffect, useState } from "react"
+import { ImInfo, ImWarning } from "react-icons/im"
+import { FaBars, FaPlus } from "react-icons/fa"
+import { useMutation, useQuery } from "react-query"
 import {
 	getGitAccounts,
 	getRepoList,
@@ -10,14 +10,14 @@ import {
 	QueryKey,
 	exportProject,
 	importProject,
-} from '../../api'
-import { BsGithub } from 'react-icons/bs'
-import { Loader as LinearLoader } from '../../features/ui'
-import { useParams } from 'react-router-dom'
-import { BiGitRepoForked } from 'react-icons/bi'
-import { TbFileImport, TbPackgeExport } from 'react-icons/tb'
-import { toast } from 'react-toastify'
-interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+} from "../../api"
+import { BsGithub } from "react-icons/bs"
+import { Loader as LinearLoader } from "../../features/ui"
+import { useParams } from "react-router-dom"
+import { BiGitRepoForked } from "react-icons/bi"
+import { TbFileImport, TbPackgeExport } from "react-icons/tb"
+import { toast } from "react-toastify"
+interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
 	icon?: ReactElement
 	label: string
 	value: string
@@ -27,17 +27,17 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 	const [selectedValue, setSelectedValue] = useState<string>()
 	const [repoList, setRepoList] = useState<string[]>()
 	const [showError, setShowError] = useState(false)
-	const [selectedRepo, setSelectedRepo] = useState('')
+	const [selectedRepo, setSelectedRepo] = useState("")
 	const staticOptions = [
-		{ label: 'Add Github Account', value: 'add', icon: <FaPlus className="w-5 h-5" /> },
-		{ label: 'Swith Git Provider', value: 'switch', icon: <FaBars className="w-5 h-5" /> },
+		{ label: "Add Github Account", value: "add", icon: <FaPlus className="w-5 h-5" /> },
+		{ label: "Swith Git Provider", value: "switch", icon: <FaBars className="w-5 h-5" /> },
 	]
-	const { isLoading } = useQuery([QueryKey.GetGitAccounts], () => getGitAccounts('github'), {
+	const { isLoading } = useQuery([QueryKey.GetGitAccounts], () => getGitAccounts("github"), {
 		onError: (err: any) => {
 			if (err.response.status === 404) {
 				window.open(
-					'https://api.dotenx.com/git/integration/auth/github',
-					'targetWindow',
+					"https://api.dotenx.com/git/integration/auth/github",
+					"targetWindow",
 					`toolbar=no,
 				 location=no,
 				 status=no,
@@ -69,12 +69,12 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 		},
 		onError: () => setShowError(true),
 	})
-	const [openModal, setOpenModal] = useState<'export' | 'import' | ''>('')
+	const [openModal, setOpenModal] = useState<"export" | "import" | "">("")
 	useEffect(() => {
-		if (selectedValue === 'add') {
+		if (selectedValue === "add") {
 			window.open(
-				'https://api.dotenx.com/git/integration/auth/github',
-				'targetWindow',
+				"https://api.dotenx.com/git/integration/auth/github",
+				"targetWindow",
 				`toolbar=no,
 		 location=no,
 		 status=no,
@@ -82,18 +82,18 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 		 scrollbars=yes,
 		 resizable=yes,`
 			)
-			setSelectedValue('')
-		} else if (selectedValue === 'switch') {
+			setSelectedValue("")
+		} else if (selectedValue === "switch") {
 			resetProvider()
 		} else if (selectedValue) {
-			mutate({ provider: 'github', gitId: selectedValue })
+			mutate({ provider: "github", gitId: selectedValue })
 		}
 	}, [selectedValue])
 
 	const handleAuthorizeClick = () => {
 		window.open(
-			'https://api.dotenx.com/git/integration/auth/github',
-			'targetWindow',
+			"https://api.dotenx.com/git/integration/auth/github",
+			"targetWindow",
 			`toolbar=no,
 		 location=no,
 		 status=no,
@@ -117,7 +117,7 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 			</div>
 		)
 	)
-	SelectItem.displayName = 'SelectItem'
+	SelectItem.displayName = "SelectItem"
 	if (isLoading)
 		return (
 			<div className="mx-auto w-1/2 mt-40">
@@ -127,7 +127,7 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 	return (
 		<div className="mx-auto bg-rose-100  rounded-md p-5 w-2/3">
 			<Select
-				radius={'md'}
+				radius={"md"}
 				placeholder="Select a git account"
 				className="w-1/3"
 				itemComponent={SelectItem}
@@ -148,7 +148,7 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 			) : (
 				<div
 					className={`font-medium w-full h-[400px] overflow-y-auto   mt-2 ${
-						!repoList && 'flex items-center'
+						!repoList && "flex items-center"
 					}`}
 				>
 					{repoListLoading ? (
@@ -175,9 +175,9 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 											rightIcon={<TbPackgeExport className="w-5 h-5" />}
 											onClick={() => {
 												setSelectedRepo(repoName)
-												setOpenModal('export')
+												setOpenModal("export")
 											}}
-											radius={'md'}
+											radius={"md"}
 											variant="light"
 										>
 											Export
@@ -187,9 +187,9 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 											onClick={() => {
 												setSelectedRepo(repoName)
 
-												setOpenModal('import')
+												setOpenModal("import")
 											}}
-											radius={'md'}
+											radius={"md"}
 											variant="light"
 										>
 											Import
@@ -206,24 +206,24 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 				</div>
 			)}
 			<Modal
-				opened={openModal === 'export'}
-				onClose={() => setOpenModal('')}
+				opened={openModal === "export"}
+				onClose={() => setOpenModal("")}
 				title="Export Project"
 			>
 				<ExportRepoModal
-					closeModal={() => setOpenModal('')}
-					gitId={selectedValue || ''}
+					closeModal={() => setOpenModal("")}
+					gitId={selectedValue || ""}
 					repoName={selectedRepo}
 				/>
 			</Modal>
 			<Modal
-				opened={openModal === 'import'}
-				onClose={() => setOpenModal('')}
+				opened={openModal === "import"}
+				onClose={() => setOpenModal("")}
 				title="Import Project"
 			>
 				<ImportRepoModal
-					closeModal={() => setOpenModal('')}
-					gitId={selectedValue || ''}
+					closeModal={() => setOpenModal("")}
+					gitId={selectedValue || ""}
 					repoName={selectedRepo}
 				/>
 			</Modal>
@@ -240,13 +240,13 @@ const ExportRepoModal = ({
 	repoName: string
 	closeModal: () => void
 }) => {
-	const { projectName = '' } = useParams()
+	const { projectName = "" } = useParams()
 
-	const [commitMessage, setCommitMessage] = useState('')
+	const [commitMessage, setCommitMessage] = useState("")
 
 	const { data, isLoading } = useQuery([QueryKey.GetBranchList, repoName], () =>
 		getBranchList({
-			provider: 'github',
+			provider: "github",
 			gitId,
 			repoName,
 		})
@@ -256,12 +256,12 @@ const ExportRepoModal = ({
 
 	const { mutate, isLoading: repoListLoading } = useMutation(exportProject, {
 		onSuccess: () => {
-			toast('Export successfuly done.', { type: 'success', autoClose: 2000 })
+			toast("Export successfuly done.", { type: "success", autoClose: 2000 })
 			closeModal()
 		},
 		onError: () => {
-			toast('Something went wrong. Please try again later', {
-				type: 'error',
+			toast("Something went wrong. Please try again later", {
+				type: "error",
 				autoClose: 2000,
 			})
 		},
@@ -292,7 +292,7 @@ const ExportRepoModal = ({
 				placeholder="Message"
 				required
 				error={
-					commitMessage.length > 72 && 'The commit message is limited to 72 characters'
+					commitMessage.length > 72 && "The commit message is limited to 72 characters"
 				}
 				value={commitMessage}
 				onChange={(event) => setCommitMessage(event.currentTarget.value)}
@@ -302,7 +302,7 @@ const ExportRepoModal = ({
 				loading={repoListLoading}
 				onClick={() => {
 					mutate({
-						provider: 'github',
+						provider: "github",
 						projectName,
 						gitId,
 						repoName,
@@ -326,11 +326,11 @@ const ImportRepoModal = ({
 	repoName: string
 	closeModal: () => void
 }) => {
-	const { projectName = '' } = useParams()
+	const { projectName = "" } = useParams()
 
 	const { data, isLoading } = useQuery([QueryKey.GetBranchList, repoName], () =>
 		getBranchList({
-			provider: 'github',
+			provider: "github",
 			gitId,
 			repoName,
 		})
@@ -340,12 +340,12 @@ const ImportRepoModal = ({
 
 	const { mutate, isLoading: repoListLoading } = useMutation(importProject, {
 		onSuccess: () => {
-			toast('Import successfuly done.', { type: 'success', autoClose: 2000 })
+			toast("Import successfuly done.", { type: "success", autoClose: 2000 })
 			closeModal()
 		},
 		onError: () => {
-			toast('Something went wrong. Please try again later', {
-				type: 'error',
+			toast("Something went wrong. Please try again later", {
+				type: "error",
 				autoClose: 2000,
 			})
 		},
@@ -380,7 +380,7 @@ const ImportRepoModal = ({
 				loading={repoListLoading}
 				onClick={() => {
 					mutate({
-						provider: 'github',
+						provider: "github",
 						projectName,
 						gitId,
 						repoName,
