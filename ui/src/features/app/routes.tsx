@@ -1,10 +1,13 @@
 import { useViewportSize } from "@mantine/hooks"
+import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
 import AutomationPage from "../../pages/automation"
 import AutomationsPage from "../../pages/automations"
 import DomainsPage from "../../pages/domains"
 import ExecutionPage from "../../pages/execution"
 import Files from "../../pages/files"
+import GitIntegrationPage from "../../pages/git/git"
+import GitRedirectPage from "../../pages/git/git-redirect"
 import HistoryPage from "../../pages/history"
 import { HomePage } from "../../pages/home"
 import ImportYamlPage from "../../pages/import-yaml"
@@ -26,14 +29,23 @@ import UserGroupsPage from "../../pages/user-groups"
 import UserManagementPage from "../../pages/user-management"
 import { ViewPage } from "../../pages/view"
 import { Layout } from "../ui"
-import GitIntegrationPage from "../../pages/git/git"
-import GitRedirectPage from "../../pages/git/git-redirect"
 
-const routes = [
+type Routes = {
+	path: string
+	element: ReactNode
+	compactSidebar?: boolean
+	withoutSidebar?: boolean
+}[]
+
+const routes: Routes = [
 	{ path: "/builder/projects/:projectName/views/:viewName", element: <ViewPage /> },
 	{ path: "/builder/projects/:projectName/providers/:providerName", element: <ProviderPage /> },
 	{ path: "/builder/projects/:projectName/providers", element: <ProvidersPage /> },
-	{ path: "/builder/projects/:projectName/tables/:tableName", element: <TablePage /> },
+	{
+		path: "/builder/projects/:projectName/tables/:tableName",
+		element: <TablePage />,
+		compactSidebar: true,
+	},
 	{ path: "/builder/projects/:projectName/tables/:tableName/:isPublic", element: <TablePage /> },
 	{ path: "/builder/projects/:projectName/tables", element: <TablesPage /> },
 	{ path: "/builder/projects/:projectName/git", element: <GitIntegrationPage /> },
@@ -79,8 +91,8 @@ const routes = [
 	{ path: "/automations/:name", element: <AutomationPage /> },
 	{ path: "/automations", element: <AutomationsPage /> },
 	{ path: "/automations/yaml/import", element: <ImportYamlPage /> },
-	{ path: "/", element: <HomePage /> },
-	{ path: "/*", element: <NotFoundPage /> },
+	{ path: "/", element: <HomePage />, withoutSidebar: true },
+	{ path: "/*", element: <NotFoundPage />, withoutSidebar: true },
 ]
 
 export function Routes() {
@@ -99,7 +111,14 @@ export function Routes() {
 					<Route
 						key={route.path}
 						path={route.path}
-						element={<Layout>{route.element}</Layout>}
+						element={
+							<Layout
+								withoutSidebar={route.withoutSidebar}
+								compactSidebar={route.compactSidebar}
+							>
+								{route.element}
+							</Layout>
+						}
 					/>
 				))}
 			</ReactRoutes>
