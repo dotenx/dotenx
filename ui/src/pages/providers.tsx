@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import { Modals } from '../features/hooks'
-import { ProviderForm, ProviderList } from '../features/provider'
-import { NewModal } from '../features/ui'
-=======
 import { Modals } from "../features/hooks"
 import { ProviderForm, ProviderList } from "../features/provider"
-import { ContentWrapper, NewModal } from "../features/ui"
->>>>>>> main
+import { NewModal } from "../features/ui"
 
 export default function ProvidersPage() {
 	return (

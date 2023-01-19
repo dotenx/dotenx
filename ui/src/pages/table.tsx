@@ -28,17 +28,10 @@ import {
 	RecordForm,
 	TableDeletion,
 	TableEndpoints,
-<<<<<<< HEAD
-} from '../features/database'
-import { Modals, useModal } from '../features/hooks'
-import { Content_Wrapper, Drawer, Endpoint, Header, Modal, NewModal, Table } from '../features/ui'
-import { ViewForm } from '../features/views/view-form'
-=======
 } from "../features/database"
 import { Modals, useModal } from "../features/hooks"
-import { Drawer, Endpoint, Modal, NewModal, Table } from "../features/ui"
+import { Content_Wrapper, Drawer, Endpoint, Header, Modal, NewModal, Table } from "../features/ui"
 import { ViewForm } from "../features/views/view-form"
->>>>>>> main
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -115,7 +108,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 			<Header
 				headerLink={`/builder/projects/${projectName}/tables`}
 				expand
-				title={'Tables'}
+				title={"Tables"}
 				activeTab={tableName}
 				tabs={[tableName]}
 			>
@@ -128,12 +121,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					nPages={nPages}
 					setCurrentPage={setCurrentPage}
 					helpDetails={helpDetails}
-<<<<<<< HEAD
-					columns={tableHeaders}
-=======
-					title={`Table ${tableName}`}
 					columns={tableHeaders as any}
->>>>>>> main
 					data={records}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>

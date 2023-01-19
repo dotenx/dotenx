@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import { Button, Modal } from '@mantine/core'
-import { useState } from 'react'
-import { TbCodeMinus } from 'react-icons/tb'
-import Editor from '@monaco-editor/react'
-import { FaPlay } from 'react-icons/fa'
-import { useGetProjectTag } from '../../features/ui/hooks/use-get-project-tag'
-import { runCustomQuery } from '../../api'
-import { useMutation } from 'react-query'
-import { toast } from 'react-toastify'
-import { IoIosArrowBack } from 'react-icons/io'
-import { PrimaryButton, Table } from '../ui'
-=======
 import { Button, Modal } from "@mantine/core"
 import { useState } from "react"
 import { TbCodeMinus } from "react-icons/tb"
@@ -21,8 +8,7 @@ import { runCustomQuery } from "../../api"
 import { useMutation } from "react-query"
 import { toast } from "react-toastify"
 import { IoIosArrowBack } from "react-icons/io"
-import { Table } from "../ui"
->>>>>>> main
+import { PrimaryButton, Table } from "../ui"
 
 export default function CustomQuery() {
 	const [openModal, setOpenModal] = useState(false)

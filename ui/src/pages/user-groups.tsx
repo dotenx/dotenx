@@ -1,24 +1,11 @@
-<<<<<<< HEAD
-import { useState } from 'react'
-import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
-import { getProject, QueryKey } from '../api'
-import { Modals, useModal } from '../features/hooks'
-import { AddButton, NewModal } from '../features/ui'
-import { UserGroups, UserGroupsForm, UserGroupValues } from '../features/user-groups'
-import { AUTOMATION_PROJECT_NAME } from './automation'
-=======
-import { Button } from "@mantine/core"
 import { useState } from "react"
 import { useQuery } from "react-query"
 import { useParams } from "react-router-dom"
 import { getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, NewModal } from "../features/ui"
-import { PageTitle } from "../features/ui/page-title"
+import { AddButton, NewModal } from "../features/ui"
 import { UserGroups, UserGroupsForm, UserGroupValues } from "../features/user-groups"
 import { AUTOMATION_PROJECT_NAME } from "./automation"
->>>>>>> main
 
 export default function UserGroupsWrapper() {
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()

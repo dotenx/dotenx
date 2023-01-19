@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { ReactNode } from "react"
+import { useNavigate } from "react-router-dom"
 
 export function Header({
 	title,
@@ -23,14 +23,14 @@ export function Header({
 	const navigate = useNavigate()
 
 	return (
-		<div className={`${expand ? 'pl-[100px]' : 'pl-[250px]'} w-full bg-white shadow-sm`}>
+		<div className={` ${expand && "pl-[70px]"} w-full bg-white shadow-sm`}>
 			<div className="flex items-center p-10 justify-between">
 				<div className="h-10 ">
 					<div
 						onClick={() => {
 							if (headerLink) navigate(headerLink)
 						}}
-						className={`${headerLink && 'cursor-pointer'} text-3xl font-semibold `}
+						className={`${headerLink && "cursor-pointer"} text-3xl font-semibold `}
 					>
 						{title}
 					</div>
@@ -47,8 +47,8 @@ export function Header({
 							key={tab}
 							className={`transition-all duration-200 uppercase pb-1 text-sm font-medium cursor-pointer  ${
 								active
-									? 'text-black border-b-4 border-b-rose-600 '
-									: 'text-gray-400 border-b-4 border-transparent hover:border-gray-400'
+									? "text-black border-b-4 border-b-rose-600 "
+									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"
 							}`}
 						>
 							{tab}
@@ -61,7 +61,7 @@ export function Header({
 }
 export function Content_Wrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
 	return (
-		<div className={`${expand ? 'pl-[100px]' : 'pl-[250px]'}  w-full pb-10`}>
+		<div className={`${expand && "pl-[70px]"} w-full pb-10`}>
 			<div className="px-10  pt-5">{children}</div>
 		</div>
 	)

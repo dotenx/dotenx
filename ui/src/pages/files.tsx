@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-import { Button, Checkbox, MultiSelect } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { useClipboard } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
-import { BiCloudUpload } from 'react-icons/bi'
-import { IoCheckmark, IoCopy, IoReload } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
-=======
 import { Button, Checkbox, MultiSelect } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
 import { useEffect, useState } from "react"
+import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy, IoReload } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
->>>>>>> main
 import {
 	getFiles,
 	getProject,
@@ -23,9 +13,8 @@ import {
 	QueryKey,
 	setFilesAccess,
 	setFileUserGroup,
-<<<<<<< HEAD
-} from '../api'
-import { Modals, useModal } from '../features/hooks'
+} from "../api"
+import { Modals, useModal } from "../features/hooks"
 import {
 	AddButton,
 	ContentWrapper,
@@ -35,14 +24,8 @@ import {
 	Modal,
 	NewModal,
 	Table,
-} from '../features/ui'
-import { UploadFileForm } from '../internal/upload-file-form'
-=======
-} from "../api"
-import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, Form, Modal, NewModal, Table } from "../features/ui"
+} from "../features/ui"
 import { UploadFileForm } from "../internal/upload-file-form"
->>>>>>> main
 
 export default function Files() {
 	const { projectName } = useParams()
@@ -108,7 +91,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	// refresh => queryClient.invalidateQueries(QueryKey.GetFiles)}
 	return (
 		<div>
-			<Header title={'Files'} />
+			<Header title={"Files"} />
 			<Content_Wrapper>
 				<AddButton
 					text="Upload file"
@@ -200,12 +183,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					]}
 					data={tableData}
 				/>
-<<<<<<< HEAD
 				<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
 					<h2>
-						Are you sure you want to change{' '}
-						<span className="text-sky-900">{rowData.name}</span> access to{' '}
-						{rowData.isPublic ? 'private' : 'public'}?
+						Are you sure you want to change{" "}
+						<span className="text-sky-900">{rowData.name}</span> access to{" "}
+						{rowData.isPublic ? "private" : "public"}?
 					</h2>
 					<div className="flex items-center justify-end">
 						<Button
@@ -228,36 +210,6 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					</div>
 				</NewModal>
 			</Content_Wrapper>
-=======
-			</ContentWrapper>
-			<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
-				<h2>
-					Are you sure you want to change{" "}
-					<span className="text-sky-900">{rowData.name}</span> access to{" "}
-					{rowData.isPublic ? "private" : "public"}?
-				</h2>
-				<div className="flex items-center justify-end">
-					<Button
-						className="mr-2"
-						onClick={() => modal.close()}
-						variant="subtle"
-						color="gray"
-						size="xs"
-					>
-						cancel
-					</Button>
-					<Button
-						onClick={() => {
-							mutate({ rowData: rowData }), modal.close()
-						}}
-						size="xs"
-					>
-						confirm
-					</Button>
-				</div>
-			</NewModal>
-
->>>>>>> main
 			<Modal fluid kind={Modals.FilesUserGroup} title="User groups" size="md">
 				{(data: { name: string; userGroup: string[] }) => (
 					<div className="flex flex-col">

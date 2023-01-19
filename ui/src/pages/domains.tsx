@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import { Button, Loader, TextInput } from '@mantine/core'
-import { useForm, zodResolver } from '@mantine/form'
-import { useClipboard } from '@mantine/hooks'
-import { useState } from 'react'
-import { IoCheckmark, IoCopy } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Navigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { z } from 'zod'
-import { QueryKey } from '../api'
-import { ContentWrapper, Header } from '../features/ui'
-import { useGetProjectTag } from '../features/ui/hooks/use-get-project-tag'
-import { PageTitle } from '../features/ui/page-title'
-import { addDomain, GetDomainResponse, getDomains, verifyDomain } from '../internal/internal-api'
-=======
 import { Button, Loader, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
@@ -24,11 +8,10 @@ import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
 import { QueryKey } from "../api"
-import { ContentWrapper } from "../features/ui"
+import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { PageTitle } from "../features/ui/page-title"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
->>>>>>> main
 
 export default function DomainsPage() {
 	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
@@ -58,9 +41,8 @@ export default function DomainsPage() {
 	}
 
 	return (
-<<<<<<< HEAD
 		<div>
-			<Header title={'Domains'} />
+			<Header title={"Domains"} />
 			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 				{getDomainsQuery.isLoading ||
 				projectTagisLoading ||
@@ -80,22 +62,6 @@ export default function DomainsPage() {
 				)}
 			</ContentWrapper>
 		</div>
-=======
-		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
-			<PageTitle title="Domains" helpDetails={helpDetails} />
-			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
-				<Loader className="mx-auto" />
-			) : (
-				<div className="max-w-4xl px-20 py-10 mx-auto ">
-					{isDomainAdded ? (
-						<Domain projectTag={projectTag} domainData={getDomainsQuery?.data?.data} />
-					) : (
-						<AddDomain projectTag={projectTag} />
-					)}
-				</div>
-			)}
-		</ContentWrapper>
->>>>>>> main
 	)
 }
 
@@ -171,11 +137,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		},
 	})
 	return (
-<<<<<<< HEAD
 		<div className="font-medium border-2 rounded-[10px] p-3 bg-white">
-=======
-		<div className="p-3 font-medium border-2 rounded-md">
->>>>>>> main
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>

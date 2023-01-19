@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-import { Button, Modal } from '@mantine/core'
-import { useState } from 'react'
-import { MdOutlineDeleteForever } from 'react-icons/md'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteProvider, getProviders, QueryKey } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { AddButton, Content_Wrapper, Header } from '../ui'
-=======
-import { ActionIcon, Anchor, Button } from "@mantine/core"
-import { IoAdd, IoTrash } from "react-icons/io5"
+import { Button, Modal } from "@mantine/core"
+import { useState } from "react"
+import { MdOutlineDeleteForever } from "react-icons/md"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { Link } from "react-router-dom"
 import { deleteProvider, getProviders, QueryKey } from "../../api"
 import { Modals, useModal } from "../hooks"
-import { Confirm, Table } from "../ui"
->>>>>>> main
+import { AddButton, Content_Wrapper, Header } from "../ui"
 
 export function ProviderList() {
 	const modal = useModal()
@@ -35,7 +25,6 @@ export function ProviderList() {
 		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
 	return (
-<<<<<<< HEAD
 		<div>
 			<Header title="Providers" subtitle="Connect to other services." />
 			<Content_Wrapper>
@@ -48,28 +37,28 @@ export function ProviderList() {
 					{providers?.map((p) => {
 						const imageUrl = () => {
 							switch (p.type) {
-								case 'google':
-									return 'https://files.dotenx.com/7e467928-5267-4bd2-8665-245028533690.png'
-								case 'instagram':
-									return 'https://files.dotenx.com/6651658e-c8d2-4593-8f1b-be107c692faf.png'
-								case 'discord':
-									return 'https://files.dotenx.com/819c2274-b428-413e-8531-fc36340de72c.png'
-								case 'typeform':
-									return 'https://files.dotenx.com/099cae2c-f0cd-43f7-93bb-db2603b29cbc.png'
-								case 'dropbox':
-									return 'https://files.dotenx.com/8c68c03a-5876-4a5d-b8a5-8158ca772c1c.png'
-								case 'ebay':
-									return 'https://files.dotenx.com/31a9e7bb-9655-40c4-9c3f-a85516ab6f3f.png'
-								case 'facebook':
-									return 'https://files.dotenx.com/ae4d36e6-afe0-45e3-8b9c-b9fd5d7ccd14.png'
-								case 'slack-bot':
-									return 'https://files.dotenx.com/6bf34bf3-a8ea-4547-97e4-9fab4fb71b95.png'
-								case 'twitter':
-									return 'https://files.dotenx.com/81fa98a7-50a0-426c-b6be-a5ba51e322ab.png'
-								case 'mailchimp':
-									return 'https://files.dotenx.com/171735e7-cf41-4405-83ea-310d1e4a33ef.png'
+								case "google":
+									return "https://files.dotenx.com/7e467928-5267-4bd2-8665-245028533690.png"
+								case "instagram":
+									return "https://files.dotenx.com/6651658e-c8d2-4593-8f1b-be107c692faf.png"
+								case "discord":
+									return "https://files.dotenx.com/819c2274-b428-413e-8531-fc36340de72c.png"
+								case "typeform":
+									return "https://files.dotenx.com/099cae2c-f0cd-43f7-93bb-db2603b29cbc.png"
+								case "dropbox":
+									return "https://files.dotenx.com/8c68c03a-5876-4a5d-b8a5-8158ca772c1c.png"
+								case "ebay":
+									return "https://files.dotenx.com/31a9e7bb-9655-40c4-9c3f-a85516ab6f3f.png"
+								case "facebook":
+									return "https://files.dotenx.com/ae4d36e6-afe0-45e3-8b9c-b9fd5d7ccd14.png"
+								case "slack-bot":
+									return "https://files.dotenx.com/6bf34bf3-a8ea-4547-97e4-9fab4fb71b95.png"
+								case "twitter":
+									return "https://files.dotenx.com/81fa98a7-50a0-426c-b6be-a5ba51e322ab.png"
+								case "mailchimp":
+									return "https://files.dotenx.com/171735e7-cf41-4405-83ea-310d1e4a33ef.png"
 								default:
-									return 'https://files.dotenx.com/4b613007-c386-4a10-8080-79a42c349a75.png'
+									return "https://files.dotenx.com/4b613007-c386-4a10-8080-79a42c349a75.png"
 							}
 						}
 						return (
@@ -96,42 +85,12 @@ export function ProviderList() {
 									opened={openModal}
 									onClose={() => setOpenModal(false)}
 									title="Delete Provider"
-=======
-		<Table
-			helpDetails={helpDetails}
-			title="Providers"
-			emptyText="You have no provider yet, try adding one."
-			loading={query.isLoading}
-			actionBar={<ActionBar />}
-			columns={[
-				{
-					Header: "Name",
-					accessor: "name",
-					Cell: ({ value }: { value: string }) => (
-						<Anchor component={Link} to={value}>
-							{value}
-						</Anchor>
-					),
-				},
-				{ Header: "Type", accessor: "type" },
-				{
-					Header: "Action",
-					id: "action",
-					accessor: "name",
-					Cell: ({ value }: { value: string }) => (
-						<Confirm
-							target={(open) => (
-								<ActionIcon
-									loading={deleteMutation.isLoading}
-									onClick={open}
-									className="ml-auto"
->>>>>>> main
 								>
 									<ConfirmDeleteModal
 										title={
 											<span>
-												Are you sure you want to delete{' '}
-												<span className="text-slate-600">{p.name}</span>{' '}
+												Are you sure you want to delete{" "}
+												<span className="text-slate-600">{p.name}</span>{" "}
 												provider?
 											</span>
 										}

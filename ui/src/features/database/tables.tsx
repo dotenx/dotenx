@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-import { Switch } from '@mantine/core'
-import { IoAdd } from 'react-icons/io5'
-import { useMutation, useQueryClient } from 'react-query'
-import { Link } from 'react-router-dom'
-import { QueryKey, setTableAccess } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { AddButton } from '../ui'
-import CustomQuery from './custom-query'
-import ExportDatabase from './export-database'
-=======
 import { Switch } from "@mantine/core"
-import { IoAdd } from "react-icons/io5"
 import { useMutation, useQueryClient } from "react-query"
 import { Link } from "react-router-dom"
 import { QueryKey, setTableAccess } from "../../api"
 import { Modals, useModal } from "../hooks"
-import { PageTitle } from "../ui/page-title"
->>>>>>> main
+import { AddButton } from "../ui"
+import CustomQuery from "./custom-query"
+import ExportDatabase from "./export-database"
 
 export function TableList({ projectName, query }: { projectName: string; query: any }) {
 	const tables = query.data?.data.tables ?? []
@@ -82,17 +71,13 @@ function ListItem({
 	return (
 		<div
 			className={`grid group  grid-cols-1 py-2 px-10  place-items-center  h-32 transition rounded-[10px] shadow-sm bg-white  text-gray-800 hover:bg-gray-100 border-transparent border-[4px] hover:border-white  hover:shadow hover:shadow-gray-100 ${
-				isLoading && 'blur-[1px] animate-pulse '
+				isLoading && "blur-[1px] animate-pulse "
 			} `}
 		>
-<<<<<<< HEAD
 			<Link
-				to={name + (isPublic ? '/public' : '')}
+				to={name + (isPublic ? "/public" : "/private")}
 				className="text-xl transition-all duration-500 w-full h-full cursor-pointer group-hover:bg-white flex items-center justify-center rounded-[10px]  font-medium"
 			>
-=======
-			<Link to={name + (isPublic ? "/public" : "")} className="text-xl font-medium">
->>>>>>> main
 				{name}
 			</Link>
 			<div
@@ -103,11 +88,7 @@ function ListItem({
 						isPublic,
 					})
 				}
-<<<<<<< HEAD
 				className={`flex mt-3  mr-2 `}
-=======
-				className={`flex mt-3 cursor-pointer mr-2 ${isLoading && "blur-sm animate-pulse "}`}
->>>>>>> main
 			>
 				<Switch
 					label={isPublic ? "public" : "private"}

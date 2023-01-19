@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import { Button } from '@mantine/core'
-import { useState } from 'react'
-import { IoArrowBack } from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
-import { getTables, QueryKey } from '../api'
-import { TableForm, TableList } from '../features/database'
-import { Modals } from '../features/hooks'
-import { Content_Wrapper, Header, Loader, NewModal } from '../features/ui'
-import { ViewList } from '../features/views/view-list'
-=======
 import { Button } from "@mantine/core"
 import { useState } from "react"
 import { IoArrowBack } from "react-icons/io5"
@@ -17,12 +5,9 @@ import { useQuery } from "react-query"
 import { Link, Navigate, useParams } from "react-router-dom"
 import { getTables, QueryKey } from "../api"
 import { TableForm, TableList } from "../features/database"
-import ExportDatabase from "../features/database/export-database"
-import CustomQuery from "../features/database/custom-query"
 import { Modals } from "../features/hooks"
-import { ContentWrapper, Loader, NewModal } from "../features/ui"
+import { Content_Wrapper, Header, Loader, NewModal } from "../features/ui"
 import { ViewList } from "../features/views/view-list"
->>>>>>> main
 
 export default function TablesPage() {
 	const { projectName } = useParams()
@@ -33,7 +18,7 @@ export default function TablesPage() {
 function Tables({ name }: { name: string }) {
 	const [noDatabase, setNoDatabase] = useState(false)
 
-	const [activeTab, setActiveTab] = useState<'Tables' | 'Views'>('Tables')
+	const [activeTab, setActiveTab] = useState<"Tables" | "Views">("Tables")
 	const query = useQuery(QueryKey.GetTables, () => getTables(name), {
 		onError: (err: any) => {
 			if (err.response.status === 400) {
@@ -67,17 +52,17 @@ function Tables({ name }: { name: string }) {
 					<>
 						<Header
 							title="Tables"
-							tabs={['Tables', 'Views']}
+							tabs={["Tables", "Views"]}
 							activeTab={activeTab}
 							onTabChange={(v: typeof activeTab) => {
 								setActiveTab(v)
 							}}
 						/>
 						<Content_Wrapper>
-							{activeTab === 'Tables' && (
+							{activeTab === "Tables" && (
 								<TableList projectName={name} query={query} />
 							)}
-							{activeTab === 'Views' && <ViewList projectName={name} />}
+							{activeTab === "Views" && <ViewList projectName={name} />}
 						</Content_Wrapper>
 					</>
 				)}

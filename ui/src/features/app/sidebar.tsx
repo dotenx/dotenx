@@ -69,16 +69,16 @@ const useSidebar = () => {
 
 	const sidebar: SidebarData = {
 		navLinks: [
-			{
-				label: "Workflows",
-				icon: <BsFillDiagram3Fill />,
-				to: `/builder/projects/${projectName}/interactions`,
-			},
 			{ label: "Tables", icon: <BsTable />, to: `/builder/projects/${projectName}/tables` },
 			{
 				label: "User management",
 				icon: <BsPeopleFill />,
 				to: `/builder/projects/${projectName}/user-management`,
+			},
+			{
+				label: "Workflows",
+				icon: <BsFillDiagram3Fill />,
+				to: `/builder/projects/${projectName}/workflows`,
 			},
 			{
 				label: "Providers",

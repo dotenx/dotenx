@@ -10,7 +10,6 @@ import {
 	BsGlobe2,
 	BsHddNetworkFill,
 	BsTable,
-	BsWindowSidebar,
 } from "react-icons/bs"
 import { FaUsers } from "react-icons/fa"
 import { IoArrowBack } from "react-icons/io5"
@@ -43,27 +42,12 @@ export const Sidebar = memo(() => {
 			icon: <BsTable />,
 		},
 		{
-<<<<<<< HEAD
 			to: `/builder/projects/${projectName}/workflows`,
-			label: 'Workflows',
-			tourSelector: 'workflows',
+			label: "Workflows",
+			tourSelector: "workflows",
 			icon: <BsBricks />,
 		},
 		{
-=======
-			to: `/builder/projects/${projectName}/interactions`,
-			label: "Interactions",
-			tourSelector: "interactions",
-			icon: <BsBricks />,
-		},
-		{
-			to: `/builder/projects/${projectName}/templates`,
-			label: "Automation Templates",
-			tourSelector: "automation_Templates",
-			icon: <BsWindowSidebar />,
-		},
-		{
->>>>>>> main
 			to: `/builder/projects/${projectName}/providers`,
 			label: "Providers",
 			tourSelector: "providers",
@@ -125,10 +109,7 @@ export const Sidebar = memo(() => {
 
 				{!isHome && (
 					<>
-<<<<<<< HEAD
 						{/* <Tour /> */}
-=======
->>>>>>> main
 						<div className="space-y-2">
 							<a
 								href={`${UI_BUILDER_ADDRESS}/projects/${projectName}`}

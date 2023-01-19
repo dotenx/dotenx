@@ -1,31 +1,19 @@
-<<<<<<< HEAD
-import { Button, Tooltip } from '@mantine/core'
-import { BsGithub } from 'react-icons/bs'
-import { RiGitlabFill } from 'react-icons/ri'
-import { FaBitbucket } from 'react-icons/fa'
-import { ContentWrapper, Header } from '../../features/ui'
-import { useState } from 'react'
-import GithubIntegration from './github'
-import { gitProviders } from '../../api'
-=======
-import { Button, Title, Tooltip } from "@mantine/core"
+import { Button, Tooltip } from "@mantine/core"
 import { BsGithub } from "react-icons/bs"
 import { RiGitlabFill } from "react-icons/ri"
 import { FaBitbucket } from "react-icons/fa"
-import { ContentWrapper } from "../../features/ui"
+import { ContentWrapper, Header } from "../../features/ui"
 import { useState } from "react"
 import GithubIntegration from "./github"
 import { gitProviders } from "../../api"
->>>>>>> main
 
 export default function GitIntegrationPage() {
 	const [selectedProvider, setSelectedProvider] = useState<gitProviders>()
 
 	if (!selectedProvider)
 		return (
-<<<<<<< HEAD
 			<div>
-				<Header title={'Git integration'} />
+				<Header title={"Git integration"} />
 				<ContentWrapper>
 					<div className="flex flex-col items-center ">
 						<div className="mt-28 mb-8 font-medium">
@@ -34,11 +22,11 @@ export default function GitIntegrationPage() {
 						</div>
 						<div className="flex gap-2">
 							<Button
-								onClick={() => setSelectedProvider('github')}
+								onClick={() => setSelectedProvider("github")}
 								className="font-medium"
 								size="lg"
-								color={'dark'}
-								radius={'md'}
+								color={"dark"}
+								radius={"md"}
 								leftIcon={<BsGithub className="h-7 w-7" />}
 							>
 								Connect to Github
@@ -47,16 +35,16 @@ export default function GitIntegrationPage() {
 								openDelay={700}
 								withinPortal
 								withArrow
-								label={'under development'}
+								label={"under development"}
 							>
 								<div>
 									<Button
 										disabled
-										onClick={() => setSelectedProvider('gitlab')}
+										onClick={() => setSelectedProvider("gitlab")}
 										className="font-medium"
 										size="lg"
-										color={'orange'}
-										radius={'md'}
+										color={"orange"}
+										radius={"md"}
 										leftIcon={<RiGitlabFill className="h-7 w-7" />}
 									>
 										Connect to Gitlab
@@ -67,16 +55,16 @@ export default function GitIntegrationPage() {
 								openDelay={700}
 								withinPortal
 								withArrow
-								label={'under development'}
+								label={"under development"}
 							>
 								<div>
 									<Button
 										disabled
-										onClick={() => setSelectedProvider('bitbucket')}
+										onClick={() => setSelectedProvider("bitbucket")}
 										className="font-medium"
 										size="lg"
-										color={'blue'}
-										radius={'md'}
+										color={"blue"}
+										radius={"md"}
 										leftIcon={<FaBitbucket className="h-7 w-7" />}
 									>
 										Connect to Bitbucket
@@ -84,80 +72,18 @@ export default function GitIntegrationPage() {
 								</div>
 							</Tooltip>
 						</div>
-=======
-			<ContentWrapper>
-				<div className="flex justify-start">
-					<Title order={2}>Git integration</Title>
-				</div>
-				<div className="flex flex-col items-center ">
-					<div className="mt-28 mb-8 font-medium">
-						Select a Git provider to import an existing project from a Git Repository.
-					</div>
-					<div className="flex gap-2">
-						<Button
-							onClick={() => setSelectedProvider("github")}
-							className="font-medium"
-							size="lg"
-							color={"dark"}
-							radius={"md"}
-							leftIcon={<BsGithub className="h-7 w-7" />}
-						>
-							Connect to Github
-						</Button>
-						<Tooltip openDelay={700} withinPortal withArrow label={"under development"}>
-							<div>
-								<Button
-									disabled
-									onClick={() => setSelectedProvider("gitlab")}
-									className="font-medium"
-									size="lg"
-									color={"orange"}
-									radius={"md"}
-									leftIcon={<RiGitlabFill className="h-7 w-7" />}
-								>
-									Connect to Gitlab
-								</Button>
-							</div>
-						</Tooltip>
-						<Tooltip openDelay={700} withinPortal withArrow label={"under development"}>
-							<div>
-								<Button
-									disabled
-									onClick={() => setSelectedProvider("bitbucket")}
-									className="font-medium"
-									size="lg"
-									color={"blue"}
-									radius={"md"}
-									leftIcon={<FaBitbucket className="h-7 w-7" />}
-								>
-									Connect to Bitbucket
-								</Button>
-							</div>
-						</Tooltip>
->>>>>>> main
 					</div>
 				</ContentWrapper>
 			</div>
 		)
 	return (
-<<<<<<< HEAD
 		<div>
 			<Header title="Git integration" />
 			<ContentWrapper>
-				{selectedProvider === 'github' && (
+				{selectedProvider === "github" && (
 					<GithubIntegration resetProvider={() => setSelectedProvider(undefined)} />
 				)}
 			</ContentWrapper>
 		</div>
-=======
-		<ContentWrapper>
-			<div className="flex justify-start">
-				<Title order={2}>Git integration</Title>
-			</div>
-			{selectedProvider === "github" && (
-				<GithubIntegration resetProvider={() => setSelectedProvider(undefined)} />
-			)}
-		</ContentWrapper>
->>>>>>> main
 	)
 }
