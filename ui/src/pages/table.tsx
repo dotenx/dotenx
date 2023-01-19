@@ -30,7 +30,7 @@ import {
 	TableEndpoints,
 } from "../features/database"
 import { Modals, useModal } from "../features/hooks"
-import { Drawer, Endpoint, Modal, NewModal, Table } from "../features/ui"
+import { Content_Wrapper, Drawer, Endpoint, Header, Modal, NewModal, Table } from "../features/ui"
 import { ViewForm } from "../features/views/view-form"
 
 export default function TablePage() {
@@ -104,21 +104,29 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	}
 
 	return (
-		<>
-			<main className="lg:pr-32 pl-24 py-6 lg:pl-52 lg:py-16 space-y-10 grow px-4 max-w-[100vw] flex flex-col">
+		<div>
+			<Header
+				headerLink={`/builder/projects/${projectName}/tables`}
+				expand
+				title={"Tables"}
+				activeTab={tableName}
+				tabs={[tableName]}
+			>
+				<ActionBar projectName={projectName} tableName={tableName} />
+			</Header>
+			<Content_Wrapper expand>
 				<Table
 					withPagination
 					currentPage={currentPage}
 					nPages={nPages}
 					setCurrentPage={setCurrentPage}
 					helpDetails={helpDetails}
-					title={`Table ${tableName}`}
 					columns={tableHeaders as any}
 					data={records}
-					actionBar={<ActionBar projectName={projectName} tableName={tableName} />}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>
-			</main>
+			</Content_Wrapper>
+
 			<NewModal kind={Modals.NewColumn} title="New Column">
 				<ColumnForm projectName={projectName} tableName={tableName} />
 			</NewModal>
@@ -174,7 +182,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					/>
 				)}
 			</Modal>
-		</>
+		</div>
 	)
 }
 

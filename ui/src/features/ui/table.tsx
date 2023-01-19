@@ -61,7 +61,7 @@ export function Table<D extends object = Record<string, string>>({
 	if (loading) return <Loader />
 
 	return (
-		<div className="flex flex-col gap-10">
+		<div className="flex flex-col gap-10 ">
 			{title && (
 				<div className="flex justify-between ">
 					<div className="flex justify-start">
@@ -86,7 +86,7 @@ export function Table<D extends object = Record<string, string>>({
 				</div>
 			)}
 			{(data.length !== 0 || !emptyText) && (
-				<div className="flex flex-col gap-6 grow">
+				<div className="flex flex-col gap-6 grow bg-white p-4 rounded-[10px]">
 					{!withoutSearch && (
 						<TextInput
 							icon={<IoSearch className="text-xl" />}
@@ -147,14 +147,14 @@ export function Table<D extends object = Record<string, string>>({
 							</div>
 						)}
 					</div>
+					{withPagination && (
+						<Pagination
+							currentPage={currentPage || 1}
+							nPages={nPages || 1}
+							setCurrentPage={setCurrentPage}
+						/>
+					)}
 				</div>
-			)}
-			{withPagination && (
-				<Pagination
-					currentPage={currentPage || 1}
-					nPages={nPages || 1}
-					setCurrentPage={setCurrentPage}
-				/>
 			)}
 		</div>
 	)

@@ -2,6 +2,7 @@ import { Button, Checkbox, MultiSelect } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
 import { useEffect, useState } from "react"
+import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy, IoReload } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
@@ -14,7 +15,16 @@ import {
 	setFileUserGroup,
 } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, Form, Modal, NewModal, Table } from "../features/ui"
+import {
+	AddButton,
+	ContentWrapper,
+	Content_Wrapper,
+	Form,
+	Header,
+	Modal,
+	NewModal,
+	Table,
+} from "../features/ui"
 import { UploadFileForm } from "../internal/upload-file-form"
 
 export default function Files() {
@@ -78,14 +88,19 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
 		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
-
+	// refresh => queryClient.invalidateQueries(QueryKey.GetFiles)}
 	return (
-		<>
-			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
+		<div>
+			<Header title={"Files"} />
+			<Content_Wrapper>
+				<AddButton
+					text="Upload file"
+					icon={<BiCloudUpload className="w-6 h-6" />}
+					handleClick={() => modal.open(Modals.UploadFile)}
+				/>
 				<Table
 					helpDetails={helpDetails}
 					loading={projectDetailsLoading || filesDataLoading || changeAccessisLoading}
-					title="Files"
 					emptyText="Your files will be displayed here"
 					columns={[
 						{
@@ -167,36 +182,34 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						},
 					]}
 					data={tableData}
-					actionBar={<ActionBar projectTag={projectTag} />}
 				/>
-			</ContentWrapper>
-			<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
-				<h2>
-					Are you sure you want to change{" "}
-					<span className="text-sky-900">{rowData.name}</span> access to{" "}
-					{rowData.isPublic ? "private" : "public"}?
-				</h2>
-				<div className="flex items-center justify-end">
-					<Button
-						className="mr-2"
-						onClick={() => modal.close()}
-						variant="subtle"
-						color="gray"
-						size="xs"
-					>
-						cancel
-					</Button>
-					<Button
-						onClick={() => {
-							mutate({ rowData: rowData }), modal.close()
-						}}
-						size="xs"
-					>
-						confirm
-					</Button>
-				</div>
-			</NewModal>
-
+				<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
+					<h2>
+						Are you sure you want to change{" "}
+						<span className="text-sky-900">{rowData.name}</span> access to{" "}
+						{rowData.isPublic ? "private" : "public"}?
+					</h2>
+					<div className="flex items-center justify-end">
+						<Button
+							className="mr-2"
+							onClick={() => modal.close()}
+							variant="subtle"
+							color="gray"
+							size="xs"
+						>
+							cancel
+						</Button>
+						<Button
+							onClick={() => {
+								mutate({ rowData: rowData }), modal.close()
+							}}
+							size="xs"
+						>
+							confirm
+						</Button>
+					</div>
+				</NewModal>
+			</Content_Wrapper>
 			<Modal fluid kind={Modals.FilesUserGroup} title="User groups" size="md">
 				{(data: { name: string; userGroup: string[] }) => (
 					<div className="flex flex-col">
@@ -230,29 +243,9 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 					</div>
 				)}
 			</Modal>
-		</>
-	)
-}
-
-function ActionBar({ projectTag }: { projectTag: string }) {
-	const modal = useModal()
-	const queryClient = useQueryClient()
-
-	return (
-		<>
-			<div className="flex flex-wrap gap-2">
-				<Button
-					leftIcon={<IoReload />}
-					type="button"
-					onClick={() => queryClient.invalidateQueries(QueryKey.GetFiles)}
-				>
-					Refresh
-				</Button>
-				<Button onClick={() => modal.open(Modals.UploadFile)}>Upload file</Button>
-			</div>
 			<NewModal kind={Modals.UploadFile} title="Upload file" size="md">
 				<UploadFileForm tag={projectTag} />
 			</NewModal>
-		</>
+		</div>
 	)
 }
