@@ -3,6 +3,8 @@ import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import hash from 'object-hash'
+import { useEffect, useMemo } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -14,7 +16,6 @@ import {
 	TbZoomOut,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
-
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
@@ -49,6 +50,7 @@ export function TopBar() {
 				<ViewportSelection />
 				<PreviewButton />
 				<AdvancedModeButton />
+				<UnsavedMessage />
 			</Group>
 			<Group align="center" spacing="xl">
 				<PageScaling />
@@ -56,6 +58,33 @@ export function TopBar() {
 				<PageActions />
 			</Group>
 		</Group>
+	)
+}
+
+function UnsavedMessage() {
+	const elements = useElementsStore((store) => store.elements)
+	const saved = useElementsStore((store) => store.saved)
+
+	const savedHash = useMemo(() => hash(saved), [saved])
+	const currentHash = useMemo(() => hash(elements), [elements])
+	const unsaved = savedHash !== currentHash
+
+	useEffect(() => {
+		const beforeUnloadListener = (event: BeforeUnloadEvent): string => {
+			event.preventDefault()
+			return (event.returnValue = '')
+		}
+		if (!unsaved) return
+		addEventListener('beforeunload', beforeUnloadListener, { capture: true })
+		return () => removeEventListener('beforeunload', beforeUnloadListener, { capture: true })
+	}, [unsaved])
+
+	if (!unsaved) return null
+
+	return (
+		<Text color="dimmed" size="xs">
+			You have unsaved changes
+		</Text>
 	)
 }
 
@@ -227,8 +256,12 @@ function AdvancedModeButton() {
 	const dataSources = useDataSourceStore((state) => state.sources)
 	const classes = useClassesStore((state) => state.classes)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
+	const setSaved = useElementsStore((store) => store.save)
 	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => queryClient.invalidateQueries([QueryKey.PageDetails]),
+		onSuccess: () => {
+			queryClient.invalidateQueries([QueryKey.PageDetails])
+			setSaved()
+		},
 	})
 	const saveAdvanced = () => {
 		savePageMutation.mutate({

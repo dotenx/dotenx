@@ -21,6 +21,7 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 
 	if utils.ContainsString(utils.SpecialProviders, providerStr) {
 		code := c.Query("code")
+		state := c.Query("state")
 		providers := oauth.GetProvidersMap()
 		var accessToken, refreshToken string
 		var err error
@@ -35,6 +36,10 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 			accessToken, refreshToken, err = getEbayTokens(providers["ebay"].Key, providers["ebay"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/ebay")
 		case "mailchimp":
 			accessToken, err = getMailchimpAccessToken(providers["mailchimp"].Key, providers["mailchimp"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/mailchimp")
+		case "airtable":
+			accessToken, refreshToken, err = controller.getAirtableTokens(providers["airtable"].Key, providers["airtable"].Secret, code, state, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/airtable")
+		case "gumroad":
+			accessToken, refreshToken, err = getGumroadTokens(providers["gumroad"].Key, providers["gumroad"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/gumroad")
 		}
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return

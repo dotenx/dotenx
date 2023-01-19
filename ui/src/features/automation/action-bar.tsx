@@ -1,7 +1,7 @@
-import { ActionIcon, Button } from '@mantine/core'
-import { DragEvent, ReactNode } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { BsFillCalendar3WeekFill, BsUiChecksGrid } from 'react-icons/bs'
+import { ActionIcon, Button } from "@mantine/core"
+import { DragEvent, ReactNode } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { BsFillCalendar3WeekFill, BsUiChecksGrid } from "react-icons/bs"
 import {
 	IoAdd,
 	IoCalendarOutline,
@@ -14,18 +14,18 @@ import {
 	IoSaveOutline,
 	IoSwapVertical,
 	IoTrashOutline,
-} from 'react-icons/io5'
-import { Link } from 'react-router-dom'
-import { AutomationKind } from '../../api'
-import { NodeType } from '../flow/types'
-import { Modals, useModal } from '../hooks'
-import { RunInteractionForm } from '../interaction'
-import { IconButton, JsonCode, Modal, NewModal } from '../ui'
-import { SaveForm } from './save-form'
-import { useActionBar } from './use-action-bar'
-import { useActivateAutomation } from './use-activate'
-import { useUpdateAutomation } from './use-update'
-import { AutomationYaml } from './yaml'
+} from "react-icons/io5"
+import { Link } from "react-router-dom"
+import { AutomationKind } from "../../api"
+import { NodeType } from "../flow/types"
+import { Modals, useModal } from "../hooks"
+import { RunInteractionForm } from "../interaction"
+import { IconButton, JsonCode, Modal, NewModal } from "../ui"
+import { SaveForm } from "./save-form"
+import { useActionBar } from "./use-action-bar"
+import { useActivateAutomation } from "./use-activate"
+import { useUpdateAutomation } from "./use-update"
+import { AutomationYaml } from "./yaml"
 
 interface ActionBarProps {
 	automationName?: string
@@ -45,8 +45,8 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 		isRunning,
 	} = useActionBar(kind)
 	const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: string) => {
-		event.dataTransfer.setData('application/reactflow', nodeType)
-		event.dataTransfer.effectAllowed = 'move'
+		event.dataTransfer.setData("application/reactflow", nodeType)
+		event.dataTransfer.effectAllowed = "move"
 	}
 	const { onUpdate, isUpdating } = useUpdateAutomation()
 	const handleSave = () => {
@@ -54,7 +54,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 		else onUpdate({ name: automationName })
 	}
 	useHotkeys(
-		'alt+s',
+		"alt+s",
 		(e) => {
 			e.preventDefault()
 			handleSave()
@@ -62,7 +62,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 		[handleSave]
 	)
 	useHotkeys(
-		'alt+r',
+		"alt+r",
 		(e) => {
 			if (!selectedAutomation) return
 			e.preventDefault()
@@ -71,7 +71,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 		[selectedAutomation, onRun]
 	)
 	useHotkeys(
-		'alt+n',
+		"alt+n",
 		(e) => {
 			e.preventDefault()
 			newAutomation()
@@ -79,15 +79,15 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 		[newAutomation]
 	)
 	useHotkeys(
-		'alt+a',
+		"alt+a",
 		(e) => {
 			e.preventDefault()
-			onLayout('TB')
+			onLayout("TB")
 		},
 		[onLayout]
 	)
 	useHotkeys(
-		'alt+l',
+		"alt+l",
 		(e) => {
 			if (!automationName) return
 			e.preventDefault()
@@ -98,7 +98,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 
 	const { handleActivate, activateIsLoading } = useActivateAutomation(
 		selectedAutomation?.is_active ?? false,
-		automationName ?? '',
+		automationName ?? "",
 		projectName
 	)
 
@@ -120,7 +120,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 				>
 					<BsUiChecksGrid />
 				</div>
-				{kind !== 'interaction' && (
+				{kind !== "interaction" && (
 					<div
 						className="p-2 text-2xl text-white transition bg-orange-600 rounded shadow-sm cursor-grab hover:shadow-md"
 						onDragStart={(event) => onDragStart(event, NodeType.Trigger)}
@@ -130,7 +130,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 					</div>
 				)}
 				<div className="flex flex-col gap-2 px-1 py-2 rounded shadow-sm bg-gray-50">
-					{kind !== 'template' && (
+					{kind !== "template" && (
 						<IconButton
 							tooltip="Run"
 							onClick={onRun}
@@ -140,9 +140,9 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 							<IoPlayOutline />
 						</IconButton>
 					)}
-					{kind !== 'template' && (
+					{kind !== "template" && (
 						<IconButton
-							tooltip={selectedAutomation?.is_active ? 'Deactivate' : 'Activate'}
+							tooltip={selectedAutomation?.is_active ? "Deactivate" : "Activate"}
 							onClick={handleActivate}
 							disabled={!selectedAutomation}
 							loading={activateIsLoading}
@@ -153,10 +153,10 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 					<IconButton tooltip="Save" onClick={handleSave} loading={isUpdating}>
 						<IoSaveOutline />
 					</IconButton>
-					<IconButton tooltip="Sort" onClick={() => onLayout('TB')}>
+					<IconButton tooltip="Sort" onClick={() => onLayout("TB")}>
 						<IoSwapVertical />
 					</IconButton>
-					{kind === 'automation' && (
+					{kind === "automation" && (
 						<IconButton tooltip="New" onClick={newAutomation}>
 							<IoAdd />
 						</IconButton>
@@ -175,7 +175,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 					>
 						<IoCodeSlash />
 					</IconButton>
-					{kind !== 'template' && (
+					{kind !== "template" && (
 						<IconButton tooltip="History" disabled={!automationName}>
 							{automationName && (
 								<Link to="executions">
@@ -191,7 +191,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 				</div>
 			</div>
 			<NewModal
-				title={`New ${kind === 'interaction' ? 'Interaction' : 'Automation'}`}
+				title={`New ${kind === "interaction" ? "Interaction" : "Automation"}`}
 				kind={Modals.SaveAutomation}
 			>
 				<SaveForm kind={kind} />
@@ -209,8 +209,8 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 					</div>
 
 					<HelpItem label="Save Automation" hotkey="Alt + S" />
-					{kind !== 'template' && <HelpItem label="Run Automation" hotkey="Alt + R" />}
-					{kind === 'automation' && <HelpItem label="New Automation" hotkey="Alt + N" />}
+					{kind !== "template" && <HelpItem label="Run Automation" hotkey="Alt + R" />}
+					{kind === "automation" && <HelpItem label="New Automation" hotkey="Alt + N" />}
 					<HelpItem label="Arrange Nodes" hotkey="Alt + A" />
 					<HelpItem label="Clone Automation" hotkey="Alt + L" />
 				</div>
@@ -221,7 +221,7 @@ export function ActionBar({ automationName, kind, projectName }: ActionBarProps)
 				</NewModal>
 			)}
 			<NewModal kind={Modals.InteractionBody} title="Request Body">
-				<RunInteractionForm interactionName={automationName ?? ''} />
+				<RunInteractionForm interactionName={automationName ?? ""} />
 			</NewModal>
 			<Modal kind={Modals.InteractionResponse} title="Response" size="lg" fluid>
 				{(data: Record<string, unknown>) => <JsonCode code={data} />}

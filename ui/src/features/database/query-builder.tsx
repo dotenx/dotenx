@@ -1,10 +1,10 @@
-import { ActionIcon, Button } from '@mantine/core'
-import { ReactNode } from 'react'
-import { Control, useFieldArray } from 'react-hook-form'
-import { IoAdd, IoTrash } from 'react-icons/io5'
-import { z } from 'zod'
-import { chainedConditionOptions, columnTypeKinds, operatorOptions } from '../../constants'
-import { CreatableSelect, Field, NewSelect, Option } from '../ui'
+import { ActionIcon, Button } from "@mantine/core"
+import { ReactNode } from "react"
+import { Control, useFieldArray } from "react-hook-form"
+import { IoAdd, IoTrash } from "react-icons/io5"
+import { z } from "zod"
+import { chainedConditionOptions, columnTypeKinds, operatorOptions } from "../../constants"
+import { CreatableSelect, Field, NewSelect, Option } from "../ui"
 
 const schema = z.object({
 	conjunction: z.string(),
@@ -53,18 +53,18 @@ export function QueryBuilder({
 	children,
 	index,
 }: QueryBuilderProps) {
-	const conjunction = form.watch(name + 'conjunction')
-	const filterSet = form.watch(name + 'filterSet')
+	const conjunction = form.watch(name + "conjunction")
+	const filterSet = form.watch(name + "filterSet")
 	const columns = query.data?.data?.columns ?? []
 	const columnOptions = columns.map((column: any) => ({
 		label: column.name,
 		value: column.name,
 	}))
-	const fieldArray = useFieldArray({ control: form.control, name: name + 'filterSet' })
+	const fieldArray = useFieldArray({ control: form.control, name: name + "filterSet" })
 
-	const addCondition = () => fieldArray.append({ key: '', operator: '', value: '' })
+	const addCondition = () => fieldArray.append({ key: "", operator: "", value: "" })
 	const addConditionGroup = () =>
-		fieldArray.append({ filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' })
+		fieldArray.append({ filterSet: [{ key: "", operator: "", value: "" }], conjunction: "and" })
 
 	return (
 		<div className="space-y-10">
@@ -89,8 +89,8 @@ export function QueryBuilder({
 						tableName={tableName}
 					/>
 				</div>
-				<AddButton onClick={addCondition} title={'Add condition'} />
-				<AddButton onClick={addConditionGroup} title={'Add condition group'} />
+				<AddButton onClick={addCondition} title={"Add condition"} />
+				<AddButton onClick={addConditionGroup} title={"Add condition group"} />
 			</div>
 			{children(form.watch())}
 		</div>
@@ -105,7 +105,7 @@ function ConditionRow({
 	onDelete,
 	conjunction,
 	columnType,
-	name = '',
+	name = "",
 	form,
 }: {
 	form?: any
@@ -118,7 +118,7 @@ function ConditionRow({
 	conjunction: string
 	columnType: string
 }) {
-	const colKind = columnTypeKinds.find((kind) => kind.types.includes(columnType))?.kind ?? 'none'
+	const colKind = columnTypeKinds.find((kind) => kind.types.includes(columnType))?.kind ?? "none"
 	const colOperatorOptions = operatorOptions[colKind]
 	const operatorValue = form.watch(`${name}filterSet.${index}.operator`)
 	return (
@@ -153,17 +153,17 @@ function ConditionRow({
 			</div>
 			<div className="flex items-center col-span-5 gap-2">
 				<div className="grow">
-					{colKind === 'boolean' ? (
+					{colKind === "boolean" ? (
 						<NewSelect
 							name={`${name}filterSet.${index}.value` as any}
 							placeholder="value"
 							options={[
-								{ label: 'true', value: 'true' },
-								{ label: 'false', value: 'false' },
+								{ label: "true", value: "true" },
+								{ label: "false", value: "false" },
 							]}
 							control={control}
 						/>
-					) : ['has', 'hasNot'].includes(operatorValue) ? (
+					) : ["has", "hasNot"].includes(operatorValue) ? (
 						<CreatableSelect
 							name={`${name}filterSet.${index}.value` as any}
 							control={control}
@@ -244,7 +244,7 @@ function FieldsWrapper({
 				const filterSetValue = filterSet[index]
 				if (!filterSetValue) return null
 
-				if ('filterSet' in filterSetValue) {
+				if ("filterSet" in filterSetValue) {
 					return (
 						<div key={index} className="flex gap-4">
 							<div className="shrink-0">
@@ -291,7 +291,7 @@ function FieldsWrapper({
 							columnOptions={columnOptions}
 							columnType={
 								columns.find((column: any) => column.name === filterSetValue.key)
-									?.type ?? 'none'
+									?.type ?? "none"
 							}
 							conjunction={conjunction}
 							control={form.control}

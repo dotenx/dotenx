@@ -1,16 +1,16 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import * as z from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import * as z from "zod"
 import {
 	createIntegration,
 	getIntegrationKindFields,
 	getIntegrationKinds,
 	QueryKey,
-} from '../../api'
-import { toOption } from '../../utils'
-import { useOauth } from '../hooks'
+} from "../../api"
+import { toOption } from "../../utils"
+import { useOauth } from "../hooks"
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -35,10 +35,10 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		resetField,
 		setValue,
 	} = useForm<Schema>({
-		defaultValues: { type: '', name: '', secrets: undefined },
+		defaultValues: { type: "", name: "", secrets: undefined },
 		resolver: zodResolver(schema),
 	})
-	const integrationType = watch('type')
+	const integrationType = watch("type")
 	const integrationTypesQuery = useQuery(QueryKey.GetIntegrationTypes, getIntegrationKinds)
 	const integrationTypeFieldsQuery = useQuery(
 		[QueryKey.GetIntegrationTypeFields, integrationType],
@@ -52,19 +52,19 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 	const integrationTypeFields = integrationTypeFieldsQuery.data?.data
 	const { invalidate, ...oauth } = useOauth({
 		onSuccess: (accessToken, refreshToken, accessTokenSecret) => {
-			setValue('secrets.ACCESS_TOKEN', accessToken)
-			setValue('secrets.REFRESH_TOKEN', refreshToken)
-			setValue('secrets.ACCESS_TOKEN_SECRET', accessTokenSecret)
+			setValue("secrets.ACCESS_TOKEN", accessToken)
+			setValue("secrets.REFRESH_TOKEN", refreshToken)
+			setValue("secrets.ACCESS_TOKEN_SECRET", accessTokenSecret)
 		},
 	})
 
 	useEffect(() => {
-		resetField('secrets')
+		resetField("secrets")
 		invalidate()
 	}, [integrationType, invalidate, resetField])
 
 	useEffect(() => {
-		if (integrationKind) setValue('type', integrationKind)
+		if (integrationKind) setValue("type", integrationKind)
 	}, [integrationKind, setValue])
 
 	const onSave = () => {

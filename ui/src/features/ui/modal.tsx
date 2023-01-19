@@ -1,23 +1,23 @@
-import clsx from 'clsx'
-import { motion } from 'framer-motion'
-import { ReactNode } from 'react'
-import { IoClose } from 'react-icons/io5'
-import ReactModal from 'react-modal'
-import { Modals, useModal } from '../hooks'
-import { Fade } from './animation/fade'
+import clsx from "clsx"
+import { motion } from "framer-motion"
+import { ReactNode } from "react"
+import { IoClose } from "react-icons/io5"
+import ReactModal from "react-modal"
+import { Modals, useModal } from "../hooks"
+import { Fade } from "./animation/fade"
 
 type RenderChildren = (data: unknown) => ReactNode
-type Size = 'md' | 'lg' | 'xl'
+type Size = "md" | "lg" | "xl"
 
 interface ModalProps {
-	children: ReactNode | RenderChildren
+	children: ReactNode | any
 	kind: Modals
 	title?: string
 	size?: Size
 	fluid?: boolean
 }
 
-export function Modal({ children, kind, title, size = 'md', fluid = false }: ModalProps) {
+export function Modal({ children, kind, title, size = "md", fluid = false }: ModalProps) {
 	const modal = useModal()
 
 	return (
@@ -55,10 +55,10 @@ function Content({ title, children, size, fluid }: ContentProps) {
 			<motion.div
 				className="mx-auto overflow-hidden bg-white rounded-lg shadow-2xl outline-none text-slate-700"
 				initial={false}
-				transition={{ type: 'spring' }}
+				transition={{ type: "spring" }}
 				animate={{
-					maxWidth: size === 'md' ? '30rem' : size === 'lg' ? '60rem' : '80rem',
-					marginTop: size === 'md' ? '10vh' : size === 'lg' ? '10vh' : '5vh',
+					maxWidth: size === "md" ? "30rem" : size === "lg" ? "60rem" : "80rem",
+					marginTop: size === "md" ? "10vh" : size === "lg" ? "10vh" : "5vh",
 				}}
 				onClick={(e) => e.stopPropagation()}
 			>
@@ -74,13 +74,13 @@ function Content({ title, children, size, fluid }: ContentProps) {
 				</div>
 				<motion.div
 					className={clsx(
-						'p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300',
-						fluid && 'max-h-[75vh]'
+						"p-5 overflow-y-auto scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-slate-300",
+						fluid && "max-h-[75vh]"
 					)}
 					initial={false}
-					animate={{ height: fluid ? 'auto' : getModalHeight(size) }}
+					animate={{ height: fluid ? "auto" : getModalHeight(size) }}
 				>
-					{typeof children === 'function' ? children(modal.data ?? {}) : children}
+					{typeof children === "function" ? children(modal.data ?? {}) : children}
 				</motion.div>
 			</motion.div>
 		</div>
@@ -89,13 +89,13 @@ function Content({ title, children, size, fluid }: ContentProps) {
 
 const getModalHeight = (size: Size) => {
 	switch (size) {
-		case 'md':
-			return '75vh'
-		case 'lg':
-			return '75vh'
-		case 'xl':
-			return '85vh'
+		case "md":
+			return "75vh"
+		case "lg":
+			return "75vh"
+		case "xl":
+			return "85vh"
 		default:
-			return 'auto'
+			return "auto"
 	}
 }

@@ -1,13 +1,13 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { ActionIcon, Button } from '@mantine/core'
-import { openModal } from '@mantine/modals'
-import _ from 'lodash'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Navigate, useParams } from 'react-router-dom'
-import { CellProps } from 'react-table'
+import { ActionIcon, Button } from "@mantine/core"
+import { openModal } from "@mantine/modals"
+import _ from "lodash"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Navigate, useParams } from "react-router-dom"
+import { CellProps } from "react-table"
 import {
 	API_URL,
 	deleteColumn,
@@ -19,7 +19,7 @@ import {
 	GetTableRecordsRequest,
 	QueryKey,
 	TableRecord,
-} from '../api'
+} from "../api"
 import {
 	ColumnForm,
 	EditRecordForm,
@@ -28,10 +28,17 @@ import {
 	RecordForm,
 	TableDeletion,
 	TableEndpoints,
+<<<<<<< HEAD
 } from '../features/database'
 import { Modals, useModal } from '../features/hooks'
 import { Content_Wrapper, Drawer, Endpoint, Header, Modal, NewModal, Table } from '../features/ui'
 import { ViewForm } from '../features/views/view-form'
+=======
+} from "../features/database"
+import { Modals, useModal } from "../features/hooks"
+import { Drawer, Endpoint, Modal, NewModal, Table } from "../features/ui"
+import { ViewForm } from "../features/views/view-form"
+>>>>>>> main
 
 export default function TablePage() {
 	const { projectName, tableName } = useParams()
@@ -46,7 +53,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const modal = useModal()
 	const [filters, setFilters] = useState<GetTableRecordsRequest>({ columns: [] })
 	const projectDetails = useQuery(QueryKey.GetProject, () => getProject(projectName))
-	const projectTag = projectDetails.data?.data.tag ?? ''
+	const projectTag = projectDetails.data?.data.tag ?? ""
 	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const recordsQuery = useQuery(
 		[QueryKey.GetTableRecords, projectTag, tableName, filters, currentPage],
@@ -59,11 +66,11 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 	const records = (recordsQuery.data?.data?.rows || []).map((record) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
-				typeof value === 'boolean'
-					? [key, value ? 'Yes' : 'No']
+				typeof value === "boolean"
+					? [key, value ? "Yes" : "No"]
 					: _.isArray(value)
-					? [key, value.join(', ')]
-					: typeof value === 'object'
+					? [key, value.join(", ")]
+					: typeof value === "object"
 					? [key, JSON.stringify(value)]
 					: [key, value]
 			)
@@ -80,8 +87,8 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		: [
 				...headers,
 				{
-					Header: 'Actions',
-					accessor: '___actions___',
+					Header: "Actions",
+					accessor: "___actions___",
 					Cell: (props: CellProps<TableRecord>) => (
 						<RecordActions
 							projectTag={projectTag}
@@ -92,15 +99,15 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				},
 		  ]
 	const formColumns = columns.filter(
-		(column) => column.name !== 'id' && column.name !== 'creator_id'
+		(column) => column.name !== "id" && column.name !== "creator_id"
 	)
 
 	const helpDetails = {
 		title: `You can manage your table's records or find the data manipulation endpoints here`,
 		description:
-			'You can also add new columns or delete existing ones. Use the column types that best fit your data. Use the query builder to filter the records with simple or complex conditions.',
-		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
-		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+			"You can also add new columns or delete existing ones. Use the column types that best fit your data. Use the query builder to filter the records with simple or complex conditions.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
 
 	return (
@@ -121,7 +128,12 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					nPages={nPages}
 					setCurrentPage={setCurrentPage}
 					helpDetails={helpDetails}
+<<<<<<< HEAD
 					columns={tableHeaders}
+=======
+					title={`Table ${tableName}`}
+					columns={tableHeaders as any}
+>>>>>>> main
 					data={records}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
 				/>
@@ -167,7 +179,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 									recordsQuery.data?.data?.rows.find(
 										(record) => record.id === id
 									) ?? data,
-									['id', 'creator_id']
+									["id", "creator_id"]
 								)
 							).map(([key, value]) => [
 								key,
@@ -195,7 +207,7 @@ function QueryTable({
 	projectTag: string
 	tableName: string
 }) {
-	const defaultValues = { filterSet: [{ key: '', operator: '', value: '' }], conjunction: 'and' }
+	const defaultValues = { filterSet: [{ key: "", operator: "", value: "" }], conjunction: "and" }
 	const query = useQuery(QueryKey.GetColumns, () => getColumns(projectName, tableName))
 	const form = useForm<QueryBuilderValues>({ defaultValues })
 	const modal = useModal()
@@ -221,7 +233,7 @@ function QueryTable({
 						onClick={() => {
 							modal.close()
 							openModal({
-								title: 'Create view',
+								title: "Create view",
 								children: (
 									<ViewForm
 										filters={values as Filters}
@@ -314,7 +326,7 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 			client.invalidateQueries(QueryKey.GetTableRecords)
 		},
 	})
-	const showDelete = name !== 'id' && name !== 'creator_id'
+	const showDelete = name !== "id" && name !== "creator_id"
 
 	return (
 		<div className="flex items-center gap-2">
@@ -385,7 +397,7 @@ function RecordActions({
 			<ActionIcon
 				type="button"
 				onClick={() =>
-					modal.open(Modals.EditRecord, { id: rowId, data: _.omit(data, 'id') })
+					modal.open(Modals.EditRecord, { id: rowId, data: _.omit(data, "id") })
 				}
 			>
 				<IoPencil />

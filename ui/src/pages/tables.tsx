@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Button } from '@mantine/core'
 import { useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
@@ -8,6 +9,20 @@ import { TableForm, TableList } from '../features/database'
 import { Modals } from '../features/hooks'
 import { Content_Wrapper, Header, Loader, NewModal } from '../features/ui'
 import { ViewList } from '../features/views/view-list'
+=======
+import { Button } from "@mantine/core"
+import { useState } from "react"
+import { IoArrowBack } from "react-icons/io5"
+import { useQuery } from "react-query"
+import { Link, Navigate, useParams } from "react-router-dom"
+import { getTables, QueryKey } from "../api"
+import { TableForm, TableList } from "../features/database"
+import ExportDatabase from "../features/database/export-database"
+import CustomQuery from "../features/database/custom-query"
+import { Modals } from "../features/hooks"
+import { ContentWrapper, Loader, NewModal } from "../features/ui"
+import { ViewList } from "../features/views/view-list"
+>>>>>>> main
 
 export default function TablesPage() {
 	const { projectName } = useParams()

@@ -11,6 +11,9 @@
 # # hojjat12/typeform-new-response:lambda5
 # # hojjat12/mailchimp-new-subscriber:lambda
 # # hojjat12/mailchimp-new-unsubscriber:lambda
+# # hojjat12/airtable-new-record:lambda
+# # hojjat12/gumroad-new-sale:lambda
+# # hojjat12/gumroad-new-subscriber:lambda
 
 # export region="us-east-1"
 # export repository_name="awrmin/google-new-email"
@@ -106,6 +109,33 @@
 # export repository_name="hojjat12/mailchimp-new-unsubscriber"
 # export tag="lambda"
 # export directory_address="mailchimp-new-unsubscriber"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/airtable-new-record"
+# export tag="lambda"
+# export directory_address="airtable-new-record"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/gumroad-new-sale"
+# export tag="lambda"
+# export directory_address="gumroad-new-sale"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/gumroad-new-subscriber"
+# export tag="lambda"
+# export directory_address="gumroad-new-subscriber"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name

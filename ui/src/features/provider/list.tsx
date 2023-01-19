@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Button, Modal } from '@mantine/core'
 import { useState } from 'react'
 import { MdOutlineDeleteForever } from 'react-icons/md'
@@ -5,6 +6,15 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { deleteProvider, getProviders, QueryKey } from '../../api'
 import { Modals, useModal } from '../hooks'
 import { AddButton, Content_Wrapper, Header } from '../ui'
+=======
+import { ActionIcon, Anchor, Button } from "@mantine/core"
+import { IoAdd, IoTrash } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Link } from "react-router-dom"
+import { deleteProvider, getProviders, QueryKey } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { Confirm, Table } from "../ui"
+>>>>>>> main
 
 export function ProviderList() {
 	const modal = useModal()
@@ -18,13 +28,14 @@ export function ProviderList() {
 	const providers = query.data?.data
 
 	const helpDetails = {
-		title: 'In order to integrate your application with third party services, you need to add a provider',
+		title: "In order to integrate your application with third party services, you need to add a provider",
 		description:
-			'Each provider requires specific configuration. You can find the configuration details in the documentation of the provider.',
-		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
-		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+			"Each provider requires specific configuration. You can find the configuration details in the documentation of the provider.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
 	return (
+<<<<<<< HEAD
 		<div>
 			<Header title="Providers" subtitle="Connect to other services." />
 			<Content_Wrapper>
@@ -85,6 +96,36 @@ export function ProviderList() {
 									opened={openModal}
 									onClose={() => setOpenModal(false)}
 									title="Delete Provider"
+=======
+		<Table
+			helpDetails={helpDetails}
+			title="Providers"
+			emptyText="You have no provider yet, try adding one."
+			loading={query.isLoading}
+			actionBar={<ActionBar />}
+			columns={[
+				{
+					Header: "Name",
+					accessor: "name",
+					Cell: ({ value }: { value: string }) => (
+						<Anchor component={Link} to={value}>
+							{value}
+						</Anchor>
+					),
+				},
+				{ Header: "Type", accessor: "type" },
+				{
+					Header: "Action",
+					id: "action",
+					accessor: "name",
+					Cell: ({ value }: { value: string }) => (
+						<Confirm
+							target={(open) => (
+								<ActionIcon
+									loading={deleteMutation.isLoading}
+									onClick={open}
+									className="ml-auto"
+>>>>>>> main
 								>
 									<ConfirmDeleteModal
 										title={

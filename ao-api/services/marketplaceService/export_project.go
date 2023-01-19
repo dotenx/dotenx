@@ -14,6 +14,7 @@ import (
 func (ms *marketplaceService) ExportProject(accountId string, projectName, projectTag string, projectHasDb bool, dbService databaseService.DatabaseService, cService crudService.CrudService) (projectDto models.ProjectDto, err error) {
 	projectDto = models.ProjectDto{}
 	projectDto.Name = projectName
+	projectDto.AccountId = accountId
 
 	// Get the list of all the tables of this project
 	if projectHasDb {

@@ -1,9 +1,9 @@
-import { ActionIcon, Button } from '@mantine/core'
-import { IoAdd, IoTrash } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { deleteIntegration, getIntegrations, QueryKey } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { Table } from '../ui'
+import { ActionIcon, Button } from "@mantine/core"
+import { IoAdd, IoTrash } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { deleteIntegration, getIntegrations, QueryKey } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { Table } from "../ui"
 
 export function IntegrationList() {
 	const client = useQueryClient()
@@ -20,12 +20,12 @@ export function IntegrationList() {
 			loading={query.isLoading}
 			actionBar={<ActionBar />}
 			columns={[
-				{ Header: 'Name', accessor: 'name' },
-				{ Header: 'Type', accessor: 'type' },
+				{ Header: "Name", accessor: "name" },
+				{ Header: "Type", accessor: "type" },
 				{
-					Header: 'Action',
-					id: 'action',
-					accessor: 'name',
+					Header: "Action",
+					id: "action",
+					accessor: "name",
 					Cell: ({ value }: { value: string }) => (
 						<ActionIcon
 							onClick={() => deleteMutation.mutate(value)}

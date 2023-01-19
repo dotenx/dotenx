@@ -1,19 +1,19 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { ActionIcon, Menu } from '@mantine/core'
-import clsx from 'clsx'
-import produce from 'immer'
-import _ from 'lodash'
-import { nanoid } from 'nanoid'
+import { ActionIcon, Menu } from "@mantine/core"
+import clsx from "clsx"
+import produce from "immer"
+import _ from "lodash"
+import { nanoid } from "nanoid"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import { IoAdd, IoCode, IoEllipsisHorizontal, IoList, IoRemove, IoText } from 'react-icons/io5'
-import { FieldError, GroupData, InputOrSelectKind, InputOrSelectValue } from '.'
-import { ComplexFieldRaw, FormattedValue, NestedValue } from './complex-field'
+} from "react-hook-form"
+import { IoAdd, IoCode, IoEllipsisHorizontal, IoList, IoRemove, IoText } from "react-icons/io5"
+import { FieldError, GroupData, InputOrSelectKind, InputOrSelectValue } from "."
+import { ComplexFieldRaw, FormattedValue, NestedValue } from "./complex-field"
 
 export interface JsonEditorProps<
 	TFieldValues extends FieldValues,
@@ -47,10 +47,10 @@ export function JsonEditor<
 										? [
 												{
 													id: nanoid(),
-													name: '',
+													name: "",
 													value: {
 														type: InputOrSelectKind.Text,
-														data: '',
+														data: "",
 													},
 												},
 										  ]
@@ -72,9 +72,9 @@ export function JsonEditor<
 export type EditorInput = InputOrSelectValue | FormattedValue | NestedValue
 
 enum PropertyKind {
-	String = 'string',
-	Object = 'object',
-	Array = 'array',
+	String = "string",
+	Object = "object",
+	Array = "array",
 }
 
 export interface EditorObjectValue {
@@ -99,7 +99,7 @@ export function Object({
 			case PropertyKind.String:
 				changeProperties(
 					produce(properties, (draft) => {
-						draft[index].value = { type: InputOrSelectKind.Text, data: '' }
+						draft[index].value = { type: InputOrSelectKind.Text, data: "" }
 					})
 				)
 				break
@@ -109,8 +109,8 @@ export function Object({
 						draft[index].value = [
 							{
 								id: nanoid(),
-								name: '',
-								value: { type: InputOrSelectKind.Text, data: '' },
+								name: "",
+								value: { type: InputOrSelectKind.Text, data: "" },
 							},
 						]
 					})
@@ -119,7 +119,7 @@ export function Object({
 			case PropertyKind.Array:
 				changeProperties(
 					produce(properties, (draft) => {
-						draft[index].value = ['']
+						draft[index].value = [""]
 					})
 				)
 				break
@@ -131,8 +131,8 @@ export function Object({
 			produce(properties, (draft) => {
 				draft.splice(index + 1, 0, {
 					id: nanoid(),
-					name: '',
-					value: { type: InputOrSelectKind.Text, data: '' },
+					name: "",
+					value: { type: InputOrSelectKind.Text, data: "" },
 				})
 			})
 		)
@@ -185,7 +185,7 @@ function Property({
 	outputGroups: GroupData[]
 }) {
 	return (
-		<div className={clsx('flex group', kind === PropertyKind.Object && 'flex-col')}>
+		<div className={clsx("flex group", kind === PropertyKind.Object && "flex-col")}>
 			<div className="flex items-center">
 				<Actions
 					onClickText={() => changeKind(PropertyKind.String)}
@@ -213,12 +213,12 @@ function Property({
 									changeProperty({ ...property, value: value as EditorInput })
 								}
 								groups={outputGroups}
-								valueKinds={['input-or-select']}
+								valueKinds={["input-or-select"]}
 							/>
 						</div>
 					</div>
 				)}
-				{_.isArray(property.value) && typeof property.value[0] !== 'string' && (
+				{_.isArray(property.value) && typeof property.value[0] !== "string" && (
 					<div className="pl-6 mt-1">
 						<Object
 							properties={property.value as EditorObjectValue[]}
@@ -229,7 +229,7 @@ function Property({
 						/>
 					</div>
 				)}
-				{_.isArray(property.value) && typeof property.value[0] === 'string' && (
+				{_.isArray(property.value) && typeof property.value[0] === "string" && (
 					<div className="pl-6 mt-1">
 						{(property.value as string[]).map((value, index) => (
 							<ArrayItem
@@ -239,7 +239,7 @@ function Property({
 									changeProperty(
 										produce(property, (draft) => {
 											const values = draft.value as string[]
-											values.splice(index + 1, 0, '')
+											values.splice(index + 1, 0, "")
 										})
 									)
 								}
@@ -366,8 +366,8 @@ function AutoWidthInput({
 	return (
 		<input
 			className={clsx(
-				'px-[1ch] py-1 rounded border outline-none focus:ring-1 ring-rose-400 bg-inherit focus:bg-white hover:bg-white',
-				value.length === 0 ? 'border-dashed border-gray-400' : 'border-gray-50'
+				"px-[1ch] py-1 rounded border outline-none focus:ring-1 ring-rose-400 bg-inherit focus:bg-white hover:bg-white",
+				value.length === 0 ? "border-dashed border-gray-400" : "border-gray-50"
 			)}
 			style={{ width: inputWidth }}
 			value={value}

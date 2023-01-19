@@ -4,9 +4,9 @@ import {
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import ReactSelect, { MultiValue } from 'react-select'
-import { FieldError } from './field'
+} from "react-hook-form"
+import ReactSelect, { MultiValue } from "react-select"
+import { FieldError } from "./field"
 
 export interface Option {
 	label: string
@@ -52,7 +52,7 @@ export function Select<TFieldValues extends FieldValues, TName extends FieldPath
 	)
 }
 
-const defaultValue = { label: '', value: '' }
+const defaultValue = { label: "", value: "" }
 
 function SelectController<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
 	control,

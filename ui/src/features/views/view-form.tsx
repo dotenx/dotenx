@@ -1,9 +1,9 @@
-import { Button, Switch, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { closeAllModals } from '@mantine/modals'
-import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
-import { createView, Filters } from '../../api'
+import { Button, Switch, TextInput } from "@mantine/core"
+import { useForm } from "@mantine/form"
+import { closeAllModals } from "@mantine/modals"
+import { useMutation } from "react-query"
+import { useNavigate } from "react-router-dom"
+import { createView, Filters } from "../../api"
 
 export function ViewForm({
 	filters,
@@ -18,7 +18,7 @@ export function ViewForm({
 }) {
 	const navigate = useNavigate()
 	const mutation = useMutation(createView)
-	const form = useForm({ initialValues: { isPublic: false, viewName: '' } })
+	const form = useForm({ initialValues: { isPublic: false, viewName: "" } })
 	const onSubmit = form.onSubmit((values) =>
 		mutation.mutate(
 			{
@@ -40,8 +40,8 @@ export function ViewForm({
 
 	return (
 		<form onSubmit={onSubmit} className="space-y-4">
-			<TextInput label="View name" {...form.getInputProps('viewName')} />
-			<Switch label="Public" {...form.getInputProps('isPublic')} />
+			<TextInput label="View name" {...form.getInputProps("viewName")} />
+			<Switch label="Public" {...form.getInputProps("isPublic")} />
 			<Button type="submit" loading={mutation.isLoading}>
 				Create View
 			</Button>

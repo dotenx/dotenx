@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
-import { Table as MantineTable, TextInput, Title } from '@mantine/core'
-import Fuse from 'fuse.js'
-import _ from 'lodash'
-import { ReactNode, useMemo, useState } from 'react'
-import { IoSearch } from 'react-icons/io5'
-import { Column, useTable } from 'react-table'
-import { HelpDetails, HelpPopover } from './help-popover'
-import { Loader } from './loader'
+import { Table as MantineTable, TextInput, Title } from "@mantine/core"
+import Fuse from "fuse.js"
+import _ from "lodash"
+import { ReactNode, useMemo, useState } from "react"
+import { IoSearch } from "react-icons/io5"
+import { Column, useTable } from "react-table"
+import { HelpDetails, HelpPopover } from "./help-popover"
+import { Loader } from "./loader"
 
 interface TableProps<D extends object = Record<string, string>> {
 	title?: string
@@ -39,7 +39,7 @@ export function Table<D extends object = Record<string, string>>({
 	helpDetails,
 	withPagination,
 }: TableProps<D>) {
-	const [search, setSearch] = useState('')
+	const [search, setSearch] = useState("")
 	const fuzzySearch = useMemo(
 		() =>
 			new Fuse(data, {
@@ -65,7 +65,7 @@ export function Table<D extends object = Record<string, string>>({
 			{title && (
 				<div className="flex justify-between ">
 					<div className="flex justify-start">
-						<Title order={2} sx={{ display: 'inline-flex' }}>
+						<Title order={2} sx={{ display: "inline-flex" }}>
 							{title}
 						</Title>
 
@@ -114,7 +114,7 @@ export function Table<D extends object = Record<string, string>>({
 												className="!font-medium !text-slate-900 !whitespace-nowrap"
 												{...column.getHeaderProps()}
 											>
-												{column.render('Header')}
+												{column.render("Header")}
 											</th>
 										))}
 									</tr>
@@ -132,7 +132,7 @@ export function Table<D extends object = Record<string, string>>({
 														title={cell.value as string}
 														{...cell.getCellProps()}
 													>
-														{cell.render('Cell')}
+														{cell.render("Cell")}
 													</td>
 												)
 											})}
@@ -184,7 +184,7 @@ const Pagination = ({
 				<li
 					onClick={prevPage}
 					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
-						currentPage === 1 && 'pointer-events-none opacity-70'
+						currentPage === 1 && "pointer-events-none opacity-70"
 					}`}
 				>
 					Previous
@@ -194,7 +194,7 @@ const Pagination = ({
 						onClick={() => setCurrentPage(pgNumber)}
 						key={pgNumber}
 						className={`bg-slate-50 p-1 px-2 rounded  cursor-pointer active:bg-slate-100 ${
-							currentPage == pgNumber ? 'bg-slate-200' : ''
+							currentPage == pgNumber ? "bg-slate-200" : ""
 						} `}
 					>
 						{pgNumber}
@@ -203,7 +203,7 @@ const Pagination = ({
 				<li
 					onClick={nextPage}
 					className={`bg-slate-50 p-1 px-2 rounded cursor-pointer active:bg-slate-100 ${
-						currentPage === nPages && 'pointer-events-none opacity-70'
+						currentPage === nPages && "pointer-events-none opacity-70"
 					}`}
 				>
 					Next

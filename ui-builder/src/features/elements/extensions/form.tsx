@@ -7,7 +7,8 @@ import { FrameContext } from 'react-frame-component'
 import { TbEdit, TbForms, TbPlus } from 'react-icons/tb'
 import { AnyJson } from '../../../utils'
 import { DataSourceForm } from '../../data-source/data-source-form'
-import { useDataSourceStore } from '../../data-source/data-source-store'
+import { HttpMethod, useDataSourceStore } from '../../data-source/data-source-store'
+import { Expression } from '../../states/expression'
 import { inteliToString } from '../../ui/intelinput'
 import { Element, RenderFn } from '../element'
 import { useElementsStore } from '../elements-store'
@@ -94,7 +95,19 @@ function FormOptions({ element }: { element: FormElement }) {
 								<DataSourceForm
 									withoutFetch={true}
 									mode="simple-add"
-									initialValues={dataSource}
+									initialValues={
+										dataSource ?? {
+											stateName: '',
+											url: new Expression(),
+											method: HttpMethod.Get,
+											headers: '',
+											body: new Expression(),
+											id: '',
+											properties: [],
+											fetchOnload: false,
+											isPrivate: true,
+										}
+									}
 									onSuccess={(values) =>
 										set(
 											produce(element, (draft) => {

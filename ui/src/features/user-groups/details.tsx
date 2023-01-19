@@ -1,9 +1,9 @@
-import { Button, Table } from '@mantine/core'
-import _ from 'lodash'
-import { IoCheckmark } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { getUserGroup, QueryKey, setDefaultUserGroup, SetDefaultUserGroupRequest } from '../../api'
-import { Loader } from '../ui'
+import { Button, Table } from "@mantine/core"
+import _ from "lodash"
+import { IoCheckmark } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { getUserGroup, QueryKey, setDefaultUserGroup, SetDefaultUserGroupRequest } from "../../api"
+import { Loader } from "../ui"
 
 export function UserGroupDetails({ projectTag, name }: { projectTag: string; name: string }) {
 	const queryClient = useQueryClient()
@@ -25,10 +25,10 @@ export function UserGroupDetails({ projectTag, name }: { projectTag: string; nam
 	const rows = _.toPairs(details.privilages).map(([tableName, privileges]) => (
 		<tr key={tableName}>
 			<td>{tableName}</td>
-			<td>{privileges.includes('select') && <IoCheckmark />}</td>
-			<td>{privileges.includes('update') && <IoCheckmark />}</td>
-			<td>{privileges.includes('delete') && <IoCheckmark />}</td>
-			<td>{privileges.includes('insert') && <IoCheckmark />}</td>
+			<td>{privileges.includes("select") && <IoCheckmark />}</td>
+			<td>{privileges.includes("update") && <IoCheckmark />}</td>
+			<td>{privileges.includes("delete") && <IoCheckmark />}</td>
+			<td>{privileges.includes("insert") && <IoCheckmark />}</td>
 		</tr>
 	))
 
@@ -36,7 +36,7 @@ export function UserGroupDetails({ projectTag, name }: { projectTag: string; nam
 		<div className="space-y-6">
 			<div className="space-y-2">
 				<p className="font-medium">Description</p>
-				<p className="text-sm">{details.description || '-'}</p>
+				<p className="text-sm">{details.description || "-"}</p>
 			</div>
 			<Table>
 				<thead>

@@ -1,6 +1,6 @@
-import { Button, Popover } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import { ReactNode } from 'react'
+import { Button, Popover } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks"
+import { ReactNode } from "react"
 
 export function Confirm({
 	confirmText,

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ActionIcon, Anchor, Button, Checkbox, MultiSelect, Drawer } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { CellProps } from 'react-table'
@@ -7,6 +8,17 @@ import { useEffect, useState } from 'react'
 import { IoCodeDownload, IoTrash } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+=======
+import { ActionIcon, Anchor, Button, Checkbox, Drawer, MultiSelect } from "@mantine/core"
+import { useForm } from "@mantine/form"
+import { format } from "date-fns"
+import _ from "lodash"
+import { useEffect, useState } from "react"
+import { IoAdd, IoCodeDownload, IoTrash } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { CellProps } from "react-table"
+>>>>>>> main
 import {
 	API_URL,
 	Automation,
@@ -21,6 +33,7 @@ import {
 	QueryKey,
 	setAccess,
 	setInteractionUserGroup,
+<<<<<<< HEAD
 } from '../../api'
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { Modals, useModal } from '../hooks'
@@ -28,6 +41,15 @@ import { AddButton, Confirm, Endpoint, Form, Loader, Modal, NewModal, Table } fr
 import { HelpDetails } from '../ui/help-popover'
 import { useDeleteAutomation } from './use-delete'
 import { useNewAutomation } from './use-new'
+=======
+} from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
+import { Modals, useModal } from "../hooks"
+import { Confirm, ContentWrapper, Endpoint, Form, Loader, Modal, NewModal, Table } from "../ui"
+import { HelpDetails } from "../ui/help-popover"
+import { useDeleteAutomation } from "./use-delete"
+import { useNewAutomation } from "./use-new"
+>>>>>>> main
 
 interface AutomationListProps {
 	automations?: Automation[]
@@ -48,7 +70,7 @@ export function AutomationList({
 }: AutomationListProps) {
 	const modal = useModal()
 	const client = useQueryClient()
-	const [rowData, setRowData] = useState({ value: false, name: '' })
+	const [rowData, setRowData] = useState({ value: false, name: "" })
 	const { mutate } = useMutation(setAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetAutomations),
 	})
@@ -69,9 +91,9 @@ export function AutomationList({
 
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 	const projectQuery = useQuery([QueryKey.GetProject, projectName], () => getProject(projectName))
-	const projectTag = projectQuery.data?.data.tag ?? ''
+	const projectTag = projectQuery.data?.data.tag ?? ""
 
-	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: '', value: '' }])
+	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: "", value: "" }])
 	useQuery([QueryKey.GetUserGroups, projectTag], () => getUserGroups(projectTag), {
 		onSuccess: (data) => {
 			const userGroups = Object.values(data.data)
@@ -89,10 +111,11 @@ export function AutomationList({
 	}, [defaultUserGroups])
 
 	const [openHistory, setOpenHistory] = useState(false)
-	const [automationName, setAutomationName] = useState('')
+	const [automationName, setAutomationName] = useState("")
 	const [automationHistory, setAutomationHistory] = useState<any>([])
 
 	return (
+<<<<<<< HEAD
 		<div>
 			<NewAutomation kind={kind} />
 			<Table
@@ -224,13 +247,157 @@ export function AutomationList({
 				)}
 				data={automations}
 			/>
+=======
+		<>
+			<ContentWrapper>
+				<Table
+					title={title}
+					subtitle={subtitle}
+					helpDetails={helpDetails}
+					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
+					loading={loading || loadingAutomationHistory}
+					actionBar={<NewAutomation kind={kind} />}
+					columns={
+						(
+							[
+								{
+									Header: "Name",
+									accessor: "name",
+									Cell: ({ value }: { value: string }) => (
+										<AutomationLink automationName={value} />
+									),
+								},
+								{
+									Header: "User account",
+									accessor: "created_for",
+								},
+								{
+									Header: "Status",
+									accessor: "is_active",
+									Cell: ({ value }: { value: boolean }) => (
+										<ActivationStatus isActive={value} />
+									),
+								},
+								{
+									Header: "Public",
+									accessor: "is_public",
+									Cell: ({ value, row }: { value: boolean; row: any }) => (
+										<Checkbox
+											readOnly
+											checked={value}
+											onClick={() => {
+												setRowData({
+													value: value,
+													name: row.original.name,
+												}),
+													modal.open(Modals.ConfirmCheckbox)
+											}}
+										/>
+									),
+								},
+								{
+									Header: "User groups",
+									accessor: "user_groups",
+									Cell: ({ value, row }: { value: string[]; row: any }) => (
+										<div
+											className={`text-slate-700 ${
+												row.original.is_public
+													? "pointer-events-none pl-6"
+													: "cursor-pointer hover:opacity-80 text-xs font-medium "
+											}`}
+											onClick={() => {
+												setDefaultUserGroups(row.original.user_groups)
+												modal.open(Modals.InteractionUserGroup, {
+													name: row.original.name,
+													userGroup: value,
+												})
+											}}
+										>
+											{row.original.is_public ? "_" : "Show / Edit"}
+										</div>
+									),
+								},
+								{
+									Header: "Created automations",
+									id: "Created automations",
+									accessor: "name",
+									Cell: ({ value, row }: { value: string; row: any }) => (
+										<Button
+											onClick={() => navigate(`${value}/automations`)}
+											variant="subtle"
+											color="gray"
+											size="xs"
+										>
+											Show
+										</Button>
+									),
+								},
+								{
+									Header: "History",
+									id: "automation history",
+									accessor: "name",
+									Cell: ({ value }: { value: string }) => (
+										<Button
+											onClick={() => {
+												mutateAutomationHistory({
+													name: value,
+													projectName,
+												}),
+													setAutomationName(value)
+											}}
+											variant="subtle"
+											color="gray"
+											size="xs"
+										>
+											Show
+										</Button>
+									),
+								},
+								{
+									Header: "Action",
+									id: "action",
+									accessor: "name",
+									Cell: ({ value, row }: { value: string; row: any }) => (
+										<AutomationActions
+											automationName={value}
+											endpoint={row.original.endpoint}
+											isPublic={row.original.is_public}
+											kind={kind}
+										/>
+									),
+								},
+							] as const
+						).filter(
+							(col) =>
+								(!["automation", "template_automations"].includes(kind)
+									? col.Header !== "Status"
+									: true) &&
+								(kind !== "interaction"
+									? !["Public"].includes(col.Header)
+									: true) &&
+								(!["interaction", "template"].includes(kind)
+									? !["User groups"].includes(col.Header)
+									: true) &&
+								(kind !== "template"
+									? col.Header !== "Created automations"
+									: true) &&
+								(kind === "template_automations" ? col.Header !== "Name" : true) &&
+								(kind !== "template_automations"
+									? !["History", "User account"].includes(col.Header)
+									: true)
+						) as any
+					}
+					data={automations}
+				/>
+			</ContentWrapper>
+>>>>>>> main
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
 				{(data: { automationName: string; endpoint: string; isPublic: boolean }) => (
 					<>
-						{kind === 'template' && (
+						{kind === "template" && (
 							<TemplateEndpoint automationName={data.automationName} />
 						)}
-						{kind === 'interaction' && (
+						{kind === "interaction" && (
 							<InteractionEndpoint
 								automationName={data.automationName}
 								endpoint={data.endpoint}
@@ -242,9 +409,9 @@ export function AutomationList({
 			</Modal>
 			<NewModal kind={Modals.ConfirmCheckbox} title="Change interaction access" size="xl">
 				<h2>
-					Are you sure you want to change{' '}
-					<span className="text-sky-900">{rowData.name}</span> interaction access to{' '}
-					{rowData.value ? 'private' : 'public'}?
+					Are you sure you want to change{" "}
+					<span className="text-sky-900">{rowData.name}</span> interaction access to{" "}
+					{rowData.value ? "private" : "public"}?
 				</h2>
 				<div className="flex items-center justify-end">
 					<Button
@@ -295,7 +462,7 @@ export function AutomationList({
 									clearable
 									label="Select"
 									data={userGroupsOptions}
-									{...form.getInputProps('userGroups')}
+									{...form.getInputProps("userGroups")}
 								/>
 							</div>
 							<Button loading={isUserGroupLoading} className="w-full" type="submit">
@@ -314,12 +481,12 @@ export function AutomationList({
 				size="xl"
 				position="right"
 			>
-				<div className="overflow-y-auto h-full pb-20 ">
+				<div className="h-full pb-20 overflow-y-auto ">
 					<Table
 						title=""
 						columns={[
 							{
-								Header: 'Date',
+								Header: "Date",
 								Cell: (props: CellProps<Execution>) => (
 									<Link
 										className="rounded hover:bg-slate-50"
@@ -328,19 +495,19 @@ export function AutomationList({
 										<span>
 											{format(
 												new Date(props.row.original.StartedAt),
-												'yyyy/MM/dd'
+												"yyyy/MM/dd"
 											)}
 										</span>
 										<span className="ml-4 text-xs">
 											{format(
 												new Date(props.row.original.StartedAt),
-												'HH:mm:ss'
+												"HH:mm:ss"
 											)}
 										</span>
 									</Link>
 								),
 							},
-							{ Header: 'ID', accessor: 'Id' },
+							{ Header: "ID", accessor: "Id" },
 						]}
 						data={automationHistory}
 						emptyText={`This ${kind} has no execution history yet.`}
@@ -352,13 +519,18 @@ export function AutomationList({
 }
 
 function NewAutomation({ kind }: { kind: AutomationKind }) {
+<<<<<<< HEAD
 	const newAutomation = useNewAutomation(kind)
 	const newButtonText = kind === 'template' ? 'Automation Template' : kind
+=======
+	const newAutomation = useNewAutomation("new")
+	const newButtonText = kind === "template" ? "Automation Template" : kind
+>>>>>>> main
 
-	if (kind === 'template_automations') return null
+	if (kind === "template_automations") return null
 	return (
 		<div className="flex gap-4">
-			{kind === 'automation' && (
+			{kind === "automation" && (
 				<Button
 					component={Link}
 					to="yaml/import"
@@ -390,12 +562,12 @@ interface AutomationActionsProps {
 function AutomationActions({ automationName, kind, endpoint, isPublic }: AutomationActionsProps) {
 	const deleteMutation = useDeleteAutomation()
 	const modal = useModal()
-	const textKind = kind === 'template' ? 'automation template' : kind
+	const textKind = kind === "template" ? "automation template" : kind
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 
 	return (
 		<div className="flex items-center justify-end gap-4">
-			{!['automation', 'template_automations'].includes(kind) && (
+			{!["automation", "template_automations"].includes(kind) && (
 				<Button
 					onClick={() =>
 						modal.open(Modals.TemplateEndpoint, { automationName, endpoint, isPublic })

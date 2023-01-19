@@ -1,17 +1,17 @@
-import clsx from 'clsx'
-import _ from 'lodash'
-import { useCallback, useRef, useState } from 'react'
+import clsx from "clsx"
+import _ from "lodash"
+import { useCallback, useRef, useState } from "react"
 import {
 	Controller,
 	FieldErrors,
 	FieldPath,
 	FieldValues,
 	UseControllerProps,
-} from 'react-hook-form'
-import { IoChevronDown, IoClose } from 'react-icons/io5'
-import { useOutsideClick } from '../hooks'
-import { Fade } from './animation/fade'
-import { FieldError } from './field'
+} from "react-hook-form"
+import { IoChevronDown, IoClose } from "react-icons/io5"
+import { useOutsideClick } from "../hooks"
+import { Fade } from "./animation/fade"
+import { FieldError } from "./field"
 
 export interface InputOrSelectProps<
 	TFieldValues extends FieldValues,
@@ -35,7 +35,7 @@ export function InputOrSelect<
 				render={({ field: { onChange, value } }) => (
 					<InputOrSelectRaw
 						onChange={onChange}
-						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
+						value={value ?? { type: InputOrSelectKind.Text, data: "" }}
 						label={label}
 						name={name}
 						groups={groups}
@@ -49,8 +49,8 @@ export function InputOrSelect<
 }
 
 export enum InputOrSelectKind {
-	Text = 'text',
-	Option = 'option',
+	Text = "text",
+	Option = "option",
 }
 
 export interface GroupData {
@@ -111,7 +111,7 @@ export function InputOrSelectRaw({
 						onClose={() =>
 							onChange({
 								type: InputOrSelectKind.Text,
-								data: '',
+								data: "",
 							})
 						}
 					/>
@@ -119,8 +119,8 @@ export function InputOrSelectRaw({
 				{value.type === InputOrSelectKind.Text && (
 					<input
 						className={clsx(
-							'px-2 py-1 border rounded border-slate-400 outline-rose-500',
-							isOpen && 'outline-2 outline-offset-[-0.5px]'
+							"px-2 py-1 border rounded border-slate-400 outline-rose-500",
+							isOpen && "outline-2 outline-offset-[-0.5px]"
 						)}
 						placeholder={placeholder}
 						onFocus={() => setIsOpen(true)}
@@ -186,7 +186,7 @@ function Group({ name, options, onSelect, iconUrl }: GroupProps) {
 					<span>{name}</span>
 				</div>
 				<IoChevronDown
-					className={clsx('text-slate-400 transition', isOpen && '-scale-y-100')}
+					className={clsx("text-slate-400 transition", isOpen && "-scale-y-100")}
 				/>
 			</div>
 			{isOpen && (
@@ -222,8 +222,8 @@ function InputValueBox({ value, onClose, compact }: InputValueBoxProps) {
 	return (
 		<div
 			className={clsx(
-				'flex items-center justify-between border rounded border-slate-400',
-				compact ? 'p-px' : 'p-1'
+				"flex items-center justify-between border rounded border-slate-400",
+				compact ? "p-px" : "p-1"
 			)}
 		>
 			<div className="bg-gray-50 px-1.5 flex items-center gap-2 rounded">

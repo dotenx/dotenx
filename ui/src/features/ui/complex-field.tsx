@@ -1,6 +1,6 @@
-import { ActionIcon, Button, CloseButton, Menu, Textarea, TextInput } from '@mantine/core'
-import _ from 'lodash'
-import { useEffect, useState } from 'react'
+import { ActionIcon, Button, CloseButton, Menu, Textarea, TextInput } from "@mantine/core"
+import _ from "lodash"
+import { useEffect, useState } from "react"
 import {
 	Controller,
 	FieldErrors,
@@ -8,7 +8,7 @@ import {
 	FieldValues,
 	UseControllerProps,
 	useForm,
-} from 'react-hook-form'
+} from "react-hook-form"
 import {
 	IoClose,
 	IoCode,
@@ -16,11 +16,11 @@ import {
 	IoEllipsisHorizontal,
 	IoGitMerge,
 	IoText,
-} from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { getFormatterFunctions, QueryKey } from '../../api'
-import { Description } from './description'
-import { FieldError } from './field'
+} from "react-icons/io5"
+import { useQuery } from "react-query"
+import { getFormatterFunctions, QueryKey } from "../../api"
+import { Description } from "./description"
+import { FieldError } from "./field"
 import {
 	GroupData,
 	InputOrSelectKind,
@@ -28,8 +28,8 @@ import {
 	InputOrSelectRawProps,
 	InputOrSelectValue,
 	SelectValue,
-} from './input-or-select'
-import { NewSelect } from './new-select'
+} from "./input-or-select"
+import { NewSelect } from "./new-select"
 
 export type ComplexFieldValue =
 	| InputOrSelectValue
@@ -44,17 +44,17 @@ export interface FormattedValue {
 }
 
 export interface NestedValue {
-	kind: 'nested'
+	kind: "nested"
 	data: string
 }
 
 interface JsonValue {
-	kind: 'json'
+	kind: "json"
 	data: string
 }
 
 interface JsonArrayValue {
-	kind: 'json-array'
+	kind: "json-array"
 	data: string
 }
 
@@ -66,7 +66,7 @@ export interface ComplexFieldProps<
 	groups?: GroupData[]
 	errors?: FieldErrors<TFieldValues>
 	placeholder?: string
-	valueKinds?: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
+	valueKinds?: ("json" | "json-array" | "nested" | "formatted" | "input-or-select")[]
 }
 
 export function ComplexField<
@@ -89,7 +89,7 @@ export function ComplexField<
 				render={({ field: { onChange, value } }) => (
 					<ComplexFieldRaw
 						onChange={onChange}
-						value={value ?? { type: InputOrSelectKind.Text, data: '' }}
+						value={value ?? { type: InputOrSelectKind.Text, data: "" }}
 						label={label}
 						name={name}
 						groups={groups}
@@ -110,52 +110,52 @@ interface ComplexFieldRawProps {
 	label?: string
 	groups?: GroupData[]
 	placeholder?: string
-	valueKinds?: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
+	valueKinds?: ("json" | "json-array" | "nested" | "formatted" | "input-or-select")[]
 	compact?: boolean
 }
 export function ComplexFieldRaw({
 	value,
 	onChange,
 	groups = [],
-	name = '',
+	name = "",
 	label,
 	placeholder,
-	valueKinds = ['nested', 'formatted', 'input-or-select'],
+	valueKinds = ["nested", "formatted", "input-or-select"],
 	compact,
 }: ComplexFieldRawProps) {
 	const [view, setView] = useState<
-		'input-or-select' | 'formatting' | 'formatted' | 'nested' | 'json' | 'json-array'
-	>('input-or-select')
+		"input-or-select" | "formatting" | "formatted" | "nested" | "json" | "json-array"
+	>("input-or-select")
 
 	const switchToText = () => {
-		setView('input-or-select')
-		onChange({ type: InputOrSelectKind.Text, data: '' })
+		setView("input-or-select")
+		onChange({ type: InputOrSelectKind.Text, data: "" })
 	}
-	const switchToFormatter = () => setView('formatting')
+	const switchToFormatter = () => setView("formatting")
 	const switchToNested = () => {
-		setView('nested')
-		onChange({ kind: 'nested', data: '' })
+		setView("nested")
+		onChange({ kind: "nested", data: "" })
 	}
 	const switchToJson = () => {
-		setView('json')
-		onChange({ kind: 'json', data: '' })
+		setView("json")
+		onChange({ kind: "json", data: "" })
 	}
 	const switchToJsonArray = () => {
-		setView('json-array')
-		onChange({ kind: 'json-array', data: '' })
+		setView("json-array")
+		onChange({ kind: "json-array", data: "" })
 	}
 	const switchToFormatted = (value: FormattedValue) => {
 		onChange(value)
-		setView('formatted')
+		setView("formatted")
 	}
 	const resetFormatter = () => {
-		setView('input-or-select')
-		onChange({ type: InputOrSelectKind.Text, data: '' })
+		setView("input-or-select")
+		onChange({ type: InputOrSelectKind.Text, data: "" })
 	}
 
 	return (
 		<div>
-			{view === 'input-or-select' && !isFnValue(value) && !('kind' in value) && (
+			{view === "input-or-select" && !isFnValue(value) && !("kind" in value) && (
 				<Formatter
 					groups={groups}
 					name={name}
@@ -171,43 +171,43 @@ export function ComplexFieldRaw({
 					compact={compact}
 				/>
 			)}
-			{view === 'formatting' && (
+			{view === "formatting" && (
 				<FormatterFnForm
 					onSubmit={switchToFormatted}
 					onCancel={switchToText}
 					groups={groups}
 				/>
 			)}
-			{(view === 'formatted' || isFnValue(value)) && (
+			{(view === "formatted" || isFnValue(value)) && (
 				<FormattedBox label={label} value={value} onClose={resetFormatter} />
 			)}
-			{'kind' in value && value.kind === 'nested' && (
+			{"kind" in value && value.kind === "nested" && (
 				<NestedValueInput
 					name={name}
 					label={label}
 					placeholder={placeholder}
 					value={value.data}
 					switchToNormal={switchToText}
-					onChange={(value) => onChange({ kind: 'nested', data: value })}
+					onChange={(value) => onChange({ kind: "nested", data: value })}
 				/>
 			)}
-			{'kind' in value && value.kind === 'json' && (
+			{"kind" in value && value.kind === "json" && (
 				<JsonValueInput
 					name={name}
 					label={label}
 					placeholder={placeholder}
 					value={value.data}
-					onChange={(value) => onChange({ kind: 'json', data: value })}
+					onChange={(value) => onChange({ kind: "json", data: value })}
 					switchToNormal={switchToText}
 				/>
 			)}
-			{'kind' in value && value.kind === 'json-array' && (
+			{"kind" in value && value.kind === "json-array" && (
 				<JsonValueInput
 					name={name}
 					label={label}
 					placeholder={placeholder}
 					value={value.data}
-					onChange={(value) => onChange({ kind: 'json-array', data: value })}
+					onChange={(value) => onChange({ kind: "json-array", data: value })}
 					switchToNormal={switchToText}
 				/>
 			)}
@@ -265,7 +265,7 @@ interface FormatterProps extends InputOrSelectRawProps {
 	onClickNested: () => void
 	onClickJson: () => void
 	onClickJsonArray: () => void
-	valueKinds: ('json' | 'json-array' | 'nested' | 'formatted' | 'input-or-select')[]
+	valueKinds: ("json" | "json-array" | "nested" | "formatted" | "input-or-select")[]
 }
 
 function Formatter({
@@ -280,7 +280,7 @@ function Formatter({
 		<div className="flex items-center gap-2">
 			<InputOrSelectRaw {...rest} />
 			{rest.value.type === InputOrSelectKind.Text &&
-				!(valueKinds.length === 1 && valueKinds[0] === 'input-or-select') && (
+				!(valueKinds.length === 1 && valueKinds[0] === "input-or-select") && (
 					<Menu shadow="md" width={200}>
 						<Menu.Target>
 							<ActionIcon mt={rest.label ? 27 : 0}>
@@ -289,22 +289,22 @@ function Formatter({
 						</Menu.Target>
 
 						<Menu.Dropdown>
-							{valueKinds.includes('formatted') && (
+							{valueKinds.includes("formatted") && (
 								<Menu.Item icon={<IoText size={14} />} onClick={onClickFormatter}>
 									Formatter
 								</Menu.Item>
 							)}
-							{valueKinds.includes('nested') && (
+							{valueKinds.includes("nested") && (
 								<Menu.Item icon={<IoGitMerge size={14} />} onClick={onClickNested}>
 									Nested Value
 								</Menu.Item>
 							)}
-							{valueKinds.includes('json') && (
+							{valueKinds.includes("json") && (
 								<Menu.Item icon={<IoCode size={14} />} onClick={onClickJson}>
 									JSON
 								</Menu.Item>
 							)}
-							{valueKinds.includes('json-array') && (
+							{valueKinds.includes("json-array") && (
 								<Menu.Item
 									icon={<IoCodeWorking size={14} />}
 									onClick={onClickJsonArray}
@@ -333,19 +333,19 @@ interface FormatterFnFormProps {
 	groups: GroupData[]
 }
 function FormatterFnForm({ onSubmit, onCancel, groups }: FormatterFnFormProps) {
-	const form = useForm<FormattedValue>({ defaultValues: { fn: '', args: [] } })
+	const form = useForm<FormattedValue>({ defaultValues: { fn: "", args: [] } })
 	const fnsQuery = useQuery(QueryKey.GetFormatterFunctions, getFormatterFunctions)
 	const options = _.entries(fnsQuery.data?.data).map(([key]) => ({
 		label: key,
 		value: key,
 	}))
-	const selectedFn = form.watch('fn')
+	const selectedFn = form.watch("fn")
 	const selectedFnData = fnsQuery.data?.data[selectedFn]
 	const args = selectedFnData?.inputs
 	const { resetField } = form
 
 	useEffect(() => {
-		if (selectedFn) resetField('args')
+		if (selectedFn) resetField("args")
 	}, [resetField, selectedFn])
 
 	return (
@@ -371,7 +371,7 @@ function FormatterFnForm({ onSubmit, onCancel, groups }: FormatterFnFormProps) {
 							control={form.control}
 							errors={form.formState.errors}
 							name={`args.${index}`}
-							valueKinds={['nested', 'input-or-select']}
+							valueKinds={["nested", "input-or-select"]}
 						/>
 					))}
 				</div>
@@ -400,12 +400,12 @@ function FormattedBox({ value, onClose, label }: FormattedValueProps) {
 		arg.type === InputOrSelectKind.Text ? (
 			<span key={index}>
 				{`"${arg.data}"`}
-				{index !== value.args.length - 1 ? ',' : ''}
+				{index !== value.args.length - 1 ? "," : ""}
 			</span>
 		) : (
 			<span key={index} className="flex">
 				<FormattedOutput value={arg} />
-				{index !== value.args.length - 1 ? ',' : ''}
+				{index !== value.args.length - 1 ? "," : ""}
 			</span>
 		)
 	)
@@ -431,7 +431,7 @@ function FormattedBox({ value, onClose, label }: FormattedValueProps) {
 }
 
 function isFnValue(value: ComplexFieldValue): value is FormattedValue {
-	return 'fn' in value
+	return "fn" in value
 }
 
 function FormattedOutput({ value }: { value: SelectValue }) {

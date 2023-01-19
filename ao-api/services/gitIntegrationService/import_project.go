@@ -48,6 +48,10 @@ func (service *gitIntegrationService) ImportProject(accountId, gitAccountId, pro
 		return errors.New("provider should be one of these values: ['github', 'gitlab', 'bitbucket']")
 	}
 
+	if projectDto.AccountId != accountId || projectDto.Name != projectName {
+		return errors.New("the selected branch hasn't entities of this project")
+	}
+
 	if project.HasDatabase {
 		currentTableNames, err := dbService.GetTablesList(accountId, projectName)
 		if err != nil {

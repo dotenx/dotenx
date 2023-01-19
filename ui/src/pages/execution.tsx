@@ -1,18 +1,18 @@
-import { format } from 'date-fns'
-import { useSetAtom } from 'jotai'
-import { useEffect } from 'react'
-import { ReactFlowProvider } from 'react-flow-renderer'
-import { IoArrowBack } from 'react-icons/io5'
-import { useQuery } from 'react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { AutomationKind, getAutomation, getExecution, QueryKey } from '../api'
-import { selectedAutomationAtom } from '../features/atoms'
-import { Flow } from '../features/flow'
-import { useTaskStatus } from '../features/task'
-import { Loader } from '../features/ui'
-import { AUTOMATION_PROJECT_NAME } from './automation'
+import { format } from "date-fns"
+import { useSetAtom } from "jotai"
+import { useEffect } from "react"
+import { IoArrowBack } from "react-icons/io5"
+import { useQuery } from "react-query"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { ReactFlowProvider } from "reactflow"
+import { AutomationKind, getAutomation, getExecution, QueryKey } from "../api"
+import { selectedAutomationAtom } from "../features/atoms"
+import { Flow } from "../features/flow"
+import { useTaskStatus } from "../features/task"
+import { Loader } from "../features/ui"
+import { AUTOMATION_PROJECT_NAME } from "./automation"
 
-export default function ExecutionPage({ kind = 'automation' }: { kind?: AutomationKind }) {
+export default function ExecutionPage({ kind = "automation" }: { kind?: AutomationKind }) {
 	return (
 		<ReactFlowProvider>
 			<Content kind={kind} />
@@ -58,7 +58,7 @@ function Content({ kind }: { kind: AutomationKind }) {
 
 	return (
 		<>
-			<div onClick={() => navigate(-1)} className="ml-52 mt-10 cursor-pointer">
+			<div onClick={() => navigate(-1)} className="mt-10 cursor-pointer ml-52">
 				<IoArrowBack />
 			</div>
 			<ExecutionDetails
@@ -97,7 +97,7 @@ function ExecutionDetails({
 					<Link
 						className="text-lg font-bold"
 						to={
-							kind === 'automation'
+							kind === "automation"
 								? `/automations/${automationName}`
 								: `/builder/projects/${projectName}/interactions/${automationName}`
 						}
@@ -106,10 +106,10 @@ function ExecutionDetails({
 					</Link>
 					<div>
 						<span className="text-sm">
-							{format(new Date(execution?.StartedAt), 'yyyy/MM/dd')}
+							{format(new Date(execution?.StartedAt), "yyyy/MM/dd")}
 						</span>
 						<span className="ml-3 text-xs">
-							{format(new Date(execution?.StartedAt), 'HH:mm:ss')}
+							{format(new Date(execution?.StartedAt), "HH:mm:ss")}
 						</span>
 					</div>
 				</>

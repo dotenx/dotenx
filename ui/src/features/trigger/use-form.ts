@@ -1,16 +1,16 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import _ from 'lodash'
-import { useForm } from 'react-hook-form'
-import { useQuery } from 'react-query'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod"
+import _ from "lodash"
+import { useForm } from "react-hook-form"
+import { useQuery } from "react-query"
+import { z } from "zod"
 import {
 	getAutomations,
 	getTriggerDefinition,
 	getTriggerKinds,
 	QueryKey,
 	TriggerData,
-} from '../../api'
-import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
+} from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
 
 const schema = z.object({
 	name: z.string().min(1),
@@ -40,7 +40,7 @@ export function useTriggerForm({
 		defaultValues: defaultValues,
 		resolver: zodResolver(schema),
 	})
-	const triggerType = watch('type')
+	const triggerType = watch("type")
 	const triggerTypesQuery = useQuery(QueryKey.GetTriggerTypes, getTriggerKinds)
 	const automationsQuery = useQuery([QueryKey.GetAutomations], () =>
 		getAutomations(AUTOMATION_PROJECT_NAME)

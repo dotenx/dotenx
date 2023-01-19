@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ActionIcon, Avatar, Button, Code, Group, Loader, Select, Text } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
@@ -7,6 +8,16 @@ import { IoCheckmark, IoCopy } from 'react-icons/io5'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+=======
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ActionIcon, Button, Code } from "@mantine/core"
+import { useClipboard } from "@mantine/hooks"
+import { useForm } from "react-hook-form"
+import { IoCheckmark, IoCopy } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useParams } from "react-router-dom"
+import { z } from "zod"
+>>>>>>> main
 import {
 	API_URL,
 	createProvider,
@@ -15,11 +26,19 @@ import {
 	getProfile,
 	getProject,
 	QueryKey,
+<<<<<<< HEAD
 } from '../../api'
 import { AUTOMATION_PROJECT_NAME } from '../../pages/automation'
 import { toOption } from '../../utils'
 import { useModal } from '../hooks'
 import { CreatableSelect, Field, Form } from '../ui'
+=======
+} from "../../api"
+import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
+import { toOption } from "../../utils"
+import { useModal } from "../hooks"
+import { CreatableSelect, Field, Form, NewSelect } from "../ui"
+>>>>>>> main
 
 const schema = z.object({
 	name: z
@@ -28,7 +47,7 @@ const schema = z.object({
 		.max(20)
 		.regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, {
 			message:
-				'Name should start with a letter and contain only letters, numbers, and underscores',
+				"Name should start with a letter and contain only letters, numbers, and underscores",
 		}),
 	type: z.string().min(1),
 	key: z.string().min(1),
@@ -97,12 +116,12 @@ export function ProviderForm() {
 	})
 	const form = useForm<Schema>({
 		defaultValues: {
-			name: '',
-			type: '',
-			key: '',
-			secret: '',
+			name: "",
+			type: "",
+			key: "",
+			secret: "",
 			scopes: [],
-			front_end_url: '',
+			front_end_url: "",
 		},
 		resolver: zodResolver(schema),
 	})
@@ -112,7 +131,7 @@ export function ProviderForm() {
 
 	const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
-	const providerName = form.watch('name')
+	const providerName = form.watch("name")
 
 	interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 		image: string
@@ -217,10 +236,10 @@ function CallbackUrls({
 	projectName: string
 	providerName: string
 }) {
-	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ''), {
+	const projectQuery = useQuery(QueryKey.GetProject, () => getProject(projectName ?? ""), {
 		enabled: !!projectName,
 	})
-	const projectTag = projectQuery.data?.data?.tag ?? ''
+	const projectTag = projectQuery.data?.data?.tag ?? ""
 	const profileQuery = useQuery(
 		[QueryKey.GetProfile, projectTag],
 		() => getProfile({ projectTag }),

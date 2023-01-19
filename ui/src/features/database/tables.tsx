@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Switch } from '@mantine/core'
 import { IoAdd } from 'react-icons/io5'
 import { useMutation, useQueryClient } from 'react-query'
@@ -7,16 +8,25 @@ import { Modals, useModal } from '../hooks'
 import { AddButton } from '../ui'
 import CustomQuery from './custom-query'
 import ExportDatabase from './export-database'
+=======
+import { Switch } from "@mantine/core"
+import { IoAdd } from "react-icons/io5"
+import { useMutation, useQueryClient } from "react-query"
+import { Link } from "react-router-dom"
+import { QueryKey, setTableAccess } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { PageTitle } from "../ui/page-title"
+>>>>>>> main
 
 export function TableList({ projectName, query }: { projectName: string; query: any }) {
 	const tables = query.data?.data.tables ?? []
 	const modal = useModal()
 	const helpDetails = {
-		title: 'Use tables to store the data of your application',
+		title: "Use tables to store the data of your application",
 		description:
-			'The tables provide all the necessary functionality to store and manage your data. You can create tables, add columns, and manage the permissions of your users.',
-		videoUrl: 'https://www.youtube.com/embed/_5GRK17KUrg',
-		tutorialUrl: 'https://docs.dotenx.com/docs/builder_studio/files',
+			"The tables provide all the necessary functionality to store and manage your data. You can create tables, add columns, and manage the permissions of your users.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
 
 	return (
@@ -43,7 +53,7 @@ function List({
 	return (
 		<div className="grid grid-cols-3 gap-y-5 mt-5 gap-x-10">
 			{items
-				.filter((table) => table.name !== 'user_info' && table.name !== 'user_group')
+				.filter((table) => table.name !== "user_info" && table.name !== "user_group")
 				.map((table, index) => (
 					<ListItem
 						key={index}
@@ -75,10 +85,14 @@ function ListItem({
 				isLoading && 'blur-[1px] animate-pulse '
 			} `}
 		>
+<<<<<<< HEAD
 			<Link
 				to={name + (isPublic ? '/public' : '')}
 				className="text-xl transition-all duration-500 w-full h-full cursor-pointer group-hover:bg-white flex items-center justify-center rounded-[10px]  font-medium"
 			>
+=======
+			<Link to={name + (isPublic ? "/public" : "")} className="text-xl font-medium">
+>>>>>>> main
 				{name}
 			</Link>
 			<div
@@ -89,13 +103,17 @@ function ListItem({
 						isPublic,
 					})
 				}
+<<<<<<< HEAD
 				className={`flex mt-3  mr-2 `}
+=======
+				className={`flex mt-3 cursor-pointer mr-2 ${isLoading && "blur-sm animate-pulse "}`}
+>>>>>>> main
 			>
 				<Switch
-					label={isPublic ? 'public' : 'private'}
+					label={isPublic ? "public" : "private"}
 					className="mr-2"
 					size="md"
-					color={'pink'}
+					color={"pink"}
 					checked={isPublic}
 				></Switch>
 			</div>

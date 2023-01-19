@@ -1,13 +1,13 @@
-import { useSearchParams } from 'react-router-dom'
-import { useEffect } from 'react'
-import { IoMdAlert } from 'react-icons/io'
-import { ContentWrapper } from '../../features/ui'
+import { useSearchParams } from "react-router-dom"
+import { useEffect } from "react"
+import { IoMdAlert } from "react-icons/io"
+import { ContentWrapper } from "../../features/ui"
 
 export default function GitRedirectPage() {
-	const [searchParams] = useSearchParams({ error: '' })
+	const [searchParams] = useSearchParams({ error: "" })
 
 	useEffect(() => {
-		const error = searchParams.get('error')
+		const error = searchParams.get("error")
 		if (!error) {
 			return window.close()
 		} else {

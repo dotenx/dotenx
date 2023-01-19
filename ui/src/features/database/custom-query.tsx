@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Button, Modal } from '@mantine/core'
 import { useState } from 'react'
 import { TbCodeMinus } from 'react-icons/tb'
@@ -9,12 +10,25 @@ import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import { IoIosArrowBack } from 'react-icons/io'
 import { PrimaryButton, Table } from '../ui'
+=======
+import { Button, Modal } from "@mantine/core"
+import { useState } from "react"
+import { TbCodeMinus } from "react-icons/tb"
+import Editor from "@monaco-editor/react"
+import { FaPlay } from "react-icons/fa"
+import { useGetProjectTag } from "../../features/ui/hooks/use-get-project-tag"
+import { runCustomQuery } from "../../api"
+import { useMutation } from "react-query"
+import { toast } from "react-toastify"
+import { IoIosArrowBack } from "react-icons/io"
+import { Table } from "../ui"
+>>>>>>> main
 
 export default function CustomQuery() {
 	const [openModal, setOpenModal] = useState(false)
 	const [showResault, setShowResault] = useState(false)
-	const [query, setQuery] = useState('')
-	const [error, setError] = useState('')
+	const [query, setQuery] = useState("")
+	const [error, setError] = useState("")
 	const [currentPage, setCurrentPage] = useState(1)
 	const [rowsffected, setRowsffected] = useState<number>()
 	const [responseRows, setResponseRows] = useState<any>()
@@ -24,8 +38,8 @@ export default function CustomQuery() {
 		onSuccess: (d) => {
 			const res = d.data
 			if (res.total_rows === 0) {
-				toast('Query ran successfully.', {
-					type: 'success',
+				toast("Query ran successfully.", {
+					type: "success",
 					autoClose: 2000,
 				})
 				setRowsffected(res.rows_affected)
@@ -36,7 +50,7 @@ export default function CustomQuery() {
 						accessor: k,
 						Cell: ({ value }: { value: any }) => (
 							<div>
-								<span>{value === null ? '-' : value.toString()}</span>
+								<span>{value === null ? "-" : value.toString()}</span>
 							</div>
 						),
 					}
@@ -45,7 +59,7 @@ export default function CustomQuery() {
 					0,
 					0,
 					columns.splice(
-						columns.findIndex((x) => x.Header === 'id'),
+						columns.findIndex((x) => x.Header === "id"),
 						1
 					)[0]
 				)
@@ -53,7 +67,7 @@ export default function CustomQuery() {
 					1,
 					0,
 					columns.splice(
-						columns.findIndex((x) => x.Header === 'creator_id'),
+						columns.findIndex((x) => x.Header === "creator_id"),
 						1
 					)[0]
 				)
@@ -66,8 +80,8 @@ export default function CustomQuery() {
 			if (e.response.status === 400) {
 				setError(e.response.data.message)
 			} else
-				toast('Something went wrong. Please try again later.', {
-					type: 'error',
+				toast("Something went wrong. Please try again later.", {
+					type: "error",
 					autoClose: 2000,
 				})
 		},
@@ -91,7 +105,7 @@ export default function CustomQuery() {
 						<Button
 							leftIcon={<IoIosArrowBack className="w-4  h-4 " />}
 							onClick={() => setShowResault(false)}
-							variant={'light'}
+							variant={"light"}
 							className="mb-2"
 						>
 							New query
@@ -118,11 +132,11 @@ export default function CustomQuery() {
 						<div className="mb-1">Enter query:</div>
 						<Editor
 							defaultValue={query}
-							defaultLanguage={'sql'}
+							defaultLanguage={"sql"}
 							height="300px"
 							theme="vs-dark"
 							onChange={(value) => {
-								setError(''), setQuery(value ?? '')
+								setError(""), setQuery(value ?? "")
 							}}
 						/>
 						{error && <div className="my-2 text-sm text-rose-500">{error}</div>}
@@ -138,7 +152,8 @@ export default function CustomQuery() {
 							<Button
 								disabled={!query || projectTagisLoading}
 								onClick={() => {
-									setError('')
+									setError("")
+									setRowsffected(undefined)
 									mutationRun.mutate()
 								}}
 								loading={mutationRun.isLoading}

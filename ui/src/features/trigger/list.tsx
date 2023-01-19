@@ -1,10 +1,10 @@
-import { ActionIcon, Button } from '@mantine/core'
-import { IoAdd, IoTrash } from 'react-icons/io5'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { CellProps } from 'react-table'
-import { deleteTrigger, getTriggers, QueryKey, TriggerData } from '../../api'
-import { Modals, useModal } from '../hooks'
-import { Table } from '../ui'
+import { ActionIcon, Button } from "@mantine/core"
+import { IoAdd, IoTrash } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { CellProps } from "react-table"
+import { deleteTrigger, getTriggers, QueryKey, TriggerData } from "../../api"
+import { Modals, useModal } from "../hooks"
+import { Table } from "../ui"
 
 function useTriggerList() {
 	const client = useQueryClient()
@@ -12,9 +12,7 @@ function useTriggerList() {
 	const deleteMutation = useMutation(
 		(payload: { triggerName: string; automationName: string }) =>
 			deleteTrigger(payload.triggerName, payload.automationName),
-		{
-			onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers),
-		}
+		{ onSuccess: () => client.invalidateQueries(QueryKey.GetTriggers) }
 	)
 	const triggers = query.data?.data
 
@@ -35,17 +33,17 @@ export function TriggerList() {
 			loading={isLoading}
 			actionBar={<NewTrigger />}
 			columns={[
-				{ Header: 'Name', accessor: 'name' },
-				{ Header: 'Type', accessor: 'type' },
+				{ Header: "Name", accessor: "name" },
+				{ Header: "Type", accessor: "type" },
 				{
-					Header: 'Integration',
-					accessor: 'integration',
-					Cell: ({ value }: { value: string }) => <span>{value || '-'}</span>,
+					Header: "Integration",
+					accessor: "integration",
+					Cell: (({ value }: { value: string }) => <span>{value || "-"}</span>) as any,
 				},
-				{ Header: 'Automation', accessor: 'pipeline_name' },
+				{ Header: "Automation", accessor: "pipeline_name" },
 				{
-					Header: 'Action',
-					id: 'action',
+					Header: "Action",
+					id: "action",
 					Cell: (props: CellProps<TriggerData>) => {
 						return (
 							<ActionIcon
@@ -53,7 +51,7 @@ export function TriggerList() {
 								onClick={() =>
 									deleteMutation.mutate({
 										triggerName: props.row.original.name,
-										automationName: props.row.original.pipeline_name,
+										automationName: props.row.original.pipeline_name ?? "",
 									})
 								}
 								className="ml-auto"

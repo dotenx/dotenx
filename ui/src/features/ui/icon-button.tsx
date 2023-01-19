@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes, useState } from 'react'
-import { Fade } from './animation/fade'
-import { Loader } from './loader'
+import { ButtonHTMLAttributes, useState } from "react"
+import { Fade } from "./animation/fade"
+import { Loader } from "./loader"
 
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	tooltip?: string

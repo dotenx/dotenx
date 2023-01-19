@@ -1,57 +1,57 @@
-import { QueryBuilderValues } from '../features/database'
+import { QueryBuilderValues } from "../features/database"
 
 export enum QueryKey {
-	GetUserManagementData = 'get-user-management-data',
-	GetGitAccounts = 'get-git-accounts',
-	GetBranchList = 'get-branch-list',
-	GetAutomations = 'get-automation',
-	GetTemplateAutomations = 'get-template-automations',
-	GetTasks = 'get-tasks',
-	GetTaskFields = 'get-task-fields',
-	GetAutomation = 'get-automation',
-	GetAutomationYaml = 'get-automation-yaml',
-	GetResult = 'get-result',
-	GetExecutions = 'get-executions',
-	GetExecution = 'get-execution',
-	GetIntegrationTypes = 'get-integration-types',
-	GetIntegrationTypeFields = 'get-integration-type-fields',
-	GetIntegrations = 'get-integrations',
-	GetTriggers = 'get-triggers',
-	GetTriggerTypes = 'get-trigger-types',
-	GetTriggerDefinition = 'get-trigger-definition',
-	GetAutomationTrigger = 'get-automation-triggers',
-	GetIntegrationsByType = 'get-integration-by-type',
-	GetProviders = 'get-providers',
-	GetProvider = 'get-provider',
-	GetFormatterFunctions = 'get-formatter-functions',
-	GetProjects = 'get-projects',
-	GetProject = 'get-project',
-	GetFiles = 'get-files',
-	GetTables = 'get-tables',
-	GetTable = 'get-table',
-	GetTableRecords = 'get-table-records',
-	GetColumns = 'get-columns',
-	GetTemplateEndpointFields = 'get-template-endpoint-fields',
-	GetInteractionEndpointFields = 'get-interaction-endpoint-fields',
-	GetProfile = 'get-profile',
-	GetUserGroups = 'get-user-groups',
-	GetUserGroup = 'get-user-group',
-	GetDomains = 'get-domains',
-	GetViews = 'get-views',
-	GetViewDetails = 'get-view-details',
-	GetViewData = 'get-view-data',
+	GetUserManagementData = "get-user-management-data",
+	GetGitAccounts = "get-git-accounts",
+	GetBranchList = "get-branch-list",
+	GetAutomations = "get-automation",
+	GetTemplateAutomations = "get-template-automations",
+	GetTasks = "get-tasks",
+	GetTaskFields = "get-task-fields",
+	GetAutomation = "get-automation",
+	GetAutomationYaml = "get-automation-yaml",
+	GetResult = "get-result",
+	GetExecutions = "get-executions",
+	GetExecution = "get-execution",
+	GetIntegrationTypes = "get-integration-types",
+	GetIntegrationTypeFields = "get-integration-type-fields",
+	GetIntegrations = "get-integrations",
+	GetTriggers = "get-triggers",
+	GetTriggerTypes = "get-trigger-types",
+	GetTriggerDefinition = "get-trigger-definition",
+	GetAutomationTrigger = "get-automation-triggers",
+	GetIntegrationsByType = "get-integration-by-type",
+	GetProviders = "get-providers",
+	GetProvider = "get-provider",
+	GetFormatterFunctions = "get-formatter-functions",
+	GetProjects = "get-projects",
+	GetProject = "get-project",
+	GetFiles = "get-files",
+	GetTables = "get-tables",
+	GetTable = "get-table",
+	GetTableRecords = "get-table-records",
+	GetColumns = "get-columns",
+	GetTemplateEndpointFields = "get-template-endpoint-fields",
+	GetInteractionEndpointFields = "get-interaction-endpoint-fields",
+	GetProfile = "get-profile",
+	GetUserGroups = "get-user-groups",
+	GetUserGroup = "get-user-group",
+	GetDomains = "get-domains",
+	GetViews = "get-views",
+	GetViewDetails = "get-view-details",
+	GetViewData = "get-view-data",
 }
 
-export type gitProviders = 'github' | 'gitlab' | 'bitbucket'
+export type gitProviders = "github" | "gitlab" | "bitbucket"
 
 export enum TaskExecutionStatus {
-	Success = 'success',
-	Failed = 'failed',
-	Timedout = 'timedout',
-	Started = 'started',
-	Cancelled = 'cancelled',
-	Completed = 'completed',
-	Waiting = 'waiting',
+	Success = "success",
+	Failed = "failed",
+	Timedout = "timedout",
+	Started = "started",
+	Cancelled = "cancelled",
+	Completed = "completed",
+	Waiting = "waiting",
 }
 
 export interface TaskTriggerOutput {
@@ -69,12 +69,12 @@ export interface TriggerKindData {
 export interface Trigger {
 	name: string
 	account_id?: string
-	type: string
+	type?: string
 	endpoint?: string
-	pipeline_name: string
+	pipeline_name?: string
 	integration?: string
-	credentials: Record<string, string>
-	meta_data: Metadata
+	credentials?: Record<string, string>
+	meta_data?: Metadata
 }
 
 export interface Integration {
@@ -92,7 +92,7 @@ export interface ExportDatabaseResponse {
 		account_id: string
 		project_name: string
 		pg_dump_url: string
-		pg_dump_status: string,
+		pg_dump_status: string
 		pg_dump_url_expiration_time: number
 		csv_url: string
 		csv_status: string
@@ -159,15 +159,15 @@ export type TaskFieldValue =
 	| TfJsonArray
 
 export type TfDirectValue = {
-	type: 'directValue'
+	type: "directValue"
 	value: string | string[] | { steps: BuilderStep[] }
 }
-export type TfRefrenced = { type: 'refrenced'; source: string; key: string }
-export type TfNested = { type: 'nested'; nestedKey: string }
-export type TfJson = { type: 'json'; value: Record<string, TaskFieldValue> }
-export type TfJsonArray = { type: 'json_array'; value: AnyJson }
-export type TfFormatted = { type: 'formatted'; formatter: Formatter }
-export type TfCustomOutputs = { type: 'customOutputs'; outputs: string[] }
+export type TfRefrenced = { type: "refrenced"; source: string; key: string }
+export type TfNested = { type: "nested"; nestedKey: string }
+export type TfJson = { type: "json"; value: Record<string, TaskFieldValue> }
+export type TfJsonArray = { type: "json_array"; value: AnyJson }
+export type TfFormatted = { type: "formatted"; formatter: Formatter }
+export type TfCustomOutputs = { type: "customOutputs"; outputs: string[] }
 
 export type TaskBody = Record<string, TaskFieldValue>
 
@@ -248,10 +248,10 @@ export interface GetTaskFieldsResponse {
 }
 
 export enum FieldType {
-	Text = 'text',
-	Code = 'code',
-	Object = 'object',
-	CustomOutputs = 'custom-outputs',
+	Text = "text",
+	Code = "code",
+	Object = "object",
+	CustomOutputs = "custom-outputs",
 }
 
 export interface GetExecutionResultResponse {
@@ -270,10 +270,10 @@ export type GetAutomationExecutionsResponse = Execution[]
 
 export interface TriggerData {
 	name: string
-	type: string
-	pipeline_name: string
+	type?: string
+	pipeline_name?: string
 	integration?: string
-	credentials: Record<string, string>
+	credentials?: Record<string, string>
 	iconUrl?: string
 }
 
@@ -440,7 +440,7 @@ export type GetColumnsResponse = {
 	columns: { name: string; type: string }[]
 }
 
-export type AutomationKind = 'automation' | 'template' | 'interaction' | 'template_automations'
+export type AutomationKind = "automation" | "template" | "interaction" | "template_automations"
 
 export type StartAutomationRequest =
 	| Record<string, never>
@@ -472,9 +472,9 @@ export type GetRecordsResponse = {
 } | null
 
 export type RunCustomQueryResponse = {
-	rows: Array<object>,
-	rows_affected: number,
-	successful: boolean,
+	rows: Array<object>
+	rows_affected: number
+	successful: boolean
 	total_rows: number
 }
 export type AddRecordRequest = TableRecord
@@ -525,21 +525,21 @@ interface ExecuteTask {
 	url: string
 	method: string
 	headers: {
-		'DTX-auth': string
+		"DTX-auth": string
 	}
 	body: TestTaskRequest
 	output?: string
 }
 
 export type BuilderStep =
-	| { type: 'assignment'; params: Assignment }
-	| { type: 'if'; params: Conditional }
-	| { type: 'repeat'; params: Repeat }
-	| { type: 'foreach'; params: Foreach }
-	| { type: 'function_call'; params: FunctionCall }
-	| { type: 'output'; params: OutputParams }
-	| { type: 'var_declaration'; params: VarDeclaration }
-	| { type: 'execute_task'; params: ExecuteTask }
+	| { type: "assignment"; params: Assignment }
+	| { type: "if"; params: Conditional }
+	| { type: "repeat"; params: Repeat }
+	| { type: "foreach"; params: Foreach }
+	| { type: "function_call"; params: FunctionCall }
+	| { type: "output"; params: OutputParams }
+	| { type: "var_declaration"; params: VarDeclaration }
+	| { type: "execute_task"; params: ExecuteTask }
 
 export type TaskBuilder = {
 	prop: string
@@ -561,7 +561,7 @@ export type UserGroup = {
 	name: string
 	description: string
 	is_default: boolean
-	privilages: Record<string, ('select' | 'update' | 'delete' | 'insert')[]>
+	privilages: Record<string, ("select" | "update" | "delete" | "insert")[]>
 }
 
 export type UpdateUserGroupRequest = CreateUserGroupRequest
@@ -570,14 +570,16 @@ export type SetDefaultUserGroupRequest = { name: string }
 
 export type GetUserGroupResponse = Record<string, UserGroup>
 
-export type GetGitAccountsResponse =
-	{ git_account_id: string, git_username: string }[]
+export type GetGitAccountsResponse = { git_account_id: string; git_username: string }[]
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap
 
-export interface GetRepoListResponse { repositories: Array<{ full_name: string, clone_url: string }> }
+export interface GetRepoListResponse {
+	repositories: Array<{ full_name: string; clone_url: string }>
+}
 
-export interface GetBranchesListResponse { branches: Array<{ name: string }> }
-
+export interface GetBranchesListResponse {
+	branches: Array<{ name: string }>
+}
 
 export interface JsonMap {
 	[key: string]: AnyJson
@@ -591,7 +593,7 @@ type TestTaskData = {
 	manifest: {
 		tasks: {
 			task: {
-				type: string
+				type?: string
 				integration: string
 				body: Record<string, AnyJson>
 			}
