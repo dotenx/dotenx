@@ -12,7 +12,7 @@ export function Layout({ children, compactSidebar = false, withoutSidebar }: Lay
 	return (
 		<div className="text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700">
 			<AppShell
-				padding="xl"
+				padding={0}
 				navbar={
 					withoutSidebar ? undefined : (
 						<Navbar width={{ base: compactSidebar ? 80 : 300 }}>
