@@ -101,7 +101,6 @@ export function AutomationList({
 				helpDetails={helpDetails}
 				emptyText={`You have no ${title?.toLowerCase()} yet, try adding one.`}
 				loading={loading || loadingAutomationHistory}
-				actionBar={<NewAutomation kind={kind} />}
 				columns={
 					(
 						[
@@ -199,7 +198,7 @@ export function AutomationList({
 								),
 							},
 							{
-								Header: "Action",
+								Header: "",
 								id: "action",
 								accessor: "name",
 								Cell: ({ value, row }: { value: string; row: any }) => (
@@ -400,7 +399,7 @@ function AutomationActions({ automationName, kind, endpoint, isPublic }: Automat
 	const { projectName = AUTOMATION_PROJECT_NAME } = useParams()
 
 	return (
-		<div className="flex items-center justify-end gap-4">
+		<div className="flex items-center justify-end gap-4 group-hover/row:opacity-100 opacity-0">
 			{!["automation", "template_automations"].includes(kind) && (
 				<Button
 					onClick={() =>

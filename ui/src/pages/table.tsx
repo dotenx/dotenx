@@ -1,17 +1,27 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { ActionIcon, Button } from "@mantine/core"
+import { ActionIcon, Button, Menu } from "@mantine/core"
 import { openModal } from "@mantine/modals"
 import _ from "lodash"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { IoAdd, IoFilter, IoList, IoPencil, IoReload, IoSearch, IoTrash } from "react-icons/io5"
+import {
+	IoAdd,
+	IoEllipsisVertical,
+	IoFilter,
+	IoList,
+	IoPencil,
+	IoReload,
+	IoSearch,
+	IoTrash,
+} from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { Navigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { CellProps } from "react-table"
 import {
 	API_URL,
 	deleteColumn,
 	deleteRecord,
+	deleteTable,
 	Filters,
 	getColumns,
 	getProject,
@@ -26,7 +36,6 @@ import {
 	QueryBuilder,
 	QueryBuilderValues,
 	RecordForm,
-	TableDeletion,
 	TableEndpoints,
 } from "../features/database"
 import { Modals, useModal } from "../features/hooks"
@@ -80,7 +89,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		: [
 				...headers,
 				{
-					Header: "Actions",
+					Header: "",
 					accessor: "___actions___",
 					Cell: (props: CellProps<TableRecord>) => (
 						<RecordActions
@@ -124,6 +133,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 					columns={tableHeaders as any}
 					data={records}
 					loading={recordsQuery.isLoading || columnsQuery.isLoading}
+					actionBar={<TableActions projectName={projectName} tableName={tableName} />}
 				/>
 			</Content_Wrapper>
 
@@ -247,28 +257,12 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 
 	return (
 		<div className="flex gap-2 text-xs">
-			<TableDeletion projectName={projectName} tableName={tableName} />
-			<Button
-				leftIcon={<IoReload />}
-				size="xs"
-				type="button"
-				onClick={() => queryClient.invalidateQueries(QueryKey.GetTableRecords)}
-			>
-				Refresh
-			</Button>
-			<Button
-				size="xs"
-				leftIcon={<IoFilter />}
-				type="button"
-				onClick={() => modal.open(Modals.TableFilter)}
-			>
-				Filter
-			</Button>
 			<Button
 				size="xs"
 				leftIcon={<IoSearch />}
 				type="button"
 				onClick={() => modal.open(Modals.QueryBuilder)}
+				variant="default"
 			>
 				Query Builder
 			</Button>
@@ -279,22 +273,6 @@ function ActionBar({ projectName, tableName }: { projectName: string; tableName:
 				onClick={() => modal.open(Modals.TableEndpoints)}
 			>
 				Endpoints
-			</Button>
-			<Button
-				size="xs"
-				leftIcon={<IoAdd />}
-				type="button"
-				onClick={() => modal.open(Modals.NewRecord)}
-			>
-				New Record
-			</Button>
-			<Button
-				size="xs"
-				leftIcon={<IoAdd />}
-				type="button"
-				onClick={() => modal.open(Modals.NewColumn)}
-			>
-				New Column
 			</Button>
 		</div>
 	)
@@ -317,13 +295,15 @@ function Column({ projectName, tableName, name }: ColumnProps) {
 	const showDelete = name !== "id" && name !== "creator_id"
 
 	return (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2 group">
 			{name}
 			{showDelete && (
 				<ActionIcon
 					type="button"
 					onClick={() => deleteMutation.mutate()}
 					loading={deleteMutation.isLoading}
+					className="invisible group-hover:visible"
+					color="dark"
 				>
 					<IoTrash />
 				</ActionIcon>
@@ -381,7 +361,7 @@ function RecordActions({
 	const modal = useModal()
 
 	return (
-		<div className="flex gap-1">
+		<div className="flex gap-1 opacity-0 group-hover/row:opacity-100 justify-end">
 			<ActionIcon
 				type="button"
 				onClick={() =>
@@ -397,6 +377,59 @@ function RecordActions({
 			>
 				<IoTrash />
 			</ActionIcon>
+		</div>
+	)
+}
+
+function TableActions({ projectName, tableName }: { projectName: string; tableName: string }) {
+	const modal = useModal()
+	const queryClient = useQueryClient()
+	const navigate = useNavigate()
+	const deleteMutation = useMutation(() => deleteTable(projectName, tableName), {
+		onSuccess: () => navigate(`/builder/projects/${projectName}/tables`),
+	})
+
+	return (
+		<div className="flex">
+			<ActionIcon
+				color="dark"
+				onClick={() => queryClient.invalidateQueries(QueryKey.GetTableRecords)}
+			>
+				<IoReload />
+			</ActionIcon>
+			<ActionIcon color="dark" onClick={() => modal.open(Modals.TableFilter)}>
+				<IoFilter />
+			</ActionIcon>
+			<Menu position="bottom-end">
+				<Menu.Target>
+					<ActionIcon color="dark">
+						<IoEllipsisVertical />
+					</ActionIcon>
+				</Menu.Target>
+				<Menu.Dropdown>
+					<Menu.Item
+						icon={<IoAdd />}
+						onClick={() => modal.open(Modals.NewRecord)}
+						className="font-medium !text-xs"
+					>
+						Add record
+					</Menu.Item>
+					<Menu.Item
+						icon={<IoAdd />}
+						onClick={() => modal.open(Modals.NewColumn)}
+						className="font-medium !text-xs"
+					>
+						Add column
+					</Menu.Item>
+					<Menu.Item
+						icon={<IoTrash />}
+						onClick={() => deleteMutation.mutate()}
+						className="font-medium !text-xs !text-red-600"
+					>
+						Delete table
+					</Menu.Item>
+				</Menu.Dropdown>
+			</Menu>
 		</div>
 	)
 }
