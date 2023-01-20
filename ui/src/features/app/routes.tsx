@@ -1,3 +1,4 @@
+import WorkflowsPage from "../../pages/workflows"
 import { useViewportSize } from "@mantine/hooks"
 import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
@@ -6,20 +7,15 @@ import AutomationsPage from "../../pages/automations"
 import DomainsPage from "../../pages/domains"
 import ExecutionPage from "../../pages/execution"
 import Files from "../../pages/files"
-import GitIntegrationPage from "../../pages/git/git"
-import GitRedirectPage from "../../pages/git/git-redirect"
 import HistoryPage from "../../pages/history"
 import { HomePage } from "../../pages/home"
 import ImportYamlPage from "../../pages/import-yaml"
 import IntegrationsPage from "../../pages/integrations"
 import InteractionPage from "../../pages/interaction"
-import InteractionsPage from "../../pages/interactions"
 import NotFoundPage from "../../pages/not-found"
 import OauthPage from "../../pages/oauth"
 import ProviderPage from "../../pages/provider"
 import ProvidersPage from "../../pages/providers"
-import TablePage from "../../pages/table"
-import TablesPage from "../../pages/tables"
 import TemplatePage from "../../pages/template"
 import TemplateAutomationsPage from "../../pages/template-automations"
 import TemplatesPage from "../../pages/templates"
@@ -29,6 +25,11 @@ import UserGroupsPage from "../../pages/user-groups"
 import UserManagementPage from "../../pages/user-management"
 import { ViewPage } from "../../pages/view"
 import { Layout } from "../ui"
+import TablePage from "../../pages/table"
+import TablesPage from "../../pages/tables"
+import GitRedirectPage from "../../pages/git/git-redirect"
+import GitIntegrationPage from "../../pages/git/git"
+import InteractionsPage from "../../pages/interactions"
 
 type Routes = {
 	path: string
@@ -42,11 +43,24 @@ const routes: Routes = [
 	{ path: "/builder/projects/:projectName/providers/:providerName", element: <ProviderPage /> },
 	{ path: "/builder/projects/:projectName/providers", element: <ProvidersPage /> },
 	{
-		path: "/builder/projects/:projectName/tables/:tableName",
+		path: "/builder/projects/:projectName/workflows/:name/executions/:id",
+		element: <ExecutionPage kind="interaction" />,
+	},
+	{
+		path: "/builder/projects/:projectName/workflows/:name/executions",
+		element: <HistoryPage kind="interaction" />,
+	},
+	{ path: "/builder/projects/:projectName/workflows/interaction", element: <InteractionPage /> },
+	{ path: "/builder/projects/:projectName/workflows/:name", element: <InteractionPage /> },
+	{ path: "/builder/projects/:projectName/workflows", element: <WorkflowsPage /> },
+	{ path: "/builder/projects/:projectName/templates/template", element: <TemplatePage /> },
+	{ path: "/builder/projects/:projectName/templates/:name", element: <TemplatePage /> },
+
+	{
+		path: "/builder/projects/:projectName/tables/:tableName/:isPublic",
 		element: <TablePage />,
 		compactSidebar: true,
 	},
-	{ path: "/builder/projects/:projectName/tables/:tableName/:isPublic", element: <TablePage /> },
 	{ path: "/builder/projects/:projectName/tables", element: <TablesPage /> },
 	{ path: "/builder/projects/:projectName/git", element: <GitIntegrationPage /> },
 	{ path: "/builder/git/integration/callback", element: <GitRedirectPage /> },

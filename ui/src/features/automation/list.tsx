@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form"
 import { format } from "date-fns"
 import _ from "lodash"
 import { useEffect, useState } from "react"
-import { IoAdd, IoCodeDownload, IoTrash } from "react-icons/io5"
+import { IoCodeDownload, IoTrash } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { CellProps } from "react-table"
@@ -24,7 +24,7 @@ import {
 } from "../../api"
 import { AUTOMATION_PROJECT_NAME } from "../../pages/automation"
 import { Modals, useModal } from "../hooks"
-import { Confirm, ContentWrapper, Endpoint, Form, Loader, Modal, NewModal, Table } from "../ui"
+import { AddButton, Confirm, Endpoint, Form, Loader, Modal, NewModal, Table } from "../ui"
 import { HelpDetails } from "../ui/help-popover"
 import { useDeleteAutomation } from "./use-delete"
 import { useNewAutomation } from "./use-new"
@@ -32,7 +32,7 @@ import { useNewAutomation } from "./use-new"
 interface AutomationListProps {
 	automations?: Automation[]
 	loading: boolean
-	title: string
+	title?: string
 	subtitle?: string
 	kind: AutomationKind
 	helpDetails?: HelpDetails
@@ -93,148 +93,143 @@ export function AutomationList({
 	const [automationHistory, setAutomationHistory] = useState<any>([])
 
 	return (
-		<>
-			<ContentWrapper>
-				<Table
-					title={title}
-					subtitle={subtitle}
-					helpDetails={helpDetails}
-					emptyText={`You have no ${title.toLowerCase()} yet, try adding one.`}
-					loading={loading || loadingAutomationHistory}
-					actionBar={<NewAutomation kind={kind} />}
-					columns={
-						(
-							[
-								{
-									Header: "Name",
-									accessor: "name",
-									Cell: ({ value }: { value: string }) => (
-										<AutomationLink automationName={value} />
-									),
-								},
-								{
-									Header: "User account",
-									accessor: "created_for",
-								},
-								{
-									Header: "Status",
-									accessor: "is_active",
-									Cell: ({ value }: { value: boolean }) => (
-										<ActivationStatus isActive={value} />
-									),
-								},
-								{
-									Header: "Public",
-									accessor: "is_public",
-									Cell: ({ value, row }: { value: boolean; row: any }) => (
-										<Checkbox
-											readOnly
-											checked={value}
-											onClick={() => {
-												setRowData({
-													value: value,
-													name: row.original.name,
-												}),
-													modal.open(Modals.ConfirmCheckbox)
-											}}
-										/>
-									),
-								},
-								{
-									Header: "User groups",
-									accessor: "user_groups",
-									Cell: ({ value, row }: { value: string[]; row: any }) => (
-										<div
-											className={`text-slate-700 ${
-												row.original.is_public
-													? "pointer-events-none pl-6"
-													: "cursor-pointer hover:opacity-80 text-xs font-medium "
-											}`}
-											onClick={() => {
-												setDefaultUserGroups(row.original.user_groups)
-												modal.open(Modals.InteractionUserGroup, {
-													name: row.original.name,
-													userGroup: value,
-												})
-											}}
-										>
-											{row.original.is_public ? "_" : "Show / Edit"}
-										</div>
-									),
-								},
-								{
-									Header: "Created automations",
-									id: "Created automations",
-									accessor: "name",
-									Cell: ({ value, row }: { value: string; row: any }) => (
-										<Button
-											onClick={() => navigate(`${value}/automations`)}
-											variant="subtle"
-											color="gray"
-											size="xs"
-										>
-											Show
-										</Button>
-									),
-								},
-								{
-									Header: "History",
-									id: "automation history",
-									accessor: "name",
-									Cell: ({ value }: { value: string }) => (
-										<Button
-											onClick={() => {
-												mutateAutomationHistory({
-													name: value,
-													projectName,
-												}),
-													setAutomationName(value)
-											}}
-											variant="subtle"
-											color="gray"
-											size="xs"
-										>
-											Show
-										</Button>
-									),
-								},
-								{
-									Header: "Action",
-									id: "action",
-									accessor: "name",
-									Cell: ({ value, row }: { value: string; row: any }) => (
-										<AutomationActions
-											automationName={value}
-											endpoint={row.original.endpoint}
-											isPublic={row.original.is_public}
-											kind={kind}
-										/>
-									),
-								},
-							] as const
-						).filter(
-							(col) =>
-								(!["automation", "template_automations"].includes(kind)
-									? col.Header !== "Status"
-									: true) &&
-								(kind !== "interaction"
-									? !["Public"].includes(col.Header)
-									: true) &&
-								(!["interaction", "template"].includes(kind)
-									? !["User groups"].includes(col.Header)
-									: true) &&
-								(kind !== "template"
-									? col.Header !== "Created automations"
-									: true) &&
-								(kind === "template_automations" ? col.Header !== "Name" : true) &&
-								(kind !== "template_automations"
-									? !["History", "User account"].includes(col.Header)
-									: true)
-						) as any
-					}
-					data={automations}
-				/>
-			</ContentWrapper>
+		<div>
+			<NewAutomation kind={kind} />
+			<Table
+				title={title}
+				subtitle={subtitle}
+				helpDetails={helpDetails}
+				emptyText={`You have no ${title?.toLowerCase()} yet, try adding one.`}
+				loading={loading || loadingAutomationHistory}
+				actionBar={<NewAutomation kind={kind} />}
+				columns={
+					(
+						[
+							{
+								Header: "Name",
+								accessor: "name",
+								Cell: ({ value }: { value: string }) => (
+									<AutomationLink automationName={value} />
+								),
+							},
+							{
+								Header: "User account",
+								accessor: "created_for",
+							},
+							{
+								Header: "Status",
+								accessor: "is_active",
+								Cell: ({ value }: { value: boolean }) => (
+									<ActivationStatus isActive={value} />
+								),
+							},
+							{
+								Header: "Public",
+								accessor: "is_public",
+								Cell: ({ value, row }: { value: boolean; row: any }) => (
+									<Checkbox
+										readOnly
+										checked={value}
+										onClick={() => {
+											setRowData({
+												value: value,
+												name: row.original.name,
+											}),
+												modal.open(Modals.ConfirmCheckbox)
+										}}
+									/>
+								),
+							},
+							{
+								Header: "User groups",
+								accessor: "user_groups",
+								Cell: ({ value, row }: { value: string[]; row: any }) => (
+									<div
+										className={`text-slate-700 ${
+											row.original.is_public
+												? "pointer-events-none pl-6"
+												: "cursor-pointer hover:opacity-80 text-xs font-medium "
+										}`}
+										onClick={() => {
+											setDefaultUserGroups(row.original.user_groups)
+											modal.open(Modals.InteractionUserGroup, {
+												name: row.original.name,
+												userGroup: value,
+											})
+										}}
+									>
+										{row.original.is_public ? "_" : "Show / Edit"}
+									</div>
+								),
+							},
+							{
+								Header: "Created automations",
+								id: "Created automations",
+								accessor: "name",
+								Cell: ({ value, row }: { value: string; row: any }) => (
+									<Button
+										onClick={() => navigate(`${value}/automations`)}
+										variant="subtle"
+										color="gray"
+										size="xs"
+									>
+										Show
+									</Button>
+								),
+							},
+							{
+								Header: "History",
+								id: "automation history",
+								accessor: "name",
+								Cell: ({ value }: { value: string }) => (
+									<Button
+										onClick={() => {
+											mutateAutomationHistory({
+												name: value,
+												projectName,
+											}),
+												setAutomationName(value)
+										}}
+										variant="subtle"
+										color="gray"
+										size="xs"
+									>
+										Show
+									</Button>
+								),
+							},
+							{
+								Header: "Action",
+								id: "action",
+								accessor: "name",
+								Cell: ({ value, row }: { value: string; row: any }) => (
+									<AutomationActions
+										automationName={value}
+										endpoint={row.original.endpoint}
+										isPublic={row.original.is_public}
+										kind={kind}
+									/>
+								),
+							},
+						] as const
+					).filter(
+						(col) =>
+							(!["automation", "template_automations"].includes(kind)
+								? col.Header !== "Status"
+								: true) &&
+							(kind !== "interaction" ? !["Public"].includes(col.Header) : true) &&
+							(!["interaction", "template"].includes(kind)
+								? !["User groups"].includes(col.Header)
+								: true) &&
+							(kind !== "template" ? col.Header !== "Created automations" : true) &&
+							(kind === "template_automations" ? col.Header !== "Name" : true) &&
+							(kind !== "template_automations"
+								? !["History", "User account"].includes(col.Header)
+								: true)
+					) as any
+				}
+				data={automations}
+			/>
 			<Modal kind={Modals.TemplateEndpoint} title="Endpoint" size="lg">
 				{(data: { automationName: string; endpoint: string; isPublic: boolean }) => (
 					<>
@@ -358,12 +353,12 @@ export function AutomationList({
 					/>
 				</div>
 			</Drawer>
-		</>
+		</div>
 	)
 }
 
 function NewAutomation({ kind }: { kind: AutomationKind }) {
-	const newAutomation = useNewAutomation("new")
+	const newAutomation = useNewAutomation(kind)
 	const newButtonText = kind === "template" ? "Automation Template" : kind
 
 	if (kind === "template_automations") return null
@@ -378,9 +373,7 @@ function NewAutomation({ kind }: { kind: AutomationKind }) {
 					Import YAML
 				</Button>
 			)}
-			<Button onClick={newAutomation} leftIcon={<IoAdd className="text-xl" />}>
-				New {_.capitalize(newButtonText)}
-			</Button>
+			<AddButton handleClick={newAutomation} text={`New ${_.capitalize(newButtonText)}`} />
 		</div>
 	)
 }

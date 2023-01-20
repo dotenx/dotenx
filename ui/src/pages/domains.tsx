@@ -8,7 +8,7 @@ import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
 import { QueryKey } from "../api"
-import { ContentWrapper } from "../features/ui"
+import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { PageTitle } from "../features/ui/page-title"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
@@ -41,20 +41,27 @@ export default function DomainsPage() {
 	}
 
 	return (
-		<ContentWrapper className="lg:pr-0 lg:pl-44 ">
-			<PageTitle title="Domains" helpDetails={helpDetails} />
-			{getDomainsQuery.isLoading || projectTagisLoading || getDomainsQuery.isRefetching ? (
-				<Loader className="mx-auto" />
-			) : (
-				<div className="max-w-4xl px-20 py-10 mx-auto ">
-					{isDomainAdded ? (
-						<Domain projectTag={projectTag} domainData={getDomainsQuery?.data?.data} />
-					) : (
-						<AddDomain projectTag={projectTag} />
-					)}
-				</div>
-			)}
-		</ContentWrapper>
+		<div>
+			<Header title={"Domains"} />
+			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
+				{getDomainsQuery.isLoading ||
+				projectTagisLoading ||
+				getDomainsQuery.isRefetching ? (
+					<Loader className="mx-auto" />
+				) : (
+					<div className="mx-auto py-10  px-20 max-w-4xl ">
+						{isDomainAdded ? (
+							<Domain
+								projectTag={projectTag}
+								domainData={getDomainsQuery?.data?.data}
+							/>
+						) : (
+							<AddDomain projectTag={projectTag} />
+						)}
+					</div>
+				)}
+			</ContentWrapper>
+		</div>
 	)
 }
 
@@ -130,7 +137,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		},
 	})
 	return (
-		<div className="p-3 font-medium border-2 rounded-md">
+		<div className="font-medium border-2 rounded-[10px] p-3 bg-white">
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>
