@@ -12,7 +12,7 @@ import {
 	BsPeopleFill,
 	BsTable,
 } from "react-icons/bs"
-import { Link, useParams } from "react-router-dom"
+import { Link, NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 
 const ANIMATION_DURATION = 0.15
@@ -140,15 +140,20 @@ function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) 
 
 function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 	return (
-		<Link
+		<RouterNavLink
 			to={link.to}
-			className="flex items-center gap-4 px-2 h-12 text-lg transition text-white rounded-md hover:bg-rose-700 whitespace-nowrap"
+			className={({ isActive }) =>
+				clsx(
+					"flex items-center gap-4 px-2 h-12 text-lg transition text-white rounded-md hover:bg-rose-700 whitespace-nowrap",
+					isActive && "bg-rose-700"
+				)
+			}
 		>
 			<span className="pl-2">{link.icon}</span>
 			<FadeIn visible={!closed}>
 				<span>{link.label}</span>
 			</FadeIn>
-		</Link>
+		</RouterNavLink>
 	)
 }
 
