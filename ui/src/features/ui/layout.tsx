@@ -20,8 +20,9 @@ export function Layout({ children, compactSidebar = false, withoutSidebar }: Lay
 						</Navbar>
 					)
 				}
+				className="bg-[#ECECEC]"
 			>
-				<div className="bg-[#ECECEC] w-full">{children}</div>
+				{children}
 			</AppShell>
 		</div>
 	)
