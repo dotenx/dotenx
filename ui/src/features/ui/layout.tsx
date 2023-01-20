@@ -20,7 +20,7 @@ export function Layout({ children, compactSidebar = false, withoutSidebar }: Lay
 						</Navbar>
 					)
 				}
-				className="bg-[#ECECEC]"
+				className="bg-gray-100"
 			>
 				{children}
 			</AppShell>

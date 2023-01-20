@@ -23,8 +23,8 @@ export function Header({
 	const navigate = useNavigate()
 
 	return (
-		<div className={` ${expand && "pl-[70px]"} w-full bg-white shadow-sm`}>
-			<div className="flex items-center p-10 justify-between">
+		<div className={` ${expand && "pl-[0]"} w-full bg-white shadow-sm`}>
+			<div className="flex items-center justify-between p-10">
 				<div className="h-10 ">
 					<div
 						onClick={() => {
@@ -36,9 +36,9 @@ export function Header({
 					</div>
 					<div className="text-xs text-gray-500">{subtitle}</div>
 				</div>
-				<div className="flex  gap-x-5">{children}</div>
+				<div className="flex gap-x-5">{children}</div>
 			</div>
-			<div className="flex pl-10 gap-x-10 h-8 ">
+			<div className="flex h-8 pl-10 gap-x-10 ">
 				{tabs?.map((tab) => {
 					const active = tab === activeTab
 					return (
@@ -61,8 +61,8 @@ export function Header({
 }
 export function Content_Wrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
 	return (
-		<div className={`${expand && "pl-[70px]"} w-full pb-10`}>
-			<div className="px-10  pt-5">{children}</div>
+		<div className={`${expand && "pl-[0]"} w-full pb-10`}>
+			<div className="px-10 pt-5">{children}</div>
 		</div>
 	)
 }
