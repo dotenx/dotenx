@@ -1,68 +1,23 @@
 import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { FaPlus } from 'react-icons/fa'
-import { controllers } from '../controllers'
+import { controllers, ControllerSection } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
+import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { AddSimpleComponentButton, insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar() {
-	const addElement = useElementsStore((store) => store.add)
-	const [inserting, setInserting] = useAtom(insertingAtom)
+	const inserting = useAtomValue(insertingAtom)
 
 	if (!inserting) return <NotSelectedMessage />
 
 	return (
 		<div className="flex flex-col ">
 			{controllers.map((section) => (
-				<div key={section.title} className="">
-					<DividerCollapsible closed title={section.title}>
-						{section.items.map((Item) => {
-							const controller = new Item()
-							return (
-								<InsertionItem
-									src={controller.image}
-									key={controller.name}
-									icon={
-										<Image
-											height={100}
-											src={controller.image}
-											alt={controller.name}
-										/>
-									}
-									label={controller.name}
-									onClick={() => {
-										const newElement = controller.transform()
-										controller.onCreate(newElement)
-										switch (inserting.placement) {
-											case 'initial':
-												addElement(newElement, {
-													id: inserting.where,
-													mode: 'in',
-												})
-												break
-											case 'before':
-												addElement(newElement, {
-													id: inserting.where,
-													mode: 'before',
-												})
-												break
-											case 'after':
-												addElement(newElement, {
-													id: inserting.where,
-													mode: 'after',
-												})
-												break
-										}
-										setInserting(null)
-									}}
-								/>
-							)
-						})}
-					</DividerCollapsible>
-				</div>
+				<SimpleComponentList key={section.title} section={section} />
 			))}
 		</div>
 	)
@@ -70,7 +25,7 @@ export function SimpleLeftSidebar() {
 
 function NotSelectedMessage() {
 	return (
-		<div className="text-xs flex flex-col items-center gap-2">
+		<div className="flex flex-col items-center gap-2 text-xs">
 			Click on
 			<AddSimpleComponentButton className="!px-1.5 !py-1 pointer-events-none">
 				<FaPlus />
@@ -81,15 +36,40 @@ function NotSelectedMessage() {
 	)
 }
 
-export function InsertionItem({
+function SimpleComponentList({ section: { title, items } }: { section: ControllerSection }) {
+	const insertComponent = useInsertComponent()
+
+	return (
+		<DividerCollapsible closed title={title}>
+			{items.map((Item) => {
+				const controller = new Item()
+				return (
+					<SimpleComponentItem
+						src={controller.image}
+						key={controller.name}
+						image={<Image height={100} src={controller.image} alt={controller.name} />}
+						label={controller.name}
+						onClick={() => {
+							const component = controller.transform()
+							controller.onCreate(component)
+							insertComponent(component)
+						}}
+					/>
+				)
+			})}
+		</DividerCollapsible>
+	)
+}
+
+export function SimpleComponentItem({
 	label,
 	src,
-	icon,
+	image,
 	onClick,
 }: {
 	label: string
 	src: string
-	icon: ReactElement
+	image: ReactElement
 	onClick: () => void
 }) {
 	const { hovered, ref } = useHover<HTMLButtonElement>()
@@ -97,15 +77,15 @@ export function InsertionItem({
 	return (
 		<button
 			ref={ref}
-			className=" border overflow-hidden flex flex-col items-center w-full gap-1 rounded bg-gray-50 text-slate-600 hover:text-slate-900"
+			className="flex flex-col items-center w-full gap-1 overflow-hidden border rounded bg-gray-50 text-slate-600 hover:text-slate-900"
 			onClick={onClick}
 		>
-			{icon}
-			<p className="text-xs text-center pb-1 ">{label}</p>
+			{image}
+			<p className="pb-1 text-xs text-center ">{label}</p>
 			{hovered && (
 				<Portal>
 					<img
-						className="outline outline-1 outline-slate-200 shadow-md w-[700px] h-[300px] rounded-2xl absolute z-[100]   top-[35%] left-[20%]"
+						className="outline outline-1 outline-slate-200 shadow-md w-[700px] h-[300px] rounded-2xl absolute z-[100] top-[35%] left-[20%]"
 						src={src}
 						alt="Preview"
 					/>
@@ -113,4 +93,36 @@ export function InsertionItem({
 			)}
 		</button>
 	)
+}
+
+const useInsertComponent = () => {
+	const [inserting, setInserting] = useAtom(insertingAtom)
+	const addElement = useElementsStore((store) => store.add)
+
+	const insert = (component: Element) => {
+		if (!inserting) return
+		switch (inserting.placement) {
+			case 'initial':
+				addElement(component, {
+					id: inserting.where,
+					mode: 'in',
+				})
+				break
+			case 'before':
+				addElement(component, {
+					id: inserting.where,
+					mode: 'before',
+				})
+				break
+			case 'after':
+				addElement(component, {
+					id: inserting.where,
+					mode: 'after',
+				})
+				break
+		}
+		setInserting(null)
+	}
+
+	return insert
 }

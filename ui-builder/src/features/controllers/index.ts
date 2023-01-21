@@ -99,3 +99,5 @@ export const controllers = [
 		],
 	},
 ] as const
+
+export type ControllerSection = (typeof controllers)[number]

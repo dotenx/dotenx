@@ -10,7 +10,7 @@ import { ElementOverlay } from './simple-renderer'
 
 export const insertingAtom = atom<Inserting | null>(null)
 
-interface Inserting {
+export interface Inserting {
 	where: string
 	placement: 'before' | 'after' | 'initial'
 }
