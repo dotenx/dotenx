@@ -54,7 +54,7 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 	const setInserting = useSetAtom(insertingAtom)
 
 	return (
-		<AddButton
+		<AddSimpleComponentButton
 			onClick={(event) => {
 				event.stopPropagation()
 				setInserting(insert)
@@ -62,11 +62,11 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 		>
 			<FaPlus />
 			Section
-		</AddButton>
+		</AddSimpleComponentButton>
 	)
 }
 
-const AddButton = styled.button`
+export const AddSimpleComponentButton = styled.button`
 	border: none;
 	background-color: #f43f5e;
 	border-radius: 4px;

@@ -1,44 +1,18 @@
-import { Image, Portal, Tooltip } from '@mantine/core'
+import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { useAtom } from 'jotai'
 import { ReactElement } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { controllers } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
-import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
-import { insertingAtom } from './simple-canvas'
+import { AddSimpleComponentButton, insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar() {
-	const { addDataSource } = useDataSourceStore((store) => ({
-		addDataSource: store.add,
-	}))
-	const { addAfter, addBefore, add } = useElementsStore((store) => ({
-		add: store.add,
-		addBefore: store.add,
-		addAfter: store.add,
-	}))
+	const addElement = useElementsStore((store) => store.add)
 	const [inserting, setInserting] = useAtom(insertingAtom)
 
-	if (!inserting)
-		return (
-			<Tooltip
-				openDelay={700}
-				withArrow
-				label={
-					<div className="flex items-center text-xs ">
-						Click on
-						<div className=" font-semibold p-1 flex items-center bg-rose-600 text-white rounded-sm mx-1">
-							<FaPlus />
-							Section
-						</div>
-						to see the components list
-					</div>
-				}
-			>
-				<p className="text-center cursor-help px-5 pb-5">...</p>
-			</Tooltip>
-		)
+	if (!inserting) return <NotSelectedMessage />
 
 	return (
 		<div className="flex flex-col ">
@@ -64,19 +38,19 @@ export function SimpleLeftSidebar() {
 										controller.onCreate(newElement)
 										switch (inserting.placement) {
 											case 'initial':
-												add(newElement, {
+												addElement(newElement, {
 													id: inserting.where,
 													mode: 'in',
 												})
 												break
 											case 'before':
-												addBefore(newElement, {
+												addElement(newElement, {
 													id: inserting.where,
 													mode: 'before',
 												})
 												break
 											case 'after':
-												addAfter(newElement, {
+												addElement(newElement, {
 													id: inserting.where,
 													mode: 'after',
 												})
@@ -90,6 +64,19 @@ export function SimpleLeftSidebar() {
 					</DividerCollapsible>
 				</div>
 			))}
+		</div>
+	)
+}
+
+function NotSelectedMessage() {
+	return (
+		<div className="text-xs flex flex-col items-center gap-2">
+			Click on
+			<AddSimpleComponentButton className="!px-1.5 !py-1 pointer-events-none">
+				<FaPlus />
+				Section
+			</AddSimpleComponentButton>
+			to see the component list
 		</div>
 	)
 }

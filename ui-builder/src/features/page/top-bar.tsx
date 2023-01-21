@@ -65,8 +65,8 @@ function UnsavedMessage() {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
 
-	const savedHash = useMemo(() => hash(saved), [saved])
-	const currentHash = useMemo(() => hash(elements), [elements])
+	const savedHash = useMemo(() => safeHash(saved), [saved])
+	const currentHash = useMemo(() => safeHash(elements), [elements])
 	const unsaved = savedHash !== currentHash
 
 	useEffect(() => {
@@ -86,6 +86,14 @@ function UnsavedMessage() {
 			You have unsaved changes
 		</Text>
 	)
+}
+
+const safeHash = (object: hash.NotUndefined) => {
+	try {
+		return hash(object)
+	} catch (error) {
+		console.warn({ object }, error)
+	}
 }
 
 export const pageScaleAtom = atom(1)
