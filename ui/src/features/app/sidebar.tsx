@@ -120,7 +120,7 @@ function BackToProjects({ closed }: { closed: boolean }) {
 	return (
 		<Link
 			to="/"
-			className="text-xl bg-white w-full rounded-md flex items-center h-8 font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap"
+			className="text-xl bg-white w-full rounded-md flex items-center h-10 font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap"
 		>
 			<BsChevronLeft className="text-xl shrink-0" />
 			<FadeIn visible={!closed}>{projectName}</FadeIn>
@@ -144,7 +144,7 @@ function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 			to={link.to}
 			className={({ isActive }) =>
 				clsx(
-					"flex items-center gap-4 px-2 h-12 text-xl transition text-white rounded-md hover:bg-rose-700 whitespace-nowrap",
+					"flex items-center gap-4 px-2 h-14 text-xl transition text-white rounded-md hover:bg-rose-700 whitespace-nowrap",
 					isActive && "bg-rose-700"
 				)
 			}
