@@ -1,17 +1,17 @@
-import { AppShell, Aside, Header, Image, Navbar, ScrollArea } from '@mantine/core'
+import { AppShell, Aside, Header, Navbar, ScrollArea } from '@mantine/core'
 import { useClickOutside } from '@mantine/hooks'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { previewAtom, TopBar } from '../page/top-bar'
-import { SimpleElementSelect } from './element-select'
+import { SimpleLeftSidebar } from './left-sidebar'
+import { SimpleRightSidebar } from './right-sidebar'
 import { insertingAtom, SimpleCanvas } from './simple-canvas'
-import { SimpleOptions } from './simple-options'
 
 export function Simple() {
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <AppLeftSideBar />, aside: <AppRightSideBar /> }
 
 	return (
-		<AppShell header={<AppHeader />} {...sidebars} padding={0}>
+		<AppShell header={<AppHeader />} padding={0} {...sidebars}>
 			<SimpleCanvas />
 		</AppShell>
 	)
@@ -39,7 +39,7 @@ function AppLeftSideBar() {
 				offsetScrollbars
 			>
 				<div className="py-2 px-4">
-					<SimpleElementSelect />
+					<SimpleLeftSidebar />
 				</div>
 			</Navbar.Section>
 		</Navbar>
@@ -59,7 +59,7 @@ function AppRightSideBar() {
 				px="xl"
 			>
 				<div className="py-2 px-1">
-					<SimpleOptions />
+					<SimpleRightSidebar />
 				</div>
 			</Aside.Section>
 		</Aside>

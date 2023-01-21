@@ -1,6 +1,6 @@
 import { Image, Portal, Tooltip } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { ReactElement } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { controllers } from '../controllers'
@@ -9,7 +9,7 @@ import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { insertingAtom } from './simple-canvas'
 
-export function SimpleElementSelect() {
+export function SimpleLeftSidebar() {
 	const { addDataSource } = useDataSourceStore((store) => ({
 		addDataSource: store.add,
 	}))
