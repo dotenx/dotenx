@@ -32,6 +32,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	const tableData = usersData?.data?.rows ?? []
 
 	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
+	const queryClient = useQueryClient()
 
 	const helpDetails = {
 		title: "You can add manage the users of your application and control their access",
@@ -64,6 +65,17 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						helpDetails={helpDetails}
 						loading={projectDetailsLoading || usersDataLoading}
 						emptyText="Your users will be displayed here"
+						actionBar={
+							<Button
+								leftIcon={<IoReload />}
+								type="button"
+								onClick={() =>
+									queryClient.invalidateQueries(QueryKey.GetUserManagementData)
+								}
+							>
+								Refresh
+							</Button>
+						}
 						columns={[
 							{
 								Header: "Name",
@@ -129,20 +141,12 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 		user_group: "users",
 		tp_account_id: "********-****-****-****-************",
 	}
-	const queryClient = useQueryClient()
 
 	if (profileQuery.isLoading) return <Loader />
 
 	return (
 		<>
 			<div className="flex flex-wrap gap-2">
-				<Button
-					leftIcon={<IoReload />}
-					type="button"
-					onClick={() => queryClient.invalidateQueries(QueryKey.GetUserManagementData)}
-				>
-					Refresh
-				</Button>
 				<Button
 					className="endpoints"
 					onClick={() => modal.open(Modals.UserManagementEndpoint)}
