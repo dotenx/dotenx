@@ -84,10 +84,13 @@ export function SimpleComponentItem({
 			<p className="pb-1 text-xs text-center ">{label}</p>
 			{hovered && (
 				<Portal>
-					<img
-						className="outline outline-1 outline-slate-200 shadow-md w-[700px] h-[300px] rounded-2xl absolute z-[100] top-[35%] left-[20%]"
+					<Image
+						className="border shadow rounded absolute z-50 top-[35%] left-[20%] bg-white"
 						src={src}
 						alt="Preview"
+						width={700}
+						height={300}
+						fit="contain"
 					/>
 				</Portal>
 			)}

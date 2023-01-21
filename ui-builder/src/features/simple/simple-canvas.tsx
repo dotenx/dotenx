@@ -29,7 +29,7 @@ export function SimpleCanvas() {
 
 	return (
 		<CanvasFrame>
-			<div style={{ minHeight: 'calc(100vh - 6px)' }}>
+			<div style={{ minHeight: 'calc(100vh - 6px)', paddingBottom: 18 }}>
 				{isEmpty ? (
 					prompt
 				) : (
