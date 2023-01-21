@@ -50,7 +50,7 @@ function Content({ name, kind, projectName }: AutomationProps) {
 	return (
 		<>
 			<ActionBar projectName={projectName} automationName={name} kind={kind} />
-			<div className="flex gap-2 grow">
+			<div className="flex gap-2 grow h-screen bg-white">
 				<Flow kind={kind} />
 			</div>
 		</>

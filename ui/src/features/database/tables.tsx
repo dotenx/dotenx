@@ -74,7 +74,7 @@ function ListItem({
 		<Link
 			to={name + (isPublic ? "/public" : "/private")}
 			className={clsx(
-				"rounded-md bg-white px-6 py-4 flex justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white",
+				"rounded-md bg-white px-6 py-4 flex justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white transition",
 				isLoading && "blur-[1px] animate-pulse"
 			)}
 		>
@@ -89,7 +89,7 @@ function ListItem({
 					label={isPublic ? "public" : "private"}
 					checked={isPublic}
 					onChange={(event) => event.target.checked}
-					classNames={{ label: "group-hover:text-white" }}
+					classNames={{ label: "group-hover:text-white transition" }}
 				/>
 			</div>
 		</Link>

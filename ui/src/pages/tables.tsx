@@ -28,7 +28,7 @@ function Tables({ name }: { name: string }) {
 	})
 	if (query.isLoading)
 		return (
-			<div className="w-full">
+			<div className="w-full mt-20">
 				<Loader />
 			</div>
 		)
