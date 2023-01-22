@@ -40,9 +40,9 @@ export function App() {
 							],
 						},
 						primaryColor: "rose",
-						fontFamily: "Montserrat, sans-serif",
+						fontFamily: "Inter, sans-serif",
 						fontFamilyMonospace: "'Roboto Mono', monospace",
-						headings: { fontFamily: "Montserrat, sans-serif" },
+						headings: { fontFamily: "Inter, sans-serif" },
 					}}
 					emotionCache={emotionCache}
 				>

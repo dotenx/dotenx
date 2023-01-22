@@ -1,4 +1,5 @@
 import { Switch } from "@mantine/core"
+import clsx from "clsx"
 import { useMutation, useQueryClient } from "react-query"
 import { Link } from "react-router-dom"
 import { QueryKey, setTableAccess } from "../../api"
@@ -40,7 +41,7 @@ function List({
 	projectName: string
 }) {
 	return (
-		<div className="grid grid-cols-3 gap-y-5 mt-5 gap-x-10">
+		<div className="grid grid-cols-3 gap-y-10 gap-x-16 mt-10">
 			{items
 				.filter((table) => table.name !== "user_info" && table.name !== "user_group")
 				.map((table, index) => (
@@ -68,36 +69,29 @@ function ListItem({
 	const { mutate, isLoading } = useMutation(setTableAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTables),
 	})
+
 	return (
-		<div
-			className={`grid group  grid-cols-1 py-2 px-10  place-items-center  h-32 transition rounded-[10px] shadow-sm bg-white  text-gray-800 hover:bg-gray-100 border-transparent border-[4px] hover:border-white  hover:shadow hover:shadow-gray-100 ${
-				isLoading && "blur-[1px] animate-pulse "
-			} `}
+		<Link
+			to={name + (isPublic ? "/public" : "/private")}
+			className={clsx(
+				"rounded-md bg-white px-6 py-4 flex justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white transition",
+				isLoading && "blur-[1px] animate-pulse"
+			)}
 		>
-			<Link
-				to={name + (isPublic ? "/public" : "/private")}
-				className="text-xl transition-all duration-500 w-full h-full cursor-pointer group-hover:bg-white flex items-center justify-center rounded-[10px]  font-medium"
-			>
-				{name}
-			</Link>
+			<p className="text-2xl font-medium">{name}</p>
 			<div
-				onClick={() =>
-					mutate({
-						name,
-						projectName,
-						isPublic,
-					})
-				}
-				className={`flex mt-3  mr-2 `}
+				onClick={(event) => {
+					event.stopPropagation()
+					if (!isLoading) mutate({ name, projectName, isPublic })
+				}}
 			>
 				<Switch
 					label={isPublic ? "public" : "private"}
-					className="mr-2"
-					size="md"
-					color={"pink"}
 					checked={isPublic}
-				></Switch>
+					onChange={(event) => event.target.checked}
+					classNames={{ label: "group-hover:text-white transition" }}
+				/>
 			</div>
-		</div>
+		</Link>
 	)
 }

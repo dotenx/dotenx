@@ -30,7 +30,7 @@ export function Header({
 						onClick={() => {
 							if (headerLink) navigate(headerLink)
 						}}
-						className={`${headerLink && "cursor-pointer"} text-3xl font-semibold `}
+						className={`${headerLink && "cursor-pointer"} text-4xl`}
 					>
 						{title}
 					</div>
@@ -38,14 +38,14 @@ export function Header({
 				</div>
 				<div className="flex gap-x-5">{children}</div>
 			</div>
-			<div className="flex h-8 pl-10 gap-x-10 ">
+			<div className="flex pl-10 gap-x-10 ">
 				{tabs?.map((tab) => {
 					const active = tab === activeTab
 					return (
 						<span
 							onClick={() => onTabChange(tab)}
 							key={tab}
-							className={`transition-all duration-200 uppercase pb-1 text-sm font-medium cursor-pointer  ${
+							className={`transition-all duration-200 uppercase pb-1 text-lg font-medium cursor-pointer  ${
 								active
 									? "text-black border-b-4 border-b-rose-600 "
 									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"

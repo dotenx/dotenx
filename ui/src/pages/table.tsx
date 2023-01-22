@@ -121,7 +121,7 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 				activeTab={tableName}
 				tabs={[tableName]}
 			>
-				<ActionBar projectName={projectName} tableName={tableName} />
+				<ActionBar />
 			</Header>
 			<Content_Wrapper expand>
 				<Table
@@ -251,9 +251,8 @@ function QueryTable({
 	)
 }
 
-function ActionBar({ projectName, tableName }: { projectName: string; tableName: string }) {
+function ActionBar() {
 	const modal = useModal()
-	const queryClient = useQueryClient()
 
 	return (
 		<div className="flex gap-2 text-xs">

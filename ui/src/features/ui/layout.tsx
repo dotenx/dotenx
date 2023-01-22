@@ -10,7 +10,7 @@ interface LayoutProps {
 
 export function Layout({ children, compactSidebar = false, withoutSidebar }: LayoutProps) {
 	return (
-		<div className="text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700">
+		<div className="text-slate-900 font-body selection:bg-rose-400 selection:text-slate-900">
 			<AppShell
 				padding={0}
 				navbar={
