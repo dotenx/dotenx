@@ -4,7 +4,7 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				body: ["Montserrat", "sans-serif"],
+				body: ["Inter", "sans-serif"],
 				mono: ["'Roboto Mono'", "monospace"],
 			},
 			animation: {

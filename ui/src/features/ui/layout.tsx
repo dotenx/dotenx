@@ -1,26 +1,29 @@
-import { ReactNode } from 'react'
-import { AccessToken } from '../../internal/access-token'
-import { Modals } from '../hooks'
-import { Drawer } from './drawer'
-import { Sidebar } from './sidebar'
+import { AppShell, Navbar } from "@mantine/core"
+import { ReactNode } from "react"
+import { Sidebar } from "../app/sidebar"
 
 interface LayoutProps {
 	children: ReactNode
+	compactSidebar?: boolean
+	withoutSidebar?: boolean
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, compactSidebar = false, withoutSidebar }: LayoutProps) {
 	return (
-		<div className="flex flex-col h-screen text-slate-700 font-body selection:bg-rose-400 selection:text-slate-700">
-			<div className="flex grow">
-				<Sidebar />
-
-				<div className="container flex mx-auto grow">
-					{children}
-					<Drawer kind={Modals.AccessToken} title="Personal Access Token" size="xl">
-						<AccessToken />
-					</Drawer>
-				</div>
-			</div>
+		<div className="text-slate-900 font-body selection:bg-rose-400 selection:text-slate-900">
+			<AppShell
+				padding={0}
+				navbar={
+					withoutSidebar ? undefined : (
+						<Navbar width={{ base: compactSidebar ? 80 : 300 }}>
+							<Sidebar closable={compactSidebar} />
+						</Navbar>
+					)
+				}
+				className="bg-gray-100"
+			>
+				{children}
+			</AppShell>
 		</div>
 	)
 }

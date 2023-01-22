@@ -5,10 +5,8 @@ import { useQuery } from "react-query"
 import { Link, Navigate, useParams } from "react-router-dom"
 import { getTables, QueryKey } from "../api"
 import { TableForm, TableList } from "../features/database"
-import ExportDatabase from "../features/database/export-database"
-import CustomQuery from "../features/database/custom-query"
 import { Modals } from "../features/hooks"
-import { ContentWrapper, Loader, NewModal } from "../features/ui"
+import { Content_Wrapper, Header, Loader, NewModal } from "../features/ui"
 import { ViewList } from "../features/views/view-list"
 
 export default function TablesPage() {
@@ -19,6 +17,8 @@ export default function TablesPage() {
 
 function Tables({ name }: { name: string }) {
 	const [noDatabase, setNoDatabase] = useState(false)
+
+	const [activeTab, setActiveTab] = useState<"Tables" | "Views">("Tables")
 	const query = useQuery(QueryKey.GetTables, () => getTables(name), {
 		onError: (err: any) => {
 			if (err.response.status === 400) {
@@ -28,13 +28,13 @@ function Tables({ name }: { name: string }) {
 	})
 	if (query.isLoading)
 		return (
-			<ContentWrapper>
+			<div className="w-full mt-20">
 				<Loader />
-			</ContentWrapper>
+			</div>
 		)
 	return (
 		<>
-			<ContentWrapper>
+			<div className=" w-full">
 				{noDatabase ? (
 					<div className="flex flex-col items-center">
 						<div className="mb-4 mt-44">
@@ -50,15 +50,23 @@ function Tables({ name }: { name: string }) {
 					</div>
 				) : (
 					<>
-						<div className="w-full flex items-center justify-end gap-x-5">
-							<CustomQuery />
-							<ExportDatabase projectName={name} />
-						</div>
-						<TableList projectName={name} query={query} />
-						<ViewList projectName={name} />
+						<Header
+							title="Tables"
+							tabs={["Tables", "Views"]}
+							activeTab={activeTab}
+							onTabChange={(v: typeof activeTab) => {
+								setActiveTab(v)
+							}}
+						/>
+						<Content_Wrapper>
+							{activeTab === "Tables" && (
+								<TableList projectName={name} query={query} />
+							)}
+							{activeTab === "Views" && <ViewList projectName={name} />}
+						</Content_Wrapper>
 					</>
 				)}
-			</ContentWrapper>
+			</div>
 			<NewModal kind={Modals.NewTable} title="Add a new table">
 				<TableForm projectName={name} />
 			</NewModal>

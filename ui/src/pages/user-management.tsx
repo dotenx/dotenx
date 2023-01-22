@@ -3,10 +3,11 @@ import { format } from "date-fns"
 import { useState } from "react"
 import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
-import { Link, Navigate, useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { API_URL, getProfile, getProject, getUserManagementData, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, Drawer, Endpoint, Loader, Table } from "../features/ui"
+import { Content_Wrapper, Drawer, Endpoint, Header, Loader, Table } from "../features/ui"
+import UserGroupsWrapper from "./user-groups"
 
 export default function UserManagementPage() {
 	const { projectName } = useParams()
@@ -16,6 +17,7 @@ export default function UserManagementPage() {
 
 function UMTableContent({ projectName }: { projectName: string }) {
 	const [currentPage, setCurrentPage] = useState(1)
+	const [activeTab, setActiveTab] = useState<"users" | "user groups">("users")
 
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
@@ -30,6 +32,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	const tableData = usersData?.data?.rows ?? []
 
 	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
+	const queryClient = useQueryClient()
 
 	const helpDetails = {
 		title: "You can add manage the users of your application and control their access",
@@ -40,47 +43,74 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	}
 
 	return (
-		<ContentWrapper>
-			<Table
-				withPagination
-				currentPage={currentPage}
-				nPages={nPages}
-				setCurrentPage={setCurrentPage}
-				helpDetails={helpDetails}
-				loading={projectDetailsLoading || usersDataLoading}
-				title="User Management"
-				emptyText="Your users will be displayed here"
-				columns={[
-					{
-						Header: "Name",
-						accessor: "fullname",
-					},
-					{
-						Header: "Username",
-						accessor: "email",
-					},
-					{
-						Header: "Created",
-						accessor: "created_at",
-						Cell: ({ value }: { value: string }) => (
-							<div>
-								<span>{format(new Date(value.split("+")[0]), "yyyy/MM/dd")}</span>
-							</div>
-						),
-					},
-					{
-						Header: "Group",
-						accessor: "user_group",
-					},
-					{
-						Header: "User ID",
-						accessor: "account_id",
-					},
-				]}
-				data={tableData}
-				actionBar={<ActionBar projectTag={projectTag} />}
-			/>
-		</ContentWrapper>
+		<div>
+			<Header
+				tabs={["users", "user groups"]}
+				headerLink={`/builder/projects/${projectName}/user-management`}
+				title={"User Management"}
+				activeTab={activeTab}
+				onTabChange={(v: typeof activeTab) => {
+					setActiveTab(v)
+				}}
+			>
+				<ActionBar projectTag={projectTag} />
+			</Header>
+			<Content_Wrapper>
+				{activeTab === "users" && (
+					<Table
+						withPagination
+						currentPage={currentPage}
+						nPages={nPages}
+						setCurrentPage={setCurrentPage}
+						helpDetails={helpDetails}
+						loading={projectDetailsLoading || usersDataLoading}
+						emptyText="Your users will be displayed here"
+						actionBar={
+							<Button
+								leftIcon={<IoReload />}
+								type="button"
+								onClick={() =>
+									queryClient.invalidateQueries(QueryKey.GetUserManagementData)
+								}
+							>
+								Refresh
+							</Button>
+						}
+						columns={[
+							{
+								Header: "Name",
+								accessor: "fullname",
+							},
+							{
+								Header: "Username",
+								accessor: "email",
+							},
+							{
+								Header: "Created",
+								accessor: "created_at",
+								Cell: ({ value }: { value: string }) => (
+									<div>
+										<span>
+											{format(new Date(value.split("+")[0]), "yyyy/MM/dd")}
+										</span>
+									</div>
+								),
+							},
+							{
+								Header: "Group",
+								accessor: "user_group",
+							},
+							{
+								Header: "User ID",
+								accessor: "account_id",
+							},
+						]}
+						data={tableData}
+					/>
+				)}
+				{activeTab === "user groups" && <UserGroupsWrapper />}
+			</Content_Wrapper>
+		</div>
 	)
 }
 
@@ -111,23 +141,12 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 		user_group: "users",
 		tp_account_id: "********-****-****-****-************",
 	}
-	const queryClient = useQueryClient()
 
 	if (profileQuery.isLoading) return <Loader />
 
 	return (
 		<>
 			<div className="flex flex-wrap gap-2">
-				<Button
-					leftIcon={<IoReload />}
-					type="button"
-					onClick={() => queryClient.invalidateQueries(QueryKey.GetUserManagementData)}
-				>
-					Refresh
-				</Button>
-				<Button className="usergroups" component={Link} to="user-groups">
-					User Groups
-				</Button>
 				<Button
 					className="endpoints"
 					onClick={() => modal.open(Modals.UserManagementEndpoint)}
