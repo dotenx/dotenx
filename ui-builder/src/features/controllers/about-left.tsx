@@ -23,7 +23,7 @@ export class AboutLeft extends Controller {
 	name = 'About us with details on the left'
 	image = imageUrl
 	defaultData = defaultData
-	renderOptions = AboutLeftOptions
+	renderOptions = () => <AboutLeftOptions />
 }
 
 // =============  renderOptions =============

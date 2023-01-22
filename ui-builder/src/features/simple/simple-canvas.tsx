@@ -1,6 +1,6 @@
 import { useHotkeys } from '@mantine/hooks'
 import { atom, useSetAtom } from 'jotai'
-import { FaPlus } from 'react-icons/fa'
+import { TbPlus } from 'react-icons/tb'
 import styled from 'styled-components'
 import { RenderElements } from '../advanced/renderer'
 import { useElementsStore } from '../elements/elements-store'
@@ -29,7 +29,7 @@ export function SimpleCanvas() {
 
 	return (
 		<CanvasFrame>
-			<div style={{ minHeight: 'calc(100vh - 6px)', paddingBottom: 18 }}>
+			<div style={{ minHeight: 'calc(100vh - 6px)', paddingBottom: 16 }}>
 				{isEmpty ? (
 					prompt
 				) : (
@@ -60,8 +60,7 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 				setInserting(insert)
 			}}
 		>
-			<FaPlus />
-			Section
+			<TbPlus size={30} />
 		</AddSimpleComponentButton>
 	)
 }
@@ -69,14 +68,13 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 export const AddSimpleComponentButton = styled.button`
 	border: none;
 	background-color: #f43f5e;
-	border-radius: 4px;
+	border-radius: 9999px;
 	color: white;
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 10px;
-	padding-right: 12px;
-	font-weight: 600;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
 	cursor: pointer;
 	:active {
 		background-color: #d41b43;

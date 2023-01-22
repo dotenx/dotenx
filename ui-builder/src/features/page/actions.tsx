@@ -626,6 +626,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 						setOpen(!open)
 					}}
 					disabled={isLoading}
+					className="!rounded-r"
 					size="xs"
 				>
 					<TbWorldUpload className="w-5 h-5 " />

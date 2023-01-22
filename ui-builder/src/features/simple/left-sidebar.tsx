@@ -2,7 +2,7 @@ import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
-import { FaPlus } from 'react-icons/fa'
+import { TbPlus } from 'react-icons/tb'
 import { controllers, ControllerSection } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
 import { Element } from '../elements/element'
@@ -25,11 +25,10 @@ export function SimpleLeftSidebar() {
 
 function NotSelectedMessage() {
 	return (
-		<div className="flex flex-col items-center gap-2 text-xs">
+		<div className="flex justify-center items-center gap-2 text-xs">
 			Click on
-			<AddSimpleComponentButton className="!px-1.5 !py-1 pointer-events-none">
-				<FaPlus />
-				Section
+			<AddSimpleComponentButton className="!w-6 !h-6 pointer-events-none">
+				<TbPlus />
 			</AddSimpleComponentButton>
 			to see the component list
 		</div>
