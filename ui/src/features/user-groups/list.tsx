@@ -89,11 +89,11 @@ function UserGroupItem({
 	const [deleteConfirmationOpened, deleteConfirmationHandlers] = useDisclosure(false)
 
 	return (
-		<div className="px-4 py-3 space-y-2 border rounded-md">
+		<div className="px-4 py-3 space-y-2 border rounded-[10px] bg-white">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<button
-						className="font-medium hover:bg-gray-50"
+						className="font-medium text-xl hover:bg-gray-50"
 						type="button"
 						onClick={() => {
 							onSelect(details.name)
@@ -157,7 +157,7 @@ function UserGroupItem({
 					</div>
 				)}
 			</div>
-			<p className="overflow-hidden text-xs text-slate-500 text-ellipsis">
+			<p className="overflow-hidden text-base text-slate-500 text-ellipsis">
 				{details.description}
 			</p>
 		</div>

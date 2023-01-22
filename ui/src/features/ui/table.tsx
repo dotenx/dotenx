@@ -71,47 +71,47 @@ export function Table<D extends object = Record<string, string>>({
 
 						{helpDetails && <HelpPopover helpDetails={helpDetails} />}
 					</div>
-
-					{data.length !== 0 && <span>{actionBar}</span>}
 				</div>
 			)}
 			<div className="flex justify-start bg-red-200">
-				<div className="text-sm -mt-8 font-medium">{subtitle}</div>
+				<div className="-mt-8 text-sm font-medium">{subtitle}</div>
 			</div>
 			{data.length === 0 && (
 				<div className="flex flex-col items-center gap-12 mt-16 font-medium text-slate-500">
-					{actionBar}
 					<span className="text-lg">{emptyText}</span>
-					{/* <EmptySvg className="fixed hidden -right-20 -bottom-80 -z-10 md:block" /> */}
 				</div>
 			)}
 			{(data.length !== 0 || !emptyText) && (
-				<div className="flex flex-col gap-6 grow">
-					{!withoutSearch && (
-						<TextInput
-							icon={<IoSearch className="text-xl" />}
-							value={search}
-							placeholder="Search..."
-							onChange={(e) => setSearch(e.target.value)}
-							className="max-w-xs"
-						/>
-					)}
-					<div className="max-w-full overflow-auto scrollbar-thin scrollbar-track-rounded-sm scrollbar-corner-rounded-sm scrollbar-thumb-rounded-sm scrollbar-thumb-gray-900 scrollbar-track-gray-100 pb-4">
+				<div className="flex flex-col bg-white grow">
+					<div className="p-4 bg-gray-300 flex justify-between">
+						{!withoutSearch && (
+							<TextInput
+								icon={<IoSearch className="text-xl" />}
+								value={search}
+								placeholder="Search..."
+								onChange={(e) => setSearch(e.target.value)}
+								className="w-56"
+								styles={{ input: { border: "none" } }}
+								radius="md"
+								size="xs"
+							/>
+						)}
+						{actionBar}
+					</div>
+					<div className="max-w-full overflow-auto scrollbar-thin scrollbar-track-rounded-sm scrollbar-corner-rounded-sm scrollbar-thumb-rounded-sm scrollbar-thumb-gray-900 scrollbar-track-gray-100">
 						<MantineTable
-							verticalSpacing={1}
-							horizontalSpacing="xs"
+							verticalSpacing="lg"
+							horizontalSpacing="lg"
 							highlightOnHover
-							withBorder
-							withColumnBorders
 							fontSize={13}
 							{...getTableProps()}
 						>
-							<thead className="bg-gray-100">
+							<thead className="bg-gray-300 uppercase">
 								{headerGroups.map((headerGroup) => (
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map((column) => (
 											<th
-												className="!font-medium !text-slate-900 !whitespace-nowrap"
+												className="!font-bold !text-slate-900 !whitespace-nowrap !py-2 !border-gray-500 border-b"
 												{...column.getHeaderProps()}
 											>
 												{column.render("Header")}
@@ -124,11 +124,11 @@ export function Table<D extends object = Record<string, string>>({
 								{rows.map((row) => {
 									prepareRow(row)
 									return (
-										<tr {...row.getRowProps()}>
+										<tr className="group/row" {...row.getRowProps()}>
 											{row.cells.map((cell) => {
 												return (
 													<td
-														className="text-slate-900 text-xs !overflow-hidden !whitespace-nowrap !text-ellipsis max-w-xs"
+														className="text-slate-500 font-medium text-xs !overflow-hidden !whitespace-nowrap !text-ellipsis max-w-xs !border-gray-500 border-b"
 														title={cell.value as string}
 														{...cell.getCellProps()}
 													>
@@ -147,14 +147,16 @@ export function Table<D extends object = Record<string, string>>({
 							</div>
 						)}
 					</div>
+					{withPagination && (nPages || 1) !== 1 && (
+						<div className="py-4 px-6">
+							<Pagination
+								currentPage={currentPage || 1}
+								nPages={nPages || 1}
+								setCurrentPage={setCurrentPage}
+							/>
+						</div>
+					)}
 				</div>
-			)}
-			{withPagination && (
-				<Pagination
-					currentPage={currentPage || 1}
-					nPages={nPages || 1}
-					setCurrentPage={setCurrentPage}
-				/>
 			)}
 		</div>
 	)
@@ -179,7 +181,7 @@ const Pagination = ({
 	}
 	if (nPages === 1) return null
 	return (
-		<div className="w-full  flex justify-end select-none">
+		<div className="flex justify-end w-full select-none">
 			<ul className="flex items-center space-x-2 font-medium">
 				<li
 					onClick={prevPage}

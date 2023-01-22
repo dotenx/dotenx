@@ -125,7 +125,7 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 			</div>
 		)
 	return (
-		<div className="mx-auto bg-rose-100  rounded-md p-5 w-2/3">
+		<div className="mx-auto bg-white rounded-md p-5 w-2/3">
 			<Select
 				radius={"md"}
 				placeholder="Select a git account"

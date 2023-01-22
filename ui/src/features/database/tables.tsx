@@ -1,14 +1,18 @@
 import { Switch } from "@mantine/core"
 import { IoAdd } from "react-icons/io5"
+import clsx from "clsx"
 import { useMutation, useQueryClient } from "react-query"
 import { Link } from "react-router-dom"
 import { QueryKey, setTableAccess } from "../../api"
 import { Modals, useModal } from "../hooks"
 import { PageTitle } from "../ui/page-title"
+import { AddButton } from "../ui"
+import CustomQuery from "./custom-query"
+import ExportDatabase from "./export-database"
 
 export function TableList({ projectName, query }: { projectName: string; query: any }) {
 	const tables = query.data?.data.tables ?? []
-
+	const modal = useModal()
 	const helpDetails = {
 		title: "Use tables to store the data of your application",
 		description:
@@ -19,7 +23,13 @@ export function TableList({ projectName, query }: { projectName: string; query: 
 
 	return (
 		<div>
-			<PageTitle title="Tables" helpDetails={helpDetails} />
+			<div className="w-full flex justify-between">
+				<AddButton text="Add new table" handleClick={() => modal.open(Modals.NewTable)} />
+				<div className="flex gap-x-5">
+					<ExportDatabase projectName={projectName} />
+					<CustomQuery />
+				</div>
+			</div>
 			<List items={tables} projectName={projectName} />
 		</div>
 	)
@@ -33,7 +43,7 @@ function List({
 	projectName: string
 }) {
 	return (
-		<div className="flex flex-wrap gap-8 mt-4">
+		<div className="grid grid-cols-3 gap-y-10 gap-x-16 mt-10">
 			{items
 				.filter((table) => table.name !== "user_info" && table.name !== "user_group")
 				.map((table, index) => (
@@ -44,7 +54,6 @@ function List({
 						name={table.name}
 					/>
 				))}
-			<AddTableButton />
 		</div>
 	)
 }
@@ -62,44 +71,29 @@ function ListItem({
 	const { mutate, isLoading } = useMutation(setTableAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTables),
 	})
+
 	return (
-		<div
-			className={`grid grid-cols-1 py-2  place-items-center w-40 h-32 transition rounded shadow-sm bg-rose-50 shadow-rose-50 text-rose-900 hover:bg-rose-100 hover:shadow hover:shadow-rose-100 outline-rose-400 `}
+		<Link
+			to={name + (isPublic ? "/public" : "/private")}
+			className={clsx(
+				"rounded-md bg-white px-6 py-4 flex justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white transition",
+				isLoading && "blur-[1px] animate-pulse"
+			)}
 		>
-			<Link to={name + (isPublic ? "/public" : "")} className="text-xl font-medium">
-				{name}
-			</Link>
+			<p className="text-2xl font-medium">{name}</p>
 			<div
-				onClick={() =>
-					mutate({
-						name,
-						projectName,
-						isPublic,
-					})
-				}
-				className={`flex mt-3 cursor-pointer mr-2 ${isLoading && "blur-sm animate-pulse "}`}
+				onClick={(event) => {
+					event.stopPropagation()
+					if (!isLoading) mutate({ name, projectName, isPublic })
+				}}
 			>
 				<Switch
 					label={isPublic ? "public" : "private"}
-					className="mr-2"
-					size="md"
-					color={"pink"}
 					checked={isPublic}
-				></Switch>
+					onChange={(event) => event.target.checked}
+					classNames={{ label: "group-hover:text-white transition" }}
+				/>
 			</div>
-		</div>
-	)
-}
-
-function AddTableButton() {
-	const modal = useModal()
-
-	return (
-		<button
-			className="flex items-center justify-center w-40 h-32 text-xl text-center transition-all border-2 border-dashed rounded border-rose-400 text-rose-500 hover:text-2xl hover:text-rose-600 hover:border-x-rose-600 outline-rose-400"
-			onClick={() => modal.open(Modals.NewTable)}
-		>
-			<IoAdd />
-		</button>
+		</Link>
 	)
 }

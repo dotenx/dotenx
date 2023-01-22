@@ -31,8 +31,8 @@ type Page struct {
 }
 
 var pageTemplate = `<!DOCTYPE html>
-<html lang="en">
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>{{.Head.Title}}</title>
 	{{range .Head.Meta}}
 	<meta name="{{.Name}}" content="{{.Content}}">
