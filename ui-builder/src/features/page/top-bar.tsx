@@ -211,19 +211,19 @@ function BackToBackEnd() {
 	const { projectName = '' } = useParams()
 
 	return (
-		<div className="flex items-center justify-center p-1 px-2 text-white transition-all rounded cursor-pointer group bg-rose-600 hover:scale-x-105 ">
-			<IoArrowBack className="w-4 h-4 mr-1" />
+		<Tooltip withArrow label={<Text size="xs">Backend builder</Text>}>
 			<a
-				className="hidden text-sm transition-all group-hover:block "
 				href={`${
 					import.meta.env.VITE_BACKEND_BUILDER_URL
 				}/builder/projects/${projectName}/tables`}
 				rel="noopener noreferrer"
 				target={'_blank'}
 			>
-				Backend builder
+				<ActionIcon color="rose" variant="filled">
+					<IoArrowBack className="w-4 h-4" />
+				</ActionIcon>
 			</a>
-		</div>
+		</Tooltip>
 	)
 }
 function PreviewButton() {
