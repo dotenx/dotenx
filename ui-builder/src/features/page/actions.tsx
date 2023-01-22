@@ -14,9 +14,18 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { FaCheck, FaCopy, FaExternalLinkAlt, FaPlay } from 'react-icons/fa'
-import { IoSaveOutline } from 'react-icons/io5'
-import { TbCode, TbCopy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import {
+	TbCheck,
+	TbCloudUpload,
+	TbCode,
+	TbCopy,
+	TbExternalLink,
+	TbPlayerPlay,
+	TbPlus,
+	TbSettings,
+	TbTrash,
+	TbWorldUpload,
+} from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
@@ -411,7 +420,7 @@ function SaveButton() {
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button onClick={save} loading={savePageMutation.isLoading} size="xs" variant="default">
-				<IoSaveOutline className="w-5 h-5" />
+				<TbCloudUpload className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
@@ -488,7 +497,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 					variant="light"
 					size="xs"
 				>
-					<FaPlay className="w-4 h-4 " />
+					<TbPlayerPlay className="w-4 h-4 " />
 				</Button>
 			</Tooltip>
 			{open && (
@@ -509,9 +518,9 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPreview.copied ? (
-											<FaCheck className="w-5 h-5 mb-1 " />
+											<TbCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className="w-5 h-5 mb-1 " />
+											<TbCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
@@ -520,7 +529,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										rel="noopener noreferrer"
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
+										<TbExternalLink className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>
@@ -650,9 +659,9 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPublish.copied ? (
-											<FaCheck className="w-5 h-5 mb-1 " />
+											<TbCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className="w-5 h-5 mb-1 " />
+											<TbCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
@@ -661,7 +670,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										rel="noopener noreferrer"
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
+										<TbExternalLink className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>
