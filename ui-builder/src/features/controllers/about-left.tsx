@@ -22,11 +22,8 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 export class AboutLeft extends Controller {
 	name = 'About us with details on the left'
 	image = imageUrl
-	defaultData = deserializeElement(defaultData)
-
-	renderOptions() {
-		return <AboutLeftOptions />
-	}
+	defaultData = defaultData
+	renderOptions = AboutLeftOptions
 }
 
 // =============  renderOptions =============
@@ -323,7 +320,7 @@ const cta = produce(new LinkElement(), (draft) => {
 	draft.tagId = tagIds.cta
 }).serialize()
 
-const defaultData = {
+const defaultData = deserializeElement({
 	...component,
 	components: [
 		{
@@ -340,4 +337,4 @@ const defaultData = {
 		},
 		heroImage,
 	],
-}
+})
