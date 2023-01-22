@@ -1,5 +1,4 @@
 import produce from 'immer'
-import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/about-left.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
@@ -15,7 +14,7 @@ import { IconElementInput } from '../ui/icon-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
-import { Controller, ElementOptions } from './controller'
+import { Controller } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -25,7 +24,7 @@ export class AboutLeft extends Controller {
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ElementOptions): ReactNode {
+	renderOptions() {
 		return <AboutLeftOptions />
 	}
 }
