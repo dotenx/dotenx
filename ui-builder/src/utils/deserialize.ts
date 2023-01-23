@@ -5,7 +5,7 @@ import { ACTIONS } from '../features/actions'
 import { Action, AnimationAction } from '../features/actions/action'
 import { Easing } from '../features/animations/options'
 import { Animation } from '../features/animations/schema'
-import { controllers } from '../features/controllers'
+import { CONTROLLERS } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
 import { ELEMENTS } from '../features/elements'
 import { Element } from '../features/elements/element'
@@ -60,9 +60,9 @@ export function deserializeElement(serialized: any): Element {
 }
 
 function deserializeController(data: any): Controller {
-	const Constructor = controllers
-		.flatMap((controller) => controller.items)
-		.find((controller) => new controller().name === data.name)
+	const Constructor = CONTROLLERS.flatMap((controller) => controller.items).find(
+		(controller) => new controller().name === data.name
+	)
 	if (!Constructor) throw new Error(`Controller ${data.name} not found`)
 	const controller = new Constructor()
 	controller.data = data.data

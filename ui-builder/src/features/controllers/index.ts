@@ -43,7 +43,7 @@ import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
 
-export const controllers = [
+export const CONTROLLERS = [
 	{
 		title: 'About',
 		items: [AboutLeft, AboutRight],
@@ -98,6 +98,8 @@ export const controllers = [
 			Details,
 		],
 	},
-] as const
+]
 
-export type ControllerSection = (typeof controllers)[number]
+export type ControllerSection = (typeof CONTROLLERS)[number]
+
+export type Components = ControllerSection[]
