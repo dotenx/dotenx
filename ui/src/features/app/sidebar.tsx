@@ -118,13 +118,13 @@ function BackToProjects({ closed }: { closed: boolean }) {
 	const { projectName = "" } = useParams()
 
 	return (
-		<Link
-			to="/"
+		<a
+			href="https://admin.dotenx.com"
 			className="text-xl bg-white w-full rounded-md flex items-center h-10 font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap"
 		>
 			<BsChevronLeft className="text-xl shrink-0" />
 			<FadeIn visible={!closed}>{projectName}</FadeIn>
-		</Link>
+		</a>
 	)
 }
 
