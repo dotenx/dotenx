@@ -315,6 +315,14 @@ var migrations = []struct {
 		name: "add-last-preview-published-at-field-to-ui-pages-table",
 		stmt: addLastPreviewPublishedAtFieldToUIPagesTable,
 	},
+	{
+		name: "add-type-field-to-projects-table",
+		stmt: addTypeFieldToProjectsTable,
+	},
+	{
+		name: "add-metadata-field-to-projects-table",
+		stmt: addMetadataFieldToProjectsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -889,4 +897,14 @@ ADD COLUMN IF NOT EXISTS last_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:0
 var addLastPreviewPublishedAtFieldToUIPagesTable = `
 ALTER TABLE ui_pages
 ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
+`
+
+var addTypeFieldToProjectsTable = `
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'free';
+`
+
+var addMetadataFieldToProjectsTable = `
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL;
 `
