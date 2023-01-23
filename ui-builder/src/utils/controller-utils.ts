@@ -16,7 +16,7 @@ export function addControllers(elements: Element[]): Element[] {
 				const Controller = CONTROLLERS.flatMap((section) => section.items).find(
 					(c) => c.name === element.controller?.name
 				)
-				if (Controller) element.controller = new Controller()
+				if (Controller) element.controller = new (Controller as any)()
 			}
 		}
 	})

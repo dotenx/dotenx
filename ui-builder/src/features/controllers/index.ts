@@ -12,6 +12,7 @@ import {
 	ChartScatter,
 } from './chart-bar'
 import { ComparisonTableSimple } from './comparison-table-simple'
+import { Controller } from './controller'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { DividerSimpleTitle } from './divider-simple-title'
@@ -43,7 +44,7 @@ import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
 
-export const CONTROLLERS = [
+export const CONTROLLERS: Components = [
 	{
 		title: 'About',
 		items: [AboutLeft, AboutRight],
@@ -102,4 +103,4 @@ export const CONTROLLERS = [
 
 export type ControllerSection = (typeof CONTROLLERS)[number]
 
-export type Components = ControllerSection[]
+export type Components = { title: string; items: (typeof Controller)[] }[]

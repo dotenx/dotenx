@@ -1,6 +1,6 @@
 import { AppShell } from '@mantine/core'
 import { useAtomValue } from 'jotai'
-import { ECOMMERCE_COMPONENTS } from '../features/ecommerce/components'
+import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { PageActions } from '../features/page/actions'
 import { PageSelection } from '../features/page/page-selection'
 import {

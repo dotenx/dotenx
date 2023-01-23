@@ -40,7 +40,7 @@ function SimpleComponentList({ section: { title, items } }: { section: Controlle
 	return (
 		<DividerCollapsible closed title={title}>
 			{items.map((Item) => {
-				const controller = new Item()
+				const controller = new (Item as any)()
 				return (
 					<SimpleComponentItem
 						src={controller.image}
