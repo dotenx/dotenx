@@ -231,7 +231,7 @@ deploy ui: &deploy_ui
     BUCKET: app.dotenx.com
     environment: prod
     DISTRIBUTION_ID: EXE3WNBU24B4E
-    build_dest: build
+    build_dest: dist
   environment:
     name: production-ui
     url: https://app.dotenx.com
