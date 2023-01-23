@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import hash from 'object-hash'
-import { useEffect, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -42,26 +42,43 @@ export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
 	return (
+		<TopBarWrapper
+			left={
+				<>
+					<Logo />
+					<BackToBackEnd />
+					<PageSelection />
+					<ViewportSelection />
+					<FullscreenButton />
+					<AdvancedModeButton />
+					<UnsavedMessage />
+				</>
+			}
+			right={
+				<>
+					<PageScaling />
+					<UndoRedo />
+					<PageActions />
+				</>
+			}
+		/>
+	)
+}
+
+export function TopBarWrapper({ left, right }: { left: ReactNode; right: ReactNode }) {
+	return (
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
 			<Group align="center" spacing="xl">
-				<Logo />
-				<BackToBackEnd />
-				<PageSelection />
-				<ViewportSelection />
-				<PreviewButton />
-				<AdvancedModeButton />
-				<UnsavedMessage />
+				{left}
 			</Group>
 			<Group align="center" spacing="xl">
-				<PageScaling />
-				<UndoRedo />
-				<PageActions />
+				{right}
 			</Group>
 		</Group>
 	)
 }
 
-function UnsavedMessage() {
+export function UnsavedMessage() {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
 
@@ -98,7 +115,7 @@ const safeHash = (object: hash.NotUndefined) => {
 
 export const pageScaleAtom = atom(1)
 
-function PageScaling() {
+export function PageScaling() {
 	const [scale, setScale] = useAtom(pageScaleAtom)
 
 	return (
@@ -207,6 +224,7 @@ export function Logo() {
 		</Tooltip>
 	)
 }
+
 function BackToBackEnd() {
 	const { projectName = '' } = useParams()
 
@@ -226,7 +244,8 @@ function BackToBackEnd() {
 		</Tooltip>
 	)
 }
-function PreviewButton() {
+
+export function FullscreenButton() {
 	const setPreview = useSetAtom(previewAtom)
 	const deselect = useSelectionStore((store) => store.deselect)
 	const handleClick = () => {
@@ -312,7 +331,7 @@ function AdvancedModeButton() {
 	)
 }
 
-function UndoRedo() {
+export function UndoRedo() {
 	const { history, historyIndex, redo, undo } = useElementsStore((store) => ({
 		history: store.history,
 		historyIndex: store.historyIndex,
