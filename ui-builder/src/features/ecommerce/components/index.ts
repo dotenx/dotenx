@@ -1,3 +1,3 @@
-import { Components } from '../controllers'
+import { Components } from '../../controllers'
 
 export const ECOMMERCE_COMPONENTS: Components = []
