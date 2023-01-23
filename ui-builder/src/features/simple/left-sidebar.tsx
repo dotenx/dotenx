@@ -3,20 +3,19 @@ import { useHover } from '@mantine/hooks'
 import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { TbPlus } from 'react-icons/tb'
-import { controllers, ControllerSection } from '../controllers'
+import { Components, ControllerSection } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { AddSimpleComponentButton, insertingAtom } from './simple-canvas'
 
-export function SimpleLeftSidebar() {
+export function SimpleLeftSidebar({ components }: { components: Components }) {
 	const inserting = useAtomValue(insertingAtom)
-
 	if (!inserting) return <NotSelectedMessage />
 
 	return (
 		<div className="flex flex-col ">
-			{controllers.map((section) => (
+			{components.map((section) => (
 				<SimpleComponentList key={section.title} section={section} />
 			))}
 		</div>
@@ -25,7 +24,7 @@ export function SimpleLeftSidebar() {
 
 function NotSelectedMessage() {
 	return (
-		<div className="flex justify-center items-center gap-2 text-xs">
+		<div className="flex justify-center items-center gap-2 text-xs mt-2">
 			Click on
 			<AddSimpleComponentButton className="!w-6 !h-6 pointer-events-none">
 				<TbPlus />
