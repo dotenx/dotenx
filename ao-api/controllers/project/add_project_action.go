@@ -19,10 +19,14 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "name of project should contain just small letters, numbers and underscores",
+				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'free', 'landing_page', 'ecommerce', 'ui_portfolio'",
 			})
 			return
 		}
+		if dto.Type == "" {
+			dto.Type = "free"
+		}
+
 		var err error
 		if dto.ItemId != 0 {
 			err = pc.Service.ImportProject(accountId, dto.Name, dto.Description, dto.ItemId, mService, dbService, cService, uiBuilderService)
@@ -33,6 +37,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 				Description:      dto.Description,
 				AccountId:        accountId,
 				DefaultUserGroup: dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
+				Type:             dto.Type,
 				HasDatabase:      dto.HasDatabase,
 			}, uiBuilderService)
 		}
@@ -61,5 +66,6 @@ type ProjectRequest struct {
 	AccountId        string `db:"account_id" json:"-"`
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
+	Type             string `db:"type" json:"type" binding:"oneof='' 'free' 'landing_page' 'ecommerce' 'ui_portfolio'"`
 	HasDatabase      bool   `json:"hasDatabase"`
 }

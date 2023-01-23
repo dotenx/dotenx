@@ -319,10 +319,6 @@ var migrations = []struct {
 		name: "add-type-field-to-projects-table",
 		stmt: addTypeFieldToProjectsTable,
 	},
-	{
-		name: "add-metadata-field-to-projects-table",
-		stmt: addMetadataFieldToProjectsTable,
-	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -902,9 +898,4 @@ ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01
 var addTypeFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'free';
-`
-
-var addMetadataFieldToProjectsTable = `
-ALTER TABLE projects
-ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL;
 `
