@@ -49,8 +49,8 @@ function SimpleComponentList({ section: { title, items } }: { section: Controlle
 						label={controller.name}
 						onClick={() => {
 							const component = controller.transform()
-							controller.onCreate(component)
 							insertComponent(component)
+							controller.onCreate(component)
 						}}
 					/>
 				)
