@@ -197,6 +197,7 @@ export function TypographyEditor({ simple, element }: { simple?: boolean; elemen
 					className="col-span-9"
 					size="xs"
 					format="hsla"
+					autoComplete="off"
 				/>
 
 				<p className="col-span-3">Align</p>
@@ -230,9 +231,8 @@ export function TypographyEditor({ simple, element }: { simple?: boolean; elemen
 						size="sm"
 						variant="filled"
 						radius="sm"
-						title="Italic"
 					>
-						<TbItalic className="inline" />
+						<TbItalic className="inline" title="Italic" />
 					</Chip>
 				</div>
 			</div>
