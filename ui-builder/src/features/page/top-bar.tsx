@@ -87,6 +87,7 @@ export function UnsavedMessage() {
 	const unsaved = savedHash !== currentHash
 
 	useEffect(() => {
+		if (import.meta.env.MODE === 'development') return
 		const beforeUnloadListener = (event: BeforeUnloadEvent): string => {
 			event.preventDefault()
 			return (event.returnValue = '')
