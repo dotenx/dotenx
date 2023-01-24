@@ -13,7 +13,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageDrop } from '../ui/image-drop'
 import { TextElementInput } from '../ui/text-element-input'
@@ -57,7 +57,7 @@ function GalleryWithTitleOptions() {
 		<div className="space-y-6">
 			<ComponentName name="Gallery with title on images" />
 			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<Button size="xs" fullWidth variant="outline" onClick={addTile} leftIcon={<TbPlus />}>
 				Add feature
 			</Button>

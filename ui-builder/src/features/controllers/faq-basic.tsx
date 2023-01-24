@@ -9,7 +9,7 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -31,8 +31,8 @@ export class FaqBasic extends Controller {
 
 function FaqBasicBasicOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
-	const faqTitle = component.findByTagId<TextElement>(tagIds.faqTitle)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
+	const faqTitle = component.find<TextElement>(tagIds.faqTitle)!
 
 	return (
 		<OptionsWrapper>
@@ -44,7 +44,7 @@ function FaqBasicBasicOptions() {
 				renderItemOptions={(item) => <CellOptions item={item} />}
 				insertElement={() => regenElement(tile)}
 			/>
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 		</OptionsWrapper>
 	)
 }

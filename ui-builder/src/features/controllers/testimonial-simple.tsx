@@ -11,7 +11,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -42,7 +42,7 @@ function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 			<ComponentName name="Simple testimonial" />
 			<TextElementInput label="Title" element={title} />
 			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInput label="Background color" element={containerDiv} />
+			<BoxElementInputSimple label="Background color" element={containerDiv} />
 			<Divider title="Testimonials" />
 			<DndTabs
 				containerElement={gridContainer}

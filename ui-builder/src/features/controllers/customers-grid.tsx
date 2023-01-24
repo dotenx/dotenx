@@ -8,7 +8,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { inteliText } from '../ui/intelinput'
@@ -32,9 +32,9 @@ export class CustomersGrid extends Controller {
 
 function CustomersGridOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const titleText = component.findByTagId<TextElement>(tagIds.titleText)!
-	const subtitleText = component.findByTagId<TextElement>(tagIds.subtitleText)!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
+	const titleText = component.find<TextElement>(tagIds.titleText)!
+	const subtitleText = component.find<TextElement>(tagIds.subtitleText)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	const addGridItem = () =>
 		createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png')
@@ -43,7 +43,7 @@ function CustomersGridOptions() {
 		<OptionsWrapper>
 			<ComponentName name="Customers grid" />
 			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<TextElementInput label="Title" element={titleText} />
 			<TextElementInput label="Subtitle" element={subtitleText} />
 			<DndTabs

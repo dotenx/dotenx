@@ -12,7 +12,7 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -57,7 +57,7 @@ function GalleryBasicRoundedOptions() {
 			<Button size="xs" fullWidth variant="outline" onClick={addImage} leftIcon={<TbPlus />}>
 				Add image
 			</Button>
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<Select
 				label="Tiles"
 				size="xs"

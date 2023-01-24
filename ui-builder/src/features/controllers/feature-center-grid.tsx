@@ -17,7 +17,7 @@ import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -41,9 +41,9 @@ function FeatureCenterGridOptions() {
 	const [selectedTileNumber, setSelectedTileNumber] = useState(0)
 	const set = useSetElement()
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
 	const [searchValue, setSearchValue] = useState('')
 	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
 	const [iconType, setIconType] = useState('far')
@@ -94,7 +94,7 @@ function FeatureCenterGridOptions() {
 			<ColumnsElementInput element={grid} />
 			<TextElementInput label="Title" element={title} />
 			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth

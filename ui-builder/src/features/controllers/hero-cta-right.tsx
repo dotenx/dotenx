@@ -8,7 +8,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageDrop } from '../ui/image-drop'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
@@ -50,7 +50,7 @@ function HeroCtaRightOptions() {
 			/>
 			<TextElementInput label="Title" element={title} />
 			<TextElementInput label="Sub-title" element={subtitle} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
 		</OptionsWrapper>

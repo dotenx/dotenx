@@ -12,7 +12,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
@@ -42,7 +42,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 			<ComponentName name="Team Center Grid" />
 			<TextElementInput label="Title" element={titleText} />
 			<TextElementInput label="Subtitle" element={subtitleText} />
-			<BoxElementInput label="Background color" element={options.element} />
+			<BoxElementInputSimple label="Background color" element={options.element} />
 			<DndTabs
 				containerElement={containerDiv}
 				insertElement={() => regenElement(tile)}

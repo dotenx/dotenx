@@ -10,7 +10,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -32,16 +32,16 @@ export class FeatureGridImages extends Controller {
 
 function FeatureGridImagesOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature Grid with images" />
 			<TextElementInput label="Title" element={title} />
 			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <TileOptions item={item} />}

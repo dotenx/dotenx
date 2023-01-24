@@ -9,7 +9,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { IconElementInput } from '../ui/icon-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
@@ -30,12 +30,12 @@ export class AboutLeft extends Controller {
 
 function AboutLeftOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const heroImage = component.findByTagId<ImageElement>(tagIds.heroImage)!
-	const title = component.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
-	const featureLinesWrapper = component.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = component.findByTagId<LinkElement>(tagIds.cta)!
-	const ctaText = component.findByTagId<TextElement>(tagIds.ctaText)!
+	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
+	const cta = component.find<LinkElement>(tagIds.cta)!
+	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
 		<OptionsWrapper>
@@ -46,8 +46,8 @@ function AboutLeftOptions() {
 			<TextElementInput label="CTA" element={ctaText} />
 			<LinkElementInput label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				<BoxElementInput label="Background color" element={component} />
-				<BoxElementInput label="Button background color" element={cta} />
+				<BoxElementInputSimple label="Background color" element={component} />
+				<BoxElementInputSimple label="Button background color" element={cta} />
 			</DividerCollapsible>
 			<DndTabs
 				containerElement={featureLinesWrapper}

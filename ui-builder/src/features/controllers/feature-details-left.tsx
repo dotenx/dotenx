@@ -8,7 +8,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -30,14 +30,14 @@ export class FeatureDetailsLeft extends Controller {
 
 function FeatureDetailsLeftOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const image = component.findByTagId<ImageElement>(tagIds.image)!
-	const features = component.findByTagId<BoxElement>(tagIds.features)!
+	const image = component.find<ImageElement>(tagIds.image)!
+	const features = component.find<BoxElement>(tagIds.features)!
 
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature with details on the left" />
 			<ImageElementInput element={image} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<Divider title="Rows" />
 			<DndTabs
 				containerElement={features}

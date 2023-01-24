@@ -17,7 +17,7 @@ import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
@@ -208,7 +208,7 @@ function LogoColumn() {
 	return (
 		<div className="flex flex-col space-y-4 justify-stretch">
 			<ImageElementInput element={logo} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<TextElementInput label="Title" element={title} />
 			<LogoColumnLines column={column as BoxElement} />
 			<Button className="mt-2" size="xs" onClick={addLine} leftIcon={<TbPlus />}>

@@ -12,7 +12,7 @@ import { IconElement } from '../elements/extensions/icon'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { LinkElementInput } from '../ui/link-element-input'
 import { TextElementInput } from '../ui/text-element-input'
@@ -72,7 +72,7 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 				<TextElementInput label="Title" element={title} />
 				<TextElementInput label="Yearly price" element={yearlyPrice} />
 				<TextElementInput label="Monthly price" element={monthlyPrice} />
-				<BoxElementInput label="Background color" element={tileDiv} />
+				<BoxElementInputSimple label="Background color" element={tileDiv} />
 			</DividerCollapsible>
 
 			<DividerCollapsible closed title="Features">
@@ -106,7 +106,7 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 			<Divider title="CTA" />
 			<TextElementInput placeholder="CTA" label="Text" element={ctaText} />
 			<LinkElementInput label="Link" element={ctaLink} />
-			<BoxElementInput label="CTA background color" element={ctaLink} />
+			<BoxElementInputSimple label="CTA background color" element={ctaLink} />
 		</div>
 	)
 }

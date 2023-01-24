@@ -7,7 +7,7 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
@@ -32,13 +32,13 @@ const tagIds = {
 
 function GalleryBasicOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const grid = component.findByTagId(tagIds.grid) as ColumnsElement
+	const grid = component.find(tagIds.grid) as ColumnsElement
 
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Basic Gallery" />
 			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}

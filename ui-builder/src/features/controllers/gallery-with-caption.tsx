@@ -13,7 +13,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
+import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageElementInput } from '../ui/image-element-input'
 import { TextElementInput } from '../ui/text-element-input'
@@ -57,7 +57,7 @@ function GalleryWithCaptionsOptions() {
 		<div className="space-y-6">
 			<ComponentName name="Gallery with image captions" />
 			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxElementInputSimple label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth
