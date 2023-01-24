@@ -37,9 +37,7 @@ export function ColumnsElementInput({ element }: { element: ColumnsElement }) {
 	return (
 		<OptionsWrapper>
 			<div>
-				<p className="mb-1 font-medium cursor-default">
-					{_.capitalize(viewport)} mode columns
-				</p>
+				<p className="mb-2 font-medium cursor-default">{_.capitalize(viewport)} columns</p>
 				<SliderNoMemo
 					size="xs"
 					step={1}
@@ -51,10 +49,10 @@ export function ColumnsElementInput({ element }: { element: ColumnsElement }) {
 				/>
 			</div>
 			<div>
-				<p className="mb-1 font-medium cursor-default">Gap</p>
+				<p className="mb-2 font-medium cursor-default">Gap</p>
 				<SliderNoMemo
 					size="xs"
-					label={(val) => val + 'px'}
+					label={(value) => value + 'px'}
 					max={40}
 					step={1}
 					styles={{ markLabel: { display: 'none' } }}
