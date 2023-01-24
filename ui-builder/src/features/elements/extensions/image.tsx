@@ -57,6 +57,11 @@ export class ImageElement extends Element {
 		return <ImageOptions element={this} />
 	}
 
+	src(src: string) {
+		this.data.src = Expression.fromString(src)
+		return this
+	}
+
 	srcState(state: string) {
 		this.data.src = Expression.fromState(state)
 		return this
