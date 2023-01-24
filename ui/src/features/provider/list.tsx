@@ -64,7 +64,7 @@ export function ProviderList() {
 						return (
 							<div
 								key={p.name}
-								className="flex cursor-default group  mt-5 p-3 gap-x-4 items-center bg-white rounded-[10px] shadow-md"
+								className="flex cursor-default group  mt-5 p-3 gap-x-4 items-center bg-white  rounded-sm  shadow-md"
 							>
 								<img src={imageUrl()} className="h-[60px] w-[60px]" />
 								<div className="flex-col  w-full   items-start">
