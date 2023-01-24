@@ -44,7 +44,7 @@ export function AccessToken() {
 	if (!accessToken) {
 		return (
 			<div>
-				<div className="flex items-center mb-6  justify-between ">
+				<div className="flex items-center  justify-between border-b mb-4 py-4">
 					<div>
 						<span className="text-sm">Project tag:</span> <Code>{projectTag}</Code>
 					</div>
@@ -73,65 +73,71 @@ export function AccessToken() {
 					<CopyButton text={projectTag} />
 				</div>
 			</div>
-			<div className="flex items-center  justify-between gap-2 border-b py-4">
-				{accessToken && (
-					<div>
-						<span className="text-xs whitespace-nowrap">Access token: </span>
-						<Code>{accessToken}</Code>
+			<div className="border-b py-4">
+				<div className="flex items-center  justify-between gap-2 ">
+					{accessToken && (
+						<div>
+							<span className="text-xs whitespace-nowrap">Access token: </span>
+							<Code>{accessToken}</Code>
+						</div>
+					)}
+					<div className="flex gap-0.5">
+						<ActionIcon
+							className={`${showConfirmDelete && "!bg-slate-200"}`}
+							type="button"
+							title="Delete existing access token"
+							onClick={() => {
+								setShowConfirmRegenerate(false),
+									setShowConfirmDelete(!showConfirmDelete)
+							}}
+							loading={deleteMutation.isLoading}
+						>
+							<IoTrash />
+						</ActionIcon>
+						<ActionIcon
+							type="button"
+							className={`${showConfirmRegenerate && "!bg-slate-200"}`}
+							title="Generate a new access token"
+							onClick={() => {
+								setShowConfirmDelete(false),
+									setShowConfirmRegenerate(!showConfirmRegenerate)
+							}}
+							loading={regenerateMutation.isLoading}
+						>
+							<IoRepeat />
+						</ActionIcon>
+						<CopyButton text={accessToken} />
+					</div>
+				</div>
+				{showConfirmDelete && (
+					<div className="flex flex-col  space-y-2 mt-2 border p-2 ">
+						<p>Are you sure you want to delete existing access token?</p>
+						<div className="flex justify-end w-full">
+							<Button
+								size="xs"
+								loading={deleteMutation.isLoading}
+								onClick={() => deleteMutation.mutate()}
+							>
+								Delete
+							</Button>
+						</div>
 					</div>
 				)}
-				<div className="flex gap-0.5">
-					<ActionIcon
-						className={`${showConfirmDelete && "!bg-slate-200"}`}
-						type="button"
-						title="Delete existing access token"
-						onClick={() => {
-							setShowConfirmRegenerate(false),
-								setShowConfirmDelete(!showConfirmDelete)
-						}}
-						loading={deleteMutation.isLoading}
-					>
-						<IoTrash />
-					</ActionIcon>
-					<ActionIcon
-						type="button"
-						className={`${showConfirmRegenerate && "!bg-slate-200"}`}
-						title="Generate a new access token"
-						onClick={() => {
-							setShowConfirmDelete(false),
-								setShowConfirmRegenerate(!showConfirmRegenerate)
-						}}
-						loading={regenerateMutation.isLoading}
-					>
-						<IoRepeat />
-					</ActionIcon>
-					<CopyButton text={accessToken} />
-				</div>
+				{showConfirmRegenerate && (
+					<div className="flex flex-col  space-y-2 mt-2 border p-2 ">
+						<p>Are you sure you want to generate a new access token?</p>
+						<div className="flex justify-end w-full">
+							<Button
+								size="xs"
+								loading={regenerateMutation.isLoading}
+								onClick={() => regenerateMutation.mutate()}
+							>
+								Generate
+							</Button>
+						</div>
+					</div>
+				)}
 			</div>
-			{showConfirmDelete && (
-				<div className="flex flex-col items-end space-y-2 mt-2 border p-2 mb-4">
-					<p>Are you sure you want to delete existing access token?</p>
-					<Button
-						className="!w-fit "
-						loading={deleteMutation.isLoading}
-						onClick={() => deleteMutation.mutate()}
-					>
-						Delete
-					</Button>
-				</div>
-			)}
-			{showConfirmRegenerate && (
-				<div className="flex flex-col items-end space-y-2 mt-2 border p-2 mb-4">
-					<p>Are you sure you want to generate a new access token?</p>
-					<Button
-						className="!w-fit"
-						loading={regenerateMutation.isLoading}
-						onClick={() => regenerateMutation.mutate()}
-					>
-						Generate
-					</Button>
-				</div>
-			)}
 			<p className="mt-4">Set this header in requests</p>
 			<Code>DTX-auth: {accessToken}</Code>
 		</div>
