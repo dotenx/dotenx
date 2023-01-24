@@ -20,7 +20,6 @@ export class ColumnsElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				minHeight: '150px',
 				display: 'grid',
 				gridTemplateColumns: '1fr 1fr',
 				gap: '10px',

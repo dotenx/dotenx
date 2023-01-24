@@ -16,7 +16,6 @@ export class LinkElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				minHeight: '100px',
 				textDecoration: 'none',
 				color: '#000000',
 			},

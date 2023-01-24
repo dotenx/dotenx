@@ -104,17 +104,20 @@ export abstract class Element {
 	}
 
 	css(css: CSSProperties) {
-		_.set(this.style, 'desktop.default', css)
+		const merged = _.assign({}, this.style.desktop?.default, css)
+		_.set(this.style, 'desktop.default', merged)
 		return this
 	}
 
 	cssTablet(css: CSSProperties) {
-		_.set(this.style, 'tablet.default', css)
+		const merged = _.assign({}, this.style.tablet?.default, css)
+		_.set(this.style, 'tablet.default', merged)
 		return this
 	}
 
 	cssMobile(css: CSSProperties) {
-		_.set(this.style, 'mobile.default', css)
+		const merged = _.assign({}, this.style.mobile?.default, css)
+		_.set(this.style, 'mobile.default', merged)
 		return this
 	}
 
