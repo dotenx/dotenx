@@ -1,4 +1,5 @@
 import { immerable } from 'immer'
+import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
@@ -72,7 +73,7 @@ export abstract class Element {
 		// noop
 	}
 
-	findByTagId<T extends Element = Element>(tagId: string): T | undefined {
+	find<T extends Element = Element>(tagId: string): T | undefined {
 		if (this.children) {
 			for (const child of this.children) {
 				const found = child._findByTagIdRecursive(tagId)
@@ -90,6 +91,41 @@ export abstract class Element {
 				if (found) return found
 			}
 		}
+	}
+
+	findAll<T extends Element = Element>(tagId: string): T[] {
+		const all: T[] = []
+		if (this.tagId === tagId) all.push(this as Element as T)
+		for (const child of this.children ?? []) {
+			const founds = child.findAll(tagId) as T[]
+			all.push(...founds)
+		}
+		return all
+	}
+
+	css(css: CSSProperties) {
+		_.set(this.style, 'desktop.default', css)
+		return this
+	}
+
+	cssTablet(css: CSSProperties) {
+		_.set(this.style, 'tablet.default', css)
+		return this
+	}
+
+	cssMobile(css: CSSProperties) {
+		_.set(this.style, 'mobile.default', css)
+		return this
+	}
+
+	tag(tagId: string) {
+		this.tagId = tagId
+		return this
+	}
+
+	populate(children: Element[]) {
+		this.children = children
+		return this
 	}
 }
 
