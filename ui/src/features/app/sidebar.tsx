@@ -12,9 +12,10 @@ import {
 	BsPeopleFill,
 	BsTable,
 } from "react-icons/bs"
-import { Link, NavLink as RouterNavLink, useParams } from "react-router-dom"
+import { NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
-
+import { BiKey } from "react-icons/bi"
+import { Modals, useModal } from "../hooks"
 const ANIMATION_DURATION = 0.15
 
 type SidebarData = {
@@ -30,7 +31,8 @@ type NavLinkData = {
 
 type SubLinkData = {
 	icon: ReactNode
-	to: string
+	to?: string
+	drawer?: string
 }
 
 export function Sidebar({ closable }: { closable: boolean }) {
@@ -134,8 +136,12 @@ const useSidebar = () => {
 		],
 		subLinks: [
 			{
-				icon: <BsFillDiagram2Fill />,
+				icon: <BsFillDiagram2Fill className="h-6 w-6" />,
 				to: `/builder/projects/${projectName}/git`,
+			},
+			{
+				icon: <BiKey className="h-7 w-7" />,
+				drawer: Modals.AccessToken,
 			},
 		],
 	}
@@ -146,10 +152,9 @@ const useSidebar = () => {
 function BackToProjects({ closed }: { closed: boolean }) {
 	const { projectName = "" } = useParams()
 	const smallScreen = window.innerHeight < 750
-
 	return (
-		<Link
-			to="/"
+		<a
+			href="https://admin.dotenx.com/projects"
 			className={`${
 				smallScreen ? "h-8 " : "h-10 "
 			} text-xl bg-white w-full rounded-md flex items-center font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap`}
@@ -160,7 +165,7 @@ function BackToProjects({ closed }: { closed: boolean }) {
 					{projectName}
 				</span>
 			</FadeIn>
-		</Link>
+		</a>
 	)
 }
 
@@ -210,9 +215,23 @@ function SubLinks({ links }: { links: SubLinkData[] }) {
 }
 
 function SubLink({ link }: { link: SubLinkData }) {
+	const modal = useModal()
+
+	if (link.drawer)
+		return (
+			<div
+				onClick={() => modal.open(link.drawer as Modals)}
+				className={clsx(
+					"text-lg cursor-pointer text-white transition p-1 rounded-md hover:text-rose-100",
+					modal.kind === link.drawer ? "bg-rose-700" : "hover:bg-rose-500"
+				)}
+			>
+				{link.icon}
+			</div>
+		)
 	return (
 		<RouterNavLink
-			to={link.to}
+			to={link.to || ""}
 			className={({ isActive }) =>
 				clsx(
 					"text-lg  text-white transition p-1 rounded-md hover:text-rose-100",
