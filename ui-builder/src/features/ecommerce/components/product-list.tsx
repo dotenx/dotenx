@@ -2,7 +2,6 @@ import _ from 'lodash'
 import { API_URL } from '../../../api'
 import imageUrl from '../../../assets/components/about-left.png'
 import { uuid } from '../../../utils'
-import { gridCols } from '../../../utils/style-utils'
 import { Controller } from '../../controllers/controller'
 import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
 import { HttpMethod, useDataSourceStore } from '../../data-source/data-source-store'
@@ -19,6 +18,7 @@ import { BoxStyler } from '../../simple/stylers/box-styler'
 import { ColumnsStyler } from '../../simple/stylers/columns-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { Expression } from '../../states/expression'
+import { shared } from '../shared'
 
 export class ProductList extends Controller {
 	name = 'Product list'
@@ -56,18 +56,18 @@ export class ProductList extends Controller {
 }
 
 function ProductListOptions() {
-	const component = useSelectedElement<BoxElement>()!
-	const title = component.find<TextElement>(tagIds.title)!
-	const grid = component.find<ColumnsElement>(tagIds.grid)!
-	const columns = component.findAll<BoxElement>(tagIds.column)!
-	const names = component.findAll<TextElement>(tagIds.name)!
-	const prices = component.findAll<TextElement>(tagIds.price)!
+	const root = useSelectedElement<BoxElement>()!
+	const title = root.find<TextElement>(tagIds.title)!
+	const grid = root.find<ColumnsElement>(tagIds.grid)!
+	const columns = root.findAll<BoxElement>(tagIds.column)!
+	const names = root.findAll<TextElement>(tagIds.name)!
+	const prices = root.findAll<TextElement>(tagIds.price)!
 
 	return (
 		<OptionsWrapper>
 			<TextStyler label="Title" element={title} />
 			<ColumnsStyler element={grid} />
-			<BoxStyler label="Wrapper" element={component} />
+			<BoxStyler label="Wrapper" element={root} />
 			<BoxStyler label="Columns" element={columns} />
 			<TextStyler label="Names" element={names} noText />
 			<TextStyler label="Prices" element={prices} noText />
@@ -85,47 +85,18 @@ const tagIds = {
 }
 
 function component() {
-	const title = new TextElement().tag(tagIds.title).text('Products').as('h2').css({
-		marginBottom: '30px',
-		fontSize: '2.5rem',
-	})
-
-	const grid = new ColumnsElement()
-		.tag(tagIds.grid)
-		.populate(_.range(3).map(column))
-		.css({
-			display: 'grid',
-			gridTemplateColumns: gridCols(3),
-			gap: '8px',
-		})
-		.cssTablet({
-			gridTemplateColumns: gridCols(2),
-			gap: '8px',
-		})
-		.cssMobile({
-			gridTemplateColumns: gridCols(1),
-			gap: '8px',
-		})
-
-	const container = new BoxElement().populate([title, grid]).css({
-		maxWidth: '1200px',
-		margin: '0 auto',
-	})
-
-	const component = new BoxElement().populate([container]).css({
-		paddingTop: '36px',
-		paddingRight: '50px',
-		paddingBottom: '36px',
-		paddingLeft: '50px',
-	})
-
-	return component
+	const title = shared.title().tag(tagIds.title).text('Products')
+	const grid = shared.grid().tag(tagIds.grid).populate(_.range(3).map(column))
+	const container = shared.container().populate([title, grid])
+	const root = shared.paper().populate([container])
+	return root
 }
 
 const column = () => {
 	const image = new ImageElement().tag(tagIds.image).srcState('product.image_url').css({
 		flexGrow: '1',
 		backgroundColor: '#f5f5f5',
+		height: '100%',
 	})
 
 	const name = new TextElement().tag(tagIds.name).textState('product.name').css({
