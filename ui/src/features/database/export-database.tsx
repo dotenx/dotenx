@@ -96,7 +96,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 				</Tooltip>
 			</Button.Group>
 			{openOptions && (
-				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[275px] top-[214px] py-3  rounded-sm  shadow-md">
+				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[275px] top-[185px] py-3  rounded-sm  shadow-md">
 					<div className="mb-2 text-sm px-1">Select file format</div>
 					{["dump", "csv"].map((o, index) => (
 						<div
