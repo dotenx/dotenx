@@ -1,6 +1,9 @@
 import { AppShell, Navbar } from "@mantine/core"
 import { ReactNode } from "react"
+import { AccessToken } from "../../internal/access-token"
 import { Sidebar } from "../app/sidebar"
+import { Modals } from "../hooks"
+import { Drawer } from "./drawer"
 
 interface LayoutProps {
 	children: ReactNode
@@ -35,6 +38,9 @@ export function Layout({ children, compactSidebar = false, withoutSidebar }: Lay
 				className="bg-gray-100"
 			>
 				{children}
+				<Drawer kind={Modals.AccessToken} title="Project settings">
+					<AccessToken />
+				</Drawer>
 			</AppShell>
 		</div>
 	)

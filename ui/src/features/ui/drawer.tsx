@@ -10,7 +10,7 @@ export function Drawer({ kind, children, ...rest }: DrawerProps) {
 
 	return (
 		<RawDrawer
-			size="1000px"
+			size={`${modal.kind === "access-token" ? "500px" : "1000px"}`}
 			position="right"
 			classNames={{
 				header: "px-6 pt-6",
