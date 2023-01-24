@@ -30,7 +30,7 @@ export class ProductList extends Controller {
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
-		const dataSourceName = `product_list_${id}`
+		const dataSourceName = `$product_list_${id}`
 		addDataSource({
 			id,
 			stateName: dataSourceName,

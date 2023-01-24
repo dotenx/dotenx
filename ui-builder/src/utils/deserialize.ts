@@ -7,6 +7,7 @@ import { Easing } from '../features/animations/options'
 import { Animation } from '../features/animations/schema'
 import { CONTROLLERS } from '../features/controllers'
 import { Controller } from '../features/controllers/controller'
+import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { ELEMENTS } from '../features/elements'
 import { Element } from '../features/elements/element'
 import { ImageElement } from '../features/elements/extensions/image'
@@ -60,9 +61,9 @@ export function deserializeElement(serialized: any): Element {
 }
 
 function deserializeController(data: any): Controller {
-	const Constructor = CONTROLLERS.flatMap((controller) => controller.items).find(
-		(controller) => new (controller as any)().name === data.name
-	)
+	const Constructor = [...CONTROLLERS, ...ECOMMERCE_COMPONENTS]
+		.flatMap((controller) => controller.items)
+		.find((controller) => new (controller as any)().name === data.name)
 	if (!Constructor) throw new Error(`Controller ${data.name} not found`)
 	const controller = new (Constructor as any)()
 	controller.data = data.data
