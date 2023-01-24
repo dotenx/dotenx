@@ -19,7 +19,7 @@ export function InputStyler({ children }: { children: ReactNode }) {
 				overlayOpacity={0}
 				size={310}
 			>
-				{children}
+				<div className="space-y-6 text-xs">{children}</div>
 			</Drawer>
 		</>
 	)
