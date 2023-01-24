@@ -32,6 +32,7 @@ export class ImageElement extends Element {
 						alignItems: 'center',
 						color: '#334155',
 						padding: '10px',
+						height: '100%',
 					}}
 				>
 					<TbPhoto size={48} />
