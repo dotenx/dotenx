@@ -134,6 +134,7 @@ const column = () => {
 
 	const link = new LinkElement().populate([name]).css({
 		textDecoration: 'none',
+		color: 'inherit',
 	})
 
 	const price = new TextElement().tag(tagIds.price).textState('product.price').css({
