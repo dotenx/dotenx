@@ -22,11 +22,9 @@ export function ImageElementInput({ element }: { element: ImageElement }) {
 function StyleEditor({ element }: { element: ImageElement }) {
 	return (
 		<InputStyler>
-			<div className="space-y-6 text-xs">
-				<SizeEditor element={element} simple />
-				<BordersEditor element={element} simple />
-				<SpacingEditor element={element} />
-			</div>
+			<SizeEditor element={element} simple />
+			<BordersEditor element={element} simple />
+			<SpacingEditor element={element} />
 		</InputStyler>
 	)
 }

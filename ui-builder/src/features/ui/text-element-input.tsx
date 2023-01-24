@@ -36,10 +36,8 @@ export function TextElementInput({
 function StyleEditor({ element }: { element: TextElement }) {
 	return (
 		<InputStyler>
-			<div className="space-y-6 text-xs">
-				<TypographyEditor element={element} simple />
-				<SpacingEditor element={element} />
-			</div>
+			<TypographyEditor element={element} simple />
+			<SpacingEditor element={element} />
 		</InputStyler>
 	)
 }
