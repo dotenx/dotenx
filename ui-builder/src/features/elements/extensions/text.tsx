@@ -37,6 +37,11 @@ export class TextElement extends Element {
 		return this
 	}
 
+	textState(state: string) {
+		this.data.text = Expression.fromState(state)
+		return this
+	}
+
 	as(as: string) {
 		this.data.as = as
 		return this
