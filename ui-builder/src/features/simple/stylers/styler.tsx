@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { ReactNode } from 'react'
 import { TbDroplet } from 'react-icons/tb'
 
-export function InputStyler({ children }: { children: ReactNode }) {
+export function Styler({ children }: { children: ReactNode }) {
 	const [opened, openedHandlers] = useDisclosure(false)
 
 	return (

@@ -10,10 +10,10 @@ import { NavbarElement } from '../elements/extensions/nav/navbar'
 import { TextElement } from '../elements/extensions/text'
 import { navLink } from '../elements/utils'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { ImageElementInput } from '../ui/image-element-input'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -35,7 +35,7 @@ function NavbarOptions() {
 
 	return (
 		<OptionsWrapper>
-			<ImageElementInput element={logo} />
+			<ImageStyler element={logo} />
 			<DndTabs
 				containerElement={navMenu}
 				insertElement={navLink}
@@ -51,8 +51,8 @@ function ItemOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<LinkElementInput label="Link URL" element={link} />
-			<TextElementInput label="Text" element={text} />
+			<LinkStyler label="Link URL" element={link} />
+			<TextStyler label="Text" element={text} />
 		</OptionsWrapper>
 	)
 }

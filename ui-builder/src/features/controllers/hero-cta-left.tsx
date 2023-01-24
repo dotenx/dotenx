@@ -8,11 +8,11 @@ import { BoxElement } from '../elements/extensions/box'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
 import { ImageDrop } from '../ui/image-drop'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -49,11 +49,11 @@ function HeroCtaLeftOptions() {
 				}
 				src={extractUrl(component.style.desktop!.default!.backgroundImage as string)}
 			/>
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInputSimple label="Background color" element={component} />
-			<TextElementInput label="CTA" element={ctaText} />
-			<LinkElementInput label="CTA Link" element={cta} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<BoxStylerSimple label="Background color" element={component} />
+			<TextStyler label="CTA" element={ctaText} />
+			<LinkStyler label="CTA Link" element={cta} />
 		</OptionsWrapper>
 	)
 }

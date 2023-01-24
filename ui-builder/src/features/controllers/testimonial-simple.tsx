@@ -10,10 +10,10 @@ import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -40,9 +40,9 @@ function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Simple testimonial" />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInputSimple label="Background color" element={containerDiv} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<BoxStylerSimple label="Background color" element={containerDiv} />
 			<Divider title="Testimonials" />
 			<DndTabs
 				containerElement={gridContainer}
@@ -69,10 +69,10 @@ function ItemOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<ImageElementInput element={image} />
-			<TextElementInput label="Name" element={name} />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Description" element={description} />
+			<ImageStyler element={image} />
+			<TextStyler label="Name" element={name} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Description" element={description} />
 		</OptionsWrapper>
 	)
 }

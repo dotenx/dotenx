@@ -7,10 +7,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -36,8 +36,8 @@ function FeatureDetailsLeftOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature with details on the left" />
-			<ImageElementInput element={image} />
-			<BoxElementInputSimple label="Background color" element={component} />
+			<ImageStyler element={image} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<Divider title="Rows" />
 			<DndTabs
 				containerElement={features}
@@ -54,8 +54,8 @@ function FeatureOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Details" element={details} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Details" element={details} />
 		</OptionsWrapper>
 	)
 }

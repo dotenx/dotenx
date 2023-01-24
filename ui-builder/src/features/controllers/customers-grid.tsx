@@ -7,12 +7,12 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
 import { inteliText } from '../ui/intelinput'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -42,13 +42,13 @@ function CustomersGridOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Customers grid" />
-			<ColumnsElementInput element={grid} />
-			<BoxElementInputSimple label="Background color" element={component} />
-			<TextElementInput label="Title" element={titleText} />
-			<TextElementInput label="Subtitle" element={subtitleText} />
+			<ColumnsStyler element={grid} />
+			<BoxStylerSimple label="Background color" element={component} />
+			<TextStyler label="Title" element={titleText} />
+			<TextStyler label="Subtitle" element={subtitleText} />
 			<DndTabs
 				containerElement={grid}
-				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}
+				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={addGridItem}
 			/>
 		</OptionsWrapper>

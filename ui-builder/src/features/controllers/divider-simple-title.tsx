@@ -5,9 +5,9 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxElementInputSimple } from '../ui/box-element-input'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -32,9 +32,9 @@ function DividerSimpleTitleOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Divider simple title" />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInputSimple label="Background color" element={component} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<BoxStylerSimple label="Background color" element={component} />
 		</OptionsWrapper>
 	)
 }

@@ -1,13 +1,13 @@
 import { TextInput } from '@mantine/core'
 import _ from 'lodash'
-import { useSetWithElement } from '../elements/elements-store'
-import { TextElement } from '../elements/extensions/text'
-import { Expression } from '../states/expression'
-import { SpacingEditor } from '../style/spacing-editor'
-import { TypographyEditor } from '../style/typography-editor'
-import { InputStyler } from './input-styler'
+import { useSetWithElement } from '../../elements/elements-store'
+import { TextElement } from '../../elements/extensions/text'
+import { Expression } from '../../states/expression'
+import { SpacingEditor } from '../../style/spacing-editor'
+import { TypographyEditor } from '../../style/typography-editor'
+import { Styler } from './styler'
 
-export function TextElementInput({
+export function TextStyler({
 	label,
 	element,
 	placeholder,
@@ -18,10 +18,10 @@ export function TextElementInput({
 	placeholder?: string
 	noText?: boolean
 }) {
-	if (noText) return <TextElementInputNoText label={label} element={element} />
+	if (noText) return <TextStylerNoText label={label} element={element} />
 
 	return (
-		<TextElementInputWithText
+		<TextStylerWithText
 			label={label}
 			element={_.isArray(element) ? element[0] : element}
 			placeholder={placeholder}
@@ -29,7 +29,7 @@ export function TextElementInput({
 	)
 }
 
-function TextElementInputWithText({
+function TextStylerWithText({
 	label,
 	element,
 	placeholder,
@@ -58,7 +58,7 @@ function TextElementInputWithText({
 	)
 }
 
-function TextElementInputNoText({
+function TextStylerNoText({
 	element,
 	label,
 }: {
@@ -75,9 +75,9 @@ function TextElementInputNoText({
 
 function StyleEditor({ element }: { element: TextElement | TextElement[] }) {
 	return (
-		<InputStyler>
+		<Styler>
 			<TypographyEditor element={element} simple />
 			<SpacingEditor element={element} />
-		</InputStyler>
+		</Styler>
 	)
 }

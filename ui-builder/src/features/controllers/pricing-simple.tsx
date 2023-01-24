@@ -11,11 +11,11 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { IconElement } from '../elements/extensions/icon'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -40,7 +40,7 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Simple pricing" />
-			<ColumnsElementInput element={gridDiv} />
+			<ColumnsStyler element={gridDiv} />
 			<Divider title="Price columns" />
 			<DndTabs
 				containerElement={gridDiv}
@@ -69,10 +69,10 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 	return (
 		<div className="flex flex-col items-stretch gap-y-2">
 			<DividerCollapsible closed title="price">
-				<TextElementInput label="Title" element={title} />
-				<TextElementInput label="Yearly price" element={yearlyPrice} />
-				<TextElementInput label="Monthly price" element={monthlyPrice} />
-				<BoxElementInputSimple label="Background color" element={tileDiv} />
+				<TextStyler label="Title" element={title} />
+				<TextStyler label="Yearly price" element={yearlyPrice} />
+				<TextStyler label="Monthly price" element={monthlyPrice} />
+				<BoxStylerSimple label="Background color" element={tileDiv} />
 			</DividerCollapsible>
 
 			<DividerCollapsible closed title="Features">
@@ -84,7 +84,7 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 						const text = child.children?.[1] as TextElement
 						return {
 							id: child.id,
-							content: <TextElementInput label="Title" element={text} />,
+							content: <TextStyler label="Title" element={text} />,
 						}
 					})}
 				/>
@@ -104,9 +104,9 @@ const TabOptions = ({ tileDiv, set }: TabOptionsProps) => {
 				</Button>
 			</DividerCollapsible>
 			<Divider title="CTA" />
-			<TextElementInput placeholder="CTA" label="Text" element={ctaText} />
-			<LinkElementInput label="Link" element={ctaLink} />
-			<BoxElementInputSimple label="CTA background color" element={ctaLink} />
+			<TextStyler placeholder="CTA" label="Text" element={ctaText} />
+			<LinkStyler label="Link" element={ctaLink} />
+			<BoxStylerSimple label="CTA background color" element={ctaLink} />
 		</div>
 	)
 }

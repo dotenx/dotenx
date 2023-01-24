@@ -11,9 +11,9 @@ import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxElementInputSimple } from '../ui/box-element-input'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
-import { TextElementInput } from '../ui/text-element-input'
 import { viewportAtom } from '../viewport/viewport-store'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, repeatObject } from './helpers'
@@ -169,9 +169,9 @@ function ComparisonTableSimpleOptions() {
 					value={selectedColumn.toString()}
 				/>
 			</div>
-			<TextElementInput label="Cell content" element={cellContent} />
+			<TextStyler label="Cell content" element={cellContent} />
 			<DividerCollapsible closed title="color">
-				<BoxElementInputSimple element={component} label="Background color" />
+				<BoxStylerSimple element={component} label="Background color" />
 				<ColorInput
 					value={component.style.desktop?.default?.borderColor}
 					label="Border color"

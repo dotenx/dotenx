@@ -9,9 +9,9 @@ import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { BoxElementInput } from '../../ui/box-element-input'
-import { ColumnsElementInput } from '../../ui/columns-element-input'
-import { TextElementInput } from '../../ui/text-element-input'
+import { BoxStyler } from '../../simple/stylers/box-styler'
+import { ColumnsStyler } from '../../simple/stylers/columns-styler'
+import { TextStyler } from '../../simple/stylers/text-styler'
 
 export class ProductList extends Controller {
 	name = 'Product list'
@@ -30,12 +30,12 @@ function ProductListOptions() {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={title} />
-			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Wrapper" element={component} />
-			<BoxElementInput label="Columns" element={columns} />
-			<TextElementInput label="Names" element={names} noText />
-			<TextElementInput label="Prices" element={prices} noText />
+			<TextStyler label="Title" element={title} />
+			<ColumnsStyler element={grid} />
+			<BoxStyler label="Wrapper" element={component} />
+			<BoxStyler label="Columns" element={columns} />
+			<TextStyler label="Names" element={names} noText />
+			<TextStyler label="Prices" element={prices} noText />
 		</OptionsWrapper>
 	)
 }

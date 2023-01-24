@@ -9,10 +9,10 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -39,9 +39,9 @@ function FeatureGridImagesOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature Grid with images" />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInputSimple label="Background color" element={component} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <TileOptions item={item} />}
@@ -58,9 +58,9 @@ function TileOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Details" element={details} />
-			<ImageElementInput element={image} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Details" element={details} />
+			<ImageStyler element={image} />
 		</OptionsWrapper>
 	)
 }

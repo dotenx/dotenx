@@ -3,12 +3,12 @@ import { useDidUpdate } from '@mantine/hooks'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useState } from 'react'
-import { OptionsWrapper } from '../controllers/helpers/options-wrapper'
-import { useSetWithElement } from '../elements/elements-store'
-import { ColumnsElement } from '../elements/extensions/columns'
-import { viewportAtom } from '../viewport/viewport-store'
+import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
+import { useSetWithElement } from '../../elements/elements-store'
+import { ColumnsElement } from '../../elements/extensions/columns'
+import { viewportAtom } from '../../viewport/viewport-store'
 
-export function ColumnsElementInput({ element }: { element: ColumnsElement }) {
+export function ColumnsStyler({ element }: { element: ColumnsElement }) {
 	const set = useSetWithElement(element)
 	const viewport = useAtomValue(viewportAtom)
 	const columns =

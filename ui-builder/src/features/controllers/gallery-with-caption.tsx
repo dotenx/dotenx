@@ -12,11 +12,11 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 
@@ -56,8 +56,8 @@ function GalleryWithCaptionsOptions() {
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Gallery with image captions" />
-			<ColumnsElementInput element={grid} />
-			<BoxElementInputSimple label="Background color" element={component} />
+			<ColumnsStyler element={grid} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth
@@ -75,11 +75,8 @@ function GalleryWithCaptionsOptions() {
 				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
 				value={selectedTile.toString()}
 			/>
-			<TextElementInput
-				label="Image caption"
-				element={selectedItem.children?.[1] as TextElement}
-			/>
-			<ImageElementInput element={selectedTileImage} />
+			<TextStyler label="Image caption" element={selectedItem.children?.[1] as TextElement} />
+			<ImageStyler element={selectedTileImage} />
 			<Button
 				disabled={grid.children?.length === 1}
 				size="xs"

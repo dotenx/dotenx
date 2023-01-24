@@ -6,9 +6,9 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -35,10 +35,10 @@ function CustomersLogoGridOptions() {
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Customers logo grid" />
-			<BoxElementInputSimple label="Background color" element={component} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
-				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}
+				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={addGridItem}
 			/>
 		</div>

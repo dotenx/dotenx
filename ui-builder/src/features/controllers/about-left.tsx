@@ -8,12 +8,12 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { IconStyler } from '../simple/stylers/icon-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInputSimple } from '../ui/box-element-input'
-import { IconElementInput } from '../ui/icon-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -40,14 +40,14 @@ function AboutLeftOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="About us with details on the left" />
-			<ImageElementInput element={heroImage} />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<TextElementInput label="CTA" element={ctaText} />
-			<LinkElementInput label="CTA Link" element={cta} />
+			<ImageStyler element={heroImage} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<TextStyler label="CTA" element={ctaText} />
+			<LinkStyler label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				<BoxElementInputSimple label="Background color" element={component} />
-				<BoxElementInputSimple label="Button background color" element={cta} />
+				<BoxStylerSimple label="Background color" element={component} />
+				<BoxStylerSimple label="Button background color" element={cta} />
 			</DividerCollapsible>
 			<DndTabs
 				containerElement={featureLinesWrapper}
@@ -64,8 +64,8 @@ function ItemOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={text} />
-			<IconElementInput label="Icon color" element={icon} />
+			<TextStyler label="Title" element={text} />
+			<IconStyler label="Icon color" element={icon} />
 		</OptionsWrapper>
 	)
 }
