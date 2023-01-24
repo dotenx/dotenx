@@ -56,6 +56,11 @@ export class ImageElement extends Element {
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return <ImageOptions element={this} />
 	}
+
+	srcState(state: string) {
+		this.data.src = Expression.fromState(state)
+		return this
+	}
 }
 
 function ImageOptions({ element }: { element: ImageElement }) {
