@@ -42,7 +42,7 @@ export function ColumnsStyler({ element }: { element: ColumnsElement }) {
 					size="xs"
 					step={1}
 					min={1}
-					max={10}
+					max={5}
 					styles={{ markLabel: { display: 'none' } }}
 					value={columns}
 					onChange={setColumns}
