@@ -5,6 +5,8 @@ import { Controller } from '../../controllers/controller'
 import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
 import { BoxElement } from '../../elements/extensions/box'
 import { ColumnsElement } from '../../elements/extensions/columns'
+import { ImageElement } from '../../elements/extensions/image'
+import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BoxElementInput } from '../../ui/box-element-input'
@@ -14,7 +16,7 @@ import { TextElementInput } from '../../ui/text-element-input'
 export class ProductList extends Controller {
 	name = 'Product list'
 	image = imageUrl
-	defaultData = defaultData()
+	defaultData = component()
 	renderOptions = () => <ProductListOptions />
 }
 
@@ -23,6 +25,8 @@ function ProductListOptions() {
 	const title = component.find<TextElement>(tagIds.title)!
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 	const columns = component.findAll<ColumnsElement>(tagIds.column)!
+	const names = component.findAll<TextElement>(tagIds.name)!
+	const prices = component.findAll<TextElement>(tagIds.price)!
 
 	return (
 		<OptionsWrapper>
@@ -30,6 +34,8 @@ function ProductListOptions() {
 			<ColumnsElementInput element={grid} />
 			<BoxElementInput label="Wrapper" element={component} />
 			<BoxElementInput label="Columns" element={columns} />
+			<TextElementInput label="Names" element={names} noText />
+			<TextElementInput label="Prices" element={prices} noText />
 		</OptionsWrapper>
 	)
 }
@@ -38,9 +44,11 @@ const tagIds = {
 	title: 'title',
 	grid: 'grid',
 	column: 'column',
+	name: 'name',
+	price: 'price',
 }
 
-function defaultData() {
+function component() {
 	const title = new TextElement().tag(tagIds.title).text('Products').as('h2').css({
 		marginBottom: '30px',
 		fontSize: '2.5rem',
@@ -78,12 +86,41 @@ function defaultData() {
 	return component
 }
 
-const column = () =>
-	new BoxElement().tag(tagIds.column).css({
+const column = () => {
+	const image = new ImageElement().css({
+		flexGrow: '1',
+		backgroundColor: '#f5f5f5',
+	})
+
+	const name = new TextElement().tag(tagIds.name).text('Name').css({
+		fontWeight: '500',
+	})
+
+	const link = new LinkElement().populate([name]).css({
+		textDecoration: 'none',
+	})
+
+	const price = new TextElement().tag(tagIds.price).text('$0.0').css({
+		fontWeight: '500',
+	})
+
+	const namePriceWrapper = new BoxElement().populate([link, price]).css({
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	})
+
+	const column = new BoxElement().tag(tagIds.column).populate([image, namePriceWrapper]).css({
 		paddingTop: '10px',
 		paddingRight: '10px',
 		paddingBottom: '10px',
 		paddingLeft: '10px',
-		backgroundColor: '#f5f5f5',
 		aspectRatio: '1 / 1',
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'space-between',
+		gap: '10px',
 	})
+
+	return column
+}
