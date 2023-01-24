@@ -12,7 +12,10 @@ export function ColumnsElementInput({ element }: { element: ColumnsElement }) {
 	const set = useSetWithElement(element)
 	const viewport = useAtomValue(viewportAtom)
 	const columns =
-		element.style[viewport]?.default?.gridTemplateColumns?.toString().split(' ').length ?? 0
+		element.style[viewport]?.default?.gridTemplateColumns?.toString().split(' ').length ??
+		element.style.tablet?.default?.gridTemplateColumns?.toString().split(' ').length ??
+		element.style.desktop?.default?.gridTemplateColumns?.toString().split(' ').length ??
+		0
 	const gap = _.parseInt(element.style[viewport]?.default?.gap?.toString() ?? '0')
 
 	const setColumns = (value: number) => {
@@ -67,7 +70,7 @@ function SliderNoMemo(props: SliderProps) {
 	const [value, setValue] = useState(props.value)
 
 	useDidUpdate(() => {
-		if (value) props.onChange?.(value)
+		if (value !== undefined) props.onChange?.(value)
 	}, [value])
 
 	useDidUpdate(() => {
