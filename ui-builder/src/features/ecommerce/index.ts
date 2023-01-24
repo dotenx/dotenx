@@ -1,9 +1,9 @@
 import { Components } from '../controllers'
-import { CollectionList } from './components/collection-list'
+import { ProductList } from './components/product-list'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
 		title: 'Collections',
-		items: [CollectionList],
+		items: [ProductList],
 	},
 ]

@@ -11,14 +11,14 @@ import { BoxElementInput } from '../../ui/box-element-input'
 import { ColumnsElementInput } from '../../ui/columns-element-input'
 import { TextElementInput } from '../../ui/text-element-input'
 
-export class CollectionList extends Controller {
-	name = 'Collection list'
+export class ProductList extends Controller {
+	name = 'Product list'
 	image = imageUrl
 	defaultData = defaultData()
-	renderOptions = () => <CollectionListOptions />
+	renderOptions = () => <ProductListOptions />
 }
 
-function CollectionListOptions() {
+function ProductListOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const title = component.find<TextElement>(tagIds.title)!
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
@@ -41,7 +41,7 @@ const tagIds = {
 }
 
 function defaultData() {
-	const title = new TextElement().tag(tagIds.title).text('Collections').as('h2').css({
+	const title = new TextElement().tag(tagIds.title).text('Products').as('h2').css({
 		marginBottom: '30px',
 		fontSize: '2.5rem',
 	})
