@@ -1,9 +1,9 @@
-import { Button } from '@mantine/core'
-import { useAtom } from 'jotai'
-import _ from 'lodash'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { Button } from "@mantine/core"
+import { useAtom } from "jotai"
+import _ from "lodash"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
 import {
 	AutomationKind,
 	deleteAutomation,
@@ -77,7 +77,7 @@ export function useActionBar(kind: AutomationKind) {
 									{ closeButton: true, autoClose: false }
 								)
 							} else {
-								toast(e.response.data.message, { type: 'error', autoClose: 2000 })
+								toast(e.response.data.message, { type: "error", autoClose: 2000 })
 							}
 						},
 					}
@@ -112,7 +112,7 @@ export function useActionBar(kind: AutomationKind) {
 									)
 								} else {
 									toast(e.response.data.message, {
-										type: 'error',
+										type: "error",
 										autoClose: 2000,
 									})
 								}

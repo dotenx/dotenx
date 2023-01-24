@@ -1,7 +1,7 @@
-import { Button } from '@mantine/core'
-import { useMutation, useQueryClient } from 'react-query'
-import { toast } from 'react-toastify'
-import { activateAutomation, deactivateAutomation, QueryKey } from '../../api'
+import { Button } from "@mantine/core"
+import { useMutation, useQueryClient } from "react-query"
+import { toast } from "react-toastify"
+import { activateAutomation, deactivateAutomation, QueryKey } from "../../api"
 
 export function useActivateAutomation(
 	isActive: boolean,
@@ -30,7 +30,7 @@ export function useActivateAutomation(
 					{ closeButton: true, autoClose: false }
 				)
 			} else {
-				toast(e.response.data.message, { type: 'error', autoClose: 2000 })
+				toast(e.response.data.message, { type: "error", autoClose: 2000 })
 			}
 		},
 	})
