@@ -105,10 +105,79 @@ const routes: Routes = [
 	{
 		path: "/builder/projects/:projectName/interactions/:name/executions/:id",
 		element: <ExecutionPage kind="interaction" />,
+		compactSidebar: true,
 	},
 	{
 		path: "/builder/projects/:projectName/interactions/:name/executions",
 		element: <HistoryPage kind="interaction" />,
+		compactSidebar: true,
+	},
+	{
+		path: "/builder/projects/:projectName/workflows/interaction",
+		element: <InteractionPage />,
+		compactSidebar: true,
+	},
+	{
+		path: "/builder/projects/:projectName/workflows/:name",
+		element: <InteractionPage />,
+		compactSidebar: true,
+	},
+	{
+		path: "/builder/projects/:projectName/workflows",
+		element: <WorkflowsPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/templates/template",
+		element: <TemplatePage />,
+	},
+	{
+		path: "/builder/projects/:projectName/templates/:name",
+		element: <TemplatePage />,
+	},
+	{
+		path: "/builder/projects/:projectName/tables/:tableName/:isPublic",
+		element: <TablePage />,
+		compactSidebar: true,
+	},
+	{
+		path: "/builder/projects/:projectName/tables",
+		element: <TablesPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/git",
+		element: <GitIntegrationPage />,
+	},
+	{
+		path: "/builder/git/integration/callback",
+		element: <GitRedirectPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/interactions/:name/executions/:id",
+		element: <ExecutionPage kind="interaction" />,
+	},
+	{
+		path: "/builder/projects/:projectName/interactions/:name/executions",
+		element: <HistoryPage kind="interaction" />,
+	},
+	{
+		path: "/builder/projects/:projectName/interactions/new",
+		element: <InteractionPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/interactions/:name",
+		element: <InteractionPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/interactions",
+		element: <InteractionsPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/templates/new",
+		element: <TemplatePage />,
+	},
+	{
+		path: "/builder/projects/:projectName/templates/:name",
+		element: <TemplatePage />,
 	},
 	{
 		path: "/builder/projects/:projectName/interactions/new",
@@ -215,7 +284,7 @@ export function Routes() {
 	const { width } = useViewportSize()
 	useEffect(() => {
 		if (!IS_LOCAL) {
-			const token = Cookies.get('dotenx')
+			const token = Cookies.get("dotenx")
 			if (!token) window.location.replace(ADMIN_URL)
 		}
 	}, [location])

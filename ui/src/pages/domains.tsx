@@ -137,7 +137,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		},
 	})
 	return (
-		<div className="font-medium border-2 rounded-[10px] p-3 bg-white">
+		<div className="font-medium border-2  rounded-[10px]  p-3 bg-white">
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>
