@@ -116,14 +116,13 @@ function TableContent({ projectName, tableName }: { projectName: string; tableNa
 		<div>
 			<Header
 				headerLink={`/builder/projects/${projectName}/tables`}
-				expand
 				title={"Tables"}
 				activeTab={tableName}
 				tabs={[tableName]}
 			>
 				<ActionBar />
 			</Header>
-			<Content_Wrapper expand>
+			<Content_Wrapper>
 				<Table
 					withPagination
 					currentPage={currentPage}
