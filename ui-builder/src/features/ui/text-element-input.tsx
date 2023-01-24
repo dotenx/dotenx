@@ -1,4 +1,5 @@
 import { TextInput } from '@mantine/core'
+import _ from 'lodash'
 import { useSetWithElement } from '../elements/elements-store'
 import { TextElement } from '../elements/extensions/text'
 import { Expression } from '../states/expression'
@@ -10,10 +11,34 @@ export function TextElementInput({
 	label,
 	element,
 	placeholder,
+	noText,
+}: {
+	label: string
+	element: TextElement | TextElement[]
+	placeholder?: string
+	noText?: boolean
+}) {
+	if (noText) return <TextElementInputNoText label={label} element={element} />
+
+	return (
+		<TextElementInputWithText
+			label={label}
+			element={_.isArray(element) ? element[0] : element}
+			placeholder={placeholder}
+		/>
+	)
+}
+
+function TextElementInputWithText({
+	label,
+	element,
+	placeholder,
+	noText,
 }: {
 	label: string
 	element: TextElement
 	placeholder?: string
+	noText?: boolean
 }) {
 	const set = useSetWithElement(element)
 	const setText = (text: string) => {
@@ -33,7 +58,22 @@ export function TextElementInput({
 	)
 }
 
-function StyleEditor({ element }: { element: TextElement }) {
+function TextElementInputNoText({
+	element,
+	label,
+}: {
+	element: TextElement | TextElement[]
+	label: string
+}) {
+	return (
+		<div className="flex justify-between items-center">
+			<p className="font-medium">{label}</p>
+			<StyleEditor element={element} />
+		</div>
+	)
+}
+
+function StyleEditor({ element }: { element: TextElement | TextElement[] }) {
 	return (
 		<InputStyler>
 			<TypographyEditor element={element} simple />
