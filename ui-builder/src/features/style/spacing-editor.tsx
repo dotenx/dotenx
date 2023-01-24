@@ -4,7 +4,7 @@ import { CollapseLine } from '../ui/collapse-line'
 import { MarginPaddingInput } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'
 
-export function SpacingEditor({ element }: { element?: Element }) {
+export function SpacingEditor({ element }: { element?: Element | Element[] }) {
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (
