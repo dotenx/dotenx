@@ -118,7 +118,13 @@ const fontSizes = [
 	{ label: '9xl', value: '8rem' },
 ]
 
-export function TypographyEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+export function TypographyEditor({
+	simple,
+	element,
+}: {
+	simple?: boolean
+	element?: Element | Element[]
+}) {
 	const { pageName = '' } = useParams()
 	const fonts = useAtomValue(fontsAtom)
 	const { style, editStyle } = useEditStyle(element)
