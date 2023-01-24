@@ -3,7 +3,7 @@ import { ProductList } from './components/product-list'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
-		title: 'Collections',
+		title: 'E-commerce',
 		items: [ProductList],
 	},
 ]
