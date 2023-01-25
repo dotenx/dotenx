@@ -135,16 +135,18 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 		return
 	}
 
-	projects, err := c.Service.ListDBProjects(dto.AccountId)
-	if err != nil {
-		logrus.Error(err.Error())
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
+	// projects, err := c.Service.ListDBProjects(dto.AccountId)
+	// if err != nil {
+	// 	logrus.Error(err.Error())
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"message": err.Error(),
+	// 	})
+	// 	return
+	// }
 
-	tpUsers, err := c.Service.ListTpUsers(projects, dto.AccountId)
+	// tpUsers, err := c.Service.ListTpUsers(projects, dto.AccountId)
+	tpUsers := make([]string, 0)
+	var err error
 	if err != nil {
 		logrus.Error(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{
