@@ -4,6 +4,7 @@ import { useSetWithElement } from '../../elements/elements-store'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { BordersEditor } from '../../style/border-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
+import { TypographyEditor } from '../../style/typography-editor'
 import { Styler } from './styler'
 
 export function BoxStyler({ element, label }: { element: Element | Element[]; label: string }) {
@@ -21,6 +22,7 @@ function StyleEditor({ element }: { element: Element | Element[] }) {
 			<BackgroundsEditor simple element={element} />
 			<BordersEditor simple element={element} />
 			<SpacingEditor element={element} />
+			<TypographyEditor simple element={element} />
 		</Styler>
 	)
 }
