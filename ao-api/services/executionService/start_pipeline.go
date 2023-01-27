@@ -94,17 +94,4 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 			}
 		}
 	}
-
-	// err = manager.QueueService.AddUser(accountId)
-	// if err != nil {
-	// 	return -1, err
-	// }
-	// err = manager.GetNextTask(-1, executionId, "", accountId)
-	// if err != nil {
-	// 	return -1, err
-	// }
-	// if !pipeline.IsInteraction {
-	// 	return gin.H{"id": executionId}, err
-	// }
-	// return manager.getResponse(executionId)
 }

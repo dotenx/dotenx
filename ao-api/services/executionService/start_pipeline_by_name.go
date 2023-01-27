@@ -118,39 +118,6 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 			}
 		}
 	}
-
-	// err = manager.redisQueue.StoreExecution(msg, accountId)
-	/*
-		if err != nil {
-			manager.DeleteExecution(executionId)
-			return -1, err
-		}
-		err = manager.QueueService.AddUser(accountId)
-		if err != nil {
-			manager.DeleteExecution(executionId)
-			return -1, err
-		}
-		err = manager.GetNextTask(-1, executionId, "", accountId)
-		if err != nil {
-			//manager.DeleteExecution(executionId)
-			return -1, err
-		}
-	*/
-	// ch, err := manager.QueueService.NewChannel()
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	return -1, http.StatusInternalServerError
-	// }
-
-	// err = manager.QueueService.SendMessage(ch, msg, config.Configs.Queue.Exchange, config.Configs.Queue.Key)
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	return -1, http.StatusInternalServerError
-	// }
-	// if !pipeline.IsInteraction {
-	// 	return gin.H{"id": executionId}, err
-	// }
-	// return manager.getResponse(executionId)
 }
 
 // transferInitialDataToWrightFormat transforms the initial data from the format that the user provides to the format that the wright service expects

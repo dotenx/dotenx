@@ -1,6 +1,7 @@
 package executionService
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -15,9 +17,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
+// ExecuteTasks gets an initial task and run it then call itself (recursively) for all next tasks (based of results of initial task)
 func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, accountId string, resultsChan chan models.TaskResultDto, errChan chan error) {
 	// tpAccountId will be used to get user integration for each task (if needed)
 	tpAccountId, err := manager.Store.GetThirdPartyAccountId(noContext, executionId)
@@ -136,6 +140,7 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 	resultsChan <- result
 }
 
+// Execute invokes aws lambda function and return results
 func (manager *executionManager) Execute(job models.Job) (result models.TaskResultDto, err error) {
 	result.Status = models.Failed.String()
 	if job.Image == "" {
@@ -218,4 +223,60 @@ func (manager *executionManager) Execute(job models.Job) (result models.TaskResu
 	result.Status = models.Completed.String()
 	result.ReturnValue = resp.ReturnValue
 	return
+}
+
+// check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
+func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) (map[string]interface{}, error) {
+	finalTaskBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, map[string]returnValues{})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	// finalTaskBody = append(finalTaskBody, currentTaskBody)
+	// }
+	logrus.Info("finalTaskBody:", finalTaskBody)
+	return finalTaskBody, nil
+}
+
+// updateExecutionTasksUsage sends a request to dotenx-admin and add number of tasks to account's plan usage
+func (manager *executionManager) updateExecutionTasksUsage(accountId string, tasks int) error {
+	dt := executionTaskDto{
+		AccountId: accountId,
+		Tasks:     tasks,
+	}
+	jsonData, err := json.Marshal(dt)
+	if err != nil {
+		return errors.New("bad input body")
+	}
+	requestBody := bytes.NewBuffer(jsonData)
+	token, err := utils.GeneratToken()
+	if err != nil {
+		return err
+	}
+	Requestheaders := []utils.Header{
+		{
+			Key:   "Authorization",
+			Value: token,
+		},
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+	}
+	url := config.Configs.Endpoints.Admin + "/internal/execution/task"
+	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+	_, err, status, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, Requestheaders, time.Minute, true)
+	if err != nil {
+		return err
+	}
+	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println("status code:", status)
+		return errors.New("not ok with status: " + strconv.Itoa(status))
+	}
+	return nil
+}
+
+type executionTaskDto struct {
+	AccountId string `json:"account_id" binding:"required"`
+	Tasks     int    `json:"tasks" binding:"required"`
 }

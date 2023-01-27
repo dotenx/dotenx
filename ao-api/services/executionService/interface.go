@@ -27,7 +27,6 @@ type ExecutionService interface {
 	GetTaskId(executionId int, taskName string) (int, error)
 	SetTaskStatusToTimedout(executionId, taskId int) error
 	GetNumberOfTasksByExecution(executionId int) (int, error)
-	GetNextTask(taskId, executionId int, status, accountId string) error
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
 	SetExecutionTime(executionId int, seconds int) error
