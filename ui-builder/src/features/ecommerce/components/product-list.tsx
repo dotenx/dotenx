@@ -9,6 +9,7 @@ import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
 import { ColumnsElement } from '../../elements/extensions/columns'
+import { IconElement } from '../../elements/extensions/icon'
 import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
@@ -27,6 +28,8 @@ export class ProductList extends Controller {
 	renderOptions = () => <ProductListOptions />
 
 	onCreate(root: Element) {
+		const column = root.find<BoxElement>(tagIds.column)!
+
 		const projectTag = useProjectStore.getState().tag
 		const addDataSource = useDataSourceStore.getState().add
 		const id = uuid()
@@ -47,7 +50,6 @@ export class ProductList extends Controller {
 			properties: [],
 			onSuccess: [],
 		})
-		const column = root.find<BoxElement>(tagIds.column)!
 		setElement(
 			column,
 			(draft) => (draft.repeatFrom = { name: dataSourceName, iterator: 'product' })
@@ -82,14 +84,46 @@ const tagIds = {
 	image: 'image',
 	name: 'name',
 	price: 'price',
+	prev: 'prev',
+	next: 'next',
 }
 
 function component() {
+	const pagination = createPagination()
 	const title = shared.title().tag(tagIds.title).text('Products')
 	const grid = shared.grid().tag(tagIds.grid).populate(_.range(3).map(column))
-	const container = shared.container().populate([title, grid])
+	const container = shared.container().populate([title, grid, pagination])
 	const root = shared.paper().populate([container])
 	return root
+}
+
+const createPagination = () => {
+	const prevIcon = chevron().setName('chevron-left')
+	const nextIcon = chevron().setName('chevron-right')
+
+	const pagination = new BoxElement().populate([prevIcon, nextIcon]).css({
+		display: 'flex',
+		gap: '10px',
+		justifyContent: 'center',
+		marginTop: '20px',
+	})
+	return pagination
+}
+
+const chevron = () => {
+	const icon = new IconElement().type('fas').size('24px').tag(tagIds.prev).css({
+		opacity: '0.8',
+		padding: '6px',
+		borderRadius: '50%',
+		cursor: 'pointer',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flexShrink: '1',
+	})
+	_.set(icon.style, 'desktop.hover.opacity', '1')
+	_.set(icon.style, 'desktop.hover.backgroundColor', '#f5f5f5')
+	return icon
 }
 
 const column = () => {
