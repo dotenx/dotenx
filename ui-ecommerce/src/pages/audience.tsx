@@ -34,12 +34,8 @@ function ActionBar() {
 	const modal = useModal()
 
 	return (
-		<Button
-			leftIcon={<IoMail />}
-			// todo: make the button black
-			onClick={() => modal.open(Modals.UserManagementEndpoint)}
-		>
-			Send New Email
+		<Button leftIcon={<IoMail />} onClick={() => modal.open(Modals.UserManagementEndpoint)}>
+			Send Email
 		</Button>
 	)
 }
@@ -152,7 +148,6 @@ function SentEmailsTab() {
 
 function DraftsTab() {
 	const drafts = [
-		//give all the data here
 		{
 			subject: "Subject",
 			last_edited: "Last Edited",

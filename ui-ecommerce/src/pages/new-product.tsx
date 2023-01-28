@@ -24,14 +24,25 @@ function DetailsTab() {
 	return (
 		<div className="grid grid-cols-3">
 			<form className="flex flex-col w-full gap-8 col-span-2">
-				<TextInput label="Product Name" placeholder="Name" />
+				<TextInput label="Product name" placeholder="Name" name="product name" />
 				<Select
-					data={["Subscription", "one-time"]}
-					label="Product Type"
+					data={["one-time", "membership"]}
+					label="Product type"
 					placeholder="Type"
+					name="product type"
 				/>
-				<Textarea label="Long Description" placeholder="Description" minRows={10} />
-				<Textarea label="Short Description" placeholder="Description" minRows={3} />
+				<Textarea
+					label="Long description"
+					placeholder="Description"
+					minRows={10}
+					name="long description"
+				/>
+				<Textarea
+					label="Short description"
+					placeholder="Description"
+					minRows={3}
+					name="short description"
+				/>
 				{/* Todo: Add file upload for cover image */}
 				{/* Todo: Add file upload for thumbnails */}
 			</form>

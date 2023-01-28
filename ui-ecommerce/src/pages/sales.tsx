@@ -6,7 +6,7 @@ import {
 	Legend,
 	LinearScale,
 	Title,
-	Tooltip,
+	Tooltip
 } from "chart.js"
 import { getDaysInMonth } from "date-fns"
 import _ from "lodash"
@@ -31,12 +31,16 @@ export function SalesPage() {
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 			/>
-			<ContentWrapper>{activeTab === "all" && <AllTabs />}</ContentWrapper>
+			<ContentWrapper>
+				{activeTab === "all" && <AllTab />}
+				{activeTab === "products" && <ProductsTab />}
+				{activeTab === "memberships" && <MembershipsTab />}
+			</ContentWrapper>
 		</div>
 	)
 }
 
-function AllTabs() {
+function AllTab() {
 	const queryClient = useQueryClient()
 	const [currentPage, setCurrentPage] = useState(1)
 	const projectQuery = useGetProjectTag()
@@ -47,7 +51,7 @@ function AllTabs() {
 		{ enabled: !!projectTag }
 	)
 	const sales = salesQuery.data?.data?.rows ?? []
-	const nPages = Math.ceil((salesQuery.data?.data?.totalRows as number) / 10)
+	const nPages = Math.ceil((salesQuery.data?.data?.totalRows ?? 0) / 10)
 	const refetchSales = () => queryClient.invalidateQueries(QueryKey.GetLastDaySales)
 
 	return (
@@ -133,4 +137,11 @@ function CurrentMonthSalesChart() {
 export const monthDays = () => {
 	// days of the current month from 1 to the last day of the month. The last day of the month depends on the current month.
 	return _.range(1, getDaysInMonth(new Date()) + 1)
+}
+
+function ProductsTab() {
+	return <div></div>
+}
+function MembershipsTab() {
+	return <div></div>
 }

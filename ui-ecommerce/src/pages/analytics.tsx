@@ -49,14 +49,10 @@ export function AnalyticsPage() {
 
 function SalesTab() {
 	return (
-		<div>
-			<div className="my-10">
-				<SalesStats />
-			</div>
+		<div className="gap-10 flex flex-col">
+			<SalesStats />
 			<SalesChart mode="daily" />
-			<div className="my-10">
-				<BestStats />
-			</div>
+			<BestStats />
 		</div>
 	)
 }
@@ -185,14 +181,10 @@ function BestStat({
 
 function AudienceTab() {
 	return (
-		<div className="flex flex-col">
-			<div className="my-10">
-				<AudienceStats />
-			</div>
+		<div className="gap-10 flex flex-col">
+			<AudienceStats />
 			<AudienceChart mode="daily" />
-			<div className="my-10">
-				<ReferrerChart mode="daily" />
-			</div>
+			<ReferrerChart mode="daily" />
 		</div>
 	)
 }
