@@ -26,6 +26,9 @@ import {
 	GetIntegrationKindsResponse,
 	GetIntegrationsByKindsResponse,
 	GetIntegrationsResponse,
+	GetLast24HoursSalesResponse,
+	GetMembersSummaryResponse,
+	GetProductsSummaryResponse,
 	GetProfileResponse,
 	GetProjectResponse,
 	GetProjectsResponse,
@@ -437,6 +440,44 @@ export function getUserManagementData(projectTag: string, page: number) {
 		}
 	)
 }
+
+export function getProductsSummary(projectTag: string, page: number) {
+	return api.post<GetProductsSummaryResponse | null>(
+		`/database/query/select/project/${projectTag}/table/products`, //TODO: Use a view
+		{ columns: ["imageUrl", "name", "sales", "revenue", "price", "status"] },
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
+	)
+}
+export function getLast24HoursSales(projectTag: string, page: number) {
+	return api.post<GetLast24HoursSalesResponse | null>(
+		`/database/query/select/project/${projectTag}/table/sales`, //TODO: Use a view
+		{ columns: ["time", "email", "total"] },
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
+	)
+}
+export function getMembersSummary(projectTag: string, page: number) {
+	return api.post<GetMembersSummaryResponse | null>(
+		`/database/query/select/project/${projectTag}/table/members`, //TODO: Use a view
+		{ columns: ["email", "name", "total_orders", "monthly_revenue"] },
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
+	)
+}
+
 export function getFiles(projectTag: string) {
 	return api.get<GetFilesDataResponse | null>(`/objectstore/project/${projectTag}`)
 }

@@ -1,6 +1,9 @@
 import { QueryBuilderValues } from "../features/database"
 
 export enum QueryKey {
+	GetProductsSummary = "get-products-summary",
+	GetLast24HoursSales = "get-last-24-hours-sales",
+	GetMembersSummary = "get-members-summary",
 	GetUserManagementData = "get-user-management-data",
 	GetGitAccounts = "get-git-accounts",
 	GetBranchList = "get-branch-list",
@@ -347,6 +350,35 @@ export type GetUserManagementDataResponse = {
 		email: string
 		fullname: string
 		user_group: string
+	}[]
+}
+
+export type GetProductsSummaryResponse = {
+	totalRows: number
+	rows: {
+		imageUrl: string
+		name: string
+		sales: string
+		revenue: string
+		price: string
+		status: string
+	}[]
+}
+export type GetLast24HoursSalesResponse = {
+	totalRows: number
+	rows: {
+		time: string
+		email: string
+		total: string
+	}[]
+}
+export type GetMembersSummaryResponse = {
+	totalRows: number
+	rows: {
+		email: string
+		name: string
+		total_orders: string
+		monthly_revenue: string
 	}[]
 }
 
