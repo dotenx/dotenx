@@ -1,12 +1,17 @@
 import { useViewportSize } from "@mantine/hooks"
 import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
+import AnalyticsPage from "../../pages/analytics"
+import AudiencePage from "../../pages/audience"
 import DomainsPage from "../../pages/domains"
 import Files from "../../pages/files"
 import GitIntegrationPage from "../../pages/git/git"
 import GitRedirectPage from "../../pages/git/git-redirect"
 import { HomePage } from "../../pages/home"
+import NewProductsPage from "../../pages/new-product"
 import NotFoundPage from "../../pages/not-found"
+import ProductsPage from "../../pages/products"
+import SalesPage from "../../pages/sales"
 import TablePage from "../../pages/table"
 import TablesPage from "../../pages/tables"
 import UserGroupsPage from "../../pages/user-groups"
@@ -23,40 +28,31 @@ type Routes = {
 
 const routes: Routes = [
 	{
-		path: "/builder/projects/:projectName/views/:viewName",
-		element: <ViewPage />,
+		path: "/projects/:projectName/products/New",
+		element: <NewProductsPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/tables/:tableName/:isPublic",
-		element: <TablePage />,
-		compactSidebar: true,
+		path: "/projects/:projectName/products",
+		element: <ProductsPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/tables",
-		element: <TablesPage />,
+		path: "/projects/:projectName/sales",
+		element: <SalesPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/git",
-		element: <GitIntegrationPage />,
+		path: "/projects/:projectName/analytics",
+		element: <AnalyticsPage />,
 	},
 	{
-		path: "/builder/git/integration/callback",
-		element: <GitRedirectPage />,
+		path: "/projects/:projectName/audience",
+		element: <AudiencePage />,
 	},
 	{
-		path: "/builder/projects/:projectName/user-management/user-groups",
-		element: <UserGroupsPage />,
-	},
-	{
-		path: "/builder/projects/:projectName/user-management",
-		element: <UserManagementPage />,
-	},
-	{
-		path: "/builder/projects/:projectName/files",
+		path: "/projects/:projectName/files",
 		element: <Files />,
 	},
 	{
-		path: "/builder/projects/:projectName/domains",
+		path: "/projects/:projectName/domains",
 		element: <DomainsPage />,
 	},
 	{

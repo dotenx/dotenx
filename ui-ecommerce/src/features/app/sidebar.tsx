@@ -2,6 +2,7 @@ import { useHover } from "@mantine/hooks"
 import clsx from "clsx"
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
+import { BiDollarCircle } from "react-icons/bi"
 import {
 	BsChevronLeft,
 	BsFiles,
@@ -12,6 +13,7 @@ import {
 	BsPeopleFill,
 	BsTable,
 } from "react-icons/bs"
+import { FaBoxOpen, FaChartLine } from "react-icons/fa"
 import { Link, NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 
@@ -73,31 +75,41 @@ const useSidebar = () => {
 	const sidebar: SidebarData = {
 		navLinks: [
 			{
-				label: "Tables",
-				icon: <BsTable />,
-				to: `/builder/projects/${projectName}/tables`,
+				label: "Products",
+				icon: <FaBoxOpen />,
+				to: `/projects/${projectName}/products`,
 			},
 			{
-				label: "User management",
+				label: "Sales",
+				icon: <BiDollarCircle />,
+				to: `/projects/${projectName}/sales`,
+			},
+			{
+				label: "Analytics",
+				icon: <FaChartLine />,
+				to: `/projects/${projectName}/analytics`,
+			},
+			{
+				label: "Audience",
 				icon: <BsPeopleFill />,
-				to: `/builder/projects/${projectName}/user-management`,
+				to: `/projects/${projectName}/audience`,
 			},
 			{
 				label: "Files",
 				icon: <BsFiles />,
-				to: `/builder/projects/${projectName}/files`,
+				to: `/projects/${projectName}/files`,
 			},
 			{
 				label: "Domains",
 				icon: <BsGlobe />,
-				to: `/builder/projects/${projectName}/domains`,
+				to: `/projects/${projectName}/domains`,
 			},
 		],
 		subLinks: [
-			{
-				icon: <BsFillDiagram2Fill />,
-				to: `/builder/projects/${projectName}/git`,
-			},
+			// {
+			// 	icon: <BsFillDiagram2Fill />,
+			// 	to: `/projects/${projectName}/git`,
+			// },
 		],
 	}
 
