@@ -1,29 +1,13 @@
 import { Button } from "@mantine/core"
 import { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
-import { IoReload } from "react-icons/io5"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery } from "react-query"
 import { Link, useParams } from "react-router-dom"
 import { getProductsSummary, getProject, QueryKey } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 
 export function ProductsPage() {
-	const { projectName = "" } = useParams()
-	const [currentPage, setCurrentPage] = useState(1)
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
-	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
-		QueryKey.GetProject,
-		() => getProject(projectName)
-	)
-	const projectTag = projectDetails?.data.tag ?? ""
-	const { data: usersData, isLoading: usersDataLoading } = useQuery(
-		[QueryKey.GetProductsSummary, projectTag, currentPage],
-		() => getProductsSummary(projectTag, currentPage),
-		{ enabled: !!projectTag }
-	)
-	const tableData = usersData?.data?.rows ?? []
-	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
-	const queryClient = useQueryClient()
 
 	return (
 		<div>
@@ -35,55 +19,62 @@ export function ProductsPage() {
 			>
 				<ActionBar />
 			</Header>
-			<ContentWrapper>
-				{activeTab === "all" && (
-					<div className="flex flex-col">
-						<Stats />
-						<Table
-							withPagination
-							currentPage={currentPage}
-							nPages={nPages}
-							setCurrentPage={setCurrentPage}
-							loading={projectDetailsLoading || usersDataLoading}
-							emptyText="No products added yet"
-							actionBar={
-								<Button
-									leftIcon={<IoReload />}
-									type="button"
-									onClick={() =>
-										queryClient.invalidateQueries(QueryKey.GetProductsSummary)
-									}
-								>
-									Refresh
-								</Button>
-							}
-							columns={[
-								{
-									Header: "",
-									accessor: "imageUrl",
-								},
-								{
-									Header: "Name",
-									accessor: "name",
-								},
-								{
-									Header: "Sales",
-									accessor: "sales",
-								},
-								{
-									Header: "Revenue",
-									accessor: "revenue",
-								},
-								{
-									Header: "Status",
-									accessor: "status",
-								},
-							]}
-							data={tableData}
-						/>
-					</div>
-				)}
-			</ContentWrapper>
+			<ContentWrapper>{activeTab === "all" && <AllTabs />}</ContentWrapper>
+		</div>
+	)
+}
+
+function AllTabs() {
+	const { projectName = "" } = useParams()
+	const [currentPage, setCurrentPage] = useState(1)
+	const projectQuery = useQuery(
+		[QueryKey.GetProject, projectName],
+		() => getProject(projectName),
+		{ enabled: !!projectName }
+	)
+	const projectTag = projectQuery.data?.data.tag ?? ""
+	const productsSummaryQuery = useQuery(
+		[QueryKey.GetProductsSummary, projectTag, currentPage],
+		() => getProductsSummary(projectTag, currentPage),
+		{ enabled: !!projectTag }
+	)
+	const products = productsSummaryQuery.data?.data?.rows ?? []
+	const nPages = Math.ceil((productsSummaryQuery?.data?.data?.totalRows as number) / 10)
+
+	return (
+		<div>
+			<Stats />
+			<Table
+				withPagination
+				currentPage={currentPage}
+				nPages={nPages}
+				setCurrentPage={setCurrentPage}
+				loading={projectQuery.isLoading || productsSummaryQuery.isLoading}
+				emptyText="No products added yet"
+				columns={[
+					{
+						Header: "",
+						accessor: "imageUrl",
+					},
+					{
+						Header: "Name",
+						accessor: "name",
+					},
+					{
+						Header: "Sales",
+						accessor: "sales",
+					},
+					{
+						Header: "Revenue",
+						accessor: "revenue",
+					},
+					{
+						Header: "Status",
+						accessor: "status",
+					},
+				]}
+				data={products}
+			/>
 		</div>
 	)
 }
