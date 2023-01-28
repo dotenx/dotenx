@@ -5,63 +5,35 @@ import { useEffect, useState } from "react"
 import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { Navigate, useParams } from "react-router-dom"
-import {
-	getFiles,
-	getProject,
-	getUserGroups,
-	QueryKey,
-	setFilesAccess,
-	setFileUserGroup,
-} from "../api"
+import { getFiles, getUserGroups, QueryKey, setFilesAccess, setFileUserGroup } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Form, Header, Modal, NewModal, Table } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { UploadFileForm } from "../internal/upload-file-form"
 
-export default function Files() {
-	const { projectName } = useParams()
-	if (!projectName) return <Navigate to="/" replace />
-	return <FilesTableContent projectName={projectName} />
-}
-
-function FilesTableContent({ projectName }: { projectName: string }) {
+export function Files() {
 	const modal = useModal()
-	const [rowData, setRowData] = useState({ isPublic: false, name: "", projectTag: "" })
-
 	const client = useQueryClient()
-	const { mutate, isLoading: changeAccessisLoading } = useMutation(setFilesAccess, {
+	const [rowData, setRowData] = useState({ isPublic: false, name: "", projectTag: "" })
+	const filesAccessMutation = useMutation(setFilesAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
 	})
-
 	const clipboard = useClipboard({ timeout: 3000 })
 	const [clicked, setClicked] = useState("")
-	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
-		QueryKey.GetProject,
-		() => getProject(projectName)
-	)
-
-	const projectTag = projectDetails?.data.tag ?? ""
-
-	const { data: filesData, isLoading: filesDataLoading } = useQuery(
-		QueryKey.GetFiles,
-		() => getFiles(projectTag),
-		{ enabled: !!projectTag }
-	)
-
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const filesQuery = useQuery([QueryKey.GetFiles, projectTag], () => getFiles(projectTag), {
+		enabled: !!projectTag,
+	})
 	const [defaultUserGroups, setDefaultUserGroups] = useState([])
 	const { onSubmit, ...form } = useForm()
 	useEffect(() => {
 		form.setValues({ userGroups: defaultUserGroups })
 	}, [defaultUserGroups])
 	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: "", value: "" }])
-
-	const { mutate: mutateFileUserGroup, isLoading: isUserGroupLoading } = useMutation(
-		setFileUserGroup,
-		{
-			onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
-		}
-	)
-
+	const fileUserGroupMutation = useMutation(setFileUserGroup, {
+		onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
+	})
 	useQuery([QueryKey.GetUserGroups, projectTag], () => getUserGroups(projectTag), {
 		onSuccess: (data) => {
 			const userGroups = Object.values(data.data)
@@ -70,8 +42,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 		},
 		enabled: !!projectTag,
 	})
-
-	const tableData = filesData?.data ?? []
+	const files = filesQuery.data?.data ?? []
 	const helpDetails = {
 		title: "You can upload files to your project or allow your users to upload files",
 		description:
@@ -79,10 +50,10 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
 		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/files",
 	}
-	// refresh => queryClient.invalidateQueries(QueryKey.GetFiles)}
+
 	return (
 		<div>
-			<Header title={"Files"} />
+			<Header title="Files" />
 			<ContentWrapper>
 				<button
 					className="active:translate-y-[2px] flex transition-all px-4 gap-x-2 hover:text-slate-700  hover:bg-slate-50 items-center p-2 rounded-[10px] bg-white  text-slate-900   font-medium"
@@ -94,7 +65,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 
 				<Table
 					helpDetails={helpDetails}
-					loading={projectDetailsLoading || filesDataLoading || changeAccessisLoading}
+					loading={
+						projectQuery.isLoading ||
+						filesQuery.isLoading ||
+						filesAccessMutation.isLoading
+					}
 					emptyText="Your files will be displayed here"
 					columns={[
 						{
@@ -175,7 +150,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 							),
 						},
 					]}
-					data={tableData}
+					data={files}
 				/>
 				<NewModal kind={Modals.ConfirmCheckbox} title="Change file access" size="xl">
 					<h2>
@@ -195,7 +170,8 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						</Button>
 						<Button
 							onClick={() => {
-								mutate({ rowData: rowData }), modal.close()
+								filesAccessMutation.mutate({ rowData: rowData })
+								modal.close()
 							}}
 							size="xs"
 						>
@@ -211,7 +187,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						<Form
 							className="h-full"
 							onSubmit={onSubmit((values) =>
-								mutateFileUserGroup(
+								fileUserGroupMutation.mutate(
 									{
 										name: data.name,
 										payload: values,
@@ -230,7 +206,11 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 									{...form.getInputProps("userGroups")}
 								/>
 							</div>
-							<Button loading={isUserGroupLoading} className="w-full" type="submit">
+							<Button
+								loading={fileUserGroupMutation.isLoading}
+								className="w-full"
+								type="submit"
+							>
 								Save
 							</Button>
 						</Form>
