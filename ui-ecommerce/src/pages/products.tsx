@@ -3,8 +3,9 @@ import { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { useQuery } from "react-query"
 import { Link, useParams } from "react-router-dom"
-import { getProductsSummary, getProject, QueryKey } from "../api"
+import { getProductsSummary, QueryKey } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
@@ -25,14 +26,9 @@ export function ProductsPage() {
 }
 
 function AllTabs() {
-	const { projectName = "" } = useParams()
 	const [currentPage, setCurrentPage] = useState(1)
-	const projectQuery = useQuery(
-		[QueryKey.GetProject, projectName],
-		() => getProject(projectName),
-		{ enabled: !!projectName }
-	)
-	const projectTag = projectQuery.data?.data.tag ?? ""
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
 	const productsSummaryQuery = useQuery(
 		[QueryKey.GetProductsSummary, projectTag, currentPage],
 		() => getProductsSummary(projectTag, currentPage),
