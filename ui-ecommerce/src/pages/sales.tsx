@@ -111,8 +111,7 @@ function CurrentMonthSalesChart() {
 		},
 	}
 
-	// days of the current month from 1 to the last day of the month. The last day of the month depends on the current month.
-	const labels = _.range(1, getDaysInMonth(new Date()) + 1)
+	const labels = monthDays()
 
 	const data = {
 		labels,
@@ -129,4 +128,9 @@ function CurrentMonthSalesChart() {
 	ChartJS.defaults.color = "#2b2d42"
 
 	return <Bar options={options} data={data} className="max-h-80" />
+}
+
+export const monthDays = () => {
+	// days of the current month from 1 to the last day of the month. The last day of the month depends on the current month.
+	return _.range(1, getDaysInMonth(new Date()) + 1)
 }
