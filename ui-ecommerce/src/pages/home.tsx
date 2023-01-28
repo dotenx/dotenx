@@ -55,7 +55,7 @@ function ProjectList() {
 					<div className="flex justify-between">
 						<Anchor
 							component={Link}
-							to={`/builder/projects/${project.name}/tables`}
+							to={`/projects/${project.name}/products`}
 							className="self-start"
 						>
 							{project.name}
