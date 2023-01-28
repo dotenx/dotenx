@@ -59,6 +59,7 @@ export function Header({
 		</div>
 	)
 }
+
 export function ContentWrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
 	return (
 		<div className={`${expand && "pl-[0]"} w-full pb-10`}>

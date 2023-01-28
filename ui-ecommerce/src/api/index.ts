@@ -1,11 +1,9 @@
 import axios from "axios"
 import {
 	GetFilesDataResponse,
-	GetFormatterFunctionsResponse,
 	GetLastDaySalesResponse,
 	GetMembersSummaryResponse,
 	GetProductsSummaryResponse,
-	GetProfileResponse,
 	GetProjectResponse,
 	GetUserGroupsResponse,
 } from "./types"
@@ -17,10 +15,6 @@ export const api = axios.create({
 	baseURL: API_URL,
 	withCredentials: true,
 })
-
-export function getFormatterFunctions() {
-	return api.get<GetFormatterFunctionsResponse>("/funcs")
-}
 
 export function setFileUserGroup({
 	name,
@@ -101,10 +95,6 @@ export function getMembersSummary(projectTag: string, page: number) {
 
 export function getFiles(projectTag: string) {
 	return api.get<GetFilesDataResponse | null>(`/objectstore/project/${projectTag}`)
-}
-
-export function getProfile({ projectTag }: { projectTag: string }) {
-	return api.get<GetProfileResponse>(`/profile/project/${projectTag}`)
 }
 
 export function getUserGroups(projectTag: string) {

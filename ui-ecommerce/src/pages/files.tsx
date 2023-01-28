@@ -7,7 +7,7 @@ import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { getFiles, getUserGroups, QueryKey, setFilesAccess, setFileUserGroup } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, Form, Header, Modal, NewModal, Table } from "../features/ui"
+import { ContentWrapper, Header, Modal, NewModal, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { UploadFileForm } from "../internal/upload-file-form"
 
@@ -184,8 +184,8 @@ export function Files() {
 				{(data: { name: string; userGroup: string[] }) => (
 					<div className="flex flex-col">
 						<p className="my-6">Select which user groups can access this file</p>
-						<Form
-							className="h-full"
+						<form
+							className="h-full flex flex-col gap-10"
 							onSubmit={onSubmit((values) =>
 								fileUserGroupMutation.mutate(
 									{
@@ -213,7 +213,7 @@ export function Files() {
 							>
 								Save
 							</Button>
-						</Form>
+						</form>
 					</div>
 				)}
 			</Modal>

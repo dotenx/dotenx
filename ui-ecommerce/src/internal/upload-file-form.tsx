@@ -7,7 +7,6 @@ import { useMutation, useQueryClient } from "react-query"
 import { z } from "zod"
 import { QueryKey, uploadFile } from "../api"
 import { useModal } from "../features/hooks"
-import { Form } from "../features/ui"
 
 const schema = z.object({
 	file: z.any(),
@@ -18,7 +17,7 @@ type Schema = z.infer<typeof schema>
 
 export function UploadFileForm({ tag }: { tag: string }) {
 	const [file, setFile] = useState<File>()
-	const [isPublic, setisPublic] = useState(false)
+	const [isPublic, setIsPublic] = useState(false)
 
 	const client = useQueryClient()
 	const modal = useModal()
@@ -44,7 +43,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 	const onSubmit = form.handleSubmit(() => mutation.mutate())
 
 	return (
-		<Form className="gap-16" onSubmit={onSubmit}>
+		<form className="flex flex-col gap-16" onSubmit={onSubmit}>
 			<div className="grid grid-cols-1">
 				<div className="flex flex-col gap-1 ">
 					<span className="text-sm font-medium">Choose file: </span>
@@ -85,7 +84,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 						readOnly
 						checked={isPublic}
 						onClick={() => {
-							setisPublic(!isPublic)
+							setIsPublic(!isPublic)
 						}}
 					/>
 				</div>
@@ -93,6 +92,6 @@ export function UploadFileForm({ tag }: { tag: string }) {
 			<Button loading={mutation.isLoading} type="submit">
 				Upload
 			</Button>
-		</Form>
+		</form>
 	)
 }
