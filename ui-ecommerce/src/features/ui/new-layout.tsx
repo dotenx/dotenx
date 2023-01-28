@@ -47,7 +47,7 @@ export function Header({
 							key={tab}
 							className={`transition-all duration-200 uppercase pb-1 text-lg font-medium cursor-pointer  ${
 								active
-									? "text-black border-b-4 border-b-rose-600 "
+									? "text-slate-900 border-b-4 border-b-rose-600 "
 									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"
 							}`}
 						>
