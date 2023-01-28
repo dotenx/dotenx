@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core"
 import {
 	BarElement,
 	CategoryScale,
@@ -12,11 +11,9 @@ import {
 } from "chart.js"
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
-import { useQuery, useQueryClient } from "react-query"
-import { Navigate, useParams } from "react-router-dom"
-import { getLast24HoursSales, getProject, QueryKey } from "../api"
-import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header } from "../features/ui"
+import { SalesStats, Stats } from "./products"
+import { monthDays } from "./sales"
 
 ChartJS.register(
 	CategoryScale,
@@ -29,60 +26,21 @@ ChartJS.register(
 	Legend
 )
 
-export default function AnalyticsPage() {
-	const { projectName } = useParams()
-	if (!projectName) return <Navigate to="/" replace />
-	return <UMTableContent projectName={projectName} />
-}
-
-function UMTableContent({ projectName }: { projectName: string }) {
-	const [currentPage, setCurrentPage] = useState(1)
+export function AnalyticsPage() {
 	const [activeTab, setActiveTab] = useState<"sales" | "audience">("sales")
-
-	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
-		QueryKey.GetProject,
-		() => getProject(projectName)
-	)
-	const projectTag = projectDetails?.data.tag ?? ""
-	const { data: usersData, isLoading: usersDataLoading } = useQuery(
-		[QueryKey.GetLast24HoursSales, projectTag, currentPage],
-		() => getLast24HoursSales(projectTag, currentPage),
-		{ enabled: !!projectTag }
-	)
-	const tableData = usersData?.data?.rows ?? []
-
-	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
-	const queryClient = useQueryClient()
 
 	return (
 		<div>
 			<Header
 				tabs={["sales", "audience"]}
-				headerLink={`/builder/projects/${projectName}/user-management`}
-				title={"Analytics"}
+				title="Analytics"
 				activeTab={activeTab}
-				onTabChange={(v: typeof activeTab) => {
-					setActiveTab(v)
-				}}
-			>
-				<ActionBar />
-			</Header>
+				onTabChange={setActiveTab}
+			/>
 			<ContentWrapper>
 				{activeTab === "sales" && <SalesTab />}
-				{activeTab === "audience" && <AudienceTab projectTag={projectTag} />}
+				{activeTab === "audience" && <AudienceTab />}
 			</ContentWrapper>
-		</div>
-	)
-}
-
-function ActionBar() {
-	const modal = useModal()
-
-	return (
-		<div className="flex flex-wrap gap-2">
-			<Button className="endpoints" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
-				Add New Product
-			</Button>
 		</div>
 	)
 }
@@ -91,45 +49,14 @@ function ActionBar() {
 
 function SalesTab() {
 	return (
-		<div className="flex flex-col">
+		<div>
 			<div className="my-10">
-				<Stats />
+				<SalesStats />
 			</div>
 			<SalesChart mode="daily" />
 			<div className="my-10">
 				<BestStats />
 			</div>
-		</div>
-	)
-}
-
-function Stats() {
-	const totalRevenue = 130
-	const last24 = 10
-	const mrr = 100
-
-	return (
-		<div className="grid lg:grid-cols-3 md-grid-cols-2 gap-x-2 gap-y-2">
-			<StatBlock title="Total Revenue" value={`$${totalRevenue}`} defaultValue="$0" />
-			<StatBlock title="Last 24h" value={`$${last24}`} defaultValue="$0" />
-			<StatBlock title="MRR" value={`$${mrr}`} defaultValue="$0" />
-		</div>
-	)
-}
-
-function StatBlock({
-	title,
-	value,
-	defaultValue,
-}: {
-	title: string
-	value: string
-	defaultValue: string
-}) {
-	return (
-		<div className="bg-white rounded-lg p-4 border-solid border-2 border-gray-600">
-			<p className="text-gray-500 text-sm pb-2">{title}</p>
-			<p className="text-2xl font-bold">{value || defaultValue}</p>
 		</div>
 	)
 }
@@ -162,10 +89,7 @@ function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
 		},
 	}
 
-	const labels = Array.from(
-		{ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() },
-		(_, i) => i + 1
-	)
+	const labels = monthDays()
 
 	const data = {
 		labels,
@@ -173,12 +97,12 @@ function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
 			{
 				label: `${mode === "daily" ? "Daily" : "Monthly"} One-off sales`,
 				data: labels.map(() => Math.floor(Math.random() * 100)),
-				backgroundColor: "#8d99ae",
+				backgroundColor: "#9ca3af",
 			},
 			{
 				label: `${mode === "daily" ? "Daily" : "Monthly"} Membership Sales`,
 				data: labels.map(() => Math.floor(Math.random() * 100)),
-				backgroundColor: "#ef233c",
+				backgroundColor: "#f43f5e",
 			},
 		],
 	}
@@ -186,11 +110,7 @@ function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
 	ChartJS.defaults.font.family = "Inter"
 	ChartJS.defaults.color = "#2b2d42"
 
-	return (
-		<div className="">
-			<Bar options={options} data={data} className="max-h-80" />
-		</div>
-	)
+	return <Bar options={options} data={data} className="max-h-80" />
 }
 
 function BestStats() {
@@ -206,51 +126,54 @@ function BestStats() {
 
 	return (
 		<div className="grid lg:grid-cols-2 md-grid-cols-1 gap-x-2 gap-y-8">
-			<div className="bg-white rounded-lg border-solid border-2 border-gray-600 grid grid-cols-2">
-				<div className="p-4 flex flex-col">
-					<p className="text-gray-500 text-sm pb-2">Best Day of the Week</p>
-					<p className="text-2xl font-bold my-auto">{bestDay}</p>
-				</div>
-				<div className="p-4 bg-black text-white flex flex-col">
-					<p className="text-6xl font-bold">
-						{currency}
-						{bestDayAverageRevenue}
-					</p>
-					<p className="text-gray-300 text-sm pb-2 my-auto">Average Revenue</p>
-				</div>
+			<BestStat
+				title="Best Day of the Week"
+				value={bestDay}
+				rightTitle="Average Revenue"
+				rightValue={`${currency}${bestDayAverageRevenue}`}
+			/>
+			<BestStat
+				title="Best Seller"
+				value={bestSeller}
+				rightTitle="Total Revenue"
+				rightValue={`${currency}${bestSellerTotalRevenue}`}
+			/>
+			<BestStat
+				title="Most Popular Product"
+				value={mostPopularProduct}
+				rightTitle="Units Sold"
+				rightValue={mostPopularProductSold}
+			/>
+			<BestStat
+				title="Highest Rated Product"
+				value={highestRatedProduct}
+				rightTitle="Average Rating"
+				rightValue={highestRatedProductRating}
+			/>
+		</div>
+	)
+}
+
+function BestStat({
+	title,
+	value,
+	rightTitle,
+	rightValue,
+}: {
+	title: string
+	value: string
+	rightTitle: string
+	rightValue: string
+}) {
+	return (
+		<div className="bg-white rounded-lg grid grid-cols-2">
+			<div className="p-4 flex flex-col">
+				<p className="text-gray-500 text-sm pb-2">{title}</p>
+				<p className="text-2xl font-bold my-auto">{value}</p>
 			</div>
-			<div className="bg-white rounded-lg border-solid border-2 border-gray-600 grid grid-cols-2">
-				<div className="p-4 flex flex-col">
-					<p className="text-gray-500 text-sm pb-2">Best Seller</p>
-					<p className="text-2xl font-bold my-auto">{bestSeller}</p>
-				</div>
-				<div className="p-4 bg-black text-white flex flex-col">
-					<p className="text-6xl font-bold">
-						{currency}
-						{bestSellerTotalRevenue}
-					</p>
-					<p className="text-gray-300 text-sm pb-2 my-auto">Total Revenue</p>
-				</div>
-			</div>
-			<div className="bg-white rounded-lg border-solid border-2 border-gray-600 grid grid-cols-2">
-				<div className="p-4 flex flex-col">
-					<p className="text-gray-500 text-sm pb-2">Most Popular Product</p>
-					<p className="text-2xl font-bold my-auto">{mostPopularProduct}</p>
-				</div>
-				<div className="p-4 bg-black text-white flex flex-col">
-					<p className="text-6xl font-bold">{mostPopularProductSold}</p>
-					<p className="text-gray-300 text-sm pb-2 my-auto">Units Sold</p>
-				</div>
-			</div>
-			<div className="bg-white rounded-lg border-solid border-2 border-gray-600 grid grid-cols-2">
-				<div className="p-4 flex flex-col">
-					<p className="text-gray-500 text-sm pb-2">Highest Rated Product</p>
-					<p className="text-2xl font-bold my-auto">{highestRatedProduct}</p>
-				</div>
-				<div className="p-4 bg-black text-white flex flex-col">
-					<p className="text-6xl font-bold">{highestRatedProductRating}</p>
-					<p className="text-gray-300 text-sm pb-2 my-auto">Average Rating</p>
-				</div>
+			<div className="p-4 bg-black rounded-r-lg text-white flex flex-col">
+				<p className="text-6xl font-bold">{rightValue}</p>
+				<p className="text-gray-300 text-sm pb-2 my-auto">{rightTitle}</p>
 			</div>
 		</div>
 	)
@@ -260,9 +183,9 @@ function BestStats() {
 
 //#region audience
 
-function AudienceTab({ projectTag }: { projectTag: string }) {
+function AudienceTab() {
 	return (
-		<div className="flex flex-col">
+		<div>
 			<div className="my-10">
 				<AudienceStats />
 			</div>
@@ -278,12 +201,12 @@ export function AudienceStats() {
 	const totalUsers = 1900
 	const last24 = 4
 
-	return (
-		<div className="grid lg:grid-cols-3 md-grid-cols-2 gap-x-2 gap-y-2">
-			<StatBlock title="Total Members" value={`${totalUsers}`} defaultValue="0" />
-			<StatBlock title="New Members (24h)" value={`${last24}`} defaultValue="0" />
-		</div>
-	)
+	const stats = [
+		{ title: "Total Members", value: `${totalUsers}` },
+		{ title: "New Members (24h)", value: `${last24}` },
+	]
+
+	return <Stats stats={stats} />
 }
 
 function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
@@ -312,10 +235,7 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 		},
 	}
 
-	const labels = Array.from(
-		{ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() },
-		(_, i) => i + 1
-	)
+	const labels = monthDays()
 
 	const data = {
 		labels,
@@ -331,11 +251,7 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 	ChartJS.defaults.font.family = "Inter"
 	ChartJS.defaults.color = "#2b2d42"
 
-	return (
-		<div className="">
-			<Line options={options} data={data} className="max-h-80" />
-		</div>
-	)
+	return <Line options={options} data={data} className="max-h-80" />
 }
 
 function ReferrerChart({ mode }: { mode: "daily" | "monthly" }) {
@@ -387,11 +303,7 @@ function ReferrerChart({ mode }: { mode: "daily" | "monthly" }) {
 	ChartJS.defaults.font.family = "Inter"
 	ChartJS.defaults.color = "#2b2d42"
 
-	return (
-		<div className="">
-			<Bar options={options} data={data} className="max-h-80" />
-		</div>
-	)
+	return <Bar options={options} data={data} className="max-h-80" />
 }
 
 //#endregion

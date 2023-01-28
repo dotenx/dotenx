@@ -1,7 +1,7 @@
 import { useViewportSize } from "@mantine/hooks"
 import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
-import AnalyticsPage from "../../pages/analytics"
+import { AnalyticsPage } from "../../pages/analytics"
 import AudiencePage from "../../pages/audience"
 import DomainsPage from "../../pages/domains"
 import Files from "../../pages/files"
