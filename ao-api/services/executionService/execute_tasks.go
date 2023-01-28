@@ -18,8 +18,57 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
+
+// ExecuteAllTasksAndReturnResults starts pipline from first (initial) task and wait until pipeline tasks be ended then return results
+func (manager *executionManager) ExecuteAllTasksAndReturnResults(pipeline models.PipelineSummery, executionId int) (interface{}, error) {
+	initialTaskId, err := manager.Store.GetInitialTask(noContext, executionId)
+	if err != nil {
+		log.Println(err.Error())
+		return -1, err
+	}
+	errChan := make(chan error, 100)
+	resultsChan := make(chan models.TaskResultDto, 100)
+	defer close(errChan)
+	defer close(resultsChan)
+	manager.ExecuteTasks(initialTaskId, executionId, pipeline.AccountId, resultsChan, errChan)
+	for {
+		select {
+		case <-time.After(time.Duration(config.Configs.App.ExcutionTaskTimeLimit) * time.Second):
+			return nil, errors.New("pipeline timeout")
+		case err = <-errChan:
+			return nil, err
+		case res := <-resultsChan:
+			cnt, err := manager.Store.GetNumberOfRunningTasks(noContext, executionId)
+			if err != nil {
+				return nil, err
+			}
+			taskIds, err := manager.Store.GetNextTasks(noContext, executionId, res.TaskId, res.Status)
+			if err != nil {
+				return nil, err
+			}
+			if cnt == 0 && len(taskIds) == 0 {
+				if !pipeline.IsInteraction {
+					return gin.H{"id": executionId}, err
+				}
+				var taskRes = struct {
+					Status      string                `json:"status"`
+					Error       string                `json:"error"`
+					Log         string                `json:"log"`
+					ReturnValue models.ReturnValueMap `json:"return_value"`
+				}{
+					Status:      res.Status,
+					Error:       res.Error,
+					Log:         res.Log,
+					ReturnValue: res.ReturnValue,
+				}
+				return taskRes, nil
+			}
+		}
+	}
+}
 
 // ExecuteTasks gets an initial task and run it then call itself (recursively) for all next tasks (based of results of initial task)
 func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, accountId string, resultsChan chan models.TaskResultDto, errChan chan error) {
@@ -39,6 +88,8 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 	}
 	// create job based on task detailes
 	jobDTO := models.NewJob(task, executionId, accountId)
+
+	// TODO: check what is workSpace and delete it if isn't useful
 	workSpace, err := manager.CheckExecutionInitialDataForWorkSpace(executionId)
 	if err != nil {
 		logrus.Error(err.Error())
@@ -46,6 +97,7 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 		return
 	}
 	jobDTO.WorkSpace = workSpace
+
 	// set job body based on task body and execution initial data and other tasks output (if needed)
 	body, err := manager.mapFields(executionId, accountId, task.Name, task.Body)
 	if err != nil {
@@ -85,11 +137,12 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 			}
 		}
 	}
+
+	switch task.Type {
 	// convert 'Custom task' to 'Run node code'
-	if task.Type == "Custom task" {
+	case "Custom task":
 		jobDTO.PrepRunMiniTasks()
-	}
-	if task.Type == "Run node code" {
+	case "Run node code":
 		jobDTO.SetRunCodeFields()
 	}
 	err = manager.SetTaskExecutionResult(executionId, initialTaskId, "started")

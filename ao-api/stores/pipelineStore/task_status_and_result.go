@@ -150,9 +150,6 @@ func (ps *pipelineStore) GetNumberOfRunningTasks(context context.Context, execut
 	case db.Postgres:
 		conn := ps.db.Connection
 		err = conn.QueryRow(getNumberOfRunningTasks, executionId).Scan(&count)
-		if err != nil {
-			return 0, err
-		}
 	}
 	return
 }

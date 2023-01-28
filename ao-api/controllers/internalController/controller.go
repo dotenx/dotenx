@@ -135,6 +135,7 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: Implementing an acceptable method for getting number of tp users (for DoTenX users)
 	// projects, err := c.Service.ListDBProjects(dto.AccountId)
 	// if err != nil {
 	// 	logrus.Error(err.Error())
@@ -144,6 +145,7 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 	// 	return
 	// }
 
+	// Currently we return an empty array for list of tp users (no limitation on number of tp users)
 	// tpUsers, err := c.Service.ListTpUsers(projects, dto.AccountId)
 	tpUsers := make([]string, 0)
 	var err error

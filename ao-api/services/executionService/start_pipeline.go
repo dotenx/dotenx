@@ -7,7 +7,6 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
-	"github.com/gin-gonic/gin"
 )
 
 func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (interface{}, error) {
@@ -50,48 +49,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return -1, err
 	}
 
-	initialTaskId, err := manager.Store.GetInitialTask(noContext, executionId)
-	if err != nil {
-		log.Println(err.Error())
-		return -1, err
-	}
-	errChan := make(chan error, 100)
-	resultsChan := make(chan models.TaskResultDto, 100)
-	defer close(errChan)
-	defer close(resultsChan)
-	manager.ExecuteTasks(initialTaskId, executionId, accountId, resultsChan, errChan)
-	for {
-		select {
-		case <-time.After(20 * time.Second):
-			return -1, errors.New("pipeline timeout")
-		case err = <-errChan:
-			return -1, err
-		case res := <-resultsChan:
-			cnt, err := manager.Store.GetNumberOfRunningTasks(noContext, executionId)
-			if err != nil {
-				return -1, err
-			}
-			taskIds, err := manager.Store.GetNextTasks(noContext, executionId, res.TaskId, res.Status)
-			if err != nil {
-				return -1, err
-			}
-			if cnt == 0 && len(taskIds) == 0 {
-				if !pipeline.IsInteraction {
-					return gin.H{"id": executionId}, err
-				}
-				var taskRes = struct {
-					Status      string                `json:"status"`
-					Error       string                `json:"error"`
-					Log         string                `json:"log"`
-					ReturnValue models.ReturnValueMap `json:"return_value"`
-				}{
-					Status:      res.Status,
-					Error:       res.Error,
-					Log:         res.Log,
-					ReturnValue: res.ReturnValue,
-				}
-				return taskRes, nil
-			}
-		}
-	}
+	pipeline.AccountId = accountId
+	// TODO: implementing better error (or timeout) handling
+	return manager.ExecuteAllTasksAndReturnResults(pipeline, executionId)
 }
