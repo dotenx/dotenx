@@ -31,14 +31,6 @@ export default function DomainsPage() {
 
 	if (!projectName) return <Navigate to="/" replace />
 
-	const helpDetails = {
-		title: "Set a custom domain for your application instead of using the default domain",
-		description:
-			"You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.",
-		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
-		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/domains",
-	}
-
 	return (
 		<div>
 			<Header title={"Domains"} />
@@ -75,7 +67,7 @@ const Domain = ({
 
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
-			toast("Domain verified successfuly", { type: "success", autoClose: 2000 }),
+			toast("Domain verified successfully", { type: "success", autoClose: 2000 }),
 				client.invalidateQueries(QueryKey.GetDomains)
 		},
 		onError: () => {
