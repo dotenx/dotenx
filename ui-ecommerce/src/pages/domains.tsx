@@ -1,9 +1,9 @@
 import { Button, Loader, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
-import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
@@ -68,7 +68,7 @@ const Domain = ({
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
 			toast("Domain verified successfully", { type: "success", autoClose: 2000 }),
-				client.invalidateQueries(QueryKey.GetDomains)
+				client.invalidateQueries([QueryKey.GetDomains])
 		},
 		onError: () => {
 			toast("External domain is not verified", { type: "error", autoClose: 2000 })
@@ -119,7 +119,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		validate: zodResolver(schema),
 	})
 	const { mutate, isLoading } = useMutation(addDomain, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetDomains),
+		onSuccess: () => client.invalidateQueries([QueryKey.GetDomains]),
 		onError: (e: any) => {
 			toast(e.response.data.message, {
 				type: "error",

@@ -72,3 +72,13 @@ export type UserGroup = {
 	is_default: boolean
 	privilages: Record<string, ("select" | "update" | "delete" | "insert")[]>
 }
+
+export type UploadImageRequest = {
+	projectTag: string
+	image: File
+}
+
+export type UploadImageResponse = {
+	fileName: string
+	url: string
+}

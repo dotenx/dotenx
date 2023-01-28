@@ -6,6 +6,8 @@ import {
 	GetProductsSummaryResponse,
 	GetProjectResponse,
 	GetUserGroupsResponse,
+	UploadImageRequest,
+	UploadImageResponse,
 } from "./types"
 export * from "./types"
 
@@ -99,4 +101,13 @@ export function getFiles(projectTag: string) {
 
 export function getUserGroups(projectTag: string) {
 	return api.get<GetUserGroupsResponse>(`/user/group/management/project/${projectTag}/userGroup`)
+}
+
+export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
+	const formData = new FormData()
+	formData.append("file", image)
+	formData.append("is_public", "true")
+	return api.post<UploadImageResponse>(`/objectstore/project/${projectTag}/upload`, formData, {
+		headers: { "Content-Type": "multipart/form-data" },
+	})
 }

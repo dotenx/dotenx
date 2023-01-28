@@ -1,4 +1,5 @@
 import { ActionIcon } from "@mantine/core"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -6,14 +7,13 @@ import {
 	Legend,
 	LinearScale,
 	Title,
-	Tooltip,
+	Tooltip
 } from "chart.js"
 import { getDaysInMonth } from "date-fns"
 import _ from "lodash"
 import { useState } from "react"
 import { Bar } from "react-chartjs-2"
 import { IoReload } from "react-icons/io5"
-import { useQuery, useQueryClient } from "react-query"
 import { getLast24HoursSales, QueryKey } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
@@ -52,7 +52,7 @@ function AllTab() {
 	)
 	const sales = salesQuery.data?.data?.rows ?? []
 	const nPages = Math.ceil((salesQuery.data?.data?.totalRows ?? 0) / 10)
-	const refetchSales = () => queryClient.invalidateQueries(QueryKey.GetLastDaySales)
+	const refetchSales = () => queryClient.invalidateQueries([QueryKey.GetLastDaySales])
 
 	return (
 		<div>

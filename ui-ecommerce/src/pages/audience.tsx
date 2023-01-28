@@ -1,7 +1,7 @@
 import { ActionIcon, Button } from "@mantine/core"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { IoMail, IoReload } from "react-icons/io5"
-import { useQuery, useQueryClient } from "react-query"
 import { getMembersSummary, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
@@ -52,7 +52,7 @@ function MembersTab() {
 	const members = membersQuery.data?.data?.rows ?? []
 	const nPages = Math.ceil((membersQuery.data?.data?.totalRows as number) / 10)
 	const queryClient = useQueryClient()
-	const refetchMembers = () => queryClient.invalidateQueries(QueryKey.GetMembersSummary)
+	const refetchMembers = () => queryClient.invalidateQueries([QueryKey.GetMembersSummary])
 
 	return (
 		<div>

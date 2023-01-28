@@ -1,10 +1,10 @@
 import { Button, Checkbox, MultiSelect } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
-import { useMutation, useQuery, useQueryClient } from "react-query"
 import { getFiles, getUserGroups, QueryKey, setFilesAccess, setFileUserGroup } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Modal, NewModal, Table } from "../features/ui"
@@ -16,7 +16,7 @@ export function Files() {
 	const client = useQueryClient()
 	const [rowData, setRowData] = useState({ isPublic: false, name: "", projectTag: "" })
 	const filesAccessMutation = useMutation(setFilesAccess, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
+		onSuccess: () => client.invalidateQueries([QueryKey.GetFiles]),
 	})
 	const clipboard = useClipboard({ timeout: 3000 })
 	const [clicked, setClicked] = useState("")
@@ -32,7 +32,7 @@ export function Files() {
 	}, [defaultUserGroups])
 	const [userGroupsOptions, setUserGroupsOptions] = useState([{ label: "", value: "" }])
 	const fileUserGroupMutation = useMutation(setFileUserGroup, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetFiles),
+		onSuccess: () => client.invalidateQueries([QueryKey.GetFiles]),
 	})
 	useQuery([QueryKey.GetUserGroups, projectTag], () => getUserGroups(projectTag), {
 		onSuccess: (data) => {

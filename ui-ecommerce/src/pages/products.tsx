@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core"
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
-import { useQuery } from "react-query"
 import { Link, useParams } from "react-router-dom"
 import { getProductsSummary, QueryKey } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"

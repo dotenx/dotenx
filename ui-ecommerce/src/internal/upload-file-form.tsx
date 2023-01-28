@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Checkbox } from "@mantine/core"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { BsFillFolderSymlinkFill } from "react-icons/bs"
-import { useMutation, useQueryClient } from "react-query"
 import { z } from "zod"
 import { QueryKey, uploadFile } from "../api"
 import { useModal } from "../features/hooks"
@@ -35,7 +35,7 @@ export function UploadFileForm({ tag }: { tag: string }) {
 		},
 		{
 			onSuccess: () => {
-				client.invalidateQueries(QueryKey.GetFiles)
+				client.invalidateQueries([QueryKey.GetFiles])
 				modal.close()
 			},
 		}
