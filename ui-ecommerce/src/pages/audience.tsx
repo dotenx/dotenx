@@ -1,47 +1,28 @@
-import { Button } from "@mantine/core"
+import { ActionIcon, Button } from "@mantine/core"
 import { useState } from "react"
-import { IoReload } from "react-icons/io5"
+import { IoMail, IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
-import { Navigate, useParams } from "react-router-dom"
-import { getMembersSummary, getProject, QueryKey } from "../api"
+import { getMembersSummary, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
 
-export default function AudiencePage() {
-	const { projectName } = useParams()
-	if (!projectName) return <Navigate to="/" replace />
-	return <UMTableContent projectName={projectName} />
-}
-
-function UMTableContent({ projectName }: { projectName: string }) {
+export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")
-
-	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
-		QueryKey.GetProject,
-		() => getProject(projectName)
-	)
-	const projectTag = projectDetails?.data.tag ?? ""
 
 	return (
 		<div>
 			<Header
 				tabs={["members", "sent emails", "drafts"]}
-				title={"Audience"}
+				title="Audience"
 				activeTab={activeTab}
-				onTabChange={(v: typeof activeTab) => {
-					setActiveTab(v)
-				}}
+				onTabChange={setActiveTab}
 			>
 				<ActionBar />
 			</Header>
 			<ContentWrapper>
-				{activeTab === "members" && (
-					<MembersTab
-						projectTag={projectTag}
-						projectDetailsLoading={projectDetailsLoading}
-					/>
-				)}
+				{activeTab === "members" && <MembersTab />}
 				{activeTab === "sent emails" && <SentEmailsTab />}
 				{activeTab === "drafts" && <DraftsTab />}
 			</ContentWrapper>
@@ -49,27 +30,36 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	)
 }
 
-function MembersTab({
-	projectTag,
-	projectDetailsLoading,
-}: {
-	projectTag: string
-	projectDetailsLoading: boolean
-}) {
-	const [currentPage, setCurrentPage] = useState(1)
+function ActionBar() {
+	const modal = useModal()
 
-	const { data: usersData, isLoading: usersDataLoading } = useQuery(
+	return (
+		<Button
+			leftIcon={<IoMail />}
+			// todo: make the button black
+			onClick={() => modal.open(Modals.UserManagementEndpoint)}
+		>
+			Send New Email
+		</Button>
+	)
+}
+
+function MembersTab() {
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const [currentPage, setCurrentPage] = useState(1)
+	const membersQuery = useQuery(
 		[QueryKey.GetMembersSummary, projectTag, currentPage],
 		() => getMembersSummary(projectTag, currentPage),
 		{ enabled: !!projectTag }
 	)
-	const tableData = usersData?.data?.rows ?? []
-
-	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
+	const members = membersQuery.data?.data?.rows ?? []
+	const nPages = Math.ceil((membersQuery.data?.data?.totalRows as number) / 10)
 	const queryClient = useQueryClient()
+	const refetchMembers = () => queryClient.invalidateQueries(QueryKey.GetMembersSummary)
 
 	return (
-		<div className="flex flex-col">
+		<div>
 			<div className="my-10">
 				<AudienceStats />
 			</div>
@@ -79,16 +69,12 @@ function MembersTab({
 				currentPage={currentPage}
 				nPages={nPages}
 				setCurrentPage={setCurrentPage}
-				loading={projectDetailsLoading || usersDataLoading}
+				loading={projectQuery.isLoading || membersQuery.isLoading}
 				emptyText="No members yet"
 				actionBar={
-					<Button
-						leftIcon={<IoReload />}
-						type="button"
-						onClick={() => queryClient.invalidateQueries(QueryKey.GetMembersSummary)}
-					>
-						Refresh
-					</Button>
+					<ActionIcon onClick={refetchMembers}>
+						<IoReload />
+					</ActionIcon>
 				}
 				columns={[
 					{
@@ -108,27 +94,14 @@ function MembersTab({
 						accessor: "monthly_revenue",
 					},
 				]}
-				data={tableData}
+				data={members}
 			/>
 		</div>
 	)
 }
 
-function ActionBar() {
-	const modal = useModal()
-
-	return (
-		<Button
-			// todod: make the button black
-			onClick={() => modal.open(Modals.UserManagementEndpoint)}
-		>
-			Send New Email
-		</Button>
-	)
-}
-
 function SentEmailsTab() {
-	const tableData = [
+	const emails = [
 		{
 			subject: "Subject",
 			date: "Date",
@@ -141,7 +114,7 @@ function SentEmailsTab() {
 	]
 
 	return (
-		<div className="w-full mt-4">
+		<div className="mt-4">
 			<Table
 				columns={[
 					{
@@ -173,14 +146,14 @@ function SentEmailsTab() {
 						accessor: "bounces",
 					},
 				]}
-				data={tableData}
+				data={emails}
 			/>
 		</div>
 	)
 }
 
 function DraftsTab() {
-	const tableData = [
+	const drafts = [
 		//give all the data here
 		{
 			subject: "Subject",
@@ -190,20 +163,18 @@ function DraftsTab() {
 
 	// todo: add edit, and delete buttons
 	return (
-		<div className="flex flex-col">
-			<Table
-				columns={[
-					{
-						Header: "Subject",
-						accessor: "subject",
-					},
-					{
-						Header: "Last Edited",
-						accessor: "last_edited",
-					},
-				]}
-				data={tableData}
-			/>
-		</div>
+		<Table
+			columns={[
+				{
+					Header: "Subject",
+					accessor: "subject",
+				},
+				{
+					Header: "Last Edited",
+					accessor: "last_edited",
+				},
+			]}
+			data={drafts}
+		/>
 	)
 }
