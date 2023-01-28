@@ -39,7 +39,7 @@ function AllTabs() {
 
 	return (
 		<div>
-			<Stats />
+			<SalesStats />
 			<Table
 				withPagination
 				currentPage={currentPage}
@@ -89,33 +89,40 @@ function ActionBar() {
 	)
 }
 
-function Stats() {
-	const totalRevenue = 130
-	const last24 = 10
-	const mrr = 100
-
+export function Stats({ stats }: { stats: StatData[] }) {
 	return (
 		<div className="grid lg:grid-cols-3 md-grid-cols-2 gap-x-2 gap-y-2">
-			<StatBlock title="Total Revenue" value={`$${totalRevenue}`} defaultValue="$0" />
-			<StatBlock title="Last 24h" value={`$${last24}`} defaultValue="$0" />
-			<StatBlock title="MRR" value={`$${mrr}`} defaultValue="$0" />
+			{stats.map((stat) => (
+				<StatBlock key={stat.title} title={stat.title} value={stat.value} />
+			))}
 		</div>
 	)
 }
 
-function StatBlock({
-	title,
-	value,
-	defaultValue,
-}: {
+export function SalesStats() {
+	const totalRevenue = 130
+	const last24 = 10
+	const mrr = 100
+
+	const stats = [
+		{ title: "Total Revenue", value: `$${totalRevenue}` },
+		{ title: "Last 24h", value: `$${last24}` },
+		{ title: "MRR", value: `$${mrr}` },
+	]
+
+	return <Stats stats={stats} />
+}
+
+type StatData = {
 	title: string
 	value: string
-	defaultValue: string
-}) {
+}
+
+export function StatBlock({ title, value }: StatData) {
 	return (
 		<div className="bg-white rounded-lg p-4">
 			<p className="text-gray-500 text-sm pb-2">{title}</p>
-			<p className="text-2xl font-bold">{value || defaultValue}</p>
+			<p className="text-2xl font-bold">{value}</p>
 		</div>
 	)
 }
