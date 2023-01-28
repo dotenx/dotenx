@@ -1,5 +1,6 @@
 import { Button } from "@mantine/core"
 import { useState } from "react"
+import { BsPlusLg } from "react-icons/bs"
 import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
 import { Link, useParams } from "react-router-dom"
@@ -27,13 +28,10 @@ export function ProductsPage() {
 	return (
 		<div>
 			<Header
+				title="Products"
 				tabs={["all", "products", "memberships"]}
-				headerLink={`/builder/projects/${projectName}/user-management`}
-				title={"Products"}
 				activeTab={activeTab}
-				onTabChange={(v: typeof activeTab) => {
-					setActiveTab(v)
-				}}
+				onTabChange={setActiveTab}
 			>
 				<ActionBar />
 			</Header>
@@ -94,13 +92,13 @@ function ActionBar() {
 	const { projectName } = useParams()
 
 	return (
-		<>
-			<div className="flex flex-wrap gap-2">
-				<Button component={Link} to={`/projects/${projectName}/products/new`}>
-					Add New Product
-				</Button>
-			</div>
-		</>
+		<Button
+			component={Link}
+			to={`/projects/${projectName}/products/new`}
+			leftIcon={<BsPlusLg />}
+		>
+			New Product
+		</Button>
 	)
 }
 
@@ -128,7 +126,7 @@ function StatBlock({
 	defaultValue: string
 }) {
 	return (
-		<div className="bg-white rounded-lg p-4 border-solid border-2 border-gray-600">
+		<div className="bg-white rounded-lg p-4">
 			<p className="text-gray-500 text-sm pb-2">{title}</p>
 			<p className="text-2xl font-bold">{value || defaultValue}</p>
 		</div>
