@@ -20,12 +20,30 @@ export function ProductsPage() {
 			>
 				<ActionBar />
 			</Header>
-			<ContentWrapper>{activeTab === "all" && <AllTabs />}</ContentWrapper>
+			<ContentWrapper>
+				{activeTab === "all" && <AllTab />}
+				{activeTab === "products" && <ProductsTab />}
+				{activeTab === "memberships" && <MembershipsTab />}
+			</ContentWrapper>
 		</div>
 	)
 }
 
-function AllTabs() {
+function ActionBar() {
+	const { projectName } = useParams()
+
+	return (
+		<Button
+			component={Link}
+			to={`/projects/${projectName}/products/new`}
+			leftIcon={<BsPlusLg />}
+		>
+			New Product
+		</Button>
+	)
+}
+
+function AllTab() {
 	const [currentPage, setCurrentPage] = useState(1)
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
@@ -35,7 +53,7 @@ function AllTabs() {
 		{ enabled: !!projectTag }
 	)
 	const products = productsSummaryQuery.data?.data?.rows ?? []
-	const nPages = Math.ceil((productsSummaryQuery?.data?.data?.totalRows as number) / 10)
+	const nPages = Math.ceil((productsSummaryQuery?.data?.data?.totalRows ?? 0) / 10)
 
 	return (
 		<div>
@@ -75,30 +93,6 @@ function AllTabs() {
 	)
 }
 
-function ActionBar() {
-	const { projectName } = useParams()
-
-	return (
-		<Button
-			component={Link}
-			to={`/projects/${projectName}/products/new`}
-			leftIcon={<BsPlusLg />}
-		>
-			New Product
-		</Button>
-	)
-}
-
-export function Stats({ stats }: { stats: StatData[] }) {
-	return (
-		<div className="grid lg:grid-cols-3 md-grid-cols-2 gap-x-2 gap-y-2">
-			{stats.map((stat) => (
-				<StatBlock key={stat.title} title={stat.title} value={stat.value} />
-			))}
-		</div>
-	)
-}
-
 export function SalesStats() {
 	const totalRevenue = 130
 	const last24 = 10
@@ -113,6 +107,16 @@ export function SalesStats() {
 	return <Stats stats={stats} />
 }
 
+export function Stats({ stats }: { stats: StatData[] }) {
+	return (
+		<div className="grid lg:grid-cols-3 md-grid-cols-2 gap-x-2 gap-y-2">
+			{stats.map((stat) => (
+				<StatBlock key={stat.title} title={stat.title} value={stat.value} />
+			))}
+		</div>
+	)
+}
+
 type StatData = {
 	title: string
 	value: string
@@ -125,4 +129,12 @@ export function StatBlock({ title, value }: StatData) {
 			<p className="text-2xl font-bold">{value}</p>
 		</div>
 	)
+}
+
+function ProductsTab() {
+	return <div></div>
+}
+
+function MembershipsTab() {
+	return <div></div>
 }
