@@ -7,7 +7,6 @@ module.exports = {
 				body: ["Inter", "sans-serif"],
 				mono: ["'Roboto Mono'", "monospace"],
 			},
-			
 		},
 	},
 	plugins: [require("tailwind-scrollbar")({ nocompatible: true })],

@@ -10,11 +10,10 @@ import { z } from "zod"
 import { QueryKey } from "../api"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { PageTitle } from "../features/ui/page-title"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
 
 export default function DomainsPage() {
-	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
+	const { projectTag, projectName, isLoading: projectTagIsLoading } = useGetProjectTag()
 	const [isDomainAdded, setIsDomainAdded] = useState<boolean>()
 	const getDomainsQuery = useQuery(
 		[QueryKey.GetDomains, projectTag],
@@ -45,7 +44,7 @@ export default function DomainsPage() {
 			<Header title={"Domains"} />
 			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
 				{getDomainsQuery.isLoading ||
-				projectTagisLoading ||
+				projectTagIsLoading ||
 				getDomainsQuery.isRefetching ? (
 					<Loader className="mx-auto" />
 				) : (

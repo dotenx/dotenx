@@ -1,11 +1,4 @@
-import { Button, Code } from "@mantine/core"
-import { useState } from "react"
-import { useQuery, useQueryClient } from "react-query"
-import { Navigate, useParams } from "react-router-dom"
-import { API_URL, getLast24HoursSales, getProfile, getProject, QueryKey } from "../api"
-import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Drawer, Endpoint, Header, Loader } from "../features/ui"
-
+import { Button } from "@mantine/core"
 import {
 	BarElement,
 	CategoryScale,
@@ -17,7 +10,13 @@ import {
 	Title,
 	Tooltip,
 } from "chart.js"
+import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
+import { useQuery, useQueryClient } from "react-query"
+import { Navigate, useParams } from "react-router-dom"
+import { getLast24HoursSales, getProject, QueryKey } from "../api"
+import { Modals, useModal } from "../features/hooks"
+import { Content_Wrapper, Header } from "../features/ui"
 
 ChartJS.register(
 	CategoryScale,
@@ -66,104 +65,31 @@ function UMTableContent({ projectName }: { projectName: string }) {
 					setActiveTab(v)
 				}}
 			>
-				<ActionBar projectTag={projectTag} />
+				<ActionBar />
 			</Header>
 			<Content_Wrapper>
-				{activeTab === "sales" && <SalesTab projectTag={projectTag} />}
+				{activeTab === "sales" && <SalesTab />}
 				{activeTab === "audience" && <AudienceTab projectTag={projectTag} />}
 			</Content_Wrapper>
 		</div>
 	)
 }
 
-const registerExample = {
-	email: "example@email.com",
-	password: "abcdefg1234",
-	fullname: "John Smith",
-}
-
-const loginExample = {
-	email: "example@email.com",
-	password: "abcdefg1234",
-}
-
-function ActionBar({ projectTag }: { projectTag: string }) {
+function ActionBar() {
 	const modal = useModal()
-	const profileQuery = useQuery(
-		[QueryKey.GetProfile, projectTag],
-		() => getProfile({ projectTag }),
-		{ enabled: !!projectTag }
-	)
-	const accountId = profileQuery.data?.data.account_id
-	const profileExample = {
-		account_id: accountId,
-		created_at: "2022-11-25 20:59:13.675894187 +0000 UTC m=+171.884849553",
-		email: "example.email.com",
-		full_name: "John Smith",
-		user_group: "users",
-		tp_account_id: "********-****-****-****-************",
-	}
-
-	if (profileQuery.isLoading) return <Loader />
 
 	return (
-		<>
-			<div className="flex flex-wrap gap-2">
-				<Button
-					className="endpoints"
-					onClick={() => modal.open(Modals.UserManagementEndpoint)}
-				>
-					Add New Product
-				</Button>
-			</div>
-			<Drawer kind={Modals.UserManagementEndpoint} title="Endpoint">
-				<div className="space-y-8">
-					<Endpoint
-						label="Sign up a user"
-						url={`${API_URL}/user/management/project/${projectTag}/register`}
-						method="POST"
-						code={registerExample}
-					/>
-					<Endpoint
-						label="Sign in"
-						url={`${API_URL}/user/management/project/${projectTag}/login`}
-						method="POST"
-						code={loginExample}
-					/>
-					<Endpoint
-						label="Get user profile"
-						url={`${API_URL}/profile/project/${projectTag}`}
-						method="GET"
-						code={profileExample}
-						isResponse
-						description={
-							<p>
-								<Code>tp_account_id</Code> is the user&apos;s account ID.
-							</p>
-						}
-					/>
-					<Endpoint
-						label="Authenticate with provider"
-						url={`${API_URL}/user/management/project/${projectTag}/provider/:provider_name/authorize`}
-						method="GET"
-					/>
-					<Endpoint
-						label="Set user group"
-						url={`${API_URL}/user/group/management/project/${projectTag}/userGroup/name/:group_name`}
-						method="POST"
-						code={{
-							account_id: "account_id",
-						}}
-					/>
-				</div>
-			</Drawer>
-		</>
+		<div className="flex flex-wrap gap-2">
+			<Button className="endpoints" onClick={() => modal.open(Modals.UserManagementEndpoint)}>
+				Add New Product
+			</Button>
+		</div>
 	)
 }
 
 //#region sales
 
-function SalesTab({ projectTag }: { projectTag: string }) {
+function SalesTab() {
 	return (
 		<div className="flex flex-col">
 			<div className="my-10">

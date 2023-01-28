@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import { BiCloudUpload } from "react-icons/bi"
-import { IoCheckmark, IoCopy, IoReload } from "react-icons/io5"
+import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import {
@@ -12,19 +12,10 @@ import {
 	getUserGroups,
 	QueryKey,
 	setFilesAccess,
-	setFileUserGroup,
+	setFileUserGroup
 } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import {
-	AddButton,
-	ContentWrapper,
-	Content_Wrapper,
-	Form,
-	Header,
-	Modal,
-	NewModal,
-	Table,
-} from "../features/ui"
+import { Content_Wrapper, Form, Header, Modal, NewModal, Table } from "../features/ui"
 import { UploadFileForm } from "../internal/upload-file-form"
 
 export default function Files() {
@@ -93,11 +84,14 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 		<div>
 			<Header title={"Files"} />
 			<Content_Wrapper>
-				<AddButton
-					text="Upload file"
-					icon={<BiCloudUpload className="w-6 h-6" />}
-					handleClick={() => modal.open(Modals.UploadFile)}
-				/>
+				<button
+					className="active:translate-y-[2px] flex transition-all px-4 gap-x-2 hover:text-slate-700  hover:bg-slate-50 items-center p-2 rounded-[10px] bg-white  text-slate-900   font-medium"
+					onClick={() => modal.open(Modals.UploadFile)}
+				>
+					<BiCloudUpload className="w-6 h-6" />
+					Upload file
+				</button>
+
 				<Table
 					helpDetails={helpDetails}
 					loading={projectDetailsLoading || filesDataLoading || changeAccessisLoading}

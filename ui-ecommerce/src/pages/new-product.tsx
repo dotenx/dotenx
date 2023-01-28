@@ -1,20 +1,10 @@
-import { Button, Code } from "@mantine/core"
-import { format } from "date-fns"
+import { Button } from "@mantine/core"
 import { useState } from "react"
-import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
-import {
-	API_URL,
-	getProductsSummary,
-	getProfile,
-	getProject,
-	getUserManagementData,
-	QueryKey,
-} from "../api"
+import { getProductsSummary, getProfile, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Drawer, Endpoint, Header, Loader, Table } from "../features/ui"
-import UserGroupsWrapper from "./user-groups"
+import { Content_Wrapper, Header, Loader } from "../features/ui"
 
 export default function NewProductsPage() {
 	const { projectName } = useParams()
@@ -54,10 +44,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			>
 				<ActionBar projectTag={projectTag} />
 			</Header>
-			<Content_Wrapper>
-				{activeTab === "details" && <DetailsTab />}
-				{activeTab === "content" && <UserGroupsWrapper />}
-			</Content_Wrapper>
+			<Content_Wrapper>{activeTab === "details" && <DetailsTab />}</Content_Wrapper>
 		</div>
 	)
 }
@@ -66,22 +53,30 @@ function DetailsTab() {
 	return (
 		<div className="grid grid-cols-[60%_40%]">
 			<form className="flex flex-col w-full gap-8">
-					<Input label="Product Name" value="" placeholder="Name" />
-					<Select label="Product Type" value="" placeholder="Type">
-						<option value="subscription">Subscription</option>
-						<option value="one-time">One-time</option>
-					</Select>
-					<TextArea label="Long Description" value="" placeholder="Description" rows={10} />
-					<TextArea label="Short Description" value="" placeholder="Description" rows={3} />
-					{/* Todo: Add file upload for cover image */}
-					{/* Todo: Add file upload for thumbnails */}
+				<Input label="Product Name" value="" placeholder="Name" />
+				<Select label="Product Type" value="" placeholder="Type">
+					<option value="subscription">Subscription</option>
+					<option value="one-time">One-time</option>
+				</Select>
+				<TextArea label="Long Description" value="" placeholder="Description" rows={10} />
+				<TextArea label="Short Description" value="" placeholder="Description" rows={3} />
+				{/* Todo: Add file upload for cover image */}
+				{/* Todo: Add file upload for thumbnails */}
 			</form>
 			<div></div>
 		</div>
 	)
 }
 
-function Input({ label, value, placeholder }: { label: string; value: string, placeholder?: string }) {
+function Input({
+	label,
+	value,
+	placeholder,
+}: {
+	label: string
+	value: string
+	placeholder?: string
+}) {
 	return (
 		<div className="flex flex-col gap-2">
 			<label className="text-sm text-black">{label}</label>
@@ -95,7 +90,17 @@ function Input({ label, value, placeholder }: { label: string; value: string, pl
 	)
 }
 
-function TextArea({ label, value, placeholder, rows }: { label: string; value: string, placeholder?: string, rows?: number }) {
+function TextArea({
+	label,
+	value,
+	placeholder,
+	rows,
+}: {
+	label: string
+	value: string
+	placeholder?: string
+	rows?: number
+}) {
 	return (
 		<div className="flex flex-col gap-2">
 			<label className="text-sm text-black">{label}</label>
@@ -109,7 +114,17 @@ function TextArea({ label, value, placeholder, rows }: { label: string; value: s
 	)
 }
 
-function Select({ label, value, placeholder, children }: { label: string; value: string, placeholder?: string, children: React.ReactNode }) {
+function Select({
+	label,
+	value,
+	placeholder,
+	children,
+}: {
+	label: string
+	value: string
+	placeholder?: string
+	children: React.ReactNode
+}) {
 	return (
 		<div className="flex flex-col gap-2">
 			<label className="text-sm text-black">{label}</label>

@@ -1,20 +1,10 @@
-import { Button, Code } from "@mantine/core"
-import { format } from "date-fns"
+import { Button } from "@mantine/core"
 import { useState } from "react"
 import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
 import { Link, Navigate, useParams } from "react-router-dom"
-import {
-	API_URL,
-	getProductsSummary,
-	getProfile,
-	getProject,
-	getUserManagementData,
-	QueryKey,
-} from "../api"
-import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Drawer, Endpoint, Header, Loader, Table } from "../features/ui"
-import UserGroupsWrapper from "./user-groups"
+import { getProductsSummary, getProfile, getProject, QueryKey } from "../api"
+import { Content_Wrapper, Header, Loader, Table } from "../features/ui"
 
 export default function ProductsPage() {
 	const { projectName } = useParams()
@@ -102,7 +92,6 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						/>
 					</div>
 				)}
-				{activeTab === "products" && <UserGroupsWrapper />}
 			</Content_Wrapper>
 		</div>
 	)
@@ -141,11 +130,7 @@ function ActionBar({ projectTag }: { projectTag: string }) {
 	return (
 		<>
 			<div className="flex flex-wrap gap-2">
-				<Button
-					component={Link}
-					to={`/projects/${projectName}/products/new`}
-
-				>
+				<Button component={Link} to={`/projects/${projectName}/products/new`}>
 					Add New Product
 				</Button>
 			</div>
