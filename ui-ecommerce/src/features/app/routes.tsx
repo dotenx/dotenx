@@ -63,29 +63,31 @@ const routes: Routes = [
 export function Routes() {
 	const { width } = useViewportSize()
 
-	if (width < 600) {
+	if (width === 0) return null
+
+	if (width < 600)
 		return (
 			<div className="w-full px-20 pt-10 text-center ">
 				Dotenx is not designed for mobile use, please come back with a bigger screen.
 			</div>
 		)
-	} else
-		return (
-			<ReactRoutes>
-				{routes.map((route) => (
-					<Route
-						key={route.path}
-						path={route.path}
-						element={
-							<Layout
-								withoutSidebar={route.withoutSidebar}
-								compactSidebar={route.compactSidebar}
-							>
-								{route.element}
-							</Layout>
-						}
-					/>
-				))}
-			</ReactRoutes>
-		)
+
+	return (
+		<ReactRoutes>
+			{routes.map((route) => (
+				<Route
+					key={route.path}
+					path={route.path}
+					element={
+						<Layout
+							withoutSidebar={route.withoutSidebar}
+							compactSidebar={route.compactSidebar}
+						>
+							{route.element}
+						</Layout>
+					}
+				/>
+			))}
+		</ReactRoutes>
+	)
 }
