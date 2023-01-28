@@ -1,6 +1,7 @@
 import { Button, Select, Textarea, TextInput } from "@mantine/core"
 import { useState } from "react"
 import { ContentWrapper, Header } from "../features/ui"
+import { ImageDrop } from "../features/ui/image-drop"
 
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content">("details")
@@ -22,7 +23,7 @@ export function NewProductPage() {
 
 function DetailsTab() {
 	return (
-		<div className="grid grid-cols-3">
+		<div className="grid grid-cols-3 gap-20">
 			<form className="flex flex-col w-full gap-8 col-span-2">
 				<TextInput label="Product name" placeholder="Name" name="product name" />
 				<Select
@@ -43,10 +44,11 @@ function DetailsTab() {
 					minRows={3}
 					name="short description"
 				/>
-				{/* Todo: Add file upload for cover image */}
-				{/* Todo: Add file upload for thumbnails */}
 			</form>
-			<div></div>
+			<div className="space-y-8">
+				<ImageDrop label="Cover image" src="" onChange={(src) => console.log(src)} />
+				<ImageDrop label="Thumbnail" src="" onChange={(src) => console.log(src)} />
+			</div>
 		</div>
 	)
 }
