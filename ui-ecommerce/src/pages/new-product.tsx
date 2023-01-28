@@ -1,5 +1,6 @@
-import { Button, Select, Textarea, TextInput } from "@mantine/core"
+import { Button, NumberInput, Select, Textarea, TextInput } from "@mantine/core"
 import { useState } from "react"
+import { BsCurrencyDollar } from "react-icons/bs"
 import { ContentWrapper, Header } from "../features/ui"
 import { ImageDrop } from "../features/ui/image-drop"
 
@@ -43,6 +44,12 @@ function DetailsTab() {
 					placeholder="Description"
 					minRows={3}
 					name="short description"
+				/>
+				<NumberInput
+					label="Price"
+					placeholder="Price"
+					name="price"
+					rightSection={<BsCurrencyDollar />}
 				/>
 			</form>
 			<div className="space-y-8">
