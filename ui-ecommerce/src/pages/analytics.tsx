@@ -1,28 +1,34 @@
 import { Button, Code } from "@mantine/core"
-import { format } from "date-fns"
 import { useState } from "react"
-import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import { API_URL, getLast24HoursSales, getProfile, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Drawer, Endpoint, Header, Loader, Table } from "../features/ui"
-import UserGroupsWrapper from "./user-groups"
+import { Content_Wrapper, Drawer, Endpoint, Header, Loader } from "../features/ui"
 
 import {
-	Chart as ChartJS,
-	CategoryScale,
-	LinearScale,
 	BarElement,
+	CategoryScale,
+	Chart as ChartJS,
+	Legend,
+	LinearScale,
+	LineElement,
+	PointElement,
 	Title,
 	Tooltip,
-	LineElement,
-	Legend,
-	PointElement,
 } from "chart.js"
 import { Bar, Line } from "react-chartjs-2"
 
-ChartJS.register(CategoryScale, LinearScale,LineElement, PointElement, BarElement, Title, Tooltip, Legend)
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	LineElement,
+	PointElement,
+	BarElement,
+	Title,
+	Tooltip,
+	Legend
+)
 
 export default function AnalyticsPage() {
 	const { projectName } = useParams()
@@ -409,7 +415,7 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 function ReferrerChart({ mode }: { mode: "daily" | "monthly" }) {
 	const options = {
 		responsive: true,
-		indexAxis: "y",
+		indexAxis: "y" as const,
 		plugins: {
 			legend: {
 				display: false,
