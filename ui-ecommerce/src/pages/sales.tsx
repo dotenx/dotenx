@@ -6,7 +6,7 @@ import {
 	Legend,
 	LinearScale,
 	Title,
-	Tooltip
+	Tooltip,
 } from "chart.js"
 import { getDaysInMonth } from "date-fns"
 import _ from "lodash"
