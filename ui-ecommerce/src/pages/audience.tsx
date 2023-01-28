@@ -114,41 +114,39 @@ function SentEmailsTab() {
 	]
 
 	return (
-		<div className="mt-4">
-			<Table
-				columns={[
-					{
-						Header: "Subject",
-						accessor: "subject",
-					},
-					{
-						Header: "Date",
-						accessor: "date",
-					},
-					{
-						Header: "Recipients",
-						accessor: "recipients",
-					},
-					{
-						Header: "Views",
-						accessor: "views",
-					},
-					{
-						Header: "Clicks",
-						accessor: "clicks",
-					},
-					{
-						Header: "Opens",
-						accessor: "opens",
-					},
-					{
-						Header: "Bounces",
-						accessor: "bounces",
-					},
-				]}
-				data={emails}
-			/>
-		</div>
+		<Table
+			columns={[
+				{
+					Header: "Subject",
+					accessor: "subject",
+				},
+				{
+					Header: "Date",
+					accessor: "date",
+				},
+				{
+					Header: "Recipients",
+					accessor: "recipients",
+				},
+				{
+					Header: "Views",
+					accessor: "views",
+				},
+				{
+					Header: "Clicks",
+					accessor: "clicks",
+				},
+				{
+					Header: "Opens",
+					accessor: "opens",
+				},
+				{
+					Header: "Bounces",
+					accessor: "bounces",
+				},
+			]}
+			data={emails}
+		/>
 	)
 }
 

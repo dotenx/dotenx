@@ -12,7 +12,7 @@ import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
 
-export default function DomainsPage() {
+export function DomainsPage() {
 	const { projectTag, projectName, isLoading: projectTagIsLoading } = useGetProjectTag()
 	const [isDomainAdded, setIsDomainAdded] = useState<boolean>()
 	const getDomainsQuery = useQuery(

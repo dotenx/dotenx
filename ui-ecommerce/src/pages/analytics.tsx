@@ -185,7 +185,7 @@ function BestStat({
 
 function AudienceTab() {
 	return (
-		<div>
+		<div className="flex flex-col">
 			<div className="my-10">
 				<AudienceStats />
 			</div>

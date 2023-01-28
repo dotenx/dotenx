@@ -3,11 +3,11 @@ import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
 import { AnalyticsPage } from "../../pages/analytics"
 import { AudiencePage } from "../../pages/audience"
-import DomainsPage from "../../pages/domains"
+import { DomainsPage } from "../../pages/domains"
 import { Files } from "../../pages/files"
 import { HomePage } from "../../pages/home"
-import NewProductsPage from "../../pages/new-product"
-import NotFoundPage from "../../pages/not-found"
+import { NewProductPage } from "../../pages/new-product"
+import { NotFoundPage } from "../../pages/not-found"
 import { ProductsPage } from "../../pages/products"
 import { SalesPage } from "../../pages/sales"
 import { Layout } from "../ui"
@@ -22,7 +22,7 @@ type Routes = {
 const routes: Routes = [
 	{
 		path: "/projects/:projectName/products/New",
-		element: <NewProductsPage />,
+		element: <NewProductPage />,
 	},
 	{
 		path: "/projects/:projectName/products",
