@@ -9,7 +9,7 @@ import { HomePage } from "../../pages/home"
 import NewProductsPage from "../../pages/new-product"
 import NotFoundPage from "../../pages/not-found"
 import { ProductsPage } from "../../pages/products"
-import SalesPage from "../../pages/sales"
+import { SalesPage } from "../../pages/sales"
 import { Layout } from "../ui"
 
 type Routes = {
