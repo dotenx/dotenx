@@ -2,20 +2,14 @@ import { Button } from "@mantine/core"
 import { useState } from "react"
 import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
-import { Link, Navigate, useParams } from "react-router-dom"
-import { getProductsSummary, getProfile, getProject, QueryKey } from "../api"
-import { Content_Wrapper, Header, Loader, Table } from "../features/ui"
+import { Link, useParams } from "react-router-dom"
+import { getProductsSummary, getProject, QueryKey } from "../api"
+import { Content_Wrapper, Header, Table } from "../features/ui"
 
-export default function ProductsPage() {
-	const { projectName } = useParams()
-	if (!projectName) return <Navigate to="/" replace />
-	return <UMTableContent projectName={projectName} />
-}
-
-function UMTableContent({ projectName }: { projectName: string }) {
+export function ProductsPage() {
+	const { projectName = "" } = useParams()
 	const [currentPage, setCurrentPage] = useState(1)
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
-
 	const { data: projectDetails, isLoading: projectDetailsLoading } = useQuery(
 		QueryKey.GetProject,
 		() => getProject(projectName)
@@ -27,7 +21,6 @@ function UMTableContent({ projectName }: { projectName: string }) {
 		{ enabled: !!projectTag }
 	)
 	const tableData = usersData?.data?.rows ?? []
-
 	const nPages = Math.ceil((usersData?.data?.totalRows as number) / 10)
 	const queryClient = useQueryClient()
 
@@ -42,7 +35,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 					setActiveTab(v)
 				}}
 			>
-				<ActionBar projectTag={projectTag} />
+				<ActionBar />
 			</Header>
 			<Content_Wrapper>
 				{activeTab === "all" && (
@@ -97,35 +90,8 @@ function UMTableContent({ projectName }: { projectName: string }) {
 	)
 }
 
-const registerExample = {
-	email: "example@email.com",
-	password: "abcdefg1234",
-	fullname: "John Smith",
-}
-
-const loginExample = {
-	email: "example@email.com",
-	password: "abcdefg1234",
-}
-
-function ActionBar({ projectTag }: { projectTag: string }) {
+function ActionBar() {
 	const { projectName } = useParams()
-	const profileQuery = useQuery(
-		[QueryKey.GetProfile, projectTag],
-		() => getProfile({ projectTag }),
-		{ enabled: !!projectTag }
-	)
-	const accountId = profileQuery.data?.data.account_id
-	const profileExample = {
-		account_id: accountId,
-		created_at: "2022-11-25 20:59:13.675894187 +0000 UTC m=+171.884849553",
-		email: "example.email.com",
-		full_name: "John Smith",
-		user_group: "users",
-		tp_account_id: "********-****-****-****-************",
-	}
-
-	if (profileQuery.isLoading) return <Loader />
 
 	return (
 		<>
