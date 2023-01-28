@@ -2,7 +2,7 @@ import axios from "axios"
 import {
 	GetFilesDataResponse,
 	GetFormatterFunctionsResponse,
-	GetLast24HoursSalesResponse,
+	GetLastDaySalesResponse,
 	GetMembersSummaryResponse,
 	GetProductsSummaryResponse,
 	GetProfileResponse,
@@ -74,7 +74,7 @@ export function getProductsSummary(projectTag: string, page: number) {
 }
 
 export function getLast24HoursSales(projectTag: string, page: number) {
-	return api.post<GetLast24HoursSalesResponse | null>(
+	return api.post<GetLastDaySalesResponse | null>(
 		`/database/query/select/project/${projectTag}/table/sales`, //TODO: Use a view
 		{ columns: ["time", "email", "total"] },
 		{

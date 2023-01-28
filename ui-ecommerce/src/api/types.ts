@@ -1,6 +1,6 @@
 export enum QueryKey {
 	GetProductsSummary = "get-products-summary",
-	GetLast24HoursSales = "get-last-24-hours-sales",
+	GetLastDaySales = "get-last-day-sales",
 	GetMembersSummary = "get-members-summary",
 	GetUserManagementData = "get-user-management-data",
 	GetProject = "get-project",
@@ -32,7 +32,7 @@ export type GetProductsSummaryResponse = {
 	}[]
 }
 
-export type GetLast24HoursSalesResponse = {
+export type GetLastDaySalesResponse = {
 	totalRows: number
 	rows: {
 		time: string
