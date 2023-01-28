@@ -29,6 +29,7 @@ export abstract class Element {
 	elementId?: string
 	tagId?: string
 	hidden?: boolean
+	script?: string
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -128,6 +129,11 @@ export abstract class Element {
 
 	populate(children: Element[]) {
 		this.children = children
+		return this
+	}
+
+	setScript(script: string) {
+		this.script = script
 		return this
 	}
 }
