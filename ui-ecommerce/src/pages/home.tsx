@@ -10,7 +10,8 @@ import {
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { closeAllModals, openModal } from "@mantine/modals"
-import { TbPlus, TbTrash } from "react-icons/tb"
+import { BsPlusLg } from "react-icons/bs"
+import { TbTrash } from "react-icons/tb"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Link } from "react-router-dom"
 import { z } from "zod"
@@ -28,7 +29,7 @@ export function HomePage() {
 			<div className="container p-10 mx-auto space-y-6">
 				<div className="flex justify-between">
 					<h2 className="text-2xl">Projects</h2>
-					<Button leftIcon={<TbPlus />} onClick={onClickAddProject}>
+					<Button leftIcon={<BsPlusLg />} onClick={onClickAddProject}>
 						Add Project
 					</Button>
 				</div>
