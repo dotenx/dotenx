@@ -12,10 +12,10 @@ import {
 	getUserGroups,
 	QueryKey,
 	setFilesAccess,
-	setFileUserGroup
+	setFileUserGroup,
 } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Form, Header, Modal, NewModal, Table } from "../features/ui"
+import { ContentWrapper, Form, Header, Modal, NewModal, Table } from "../features/ui"
 import { UploadFileForm } from "../internal/upload-file-form"
 
 export default function Files() {
@@ -83,7 +83,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 	return (
 		<div>
 			<Header title={"Files"} />
-			<Content_Wrapper>
+			<ContentWrapper>
 				<button
 					className="active:translate-y-[2px] flex transition-all px-4 gap-x-2 hover:text-slate-700  hover:bg-slate-50 items-center p-2 rounded-[10px] bg-white  text-slate-900   font-medium"
 					onClick={() => modal.open(Modals.UploadFile)}
@@ -203,7 +203,7 @@ function FilesTableContent({ projectName }: { projectName: string }) {
 						</Button>
 					</div>
 				</NewModal>
-			</Content_Wrapper>
+			</ContentWrapper>
 			<Modal fluid kind={Modals.FilesUserGroup} title="User groups" size="md">
 				{(data: { name: string; userGroup: string[] }) => (
 					<div className="flex flex-col">

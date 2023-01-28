@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import { getProductsSummary, getProfile, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Header, Loader } from "../features/ui"
+import { ContentWrapper, Header, Loader } from "../features/ui"
 
 export default function NewProductsPage() {
 	const { projectName } = useParams()
@@ -44,7 +44,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			>
 				<ActionBar projectTag={projectTag} />
 			</Header>
-			<Content_Wrapper>{activeTab === "details" && <DetailsTab />}</Content_Wrapper>
+			<ContentWrapper>{activeTab === "details" && <DetailsTab />}</ContentWrapper>
 		</div>
 	)
 }

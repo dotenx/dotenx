@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import { getLast24HoursSales, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Header, Table } from "../features/ui"
+import { ContentWrapper, Header, Table } from "../features/ui"
 
 import {
 	BarElement,
@@ -58,7 +58,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			>
 				<ActionBar />
 			</Header>
-			<Content_Wrapper>
+			<ContentWrapper>
 				{activeTab === "all" && (
 					<div className="flex flex-col">
 						<CurrentMonthSalesChart />
@@ -98,7 +98,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 						/>
 					</div>
 				)}
-			</Content_Wrapper>
+			</ContentWrapper>
 		</div>
 	)
 }

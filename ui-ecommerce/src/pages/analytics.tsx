@@ -16,7 +16,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import { getLast24HoursSales, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Header } from "../features/ui"
+import { ContentWrapper, Header } from "../features/ui"
 
 ChartJS.register(
 	CategoryScale,
@@ -67,10 +67,10 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			>
 				<ActionBar />
 			</Header>
-			<Content_Wrapper>
+			<ContentWrapper>
 				{activeTab === "sales" && <SalesTab />}
 				{activeTab === "audience" && <AudienceTab projectTag={projectTag} />}
-			</Content_Wrapper>
+			</ContentWrapper>
 		</div>
 	)
 }

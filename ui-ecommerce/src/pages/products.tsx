@@ -5,7 +5,7 @@ import { IoReload } from "react-icons/io5"
 import { useQuery, useQueryClient } from "react-query"
 import { Link, useParams } from "react-router-dom"
 import { getProductsSummary, getProject, QueryKey } from "../api"
-import { Content_Wrapper, Header, Table } from "../features/ui"
+import { ContentWrapper, Header, Table } from "../features/ui"
 
 export function ProductsPage() {
 	const { projectName = "" } = useParams()
@@ -35,7 +35,7 @@ export function ProductsPage() {
 			>
 				<ActionBar />
 			</Header>
-			<Content_Wrapper>
+			<ContentWrapper>
 				{activeTab === "all" && (
 					<div className="flex flex-col">
 						<Stats />
@@ -83,7 +83,7 @@ export function ProductsPage() {
 						/>
 					</div>
 				)}
-			</Content_Wrapper>
+			</ContentWrapper>
 		</div>
 	)
 }

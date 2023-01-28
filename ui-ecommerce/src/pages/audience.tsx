@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { Navigate, useParams } from "react-router-dom"
 import { getMembersSummary, getProject, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
-import { Content_Wrapper, Header, Table } from "../features/ui"
+import { ContentWrapper, Header, Table } from "../features/ui"
 import { AudienceStats } from "./analytics"
 
 export default function AudiencePage() {
@@ -35,7 +35,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 			>
 				<ActionBar />
 			</Header>
-			<Content_Wrapper>
+			<ContentWrapper>
 				{activeTab === "members" && (
 					<MembersTab
 						projectTag={projectTag}
@@ -44,7 +44,7 @@ function UMTableContent({ projectName }: { projectName: string }) {
 				)}
 				{activeTab === "sent emails" && <SentEmailsTab />}
 				{activeTab === "drafts" && <DraftsTab />}
-			</Content_Wrapper>
+			</ContentWrapper>
 		</div>
 	)
 }

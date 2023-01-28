@@ -42,7 +42,7 @@ export default function DomainsPage() {
 	return (
 		<div>
 			<Header title={"Domains"} />
-			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
+			<ContentWrapper>
 				{getDomainsQuery.isLoading ||
 				projectTagIsLoading ||
 				getDomainsQuery.isRefetching ? (

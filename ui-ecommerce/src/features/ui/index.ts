@@ -1,5 +1,4 @@
 export * from "./animation/fade"
-export * from "./content-wrapper"
 export * from "./description"
 export * from "./field"
 export * from "./form"
