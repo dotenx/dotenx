@@ -7,7 +7,6 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
@@ -67,42 +66,9 @@ func (manager *executionManager) StartPipelineByName(input map[string]interface{
 		return -1, err
 	}
 
-	// _ = redis.Execution{
-	// 	Action:      "start_pipeline",
-	// 	ExecutionId: executionId,
-	// 	PipelineId:  pipelineId,
-	// 	Input:       input,
-	// }
-
-	//err = manager.redisQueue.StoreExecution(msg, accountId)
-	if err != nil {
-		manager.DeleteExecution(executionId)
-		return -1, err
-	}
-	err = manager.QueueService.AddUser(accountId)
-	if err != nil {
-		manager.DeleteExecution(executionId)
-		return -1, err
-	}
-	err = manager.GetNextTask(-1, executionId, "", accountId)
-	if err != nil {
-		//manager.DeleteExecution(executionId)
-		return -1, err
-	} // ch, err := manager.QueueService.NewChannel()
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	return -1, http.StatusInternalServerError
-	// }
-
-	// err = manager.QueueService.SendMessage(ch, msg, config.Configs.Queue.Exchange, config.Configs.Queue.Key)
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// 	return -1, http.StatusInternalServerError
-	// }
-	if !pipeline.IsInteraction {
-		return gin.H{"id": executionId}, err
-	}
-	return manager.getResponse(executionId)
+	pipeline.AccountId = accountId
+	// TODO: implementing better error (or timeout) handling
+	return manager.ExecuteAllTasksAndReturnResults(pipeline, executionId)
 }
 
 // transferInitialDataToWrightFormat transforms the initial data from the format that the user provides to the format that the wright service expects
