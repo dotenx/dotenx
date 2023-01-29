@@ -16,6 +16,7 @@ import { NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 import { BiKey } from "react-icons/bi"
 import { Modals, useModal } from "../hooks"
+import { FaExternalLinkAlt } from "react-icons/fa"
 const ANIMATION_DURATION = 0.15
 
 type SidebarData = {
@@ -64,11 +65,14 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				<div className="mt-10">
 					<NavLinks closed={closed} links={sidebar.navLinks} />
 				</div>
-				<div className="mt-6">
+				<div className="mt-10 pt-5 px-5  border-t -mx-5">
 					<a
 						target={"_blank"}
 						href={`https://ui.dotenx.com/projects/${projectName}`}
-						className="text-xl hover:bg-sla bg-white w-full rounded-md flex items-center h-10 font-medium gap-2 transition-all hover:text-rose-600 hover:shadow-lg px-3 whitespace-nowrap"
+						className={clsx(
+							" text-white hover:bg-rose-500   w-full rounded-md flex items-center  font-medium gap-2 transition-all  px-3 whitespace-nowrap",
+							smallScreen ? "text-sm h-9  " : "text-xl h-14 "
+						)}
 					>
 						<div
 							className={`shrink-0 transition-all ${
@@ -78,13 +82,14 @@ export function Sidebar({ closable }: { closable: boolean }) {
 							UI
 						</div>
 						<FadeIn visible={!closed}>
-							<span
-								className={`pl-[38px] shrink-0 ${
-									smallScreen ? "text-sm " : "text-lg "
-								}`}
-							>
-								UI builder
-							</span>
+							<div className="flex items-center p-1">
+								<FaExternalLinkAlt className="w-4 h-4 mr-4" />
+								<span
+									className={` shrink-0 ${smallScreen ? "text-sm " : "text-lg "}`}
+								>
+									UI builder
+								</span>
+							</div>
 						</FadeIn>
 					</a>
 				</div>
@@ -154,7 +159,7 @@ function BackToProjects({ closed }: { closed: boolean }) {
 	const smallScreen = window.innerHeight < 750
 	return (
 		<a
-			href="https://admin.dotenx.com/projects"
+			href="https://admin.dotenx.com"
 			className={`${
 				smallScreen ? "h-8 " : "h-10 "
 			} text-xl bg-white w-full rounded-md flex items-center font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap`}
