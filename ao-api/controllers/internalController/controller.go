@@ -135,16 +135,20 @@ func (c *InternalController) ListTpUsers(ctx *gin.Context) {
 		return
 	}
 
-	projects, err := c.Service.ListDBProjects(dto.AccountId)
-	if err != nil {
-		logrus.Error(err.Error())
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
+	// TODO: Implementing an acceptable method for getting number of tp users (for DoTenX users)
+	// projects, err := c.Service.ListDBProjects(dto.AccountId)
+	// if err != nil {
+	// 	logrus.Error(err.Error())
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"message": err.Error(),
+	// 	})
+	// 	return
+	// }
 
-	tpUsers, err := c.Service.ListTpUsers(projects, dto.AccountId)
+	// Currently we return an empty array for list of tp users (no limitation on number of tp users)
+	// tpUsers, err := c.Service.ListTpUsers(projects, dto.AccountId)
+	tpUsers := make([]string, 0)
+	var err error
 	if err != nil {
 		logrus.Error(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{
