@@ -297,7 +297,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	execution.POST("/type/:type/step/:step_name", executionController.RunInstantly(crudServices, TriggerService, IntegrationService))
 	execution.GET("/project/:project_name/name/:name/status", executionController.WatchPipelineLastExecutionStatus())
 	execution.GET("/id/:id/status", executionController.WatchExecutionStatus())
-	// execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
+	//execution.POST("/ep/:endpoint/task/:name/start", executionController.StartPipelineTask())
 
 	execution.GET("/queue", executionController.GetExecution())
 	execution.POST("/id/:id/task/:taskId/status/timedout", executionController.TaskExecutionTimedout())
