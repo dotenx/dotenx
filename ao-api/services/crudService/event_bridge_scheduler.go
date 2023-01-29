@@ -11,10 +11,6 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-const rate = "rate(10 minutes)"
-const roleArn = "arn:aws:iam::994147050565:role/dotenx-event-bridge-scheduler-role"
-const topicArn = "arn:aws:sns:us-east-1:994147050565:call-trigger"
-
 func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint string) (err error) {
 
 	// Create a new AWS session
@@ -41,13 +37,13 @@ func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint string) (err 
 	_, err = client.CreateSchedule(&awsScheduler.CreateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(rate),
+		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
 		Target: &awsScheduler.Target{
-			Arn:     aws.String(topicArn),
-			RoleArn: aws.String(roleArn),
+			Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
+			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
 			Input:   aws.String(payloadStr),
 		},
 	})
@@ -104,13 +100,13 @@ func (cm *crudManager) EnableEventBridgeScheduler(pipelineEndpoint string) (err 
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateEnabled),
-		ScheduleExpression: aws.String(rate),
+		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
 		Target: &awsScheduler.Target{
-			Arn:     aws.String(topicArn),
-			RoleArn: aws.String(roleArn),
+			Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
+			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
 			Input:   aws.String(payloadStr),
 		},
 	})
@@ -143,13 +139,13 @@ func (cm *crudManager) DisableEventBridgeScheduler(pipelineEndpoint string) (err
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(rate),
+		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
 		Target: &awsScheduler.Target{
-			Arn:     aws.String(topicArn),
-			RoleArn: aws.String(roleArn),
+			Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
+			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
 			Input:   aws.String(payloadStr),
 		},
 	})

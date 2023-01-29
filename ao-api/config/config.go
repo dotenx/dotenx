@@ -34,6 +34,7 @@ type (
 		UiBuilderPublishPath  string `envconfig:"AOA_UI_BUILDER_PUBLISH_PATH"`
 		CustomQueryTimeLimit  string `envconfig:"AOA_CUSTOM_QUERY_TIME_LIMIT_IN_MILLISECONDS"`
 		ExcutionTaskTimeLimit int    `envconfig:"AOA_TASK_TIME_LIMIT_IN_SECONDS"`
+		ExcutionTriggerRate   string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_SCHEDULE_EXPRESSION"`
 	}
 
 	Queue struct {
@@ -67,23 +68,25 @@ type (
 	}
 
 	Secrets struct {
-		AuthServerJwtSecret    string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
-		AppName                string `envconfig:"AOA_APP_NAME"`
-		AppSecret              string `envconfig:"AOA_APP_SECRET"`
-		CookieSecret           string `envconfig:"AOA_Cookie_SECRET"`
-		Encryption             string `envconfig:"AOA_ENCRYPTION_SECRET"`
-		SessionAuthSecret      string `envconfig:"AOA_SESSION_AUTH_SECRET"`
-		SessionEncryptSecret   string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
-		RunnerToken            string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
-		AwsAccessKeyId         string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
-		AwsSecretAccessKey     string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
-		AwsRegion              string `envconfig:"AOA_AWS_REGION"`
-		CodeChallenge          string `envconfig:"AOA_CODE_CHALLENGE"`
-		EbayNotifToken         string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
-		SendGridToken          string `envconfig:"AOA_SEND_GRID_TOKEN"`
-		MarketPlaceAdminSecret string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
-		DeployFunctionRoleArn  string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
-		EventSchedulerToken    string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TOKEN"`
+		AuthServerJwtSecret     string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
+		AppName                 string `envconfig:"AOA_APP_NAME"`
+		AppSecret               string `envconfig:"AOA_APP_SECRET"`
+		CookieSecret            string `envconfig:"AOA_Cookie_SECRET"`
+		Encryption              string `envconfig:"AOA_ENCRYPTION_SECRET"`
+		SessionAuthSecret       string `envconfig:"AOA_SESSION_AUTH_SECRET"`
+		SessionEncryptSecret    string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
+		RunnerToken             string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
+		AwsAccessKeyId          string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
+		AwsSecretAccessKey      string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
+		AwsRegion               string `envconfig:"AOA_AWS_REGION"`
+		CodeChallenge           string `envconfig:"AOA_CODE_CHALLENGE"`
+		EbayNotifToken          string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
+		SendGridToken           string `envconfig:"AOA_SEND_GRID_TOKEN"`
+		MarketPlaceAdminSecret  string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
+		DeployFunctionRoleArn   string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		EventSchedulerToken     string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TOKEN"`
+		EventSchedulerRoleArn   string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_ROLE_ARN"`
+		EventSchedulerTargetArn string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TARGET_ARN"`
 	}
 
 	Upload struct {

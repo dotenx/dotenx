@@ -15,9 +15,6 @@ func (controller *TriggerController) HandleEventBridgeScheduler() gin.HandlerFun
 			AuthToken        string `json:"auth_token"`
 		}
 
-		// body, _ := ioutil.ReadAll(c.Request.Body)
-		// logrus.Info(string(body))
-
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
