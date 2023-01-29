@@ -21,13 +21,12 @@ type ExecutionService interface {
 	GetExecutionIdForPipeline(accountId, pipeLineName, projectName string) (int, error)
 
 	// tasks
-	SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error
+	SetTaskExecutionStatus(executionId int, taskId int, taskStatus string) error
 	SetTaskExecutionResultDetails(executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) error
 	GetTaskExecutionResult(executionId int, taskId int) (interface{}, error)
 	GetTaskId(executionId int, taskName string) (int, error)
 	SetTaskStatusToTimedout(executionId, taskId int) error
 	GetNumberOfTasksByExecution(executionId int) (int, error)
-	GetNextTask(taskId, executionId int, status, accountId string) error
 	GetTaskByExecution(executionId, taskId int) (models.TaskDetails, error)
 	GetTasksWithStatusForExecution(id int) ([]models.TaskStatusSummery, error)
 	SetExecutionTime(executionId int, seconds int) error

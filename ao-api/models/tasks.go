@@ -80,10 +80,11 @@ type TaskStatusSummery struct {
 type TaskResultDto struct {
 	TaskId int `json:"task_id"`
 	//ExecutionId int    `json:"execution_id"`
-	Status    string `json:"status"`
-	AccountId string `json:"account_id"`
-	Log       string `json:"log"`
-	Error     string `json:"error"`
+	Status      string         `json:"status"`
+	AccountId   string         `json:"account_id"`
+	Log         string         `json:"log"`
+	Error       string         `json:"error"`
+	ReturnValue ReturnValueMap `json:"return_value"`
 }
 
 func init() {
