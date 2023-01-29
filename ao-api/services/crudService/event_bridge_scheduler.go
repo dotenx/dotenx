@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	awsScheduler "github.com/aws/aws-sdk-go/service/scheduler"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 const rate = "rate(10 minutes)"
@@ -71,7 +72,8 @@ func (cm *crudManager) DeleteEventBridgeScheduler(pipelineEndpoint string) (err 
 
 	schedulerName := "dtx_" + pipelineEndpoint
 	_, err = client.DeleteSchedule(&awsScheduler.DeleteScheduleInput{
-		Name: aws.String(schedulerName),
+		ClientToken: aws.String(utils.RandStringRunes(32, utils.FullRunes)),
+		Name:        aws.String(schedulerName),
 	})
 	return
 }
