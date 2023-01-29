@@ -126,7 +126,7 @@ func (manager *TriggerManager) AddTriggers(accountId string, projectName string,
 			return
 		}
 	}
-	return
+	return manager.CreateEventBridgeScheduler(endpoint)
 }
 
 func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
