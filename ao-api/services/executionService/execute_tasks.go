@@ -119,9 +119,7 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 		}
 		jobDTO.SetIntegration(integration)
 	} else {
-		if tpAccountId == "" {
-			logrus.Println("task does not have an integration")
-		} else {
+		if tpAccountId != "" {
 			// TODO what if for tasks with several types of integrations
 			task.MetaData = models.AvaliableTasks[task.Type]
 			if len(jobDTO.MetaData.Integrations) > 0 { // check if task needs integration
@@ -135,6 +133,8 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 				logrus.Println(integration)
 				jobDTO.SetIntegration(integration)
 			}
+		} else {
+			logrus.Println("task does not have an integration")
 		}
 	}
 
@@ -145,12 +145,13 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 	case "Run node code":
 		jobDTO.SetRunCodeFields()
 	}
-	err = manager.SetTaskExecutionResult(executionId, initialTaskId, "started")
+	err = manager.SetTaskExecutionStatus(executionId, initialTaskId, "started")
 	if err != nil {
 		logrus.Error(err.Error())
 		errChan <- err
 		return
 	}
+	// TODO: check why we should set results before executing task
 	err = manager.SetTaskExecutionResultDetails(executionId, initialTaskId, "started", map[string]interface{}{}, "")
 	if err != nil {
 		logrus.Error(err.Error())
@@ -158,9 +159,10 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 		return
 	}
 
+	// TODO: better error handling, currently we consider errors that are in result variable
 	result, _ := manager.Execute(*jobDTO)
 	result.TaskId = initialTaskId
-	err = manager.SetTaskExecutionResult(executionId, initialTaskId, result.Status)
+	err = manager.SetTaskExecutionStatus(executionId, initialTaskId, result.Status)
 	if err != nil {
 		logrus.Error(err.Error())
 		errChan <- err
@@ -173,6 +175,7 @@ func (manager *executionManager) ExecuteTasks(initialTaskId, executionId int, ac
 		return
 	}
 
+	// TODO: renaming UtopiopsService
 	manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTasks[task.Type].Author, "task", task.Type)
 	err = manager.updateExecutionTasksUsage(accountId, 1)
 	if err != nil {
@@ -280,15 +283,7 @@ func (manager *executionManager) Execute(job models.Job) (result models.TaskResu
 
 // check each field in body and looks for value for a filed in a task return value or trigger initial data if needed
 func (manager *executionManager) mapFields(execId int, accountId string, taskName string, taskBody map[string]interface{}) (map[string]interface{}, error) {
-	finalTaskBody, err := manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, map[string]returnValues{})
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	// finalTaskBody = append(finalTaskBody, currentTaskBody)
-	// }
-	logrus.Info("finalTaskBody:", finalTaskBody)
-	return finalTaskBody, nil
+	return manager.getBodyFromSourceData(execId, accountId, taskName, taskBody, map[string]returnValues{})
 }
 
 // updateExecutionTasksUsage sends a request to dotenx-admin and add number of tasks to account's plan usage

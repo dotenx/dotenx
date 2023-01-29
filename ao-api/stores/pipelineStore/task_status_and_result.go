@@ -13,7 +13,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {
+func (ps *pipelineStore) SetTaskStatus(context context.Context, executionId int, taskId int, status string) (err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection

@@ -53,7 +53,7 @@ type PipelineStore interface {
 	// Set the status of a task to timed out if it's status is not already set
 	SetTaskStatusToTimedout(context context.Context, executionId int, taskId int) (err error)
 	// Set the result of a task
-	SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error)
+	SetTaskStatus(context context.Context, executionId int, taskId int, status string) (err error)
 	SetTaskResultDetails(context context.Context, executionId int, taskId int, status string, returnValue models.ReturnValueMap, log string) (err error)
 
 	// executions
