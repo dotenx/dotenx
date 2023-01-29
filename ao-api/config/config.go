@@ -83,6 +83,7 @@ type (
 		SendGridToken          string `envconfig:"AOA_SEND_GRID_TOKEN"`
 		MarketPlaceAdminSecret string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
 		DeployFunctionRoleArn  string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		EventSchedulerToken    string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TOKEN"`
 	}
 
 	Upload struct {

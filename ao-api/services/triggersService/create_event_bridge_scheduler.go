@@ -28,6 +28,7 @@ func (manager *TriggerManager) CreateEventBridgeScheduler(pipelineEndpoint strin
 	topicArn := "arn:aws:sns:us-east-1:994147050565:call-trigger"
 	payloadMap := map[string]interface{}{
 		"pipeline_endpoint": pipelineEndpoint,
+		"auth_token":        config.Configs.Secrets.EventSchedulerToken,
 	}
 	payloadBytes, _ := json.Marshal(payloadMap)
 	payloadStr := string(payloadBytes)

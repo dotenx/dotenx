@@ -7,11 +7,10 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
-	"github.com/dotenx/dotenx/ao-api/stores/integrationStore"
 	"github.com/sirupsen/logrus"
 )
 
-func (manager *TriggerManager) HandleEventBridgeScheduler(intgStore integrationStore.IntegrationStore, pipelineEndpoint string) (err error) {
+func (manager *TriggerManager) HandleEventBridgeScheduler(pipelineEndpoint string) (err error) {
 	triggers, err := manager.GetAllTriggersForPipelineByEndpoint(pipelineEndpoint)
 	if err != nil {
 		logrus.Error(err.Error())
@@ -32,7 +31,7 @@ func (manager *TriggerManager) HandleEventBridgeScheduler(intgStore integrationS
 			continue
 		}
 		if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
-			go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, intgStore, utils.GetNewUuid())
+			go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, utils.GetNewUuid())
 			manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 		}
 	}
