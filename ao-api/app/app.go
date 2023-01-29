@@ -194,11 +194,6 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
 
 	// Routes
-	// endpoints with runner token
-	r.POST("/execution/id/:id/next", executionController.GetNextTask())
-	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
-
-	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
 
 	// user management router (without any authentication)

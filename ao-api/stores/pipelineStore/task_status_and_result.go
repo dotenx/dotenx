@@ -13,7 +13,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func (ps *pipelineStore) SetTaskResult(context context.Context, executionId int, taskId int, status string) (err error) {
+func (ps *pipelineStore) SetTaskStatus(context context.Context, executionId int, taskId int, status string) (err error) {
 	switch ps.db.Driver {
 	case db.Postgres:
 		conn := ps.db.Connection
@@ -145,6 +145,15 @@ func (ps *pipelineStore) SetTaskStatusToTimedout(context context.Context, execut
 	return
 }
 
+func (ps *pipelineStore) GetNumberOfRunningTasks(context context.Context, executionId int) (count int, err error) {
+	switch ps.db.Driver {
+	case db.Postgres:
+		conn := ps.db.Connection
+		err = conn.QueryRow(getNumberOfRunningTasks, executionId).Scan(&count)
+	}
+	return
+}
+
 var checkIfTaskStatusAlreadySet = `
 SELECT count(*) FROM executions_status
 WHERE execution_id = $1 AND task_id = $2;
@@ -191,4 +200,9 @@ var updateTaskResultDetailsWithoutReturnValue = `
 UPDATE executions_result
 SET execution_id=$1, task_id=$2, status=$3, log=$4
 WHERE execution_id = $1 AND task_id = $2;
+`
+
+var getNumberOfRunningTasks = `
+SELECT count(*) FROM executions_status
+WHERE execution_id = $1 AND (status = 'started' OR status = 'waiting')
 `

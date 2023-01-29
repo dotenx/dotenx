@@ -6,8 +6,8 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 )
 
-func (manager *executionManager) SetTaskExecutionResult(executionId int, taskId int, taskStatus string) error {
-	err := manager.Store.SetTaskResult(noContext, executionId, taskId, taskStatus)
+func (manager *executionManager) SetTaskExecutionStatus(executionId int, taskId int, taskStatus string) error {
+	err := manager.Store.SetTaskStatus(noContext, executionId, taskId, taskStatus)
 	if err != nil {
 		log.Println(err.Error())
 		return err
