@@ -37,7 +37,7 @@ func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint string) (err 
 	_, err = client.CreateSchedule(&awsScheduler.CreateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
+		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
@@ -100,7 +100,7 @@ func (cm *crudManager) EnableEventBridgeScheduler(pipelineEndpoint string) (err 
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateEnabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
+		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
@@ -139,7 +139,7 @@ func (cm *crudManager) DisableEventBridgeScheduler(pipelineEndpoint string) (err
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
 		Name:               &schedulerName,
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExcutionTriggerRate),
+		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
