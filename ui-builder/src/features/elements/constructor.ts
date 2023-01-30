@@ -2,6 +2,7 @@ import { Element } from './element'
 import { BoxElement } from './extensions/box'
 import { ButtonElement } from './extensions/button'
 import { ColumnsElement } from './extensions/columns'
+import { IconElement } from './extensions/icon'
 import { ImageElement } from './extensions/image'
 import { TextElement } from './extensions/text'
 
@@ -10,3 +11,4 @@ export const btn = (txt: string) => new ButtonElement().unstyled().txt(txt)
 export const txt = (txt: string) => new TextElement().unstyled().txt(txt)
 export const grid = (columns: number) => new ColumnsElement().cols(columns)
 export const img = (src?: string) => new ImageElement().src(src ?? '')
+export const icn = (name: string) => new IconElement().type('fas').setName(name)

@@ -1,8 +1,13 @@
 import heroImg from '../../../assets/themes/sofa/hero.png'
 import infoImg1 from '../../../assets/themes/sofa/info-1.png'
 import infoImg2 from '../../../assets/themes/sofa/info-2.png'
+import logoImg1 from '../../../assets/themes/sofa/logo-1.png'
+import logoImg2 from '../../../assets/themes/sofa/logo-2.png'
+import logoImg3 from '../../../assets/themes/sofa/logo-3.png'
+import logoImg4 from '../../../assets/themes/sofa/logo-4.png'
+import logoImg5 from '../../../assets/themes/sofa/logo-5.png'
 import { gridCols } from '../../../utils/style-utils'
-import { box, btn, grid, img, txt } from '../../elements/constructor'
+import { box, btn, grid, icn, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 
 const theme = {
@@ -123,9 +128,15 @@ const stat = ({ title, sub }: { title: string; sub: string }) =>
 const logos = () =>
 	container([
 		grid(5)
-			.populate([img(), img(), img(), img(), img()])
+			.populate([img(logoImg1), img(logoImg2), img(logoImg3), img(logoImg4), img(logoImg5)])
+			.css({
+				gap: '1.5rem',
+			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(3),
+			})
+			.cssMobile({
+				gridTemplateColumns: gridCols(2),
 			}),
 	]).css({
 		paddingTop: '10rem',
@@ -158,6 +169,7 @@ const features = () =>
 				feature({
 					title: 'Grow Faster',
 					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+					icon: 'line-chart',
 				})
 					.css({
 						marginBottom: '9rem',
@@ -168,6 +180,7 @@ const features = () =>
 				feature({
 					title: 'Build Audience',
 					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+					icon: 'users',
 				})
 					.css({
 						marginTop: '9rem',
@@ -178,6 +191,7 @@ const features = () =>
 				feature({
 					title: 'Get Feedback',
 					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+					icon: 'comments',
 				})
 					.css({
 						marginBottom: '9rem',
@@ -188,6 +202,7 @@ const features = () =>
 				feature({
 					title: 'Battle Tested',
 					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+					icon: 'shield',
 				})
 					.css({
 						marginTop: '9rem',
@@ -209,9 +224,11 @@ const features = () =>
 		paddingBottom: '4.3rem',
 	})
 
-const feature = ({ title, sub }: { title: string; sub: string }) =>
+const feature = ({ title, sub, icon }: { title: string; sub: string; icon: string }) =>
 	box([
-		img(),
+		icn(icon).size('2rem').css({
+			color: theme.colors.primaryDark,
+		}),
 		bold(title),
 		txt(sub).css({
 			fontWeight: '700',
