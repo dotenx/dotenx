@@ -136,6 +136,11 @@ export abstract class Element {
 		this.script = script
 		return this
 	}
+
+	unstyled() {
+		this.style = {}
+		return this
+	}
 }
 
 export interface RenderOptions {
