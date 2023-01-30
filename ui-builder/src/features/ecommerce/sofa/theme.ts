@@ -100,11 +100,7 @@ const stat = ({ title, sub }: { title: string; sub: string }) =>
 			height: '0.3rem',
 			backgroundColor: theme.colors.primaryDark,
 		}),
-		txt(title).css({
-			fontWeight: '700',
-			fontSize: '1.5rem',
-			marginTop: '0.6rem',
-		}),
+		bold(title),
 		txt(sub).css({
 			color: theme.colors.textLight,
 			marginTop: '0.6rem',
@@ -135,27 +131,57 @@ const featuresText = () =>
 		})
 
 const features = () =>
-	grid(4).populate([
-		feature({
-			title: 'Grow Faster',
-			sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-		}),
-		feature({
-			title: 'Build Audience',
-			sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-		}),
-		feature({
-			title: 'Get Feedback',
-			sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-		}),
-		feature({
-			title: 'Battle Tested',
-			sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-		}),
-	])
+	grid(4)
+		.populate([
+			feature({
+				title: 'Grow Faster',
+				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+			}).css({
+				marginBottom: '9rem',
+			}),
+			feature({
+				title: 'Build Audience',
+				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+			}).css({
+				marginTop: '9rem',
+			}),
+			feature({
+				title: 'Get Feedback',
+				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+			}).css({
+				marginBottom: '9rem',
+			}),
+			feature({
+				title: 'Battle Tested',
+				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+			}).css({
+				marginTop: '9rem',
+			}),
+		])
+		.css({
+			padding: `2rem ${theme.container.padding}`,
+			gap: '4.8rem',
+		})
 
 const feature = ({ title, sub }: { title: string; sub: string }) =>
-	box([img(), txt(title), txt(sub)])
+	box([
+		img(),
+		bold(title),
+		txt(sub).css({
+			fontWeight: '700',
+			color: theme.colors.textLight,
+		}),
+	]).css({
+		border: '1px solid',
+		borderRadius: '50% 50% 50% 50% / 30% 30% 30% 30%',
+		padding: '7.5rem 1.75rem',
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: '1rem',
+		textAlign: 'center',
+	})
 
 const info = () => grid(2).populate([infoTxt(), img()])
 
@@ -172,6 +198,13 @@ const desc = (text: string) =>
 	txt(text).css({
 		color: theme.colors.textLight,
 		marginTop: '1.25rem',
+	})
+
+const bold = (text: string) =>
+	txt(text).css({
+		fontWeight: '700',
+		fontSize: '1.5rem',
+		marginTop: '0.6rem',
 	})
 
 export { page as sofa }
