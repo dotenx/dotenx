@@ -64,4 +64,15 @@ export class ButtonElement extends Element {
 		this.data.text = text
 		return this
 	}
+
+	unstyled() {
+		super.unstyled()
+		this.css({
+			border: 'none',
+			display: 'inline-block',
+			textAlign: 'center',
+			cursor: 'pointer',
+		})
+		return this
+	}
 }
