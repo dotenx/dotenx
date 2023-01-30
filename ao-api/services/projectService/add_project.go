@@ -37,7 +37,7 @@ func (ps *projectService) initializeProject(accountId, projectName, defaultUserG
 		return "", err
 	}
 
-	// Check if use is allowed to create a new database based on his plan
+	// Check if user is allowed to create a new database based on his plan
 	if hasDatabase {
 		err := ps.canCreateDatabase(accountId)
 		if err != nil {
