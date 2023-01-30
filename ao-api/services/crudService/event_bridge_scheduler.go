@@ -11,7 +11,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
-func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint string) (err error) {
+func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint, scheduleExpression string) (err error) {
 
 	// Create a new AWS session
 	awsRegion := config.Configs.Secrets.AwsRegion
@@ -35,9 +35,9 @@ func (cm *crudManager) CreateEventBridgeScheduler(pipelineEndpoint string) (err 
 	schedulerName := "dtx_" + pipelineEndpoint
 
 	_, err = client.CreateSchedule(&awsScheduler.CreateScheduleInput{
-		Name:               &schedulerName,
+		Name:               aws.String(schedulerName),
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
+		ScheduleExpression: aws.String(scheduleExpression),
 		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
@@ -87,28 +87,22 @@ func (cm *crudManager) EnableEventBridgeScheduler(pipelineEndpoint string) (err 
 		},
 	}))
 
-	payloadMap := map[string]interface{}{
-		"pipeline_endpoint": pipelineEndpoint,
-		"auth_token":        config.Configs.Secrets.EventSchedulerToken,
-	}
-	payloadBytes, _ := json.Marshal(payloadMap)
-	payloadStr := string(payloadBytes)
 	// Create a new EventBridge client
 	client := awsScheduler.New(sess)
 
 	schedulerName := "dtx_" + pipelineEndpoint
+	oldScheduler, err := client.GetSchedule(&awsScheduler.GetScheduleInput{
+		Name: aws.String(schedulerName),
+	})
+	if err != nil {
+		return err
+	}
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
-		Name:               &schedulerName,
+		Name:               aws.String(schedulerName),
 		State:              aws.String(awsScheduler.ScheduleStateEnabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
-		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
-			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
-		},
-		Target: &awsScheduler.Target{
-			Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
-			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
-			Input:   aws.String(payloadStr),
-		},
+		ScheduleExpression: oldScheduler.ScheduleExpression,
+		FlexibleTimeWindow: oldScheduler.FlexibleTimeWindow,
+		Target:             oldScheduler.Target,
 	})
 	return
 }
@@ -126,28 +120,22 @@ func (cm *crudManager) DisableEventBridgeScheduler(pipelineEndpoint string) (err
 		},
 	}))
 
-	payloadMap := map[string]interface{}{
-		"pipeline_endpoint": pipelineEndpoint,
-		"auth_token":        config.Configs.Secrets.EventSchedulerToken,
-	}
-	payloadBytes, _ := json.Marshal(payloadMap)
-	payloadStr := string(payloadBytes)
 	// Create a new EventBridge client
 	client := awsScheduler.New(sess)
 
 	schedulerName := "dtx_" + pipelineEndpoint
+	oldScheduler, err := client.GetSchedule(&awsScheduler.GetScheduleInput{
+		Name: aws.String(schedulerName),
+	})
+	if err != nil {
+		return err
+	}
 	_, err = client.UpdateSchedule(&awsScheduler.UpdateScheduleInput{
-		Name:               &schedulerName,
+		Name:               aws.String(schedulerName),
 		State:              aws.String(awsScheduler.ScheduleStateDisabled),
-		ScheduleExpression: aws.String(config.Configs.App.ExecutionTriggerRate),
-		FlexibleTimeWindow: &awsScheduler.FlexibleTimeWindow{
-			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
-		},
-		Target: &awsScheduler.Target{
-			Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
-			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
-			Input:   aws.String(payloadStr),
-		},
+		ScheduleExpression: oldScheduler.ScheduleExpression,
+		FlexibleTimeWindow: oldScheduler.FlexibleTimeWindow,
+		Target:             oldScheduler.Target,
 	})
 	return
 }

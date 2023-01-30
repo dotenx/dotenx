@@ -36,7 +36,7 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return
 	}
-	err = cm.CreateEventBridgeScheduler(p.Endpoint)
+	err = cm.CreateEventBridgeScheduler(p.Endpoint, config.Configs.App.ExecutionTriggerRate)
 	if err != nil {
 		return
 	}
@@ -69,7 +69,7 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 		log.Println(err)
 		return err
 	}
-	err = cm.CreateEventBridgeScheduler(newP.Endpoint)
+	err = cm.CreateEventBridgeScheduler(newP.Endpoint, config.Configs.App.ExecutionTriggerRate)
 	if err != nil {
 		return err
 	}
