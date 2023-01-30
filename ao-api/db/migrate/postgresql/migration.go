@@ -897,5 +897,5 @@ ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01
 
 var addTypeFieldToProjectsTable = `
 ALTER TABLE projects
-ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'free';
+ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'freestyle';
 `

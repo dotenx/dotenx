@@ -19,12 +19,12 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'free', 'landing_page', 'ecommerce', 'ui_portfolio'",
+				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'freestyle', 'landing_page', 'ecommerce', 'ui_portfolio'",
 			})
 			return
 		}
 		if dto.Type == "" {
-			dto.Type = "free"
+			dto.Type = "freestyle"
 		}
 
 		var err error
@@ -66,6 +66,6 @@ type ProjectRequest struct {
 	AccountId        string `db:"account_id" json:"-"`
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
-	Type             string `db:"type" json:"type" binding:"oneof='' 'free' 'landing_page' 'ecommerce' 'ui_portfolio'"`
+	Type             string `db:"type" json:"type" binding:"oneof='' 'freestyle' 'landing_page' 'ecommerce' 'ui_portfolio'"`
 	HasDatabase      bool   `json:"hasDatabase"`
 }
