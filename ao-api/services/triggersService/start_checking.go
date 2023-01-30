@@ -98,7 +98,7 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore, fr
 				continue
 			}
 			if trigger.Type != "Schedule" && pipeline.IsActive && !pipeline.IsTemplate && !pipeline.IsInteraction {
-				go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, store, utils.GetNewUuid())
+				go dc.handleTrigger(manager.Store, manager.ExecutionService, manager.IntegrationService, trigger.AccountId, trigger, utils.GetNewUuid())
 				manager.UtopiopsService.IncrementUsedTimes(models.AvaliableTriggers[trigger.Type].Author, "trigger", trigger.Type)
 			}
 		}
@@ -107,7 +107,7 @@ func (manager *TriggerManager) check(store integrationStore.IntegrationStore, fr
 	return nil
 }
 
-func (dc dockerCleint) handleTrigger(triggerStore triggerStore.TriggerStore, execService executionService.ExecutionService, service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, store integrationStore.IntegrationStore, workspace string) {
+func (dc dockerCleint) handleTrigger(triggerStore triggerStore.TriggerStore, execService executionService.ExecutionService, service integrationService.IntegrationService, accountId string, trigger models.EventTrigger, workspace string) {
 	integration, err := service.GetIntegrationByName(accountId, trigger.Integration)
 	if err != nil {
 		log.Printf("An error occured when trying to call GetIntegrationByName function in trigger %s and integration %s\n", trigger.Name, trigger.Integration)

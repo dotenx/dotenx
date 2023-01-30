@@ -36,7 +36,7 @@ func (manager *executionManager) ExecuteAllTasksAndReturnResults(pipeline models
 	manager.ExecuteTasks(initialTaskId, executionId, pipeline.AccountId, resultsChan, errChan)
 	for {
 		select {
-		case <-time.After(time.Duration(config.Configs.App.ExcutionTaskTimeLimit) * time.Second):
+		case <-time.After(time.Duration(config.Configs.App.ExecutionTaskTimeLimit) * time.Second):
 			return nil, errors.New("pipeline timeout")
 		case err = <-errChan:
 			return nil, err
