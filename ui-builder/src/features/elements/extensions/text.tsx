@@ -32,7 +32,7 @@ export class TextElement extends Element {
 		return <TextOptions element={this} />
 	}
 
-	text(text: string) {
+	txt(text: string) {
 		this.data.text = Expression.fromString(text)
 		return this
 	}

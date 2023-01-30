@@ -2,6 +2,7 @@ import { Button, CloseButton, NumberInput, SegmentedControl, TextInput } from '@
 import produce from 'immer'
 import { ReactNode } from 'react'
 import { TbLayoutColumns, TbPlus } from 'react-icons/tb'
+import { gridCols } from '../../../utils/style-utils'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { simpleFlexAligns } from '../../style/layout-editor'
@@ -40,6 +41,13 @@ export class ColumnsElement extends Element {
 				<SpacingEditor />
 			</div>
 		)
+	}
+
+	cols(columns: number) {
+		this.css({
+			gridTemplateColumns: gridCols(columns),
+		})
+		return this
 	}
 }
 

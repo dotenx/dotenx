@@ -59,7 +59,7 @@ const tagIds = {
 
 const component = () => {
 	const navbar = menu()
-	const logoText = new TextElement().as('h1').text('Logo').tag(tagIds.logo).css({
+	const logoText = new TextElement().as('h1').txt('Logo').tag(tagIds.logo).css({
 		fontSize: '1.5rem',
 		opacity: 0.8,
 	})
@@ -89,7 +89,7 @@ const menu = () => {
 }
 
 const navLink = (text: string) => {
-	const link = new LinkElement().text(text).href('/').css({
+	const link = new LinkElement().txt(text).href('/').css({
 		opacity: 0.8,
 	})
 	link.children[0]

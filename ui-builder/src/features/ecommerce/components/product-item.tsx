@@ -33,10 +33,10 @@ const tagIds = {
 }
 
 const component = () => {
-	const description = new TextElement().text('Description').css({ fontSize: '0.875rem' })
+	const description = new TextElement().txt('Description').css({ fontSize: '0.875rem' })
 	const image = new ImageElement().css({ height: '300px' })
-	const title = shared.title().text('Product').tag(tagIds.title).css({ marginBottom: '0px' })
-	const price = new TextElement().text('$0.0').css({ fontSize: '1.25rem' })
+	const title = shared.title().txt('Product').tag(tagIds.title).css({ marginBottom: '0px' })
+	const price = new TextElement().txt('$0.0').css({ fontSize: '1.25rem' })
 	const group = shared.group().populate([title, price])
 	const container = shared.container().populate([group, image, description])
 	const root = shared.paper().populate([container])

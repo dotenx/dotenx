@@ -90,7 +90,7 @@ const tagIds = {
 
 function component() {
 	const pagination = createPagination()
-	const title = shared.title().tag(tagIds.title).text('Products')
+	const title = shared.title().tag(tagIds.title).txt('Products')
 	const grid = shared.grid().tag(tagIds.grid).populate(_.range(3).map(column))
 	const container = shared.container().populate([title, grid, pagination])
 	const root = shared.paper().populate([container])

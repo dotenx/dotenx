@@ -31,8 +31,8 @@ export class LinkElement extends Element {
 		return <LinkOptions element={this} />
 	}
 
-	text(text: string) {
-		this.children = [new TextElement().text(text)]
+	txt(text: string) {
+		this.children = [new TextElement().txt(text)]
 		return this
 	}
 
