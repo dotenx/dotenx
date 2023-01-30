@@ -9,7 +9,7 @@ import (
 )
 
 var ListDBProjects = `
-Select id, name, description, tag from projects
+Select id, name, description, tag, type from projects
 WHERE account_id = $1 AND has_database = true
 `
 
@@ -30,7 +30,7 @@ func (store *projectStore) ListDBProjects(ctx context.Context, accountId string)
 	var projects []models.Project
 	for rows.Next() {
 		var project models.Project
-		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag); err != nil {
+		if err := rows.Scan(&project.Id, &project.Name, &project.Description, &project.Tag, &project.Type); err != nil {
 			return nil, err
 		}
 		projects = append(projects, project)

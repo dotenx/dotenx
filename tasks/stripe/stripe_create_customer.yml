@@ -22,5 +22,5 @@ outputs:
       display_name: customer id
 author: hawwwdi
 icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
-node_color: FBFB11
+node_color: 665BFF
 description: create new customer in stripe
