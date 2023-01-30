@@ -164,7 +164,7 @@ deploy api: &deploy
       cd $FOLDER
       joined=[`cat .env.${environment} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
       echo $joined
-      NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" --argjson ENV_VARS $joined '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0].environment = $ENV_VARS | .taskDefinition.containerDefinitions[0]')
+      NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" --argjson ENV_VARS "$joined" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0].environment = $ENV_VARS | .taskDefinition.containerDefinitions[0]')
       else
       NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
       fi
