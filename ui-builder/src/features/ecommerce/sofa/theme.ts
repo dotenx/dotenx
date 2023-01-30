@@ -1,4 +1,6 @@
+import { gridCols } from '../../../utils/style-utils'
 import { box, btn, grid, img, txt } from '../../elements/constructor'
+import { Element } from '../../elements/element'
 
 const theme = {
 	fontFamily: 'Inter',
@@ -15,9 +17,6 @@ const theme = {
 	},
 	shadows: {
 		normal: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-	},
-	container: {
-		padding: '8.5rem',
 	},
 }
 
@@ -37,11 +36,12 @@ const page = () =>
 	})
 
 const navbar = () =>
-	box([
+	container([
 		box(),
 		box([txt('Category 1'), txt('Category 2'), txt('Case studies')]).css({
 			display: 'flex',
 			gap: '2.5rem',
+			flexWrap: 'wrap',
 		}),
 		outlineBtn('Sign up'),
 	]).css({
@@ -49,36 +49,40 @@ const navbar = () =>
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		padding: `1.75rem ${theme.container.padding}`,
+		paddingTop: '1.8rem',
 	})
 
 const hero = () =>
-	grid(2)
-		.populate([
-			box([
-				infoTxt().css({
-					paddingTop: '6rem',
-				}),
-				grid(2)
-					.populate([
-						stat({ title: '200 Users', sub: 'Every week' }),
-						stat({ title: '300 Subs', sub: 'Winning together' }),
-						stat({ title: '700K+', sub: 'Daily views' }),
-						stat({ title: '90+', sub: 'Sessions' }),
-					])
-					.css({
-						marginTop: '4.125rem',
-						gap: '5rem',
-						width: '50%',
+	container([
+		grid(2)
+			.populate([
+				box([
+					infoTxt().css({
+						paddingTop: '6rem',
 					}),
-			]),
-			img(),
-		])
-		.css({
-			gridTemplateColumns: '3fr 2fr',
-			paddingLeft: theme.container.padding,
-			paddingBottom: '10rem',
-		})
+					grid(2)
+						.populate([
+							stat({ title: '200 Users', sub: 'Every week' }),
+							stat({ title: '300 Subs', sub: 'Winning together' }),
+							stat({ title: '700K+', sub: 'Daily views' }),
+							stat({ title: '90+', sub: 'Sessions' }),
+						])
+						.css({
+							marginTop: '4.125rem',
+							gap: '5rem',
+							maxWidth: '450px',
+						}),
+				]),
+				img(),
+			])
+			.css({
+				gridTemplateColumns: '3fr 2fr',
+				paddingBottom: '10rem',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(1),
+			}),
+	])
 
 const infoTxt = () =>
 	box([
@@ -104,60 +108,92 @@ const stat = ({ title, sub }: { title: string; sub: string }) =>
 	])
 
 const logos = () =>
-	grid(5)
-		.populate([img(), img(), img(), img(), img()])
-		.css({
-			padding: `6.25rem ${theme.container.padding}`,
-			display: 'flex',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-		})
+	container([
+		grid(5)
+			.populate([img(), img(), img(), img(), img()])
+			.cssTablet({
+				gridTemplateColumns: gridCols(3),
+			}),
+	]).css({
+		paddingBottom: '10rem',
+	})
 
 const featuresText = () =>
-	grid(2)
-		.populate([
-			title('Win The Game With These Tricks'),
-			desc(
-				'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
-			),
-		])
-		.css({
-			padding: `4rem ${theme.container.padding}`,
-			gap: '8rem',
-		})
+	container([
+		grid(2)
+			.populate([
+				title('Win The Game With These Tricks'),
+				desc(
+					'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
+				),
+			])
+			.css({
+				gap: '8rem',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(1),
+			}),
+	]).css({
+		paddingBottom: '10rem',
+	})
 
 const features = () =>
-	grid(4)
-		.populate([
-			feature({
-				title: 'Grow Faster',
-				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-			}).css({
-				marginBottom: '9rem',
+	container([
+		grid(4)
+			.populate([
+				feature({
+					title: 'Grow Faster',
+					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+				})
+					.css({
+						marginBottom: '9rem',
+					})
+					.cssMobile({
+						marginBottom: '0',
+					}),
+				feature({
+					title: 'Build Audience',
+					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+				})
+					.css({
+						marginTop: '9rem',
+					})
+					.cssMobile({
+						marginTop: '0',
+					}),
+				feature({
+					title: 'Get Feedback',
+					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+				})
+					.css({
+						marginBottom: '9rem',
+					})
+					.cssMobile({
+						marginBottom: '0',
+					}),
+				feature({
+					title: 'Battle Tested',
+					sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
+				})
+					.css({
+						marginTop: '9rem',
+					})
+					.cssMobile({
+						marginTop: '0',
+					}),
+			])
+			.css({
+				gap: '4.8rem',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(2),
+			})
+			.cssMobile({
+				gridTemplateColumns: gridCols(1),
 			}),
-			feature({
-				title: 'Build Audience',
-				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-			}).css({
-				marginTop: '9rem',
-			}),
-			feature({
-				title: 'Get Feedback',
-				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-			}).css({
-				marginBottom: '9rem',
-			}),
-			feature({
-				title: 'Battle Tested',
-				sub: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.',
-			}).css({
-				marginTop: '9rem',
-			}),
-		])
-		.css({
-			padding: `2rem ${theme.container.padding}`,
-			gap: '4.8rem',
-		})
+	]).css({
+		paddingBottom: '10rem',
+	})
 
 const feature = ({ title, sub }: { title: string; sub: string }) =>
 	box([
@@ -179,35 +215,71 @@ const feature = ({ title, sub }: { title: string; sub: string }) =>
 		textAlign: 'center',
 	})
 
-const infoLeftTxt = () => info().populate([infoTxt(), img()])
+const infoLeftTxt = () =>
+	container([
+		grid(2)
+			.populate([infoTxt(), img()])
+			.css({
+				gap: '1.25rem',
+				paddingBottom: '10rem',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(1),
+			}),
+	])
 
-const infoRightTxt = () => info().populate([img(), infoTxt()])
-
-const info = () =>
-	grid(2).css({
-		padding: `10rem ${theme.container.padding}`,
-		gap: '1.25rem',
-	})
+const infoRightTxt = () =>
+	container([
+		grid(2)
+			.populate([
+				img(),
+				infoTxt().cssTablet({
+					gridRow: '1',
+				}),
+			])
+			.css({
+				gap: '1.25rem',
+				paddingBottom: '10rem',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(1),
+			}),
+	])
 
 const cta = () =>
-	box([
+	container([
 		box([
-			btn('Get the course now for $99 →').css({
-				padding: '6.5rem 10.75rem',
-				backgroundColor: theme.colors.primary,
-				fontWeight: '700',
-				fontSize: '4rem',
-				lineHeight: '125%',
-				borderRadius: '3rem',
-				width: '100%',
-			}),
+			btn('Get the course now for $99 →')
+				.css({
+					padding: '6.5rem 10.75rem',
+					backgroundColor: theme.colors.primary,
+					fontWeight: '700',
+					fontSize: '4rem',
+					borderRadius: '3rem',
+					width: '100%',
+				})
+				.cssTablet({
+					padding: '6rem 5rem',
+					fontSize: '3rem',
+				})
+				.cssMobile({
+					padding: '4rem 3rem',
+					fontSize: '2rem',
+				}),
 		]).css({
 			border: `0.5rem solid ${theme.colors.primaryDark}`,
 			borderRadius: '3rem',
 			padding: '0.5rem 1.625rem',
 		}),
 	]).css({
-		padding: `8rem ${theme.container.padding}`,
+		paddingBottom: '10rem',
+	})
+
+const container = (children: Element[]) =>
+	box(children).css({
+		maxWidth: '1440px',
+		margin: '0 auto',
+		padding: '0 1.5rem',
 	})
 
 const title = (text: string) =>
@@ -247,6 +319,7 @@ const outlineBtn = (text: string) =>
 		borderRadius: '9999px',
 		padding: '1rem 3.5rem',
 		boxShadow: theme.shadows.normal,
+		whiteSpace: 'nowrap',
 	})
 
 export { page as sofa }
