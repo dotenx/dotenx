@@ -36,6 +36,10 @@ func (cm *crudManager) CreatePipeLine(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return
 	}
+	err = cm.CreateEventBridgeScheduler(p.Endpoint, config.Configs.App.ExecutionTriggerRate)
+	if err != nil {
+		return
+	}
 	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, p.Endpoint, base.AccountId, p.IsTemplate, base.ProjectName)
 	if err != nil {
 		return
@@ -63,6 +67,10 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	newP, err := cm.GetPipelineByName(base.AccountId, base.Name, base.ProjectName)
 	if err != nil {
 		log.Println(err)
+		return err
+	}
+	err = cm.CreateEventBridgeScheduler(newP.Endpoint, config.Configs.App.ExecutionTriggerRate)
+	if err != nil {
 		return err
 	}
 	if p.IsActive {
@@ -115,6 +123,10 @@ func (cm *crudManager) DeletePipeline(accountId, name, projectName string, delet
 			logrus.Println(err)
 			return
 		}
+	}
+	err = cm.DeleteEventBridgeScheduler(p.Endpoint)
+	if err != nil {
+		return
 	}
 	return cm.Store.DeletePipeline(noContext, accountId, name, projectName)
 }
