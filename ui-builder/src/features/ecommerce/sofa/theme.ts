@@ -1,24 +1,54 @@
 import { box, btn, grid, img, txt } from '../../elements/constructor'
 
-const colors = {
-	text: '#000000',
-	background: '#FFFFFF',
-	light: '#EEEEEE',
-	primary: '#F4A261',
-	primaryLight: '#E9C46A',
-	primaryDark: '#E76F51',
-	secondary: '#2A9D8F',
-	secondaryDark: '#264653',
+const theme = {
+	fontFamily: 'Inter',
+	colors: {
+		text: '#000000',
+		background: '#FFFFFF',
+		light: '#EEEEEE',
+		primary: '#F4A261',
+		primaryLight: '#E9C46A',
+		primaryDark: '#E76F51',
+		secondary: '#2A9D8F',
+		secondaryDark: '#264653',
+	},
 }
 
 const page = () =>
-	box().populate([navbar(), hero(), logos(), featuresText(), features(), info(), info(), cta()])
+	box()
+		.populate([navbar(), hero(), logos(), featuresText(), features(), info(), info(), cta()])
+		.css({
+			fontFamily: theme.fontFamily,
+		})
 
 const navbar = () =>
-	box().populate([
-		box().populate([txt('Category 1'), txt('Category 2'), txt('Case studies')]),
-		btn('Sign up'),
-	])
+	box()
+		.populate([
+			box(),
+			box()
+				.populate([
+					txt('Category 1').unstyled(),
+					txt('Category 2').unstyled(),
+					txt('Case studies').unstyled(),
+				])
+				.css({
+					display: 'flex',
+					gap: '2.5rem',
+				}),
+			btn('Sign up').unstyled().css({
+				border: '1px solid',
+				borderRadius: '9999px',
+				padding: '1rem 3.5rem',
+				boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+			}),
+		])
+		.css({
+			fontSize: '1.25rem',
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			padding: '1.75rem',
+		})
 
 const hero = () =>
 	box().populate([
