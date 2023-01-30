@@ -275,7 +275,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// In order to reduce the risks we're taking the following measures:
 
 	// pipeline router
-	// TODO : fix the type of the pipeline
+	// TODO: fix the type of the pipeline
 	pipeline.POST("/project/:project_name", crudController.AddPipeline())
 	pipeline.GET("/project/:project_name", crudController.ListProjectPipelines())
 	pipeline.POST("/project/:project_name/template/name/:name", crudController.CreateFromTemplate())
