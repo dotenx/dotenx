@@ -9,4 +9,4 @@ export const box = (children?: Element[]) => new BoxElement().populate(children 
 export const btn = (txt: string) => new ButtonElement().unstyled().txt(txt)
 export const txt = (txt: string) => new TextElement().unstyled().txt(txt)
 export const grid = (columns: number) => new ColumnsElement().cols(columns)
-export const img = () => new ImageElement()
+export const img = (src?: string) => new ImageElement().src(src ?? '')

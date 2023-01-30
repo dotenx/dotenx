@@ -1,3 +1,6 @@
+import heroImg from '../../../assets/themes/sofa/hero.png'
+import infoImg1 from '../../../assets/themes/sofa/info-1.png'
+import infoImg2 from '../../../assets/themes/sofa/info-2.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, btn, grid, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -53,36 +56,46 @@ const navbar = () =>
 	})
 
 const hero = () =>
-	container([
-		grid(2)
-			.populate([
-				box([
-					infoTxt().css({
-						paddingTop: '6rem',
-					}),
-					grid(2)
-						.populate([
-							stat({ title: '200 Users', sub: 'Every week' }),
-							stat({ title: '300 Subs', sub: 'Winning together' }),
-							stat({ title: '700K+', sub: 'Daily views' }),
-							stat({ title: '90+', sub: 'Sessions' }),
-						])
-						.css({
-							marginTop: '4.125rem',
-							gap: '5rem',
-							maxWidth: '450px',
+	box([
+		container([
+			grid(2)
+				.populate([
+					box([
+						infoTxt().css({
+							paddingTop: '6rem',
 						}),
-				]),
-				img(),
-			])
-			.css({
-				gridTemplateColumns: '3fr 2fr',
-				paddingBottom: '10rem',
-			})
-			.cssTablet({
-				gridTemplateColumns: gridCols(1),
-			}),
+						grid(2)
+							.populate([
+								stat({ title: '200 Users', sub: 'Every week' }),
+								stat({ title: '300 Subs', sub: 'Winning together' }),
+								stat({ title: '700K+', sub: 'Daily views' }),
+								stat({ title: '90+', sub: 'Sessions' }),
+							])
+							.css({
+								marginTop: '4.125rem',
+								gap: '5rem',
+								maxWidth: '450px',
+							}),
+					]),
+				])
+				.css({
+					gridTemplateColumns: '3fr 2fr',
+					paddingBottom: '10rem',
+				})
+				.cssTablet({
+					gridTemplateColumns: gridCols(1),
+				}),
+		]),
 	])
+		.css({
+			backgroundImage: `url(${heroImg})`,
+			backgroundPosition: 'right',
+			backgroundRepeat: 'no-repeat',
+			backgroundSize: 'contain',
+		})
+		.cssTablet({
+			backgroundImage: 'none',
+		})
 
 const infoTxt = () =>
 	box([
@@ -115,6 +128,7 @@ const logos = () =>
 				gridTemplateColumns: gridCols(3),
 			}),
 	]).css({
+		paddingTop: '10rem',
 		paddingBottom: '10rem',
 	})
 
@@ -192,7 +206,7 @@ const features = () =>
 				gridTemplateColumns: gridCols(1),
 			}),
 	]).css({
-		paddingBottom: '10rem',
+		paddingBottom: '4.3rem',
 	})
 
 const feature = ({ title, sub }: { title: string; sub: string }) =>
@@ -218,10 +232,10 @@ const feature = ({ title, sub }: { title: string; sub: string }) =>
 const infoLeftTxt = () =>
 	container([
 		grid(2)
-			.populate([infoTxt(), img()])
+			.populate([infoTxt().css({ paddingTop: '9rem' }), img(infoImg1)])
 			.css({
 				gap: '1.25rem',
-				paddingBottom: '10rem',
+				paddingBottom: '4.3rem',
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
@@ -232,8 +246,8 @@ const infoRightTxt = () =>
 	container([
 		grid(2)
 			.populate([
-				img(),
-				infoTxt().cssTablet({
+				img(infoImg2),
+				infoTxt().css({ paddingTop: '13rem' }).cssTablet({
 					gridRow: '1',
 				}),
 			])
