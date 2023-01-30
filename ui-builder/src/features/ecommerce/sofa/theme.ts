@@ -22,7 +22,16 @@ const theme = {
 }
 
 const page = () =>
-	box([navbar(), hero(), logos(), featuresText(), features(), info(), info(), cta()]).css({
+	box([
+		navbar(),
+		hero(),
+		logos(),
+		featuresText(),
+		features(),
+		infoLeftTxt(),
+		infoRightTxt(),
+		cta(),
+	]).css({
 		fontFamily: theme.fontFamily,
 		color: theme.colors.text,
 	})
@@ -34,12 +43,7 @@ const navbar = () =>
 			display: 'flex',
 			gap: '2.5rem',
 		}),
-		btn('Sign up').css({
-			border: '1px solid',
-			borderRadius: '9999px',
-			padding: '1rem 3.5rem',
-			boxShadow: theme.shadows.normal,
-		}),
+		outlineBtn('Sign up'),
 	]).css({
 		fontSize: '1.25rem',
 		display: 'flex',
@@ -78,19 +82,11 @@ const hero = () =>
 
 const infoTxt = () =>
 	box([
-		title('BUILD YOUR COMMUNITY FASTER THAN EVER'),
+		box([title('BUILD YOUR COMMUNITY'), title('FASTER THAN EVER')]),
 		desc(
 			'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
 		),
-		btn('Join now!').css({
-			backgroundColor: theme.colors.text,
-			boxShadow: theme.shadows.normal,
-			borderRadius: '9999px',
-			fontSize: '1.25rem',
-			color: theme.colors.background,
-			marginTop: '4.625rem',
-			padding: '1rem 2.8rem',
-		}),
+		primaryBtn('Join now!'),
 	])
 
 const stat = ({ title, sub }: { title: string; sub: string }) =>
@@ -183,7 +179,15 @@ const feature = ({ title, sub }: { title: string; sub: string }) =>
 		textAlign: 'center',
 	})
 
-const info = () => grid(2).populate([infoTxt(), img()])
+const infoLeftTxt = () => info().populate([infoTxt(), img()])
+
+const infoRightTxt = () => info().populate([img(), infoTxt()])
+
+const info = () =>
+	grid(2).css({
+		padding: `10rem ${theme.container.padding}`,
+		gap: '1.25rem',
+	})
 
 const cta = () => box([btn('Get the course now for $99 →')])
 
@@ -205,6 +209,25 @@ const bold = (text: string) =>
 		fontWeight: '700',
 		fontSize: '1.5rem',
 		marginTop: '0.6rem',
+	})
+
+const primaryBtn = (text: string) =>
+	btn(text).css({
+		backgroundColor: theme.colors.text,
+		boxShadow: theme.shadows.normal,
+		borderRadius: '9999px',
+		fontSize: '1.25rem',
+		color: theme.colors.background,
+		marginTop: '4.625rem',
+		padding: '1rem 2.8rem',
+	})
+
+const outlineBtn = (text: string) =>
+	btn(text).css({
+		border: '1px solid',
+		borderRadius: '9999px',
+		padding: '1rem 3.5rem',
+		boxShadow: theme.shadows.normal,
 	})
 
 export { page as sofa }
