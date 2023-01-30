@@ -89,7 +89,7 @@ function UserGroupItem({
 	const [deleteConfirmationOpened, deleteConfirmationHandlers] = useDisclosure(false)
 
 	return (
-		<div className="px-4 py-3 space-y-2 border rounded-[10px] bg-white">
+		<div className="px-4 py-3 space-y-2 border  rounded-[10px]  bg-white">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<button

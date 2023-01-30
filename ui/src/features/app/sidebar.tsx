@@ -38,6 +38,8 @@ export function Sidebar({ closable }: { closable: boolean }) {
 	const { ref, hovered } = useHover()
 	const closed = closable && !hovered
 	const opened = !closable || (closable && hovered)
+	const smallScreen = window.innerHeight < 750
+	const { projectName } = useParams()
 
 	return (
 		<motion.aside
@@ -46,16 +48,43 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				"flex flex-col h-screen bg-rose-600 overflow-hidden",
 				closable && "fixed z-50"
 			)}
-			animate={{ width: opened ? 300 : 80 }}
+			animate={{ width: opened ? (smallScreen ? 250 : 300) : smallScreen ? 70 : 80 }}
 			transition={{ type: "tween", duration: ANIMATION_DURATION }}
 		>
-			<div className="px-4 pt-16 grow">
-				<img src={logo} className="w-12 h-12 rounded-md" />
+			<div className="px-4 pt-10 grow">
+				<img
+					src={logo}
+					className={`${smallScreen ? "w-10	 h-10	" : "w-12 h-12"} rounded-md`}
+				/>
 				<div className="mt-6">
 					<BackToProjects closed={closed} />
 				</div>
 				<div className="mt-10">
 					<NavLinks closed={closed} links={sidebar.navLinks} />
+				</div>
+				<div className="mt-6">
+					<a
+						target={"_blank"}
+						href={`https://ui.dotenx.com/projects/${projectName}`}
+						className="text-xl hover:bg-sla bg-white w-full rounded-md flex items-center h-10 font-medium gap-2 transition-all hover:text-rose-600 hover:shadow-lg px-3 whitespace-nowrap"
+					>
+						<div
+							className={`shrink-0 transition-all ${
+								smallScreen ? "text-sm " : "text-lg "
+							} ${!closed && "hidden"} mt-1 `}
+						>
+							UI
+						</div>
+						<FadeIn visible={!closed}>
+							<span
+								className={`pl-[38px] shrink-0 ${
+									smallScreen ? "text-sm " : "text-lg "
+								}`}
+							>
+								UI builder
+							</span>
+						</FadeIn>
+					</a>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center h-16 border-t border-white">
@@ -116,21 +145,29 @@ const useSidebar = () => {
 
 function BackToProjects({ closed }: { closed: boolean }) {
 	const { projectName = "" } = useParams()
+	const smallScreen = window.innerHeight < 750
 
 	return (
 		<Link
 			to="/"
-			className="text-xl bg-white w-full rounded-md flex items-center h-10 font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap"
+			className={`${
+				smallScreen ? "h-8 " : "h-10 "
+			} text-xl bg-white w-full rounded-md flex items-center font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap`}
 		>
-			<BsChevronLeft className="text-xl shrink-0" />
-			<FadeIn visible={!closed}>{projectName}</FadeIn>
+			<BsChevronLeft className={`shrink-0 ${smallScreen ? "text-sm " : "text-lg "} mt-1`} />
+			<FadeIn visible={!closed}>
+				<span className={`shrink-0 ${smallScreen ? "text-base " : "text-xl "}`}>
+					{projectName}
+				</span>
+			</FadeIn>
 		</Link>
 	)
 }
 
 function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) {
+	const smallScreen = window.innerHeight < 750
 	return (
-		<nav className="space-y-6">
+		<nav className={`${smallScreen ? "space-y-4" : "space-y-5"}`}>
 			{links.map((link) => (
 				<NavLink key={link.to} link={link} closed={closed} />
 			))}
@@ -139,17 +176,22 @@ function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) 
 }
 
 function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
+	const smallScreen = window.innerHeight < 750
+
 	return (
 		<RouterNavLink
 			to={link.to}
 			className={({ isActive }) =>
 				clsx(
-					"flex items-center gap-4 px-2 h-14 text-xl transition text-white rounded-md hover:bg-rose-700 whitespace-nowrap",
-					isActive && "bg-rose-700"
+					"flex items-center gap-4 px-2 w-full  transition text-white rounded-md whitespace-nowrap ",
+					isActive ? "bg-rose-700" : "hover:bg-rose-500 ",
+					smallScreen ? "text-sm h-9  " : "text-xl h-14 "
 				)
 			}
 		>
-			<span className="pl-2">{link.icon}</span>
+			<span className={`${closed ? "w-full pl-1" : "pl-2 "} transition-all duration-300  `}>
+				{link.icon}
+			</span>
 			<FadeIn visible={!closed}>
 				<span>{link.label}</span>
 			</FadeIn>
@@ -169,9 +211,17 @@ function SubLinks({ links }: { links: SubLinkData[] }) {
 
 function SubLink({ link }: { link: SubLinkData }) {
 	return (
-		<Link to={link.to} className="text-lg text-white transition hover:text-rose-100">
+		<RouterNavLink
+			to={link.to}
+			className={({ isActive }) =>
+				clsx(
+					"text-lg  text-white transition p-1 rounded-md hover:text-rose-100",
+					isActive ? "bg-rose-700" : "hover:bg-rose-500"
+				)
+			}
+		>
 			{link.icon}
-		</Link>
+		</RouterNavLink>
 	)
 }
 

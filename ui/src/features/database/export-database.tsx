@@ -52,13 +52,17 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 			refetchRes()
 		},
 	})
+	const smallScreen = window.innerHeight < 750
+
 	return (
-		<div ref={ref} className="flex  items-center">
+		<div ref={ref} className="flex !text-xs items-center">
 			<Button.Group>
 				{showDownload ? (
 					<Button
 						variant="default"
-						className="!rounded-l-[10px] !h-10"
+						className={`!rounded-l-[10px] !h-10 ${
+							smallScreen ? "!text-xs" : "!text-base"
+						} `}
 						leftIcon={<TbFileDownload className="w-6 h-6" />}
 						loading={isLoading || mutationRun.isLoading || url === ""}
 					>
@@ -68,7 +72,9 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 					</Button>
 				) : (
 					<Button
-						className="!rounded-l-[10px] !h-10"
+						className={`!rounded-l-[10px] !h-10 ${
+							smallScreen ? "!text-xs" : "!text-base"
+						}  `}
 						variant="default"
 						leftIcon={<TbFileExport className="w-6 h-6" />}
 						loading={isLoading || mutationRun.isLoading}
@@ -85,12 +91,12 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 						className={` !rounded-r-[10px] !h-10 ${openOptions && "!bg-gray-100"}`}
 						onClick={() => setOpenOptions(!openOptions)}
 					>
-						<MdOutlineMoreVert className="w-6 h-6 " />
+						<MdOutlineMoreVert className={`${smallScreen ? "w-5 h-5" : "w-6 h-6"}  `} />
 					</Button>
 				</Tooltip>
 			</Button.Group>
 			{openOptions && (
-				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[275px] top-[214px] py-3 rounded-[10px] shadow-md">
+				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[275px] top-[214px] py-3  rounded-sm  shadow-md">
 					<div className="mb-2 text-sm px-1">Select file format</div>
 					{["dump", "csv"].map((o, index) => (
 						<div

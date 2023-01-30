@@ -21,18 +21,20 @@ type (
 	}
 
 	App struct {
-		Port                 string `envconfig:"AOA_APP_PORT" default:"3004"`
-		CheckTrigger         string `envconfig:"AOA_APP_CHECK_TRIGGER"`
-		AccountId            string `envconfig:"AOA_APP_ACCOUNT_ID"`
-		Environment          string `envconfig:"AOA_APP_ENV"`
-		FileSharing          string `envconfig:"AOA_FILE_DIR"`
-		SessionDuration      string `envconfig:"AOA_SESSION_DURATION"`
-		AllowedOrigins       string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
-		RunLocally           bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
-		InteractionBodyKey   string `envconfig:"AOA_INTERACTION_BODY_KEY"`
-		LogLevel             string `envconfig:"AOA_APP_LOG_LEVEL"`
-		UiBuilderPublishPath string `envconfig:"AOA_UI_BUILDER_PUBLISH_PATH"`
-		CustomQueryTimeLimit string `envconfig:"AOA_CUSTOM_QUERY_TIME_LIMIT_IN_MILLISECONDS"`
+		Port                   string `envconfig:"AOA_APP_PORT" default:"3004"`
+		CheckTrigger           string `envconfig:"AOA_APP_CHECK_TRIGGER"`
+		AccountId              string `envconfig:"AOA_APP_ACCOUNT_ID"`
+		Environment            string `envconfig:"AOA_APP_ENV"`
+		FileSharing            string `envconfig:"AOA_FILE_DIR"`
+		SessionDuration        string `envconfig:"AOA_SESSION_DURATION"`
+		AllowedOrigins         string `envconfig:"AOA_APP_ALLOWED_ORIGINS" default:"*"`
+		RunLocally             bool   `envconfig:"AOA_APP_RUN_LOCALLY" default:"true"`
+		InteractionBodyKey     string `envconfig:"AOA_INTERACTION_BODY_KEY"`
+		LogLevel               string `envconfig:"AOA_APP_LOG_LEVEL"`
+		UiBuilderPublishPath   string `envconfig:"AOA_UI_BUILDER_PUBLISH_PATH"`
+		CustomQueryTimeLimit   string `envconfig:"AOA_CUSTOM_QUERY_TIME_LIMIT_IN_MILLISECONDS"`
+		ExecutionTaskTimeLimit int    `envconfig:"AOA_TASK_TIME_LIMIT_IN_SECONDS"`
+		ExecutionTriggerRate   string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_SCHEDULE_EXPRESSION"`
 	}
 
 	Queue struct {
@@ -66,22 +68,25 @@ type (
 	}
 
 	Secrets struct {
-		AuthServerJwtSecret    string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
-		AppName                string `envconfig:"AOA_APP_NAME"`
-		AppSecret              string `envconfig:"AOA_APP_SECRET"`
-		CookieSecret           string `envconfig:"AOA_Cookie_SECRET"`
-		Encryption             string `envconfig:"AOA_ENCRYPTION_SECRET"`
-		SessionAuthSecret      string `envconfig:"AOA_SESSION_AUTH_SECRET"`
-		SessionEncryptSecret   string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
-		RunnerToken            string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
-		AwsAccessKeyId         string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
-		AwsSecretAccessKey     string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
-		AwsRegion              string `envconfig:"AOA_AWS_REGION"`
-		CodeChallenge          string `envconfig:"AOA_CODE_CHALLENGE"`
-		EbayNotifToken         string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
-		SendGridToken          string `envconfig:"AOA_SEND_GRID_TOKEN"`
-		MarketPlaceAdminSecret string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
-		DeployFunctionRoleArn  string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		AuthServerJwtSecret     string `envconfig:"AOA_AUTH_SERVER_JWT_SECRET"`
+		AppName                 string `envconfig:"AOA_APP_NAME"`
+		AppSecret               string `envconfig:"AOA_APP_SECRET"`
+		CookieSecret            string `envconfig:"AOA_Cookie_SECRET"`
+		Encryption              string `envconfig:"AOA_ENCRYPTION_SECRET"`
+		SessionAuthSecret       string `envconfig:"AOA_SESSION_AUTH_SECRET"`
+		SessionEncryptSecret    string `envconfig:"AOA_SESSION_ENCRYPT_SECRET"`
+		RunnerToken             string `envconfig:"AOA_RUNNER_TOKEN_SECRET"`
+		AwsAccessKeyId          string `envconfig:"AOA_AWS_ACCESS_KEY_ID"`
+		AwsSecretAccessKey      string `envconfig:"AOA_AWS_SECRET_ACCESS_KEY"`
+		AwsRegion               string `envconfig:"AOA_AWS_REGION"`
+		CodeChallenge           string `envconfig:"AOA_CODE_CHALLENGE"`
+		EbayNotifToken          string `envconfig:"AOA_EBAY_NOTIF_TOKEN"`
+		SendGridToken           string `envconfig:"AOA_SEND_GRID_TOKEN"`
+		MarketPlaceAdminSecret  string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
+		DeployFunctionRoleArn   string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		EventSchedulerToken     string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TOKEN"`
+		EventSchedulerRoleArn   string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_ROLE_ARN"`
+		EventSchedulerTargetArn string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TARGET_ARN"`
 	}
 
 	Upload struct {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
-	"github.com/gin-gonic/gin"
 )
 
 func (manager *executionManager) StartPipeline(input map[string]interface{}, accountId, endpoint string) (interface{}, error) {
@@ -50,16 +49,7 @@ func (manager *executionManager) StartPipeline(input map[string]interface{}, acc
 		return -1, err
 	}
 
-	err = manager.QueueService.AddUser(accountId)
-	if err != nil {
-		return -1, err
-	}
-	err = manager.GetNextTask(-1, executionId, "", accountId)
-	if err != nil {
-		return -1, err
-	}
-	if !pipeline.IsInteraction {
-		return gin.H{"id": executionId}, err
-	}
-	return manager.getResponse(executionId)
+	pipeline.AccountId = accountId
+	// TODO: implementing better error (or timeout) handling
+	return manager.ExecuteAllTasksAndReturnResults(pipeline, executionId)
 }

@@ -192,12 +192,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
 
 	// Routes
-	// endpoints with runner token
-	r.POST("/execution/id/:id/next", executionController.GetNextTask())
-	r.POST("/execution/id/:id/task/:taskId/result", executionController.TaskExecutionResult())
-
-	// r.GET("/execution/id/:id/initial_data", executionController.GetInitialData())
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
+
+	// this route used by event bridge scheduler for triggering pipelines
+	r.POST("/pipeline/check/trigger", TriggerController.HandleEventBridgeScheduler())
 
 	// user management router (without any authentication)
 	r.POST("/user/management/project/:tag/register", userManagementController.Register())
@@ -443,7 +441,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
 
-	go TriggerService.StartChecking(IntegrationStore)
+	// go TriggerService.StartChecking(IntegrationStore)
 	go TriggerService.StartScheduller()
 	return r
 }

@@ -69,16 +69,18 @@ function ListItem({
 	const { mutate, isLoading } = useMutation(setTableAccess, {
 		onSuccess: () => client.invalidateQueries(QueryKey.GetTables),
 	})
+	const smallScreen = window.innerHeight < 750
 
 	return (
 		<Link
 			to={name + (isPublic ? "/public" : "/private")}
 			className={clsx(
-				"rounded-md bg-white px-6 py-4 flex justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white transition",
-				isLoading && "blur-[1px] animate-pulse"
+				"rounded-md bg-white px-6 py-4 flex  justify-between items-center gap-6 hover:bg-gray-700 group hover:text-white transition",
+				isLoading && "blur-[1px] animate-pulse",
+				smallScreen ? "text-lg " : "text-xl "
 			)}
 		>
-			<p className="text-2xl font-medium">{name}</p>
+			<p className="font-medium">{name}</p>
 			<div
 				onClick={(event) => {
 					event.stopPropagation()
