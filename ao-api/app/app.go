@@ -459,7 +459,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
 
-	//go TriggerService.StartChecking(IntegrationStore)
+	// go TriggerService.StartChecking(IntegrationStore)
 	go TriggerService.StartScheduller()
 	return r
 }
