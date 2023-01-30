@@ -73,21 +73,15 @@ const hero = () =>
 		.css({
 			gridTemplateColumns: '3fr 2fr',
 			paddingLeft: theme.container.padding,
+			paddingBottom: '10rem',
 		})
 
 const infoTxt = () =>
 	box([
-		txt('BUILD YOUR COMMUNITY FASTER THAN EVER').css({
-			fontWeight: '700',
-			fontSize: '4rem',
-			lineHeight: '125%',
-		}),
-		txt(
+		title('BUILD YOUR COMMUNITY FASTER THAN EVER'),
+		desc(
 			'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
-		).css({
-			color: theme.colors.textLight,
-			marginTop: '1.25rem',
-		}),
+		),
 		btn('Join now!').css({
 			backgroundColor: theme.colors.text,
 			boxShadow: theme.shadows.normal,
@@ -117,15 +111,28 @@ const stat = ({ title, sub }: { title: string; sub: string }) =>
 		}),
 	])
 
-const logos = () => grid(5).populate([img(), img(), img(), img(), img()])
+const logos = () =>
+	grid(5)
+		.populate([img(), img(), img(), img(), img()])
+		.css({
+			padding: `6.25rem ${theme.container.padding}`,
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+		})
 
 const featuresText = () =>
-	grid(2).populate([
-		txt('Win The Game With These Tricks'),
-		txt(
-			'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
-		),
-	])
+	grid(2)
+		.populate([
+			title('Win The Game With These Tricks'),
+			desc(
+				'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
+			),
+		])
+		.css({
+			padding: `4rem ${theme.container.padding}`,
+			gap: '8rem',
+		})
 
 const features = () =>
 	grid(4).populate([
@@ -153,5 +160,18 @@ const feature = ({ title, sub }: { title: string; sub: string }) =>
 const info = () => grid(2).populate([infoTxt(), img()])
 
 const cta = () => box([btn('Get the course now for $99 →')])
+
+const title = (text: string) =>
+	txt(text).css({
+		fontWeight: '700',
+		fontSize: '4rem',
+		lineHeight: '125%',
+	})
+
+const desc = (text: string) =>
+	txt(text).css({
+		color: theme.colors.textLight,
+		marginTop: '1.25rem',
+	})
 
 export { page as sofa }
