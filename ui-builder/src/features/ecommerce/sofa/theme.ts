@@ -189,7 +189,26 @@ const info = () =>
 		gap: '1.25rem',
 	})
 
-const cta = () => box([btn('Get the course now for $99 →')])
+const cta = () =>
+	box([
+		box([
+			btn('Get the course now for $99 →').css({
+				padding: '6.5rem 10.75rem',
+				backgroundColor: theme.colors.primary,
+				fontWeight: '700',
+				fontSize: '4rem',
+				lineHeight: '125%',
+				borderRadius: '3rem',
+				width: '100%',
+			}),
+		]).css({
+			border: `0.5rem solid ${theme.colors.primaryDark}`,
+			borderRadius: '3rem',
+			padding: '0.5rem 1.625rem',
+		}),
+	]).css({
+		padding: `8rem ${theme.container.padding}`,
+	})
 
 const title = (text: string) =>
 	txt(text).css({
