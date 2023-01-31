@@ -2,12 +2,12 @@ import { Components } from '../controllers'
 import { Header } from './components/header'
 import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
-import { Sofa } from './sofa/controller'
+import { sofaControllers } from './sofa/controller'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
+		items: sofaControllers,
 		title: 'Sofa',
-		items: [Sofa],
 	},
 	{
 		title: 'E-commerce',

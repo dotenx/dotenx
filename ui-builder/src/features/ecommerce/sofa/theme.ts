@@ -28,21 +28,6 @@ const theme = {
 	},
 }
 
-const page = () =>
-	box([
-		navbar(),
-		hero(),
-		logos(),
-		featuresText(),
-		features(),
-		infoLeftTxt(),
-		infoRightTxt(),
-		cta(),
-	]).css({
-		fontFamily: theme.fontFamily,
-		color: theme.colors.text,
-	})
-
 const navbar = () =>
 	container([
 		box(),
@@ -88,7 +73,7 @@ const hero = () =>
 			])
 			.css({
 				gridTemplateColumns: '3fr 2fr',
-				paddingBottom: '10rem',
+				paddingBottom: '4rem',
 				justifyItems: 'center',
 			})
 			.cssTablet({
@@ -360,4 +345,4 @@ const outlineBtn = (text: string) =>
 		whiteSpace: 'nowrap',
 	})
 
-export { page as sofa }
+export const sofa = { navbar, hero, logos, featuresText, features, infoLeftTxt, infoRightTxt, cta }
