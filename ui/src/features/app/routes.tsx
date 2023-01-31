@@ -62,25 +62,28 @@ const routes: Routes = [
 		compactSidebar: true,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/interaction",
+		path: "/builder/projects/:projectName/workflows/interaction/new",
 		element: <InteractionPage />,
 		compactSidebar: true,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/:name",
+		path: "/builder/projects/:projectName/workflows/interaction/:name",
 		element: <InteractionPage />,
 		compactSidebar: true,
 	},
 	{
 		path: "/builder/projects/:projectName/workflows",
+		compactSidebar: true,
 		element: <WorkflowsPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/templates/template",
+		path: "/builder/projects/:projectName/workflows/template/:name",
+		compactSidebar: true,
 		element: <TemplatePage />,
 	},
 	{
-		path: "/builder/projects/:projectName/templates/:name",
+		path: "/builder/projects/:projectName/workflows/template/new",
+		compactSidebar: true,
 		element: <TemplatePage />,
 	},
 	{
@@ -107,18 +110,6 @@ const routes: Routes = [
 	{
 		path: "/builder/projects/:projectName/interactions/:name/executions",
 		element: <HistoryPage kind="interaction" />,
-	},
-	{
-		path: "/builder/projects/:projectName/interactions/new",
-		element: <InteractionPage />,
-	},
-	{
-		path: "/builder/projects/:projectName/interactions/:name",
-		element: <InteractionPage />,
-	},
-	{
-		path: "/builder/projects/:projectName/interactions",
-		element: <InteractionsPage />,
 	},
 	{
 		path: "/builder/projects/:projectName/templates/new",
@@ -155,6 +146,11 @@ const routes: Routes = [
 	{
 		path: "/builder/projects/:projectName/automations/:name/executions/:id",
 		element: <ExecutionPage />,
+	},
+	{
+		path: "/builder/projects/:projectName/workflows/automations/:name",
+		element: <AutomationPage />,
+		compactSidebar: true,
 	},
 	{
 		path: "/try-out",
