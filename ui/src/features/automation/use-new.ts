@@ -13,7 +13,7 @@ export function useNewAutomation(where: string) {
 		setSelectedAutomation(undefined)
 		reset()
 		setSelected(undefined)
-		navigate(where)
+		navigate(where + '/new')
 	}
 
 	return newAutomation

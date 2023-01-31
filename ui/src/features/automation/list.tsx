@@ -7,6 +7,7 @@ import { IoCodeDownload, IoTrash } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { CellProps } from "react-table"
+import { TypeOf } from "zod"
 import {
 	API_URL,
 	Automation,
@@ -99,7 +100,7 @@ export function AutomationList({
 				title={title}
 				subtitle={subtitle}
 				helpDetails={helpDetails}
-				emptyText={`You have no ${title?.toLowerCase()} yet, try adding one.`}
+				emptyText={`You have no automation yet, try adding one.`}
 				loading={loading || loadingAutomationHistory}
 				columns={
 					(
@@ -108,7 +109,7 @@ export function AutomationList({
 								Header: "Name",
 								accessor: "name",
 								Cell: ({ value }: { value: string }) => (
-									<AutomationLink automationName={value} />
+									<AutomationLink automationName={value} kind={kind} />
 								),
 							},
 							{
@@ -167,7 +168,7 @@ export function AutomationList({
 								accessor: "name",
 								Cell: ({ value, row }: { value: string; row: any }) => (
 									<Button
-										onClick={() => navigate(`${value}/automations`)}
+										onClick={() => navigate(`automations/${value}`)}
 										variant="subtle"
 										color="gray"
 										size="xs"
@@ -377,9 +378,9 @@ function NewAutomation({ kind }: { kind: AutomationKind }) {
 	)
 }
 
-function AutomationLink({ automationName }: { automationName: string }) {
+function AutomationLink({ automationName, kind }: { automationName: string; kind: string }) {
 	return (
-		<Anchor component={Link} to={automationName}>
+		<Anchor component={Link} to={kind + "/" + automationName}>
 			{automationName}
 		</Anchor>
 	)
@@ -445,7 +446,18 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 		{ enabled: !!automationName }
 	)
 	const fields = fieldsQuery.data?.data
-	const body = _.fromPairs(mapFieldsToPairs(fields))
+	// const body = _.fromPairs(mapFieldsToPairs(fields))
+
+	const objectKey = _.toPairs(fieldsQuery.data?.data)[0]?.[0]
+	const objectValues =
+		!_.isEmpty(fieldsQuery.data?.data) &&
+		Object?.assign(
+			{},
+			..._.toPairs(fieldsQuery.data?.data)[0]?.[1].map((d) => {
+				return { [d.key]: d.type === "text" ? "" : {} }
+			})
+		)
+	const body = { [objectKey]: objectValues }
 
 	if (fieldsQuery.isLoading || !fields) return <Loader />
 
@@ -454,7 +466,7 @@ function TemplateEndpoint({ automationName }: { automationName: string }) {
 			label="Add an automation"
 			url={`${API_URL}/pipeline/project/${projectName}/template/name/${automationName}`}
 			method="POST"
-			code={body}
+			code={_.isEmpty(fieldsQuery.data?.data) ? {} : body}
 		/>
 	)
 }
@@ -474,8 +486,19 @@ function InteractionEndpoint({
 		() => getInteractionEndpointFields({ interactionName: automationName, projectName }),
 		{ enabled: !!automationName }
 	)
-	const pairs = mapFieldsToPairs(query.data?.data)
-	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
+	// const pairs = mapFieldsToPairs(query.data?.data)
+	// const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
+
+	const objectKey = _.toPairs(query.data?.data)[0]?.[0]
+	const objectValues =
+		!_.isEmpty(query.data?.data) &&
+		Object?.assign(
+			{},
+			..._.toPairs(query.data?.data)[0]?.[1].map((d) => {
+				return { [d.key]: d.type === "text" ? "" : {} }
+			})
+		)
+	const body = { [objectKey]: objectValues }
 
 	if (query.isLoading) return <Loader />
 
@@ -485,7 +508,7 @@ function InteractionEndpoint({
 				label="Run interaction"
 				url={`${API_URL}/execution/project/${projectName}/name/${automationName}/start`}
 				method="POST"
-				code={body}
+				code={_.isEmpty(query.data?.data) ? {} : body}
 			/>
 
 			{isPublic && (
@@ -500,9 +523,9 @@ function InteractionEndpoint({
 	)
 }
 
-const mapFieldsToPairs = (fields?: EndpointFields) => {
-	return _.toPairs(fields).map(([nodeName, fields]) => [
-		nodeName,
-		_.fromPairs(fields.map((field) => [field, field])),
-	])
-}
+// const mapFieldsToPairs = (fields?: EndpointFields) => {
+// 	return _.toPairs(fields).map(([nodeName, fields]) => [
+// 		nodeName,
+// 		_.fromPairs(fields.map((field) => [field, field])),
+// 	])
+// }
