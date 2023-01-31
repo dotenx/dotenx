@@ -85,7 +85,6 @@ export function UserGroupsForm({
 				insert: _.fromPairs(values.insert.map((tableName) => [tableName, tableName])),
 			})
 	})
-	console.log(tables, "tables")
 	return (
 		<Form onSubmit={onSubmit}>
 			<div className="space-y-5">
