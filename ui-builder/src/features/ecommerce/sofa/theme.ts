@@ -61,46 +61,41 @@ const navbar = () =>
 	})
 
 const hero = () =>
-	box([
-		container([
-			grid(2)
-				.populate([
-					box([
-						infoTxt().css({
-							paddingTop: '6rem',
+	container([
+		grid(2)
+			.populate([
+				box([
+					infoTxt().css({
+						paddingTop: '6rem',
+					}),
+					grid(2)
+						.populate([
+							stat({ title: '200 Users', sub: 'Every week' }),
+							stat({ title: '300 Subs', sub: 'Winning together' }),
+							stat({ title: '700K+', sub: 'Daily views' }),
+							stat({ title: '90+', sub: 'Sessions' }),
+						])
+						.css({
+							marginTop: '4.125rem',
+							gap: '5rem',
+							maxWidth: '450px',
 						}),
-						grid(2)
-							.populate([
-								stat({ title: '200 Users', sub: 'Every week' }),
-								stat({ title: '300 Subs', sub: 'Winning together' }),
-								stat({ title: '700K+', sub: 'Daily views' }),
-								stat({ title: '90+', sub: 'Sessions' }),
-							])
-							.css({
-								marginTop: '4.125rem',
-								gap: '5rem',
-								maxWidth: '450px',
-							}),
-					]),
-				])
-				.css({
-					gridTemplateColumns: '3fr 2fr',
-					paddingBottom: '10rem',
-				})
-				.cssTablet({
-					gridTemplateColumns: gridCols(1),
+				]),
+				img(heroImg).cssTablet({
+					width: '400px',
+					height: '500px',
 				}),
-		]),
+			])
+			.css({
+				gridTemplateColumns: '3fr 2fr',
+				paddingBottom: '10rem',
+				justifyItems: 'center',
+			})
+			.cssTablet({
+				paddingBottom: '0',
+				gridTemplateColumns: gridCols(1),
+			}),
 	])
-		.css({
-			backgroundImage: `url(${heroImg})`,
-			backgroundPosition: 'right',
-			backgroundRepeat: 'no-repeat',
-			backgroundSize: 'contain',
-		})
-		.cssTablet({
-			backgroundImage: 'none',
-		})
 
 const infoTxt = () =>
 	box([
@@ -157,6 +152,7 @@ const featuresText = () =>
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
+				gap: '4rem',
 			}),
 	]).css({
 		paddingBottom: '10rem',
@@ -249,13 +245,23 @@ const feature = ({ title, sub, icon }: { title: string; sub: string; icon: strin
 const infoLeftTxt = () =>
 	container([
 		grid(2)
-			.populate([infoTxt().css({ paddingTop: '9rem' }), img(infoImg1)])
+			.populate([
+				infoTxt()
+					.css({
+						paddingTop: '9rem',
+					})
+					.cssTablet({
+						paddingTop: '1rem',
+					}),
+				img(infoImg1),
+			])
 			.css({
 				gap: '1.25rem',
 				paddingBottom: '4.3rem',
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
+				paddingBottom: '1rem',
 			}),
 	])
 
@@ -274,6 +280,7 @@ const infoRightTxt = () =>
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
+				paddingBottom: '1rem',
 			}),
 	])
 
@@ -310,7 +317,7 @@ const container = (children: Element[]) =>
 	box(children).css({
 		maxWidth: '1440px',
 		margin: '0 auto',
-		padding: '0 1.5rem',
+		padding: '0 2rem',
 	})
 
 const title = (text: string) =>
