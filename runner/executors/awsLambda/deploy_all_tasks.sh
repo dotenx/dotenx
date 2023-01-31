@@ -21,6 +21,8 @@
 # # hojjat12/mailchimp-add-new-subscriber:lambda
 # # hojjat12/mailchimp-archive-subscriber:lambda
 # # hojjat12/airtable-create-record:lambda
+# # hojjat12/stripe-create-product:lambda
+# # hojjat12/stripe-update-product:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -206,6 +208,24 @@
 # export repository_name="hojjat12/airtable-create-record"
 # export tag="lambda"
 # export directory_address="airtable-create-record"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/stripe-create-product"
+# export tag="lambda"
+# export directory_address="stripe-create-product"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/stripe-update-product"
+# export tag="lambda"
+# export directory_address="stripe-update-product"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name

@@ -44,6 +44,10 @@ func (cm *crudManager) ActivatePipeline(accountId, pipelineId string) (err error
 	if err != nil {
 		return
 	}
+	err = cm.EnableEventBridgeScheduler(pipeline.Endpoint)
+	if err != nil {
+		return err
+	}
 	return cm.NotifyPlanmanageForActivation(accountId, "activate", pipelineId, false)
 }
 
@@ -109,6 +113,10 @@ func (cm *crudManager) DeActivatePipeline(accountId, pipelineId string, deleteRe
 	err = cm.Store.DeActivatePipeline(noContext, accountId, pipelineId)
 	if err != nil {
 		return
+	}
+	err = cm.DisableEventBridgeScheduler(pipeline.Endpoint)
+	if err != nil {
+		return err
 	}
 	return cm.NotifyPlanmanageForActivation(accountId, "deactivate", pipelineId, deleteRecord)
 }
