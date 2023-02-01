@@ -38,6 +38,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 				AccountId:        accountId,
 				DefaultUserGroup: dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
 				Type:             dto.Type,
+				Theme:            dto.Theme,
 				HasDatabase:      dto.HasDatabase,
 			}, uiBuilderService)
 		}
@@ -67,5 +68,6 @@ type ProjectRequest struct {
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
 	Type             string `db:"type" json:"type" binding:"oneof='' 'freestyle' 'landing_page' 'ecommerce' 'ui_portfolio'"`
+	Theme            string `db:"theme" json:"theme"`
 	HasDatabase      bool   `json:"hasDatabase"`
 }

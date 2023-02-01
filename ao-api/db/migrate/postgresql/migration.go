@@ -319,6 +319,10 @@ var migrations = []struct {
 		name: "add-type-field-to-projects-table",
 		stmt: addTypeFieldToProjectsTable,
 	},
+	{
+		name: "add-theme-field-to-projects-table",
+		stmt: addThemeFieldToProjectsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -898,4 +902,9 @@ ADD COLUMN IF NOT EXISTS last_preview_published_at TIMESTAMP DEFAULT '1970-01-01
 var addTypeFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'freestyle';
+`
+
+var addThemeFieldToProjectsTable = `
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS theme VARCHAR(64) DEFAULT '';
 `

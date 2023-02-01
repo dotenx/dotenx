@@ -10,6 +10,7 @@ type Project struct {
 	Tag              string `db:"tag" json:"tag"`
 	DefaultUserGroup string `json:"default_user_group"`
 	Type             string `db:"type" json:"type"`
+	Theme            string `db:"theme" json:"theme"`
 	HasDatabase      bool   `db:"has_database" json:"hasDatabase"`
 }
 
