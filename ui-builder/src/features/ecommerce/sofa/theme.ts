@@ -9,6 +9,45 @@ import { gridCols } from '../../../utils/style-utils'
 import { box, btn, grid, icn, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 
+const tags = {
+	navbar: {
+		links: 'links',
+		button: 'button',
+	},
+	hero: {
+		title: 'title',
+		desc: 'desc',
+		button: 'button',
+		stats: 'stats',
+		img: 'img',
+		stat: {
+			line: 'line',
+			title: 'title',
+			desc: 'desc',
+		},
+	},
+	logos: 'logos',
+	featuresText: {
+		title: 'title',
+		desc: 'desc',
+	},
+	features: {
+		grid: 'grid',
+		icon: 'icon',
+		title: 'title',
+		desc: 'desc',
+	},
+	info: {
+		img: 'img',
+		title: 'title',
+		desc: 'desc',
+		button: 'button',
+	},
+	cta: {
+		button: 'button',
+	},
+}
+
 const theme = {
 	fontFamily: 'Inter',
 	colors: {
@@ -29,12 +68,14 @@ const theme = {
 
 const navbar = () =>
 	container([
-		box([txt('Category 1'), txt('Category 2'), txt('Case studies')]).css({
-			display: 'flex',
-			gap: '2.5rem',
-			flexWrap: 'wrap',
-		}),
-		outlineBtn('Sign up'),
+		box([txt('Category 1'), txt('Category 2'), txt('Case studies')])
+			.tag(tags.navbar.links)
+			.css({
+				display: 'flex',
+				gap: '2.5rem',
+				flexWrap: 'wrap',
+			}),
+		outlineBtn('Sign up').tag(tags.navbar.button),
 	]).css({
 		fontSize: '1.25rem',
 		display: 'flex',
@@ -49,13 +90,20 @@ const hero = () =>
 		grid(2)
 			.populate([
 				box([
-					infoTxt(),
+					box([
+						box([title('BUILD YOUR COMMUNITY FASTER THAN EVER').tag(tags.hero.title)]),
+						desc(
+							'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
+						).tag(tags.hero.desc),
+						primaryBtn('Join now!').tag(tags.hero.button),
+					]),
 					grid(2)
+						.tag(tags.hero.stats)
 						.populate([
-							stat({ title: '200 Users', sub: 'Every week' }),
-							stat({ title: '300 Subs', sub: 'Winning together' }),
-							stat({ title: '700K+', sub: 'Daily views' }),
-							stat({ title: '90+', sub: 'Sessions' }),
+							stat({ title: '200 Users', desc: 'Every week' }),
+							stat({ title: '300 Subs', desc: 'Winning together' }),
+							stat({ title: '700K+', desc: 'Daily views' }),
+							stat({ title: '90+', desc: 'Sessions' }),
 						])
 						.css({
 							marginTop: '4.125rem',
@@ -63,7 +111,7 @@ const hero = () =>
 							maxWidth: '450px',
 						}),
 				]),
-				img(heroImg).cssTablet({
+				img(heroImg).tag(tags.hero.img).cssTablet({
 					width: '400px',
 					height: '500px',
 				}),
@@ -80,24 +128,17 @@ const hero = () =>
 		paddingBottom: '6rem',
 	})
 
-const infoTxt = () =>
+const stat = ({ title, desc }: { title: string; desc: string }) =>
 	box([
-		box([title('BUILD YOUR COMMUNITY'), title('FASTER THAN EVER')]),
-		desc(
-			'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
-		),
-		primaryBtn('Join now!'),
-	])
-
-const stat = ({ title, sub }: { title: string; sub: string }) =>
-	box([
-		box().css({
-			width: '1.3rem',
-			height: '0.3rem',
-			backgroundColor: theme.colors.primaryDark,
-		}),
-		bold(title),
-		txt(sub).css({
+		box()
+			.css({
+				width: '1.3rem',
+				height: '0.3rem',
+				backgroundColor: theme.colors.primaryDark,
+			})
+			.tag(tags.hero.stat.line),
+		bold(title).tag(tags.hero.stat.title),
+		txt(desc).tag(tags.hero.stat.desc).css({
 			color: theme.colors.textLight,
 			marginTop: '0.6rem',
 		}),
@@ -107,6 +148,7 @@ const logos = () =>
 	container([
 		grid(5)
 			.populate([img(logoImg1), img(logoImg2), img(logoImg3), img(logoImg4), img(logoImg5)])
+			.tag(tags.logos)
 			.css({
 				gap: '1.5rem',
 			})
@@ -125,10 +167,10 @@ const featuresText = () =>
 	container([
 		grid(2)
 			.populate([
-				title('Win The Game With These Tricks'),
+				title('Win The Game With These Tricks').tag(tags.featuresText.title),
 				desc(
 					'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
-				),
+				).tag(tags.featuresText.desc),
 			])
 			.css({
 				gap: '8rem',
@@ -145,6 +187,7 @@ const featuresText = () =>
 const features = () =>
 	container([
 		grid(4)
+			.tag(tags.features.grid)
 			.populate([
 				feature({
 					title: 'Grow Faster',
@@ -209,11 +252,14 @@ const features = () =>
 
 const feature = ({ title, sub, icon }: { title: string; sub: string; icon: string }) =>
 	box([
-		icn(icon).size('2rem').css({
-			color: theme.colors.primaryDark,
-		}),
-		bold(title),
-		txt(sub).css({
+		icn(icon)
+			.size('2rem')
+			.css({
+				color: theme.colors.primaryDark,
+			})
+			.tag(tags.features.icon),
+		bold(title).tag(tags.features.title),
+		txt(sub).tag(tags.features.desc).css({
 			fontWeight: '700',
 			color: theme.colors.textLight,
 		}),
@@ -233,14 +279,20 @@ const info = () =>
 	container([
 		grid(2)
 			.populate([
-				infoTxt()
+				box([
+					box([title('BUILD YOUR COMMUNITY FASTER THAN EVER').tag(tags.info.title)]),
+					desc(
+						'Elevate your online presence and expand your reach by connecting with like-minded individuals, engaging with your audience, and growing your community faster than ever before.'
+					).tag(tags.info.desc),
+					primaryBtn('Join now!').tag(tags.info.button),
+				])
 					.css({
 						paddingTop: '9rem',
 					})
 					.cssTablet({
 						paddingTop: '1rem',
 					}),
-				img(infoImg).cssTablet({
+				img(infoImg).tag(tags.info.img).cssTablet({
 					width: '400px',
 					height: '500px',
 				}),
@@ -260,6 +312,7 @@ const cta = () =>
 	container([
 		box([
 			btn('Get the course now for $99 →')
+				.tag(tags.cta.button)
 				.css({
 					padding: '6.5rem 10.75rem',
 					backgroundColor: theme.colors.primary,
@@ -348,4 +401,6 @@ export const sofa = {
 	features,
 	info,
 	cta,
+	tags,
+	stat,
 }
