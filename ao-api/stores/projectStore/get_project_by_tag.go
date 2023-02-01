@@ -9,7 +9,7 @@ import (
 )
 
 var getProjectByTag = `
-Select id, name, account_id, description, tag, has_database, type from projects
+Select id, name, account_id, description, tag, has_database, type, theme from projects
 WHERE tag = $1
 `
 
@@ -28,7 +28,7 @@ func (store *projectStore) GetProjectByTag(ctx context.Context, tag string) (mod
 	defer rows.Close()
 	var project models.Project
 	for rows.Next() {
-		if err := rows.Scan(&project.Id, &project.Name, &project.AccountId, &project.Description, &project.Tag, &project.HasDatabase, &project.Type); err != nil {
+		if err := rows.Scan(&project.Id, &project.Name, &project.AccountId, &project.Description, &project.Tag, &project.HasDatabase, &project.Type, &project.Theme); err != nil {
 			return models.Project{}, err
 		}
 	}
