@@ -1,1 +1,1 @@
-# Ecommerce Dashboard
+# E-commerce Dashboard

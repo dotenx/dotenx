@@ -1,20 +1,19 @@
 import { Button, Loader, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
-import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
 import { QueryKey } from "../api"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { PageTitle } from "../features/ui/page-title"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
 
-export default function DomainsPage() {
-	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
+export function DomainsPage() {
+	const { projectTag, projectName, isLoading: projectTagIsLoading } = useGetProjectTag()
 	const [isDomainAdded, setIsDomainAdded] = useState<boolean>()
 	const getDomainsQuery = useQuery(
 		[QueryKey.GetDomains, projectTag],
@@ -32,20 +31,12 @@ export default function DomainsPage() {
 
 	if (!projectName) return <Navigate to="/" replace />
 
-	const helpDetails = {
-		title: "Set a custom domain for your application instead of using the default domain",
-		description:
-			"You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.",
-		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
-		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/domains",
-	}
-
 	return (
 		<div>
 			<Header title={"Domains"} />
-			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
+			<ContentWrapper>
 				{getDomainsQuery.isLoading ||
-				projectTagisLoading ||
+				projectTagIsLoading ||
 				getDomainsQuery.isRefetching ? (
 					<Loader className="mx-auto" />
 				) : (
@@ -76,8 +67,8 @@ const Domain = ({
 
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
-			toast("Domain verified successfuly", { type: "success", autoClose: 2000 }),
-				client.invalidateQueries(QueryKey.GetDomains)
+			toast("Domain verified successfully", { type: "success", autoClose: 2000 }),
+				client.invalidateQueries([QueryKey.GetDomains])
 		},
 		onError: () => {
 			toast("External domain is not verified", { type: "error", autoClose: 2000 })
@@ -128,7 +119,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		validate: zodResolver(schema),
 	})
 	const { mutate, isLoading } = useMutation(addDomain, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetDomains),
+		onSuccess: () => client.invalidateQueries([QueryKey.GetDomains]),
 		onError: (e: any) => {
 			toast(e.response.data.message, {
 				type: "error",

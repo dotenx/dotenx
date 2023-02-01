@@ -3,16 +3,7 @@ import clsx from "clsx"
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
 import { BiDollarCircle } from "react-icons/bi"
-import {
-	BsChevronLeft,
-	BsFiles,
-	BsFillDiagram2Fill,
-	BsFillDiagram3Fill,
-	BsGlobe,
-	BsHddNetworkFill,
-	BsPeopleFill,
-	BsTable,
-} from "react-icons/bs"
+import { BsChevronLeft, BsFiles, BsGlobe, BsPeopleFill } from "react-icons/bs"
 import { FaBoxOpen, FaChartLine } from "react-icons/fa"
 import { Link, NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
@@ -60,11 +51,6 @@ export function Sidebar({ closable }: { closable: boolean }) {
 					<NavLinks closed={closed} links={sidebar.navLinks} />
 				</div>
 			</div>
-			<div className="flex flex-col items-center justify-center h-16 border-t border-white">
-				<FadeIn visible={!closed}>
-					<SubLinks links={sidebar.subLinks} />
-				</FadeIn>
-			</div>
 		</motion.aside>
 	)
 }
@@ -105,12 +91,7 @@ const useSidebar = () => {
 				to: `/projects/${projectName}/domains`,
 			},
 		],
-		subLinks: [
-			// {
-			// 	icon: <BsFillDiagram2Fill />,
-			// 	to: `/projects/${projectName}/git`,
-			// },
-		],
+		subLinks: [],
 	}
 
 	return sidebar
@@ -156,24 +137,6 @@ function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 				<span>{link.label}</span>
 			</FadeIn>
 		</RouterNavLink>
-	)
-}
-
-function SubLinks({ links }: { links: SubLinkData[] }) {
-	return (
-		<nav className="flex gap-2">
-			{links.map((link) => (
-				<SubLink key={link.to} link={link} />
-			))}
-		</nav>
-	)
-}
-
-function SubLink({ link }: { link: SubLinkData }) {
-	return (
-		<Link to={link.to} className="text-lg text-white transition hover:text-rose-100">
-			{link.icon}
-		</Link>
 	)
 }
 

@@ -21,7 +21,7 @@ interface TableProps<D extends object = Record<string, string>> {
 	withPagination?: boolean
 	currentPage?: number
 	nPages?: number
-	setCurrentPage?: any
+	setCurrentPage?: (page: number) => void
 }
 
 export function Table<D extends object = Record<string, string>>({
@@ -169,15 +169,15 @@ const Pagination = ({
 }: {
 	currentPage: number
 	nPages: number
-	setCurrentPage?: any
+	setCurrentPage?: (page: number) => void
 }) => {
 	const pageNumbers = [...Array(nPages + 1).keys()].slice(1)
 
 	const nextPage = () => {
-		setCurrentPage(currentPage + 1)
+		setCurrentPage?.(currentPage + 1)
 	}
 	const prevPage = () => {
-		setCurrentPage(currentPage - 1)
+		setCurrentPage?.(currentPage - 1)
 	}
 	if (nPages === 1) return null
 	return (
@@ -193,7 +193,7 @@ const Pagination = ({
 				</li>
 				{pageNumbers.map((pgNumber) => (
 					<li
-						onClick={() => setCurrentPage(pgNumber)}
+						onClick={() => setCurrentPage?.(pgNumber)}
 						key={pgNumber}
 						className={`bg-slate-50 p-1 px-2 rounded  cursor-pointer active:bg-slate-100 ${
 							currentPage == pgNumber ? "bg-slate-200" : ""

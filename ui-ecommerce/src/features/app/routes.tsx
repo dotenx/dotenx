@@ -1,22 +1,15 @@
 import { useViewportSize } from "@mantine/hooks"
 import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
-import AnalyticsPage from "../../pages/analytics"
-import AudiencePage from "../../pages/audience"
-import DomainsPage from "../../pages/domains"
-import Files from "../../pages/files"
-import GitIntegrationPage from "../../pages/git/git"
-import GitRedirectPage from "../../pages/git/git-redirect"
+import { AnalyticsPage } from "../../pages/analytics"
+import { AudiencePage } from "../../pages/audience"
+import { DomainsPage } from "../../pages/domains"
+import { Files } from "../../pages/files"
 import { HomePage } from "../../pages/home"
-import NewProductsPage from "../../pages/new-product"
-import NotFoundPage from "../../pages/not-found"
-import ProductsPage from "../../pages/products"
-import SalesPage from "../../pages/sales"
-import TablePage from "../../pages/table"
-import TablesPage from "../../pages/tables"
-import UserGroupsPage from "../../pages/user-groups"
-import UserManagementPage from "../../pages/user-management"
-import { ViewPage } from "../../pages/view"
+import { NewProductPage } from "../../pages/new-product"
+import { NotFoundPage } from "../../pages/not-found"
+import { ProductsPage } from "../../pages/products"
+import { SalesPage } from "../../pages/sales"
 import { Layout } from "../ui"
 
 type Routes = {
@@ -29,7 +22,7 @@ type Routes = {
 const routes: Routes = [
 	{
 		path: "/projects/:projectName/products/New",
-		element: <NewProductsPage />,
+		element: <NewProductPage />,
 	},
 	{
 		path: "/projects/:projectName/products",
@@ -70,29 +63,31 @@ const routes: Routes = [
 export function Routes() {
 	const { width } = useViewportSize()
 
-	if (width < 600) {
+	if (width === 0) return null
+
+	if (width < 600)
 		return (
 			<div className="w-full px-20 pt-10 text-center ">
 				Dotenx is not designed for mobile use, please come back with a bigger screen.
 			</div>
 		)
-	} else
-		return (
-			<ReactRoutes>
-				{routes.map((route) => (
-					<Route
-						key={route.path}
-						path={route.path}
-						element={
-							<Layout
-								withoutSidebar={route.withoutSidebar}
-								compactSidebar={route.compactSidebar}
-							>
-								{route.element}
-							</Layout>
-						}
-					/>
-				))}
-			</ReactRoutes>
-		)
+
+	return (
+		<ReactRoutes>
+			{routes.map((route) => (
+				<Route
+					key={route.path}
+					path={route.path}
+					element={
+						<Layout
+							withoutSidebar={route.withoutSidebar}
+							compactSidebar={route.compactSidebar}
+						>
+							{route.element}
+						</Layout>
+					}
+				/>
+			))}
+		</ReactRoutes>
+	)
 }

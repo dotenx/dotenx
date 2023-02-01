@@ -47,7 +47,7 @@ export function Header({
 							key={tab}
 							className={`transition-all duration-200 uppercase pb-1 text-lg font-medium cursor-pointer  ${
 								active
-									? "text-black border-b-4 border-b-rose-600 "
+									? "text-slate-900 border-b-4 border-b-rose-600 "
 									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"
 							}`}
 						>
@@ -59,7 +59,8 @@ export function Header({
 		</div>
 	)
 }
-export function Content_Wrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
+
+export function ContentWrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
 	return (
 		<div className={`${expand && "pl-[0]"} w-full pb-10`}>
 			<div className="px-10 pt-5">{children}</div>

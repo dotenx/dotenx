@@ -1,8 +1,8 @@
 import { createEmotionCache, MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useEffect } from "react"
 import ReactModal from "react-modal"
-import { QueryClient, QueryClientProvider } from "react-query"
 import { BrowserRouter } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -37,11 +37,6 @@ export function App() {
 								"#9f1239",
 								"#881337",
 							],
-							lightRed: ["#ef233c"],
-							darkRed: ["#d90429"],
-							light: ["#edf2f4"],
-							gray: ["#8d99ae"],
-							dark: ["#2b2d42"],
 						},
 						primaryColor: "rose",
 						fontFamily: "Inter, sans-serif",

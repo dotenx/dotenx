@@ -10,8 +10,9 @@ import {
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { closeAllModals, openModal } from "@mantine/modals"
-import { TbPlus, TbTrash } from "react-icons/tb"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { BsPlusLg } from "react-icons/bs"
+import { TbTrash } from "react-icons/tb"
 import { Link } from "react-router-dom"
 import { z } from "zod"
 import { QueryKey } from "../api"
@@ -28,7 +29,7 @@ export function HomePage() {
 			<div className="container p-10 mx-auto space-y-6">
 				<div className="flex justify-between">
 					<h2 className="text-2xl">Projects</h2>
-					<Button leftIcon={<TbPlus />} onClick={onClickAddProject}>
+					<Button leftIcon={<BsPlusLg />} onClick={onClickAddProject}>
 						Add Project
 					</Button>
 				</div>
@@ -55,7 +56,7 @@ function ProjectList() {
 					<div className="flex justify-between">
 						<Anchor
 							component={Link}
-							to={`/builder/projects/${project.name}/tables`}
+							to={`/projects/${project.name}/products`}
 							className="self-start"
 						>
 							{project.name}
