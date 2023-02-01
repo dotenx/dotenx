@@ -1,3 +1,10 @@
+import ctaImg from '../../../assets/themes/sofa/preview/cta.png'
+import featuresTextImg from '../../../assets/themes/sofa/preview/features-text.png'
+import featuresImg from '../../../assets/themes/sofa/preview/features.png'
+import heroImg from '../../../assets/themes/sofa/preview/hero.png'
+import infoImg from '../../../assets/themes/sofa/preview/info.png'
+import logosImg from '../../../assets/themes/sofa/preview/logos.png'
+import navbarImg from '../../../assets/themes/sofa/preview/navbar.png'
 import { Controller, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
@@ -18,7 +25,7 @@ import { sofa } from './theme'
 
 class Navbar extends Controller {
 	name = 'Sofa Navbar'
-	image = ''
+	image = navbarImg
 	defaultData = sofa.navbar()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const links = wrapper.find<BoxElement>(sofa.tags.navbar.links)!
@@ -41,7 +48,7 @@ class Navbar extends Controller {
 
 class Hero extends Controller {
 	name = 'Sofa Hero'
-	image = ''
+	image = heroImg
 	defaultData = sofa.hero()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const title = wrapper.find<TextElement>(sofa.tags.hero.title)!
@@ -82,7 +89,7 @@ function StatOptions({ item }: { item: Element }) {
 
 class Logos extends Controller {
 	name = 'Sofa Logos'
-	image = ''
+	image = logosImg
 	defaultData = sofa.logos()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const logos = wrapper.find<BoxElement>(sofa.tags.logos)!
@@ -101,7 +108,7 @@ class Logos extends Controller {
 
 class FeaturesText extends Controller {
 	name = 'Sofa Features Text'
-	image = ''
+	image = featuresTextImg
 	defaultData = sofa.featuresText()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const title = wrapper.find<TextElement>(sofa.tags.featuresText.title)!
@@ -118,7 +125,7 @@ class FeaturesText extends Controller {
 
 class Features extends Controller {
 	name = 'Sofa Features'
-	image = ''
+	image = featuresImg
 	defaultData = sofa.features()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const features = wrapper.find<BoxElement>(sofa.tags.features.grid)!
@@ -151,7 +158,7 @@ function FeatureOptions({ item }: { item: Element }) {
 
 class Info extends Controller {
 	name = 'Sofa Info'
-	image = ''
+	image = infoImg
 	defaultData = sofa.info()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const title = wrapper.find<TextElement>(sofa.tags.info.title)!
@@ -172,7 +179,7 @@ class Info extends Controller {
 
 class Cta extends Controller {
 	name = 'Sofa Cta'
-	image = ''
+	image = ctaImg
 	defaultData = sofa.cta()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const button = wrapper.find<ButtonElement>(sofa.tags.cta.button)!
