@@ -1,53 +1,83 @@
 import { Controller } from '../../controllers/controller'
+import { ComponentName } from '../../controllers/helpers'
+import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
 import { sofa } from './theme'
 
 class Navbar extends Controller {
-	name = 'Navbar'
+	name = 'Sofa Navbar'
 	image = ''
 	defaultData = sofa.navbar()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class Hero extends Controller {
-	name = 'Hero'
+	name = 'Sofa Hero'
 	image = ''
 	defaultData = sofa.hero()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class Logos extends Controller {
-	name = 'Logos'
+	name = 'Sofa Logos'
 	image = ''
 	defaultData = sofa.logos()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class FeaturesText extends Controller {
-	name = 'FeaturesText'
+	name = 'Sofa FeaturesText'
 	image = ''
 	defaultData = sofa.featuresText()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class Features extends Controller {
-	name = 'Features'
+	name = 'Sofa Features'
 	image = ''
 	defaultData = sofa.features()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class Info extends Controller {
-	name = 'Info'
+	name = 'Sofa Info'
 	image = ''
 	defaultData = sofa.info()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 class Cta extends Controller {
-	name = 'Cta'
+	name = 'Sofa Cta'
 	image = ''
 	defaultData = sofa.cta()
-	renderOptions = () => <></>
+	renderOptions = () => (
+		<OptionsWrapper>
+			<ComponentName name={this.name} />
+		</OptionsWrapper>
+	)
 }
 
 export const sofaControllers = [Navbar, Hero, Logos, FeaturesText, Features, Info, Cta]
