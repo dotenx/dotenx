@@ -36,17 +36,10 @@ class Features extends Controller {
 	renderOptions = () => <></>
 }
 
-class InfoLeftTxt extends Controller {
-	name = 'InfoLeftTxt'
+class Info extends Controller {
+	name = 'Info'
 	image = ''
-	defaultData = sofa.infoLeftTxt()
-	renderOptions = () => <></>
-}
-
-class InfoRightTxt extends Controller {
-	name = 'InfoRightTxt'
-	image = ''
-	defaultData = sofa.infoRightTxt()
+	defaultData = sofa.info()
 	renderOptions = () => <></>
 }
 
@@ -57,13 +50,4 @@ class Cta extends Controller {
 	renderOptions = () => <></>
 }
 
-export const sofaControllers = [
-	Navbar,
-	Hero,
-	Logos,
-	FeaturesText,
-	Features,
-	InfoLeftTxt,
-	InfoRightTxt,
-	Cta,
-]
+export const sofaControllers = [Navbar, Hero, Logos, FeaturesText, Features, Info, Cta]

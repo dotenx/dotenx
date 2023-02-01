@@ -1,6 +1,5 @@
 import heroImg from '../../../assets/themes/sofa/hero.png'
-import infoImg1 from '../../../assets/themes/sofa/info-1.png'
-import infoImg2 from '../../../assets/themes/sofa/info-2.png'
+import infoImg from '../../../assets/themes/sofa/info-1.png'
 import logoImg1 from '../../../assets/themes/sofa/logo-1.png'
 import logoImg2 from '../../../assets/themes/sofa/logo-2.png'
 import logoImg3 from '../../../assets/themes/sofa/logo-3.png'
@@ -30,7 +29,6 @@ const theme = {
 
 const navbar = () =>
 	container([
-		box(),
 		box([txt('Category 1'), txt('Category 2'), txt('Case studies')]).css({
 			display: 'flex',
 			gap: '2.5rem',
@@ -42,7 +40,8 @@ const navbar = () =>
 		display: 'flex',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		paddingTop: '1.8rem',
+		paddingTop: '2rem',
+		paddingBottom: '2rem',
 	})
 
 const hero = () =>
@@ -50,9 +49,7 @@ const hero = () =>
 		grid(2)
 			.populate([
 				box([
-					infoTxt().css({
-						paddingTop: '6rem',
-					}),
+					infoTxt(),
 					grid(2)
 						.populate([
 							stat({ title: '200 Users', sub: 'Every week' }),
@@ -73,14 +70,15 @@ const hero = () =>
 			])
 			.css({
 				gridTemplateColumns: '3fr 2fr',
-				paddingBottom: '4rem',
 				justifyItems: 'center',
 			})
 			.cssTablet({
-				paddingBottom: '0',
 				gridTemplateColumns: gridCols(1),
 			}),
-	])
+	]).css({
+		paddingTop: '6rem',
+		paddingBottom: '6rem',
+	})
 
 const infoTxt = () =>
 	box([
@@ -119,8 +117,8 @@ const logos = () =>
 				gridTemplateColumns: gridCols(2),
 			}),
 	]).css({
-		paddingTop: '10rem',
-		paddingBottom: '10rem',
+		paddingTop: '6rem',
+		paddingBottom: '6rem',
 	})
 
 const featuresText = () =>
@@ -137,10 +135,11 @@ const featuresText = () =>
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
-				gap: '4rem',
+				gap: '2rem',
 			}),
 	]).css({
-		paddingBottom: '10rem',
+		paddingTop: '5rem',
+		paddingBottom: '5rem',
 	})
 
 const features = () =>
@@ -196,13 +195,16 @@ const features = () =>
 				gap: '4.8rem',
 			})
 			.cssTablet({
+				gap: '3rem',
 				gridTemplateColumns: gridCols(2),
 			})
 			.cssMobile({
+				gap: '2rem',
 				gridTemplateColumns: gridCols(1),
 			}),
 	]).css({
-		paddingBottom: '4.3rem',
+		paddingTop: '4rem',
+		paddingBottom: '4rem',
 	})
 
 const feature = ({ title, sub, icon }: { title: string; sub: string; icon: string }) =>
@@ -217,7 +219,7 @@ const feature = ({ title, sub, icon }: { title: string; sub: string; icon: strin
 		}),
 	]).css({
 		border: '1px solid',
-		borderRadius: '50% 50% 50% 50% / 30% 30% 30% 30%',
+		borderRadius: '9999px',
 		padding: '7.5rem 1.75rem',
 		display: 'flex',
 		flexDirection: 'column',
@@ -227,7 +229,7 @@ const feature = ({ title, sub, icon }: { title: string; sub: string; icon: strin
 		textAlign: 'center',
 	})
 
-const infoLeftTxt = () =>
+const info = () =>
 	container([
 		grid(2)
 			.populate([
@@ -238,34 +240,19 @@ const infoLeftTxt = () =>
 					.cssTablet({
 						paddingTop: '1rem',
 					}),
-				img(infoImg1),
-			])
-			.css({
-				gap: '1.25rem',
-				paddingBottom: '4.3rem',
-			})
-			.cssTablet({
-				gridTemplateColumns: gridCols(1),
-				paddingBottom: '1rem',
-			}),
-	])
-
-const infoRightTxt = () =>
-	container([
-		grid(2)
-			.populate([
-				img(infoImg2),
-				infoTxt().css({ paddingTop: '13rem' }).cssTablet({
-					gridRow: '1',
+				img(infoImg).cssTablet({
+					width: '400px',
+					height: '500px',
 				}),
 			])
 			.css({
 				gap: '1.25rem',
-				paddingBottom: '10rem',
+				paddingTop: '2rem',
+				paddingBottom: '2rem',
+				justifyItems: 'center',
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
-				paddingBottom: '1rem',
 			}),
 	])
 
@@ -295,7 +282,8 @@ const cta = () =>
 			padding: '0.5rem 1.625rem',
 		}),
 	]).css({
-		paddingBottom: '10rem',
+		paddingTop: '4rem',
+		paddingBottom: '4rem',
 	})
 
 const container = (children: Element[]) =>
@@ -306,11 +294,18 @@ const container = (children: Element[]) =>
 	})
 
 const title = (text: string) =>
-	txt(text).css({
-		fontWeight: '700',
-		fontSize: '4rem',
-		lineHeight: '125%',
-	})
+	txt(text)
+		.css({
+			fontWeight: '700',
+			fontSize: '4rem',
+			lineHeight: '125%',
+		})
+		.cssTablet({
+			fontSize: '3.5rem',
+		})
+		.cssMobile({
+			fontSize: '3rem',
+		})
 
 const desc = (text: string) =>
 	txt(text).css({
@@ -332,7 +327,7 @@ const primaryBtn = (text: string) =>
 		borderRadius: '9999px',
 		fontSize: '1.25rem',
 		color: theme.colors.background,
-		marginTop: '4.625rem',
+		marginTop: '4rem',
 		padding: '1rem 2.8rem',
 	})
 
@@ -345,4 +340,12 @@ const outlineBtn = (text: string) =>
 		whiteSpace: 'nowrap',
 	})
 
-export const sofa = { navbar, hero, logos, featuresText, features, infoLeftTxt, infoRightTxt, cta }
+export const sofa = {
+	navbar,
+	hero,
+	logos,
+	featuresText,
+	features,
+	info,
+	cta,
+}
