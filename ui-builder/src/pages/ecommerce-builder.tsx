@@ -1,5 +1,5 @@
-import { AppShell } from '@mantine/core'
-import { useAtomValue } from 'jotai'
+import { AppShell, Drawer } from '@mantine/core'
+import { useAtom, useAtomValue } from 'jotai'
 import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { PageActions } from '../features/page/actions'
 import { PageSelection } from '../features/page/page-selection'
@@ -14,19 +14,19 @@ import {
 	useFetchPage,
 	useFetchProjectTag,
 } from '../features/page/top-bar'
+import { useSelectionStore } from '../features/selection/selection-store'
+import { useSelectedElement } from '../features/selection/use-selected-component'
 import { SimpleLeftSidebar } from '../features/simple/left-sidebar'
 import { SimpleRightSidebar } from '../features/simple/right-sidebar'
-import { SimpleCanvas } from '../features/simple/simple-canvas'
+import { insertingAtom, SimpleCanvas } from '../features/simple/simple-canvas'
 import { AppHeader } from '../features/ui/header'
-import { LeftSidebar } from '../features/ui/left-sidebar'
-import { RightSidebar } from '../features/ui/right-sidebar'
 import { ViewportSelection } from '../features/viewport/viewport-selection'
 
 export function EcommerceBuilder() {
 	useFetchProjectTag()
 	useFetchPage()
 	const { isFullscreen } = useAtomValue(previewAtom)
-	const sidebars = isFullscreen ? {} : { navbar: <Navbar />, aside: <Aside /> }
+	const sidebars = isFullscreen ? {} : { navbar: <SimpleNavbar />, aside: <Aside /> }
 
 	return (
 		<AppShell
@@ -66,14 +66,38 @@ function TopBar() {
 	)
 }
 
-const Navbar = () => (
-	<LeftSidebar>
-		<SimpleLeftSidebar components={ECOMMERCE_COMPONENTS} />
-	</LeftSidebar>
-)
+const SimpleNavbar = () => {
+	const [inserting, setInserting] = useAtom(insertingAtom)
 
-const Aside = () => (
-	<RightSidebar>
-		<SimpleRightSidebar />
-	</RightSidebar>
-)
+	return (
+		<Drawer
+			size={310}
+			opened={!!inserting}
+			onClose={() => setInserting(null)}
+			overlayOpacity={0.1}
+			padding="md"
+			className="overflow-y-scroll"
+		>
+			<SimpleLeftSidebar components={ECOMMERCE_COMPONENTS} />
+		</Drawer>
+	)
+}
+
+const Aside = () => {
+	const selectedElement = useSelectedElement()
+	const deselect = useSelectionStore((store) => store.deselect)
+
+	return (
+		<Drawer
+			size={310}
+			opened={!!selectedElement}
+			onClose={deselect}
+			overlayOpacity={0.1}
+			padding="md"
+			className="overflow-y-scroll"
+			position="right"
+		>
+			<SimpleRightSidebar />
+		</Drawer>
+	)
+}

@@ -1,35 +1,19 @@
 import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom } from 'jotai'
 import { ReactElement } from 'react'
-import { TbPlus } from 'react-icons/tb'
 import { Components, ControllerSection } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
-import { AddSimpleComponentButton, insertingAtom } from './simple-canvas'
+import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
-	const inserting = useAtomValue(insertingAtom)
-	if (!inserting) return <NotSelectedMessage />
-
 	return (
 		<div className="flex flex-col ">
 			{components.map((section) => (
 				<SimpleComponentList key={section.title} section={section} />
 			))}
-		</div>
-	)
-}
-
-function NotSelectedMessage() {
-	return (
-		<div className="flex justify-center items-center gap-2 text-xs mt-2">
-			Click on
-			<AddSimpleComponentButton className="!w-6 !h-6 pointer-events-none">
-				<TbPlus />
-			</AddSimpleComponentButton>
-			to see the component list
 		</div>
 	)
 }
@@ -83,7 +67,7 @@ export function SimpleComponentItem({
 			{hovered && (
 				<Portal>
 					<Image
-						className="border shadow rounded absolute z-50 top-[35%] left-[20%] bg-white"
+						className="border border rounded-r absolute z-[999999] top-[35%] left-[310px] bg-white"
 						src={src}
 						alt="Preview"
 						width={700}
