@@ -256,6 +256,7 @@ deploy ui: &deploy_ui
       - master
     changes:
       - "ui/**/*"
+      - ".gitlab-ci.yml"
 
 deploy ui-ecommerce:
   <<: *deploy_ui
@@ -276,6 +277,7 @@ deploy ui-ecommerce:
       - master
     changes:
       - "ui-ecommerce/**/*"
+      - ".gitlab-ci.yml"
 
 deploy ui builder:
   <<: *deploy_ui
