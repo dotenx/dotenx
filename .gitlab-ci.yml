@@ -99,12 +99,12 @@ build ui: &build_ui
     - npm install
     - CI='' npm run build
     - tar -czvf ${environment}_build.tar.gz ./${build_dest}
-    - mv ${environment}_build.tar.gz ../${environment}_build.tar.gz
+    - mv ${environment}_build.tar.gz ../${environment}_${folder}_build.tar.gz
   except:
     - schedules
   artifacts:
     paths:
-      - ${environment}_build.tar.gz
+      - ${environment}_${folder}_build.tar.gz
   only:
     # refs:
     #   - master
@@ -240,12 +240,13 @@ deploy ui: &deploy_ui
     environment: prod
     DISTRIBUTION_ID: EXE3WNBU24B4E
     build_dest: dist
+    folder: ui
   environment:
     name: production-ui
     url: https://app.dotenx.com
   script:
     - mkdir ${build_dest}
-    - tar -xzvf ${environment}_build.tar.gz
+    - tar -xzvf ${environment}_${folder}_build.tar.gz
     - cd ./${build_dest}
     - aws s3 sync --acl public-read . s3://${BUCKET}
     - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/index.html"
@@ -269,6 +270,7 @@ deploy ui-ecommerce:
     environment: prod
     DISTRIBUTION_ID: E15E8F8Y85W7VE
     build_dest: dist
+    folder: ui-ecommerce
   environment:
     name: production-ui-ecommerce
     url: https://ecommerce.dotenx.com
@@ -290,6 +292,7 @@ deploy ui builder:
     environment: prod
     DISTRIBUTION_ID: E10STPNB69BH30
     build_dest: dist
+    folder: ui-builder
   environment:
     name: production-ui-builder
     url: https://ui.dotenx.com
