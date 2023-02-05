@@ -7,6 +7,7 @@ import { Intelinput } from '../../ui/intelinput'
 import { Element, RenderFn, RenderOptions } from '../element'
 import { useSetElement } from '../elements-store'
 import { Style } from '../style'
+import { TextElement } from './text'
 
 export class LinkElement extends Element {
 	name = 'Link'
@@ -16,9 +17,8 @@ export class LinkElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				minHeight: '100px',
 				textDecoration: 'none',
-				color: '#000000',
+				color: 'inherit',
 			},
 		},
 	}
@@ -29,6 +29,16 @@ export class LinkElement extends Element {
 
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return <LinkOptions element={this} />
+	}
+
+	txt(text: string) {
+		this.children = [new TextElement().txt(text)]
+		return this
+	}
+
+	href(href: string) {
+		this.data.href = Expression.fromString(href)
+		return this
 	}
 }
 

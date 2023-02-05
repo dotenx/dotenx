@@ -9,7 +9,7 @@ import { Style } from '../style'
 export class YouTubeElement extends Element {
 	name = 'YouTube'
 	icon = (<TbBrandYoutube />)
-	style: Style = { desktop: { default: { minHeight: '150px', width: '100%' } } }
+	style: Style = { desktop: { default: { width: '100%' } } }
 	data = { src: '' }
 
 	render() {
