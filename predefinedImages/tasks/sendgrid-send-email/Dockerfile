@@ -7,10 +7,10 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o ./send-email
+RUN go build -o ./sendgrid-send-email
 
 FROM alpine 
 
-COPY --from=build /app/send-email ./
+COPY --from=build /app/sendgrid-send-email ./
 
-CMD [ "/send-email" ]
+CMD [ "/sendgrid-send-email" ]

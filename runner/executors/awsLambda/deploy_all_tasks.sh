@@ -9,7 +9,7 @@
 # # hojjat12/facebook-publish-post:lambda4
 # # hojjat12/google-send-email:lambda4
 # # awrmin/create-jira-ticket:lambda5
-# # awrmin/sendemail:lambda6
+# # hojjat12/sendgrid-send-email:lambda7
 # # awrmin/slack-send-message:lambda6
 # # hojjat12/starshipit-create-order:lambda3
 # # stripe/stripe-create-customer:lambda5
@@ -107,9 +107,9 @@
 # echo $function_name
 
 # export region="us-east-1"
-# export repository_name="awrmin/sendemail"
-# export tag="lambda6"
-# export directory_address="send-email"
+# export repository_name="hojjat12/sendgrid-send-email"
+# export tag="lambda7"
+# export directory_address="sendgrid-send-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name
