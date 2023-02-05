@@ -110,16 +110,20 @@ build ui: &build_ui
     #   - master
     changes:
       - "ui/**/*"
+      - ".gitlab-ci.yml"
 
 build ui-ecommerce:
   <<: *build_ui
   variables:
-    folder: ui-builder
+    environment: prod
+    folder: ui-ecommerce
+    build_dest: dist
   only:
     # refs:
     #   - master
     changes:
       - "ui-ecommerce/**/*"
+      - ".gitlab-ci.yml"
 
 build ui builder:
   <<: *build_ui
