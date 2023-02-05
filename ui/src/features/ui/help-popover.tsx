@@ -1,5 +1,5 @@
-import { Popover, Text, Button, ActionIcon, Stack, Box, Center, AspectRatio } from "@mantine/core"
-import { IconFileSymlink, IconHelp } from "@tabler/icons"
+import { ActionIcon, AspectRatio, Box, Button, Popover, Stack, Text } from "@mantine/core"
+import { TbFileSymlink, TbHelp } from "react-icons/tb"
 
 export interface HelpDetails {
 	title: string
@@ -14,7 +14,7 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 		<Popover position="bottom" withArrow shadow="md">
 			<Popover.Target>
 				<ActionIcon variant="transparent">
-					<IconHelp className="text-red-600" size={16} />
+					<TbHelp className="text-red-600" size={16} />
 				</ActionIcon>
 			</Popover.Target>
 			<Popover.Dropdown>
@@ -37,7 +37,7 @@ export function HelpPopover({ helpDetails }: { helpDetails: HelpDetails }) {
 							target="_blank"
 							rel="noopener noreferrer"
 							href={helpDetails.tutorialUrl}
-							leftIcon={<IconFileSymlink size={16} />}
+							leftIcon={<TbFileSymlink size={16} />}
 							styles={(theme) => ({
 								root: {
 									backgroundColor: theme.colors.rose[1],
