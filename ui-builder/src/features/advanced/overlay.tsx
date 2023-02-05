@@ -127,8 +127,10 @@ export function ElementOverlay({
 			outlineWidth: isSelected ? 2 : 1,
 			outlineStyle: isHighlighted ? 'solid' : undefined,
 			visibility: invisible ? 'hidden' : undefined,
+			minHeight: canContain && element.children?.length === 0 ? 100 : undefined,
+			minWidth: canContain && element.children?.length === 0 ? 100 : undefined,
 		}),
-		[invisible, isHighlighted, isSelected]
+		[canContain, element.children?.length, invisible, isHighlighted, isSelected]
 	)
 	const backgroundImage = useMemo(
 		() =>

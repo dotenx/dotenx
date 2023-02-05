@@ -11,9 +11,15 @@ import { useClassesStore } from './classes-store'
 
 export type EditStyle = (style: keyof CSSProperties, value: string | null, prev?: string) => void
 
-export const useEditStyle = (target?: Element) => {
+export const useEditStyle = (target?: Element | Element[]) => {
 	const selectedElement = useSelectedElement()
-	const element = target ?? selectedElement
+	const element = target
+		? _.isArray(target)
+			? target
+			: [target]
+		: selectedElement
+		? [selectedElement]
+		: null
 	const viewport = useAtomValue(viewportAtom)
 	const editSingleStyle = useEditElementStyle(element)
 	const selectedClassName = useAtomValue(selectedClassAtom)
@@ -25,7 +31,7 @@ export const useEditStyle = (target?: Element) => {
 	const style =
 		(selectedClassName
 			? classNames[selectedClassName][viewport]?.[selector]
-			: element?.style[viewport]?.[selector]) ?? {}
+			: element?.[0]?.style[viewport]?.[selector]) ?? {}
 	const editClassStyle = (styles: CSSProperties) => {
 		if (selectedClassName) editClassName(selectedClassName, viewport, selector, styles)
 		else console.error("Can't edit class style without selected class name")
@@ -44,17 +50,19 @@ export const useEditStyle = (target?: Element) => {
 	return { editStyle, style }
 }
 
-const useEditElementStyle = (element: Element | null) => {
+const useEditElementStyle = (elements: Element[] | null) => {
 	const selector = useAtomValue(selectedSelectorAtom)
 	const viewport = useAtomValue(viewportAtom)
 	const editElement = useElementsStore((store) => store.set)
 	const editStyle = (style: CSSProperties) => {
-		if (!element) return
-		editElement(
-			produce(element, (draft) => {
-				_.set(draft, `style.${viewport}.${selector}`, style)
-			})
-		)
+		if (!elements) return
+		elements.forEach((element) => {
+			editElement(
+				produce(element, (draft) => {
+					_.set(draft, `style.${viewport}.${selector}`, style)
+				})
+			)
+		})
 	}
 	return editStyle
 }

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import hash from 'object-hash'
-import { useEffect, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -42,34 +42,52 @@ export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
 	return (
+		<TopBarWrapper
+			left={
+				<>
+					<Logo />
+					<BackToBackEnd />
+					<PageSelection />
+					<ViewportSelection />
+					<FullscreenButton />
+					<AdvancedModeButton />
+					<UnsavedMessage />
+				</>
+			}
+			right={
+				<>
+					<PageScaling />
+					<UndoRedo />
+					<PageActions />
+				</>
+			}
+		/>
+	)
+}
+
+export function TopBarWrapper({ left, right }: { left: ReactNode; right: ReactNode }) {
+	return (
 		<Group align="center" spacing="xl" position="apart" px="xl" className="h-full">
 			<Group align="center" spacing="xl">
-				<Logo />
-				<BackToBackEnd />
-				<PageSelection />
-				<ViewportSelection />
-				<PreviewButton />
-				<AdvancedModeButton />
-				<UnsavedMessage />
+				{left}
 			</Group>
 			<Group align="center" spacing="xl">
-				<PageScaling />
-				<UndoRedo />
-				<PageActions />
+				{right}
 			</Group>
 		</Group>
 	)
 }
 
-function UnsavedMessage() {
+export function UnsavedMessage() {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
 
-	const savedHash = useMemo(() => hash(saved), [saved])
-	const currentHash = useMemo(() => hash(elements), [elements])
+	const savedHash = useMemo(() => safeHash(saved), [saved])
+	const currentHash = useMemo(() => safeHash(elements), [elements])
 	const unsaved = savedHash !== currentHash
 
 	useEffect(() => {
+		if (import.meta.env.MODE === 'development') return
 		const beforeUnloadListener = (event: BeforeUnloadEvent): string => {
 			event.preventDefault()
 			return (event.returnValue = '')
@@ -88,9 +106,17 @@ function UnsavedMessage() {
 	)
 }
 
+const safeHash = (object: hash.NotUndefined) => {
+	try {
+		return hash(object)
+	} catch (error) {
+		console.warn({ object }, error)
+	}
+}
+
 export const pageScaleAtom = atom(1)
 
-function PageScaling() {
+export function PageScaling() {
 	const [scale, setScale] = useAtom(pageScaleAtom)
 
 	return (
@@ -199,26 +225,28 @@ export function Logo() {
 		</Tooltip>
 	)
 }
+
 function BackToBackEnd() {
 	const { projectName = '' } = useParams()
 
 	return (
-		<div className="flex items-center justify-center p-1 px-2 text-white transition-all rounded cursor-pointer group bg-rose-600 hover:scale-x-105 ">
-			<IoArrowBack className="w-4 h-4 mr-1" />
+		<Tooltip withArrow label={<Text size="xs">Backend builder</Text>}>
 			<a
-				className="hidden text-sm transition-all group-hover:block "
 				href={`${
 					import.meta.env.VITE_BACKEND_BUILDER_URL
 				}/builder/projects/${projectName}/tables`}
 				rel="noopener noreferrer"
 				target={'_blank'}
 			>
-				Backend builder
+				<ActionIcon color="rose" variant="filled">
+					<IoArrowBack className="w-4 h-4" />
+				</ActionIcon>
 			</a>
-		</div>
+		</Tooltip>
 	)
 }
-function PreviewButton() {
+
+export function FullscreenButton() {
 	const setPreview = useSetAtom(previewAtom)
 	const deselect = useSelectionStore((store) => store.deselect)
 	const handleClick = () => {
@@ -304,7 +332,7 @@ function AdvancedModeButton() {
 	)
 }
 
-function UndoRedo() {
+export function UndoRedo() {
 	const { history, historyIndex, redo, undo } = useElementsStore((store) => ({
 		history: store.history,
 		historyIndex: store.historyIndex,

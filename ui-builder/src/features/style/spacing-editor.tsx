@@ -4,7 +4,7 @@ import { CollapseLine } from '../ui/collapse-line'
 import { MarginPaddingInput } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'
 
-export function SpacingEditor({ element }: { element?: Element }) {
+export function SpacingEditor({ element }: { element?: Element | Element[] }) {
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (
@@ -19,12 +19,12 @@ export function SpacingEditor({ element }: { element?: Element }) {
 					Margin
 				</Text>
 				<MarginPaddingInput
-					value={styles.marginTop?.toString() ?? '0px'}
+					value={styles.marginTop?.toString() ?? styles.margin?.toString() ?? '0px'}
 					onChange={(value) => editStyle('marginTop', value)}
 				/>
 				<div className="flex gap-2">
 					<MarginPaddingInput
-						value={styles.marginLeft?.toString() ?? '0px'}
+						value={styles.marginLeft?.toString() ?? styles.margin?.toString() ?? '0px'}
 						onChange={(value) => editStyle('marginLeft', value)}
 					/>
 					<div className="px-1 py-1 bg-gray-200 border rounded grow">
@@ -38,33 +38,49 @@ export function SpacingEditor({ element }: { element?: Element }) {
 								Padding
 							</Text>
 							<MarginPaddingInput
-								value={styles.paddingTop?.toString() ?? '0px'}
+								value={
+									styles.paddingTop?.toString() ??
+									styles.padding?.toString() ??
+									'0px'
+								}
 								onChange={(value) => editStyle('paddingTop', value)}
 							/>
 							<div className="flex items-center gap-2">
 								<MarginPaddingInput
-									value={styles.paddingLeft?.toString() ?? '0px'}
+									value={
+										styles.paddingLeft?.toString() ??
+										styles.padding?.toString() ??
+										'0px'
+									}
 									onChange={(value) => editStyle('paddingLeft', value)}
 								/>
 								<div className="h-4 bg-gray-200 border rounded grow" />
 								<MarginPaddingInput
-									value={styles.paddingRight?.toString() ?? '0px'}
+									value={
+										styles.paddingRight?.toString() ??
+										styles.padding?.toString() ??
+										'0px'
+									}
 									onChange={(value) => editStyle('paddingRight', value)}
 								/>
 							</div>
 							<MarginPaddingInput
-								value={styles.paddingBottom?.toString() ?? '0px'}
+								value={
+									styles.paddingBottom?.toString() ??
+									styles.padding?.toString() ??
+									'0px'
+								}
 								onChange={(value) => editStyle('paddingBottom', value)}
 							/>
 						</div>
 					</div>
 					<MarginPaddingInput
-						value={styles.marginRight?.toString() ?? '0px'}
+						value={styles.marginRight?.toString() ?? styles.margin?.toString() ?? '0px'}
 						onChange={(value) => editStyle('marginRight', value)}
 					/>
 				</div>
 				<MarginPaddingInput
-					value={styles.marginBottom?.toString() ?? '0px'}
+					value={styles.marginBottom?.toString() ?? styles.margin?.toString() ?? '0px'}
 					onChange={(value) => editStyle('marginBottom', value)}
 				/>
 			</div>

@@ -31,6 +31,21 @@ export class TextElement extends Element {
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return <TextOptions element={this} />
 	}
+
+	txt(text: string) {
+		this.data.text = Expression.fromString(text)
+		return this
+	}
+
+	textState(state: string) {
+		this.data.text = Expression.fromState(state)
+		return this
+	}
+
+	as(as: string) {
+		this.data.as = as
+		return this
+	}
 }
 
 function TextOptions({ element }: { element: TextElement }) {

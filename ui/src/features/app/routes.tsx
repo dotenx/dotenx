@@ -13,7 +13,6 @@ import { HomePage } from "../../pages/home"
 import ImportYamlPage from "../../pages/import-yaml"
 import IntegrationsPage from "../../pages/integrations"
 import InteractionPage from "../../pages/interaction"
-import InteractionsPage from "../../pages/interactions"
 import NotFoundPage from "../../pages/not-found"
 import OauthPage from "../../pages/oauth"
 import ProviderPage from "../../pages/provider"
@@ -52,12 +51,12 @@ const routes: Routes = [
 		element: <ProvidersPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/:name/executions/:id",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions/:id",
 		element: <ExecutionPage kind="interaction" />,
 		compactSidebar: true,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/:name/executions",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions",
 		element: <HistoryPage kind="interaction" />,
 		compactSidebar: true,
 	},

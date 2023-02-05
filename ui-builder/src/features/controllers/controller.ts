@@ -7,7 +7,7 @@ export abstract class Controller {
 	abstract name: string
 	abstract image: string
 	protected abstract defaultData?: Element
-	abstract renderOptions(options: ElementOptions): ReactNode
+	abstract renderOptions(options?: ElementOptions): ReactNode
 	data: unknown
 
 	transform(): Element {

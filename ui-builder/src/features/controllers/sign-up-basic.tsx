@@ -14,10 +14,10 @@ import { FormElement } from '../elements/extensions/form'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useProjectStore } from '../page/project-store'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
@@ -45,7 +45,7 @@ export class SignUpBasic extends Controller {
 		return (
 			<div className="space-y-6">
 				<ComponentName name="Sign Up Basic" />
-				<TextElementInput label="Title" element={title} />
+				<TextStyler label="Title" element={title} />
 				<TextInput
 					label="Button Text"
 					name="buttonText"
@@ -81,9 +81,9 @@ export class SignUpBasic extends Controller {
 							: ''
 					}
 				/>
-				<LinkElementInput label="Terms of service link" element={tcLink} />
-				<LinkElementInput label="Privacy policy link" element={ppLink} />
-				<LinkElementInput label="Sign-in link" element={signInLink} />
+				<LinkStyler label="Terms of service link" element={tcLink} />
+				<LinkStyler label="Privacy policy link" element={ppLink} />
+				<LinkStyler label="Sign-in link" element={signInLink} />
 			</div>
 		)
 	}

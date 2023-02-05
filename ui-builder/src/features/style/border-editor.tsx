@@ -13,7 +13,13 @@ const borderStyles = [
 	{ label: <TbLineDotted />, title: 'Dotted', value: 'dotted' },
 ].map(toCenter)
 
-export function BordersEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+export function BordersEditor({
+	simple,
+	element,
+}: {
+	simple?: boolean
+	element?: Element | Element[]
+}) {
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	const nonSimple = (

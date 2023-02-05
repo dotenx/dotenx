@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
+import { EcommerceBuilder } from './pages/ecommerce-builder'
 import { ExtensionDetailsPage } from './pages/extension'
 import { ExtensionCreatePage } from './pages/extension-create'
 import { ExtensionEditPage } from './pages/extension-edit'
@@ -60,6 +61,7 @@ function Router() {
 	return (
 		<Layout>
 			<Routes>
+				<Route path="/ecommerce/:projectName/:pageName" element={<EcommerceBuilder />} />
 				<Route path="/extensions-edit/:projectName/:name" element={<ExtensionEditPage />} />
 				<Route path="/extensions-create/:projectName" element={<ExtensionCreatePage />} />
 				<Route path="/extensions/:projectName/:name" element={<ExtensionDetailsPage />} />
