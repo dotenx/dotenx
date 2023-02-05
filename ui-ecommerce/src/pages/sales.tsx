@@ -1,5 +1,5 @@
 import { ActionIcon } from "@mantine/core"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -7,7 +7,7 @@ import {
 	Legend,
 	LinearScale,
 	Title,
-	Tooltip
+	Tooltip,
 } from "chart.js"
 import { getDaysInMonth } from "date-fns"
 import _ from "lodash"

@@ -1,6 +1,10 @@
 import axios from "axios"
 import {
+	CreateIntegrationRequest,
 	GetFilesDataResponse,
+	GetIntegrationKindFieldsResponse,
+	GetIntegrationKindsResponse,
+	GetIntegrationsResponse,
 	GetLastDaySalesResponse,
 	GetMembersSummaryResponse,
 	GetProductsSummaryResponse,
@@ -17,6 +21,17 @@ export const api = axios.create({
 	baseURL: API_URL,
 	withCredentials: true,
 })
+
+
+export function getIntegrationKinds() {
+	return api.get<GetIntegrationKindsResponse>("/integration/avaliable")
+}
+export function getIntegrationKindFields(kind: string) {
+	return api.get<GetIntegrationKindFieldsResponse>(`/integration/type/${kind}/fields`)
+}
+export function createIntegration(payload: CreateIntegrationRequest) {
+	return api.post<void>("/integration", payload)
+}
 
 export function setFileUserGroup({
 	name,
@@ -44,6 +59,9 @@ export function setFilesAccess({
 	})
 }
 
+export function getIntegrations() {
+	return api.get<GetIntegrationsResponse>(`/integration`)
+}
 export function getProject(name: string) {
 	return api.get<GetProjectResponse>(`/project/${name}`)
 }

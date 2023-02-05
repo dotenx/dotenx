@@ -8,7 +8,6 @@ export function Header({
 	tabs,
 	activeTab,
 	onTabChange,
-	expand,
 	headerLink,
 }: {
 	title: JSX.Element | string
@@ -17,20 +16,22 @@ export function Header({
 	tabs?: string[]
 	activeTab?: string
 	onTabChange?: any
-	expand?: boolean
 	headerLink?: string
 }) {
 	const navigate = useNavigate()
+	const smallScreen = window.innerHeight < 750
 
 	return (
-		<div className={` ${expand && "pl-[0]"} w-full bg-white shadow-sm`}>
-			<div className="flex items-center justify-between p-10">
-				<div className="h-10 ">
+		<div className={` w-full bg-white shadow-sm`}>
+			<div className="flex items-center justify-between pl-10 p-6">
+				<div className="h-10  ">
 					<div
 						onClick={() => {
 							if (headerLink) navigate(headerLink)
 						}}
-						className={`${headerLink && "cursor-pointer"} text-4xl`}
+						className={`${headerLink && "cursor-pointer"} ${
+							smallScreen ? "text-3xl" : "text-4xl"
+						} `}
 					>
 						{title}
 					</div>
@@ -45,11 +46,11 @@ export function Header({
 						<span
 							onClick={() => onTabChange(tab)}
 							key={tab}
-							className={`transition-all duration-200 uppercase pb-1 text-lg font-medium cursor-pointer  ${
+							className={`transition-all duration-200 uppercase pb-1  font-medium cursor-pointer  ${
 								active
-									? "text-slate-900 border-b-4 border-b-rose-600 "
+									? "text-black border-b-4 border-b-rose-600 "
 									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"
-							}`}
+							} ${smallScreen ? "text-sm" : "text-lg"}`}
 						>
 							{tab}
 						</span>
@@ -59,10 +60,9 @@ export function Header({
 		</div>
 	)
 }
-
-export function ContentWrapper({ children, expand }: { children: ReactNode; expand?: boolean }) {
+export function ContentWrapper({ children }: { children: ReactNode }) {
 	return (
-		<div className={`${expand && "pl-[0]"} w-full pb-10`}>
+		<div className={` w-full pb-10`}>
 			<div className="px-10 pt-5">{children}</div>
 		</div>
 	)

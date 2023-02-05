@@ -1,7 +1,11 @@
 export enum QueryKey {
 	GetProductsSummary = "get-products-summary",
+	GetIntegrationTypes = "get-integration-types",
+	GetIntegrationTypeFields = "get-integration-type-fields",
+	GetIntegrations = "get-integrations",
 	GetLastDaySales = "get-last-day-sales",
 	GetMembersSummary = "get-members-summary",
+	GetIntegrationsByType = "get-integration-by-type",
 	GetUserManagementData = "get-user-management-data",
 	GetProject = "get-project",
 	GetProfile = "get-profile",
@@ -59,6 +63,39 @@ export interface Project {
 	name: string
 	description: string
 }
+export type GetIntegrationsResponse = Integration[]
+export interface Integration {
+	name: string
+	account_id: string
+	type: string
+	url: string
+	key: string
+	secret: string
+	access_token: string
+}
+export type GetIntegrationKindFieldsResponse = {
+	secrets: { key: string; name: string; internal: boolean }[]
+	oauth_provider: string
+}
+export type CreateIntegrationRequest = {
+	name: string
+	type: string
+	secrets: Record<string, string>
+}
+
+export type GetIntegrationKindsResponse = IntegrationKind[]
+export interface IntegrationKind {
+	type: string
+	secrets: Secret[]
+	oauth_provider: string
+}
+export interface Secret {
+	name: string
+	key: string
+	internal: boolean
+}
+
+
 
 export type GetProfileResponse = {
 	account_id: string

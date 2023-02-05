@@ -1,6 +1,6 @@
 import { CloseButton, Group, Image, TextInput } from "@mantine/core"
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation } from "react-query"
 import { ReactNode } from "react"
 import { TbPhoto, TbUpload, TbX } from "react-icons/tb"
 import { uploadImage } from "../../api"

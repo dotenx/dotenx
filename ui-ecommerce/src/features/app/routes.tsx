@@ -11,6 +11,7 @@ import { NotFoundPage } from "../../pages/not-found"
 import { ProductsPage } from "../../pages/products"
 import { SalesPage } from "../../pages/sales"
 import { Layout } from "../ui"
+import CheckIntegration from "./CheckIntegration"
 
 type Routes = {
 	path: string
@@ -83,6 +84,7 @@ export function Routes() {
 							withoutSidebar={route.withoutSidebar}
 							compactSidebar={route.compactSidebar}
 						>
+							<CheckIntegration />
 							{route.element}
 						</Layout>
 					}

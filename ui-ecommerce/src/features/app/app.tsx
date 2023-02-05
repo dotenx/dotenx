@@ -1,6 +1,6 @@
 import { createEmotionCache, MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider } from "react-query"
 import { useEffect } from "react"
 import ReactModal from "react-modal"
 import { BrowserRouter } from "react-router-dom"

@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery } from "react-query"
 import { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useParams } from "react-router-dom"
