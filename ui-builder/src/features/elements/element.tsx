@@ -1,4 +1,5 @@
 import { immerable } from 'immer'
+import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
@@ -28,6 +29,7 @@ export abstract class Element {
 	elementId?: string
 	tagId?: string
 	hidden?: boolean
+	script?: string
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -72,7 +74,7 @@ export abstract class Element {
 		// noop
 	}
 
-	findByTagId<T extends Element = Element>(tagId: string): T | undefined {
+	find<T extends Element = Element>(tagId: string): T | undefined {
 		if (this.children) {
 			for (const child of this.children) {
 				const found = child._findByTagIdRecursive(tagId)
@@ -90,6 +92,54 @@ export abstract class Element {
 				if (found) return found
 			}
 		}
+	}
+
+	findAll<T extends Element = Element>(tagId: string): T[] {
+		const all: T[] = []
+		if (this.tagId === tagId) all.push(this as Element as T)
+		for (const child of this.children ?? []) {
+			const founds = child.findAll(tagId) as T[]
+			all.push(...founds)
+		}
+		return all
+	}
+
+	css(css: CSSProperties) {
+		const merged = _.assign({}, this.style.desktop?.default, css)
+		_.set(this.style, 'desktop.default', merged)
+		return this
+	}
+
+	cssTablet(css: CSSProperties) {
+		const merged = _.assign({}, this.style.tablet?.default, css)
+		_.set(this.style, 'tablet.default', merged)
+		return this
+	}
+
+	cssMobile(css: CSSProperties) {
+		const merged = _.assign({}, this.style.mobile?.default, css)
+		_.set(this.style, 'mobile.default', merged)
+		return this
+	}
+
+	tag(tagId: string) {
+		this.tagId = tagId
+		return this
+	}
+
+	populate(children: Element[]) {
+		this.children = children
+		return this
+	}
+
+	setScript(script: string) {
+		this.script = script
+		return this
+	}
+
+	unstyled() {
+		this.style = {}
+		return this
 	}
 }
 

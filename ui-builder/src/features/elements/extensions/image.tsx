@@ -32,6 +32,7 @@ export class ImageElement extends Element {
 						alignItems: 'center',
 						color: '#334155',
 						padding: '10px',
+						height: '100%',
 					}}
 				>
 					<TbPhoto size={48} />
@@ -54,6 +55,16 @@ export class ImageElement extends Element {
 
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return <ImageOptions element={this} />
+	}
+
+	src(src: string) {
+		this.data.src = Expression.fromString(src)
+		return this
+	}
+
+	srcState(state: string) {
+		this.data.src = Expression.fromState(state)
+		return this
 	}
 }
 

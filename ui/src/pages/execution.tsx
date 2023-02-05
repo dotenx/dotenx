@@ -35,10 +35,10 @@ function Content({ kind }: { kind: AutomationKind }) {
 		},
 		{ enabled: !!automationName, onSuccess: (data) => setSelectedAutomation(data?.data) }
 	)
-	const { setSelected } = useTaskStatus(executionId)
 	const automation = automationQuery.data?.data
 	const navigate = useNavigate()
 
+	const { setSelected } = useTaskStatus(executionId)
 	useEffect(() => {
 		if (automationName && automation)
 			setSelected({

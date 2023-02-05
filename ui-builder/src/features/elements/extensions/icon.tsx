@@ -35,6 +35,23 @@ export class IconElement extends Element {
 	renderOptions({ set }: RenderOptions): ReactNode {
 		return <IconHandler set={set} data={this} />
 	}
+
+	type(type: string) {
+		this.data.type = type
+		return this
+	}
+
+	setName(name: string) {
+		this.data.name = name
+		return this
+	}
+
+	size(size: string) {
+		_.set(this.style, 'desktop.default.fontSize', size)
+		_.set(this.style, 'desktop.default.width', size)
+		_.set(this.style, 'desktop.default.height', size)
+		return this
+	}
 }
 
 function IconHandler({ set, data }: { set: any; data: IconElement }) {

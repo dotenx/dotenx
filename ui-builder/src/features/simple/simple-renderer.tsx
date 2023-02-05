@@ -81,7 +81,7 @@ export function ElementOverlay({
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="top"
-						offset={[0, -15]}
+						offset={[0, -16]}
 					>
 						<AddElementButton insert={{ where: element.id, placement: 'before' }} />
 					</ElementOverlayPiece>
@@ -89,7 +89,7 @@ export function ElementOverlay({
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="bottom"
-						offset={[0, -15]}
+						offset={[0, -16]}
 					>
 						<AddElementButton insert={{ where: element.id, placement: 'after' }} />
 					</ElementOverlayPiece>

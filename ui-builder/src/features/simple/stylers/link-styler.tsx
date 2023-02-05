@@ -1,9 +1,9 @@
 import { TextInput } from '@mantine/core'
-import { useSetWithElement } from '../elements/elements-store'
-import { LinkElement } from '../elements/extensions/link'
-import { Expression } from '../states/expression'
+import { useSetWithElement } from '../../elements/elements-store'
+import { LinkElement } from '../../elements/extensions/link'
+import { Expression } from '../../states/expression'
 
-export function LinkElementInput({
+export function LinkStyler({
 	label,
 	element,
 	placeholder,

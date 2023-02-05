@@ -11,9 +11,9 @@ import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import ColorOptions from './basic-components/color-options'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
@@ -40,9 +40,9 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Team Center Grid" />
-			<TextElementInput label="Title" element={titleText} />
-			<TextElementInput label="Subtitle" element={subtitleText} />
-			<BoxElementInput label="Background color" element={options.element} />
+			<TextStyler label="Title" element={titleText} />
+			<TextStyler label="Subtitle" element={subtitleText} />
+			<BoxStylerSimple label="Background color" element={options.element} />
 			<DndTabs
 				containerElement={containerDiv}
 				insertElement={() => regenElement(tile)}
@@ -63,11 +63,8 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 function ItemOptions({ item }: { item: Element }) {
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Feature title" element={item.children?.[1] as TextElement} />
-			<TextElementInput
-				label="Feature description"
-				element={item.children?.[2] as TextElement}
-			/>
+			<TextStyler label="Feature title" element={item.children?.[1] as TextElement} />
+			<TextStyler label="Feature description" element={item.children?.[2] as TextElement} />
 		</OptionsWrapper>
 	)
 }

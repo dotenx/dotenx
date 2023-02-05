@@ -9,8 +9,8 @@ import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { ImageElementInput } from '../ui/image-element-input'
 import Bio from './basic-components/bio'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
@@ -56,7 +56,7 @@ function ItemOptions({ item, options }: { item: Element; options: ElementOptions
 
 	return (
 		<OptionsWrapper>
-			<ImageElementInput element={image} />
+			<ImageStyler element={image} />
 			{Bio.getOptions({ set: options.set, root: bioRoot })}
 		</OptionsWrapper>
 	)
