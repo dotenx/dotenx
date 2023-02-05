@@ -12,11 +12,11 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
 import { ImageDrop } from '../ui/image-drop'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
 
@@ -56,8 +56,8 @@ function GalleryWithTitleOptions() {
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Gallery with title on images" />
-			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<ColumnsStyler element={grid} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<Button size="xs" fullWidth variant="outline" onClick={addTile} leftIcon={<TbPlus />}>
 				Add feature
 			</Button>
@@ -68,7 +68,7 @@ function GalleryWithTitleOptions() {
 				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
 				value={selectedTile.toString()}
 			/>
-			<TextElementInput
+			<TextStyler
 				label="Image title"
 				element={selectedItem.children?.[0].children?.[0] as TextElement}
 			/>

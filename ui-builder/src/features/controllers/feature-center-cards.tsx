@@ -16,10 +16,10 @@ import { IconElement } from '../elements/extensions/icon'
 import { TextElement } from '../elements/extensions/text'
 import { brandIconNames, regularIconNames, solidIconNames } from '../elements/fa-import'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -40,9 +40,9 @@ function FeatureCenterOptions() {
 	const [selectedTileNumber, setSelectedTileNumber] = useState(0)
 	const set = useSetElement()
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
 	const [searchValue, setSearchValue] = useState('')
 	const [iconColor, setIconColor] = useState('hsla(181, 75%, 52%, 1)')
 	const [iconType, setIconType] = useState('far')
@@ -90,10 +90,10 @@ function FeatureCenterOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Feature Center Grid" />
-			<ColumnsElementInput element={grid} />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<BoxElementInput label="Background color" element={component} />
+			<ColumnsStyler element={grid} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<Button
 				size="xs"
 				fullWidth
@@ -114,11 +114,8 @@ function FeatureCenterOptions() {
 				onChange={(value) => setSelectedTileNumber(_.parseInt(value ?? '0'))}
 				value={selectedTileNumber.toString()}
 			/>
-			<TextElementInput
-				label="Feature title"
-				element={selectedTile.children?.[1] as TextElement}
-			/>
-			<TextElementInput
+			<TextStyler label="Feature title" element={selectedTile.children?.[1] as TextElement} />
+			<TextStyler
 				label="Feature description"
 				element={selectedTile.children?.[2] as TextElement}
 			/>

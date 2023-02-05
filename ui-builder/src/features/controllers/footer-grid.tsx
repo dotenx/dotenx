@@ -16,11 +16,11 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import {
 	ComponentName,
@@ -107,7 +107,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 			</DividerCollapsible>
 			{/* Secondary footer */}
 			<DividerCollapsible closed title="Secondary footer">
-				<TextElementInput label="text" element={secondFooterTextComponent} />
+				<TextStyler label="text" element={secondFooterTextComponent} />
 				{/* Add new icon */}
 				<ActionIcon
 					onClick={() => setAddIconOpened((o) => !o)}
@@ -165,7 +165,7 @@ function FooterGridOptions({ options }: SimpleComponentOptionsProps): JSX.Elemen
 												icon.data.name as IconName,
 											]}
 										/>
-										<LinkElementInput placeholder="Link" element={item} />
+										<LinkStyler placeholder="Link" element={item} />
 										<FontAwesomeIcon
 											className="w-3 h-3 text-red-500 cursor-pointer"
 											icon={['fas', 'trash']}
@@ -207,9 +207,9 @@ function LogoColumn() {
 	}
 	return (
 		<div className="flex flex-col space-y-4 justify-stretch">
-			<ImageElementInput element={logo} />
-			<BoxElementInput label="Background color" element={component} />
-			<TextElementInput label="Title" element={title} />
+			<ImageStyler element={logo} />
+			<BoxStylerSimple label="Background color" element={component} />
+			<TextStyler label="Title" element={title} />
 			<LogoColumnLines column={column as BoxElement} />
 			<Button className="mt-2" size="xs" onClick={addLine} leftIcon={<TbPlus />}>
 				Add line
@@ -250,7 +250,7 @@ function ColumnItemOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={title} />
+			<TextStyler label="Title" element={title} />
 			<ColumnLines column={item as BoxElement} />
 			<Button
 				className="mt-2"
@@ -319,8 +319,8 @@ function ColumnLines({ column }: ColumnLinesProps): JSX.Element {
 								<TbX />
 							</ActionIcon>
 							<div className="space-y-2">
-								<TextElementInput label="Text" element={label} />
-								<LinkElementInput label="Link" element={item} />
+								<TextStyler label="Text" element={label} />
+								<LinkStyler label="Link" element={item} />
 							</div>
 						</SortableItem>
 					)
@@ -373,7 +373,7 @@ function LogoColumnLines({ column }: { column: BoxElement }): JSX.Element {
 							<ActionIcon ml="auto" size="xs" onClick={deleteColumn}>
 								<TbX />
 							</ActionIcon>
-							<TextElementInput label="Text" element={item} />
+							<TextStyler label="Text" element={item} />
 						</SortableItem>
 					)
 				})}

@@ -6,10 +6,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -32,16 +32,16 @@ const tagIds = {
 
 function GalleryBasicOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const grid = component.findByTagId(tagIds.grid) as ColumnsElement
+	const grid = component.find(tagIds.grid) as ColumnsElement
 
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Basic Gallery" />
-			<ColumnsElementInput element={grid} />
-			<BoxElementInput label="Background color" element={component} />
+			<ColumnsStyler element={grid} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
-				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}
+				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={insertTab}
 			/>
 		</div>

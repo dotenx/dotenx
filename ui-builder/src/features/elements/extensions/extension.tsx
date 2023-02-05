@@ -12,7 +12,6 @@ import { Intelinput } from '../../ui/intelinput'
 import { InputWithUnit } from '../../ui/style-input'
 import { Element, RenderFn } from '../element'
 import { useSetElement } from '../elements-store'
-import { Style } from '../style'
 
 type UserInput = undefined | Expression | number | boolean | string
 
@@ -21,7 +20,6 @@ export class ExtensionElement extends Element {
 	icon = (<TbPuzzle />)
 	data: { extension?: Extension; userInputs: Record<string, UserInput> } = { userInputs: {} }
 	children: Element[] = []
-	style: Style = { desktop: { default: { minHeight: '150px' } } }
 
 	static create(extension: Extension) {
 		const element = new ExtensionElement()

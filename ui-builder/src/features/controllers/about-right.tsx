@@ -9,12 +9,12 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { IconStyler } from '../simple/stylers/icon-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
+import { LinkStyler } from '../simple/stylers/link-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { IconElementInput } from '../ui/icon-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
-import { LinkElementInput } from '../ui/link-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -34,24 +34,24 @@ export class AboutRight extends Controller {
 
 function AboutRightOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const heroImage = component.findByTagId<ImageElement>(tagIds.heroImage)!
-	const title = component.findByTagId<TextElement>(tagIds.title)!
-	const subtitle = component.findByTagId<TextElement>(tagIds.subtitle)!
-	const featureLinesWrapper = component.findByTagId<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = component.findByTagId<LinkElement>(tagIds.cta)!
-	const ctaText = component.findByTagId<TextElement>(tagIds.ctaText)!
+	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
+	const cta = component.find<LinkElement>(tagIds.cta)!
+	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
 		<OptionsWrapper>
 			<ComponentName name="About us with details on the right" />
-			<ImageElementInput element={heroImage} />
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<TextElementInput label="CTA" element={ctaText} />
-			<LinkElementInput label="CTA Link" element={cta} />
+			<ImageStyler element={heroImage} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<TextStyler label="CTA" element={ctaText} />
+			<LinkStyler label="CTA Link" element={cta} />
 			<DividerCollapsible closed title="color">
-				<BoxElementInput label="Background color" element={component} />
-				<BoxElementInput label="Button background color" element={cta} />
+				<BoxStylerSimple label="Background color" element={component} />
+				<BoxStylerSimple label="Button background color" element={cta} />
 			</DividerCollapsible>
 			<DndTabs
 				containerElement={featureLinesWrapper}
@@ -68,8 +68,8 @@ function ItemOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={text} />
-			<IconElementInput label="Icon color" element={icon} />
+			<TextStyler label="Title" element={text} />
+			<IconStyler label="Icon color" element={icon} />
 		</OptionsWrapper>
 	)
 }

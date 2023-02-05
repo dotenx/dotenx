@@ -1,6 +1,6 @@
 import { useHotkeys } from '@mantine/hooks'
 import { atom, useSetAtom } from 'jotai'
-import { FaPlus } from 'react-icons/fa'
+import { TbPlus } from 'react-icons/tb'
 import styled from 'styled-components'
 import { RenderElements } from '../advanced/renderer'
 import { useElementsStore } from '../elements/elements-store'
@@ -10,7 +10,7 @@ import { ElementOverlay } from './simple-renderer'
 
 export const insertingAtom = atom<Inserting | null>(null)
 
-interface Inserting {
+export interface Inserting {
 	where: string
 	placement: 'before' | 'after' | 'initial'
 }
@@ -29,7 +29,7 @@ export function SimpleCanvas() {
 
 	return (
 		<CanvasFrame>
-			<div style={{ minHeight: 'calc(100vh - 6px)' }}>
+			<div style={{ minHeight: 'calc(100vh - 6px)', paddingBottom: 16 }}>
 				{isEmpty ? (
 					prompt
 				) : (
@@ -54,29 +54,27 @@ export function AddElementButton({ insert }: { insert: Inserting }) {
 	const setInserting = useSetAtom(insertingAtom)
 
 	return (
-		<AddButton
+		<AddSimpleComponentButton
 			onClick={(event) => {
 				event.stopPropagation()
 				setInserting(insert)
 			}}
 		>
-			<FaPlus />
-			Section
-		</AddButton>
+			<TbPlus size={30} />
+		</AddSimpleComponentButton>
 	)
 }
 
-const AddButton = styled.button`
+export const AddSimpleComponentButton = styled.button`
 	border: none;
 	background-color: #f43f5e;
-	border-radius: 4px;
+	border-radius: 9999px;
 	color: white;
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 10px;
-	padding-right: 12px;
-	font-weight: 600;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
 	cursor: pointer;
 	:active {
 		background-color: #d41b43;

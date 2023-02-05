@@ -5,7 +5,6 @@ stages:
 variables:
   AWS_DEFAULT_REGION: us-east-1
 
-
 build api: &build
   image: utopiops/devops:assume-role-12
   stage: build
@@ -13,7 +12,7 @@ build api: &build
     - docker:stable-dind
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -45,7 +44,7 @@ build scheduler:
   <<: *build
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -68,7 +67,7 @@ build runner:
   <<: *build
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -84,7 +83,6 @@ build runner:
     #   - master
     changes:
       - "runner/**/*"
-
 
 build ui: &build_ui
   image: node:16.15.1-slim
@@ -115,6 +113,8 @@ build ui: &build_ui
 
 build ui-ecommerce:
   <<: *build_ui
+  variables:
+    folder: ui-builder
   only:
     # refs:
     #   - master
@@ -134,14 +134,12 @@ build ui builder:
       - "ui-builder/**/*"
       - ".gitlab-ci.yml"
 
-
-
 deploy api: &deploy
   image: utopiops/devops:assume-role-12
   stage: deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -159,7 +157,7 @@ deploy api: &deploy
     - echo ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
     - echo $TASK_DEFINITION
-    - | 
+    - |
       if [[ -n $FOLDER ]]; then
       cd $FOLDER
       joined=[`cat .env.${environment} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
@@ -177,13 +175,13 @@ deploy api: &deploy
     # refs:
     #   - master
     changes:
-      - "ao-api/**/*" 
+      - "ao-api/**/*"
 
 deploy scheduler:
   <<: *deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -200,13 +198,13 @@ deploy scheduler:
     # refs:
     #   - master
     changes:
-      - "job_scheduler/**/*" 
+      - "job_scheduler/**/*"
 
 deploy runner:
   <<: *deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -224,9 +222,7 @@ deploy runner:
     # refs:
     #   - master
     changes:
-      - "runner/**/*" 
-
-  
+      - "runner/**/*"
 
 deploy ui: &deploy_ui
   image: utopiops/devops:assume-role-12
@@ -255,7 +251,7 @@ deploy ui: &deploy_ui
     refs:
       - master
     changes:
-      - "ui/**/*" 
+      - "ui/**/*"
 
 deploy ui-ecommerce:
   <<: *deploy_ui
@@ -275,7 +271,7 @@ deploy ui-ecommerce:
     refs:
       - master
     changes:
-      - "ui-ecommerce/**/*" 
+      - "ui-ecommerce/**/*"
 
 deploy ui builder:
   <<: *deploy_ui

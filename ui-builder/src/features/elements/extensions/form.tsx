@@ -12,17 +12,11 @@ import { Expression } from '../../states/expression'
 import { inteliToString } from '../../ui/intelinput'
 import { Element, RenderFn } from '../element'
 import { useElementsStore } from '../elements-store'
-import { Style } from '../style'
 
 export class FormElement extends Element {
 	name = 'Form'
 	icon = (<TbForms />)
 	children: Element[] = []
-	style: Style = {
-		desktop: {
-			default: { minHeight: '150px' },
-		},
-	}
 	data = { dataSourceName: '' }
 
 	render(renderFn: RenderFn): ReactNode {
