@@ -115,7 +115,9 @@ build ui: &build_ui
 build ui-ecommerce:
   <<: *build_ui
   variables:
+    environment: prod
     folder: ui-ecommerce
+    build_dest: dist
   only:
     # refs:
     #   - master
