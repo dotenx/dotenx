@@ -57,6 +57,7 @@ export function deserializeElement(serialized: any): Element {
 			: _.assign(new Expression(), href)
 	}
 	element.elementId = serialized.elementId
+	element.script = serialized.script
 	return element
 }
 
