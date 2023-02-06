@@ -1,8 +1,9 @@
-// image: stripe/stripe-create-payment-link:lambda2
+// image: stripe/stripe-create-payment-link:lambda3
 package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,15 +15,6 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
-
-// type Event struct {
-// 	SecretKey      string `json:"INTEGRATION_SECRET_KEY"`
-// 	CusName        string `json:"CUS_NAME"`
-// 	CusPhone       string `json:"CUS_PHONE"`
-// 	CusEmail       string `json:"CUS_EMAIL"`
-// 	ResultEndpoint string `json:"RESULT_ENDPOINT"`
-// 	Authorization  string `json:"AUTHORIZATION"`
-// }
 
 type Event struct {
 	Body           map[string]interface{} `json:"body"`
@@ -41,10 +33,6 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	resp := Response{}
 	resp.Successfull = true
 	outputCnt := 0
-	// outputs := make([]map[string]interface{}, 0)
-	// resultEndpoint := event.ResultEndpoint
-	// authorization := event.Authorization
-	// for _, val := range event.Body {
 	singleInput := event.Body
 	successUrl := singleInput["SUCCESS_URL"].(string)
 	cancelUrl := singleInput["CANCEL_URL"].(string)
@@ -61,8 +49,6 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		}
 		bag[key] = int(valInt)
 	}
-	// priceId := singleInput["PRICE_ID"].(string)
-	// quantity := singleInput["QUANTITY"].(int)
 	sc := &client.API{}
 	sc.Init(secretKey, nil)
 	url, err := createSession(sc, successUrl, cancelUrl, customerId, bag)
@@ -70,13 +56,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		fmt.Println(err)
 		resp.Successfull = false
 		return resp, err
-		// continue
 	}
-	// outputs = append(outputs, map[string]interface{}{
-	// 	"customer_id": id,
-	// })
 	outputCnt++
-	// }
 
 	resp.ReturnValue = map[string]interface{}{
 		"outputs": map[string]interface{}{
@@ -98,18 +79,38 @@ func main() {
 }
 
 func createSession(sc *client.API, successUrl, cancelUrl, customerId string, shoppingBag map[string]int) (string, error) {
+	var isRecurring bool
 	bag := make([]*stripe.CheckoutSessionLineItemParams, 0)
+	i := 0
 	for priceId, quantity := range shoppingBag {
+		price, err := sc.Prices.Get(priceId, nil)
+		if err != nil {
+			fmt.Println(err)
+			return "", err
+		}
+		if i == 0 {
+			isRecurring = price.Recurring != nil
+		}
+		if (isRecurring && price.Recurring == nil) || (!isRecurring && price.Recurring != nil) {
+			return "", errors.New("some of prices in your bag are recurring and some of them are on-time")
+		}
 		bag = append(bag, &stripe.CheckoutSessionLineItemParams{
 			Price:    stripe.String(priceId),
 			Quantity: stripe.Int64(int64(quantity)),
 		})
+		i++
+	}
+	sessionMode := ""
+	if isRecurring {
+		sessionMode = string(stripe.CheckoutSessionModeSubscription)
+	} else {
+		sessionMode = string(stripe.CheckoutSessionModePayment)
 	}
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL:        stripe.String(successUrl),
 		CancelURL:         stripe.String(cancelUrl),
 		LineItems:         bag,
-		Mode:              stripe.String(string(stripe.CheckoutSessionModePayment)),
+		Mode:              stripe.String(sessionMode),
 		ClientReferenceID: stripe.String(customerId),
 		Customer:          stripe.String(customerId),
 	}
