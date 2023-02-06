@@ -1,10 +1,8 @@
 import _ from 'lodash'
-import { API_URL } from '../../../api'
 import imageUrl from '../../../assets/components/about-left.png'
-import { uuid } from '../../../utils'
 import { Controller } from '../../controllers/controller'
 import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
-import { HttpMethod, useDataSourceStore } from '../../data-source/data-source-store'
+import { template } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -13,12 +11,11 @@ import { IconElement } from '../../elements/extensions/icon'
 import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
-import { useProjectStore } from '../../page/project-store'
+import productsScript from '../../scripts/products.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BoxStyler } from '../../simple/stylers/box-styler'
 import { ColumnsStyler } from '../../simple/stylers/columns-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
-import { Expression } from '../../states/expression'
 import { shared } from '../shared'
 
 export class ProductList extends Controller {
@@ -28,32 +25,12 @@ export class ProductList extends Controller {
 	renderOptions = () => <ProductListOptions />
 
 	onCreate(root: Element) {
-		const column = root.find<BoxElement>(tagIds.column)!
+		const list = root.find(tagIds.grid)!
+		const compiled = _.template(productsScript)
+		const script = compiled({ id: list.id })
+		setElement(root, (draft) => (draft.script = script))
 
-		const projectTag = useProjectStore.getState().tag
-		const addDataSource = useDataSourceStore.getState().add
-		const id = uuid()
-		const dataSourceName = `$product_list_${id}`
-		addDataSource({
-			id,
-			stateName: dataSourceName,
-			method: HttpMethod.Post,
-			url: Expression.fromString(
-				`${API_URL}/public/database/query/select/project/${projectTag}/table/products`
-			),
-			fetchOnload: true,
-			body: Expression.fromString(
-				JSON.stringify({ columns: ['id', 'name', 'price', 'image_url'] })
-			),
-			headers: '',
-			isPrivate: false,
-			properties: [],
-			onSuccess: [],
-		})
-		setElement(
-			column,
-			(draft) => (draft.repeatFrom = { name: dataSourceName, iterator: 'product' })
-		)
+		console.log(script)
 	}
 }
 
@@ -91,7 +68,7 @@ const tagIds = {
 function component() {
 	const pagination = createPagination()
 	const title = shared.title().tag(tagIds.title).txt('Products')
-	const grid = shared.grid().tag(tagIds.grid).populate(_.range(3).map(column))
+	const grid = shared.grid().tag(tagIds.grid).populate(_.range(1).map(column))
 	const container = shared.container().populate([title, grid, pagination])
 	const root = shared.paper().populate([container])
 	return root
@@ -132,10 +109,12 @@ const column = () => {
 		backgroundColor: '#f5f5f5',
 		height: '100%',
 	})
+	image.classes = ['image']
 
 	const name = new TextElement().tag(tagIds.name).textState('product.name').css({
 		fontWeight: '500',
 	})
+	name.classes = ['name']
 
 	const link = new LinkElement().populate([name]).css({
 		textDecoration: 'none',
@@ -145,6 +124,7 @@ const column = () => {
 	const price = new TextElement().tag(tagIds.price).textState('product.price').css({
 		fontWeight: '500',
 	})
+	price.classes = ['price']
 
 	const namePriceWrapper = new BoxElement().populate([link, price]).css({
 		display: 'flex',
@@ -164,5 +144,8 @@ const column = () => {
 		gap: '10px',
 	})
 
-	return column
+	const tmp = template(column)
+	tmp.classes = ['item']
+
+	return tmp
 }
