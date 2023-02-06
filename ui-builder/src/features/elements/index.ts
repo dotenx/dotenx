@@ -27,6 +27,7 @@ import { SelectElement } from './extensions/select'
 import { SliderElement } from './extensions/slider'
 import { StackElement } from './extensions/stack'
 import { SubmitElement } from './extensions/submit'
+import { TemplateElement } from './extensions/template'
 import { TextElement } from './extensions/text'
 import { TextareaElement } from './extensions/textarea'
 import { VideoElement } from './extensions/video'
@@ -109,4 +110,5 @@ export const ELEMENTS = [
 	MenuButtonElement,
 	NavMenuElement,
 	ExtensionElement,
+	TemplateElement,
 ]
