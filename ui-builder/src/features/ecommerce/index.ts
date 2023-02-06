@@ -33,8 +33,13 @@ import { Header } from './components/header'
 import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
 import { sofaControllers } from './sofa/controller'
+import { theme2Controllers } from './theme2/controller'
 
 export const ECOMMERCE_COMPONENTS: Components = [
+	{
+		title: 'Theme 2',
+		items: theme2Controllers,
+	},
 	{
 		title: 'Sofa',
 		items: sofaControllers,
