@@ -159,6 +159,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 			"is_interaction": true
 		}
 		`, integrationName)
+		dto = AddPipelineDto{}
 		err = json.Unmarshal([]byte(createStripePriceJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -213,6 +214,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 			"is_interaction": true
 		}
 		`, integrationName)
+		dto = AddPipelineDto{}
 		err = json.Unmarshal([]byte(updateStripeProductJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -429,6 +431,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 			"is_interaction": true
 		}
 		`, integrationName, integrationName, integrationName, integrationName)
+		dto = AddPipelineDto{}
 		err = json.Unmarshal([]byte(createStripePaymentLinkJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())
