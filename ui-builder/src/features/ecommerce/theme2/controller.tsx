@@ -1,3 +1,9 @@
+import ctaImg from '../../../assets/themes/theme2/cta.png'
+import featuresImg from '../../../assets/themes/theme2/features.png'
+import featureTextImg from '../../../assets/themes/theme2/featureText.png'
+import heroImg from '../../../assets/themes/theme2/hero.png'
+import navbarImg from '../../../assets/themes/theme2/navbar.png'
+import testimonialImg from '../../../assets/themes/theme2/testimonial.png'
 import { Controller, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
@@ -15,7 +21,7 @@ import { theme2 } from './theme'
 
 class Navbar extends Controller {
 	name = 'Theme 2 Navbar'
-	image = ''
+	image = navbarImg
 	defaultData = theme2.navbar()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const logo = wrapper.find<ImageElement>(theme2.tags.navbar.logo)!
@@ -42,7 +48,7 @@ class Navbar extends Controller {
 
 class Hero extends Controller {
 	name = 'Theme 2 Hero'
-	image = ''
+	image = heroImg
 	defaultData = theme2.hero()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const image = wrapper.find<ImageElement>(theme2.tags.hero.image)!
@@ -63,7 +69,7 @@ class Hero extends Controller {
 
 class FeatureText extends Controller {
 	name = 'Theme 2 FeatureText'
-	image = ''
+	image = featureTextImg
 	defaultData = theme2.featureText()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const text = wrapper.find<TextElement>(theme2.tags.featureText.text)!
@@ -80,7 +86,7 @@ class FeatureText extends Controller {
 
 class Features extends Controller {
 	name = 'Theme 2 Features'
-	image = ''
+	image = featuresImg
 	defaultData = theme2.features()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const features = wrapper.find<BoxElement>(theme2.tags.features.list)!
@@ -104,7 +110,7 @@ class Features extends Controller {
 
 class Testimonial extends Controller {
 	name = 'Theme 2 Testimonial'
-	image = ''
+	image = testimonialImg
 	defaultData = theme2.testimonial()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const title = wrapper.find<TextElement>(theme2.tags.testimonial.title)!
@@ -133,7 +139,7 @@ class Testimonial extends Controller {
 
 class Cta extends Controller {
 	name = 'Theme 2 CTA'
-	image = ''
+	image = ctaImg
 	defaultData = theme2.cta()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const button = wrapper.find<ButtonElement>(theme2.tags.cta.button)!
