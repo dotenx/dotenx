@@ -55,6 +55,7 @@ export abstract class Element {
 			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style) },
 			elementId: this.elementId,
 			tagId: this.tagId,
+			script: this.script,
 		}
 	}
 
