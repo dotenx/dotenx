@@ -90,7 +90,12 @@ class Features extends Controller {
 				<DndTabs
 					containerElement={features}
 					insertElement={() => theme2.feature({ title: 'Lorem ipsum', color: 'black' })}
-					renderItemOptions={() => null}
+					renderItemOptions={(item) => (
+						<TextStyler
+							element={item.find<TextElement>(theme2.tags.features.title)!}
+							label="Title"
+						/>
+					)}
 				/>
 			</ControllerWrapper>
 		)

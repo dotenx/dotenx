@@ -21,6 +21,7 @@ const tags = {
 	},
 	features: {
 		list: 'list',
+		title: 'title',
 	},
 	testimonial: {
 		image: 'image',
@@ -213,7 +214,7 @@ const features = () =>
 
 const feature = ({ title, color }: { title: string; color: string }) =>
 	box([
-		subtitle(title),
+		subtitle(title).tag(tags.features.title),
 		box([
 			desc('Learn more'),
 			btn('')
