@@ -8,6 +8,7 @@ import {
 	deserializeElement,
 	deserializeExpression,
 } from '../utils/deserialize'
+import { joinScripts } from '../utils/join-scripts'
 import { serializeAnimation } from '../utils/serialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
@@ -153,6 +154,13 @@ export const addPage = ({
 }
 
 export const updatePage = addPage
+
+export const upsertEcommercePage = (data: AddPageRequest) => {
+	const transformed = produce(data, (draft) => {
+		draft.customCodes.head = joinScripts(data.elements)
+	})
+	return addPage(transformed)
+}
 
 export const deletePage = ({ projectTag, pageName }: DeletePageRequest) => {
 	return api.delete(`/uibuilder/project/${projectTag}/page/${pageName}`)
