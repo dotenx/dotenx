@@ -133,6 +133,9 @@ export const addPage = ({
 			},
 		])
 	)
+	const transformCodes = produce(customCodes, (draft) => {
+		draft.footer = `<script>${joinScripts(elements)}</script>`
+	})
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
@@ -146,7 +149,7 @@ export const addPage = ({
 			pageParams,
 			globals,
 			fonts,
-			customCodes,
+			customCodes: transformCodes,
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
 		},
@@ -154,13 +157,6 @@ export const addPage = ({
 }
 
 export const updatePage = addPage
-
-export const upsertEcommercePage = (data: AddPageRequest) => {
-	const transformed = produce(data, (draft) => {
-		draft.customCodes.head = joinScripts(data.elements)
-	})
-	return addPage(transformed)
-}
 
 export const deletePage = ({ projectTag, pageName }: DeletePageRequest) => {
 	return api.delete(`/uibuilder/project/${projectTag}/page/${pageName}`)
