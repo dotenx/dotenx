@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create payment link
-image: stripe/stripe-create-payment-link:lambda2
+image: stripe/stripe-create-payment-link:lambda3
 integrations: [stripe]
 fields:
     - key: CUS_ID

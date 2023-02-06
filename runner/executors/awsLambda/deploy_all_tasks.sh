@@ -9,7 +9,7 @@
 # # hojjat12/facebook-publish-post:lambda4
 # # hojjat12/google-send-email:lambda4
 # # awrmin/create-jira-ticket:lambda5
-# # awrmin/sendemail:lambda6
+# # hojjat12/sendgrid-send-email:lambda7
 # # awrmin/slack-send-message:lambda6
 # # hojjat12/starshipit-create-order:lambda3
 # # stripe/stripe-create-customer:lambda5
@@ -17,12 +17,13 @@
 # # stripe/stripe-update-customer:lambda5
 # # hojjat12/twitter-send-tweet:lambda5
 # # hojjat12/youtube-upload-file:lambda4
-# # stripe/stripe-create-payment-link:lambda2
+# # stripe/stripe-create-payment-link:lambda3
 # # hojjat12/mailchimp-add-new-subscriber:lambda
 # # hojjat12/mailchimp-archive-subscriber:lambda
 # # hojjat12/airtable-create-record:lambda
 # # hojjat12/stripe-create-product:lambda
 # # hojjat12/stripe-update-product:lambda
+# # hojjat12/stripe-create-price:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -106,9 +107,9 @@
 # echo $function_name
 
 # export region="us-east-1"
-# export repository_name="awrmin/sendemail"
-# export tag="lambda6"
-# export directory_address="send-email"
+# export repository_name="hojjat12/sendgrid-send-email"
+# export tag="lambda7"
+# export directory_address="sendgrid-send-email"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name
@@ -179,7 +180,7 @@
 
 # export region="us-east-1"
 # export repository_name="stripe/stripe-create-payment-link"
-# export tag="lambda2"
+# export tag="lambda3"
 # export directory_address="stripe-create-payment-link"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
@@ -231,6 +232,15 @@
 # echo $image_name
 # echo $function_name
 
+# export region="us-east-1"
+# export repository_name="hojjat12/stripe-create-price"
+# export tag="lambda"
+# export directory_address="stripe-create-price"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
 cd ../../../predefinedImages/tasks/${directory_address}
 pwd
 docker build -t ${image_name} .
@@ -243,4 +253,4 @@ docker push 994147050565.dkr.ecr.${region}.amazonaws.com/${image_name}
 #     --policy-text file://policy.json --region ${region}
 aws lambda create-function --function-name ${function_name} --package-type Image \
     --code ImageUri=994147050565.dkr.ecr.${region}.amazonaws.com/${image_name} \
-    --role arn:aws:iam::994147050565:role/lambda-ex --region ${region}
+    --role arn:aws:iam::994147050565:role/lambda-ex --region ${region} --timeout 15
