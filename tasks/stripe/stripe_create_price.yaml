@@ -1,0 +1,36 @@
+service: stripe
+type: Stripe create price
+image: hojjat12/stripe-create-price:lambda
+integrations: [stripe]
+fields:
+    - key: product_id
+      type: text
+      description: The ID of the product that this price will belong to.
+      display_name: product id
+
+    - key: currency
+      type: text
+      description: Three-letter ISO currency code, in lowercase. Must be a supported currency.
+      display_name: currency ISO code
+
+    - key: unit_amount
+      type: text
+      description: A positive integer in cents (or 0 for a free price) representing how much cost your product.
+      display_name: price
+
+    - key: recurring_interval
+      type: text
+      description: Specifies billing frequency. Either 'day', 'week', 'month' or 'year'.
+      display_name: recurring interval (optional)
+
+    - key: recurring_interval_count
+      type: text
+      description: The number of intervals between subscription billings. For example, interval=month and interval_count=3 bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks).
+      display_name: interval count (optional)
+
+outputs:
+
+author: Hojjat-1
+icon: https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg
+node_color: 665BFF
+description: Creates a new price for an existing product. The price can be recurring or one-time.
