@@ -35,6 +35,7 @@ const tags = {
 }
 
 const theme = {
+	font: 'Syne',
 	colors: {
 		text: '#000000',
 		background: '#F4F5FD',
@@ -332,6 +333,7 @@ const container = (children: Element[]) =>
 		maxWidth: '1440px',
 		margin: '0 auto',
 		padding: '40px',
+		fontFamily: theme.font,
 	})
 
 const title = (text: string) =>
