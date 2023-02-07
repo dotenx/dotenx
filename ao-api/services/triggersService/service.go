@@ -43,6 +43,7 @@ type TriggerService interface {
 	StopScheduler(accId, pipelineName, triggerName string) error
 	StartSchedulling(trigger models.EventTrigger) error
 	HandleEventBridgeScheduler(pipelineEndpoint string) (err error)
+	HandleScheduledTriggers(pipelineEndpoint, accountId string) (err error)
 }
 
 type TriggerManager struct {

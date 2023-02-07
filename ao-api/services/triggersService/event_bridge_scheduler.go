@@ -28,6 +28,7 @@ func (manager *TriggerManager) CreateEventBridgeScheduler(trigger models.EventTr
 
 	payloadMap := map[string]interface{}{
 		"pipeline_endpoint": trigger.Endpoint,
+		"account_id":        trigger.AccountId,
 		"auth_token":        config.Configs.Secrets.EventSchedulerToken,
 	}
 	payloadBytes, _ := json.Marshal(payloadMap)
@@ -44,7 +45,7 @@ func (manager *TriggerManager) CreateEventBridgeScheduler(trigger models.EventTr
 			Mode: aws.String(awsScheduler.FlexibleTimeWindowModeOff),
 		},
 		Target: &awsScheduler.Target{
-			// Arn:     aws.String(config.Configs.Secrets.EventSchedulerTargetArn),
+			Arn:     aws.String(config.Configs.Secrets.ScheduledTriggersTargetArn),
 			RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
 			Input:   aws.String(payloadStr),
 		},
