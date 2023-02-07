@@ -54,12 +54,12 @@ const routes: Routes = [
 		element: <ProvidersPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/:name/executions/:id",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions/:id",
 		element: <ExecutionPage kind="interaction" />,
 		compactSidebar: true,
 	},
 	{
-		path: "/builder/projects/:projectName/workflows/:name/executions",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions",
 		element: <HistoryPage kind="interaction" />,
 		compactSidebar: true,
 	},

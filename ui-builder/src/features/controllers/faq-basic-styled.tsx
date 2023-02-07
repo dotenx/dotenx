@@ -8,10 +8,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { TextElementInput } from '../ui/text-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -31,20 +31,20 @@ export class FaqBasicStyled extends Controller {
 
 function FaqBasicStyledOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const grid = component.findByTagId<ColumnsElement>(tagIds.grid)!
-	const faqTitle = component.findByTagId<TextElement>(tagIds.faqTitle)!
+	const grid = component.find<ColumnsElement>(tagIds.grid)!
+	const faqTitle = component.find<TextElement>(tagIds.faqTitle)!
 
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Basic FAQ" />
-			<TextElementInput label="FAQ title" element={faqTitle} />
-			<ColumnsElementInput element={grid} />
+			<TextStyler label="FAQ title" element={faqTitle} />
+			<ColumnsStyler element={grid} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <CellOptions item={item} />}
 				insertElement={() => regenElement(tile)}
 			/>
-			<BoxElementInput label="Background color" element={component} />
+			<BoxStylerSimple label="Background color" element={component} />
 		</OptionsWrapper>
 	)
 }
@@ -55,9 +55,9 @@ function CellOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Description" element={description} />
-			<BoxElementInput label="Tile background color" element={item} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Description" element={description} />
+			<BoxStylerSimple label="Tile background color" element={item} />
 		</OptionsWrapper>
 	)
 }

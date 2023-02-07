@@ -2,10 +2,10 @@ import produce from 'immer'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
+import { LinkStyler } from '../../simple/stylers/link-styler'
+import { TextStyler } from '../../simple/stylers/text-styler'
 import { Expression } from '../../states/expression'
 import { inteliText } from '../../ui/intelinput'
-import { LinkElementInput } from '../../ui/link-element-input'
-import { TextElementInput } from '../../ui/text-element-input'
 
 const layout = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -76,10 +76,10 @@ function Options({ root }: OptionsProps): JSX.Element {
 
 	return (
 		<>
-			<TextElementInput label="Title" element={title} />
-			<TextElementInput label="Subtitle" element={subtitle} />
-			<LinkElementInput label="CTA Link" element={ctaLink} />
-			<TextElementInput label="CTA Text" element={ctaText} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<LinkStyler label="CTA Link" element={ctaLink} />
+			<TextStyler label="CTA Text" element={ctaText} />
 		</>
 	)
 }

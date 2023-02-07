@@ -14,15 +14,24 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { FaCheck, FaCopy, FaExternalLinkAlt, FaPlay } from 'react-icons/fa'
-import { IoSaveOutline } from 'react-icons/io5'
-import { TbCode, TbCopy, TbPlus, TbSettings, TbTrash, TbWorldUpload } from 'react-icons/tb'
+import {
+	TbCheck,
+	TbCloudUpload,
+	TbCode,
+	TbCopy,
+	TbExternalLink,
+	TbPlayerPlay,
+	TbPlus,
+	TbSettings,
+	TbTrash,
+	TbWorldUpload,
+} from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
-	getPageURls,
+	getPageUrls,
 	GlobalStates,
 	previewPage,
 	publishPage,
@@ -41,18 +50,20 @@ import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
 export const globalStatesAtom = atom<string[]>([])
 export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
 
-export function PageActions() {
+export function PageActions({ showSettings = true }: { showSettings?: boolean }) {
 	const mode = useAtomValue(pageModeAtom)
 	const projectTag = useAtomValue(projectTagAtom)
 	const { pageName = 'index' } = useParams()
-
 	const isSimple = mode === 'simple'
-	const { data: pageUrls, isLoading } = useQuery([QueryKey.GetPageUrls, pageName], () =>
-		getPageURls({ projectTag, pageName })
+	const { data: pageUrls, isLoading } = useQuery(
+		[QueryKey.GetPageUrls, pageName],
+		() => getPageUrls({ projectTag, pageName }),
+		{ enabled: !!projectTag && !!pageName }
 	)
+
 	return (
 		<Button.Group>
-			{!isSimple && <PageSettingsButton />}
+			{!isSimple && showSettings && <PageSettingsButton />}
 			<DuplicatePageButton />
 			<DeletePageButton />
 			<SaveButton />
@@ -250,7 +261,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 	)
 }
 
-function DuplicatePageButton() {
+export function DuplicatePageButton() {
 	const { projectName = '' } = useParams()
 	const navigate = useNavigate()
 
@@ -335,7 +346,7 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 	)
 }
 
-function DeletePageButton() {
+export function DeletePageButton() {
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
 	const projectTag = useAtomValue(projectTagAtom)
@@ -365,7 +376,7 @@ function DeletePageButton() {
 	)
 }
 
-function SaveButton() {
+export function SaveButton() {
 	const setSaved = useElementsStore((store) => store.save)
 	const { pageName = '' } = useParams()
 	const mode = useAtomValue(pageModeAtom)
@@ -410,14 +421,20 @@ function SaveButton() {
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
-			<Button onClick={save} loading={savePageMutation.isLoading} size="xs" variant="default">
-				<IoSaveOutline className="w-5 h-5" />
+			<Button
+				onClick={save}
+				loading={savePageMutation.isLoading}
+				size="xs"
+				variant="default"
+				radius={0}
+			>
+				<TbCloudUpload className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
 }
 
-function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) {
+export function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) {
 	const { pageName = 'index' } = useParams()
 
 	const projectTag = useAtomValue(projectTagAtom)
@@ -488,7 +505,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 					variant="light"
 					size="xs"
 				>
-					<FaPlay className="w-4 h-4 " />
+					<TbPlayerPlay className="w-4 h-4 " />
 				</Button>
 			</Tooltip>
 			{open && (
@@ -509,9 +526,9 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPreview.copied ? (
-											<FaCheck className="w-5 h-5 mb-1 " />
+											<TbCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className="w-5 h-5 mb-1 " />
+											<TbCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
@@ -520,7 +537,7 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										rel="noopener noreferrer"
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
+										<TbExternalLink className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>
@@ -541,7 +558,8 @@ function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 		</div>
 	)
 }
-function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) {
+
+export function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) {
 	const { pageName = 'index', projectName } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
 	const [publishUrl, setPublishUrl] = useState('')
@@ -617,6 +635,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 						setOpen(!open)
 					}}
 					disabled={isLoading}
+					className="!rounded-r"
 					size="xs"
 				>
 					<TbWorldUpload className="w-5 h-5 " />
@@ -650,9 +669,9 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 border-x-2 border-rose-700"
 									>
 										{copyPublish.copied ? (
-											<FaCheck className="w-5 h-5 mb-1 " />
+											<TbCheck className="w-5 h-5 mb-1 " />
 										) : (
-											<FaCopy className="w-5 h-5 mb-1 " />
+											<TbCopy className="w-5 h-5 mb-1 " />
 										)}
 									</div>
 									<a
@@ -661,7 +680,7 @@ function PublishButton({ url, isLoading }: { url: string; isLoading: boolean }) 
 										rel="noopener noreferrer"
 										className="p-2 transition active:bg-rose-800 hover:text-white hover:bg-rose-700 rounded-r-md"
 									>
-										<FaExternalLinkAlt className="w-5 h-5 mb-1 " />
+										<TbExternalLink className="w-5 h-5 mb-1 " />
 									</a>
 								</div>
 							</div>

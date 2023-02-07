@@ -8,13 +8,11 @@ import { SizeEditor } from '../../style/size-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { Element, RenderFn, RenderOptions } from '../element'
 import { useSetElement } from '../elements-store'
-import { Style } from '../style'
 
 export class BoxElement extends Element {
 	name = 'Box'
 	icon = (<TbSquare />)
 	children: Element[] = []
-	style: Style = { desktop: { default: { minHeight: '150px' } } }
 	data = { as: 'div' }
 
 	render(renderFn: RenderFn): ReactNode {

@@ -5,7 +5,6 @@ stages:
 variables:
   AWS_DEFAULT_REGION: us-east-1
 
-
 build api: &build
   image: utopiops/devops:assume-role-12
   stage: build
@@ -13,7 +12,7 @@ build api: &build
     - docker:stable-dind
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -45,7 +44,7 @@ build scheduler:
   <<: *build
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -68,7 +67,7 @@ build runner:
   <<: *build
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -85,7 +84,6 @@ build runner:
     changes:
       - "runner/**/*"
 
-
 build ui: &build_ui
   image: node:16.15.1-slim
   stage: build
@@ -101,25 +99,31 @@ build ui: &build_ui
     - npm install
     - CI='' npm run build
     - tar -czvf ${environment}_build.tar.gz ./${build_dest}
-    - mv ${environment}_build.tar.gz ../${environment}_build.tar.gz
+    - mv ${environment}_build.tar.gz ../${environment}_${folder}_build.tar.gz
   except:
     - schedules
   artifacts:
     paths:
-      - ${environment}_build.tar.gz
+      - ${environment}_${folder}_build.tar.gz
   only:
     # refs:
     #   - master
     changes:
       - "ui/**/*"
+      - ".gitlab-ci.yml"
 
 build ui-ecommerce:
   <<: *build_ui
+  variables:
+    environment: prod
+    folder: ui-ecommerce
+    build_dest: dist
   only:
     # refs:
     #   - master
     changes:
       - "ui-ecommerce/**/*"
+      - ".gitlab-ci.yml"
 
 build ui builder:
   <<: *build_ui
@@ -134,14 +138,12 @@ build ui builder:
       - "ui-builder/**/*"
       - ".gitlab-ci.yml"
 
-
-
 deploy api: &deploy
   image: utopiops/devops:assume-role-12
   stage: deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -159,7 +161,7 @@ deploy api: &deploy
     - echo ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
     - echo $TASK_DEFINITION
-    - | 
+    - |
       if [[ -n $FOLDER ]]; then
       cd $FOLDER
       joined=[`cat .env.${environment} | awk -F== '{print "{\"name\":\""$1"\",\"value\":"$2"}"}' | sed 'H;1h;$!d;x;y/\n/,/'`]
@@ -177,13 +179,13 @@ deploy api: &deploy
     # refs:
     #   - master
     changes:
-      - "ao-api/**/*" 
+      - "ao-api/**/*"
 
 deploy scheduler:
   <<: *deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -200,13 +202,13 @@ deploy scheduler:
     # refs:
     #   - master
     changes:
-      - "job_scheduler/**/*" 
+      - "job_scheduler/**/*"
 
 deploy runner:
   <<: *deploy
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     ECR_REGISTRY_URL: "${DEV_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com"
     image_tag_commit_sha: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
@@ -224,9 +226,7 @@ deploy runner:
     # refs:
     #   - master
     changes:
-      - "runner/**/*" 
-
-  
+      - "runner/**/*"
 
 deploy ui: &deploy_ui
   image: utopiops/devops:assume-role-12
@@ -240,12 +240,13 @@ deploy ui: &deploy_ui
     environment: prod
     DISTRIBUTION_ID: EXE3WNBU24B4E
     build_dest: dist
+    folder: ui
   environment:
     name: production-ui
     url: https://app.dotenx.com
   script:
     - mkdir ${build_dest}
-    - tar -xzvf ${environment}_build.tar.gz
+    - tar -xzvf ${environment}_${folder}_build.tar.gz
     - cd ./${build_dest}
     - aws s3 sync --acl public-read . s3://${BUCKET}
     - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/index.html"
@@ -255,7 +256,8 @@ deploy ui: &deploy_ui
     refs:
       - master
     changes:
-      - "ui/**/*" 
+      - "ui/**/*"
+      - ".gitlab-ci.yml"
 
 deploy ui-ecommerce:
   <<: *deploy_ui
@@ -268,6 +270,7 @@ deploy ui-ecommerce:
     environment: prod
     DISTRIBUTION_ID: E15E8F8Y85W7VE
     build_dest: dist
+    folder: ui-ecommerce
   environment:
     name: production-ui-ecommerce
     url: https://ecommerce.dotenx.com
@@ -275,7 +278,8 @@ deploy ui-ecommerce:
     refs:
       - master
     changes:
-      - "ui-ecommerce/**/*" 
+      - "ui-ecommerce/**/*"
+      - ".gitlab-ci.yml"
 
 deploy ui builder:
   <<: *deploy_ui
@@ -288,6 +292,7 @@ deploy ui builder:
     environment: prod
     DISTRIBUTION_ID: E10STPNB69BH30
     build_dest: dist
+    folder: ui-builder
   environment:
     name: production-ui-builder
     url: https://ui.dotenx.com

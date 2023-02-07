@@ -11,10 +11,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ColumnsElementInput } from '../ui/columns-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName, repeatObject } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -53,11 +53,11 @@ function GalleryBasicRoundedOptions() {
 	return (
 		<OptionsWrapper>
 			<ComponentName name="Basic Gallery rounded" />
-			<ColumnsElementInput element={grid} />
+			<ColumnsStyler element={grid} />
 			<Button size="xs" fullWidth variant="outline" onClick={addImage} leftIcon={<TbPlus />}>
 				Add image
 			</Button>
-			<BoxElementInput label="Background color" element={component} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<Select
 				label="Tiles"
 				size="xs"
@@ -66,7 +66,7 @@ function GalleryBasicRoundedOptions() {
 				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
 				value={selectedTile.toString()}
 			/>
-			<ImageElementInput element={selectedCell} />
+			<ImageStyler element={selectedCell} />
 			<Button
 				disabled={grid.children?.length === 1}
 				size="xs"

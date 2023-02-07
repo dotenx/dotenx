@@ -52,7 +52,7 @@ export function useTaskStatus(executionId?: string) {
 
 	useEffect(() => {
 		if (!executionId) return
-		clearStatus()
+		// clearStatus()
 		const eventSource = new EventSource(`${API_URL}/execution/id/${executionId}/status`, {
 			withCredentials: true,
 		})

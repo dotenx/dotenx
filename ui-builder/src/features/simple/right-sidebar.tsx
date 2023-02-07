@@ -1,7 +1,7 @@
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectedElement } from '../selection/use-selected-component'
 
-export function SimpleOptions() {
+export function SimpleRightSidebar() {
 	const selectedElement = useSelectedElement()
 	const editElement = useElementsStore((store) => store.set)
 

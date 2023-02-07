@@ -262,6 +262,7 @@ export function changeGlobalStates({ projectName, payload }: SetGlobalStatesRequ
 export function getGlobalStates({ projectName }: { projectName: string }) {
 	return api.get<GlobalStates>(`/uibuilder/project/name/${projectName}/state/global`)
 }
-export function getPageURls({ projectTag, pageName }: { projectTag: string; pageName: string }) {
+
+export function getPageUrls({ projectTag, pageName }: { projectTag: string; pageName: string }) {
 	return api.get<GetUrlsResponse>(`/uibuilder/project/${projectTag}/page/${pageName}/url`)
 }
