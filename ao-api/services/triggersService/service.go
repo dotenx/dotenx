@@ -149,7 +149,7 @@ func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, tri
 
 	err = manager.DeleteTriggers(accountId, triggers[0].Pipeline, endpoint)
 	if err != nil {
-		return errors.New("error while deleting old schedulers: " + err.Error())
+		return errors.New("error while deleting old triggers: " + err.Error())
 	}
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
