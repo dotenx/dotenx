@@ -11,9 +11,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	products.forEach((product) => {
 		const clone = item.content.cloneNode(true)
-		clone.querySelector('.image').src = product.images[0]
-		clone.querySelector('.name').textContent = product.title
-		clone.querySelector('.price').textContent = product.price
+
+		const image = clone.querySelector('.image')
+		image.removeAttribute('x-bind:src')
+		image.setAttribute('src', product.images[0])
+
+		const name = clone.querySelector('.name')
+		name.removeAttribute('x-html')
+		name.textContent = product.title
+
+		const price = clone.querySelector('.price')
+		price.removeAttribute('x-html')
+		price.textContent = product.price
+
 		list.appendChild(clone)
 	})
 })

@@ -29,8 +29,6 @@ export class ProductList extends Controller {
 		const compiled = _.template(productsScript)
 		const script = compiled({ id: list.id })
 		setElement(root, (draft) => (draft.script = script))
-
-		console.log(script)
 	}
 }
 
@@ -104,14 +102,14 @@ const chevron = () => {
 }
 
 const column = () => {
-	const image = new ImageElement().tag(tagIds.image).srcState('product.image_url').css({
+	const image = new ImageElement().tag(tagIds.image).css({
 		flexGrow: '1',
 		backgroundColor: '#f5f5f5',
 		height: '100%',
 	})
 	image.classes = ['image']
 
-	const name = new TextElement().tag(tagIds.name).textState('product.name').css({
+	const name = new TextElement().tag(tagIds.name).css({
 		fontWeight: '500',
 	})
 	name.classes = ['name']
@@ -121,7 +119,7 @@ const column = () => {
 		color: 'inherit',
 	})
 
-	const price = new TextElement().tag(tagIds.price).textState('product.price').css({
+	const price = new TextElement().tag(tagIds.price).css({
 		fontWeight: '500',
 	})
 	price.classes = ['price']
