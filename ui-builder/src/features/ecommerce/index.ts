@@ -34,8 +34,13 @@ import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
 import { sofaControllers } from './sofa/controller'
 import { theme2Controllers } from './theme2/controller'
+import { theme3Controllers } from './theme3/controller'
 
 export const ECOMMERCE_COMPONENTS: Components = [
+	{
+		title: 'Theme 3',
+		items: theme3Controllers,
+	},
 	{
 		title: 'Theme 2',
 		items: theme2Controllers,
