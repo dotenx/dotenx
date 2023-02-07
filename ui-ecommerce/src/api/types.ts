@@ -1,5 +1,12 @@
+import { z } from "zod"
+
 export enum QueryKey {
 	GetProductsSummary = "get-products-summary",
+	GetProductsOnlyRecords = 'get-products-only-records',
+	GetMembershipOnlyRecords = 'get-membership-only-records',
+	GetColumns = "get-columns",
+	GetTableRecords = "get-table-records",
+	GetTables = "get-tables",
 	GetIntegrationTypes = "get-integration-types",
 	GetIntegrationTypeFields = "get-integration-type-fields",
 	GetIntegrations = "get-integrations",
@@ -23,6 +30,28 @@ export interface FormatterFunction {
 	output: string
 	description: string
 }
+const schema = z.object({
+	conjunction: z.string(),
+	filterSet: z.array(
+		z
+			.object({
+				key: z.string(),
+				operator: z.string(),
+				value: z.string(),
+			})
+			.or(
+				z.object({
+					filterSet: z.array(
+						z.object({
+							key: z.string(),
+							operator: z.string(),
+							value: z.string(),
+						})
+					),
+				})
+			)
+	),
+})
 
 export type GetProductsSummaryResponse = {
 	totalRows: number
@@ -35,6 +64,14 @@ export type GetProductsSummaryResponse = {
 		status: string
 	}[]
 }
+export type QueryBuilderValues = z.infer<typeof schema>
+
+export interface RecordsFilters {
+	columns: string[]
+	filters?: { filterSet: [{ key: string, operator: string, value: string }] }
+}
+
+export type GetTableRecordsRequest = RecordsFilters
 
 export type GetLastDaySalesResponse = {
 	totalRows: number
@@ -45,6 +82,25 @@ export type GetLastDaySalesResponse = {
 	}[]
 }
 
+export type TableRecord = Record<
+	string,
+	string | string[] | boolean | boolean[] | number | number[]
+>
+
+export type GetRecordsResponse = {
+	rows: TableRecord[]
+	totalRows: number
+} | null
+
+export type GetColumnsResponse = {
+	columns: { name: string; type: string }[]
+}
+export type RunCustomQueryResponse = {
+	rows: Array<any>
+	rows_affected: number
+	successful: boolean
+	total_rows: number
+}
 export type GetMembersSummaryResponse = {
 	totalRows: number
 	rows: {
@@ -58,6 +114,28 @@ export type GetMembersSummaryResponse = {
 export type GetFilesDataResponse = any
 
 export type GetProjectResponse = Project & { tag: string }
+
+export interface Table {
+	tableName: string
+}
+
+export type AddColumnRequest = Column
+
+export interface Column {
+	columnName: string
+	columnType: string
+	tableName?: string
+}
+
+export type CreateTableRequest = Table
+
+
+export type GetTablesResponse = {
+	tables: {
+		name: string
+		is_public: boolean
+	}[]
+}
 
 export interface Project {
 	name: string

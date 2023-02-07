@@ -12,7 +12,6 @@ specifiers:
   '@mantine/modals': ^5.10.2
   '@mantine/prism': ^5.10.2
   '@monaco-editor/react': ^4.4.6
-  'react-query': ^4.23.0
   '@types/lodash': ^4.14.191
   '@types/react': ^18.0.27
   '@types/react-dom': ^18.0.10
@@ -72,7 +71,6 @@ dependencies:
   '@mantine/modals': 5.10.2_yzf4d63xstafd7ya36kewhvvjm
   '@mantine/prism': 5.10.2_yzf4d63xstafd7ya36kewhvvjm
   '@monaco-editor/react': 4.4.6_6vrjaj6ridxbohi43n7zt4gn7q
-  'react-query': 4.23.0_biqbaboplfbrettd7655fr4n2y
   '@uiball/loaders': 1.2.6_biqbaboplfbrettd7655fr4n2y
   axios: 1.2.6
   chart.js: 4.2.0
@@ -1095,28 +1093,6 @@ packages:
   /@remix-run/router/1.3.1:
     resolution: {integrity: sha512-+eun1Wtf72RNRSqgU7qM2AMX/oHp+dnx7BHk1qhK5ZHzdHTUU4LA1mGG1vT+jMc8sbhG3orvsfOmryjzx2PzQw==}
     engines: {node: '>=14'}
-    dev: false
-
-  /@tanstack/query-core/4.22.4:
-    resolution: {integrity: sha512-t79CMwlbBnj+yL82tEcmRN93bL4U3pae2ota4t5NN2z3cIeWw74pzdWrKRwOfTvLcd+b30tC+ciDlfYOKFPGUw==}
-    dev: false
-
-  /react-query/4.23.0_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-cfQsrecZQjYYueiow4WcK8ItokXJnv+b2OrK8Lf5kF7lM9uCo1ilyygFB8wo4MfxchUBVM6Cs8wq4Ed7fouwkA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      '@tanstack/query-core': 4.22.4
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@types/json-schema/7.0.11:

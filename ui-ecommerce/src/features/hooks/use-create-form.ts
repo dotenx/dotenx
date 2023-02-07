@@ -24,8 +24,18 @@ interface Options {
     onSuccess?: (addedIntegrationName: string) => void
 }
 
+function stringGen() {
+    var result = ""
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for (var i = 0; i < 7; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return result
+}
 export function useNewIntegration({ integrationKind, onSuccess }: Options) {
-    const name = integrationKind + '-' + Math.floor(Math.random() * Date.now()).toString().slice(0, 7)
+
+    const result = stringGen()
+    const name = integrationKind + '-' + result
     const {
         control,
         handleSubmit,

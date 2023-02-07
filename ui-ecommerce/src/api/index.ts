@@ -1,6 +1,9 @@
 import axios from "axios"
 import {
+	AddColumnRequest,
 	CreateIntegrationRequest,
+	CreateTableRequest,
+	GetColumnsResponse,
 	GetFilesDataResponse,
 	GetIntegrationKindFieldsResponse,
 	GetIntegrationKindsResponse,
@@ -9,7 +12,11 @@ import {
 	GetMembersSummaryResponse,
 	GetProductsSummaryResponse,
 	GetProjectResponse,
+	GetRecordsResponse,
+	GetTableRecordsRequest,
+	GetTablesResponse,
 	GetUserGroupsResponse,
+	RunCustomQueryResponse,
 	UploadImageRequest,
 	UploadImageResponse,
 } from "./types"
@@ -66,6 +73,20 @@ export function getProject(name: string) {
 	return api.get<GetProjectResponse>(`/project/${name}`)
 }
 
+export function getTables(projectName: string) {
+	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
+}
+
+
+
+export function createTable(projectName: string, payload: CreateTableRequest) {
+	return api.post<void>("/database/table", { projectName, ...payload })
+}
+
+export function addColumn(projectName: string, tableName: string, payload: AddColumnRequest) {
+	return api.post<void>("/database/table/column", { projectName, tableName, ...payload })
+}
+
 export function uploadFile(projectTag: string, formData: FormData) {
 	return api.post<void>(`/objectstore/project/${projectTag}/upload`, formData, {
 		headers: {
@@ -86,7 +107,31 @@ export function getProductsSummary(projectTag: string, page: number) {
 		}
 	)
 }
-
+export function getColumns(projectName: string, tableName: string) {
+	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
+}
+export function getTableRecords(
+	projectTag: string,
+	tableName: string,
+	page: number,
+	payload: GetTableRecordsRequest
+) {
+	return api.post<GetRecordsResponse>(
+		`/database/query/select/project/${projectTag}/table/${tableName}`,
+		payload,
+		{
+			headers: {
+				page: page,
+				size: 10,
+			},
+		}
+	)
+}
+export function runCustomQuery(projectTag: string, query: string) {
+	return api.post<RunCustomQueryResponse>(`/database/query/arbitrary/project/${projectTag}`, {
+		query: query,
+	})
+}
 export function getLast24HoursSales(projectTag: string, page: number) {
 	return api.post<GetLastDaySalesResponse | null>(
 		`/database/query/select/project/${projectTag}/table/sales`, //TODO: Use a view

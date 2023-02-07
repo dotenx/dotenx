@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
-import { Loader } from "../features/ui"
+import { Loader } from "../ui"
 
 export interface OAuthMessage {
 	error: string | null
