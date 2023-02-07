@@ -84,6 +84,7 @@ type (
 		SendGridToken              string `envconfig:"AOA_SEND_GRID_TOKEN"`
 		MarketPlaceAdminSecret     string `envconfig:"AOA_MARKET_PLACE_ADMIN_SECRET"`
 		DeployFunctionRoleArn      string `envconfig:"AOA_DEPLOY_FUNCTION_ROLE_ARN"`
+		ImportCsvS3Bucket          string `envconfig:"AOA_IMPORT_CSV_S3_BUCKET"`
 		EventSchedulerToken        string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TOKEN"`
 		EventSchedulerRoleArn      string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_ROLE_ARN"`
 		EventSchedulerTargetArn    string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TARGET_ARN"`
