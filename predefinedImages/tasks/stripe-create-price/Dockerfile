@@ -7,10 +7,10 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o ./send-email
+RUN go build -o ./stripe-create-price
 
 FROM alpine 
 
-COPY --from=build /app/send-email ./
+COPY --from=build /app/stripe-create-price ./
 
-CMD [ "/send-email" ]
+CMD [ "/stripe-create-price" ]

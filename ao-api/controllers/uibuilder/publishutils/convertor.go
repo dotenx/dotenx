@@ -31,6 +31,7 @@ type Page struct {
 }
 
 var pageTemplate = `<!DOCTYPE html>
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>{{.Head.Title}}</title>
@@ -202,6 +203,8 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		fallthrough
 	case "Divider":
 		return convertBox(component, styleStore, functionStore)
+	case "Template":
+		return convertTemplate(component, styleStore, functionStore)
 	case "Navbar":
 		return convertNavbar(component, styleStore, functionStore)
 	case "NavMenu":
