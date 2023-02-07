@@ -26,7 +26,7 @@ type Template struct {
 	} `json:"data"`
 }
 
-const templateTemplate = `<template {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{renderEvents .Events}}>{{.RenderedChildren}}</template>{{end}}`
+const templateTemplate = `<template {{if .Bindings.Class.FromStateName}}:class="{{renderClassBinding .Bindings}}"{{end}} id="{{if .ElementId}}{{.ElementId}}{{else}}{{.Id}}{{end}}" class="{{range .ClassNames}}{{.}} {{end}}" {{renderEvents .Events}}>{{.RenderedChildren}}</template>`
 
 func convertTemplate(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
 
