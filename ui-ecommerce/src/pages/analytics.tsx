@@ -12,6 +12,7 @@ import {
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
 import { ContentWrapper, Header } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { SalesStats, Stats } from "./products"
 import { monthDays } from "./sales"
 
@@ -48,9 +49,11 @@ export function AnalyticsPage() {
 //#region sales
 
 function SalesTab() {
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
 	return (
 		<div className="gap-10 flex flex-col">
-			<SalesStats />
+			<SalesStats projectTag={projectTag} />
 			<SalesChart mode="daily" />
 			<BestStats />
 		</div>

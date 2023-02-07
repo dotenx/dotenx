@@ -1,5 +1,5 @@
 import { ActionIcon, Button } from "@mantine/core"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "react-query"
 import { useState } from "react"
 import { IoMail, IoReload } from "react-icons/io5"
 import { getMembersSummary, QueryKey } from "../api"

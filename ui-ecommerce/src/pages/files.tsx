@@ -1,7 +1,7 @@
 import { Button, Checkbox, MultiSelect } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useEffect, useState } from "react"
 import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy } from "react-icons/io5"

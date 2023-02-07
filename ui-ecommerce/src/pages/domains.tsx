@@ -1,7 +1,7 @@
 import { Button, Loader, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useState } from "react"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { Navigate } from "react-router-dom"
