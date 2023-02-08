@@ -102,10 +102,13 @@ const column = () => {
 	})
 	name.classes = ['name']
 
-	const itemLink = link().populate([name]).css({
-		textDecoration: 'none',
-		color: 'inherit',
-	})
+	const itemLink = link()
+		.populate([name])
+		.css({
+			textDecoration: 'none',
+			color: 'inherit',
+		})
+		.class('item-link')
 
 	const price = txt('Price').tag(tagIds.price).css({
 		fontWeight: '500',

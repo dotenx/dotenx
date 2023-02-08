@@ -38,6 +38,10 @@ function renderProducts(products) {
 		name.removeAttribute('x-html')
 		name.textContent = product.title
 
+		const itemLink = clone.querySelector('.item-link')
+		itemLink.removeAttribute('href')
+		itemLink.setAttribute('href', `/product?id=${product.id}`)
+
 		const price = clone.querySelector('.price')
 		price.removeAttribute('x-html')
 		price.textContent = `$${product.price}`
