@@ -7,7 +7,6 @@ import { IoCodeDownload, IoTrash } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { CellProps } from "react-table"
-import { TypeOf } from "zod"
 import {
 	API_URL,
 	Automation,
@@ -486,19 +485,9 @@ function InteractionEndpoint({
 		() => getInteractionEndpointFields({ interactionName: automationName, projectName }),
 		{ enabled: !!automationName }
 	)
-	// const pairs = mapFieldsToPairs(query.data?.data)
-	// const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
-	const objectKey = _.toPairs(query.data?.data)[0]?.[0]
-	const objectValues =
-		!_.isEmpty(query.data?.data) &&
-		Object?.assign(
-			{},
-			..._.toPairs(query.data?.data)[0]?.[1].map((d) => {
-				return { [d.key]: d.type === "text" ? "" : {} }
-			})
-		)
-	const body = { [objectKey]: objectValues }
+	const pairs = mapFieldsToPairs(query.data?.data)
+	const body = pairs?.length === 0 ? {} : { interactionRunTime: _.fromPairs(pairs) }
 
 	if (query.isLoading) return <Loader />
 
@@ -523,9 +512,9 @@ function InteractionEndpoint({
 	)
 }
 
-// const mapFieldsToPairs = (fields?: EndpointFields) => {
-// 	return _.toPairs(fields).map(([nodeName, fields]) => [
-// 		nodeName,
-// 		_.fromPairs(fields.map((field) => [field, field])),
-// 	])
-// }
+const mapFieldsToPairs = (fields?: EndpointFields) => {
+	return _.toPairs(fields).map(([nodeName, fields]) => [
+		nodeName,
+		_.fromPairs(fields.map((field) => [field.key, field.type === "text" ? "" : {}])),
+	])
+}

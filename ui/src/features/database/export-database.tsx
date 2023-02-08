@@ -55,7 +55,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 	const smallScreen = window.innerHeight < 750
 
 	return (
-		<div ref={ref} className="flex  items-center">
+		<div ref={ref} className="relative flex !text-xs items-center">
 			<Button.Group>
 				{showDownload ? (
 					<Button
@@ -96,7 +96,7 @@ export default function ExportDatabase({ projectName }: { projectName: string })
 				</Tooltip>
 			</Button.Group>
 			{openOptions && (
-				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[275px] top-[185px] py-3  rounded-sm  shadow-md">
+				<div className="cursor-pointer p-1 absolute z-10 bg-white right-[0px] top-[42px] py-3  rounded-[10px]  shadow-md">
 					<div className="mb-2 text-sm px-1">Select file format</div>
 					{["dump", "csv"].map((o, index) => (
 						<div
