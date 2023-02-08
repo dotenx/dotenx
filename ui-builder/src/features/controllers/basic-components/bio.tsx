@@ -2,8 +2,8 @@ import produce from 'immer'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
+import { TextStyler } from '../../simple/stylers/text-styler'
 import { Expression } from '../../states/expression'
-import { TextElementInput } from '../../ui/text-element-input'
 import ProfessionalSocials from './professional-socials'
 
 const createLayout = (name: string, description: string, align: 'left' | 'center') =>
@@ -72,8 +72,8 @@ function Options({ set, root }: OptionsProps): JSX.Element {
 	const socialsRoot = root.children[2] as BoxElement
 	return (
 		<>
-			<TextElementInput label="Name" element={nameText} />
-			<TextElementInput label="Description" element={descriptionText} />
+			<TextStyler label="Name" element={nameText} />
+			<TextStyler label="Description" element={descriptionText} />
 			{ProfessionalSocials.getOptions({ set, root: socialsRoot })}
 		</>
 	)

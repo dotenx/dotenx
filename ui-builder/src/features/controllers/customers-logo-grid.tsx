@@ -6,9 +6,9 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { BoxElementInput } from '../ui/box-element-input'
-import { ImageElementInput } from '../ui/image-element-input'
 import { Controller, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -27,7 +27,7 @@ export class CustomersLogoGrid extends Controller {
 
 function CustomersLogoGridOptions() {
 	const component = useSelectedElement()!
-	const grid = component.findByTagId<BoxElement>(tagIds.grid)!
+	const grid = component.find<BoxElement>(tagIds.grid)!
 
 	const addGridItem = () =>
 		createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png')
@@ -35,10 +35,10 @@ function CustomersLogoGridOptions() {
 	return (
 		<div className="space-y-6">
 			<ComponentName name="Customers logo grid" />
-			<BoxElementInput label="Background color" element={component} />
+			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
-				renderItemOptions={(item) => <ImageElementInput element={item as ImageElement} />}
+				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={addGridItem}
 			/>
 		</div>

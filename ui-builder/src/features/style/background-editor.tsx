@@ -10,7 +10,13 @@ const backgroundClippings = [
 	{ label: 'Text', value: 'text' },
 ]
 
-export function BackgroundsEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+export function BackgroundsEditor({
+	simple,
+	element,
+}: {
+	simple?: boolean
+	element?: Element | Element[]
+}) {
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (

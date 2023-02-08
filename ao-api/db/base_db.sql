@@ -12,7 +12,7 @@ CREATE DOMAIN url             AS VARCHAR;
 CREATE DOMAIN email           AS VARCHAR;
 CREATE DOMAIN just_time       AS TIME;
 CREATE DOMAIN just_date       AS DATE;
-CREATE DOMAIN date_time       AS DATE;
+CREATE DOMAIN date_time       AS TIMESTAMP;
 CREATE DOMAIN num             AS int;
 CREATE DOMAIN short_text      AS VARCHAR;
 CREATE DOMAIN long_text       AS TEXT;

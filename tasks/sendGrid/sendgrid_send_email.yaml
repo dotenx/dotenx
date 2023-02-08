@@ -1,0 +1,36 @@
+service: sendGrid
+type: SendGrid send email
+image: hojjat12/sendgrid-send-email:lambda7
+integrations: [sendGrid]
+fields:
+    - key: sender
+      type: text
+      description: The 'From' email address used to deliver the message. This address should be a verified sender in your Twilio SendGrid account.
+      display_name: From
+
+    - key: target
+      type: text
+      description: The intended recipient(s) email address. (emails addresses can be separated by ',')
+      display_name: To
+
+    - key: subject
+      type: text
+      description: The subject of your email.
+      display_name: Subject
+
+    - key: text_content
+      type: text
+      description: A plain-text body of the email. (This or the HTML content is required.)
+      display_name: Text content
+
+    - key: html_content
+      type: text
+      description: HTML body of the email. (At least one of the text or HTML content must be provided.)
+      display_name: HTML content
+
+outputs:
+
+author: Hojjat-1
+icon: https://sendgrid.com/wp-content/themes/sgdotcom/pages/resource/brand/2016/SendGrid-Logomark.png
+node_color: 1A82e2
+description: Send email to one or more recipients using SendGrid
