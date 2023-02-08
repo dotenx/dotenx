@@ -20,7 +20,40 @@ const theme = {
 	},
 }
 
-const tags = {}
+const tags = {
+	navbar: {
+		text: 'text',
+		signUp: 'signUp',
+		signIn: 'signIn',
+		links: 'links',
+	},
+	hero: {
+		title: 'title',
+		subtitle: 'subtitle',
+		button: 'button',
+		image: 'image',
+	},
+	collections: {
+		list: 'list',
+		item: {
+			title: 'title',
+		},
+	},
+	featuredProduct: {
+		title: 'title',
+		image: 'image',
+		price: 'price',
+		button: 'button',
+	},
+	productList: {
+		list: 'list',
+		item: {
+			image: 'image',
+			title: 'title',
+			price: 'price',
+		},
+	},
+}
 
 // ----------------------------------------------
 
@@ -29,35 +62,43 @@ const navbar = () => box([auth(), links()])
 const auth = () =>
 	box([
 		container([
-			box(),
-			txt('Free international shipping on orders over $99'),
-			flex([txt('SIGN UP'), txt('SIGN IN')]).css({
+			box().cssTablet({
+				display: 'none',
+			}),
+			txt('Free international shipping on orders over $99').tag(tags.navbar.text),
+			flex([
+				btn('SIGN UP').tag(tags.navbar.signUp),
+				btn('SIGN IN').tag(tags.navbar.signUp),
+			]).css({
 				gap: '50px',
+				flexWrap: 'wrap',
 			}),
 		]).css({
 			padding: '0',
 			display: 'flex',
 			justifyContent: 'space-between',
+			flexWrap: 'wrap',
 			alignItems: 'center',
 		}),
 	]).css({
 		backgroundColor: theme.colors.primary,
 		color: theme.colors.white,
-		padding: '18px 0',
+		padding: '18px 10px',
 		fontSize: '20px',
 		fontWeight: '500',
 	})
 
 const links = () =>
 	box([
-		container([txt('MEN'), txt('WOMEN'), txt('SALE'), icn('basket-shopping').size('36px')]).css(
-			{
+		container([txt('MEN'), txt('WOMEN'), txt('SALE'), icn('basket-shopping').size('36px')])
+			.tag(tags.navbar.links)
+			.css({
 				display: 'flex',
+				flexWrap: 'wrap',
 				justifyContent: 'end',
 				alignItems: 'center',
 				gap: '80px',
-			}
-		),
+			}),
 	]).css({
 		backgroundColor: theme.colors.gray,
 		color: theme.colors.primary,
@@ -71,22 +112,46 @@ const hero = () =>
 			grid(2)
 				.populate([
 					box([
-						txt('Minimal Men Style').css({
-							fontSize: '64px',
-						}),
+						txt('Minimal Men Style')
+							.tag(tags.hero.title)
+							.css({
+								fontSize: '64px',
+							})
+							.cssTablet({
+								fontSize: '48px',
+							})
+							.cssMobile({
+								fontSize: '32px',
+							}),
 						txt(
 							'Lorem ipsum dolor sit amet, consectet adipisicing elit., reprehenderit sed aliquid quaerat.'
-						).css({
-							fontSize: '36px',
-							color: theme.colors.gray2,
-						}),
-						btn('SHOP NOW').css({
-							fontWeight: '500',
-							fontSize: '32px',
-							color: theme.colors.white,
-							backgroundColor: theme.colors.primary,
-							padding: '20px 52px',
-						}),
+						)
+							.tag(tags.hero.subtitle)
+							.css({
+								fontSize: '36px',
+								color: theme.colors.gray2,
+							})
+							.cssTablet({
+								fontSize: '24px',
+							})
+							.cssMobile({
+								fontSize: '18px',
+							}),
+						btn('SHOP NOW')
+							.tag(tags.hero.button)
+							.css({
+								fontWeight: '500',
+								fontSize: '32px',
+								color: theme.colors.white,
+								backgroundColor: theme.colors.primary,
+								padding: '20px 52px',
+							})
+							.cssTablet({
+								fontSize: '24px',
+							})
+							.cssMobile({
+								fontSize: '18px',
+							}),
 					]).css({
 						display: 'flex',
 						flexDirection: 'column',
@@ -95,12 +160,23 @@ const hero = () =>
 						gap: '58px',
 						textAlign: 'center',
 					}),
-					img().css({
-						height: '856px',
-					}),
+					img()
+						.tag(tags.hero.image)
+						.css({
+							height: '856px',
+						})
+						.cssTablet({
+							height: '600px',
+						})
+						.cssMobile({
+							height: '400px',
+						}),
 				])
 				.css({
 					justifyItems: 'center',
+				})
+				.cssTablet({
+					gridTemplateColumns: gridCols(1),
 				}),
 		]),
 	]).css({
@@ -127,23 +203,32 @@ const collections = () =>
 					color: theme.colors.gray2,
 				}),
 			])
+			.tag(tags.collections.list)
 			.css({
 				gap: '50px',
 				padding: '50px 0',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(2),
+			})
+			.cssMobile({
+				gridTemplateColumns: gridCols(1),
 			}),
 	])
 
 const collection = ({ title, image, color }: { title: string; image: string; color: string }) =>
 	box([
-		txt(title).css({
-			fontSize: '40px',
-			fontWeight: '500',
-			color: theme.colors.white,
-			padding: '36px 0 18px 0',
-			background: `linear-gradient(180deg, ${color}00 0%, ${color}AA 100%)`,
-			width: '100%',
-			textAlign: 'center',
-		}),
+		txt(title)
+			.tag(tags.collections.item.title)
+			.css({
+				fontSize: '40px',
+				fontWeight: '500',
+				color: theme.colors.white,
+				padding: '36px 0 18px 0',
+				background: `linear-gradient(180deg, ${color}00 0%, ${color}AA 100%)`,
+				width: '100%',
+				textAlign: 'center',
+			}),
 	]).css({
 		backgroundImage: `url(${image})`,
 		minHeight: '270px',
@@ -159,19 +244,19 @@ const featuredProduct = () =>
 		container([
 			grid(2)
 				.populate([
-					img().css({
+					img().tag(tags.featuredProduct.image).css({
 						height: '410px',
 						backgroundColor: theme.colors.gray,
 						boxShadow: theme.shadows.normal,
 						width: '100%',
 					}),
 					box([
-						txt('FLORAL JACKQUARD PULLOVER').css({
+						txt('FLORAL JACKQUARD PULLOVER').tag(tags.featuredProduct.title).css({
 							fontWeight: '700',
 							fontSize: '30px',
 							color: theme.colors.white,
 						}),
-						txt('$50.00').css({
+						txt('$50.00').tag(tags.featuredProduct.price).css({
 							marginTop: '32px',
 							fontWeight: '700',
 							fontSize: '30px',
@@ -179,10 +264,12 @@ const featuredProduct = () =>
 						}),
 						box([
 							icn('basket-shopping').size('40px'),
-							txt('ADD TO CART').css({
-								fontWeight: '500',
-								fontSize: '32px',
-							}),
+							btn('ADD TO CART')
+								.css({
+									fontWeight: '500',
+									fontSize: '32px',
+								})
+								.tag(tags.featuredProduct.button),
 						]).css({
 							marginTop: '32px',
 							color: theme.colors.primary,
@@ -197,6 +284,9 @@ const featuredProduct = () =>
 					gridTemplateColumns: '1fr 2fr',
 					alignItems: 'center',
 					gap: '102px',
+				})
+				.cssTablet({
+					gridTemplateColumns: gridCols(1),
 				}),
 		]),
 	]).css({
@@ -233,6 +323,7 @@ const productList = () =>
 						})
 					)
 				)
+				.tag(tags.productList.list)
 				.css({
 					gap: '66px 46px',
 					marginTop: '50px',
@@ -298,10 +389,10 @@ const productItem = ({ title, price, image }: { title: string; price: string; im
 			border: `1px solid ${theme.colors.gray5}`,
 		}),
 		box([
-			txt(title).css({
+			txt(title).tag(tags.featuredProduct.title).css({
 				fontWeight: '300',
 			}),
-			txt(price).css({
+			txt(price).tag(tags.featuredProduct.price).css({
 				marginTop: '6px',
 				fontWeight: '500',
 			}),
@@ -329,4 +420,5 @@ export const theme3 = {
 	collections,
 	featuredProduct,
 	productList,
+	tags,
 }
