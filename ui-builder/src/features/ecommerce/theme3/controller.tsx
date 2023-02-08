@@ -1,10 +1,15 @@
+import collectionsImg from '../../../assets/themes/theme3/collections.png'
+import featuredProductImg from '../../../assets/themes/theme3/featured-product.png'
+import heroImg from '../../../assets/themes/theme3/hero.png'
+import navbarImg from '../../../assets/themes/theme3/navbar.png'
+import productListImg from '../../../assets/themes/theme3/product-list.png'
 import { Controller, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { theme3 } from './theme'
 
 class Navbar extends Controller {
 	name = 'Theme 3 Navbar'
-	image = ''
+	image = navbarImg
 	defaultData = theme3.navbar()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		return <ControllerWrapper name={this.name}></ControllerWrapper>
@@ -13,7 +18,7 @@ class Navbar extends Controller {
 
 class Hero extends Controller {
 	name = 'Theme 3 Hero'
-	image = ''
+	image = heroImg
 	defaultData = theme3.hero()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		return <ControllerWrapper name={this.name}></ControllerWrapper>
@@ -22,7 +27,7 @@ class Hero extends Controller {
 
 class Collections extends Controller {
 	name = 'Theme 3 Collections'
-	image = ''
+	image = collectionsImg
 	defaultData = theme3.collections()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		return <ControllerWrapper name={this.name}></ControllerWrapper>
@@ -31,7 +36,7 @@ class Collections extends Controller {
 
 class FeaturedProduct extends Controller {
 	name = 'Theme 3 Featured Product'
-	image = ''
+	image = featuredProductImg
 	defaultData = theme3.featuredProduct()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		return <ControllerWrapper name={this.name}></ControllerWrapper>
@@ -40,7 +45,7 @@ class FeaturedProduct extends Controller {
 
 class ProductList extends Controller {
 	name = 'Theme 3 Product List'
-	image = ''
+	image = productListImg
 	defaultData = theme3.productList()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		return <ControllerWrapper name={this.name}></ControllerWrapper>
