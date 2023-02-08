@@ -1,16 +1,18 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/components/about-left.png'
 import { Controller } from '../../controllers/controller'
-import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
+import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { box, btn, img, link, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
+import { ButtonElement } from '../../elements/extensions/button'
 import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
 import productsScript from '../../scripts/products.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BoxStyler } from '../../simple/stylers/box-styler'
+import { ButtonStyler } from '../../simple/stylers/button-styler'
 import { ColumnsStyler } from '../../simple/stylers/columns-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
@@ -30,25 +32,27 @@ export class ProductList extends Controller {
 
 function ProductListOptions() {
 	const root = useSelectedElement<BoxElement>()!
-	const title = root.find<TextElement>(tagIds.title)!
-	const grid = root.find<ColumnsElement>(tagIds.grid)!
-	const columns = root.findAll<BoxElement>(tagIds.column)!
-	const names = root.findAll<TextElement>(tagIds.name)!
-	const prices = root.findAll<TextElement>(tagIds.price)!
+	const title = root.find<TextElement>(tags.title)!
+	const grid = root.find<ColumnsElement>(tags.grid)!
+	const columns = root.findAll<BoxElement>(tags.column)!
+	const names = root.findAll<TextElement>(tags.name)!
+	const prices = root.findAll<TextElement>(tags.price)!
+	const showMore = root.find<ButtonElement>(tags.showMore)!
 
 	return (
-		<OptionsWrapper>
+		<ControllerWrapper name="Product list">
 			<TextStyler label="Title" element={title} />
 			<ColumnsStyler element={grid} />
 			<BoxStyler label="Wrapper" element={root} />
 			<BoxStyler label="Columns" element={columns} />
 			<TextStyler label="Names" element={names} noText />
 			<TextStyler label="Prices" element={prices} noText />
-		</OptionsWrapper>
+			<ButtonStyler label="Show more" element={showMore} />
+		</ControllerWrapper>
 	)
 }
 
-const tagIds = {
+const tags = {
 	title: 'title',
 	grid: 'grid',
 	column: 'column',
@@ -59,8 +63,8 @@ const tagIds = {
 }
 
 function component() {
-	const title = shared.title().tag(tagIds.title).txt('Products')
-	const grid = shared.grid().tag(tagIds.grid).populate(_.range(1).map(column)).class('list')
+	const title = shared.title().tag(tags.title).txt('Products')
+	const grid = shared.grid().tag(tags.grid).populate(_.range(1).map(column)).class('list')
 	const container = shared.container().populate([title, grid, showMore()])
 	const root = shared.paper().populate([container])
 	return root
@@ -69,7 +73,7 @@ function component() {
 const showMore = () =>
 	box([
 		btn('Show more')
-			.tag(tagIds.showMore)
+			.tag(tags.showMore)
 			.class('show-more')
 			.css({
 				backgroundColor: '#f5f5f5',
@@ -90,14 +94,14 @@ const showMore = () =>
 	})
 
 const column = () => {
-	const image = img().tag(tagIds.image).css({
+	const image = img().tag(tags.image).css({
 		flexGrow: '1',
 		backgroundColor: '#f5f5f5',
 		height: '300px',
 	})
 	image.classes = ['image']
 
-	const name = txt('Name').tag(tagIds.name).css({
+	const name = txt('Name').tag(tags.name).css({
 		fontWeight: '500',
 	})
 	name.classes = ['name']
@@ -110,7 +114,7 @@ const column = () => {
 		})
 		.class('item-link')
 
-	const price = txt('Price').tag(tagIds.price).css({
+	const price = txt('Price').tag(tags.price).css({
 		fontWeight: '500',
 	})
 	price.classes = ['price']
@@ -121,7 +125,7 @@ const column = () => {
 		alignItems: 'center',
 	})
 
-	const column = box().tag(tagIds.column).populate([image, namePriceWrapper]).css({
+	const column = box().tag(tags.column).populate([image, namePriceWrapper]).css({
 		paddingTop: '10px',
 		paddingRight: '10px',
 		paddingBottom: '10px',
