@@ -194,8 +194,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// Routes
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
 
-	// this route used by event bridge scheduler for triggering pipelines
+	// this route used by event bridge scheduler for triggering pipelines (all type of trigger except 'Schedule')
 	r.POST("/pipeline/check/trigger", TriggerController.HandleEventBridgeScheduler())
+	// this route used by event bridge scheduler for triggering pipelines that have one or more trigger with 'Schedule' type
+	r.POST("/pipeline/check/trigger/scheduled", TriggerController.HandleScheduledTriggers())
 
 	// user management router (without any authentication)
 	r.POST("/user/management/project/:tag/register", userManagementController.Register())
@@ -443,7 +445,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
 
 	// go TriggerService.StartChecking(IntegrationStore)
-	go TriggerService.StartScheduller()
+	// go TriggerService.StartScheduller()
 	return r
 }
 
