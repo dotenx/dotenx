@@ -1,33 +1,36 @@
 /* eslint-disable no-undef */
-const id = '{{id}}'
-const root = document.getElementById(id)
-const cartItems = root.querySelector('.cart-items')
-const cartItem = document.querySelector('.cart-item')
 
-const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
-const items = Object.entries(cart)
+;(async () => {
+	const id = '{{id}}'
+	const root = document.getElementById(id)
+	const cartItems = root.querySelector('.cart-items')
+	const cartItem = document.querySelector('.cart-item')
 
-items.forEach(([id, count]) => {
-	const clone = cartItem.content.cloneNode(true)
-	const name = clone.querySelector('.name')
-	const quantity = clone.querySelector('.quantity')
-	const price = clone.querySelector('.price')
-	const removeBtn = clone.querySelector('.remove-btn')
+	const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
+	const items = Object.entries(cart)
 
-	name.removeAttribute('x-html')
-	name.textContent = id
+	items.forEach(([id, count]) => {
+		const clone = cartItem.content.cloneNode(true)
+		const name = clone.querySelector('.name')
+		const quantity = clone.querySelector('.quantity')
+		const price = clone.querySelector('.price')
+		const removeBtn = clone.querySelector('.remove-btn')
 
-	quantity.removeAttribute('x-html')
-	quantity.textContent = count
+		name.removeAttribute('x-html')
+		name.textContent = id
 
-	price.removeAttribute('x-html')
-	price.textContent = `$${count * 100}`
+		quantity.removeAttribute('x-html')
+		quantity.textContent = count
 
-	removeBtn.addEventListener('click', () => {
-		delete cart[id]
-		localStorage.setItem('cart', JSON.stringify(cart))
-		location.reload()
+		price.removeAttribute('x-html')
+		price.textContent = `$${count * 100}`
+
+		removeBtn.addEventListener('click', () => {
+			delete cart[id]
+			localStorage.setItem('cart', JSON.stringify(cart))
+			location.reload()
+		})
+
+		cartItems.appendChild(clone)
 	})
-
-	cartItems.appendChild(clone)
-})
+})()
