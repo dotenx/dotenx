@@ -82,6 +82,7 @@ export abstract class Element {
 				if (found) return found as T
 			}
 		}
+		console.info(`Element with tagId ${tagId} not found`)
 	}
 
 	_findByTagIdRecursive(tagId: string): Element | undefined {

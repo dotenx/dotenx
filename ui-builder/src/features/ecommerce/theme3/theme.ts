@@ -48,7 +48,6 @@ const tags = {
 	productList: {
 		list: 'list',
 		item: {
-			image: 'image',
 			title: 'title',
 			price: 'price',
 		},
@@ -68,7 +67,7 @@ const auth = () =>
 			txt('Free international shipping on orders over $99').tag(tags.navbar.text),
 			flex([
 				btn('SIGN UP').tag(tags.navbar.signUp),
-				btn('SIGN IN').tag(tags.navbar.signUp),
+				btn('SIGN IN').tag(tags.navbar.signIn),
 			]).css({
 				gap: '50px',
 				flexWrap: 'wrap',
@@ -90,15 +89,21 @@ const auth = () =>
 
 const links = () =>
 	box([
-		container([txt('MEN'), txt('WOMEN'), txt('SALE'), icn('basket-shopping').size('36px')])
-			.tag(tags.navbar.links)
-			.css({
-				display: 'flex',
-				flexWrap: 'wrap',
-				justifyContent: 'end',
-				alignItems: 'center',
-				gap: '80px',
-			}),
+		container([
+			flex([txt('MEN'), txt('WOMEN'), txt('SALE')])
+				.tag(tags.navbar.links)
+				.css({
+					flexWrap: 'wrap',
+					gap: '80px',
+				}),
+			icn('basket-shopping').size('36px'),
+		]).css({
+			display: 'flex',
+			flexWrap: 'wrap',
+			justifyContent: 'end',
+			alignItems: 'center',
+			gap: '80px',
+		}),
 	]).css({
 		backgroundColor: theme.colors.gray,
 		color: theme.colors.primary,
@@ -420,5 +425,7 @@ export const theme3 = {
 	collections,
 	featuredProduct,
 	productList,
+	collection,
+	productItem,
 	tags,
 }
