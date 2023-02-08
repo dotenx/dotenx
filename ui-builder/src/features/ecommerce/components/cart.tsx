@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import imageUrl from '../../../assets/components/about-left.png'
+import imageUrl from '../../../assets/themes/ecommerce/cart.png'
 import { Controller, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { btn, flex, template, txt } from '../../elements/constructor'

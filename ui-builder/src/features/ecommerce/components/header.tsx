@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import imageUrl from '../../../assets/components/about-left.png'
+import imageUrl from '../../../assets/themes/ecommerce/header.png'
 import { Controller } from '../../controllers/controller'
 import { ComponentName } from '../../controllers/helpers'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
