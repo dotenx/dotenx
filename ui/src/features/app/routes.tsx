@@ -103,11 +103,11 @@ const routes: Routes = [
 		element: <GitRedirectPage />,
 	},
 	{
-		path: "/builder/projects/:projectName/interactions/:name/executions/:id",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions/:id",
 		element: <ExecutionPage kind="interaction" />,
 	},
 	{
-		path: "/builder/projects/:projectName/interactions/:name/executions",
+		path: "/builder/projects/:projectName/workflows/interaction/:name/executions",
 		element: <HistoryPage kind="interaction" />,
 	},
 	{
@@ -168,28 +168,34 @@ const routes: Routes = [
 		element: <TriggersPage />,
 	},
 	{
-		path: "/automations/new",
+		path: "/automations/automation/new",
 		element: <AutomationPage />,
+		withoutSidebar: true,
 	},
 	{
 		path: "/automations/:name/executions/:id",
 		element: <ExecutionPage />,
+		withoutSidebar: true,
 	},
 	{
 		path: "/automations/:name/executions",
 		element: <HistoryPage />,
+		withoutSidebar: true,
 	},
 	{
-		path: "/automations/:name",
+		path: "/automations/automation/:name",
 		element: <AutomationPage />,
+		withoutSidebar: true,
 	},
 	{
 		path: "/automations",
 		element: <AutomationsPage />,
+		// withoutSidebar: true,
 	},
 	{
 		path: "/automations/yaml/import",
 		element: <ImportYamlPage />,
+		withoutSidebar: true,
 	},
 	{
 		path: "/",
