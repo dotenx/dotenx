@@ -1,5 +1,5 @@
 import { ActionIcon } from "@mantine/core"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -7,16 +7,17 @@ import {
 	Legend,
 	LinearScale,
 	Title,
-	Tooltip
+	Tooltip,
 } from "chart.js"
 import { getDaysInMonth } from "date-fns"
 import _ from "lodash"
 import { useState } from "react"
 import { Bar } from "react-chartjs-2"
 import { IoReload } from "react-icons/io5"
-import { getLast24HoursSales, QueryKey } from "../api"
+import { getColumns, getTableRecords, QueryKey, runCustomQuery } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
+import { useParams } from "react-router-dom"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -41,18 +42,67 @@ export function SalesPage() {
 }
 
 function AllTab() {
-	const queryClient = useQueryClient()
 	const [currentPage, setCurrentPage] = useState(1)
+	const { projectName = "" } = useParams()
+
+	const columnsQuery = useQuery([QueryKey.GetColumns, "orders"], () =>
+		getColumns(projectName, "orders")
+	)
+
+	const columns = columnsQuery.data?.data.columns ?? []
+	const productsHeaders = [
+		{ Header: "products__description", accessor: "products__description" },
+		{ Header: "products__name", accessor: "products__name" },
+		{ Header: "products__price", accessor: "products__price" },
+		{ Header: "products__status", accessor: "products__status" },
+		{ Header: "products__type", accessor: "products__type" },
+	]
+
+	const ordersHeaders = columns
+		.map((column) => ({
+			Header: column.name,
+			accessor: column.name,
+		}))
+		.filter((d) => d.accessor !== "creator_id")
+	const headers = ordersHeaders.concat(productsHeaders)
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
-	const salesQuery = useQuery(
-		[QueryKey.GetLastDaySales, projectTag, currentPage],
-		() => getLast24HoursSales(projectTag, currentPage),
+	const recordsQuery = useQuery(
+		["get-sales", projectTag, currentPage],
+		() =>
+			getTableRecords(projectTag, "orders", currentPage, {
+				columns: [
+					"id",
+					"creator_id",
+					"__products",
+					"quantity",
+					"address",
+					"email",
+					"payment_status",
+					"updated_at",
+					"products__name",
+					"products__type",
+					"products__description",
+					"products__price",
+					"products__status",
+				],
+			}),
 		{ enabled: !!projectTag }
 	)
-	const sales = salesQuery.data?.data?.rows ?? []
-	const nPages = Math.ceil((salesQuery.data?.data?.totalRows ?? 0) / 10)
-	const refetchSales = () => queryClient.invalidateQueries([QueryKey.GetLastDaySales])
+	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+		_.fromPairs(
+			_.toPairs(record).map(([key, value]) =>
+				typeof value === "boolean"
+					? [key, value ? "Yes" : "No"]
+					: _.isArray(value)
+					? [key, value.join(", ")]
+					: typeof value === "object"
+					? [key, JSON.stringify(value)]
+					: [key, value]
+			)
+		)
+	)
+	const nPages = Math.ceil((recordsQuery?.data?.data?.totalRows ?? 0) / 10)
 
 	return (
 		<div>
@@ -62,27 +112,14 @@ function AllTab() {
 				currentPage={currentPage}
 				nPages={nPages}
 				setCurrentPage={setCurrentPage}
-				loading={projectQuery.isLoading || salesQuery.isLoading}
+				loading={projectQuery.isLoading || recordsQuery.isLoading}
 				emptyText="No sales recorded yet"
 				actionBar={
-					<ActionIcon onClick={refetchSales}>
+					<ActionIcon onClick={() => recordsQuery.refetch()}>
 						<IoReload />
 					</ActionIcon>
 				}
-				columns={[
-					{
-						Header: "Time",
-						accessor: "time",
-					},
-					{
-						Header: "Amount",
-						accessor: "total",
-					},
-					{
-						Header: "Customer",
-						accessor: "email",
-					},
-				]}
+				columns={headers}
 				data={sales}
 			/>
 		</div>
@@ -90,6 +127,25 @@ function AllTab() {
 }
 
 function CurrentMonthSalesChart() {
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
+	const currentMonthSalesQuery = useQuery(
+		["get-total-revenue", projectTag],
+		() =>
+			runCustomQuery(
+				projectTag,
+				`select sum(paid_amount) as sale_amount, date(updated_at) 
+					from orders 
+					where updated_at >= '${lastMonth}' 
+					group by date(updated_at);`
+			),
+		{ enabled: !!projectTag }
+	)
+
+	const currentMonthSales = currentMonthSalesQuery?.data?.data.rows
+	if (currentMonthSalesQuery.isLoading || !currentMonthSales) return <></>
+
 	const options = {
 		responsive: true,
 		plugins: {
@@ -101,6 +157,7 @@ function CurrentMonthSalesChart() {
 				text: "Current Month Sales Amount",
 			},
 		},
+
 		scales: {
 			x: {
 				grid: {
@@ -115,14 +172,17 @@ function CurrentMonthSalesChart() {
 		},
 	}
 
-	const labels = monthDays()
+	const labels = currentMonthSales?.map((s) => {
+		return s?.date?.substring(0, 10)
+	})
 
 	const data = {
 		labels,
 		datasets: [
 			{
-				label: "Daily Sales",
-				data: labels.map(() => Math.floor(Math.random() * 100)),
+				data: currentMonthSales?.map((s) => {
+					return s.sale_amount
+				}),
 				backgroundColor: "#8d99ae",
 			},
 		],
@@ -130,7 +190,6 @@ function CurrentMonthSalesChart() {
 
 	ChartJS.defaults.font.family = "Inter"
 	ChartJS.defaults.color = "#2b2d42"
-
 	return <Bar options={options} data={data} className="max-h-80" />
 }
 
@@ -140,8 +199,174 @@ export const monthDays = () => {
 }
 
 function ProductsTab() {
-	return <div></div>
+	const [currentPage, setCurrentPage] = useState(1)
+	const { projectName = "" } = useParams()
+
+	const columnsQuery = useQuery([QueryKey.GetColumns, "orders"], () =>
+		getColumns(projectName, "orders")
+	)
+
+	const columns = columnsQuery.data?.data.columns ?? []
+	const productsHeaders = [
+		{ Header: "products__description", accessor: "products__description" },
+		{ Header: "products__name", accessor: "products__name" },
+		{ Header: "products__price", accessor: "products__price" },
+		{ Header: "products__status", accessor: "products__status" },
+		{ Header: "products__type", accessor: "products__type" },
+	]
+
+	const ordersHeaders = columns
+		.map((column) => ({
+			Header: column.name,
+			accessor: column.name,
+		}))
+		.filter((d) => d.accessor !== "creator_id")
+	const headers = ordersHeaders.concat(productsHeaders)
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const recordsQuery = useQuery(
+		["get-porducts-sales", projectTag, currentPage],
+		() =>
+			getTableRecords(projectTag, "orders", currentPage, {
+				columns: [
+					"id",
+					"creator_id",
+					"__products",
+					"quantity",
+					"address",
+					"email",
+					"payment_status",
+					"updated_at",
+					"products__name",
+					"products__type",
+					"products__description",
+					"products__price",
+					"products__status",
+				],
+				filters: {
+					filterSet: [{ key: "products__type", operator: "!=", value: "membership" }],
+				},
+			}),
+		{ enabled: !!projectTag }
+	)
+	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+		_.fromPairs(
+			_.toPairs(record).map(([key, value]) =>
+				typeof value === "boolean"
+					? [key, value ? "Yes" : "No"]
+					: _.isArray(value)
+					? [key, value.join(", ")]
+					: typeof value === "object"
+					? [key, JSON.stringify(value)]
+					: [key, value]
+			)
+		)
+	)
+	const nPages = Math.ceil((recordsQuery?.data?.data?.totalRows ?? 0) / 10)
+
+	return (
+		<div>
+			<Table
+				withPagination
+				currentPage={currentPage}
+				nPages={nPages}
+				setCurrentPage={setCurrentPage}
+				loading={projectQuery.isLoading || recordsQuery.isLoading}
+				emptyText="No sales recorded yet"
+				actionBar={
+					<ActionIcon onClick={() => recordsQuery.refetch()}>
+						<IoReload />
+					</ActionIcon>
+				}
+				columns={headers}
+				data={sales}
+			/>
+		</div>
+	)
 }
 function MembershipsTab() {
-	return <div></div>
+	const [currentPage, setCurrentPage] = useState(1)
+	const { projectName = "" } = useParams()
+
+	const columnsQuery = useQuery([QueryKey.GetColumns, "orders"], () =>
+		getColumns(projectName, "orders")
+	)
+
+	const columns = columnsQuery.data?.data.columns ?? []
+	const productsHeaders = [
+		{ Header: "products__description", accessor: "products__description" },
+		{ Header: "products__name", accessor: "products__name" },
+		{ Header: "products__price", accessor: "products__price" },
+		{ Header: "products__status", accessor: "products__status" },
+		{ Header: "products__type", accessor: "products__type" },
+	]
+
+	const ordersHeaders = columns
+		.map((column) => ({
+			Header: column.name,
+			accessor: column.name,
+		}))
+		.filter((d) => d.accessor !== "creator_id")
+	const headers = ordersHeaders.concat(productsHeaders)
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const recordsQuery = useQuery(
+		["get-memberships-sales", projectTag, currentPage],
+		() =>
+			getTableRecords(projectTag, "orders", currentPage, {
+				columns: [
+					"id",
+					"creator_id",
+					"__products",
+					"quantity",
+					"address",
+					"email",
+					"payment_status",
+					"updated_at",
+					"products__name",
+					"products__type",
+					"products__description",
+					"products__price",
+					"products__status",
+				],
+				filters: {
+					filterSet: [{ key: "products__type", operator: "=", value: "membership" }],
+				},
+			}),
+		{ enabled: !!projectTag }
+	)
+	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+		_.fromPairs(
+			_.toPairs(record).map(([key, value]) =>
+				typeof value === "boolean"
+					? [key, value ? "Yes" : "No"]
+					: _.isArray(value)
+					? [key, value.join(", ")]
+					: typeof value === "object"
+					? [key, JSON.stringify(value)]
+					: [key, value]
+			)
+		)
+	)
+	const nPages = Math.ceil((recordsQuery?.data?.data?.totalRows ?? 0) / 10)
+
+	return (
+		<div>
+			<Table
+				withPagination
+				currentPage={currentPage}
+				nPages={nPages}
+				setCurrentPage={setCurrentPage}
+				loading={projectQuery.isLoading || recordsQuery.isLoading}
+				emptyText="No sales recorded yet"
+				actionBar={
+					<ActionIcon onClick={() => recordsQuery.refetch()}>
+						<IoReload />
+					</ActionIcon>
+				}
+				columns={headers}
+				data={sales}
+			/>
+		</div>
+	)
 }
