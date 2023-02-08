@@ -124,6 +124,12 @@ export abstract class Element {
 		return this
 	}
 
+	cssHover(css: CSSProperties) {
+		const merged = _.assign({}, this.style.desktop?.hover, css)
+		_.set(this.style, 'desktop.hover', merged)
+		return this
+	}
+
 	tag(tagId: string) {
 		this.tagId = tagId
 		return this
@@ -141,6 +147,11 @@ export abstract class Element {
 
 	unstyled() {
 		this.style = {}
+		return this
+	}
+
+	class(classes: string[] | string) {
+		this.classes = [classes].flat()
 		return this
 	}
 }
