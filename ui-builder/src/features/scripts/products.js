@@ -1,14 +1,32 @@
 /* eslint-disable no-undef */
 
-document.addEventListener('DOMContentLoaded', async () => {
-	const id = '{{id}}'
-	const list = document.getElementById(id)
-	const item = list.querySelector('.item')
+const id = '{{id}}'
+const root = document.getElementById(id)
+const list = root.querySelector('.list')
+const item = list.querySelector('.item')
+const showMore = root.querySelector('.show-more')
 
-	const response = await fetch('https://dummyjson.com/products')
+const limit = 9
+let skip = 0
+
+getProducts().then(renderProducts)
+
+showMore.addEventListener('click', async () => {
+	skip += limit
+	const products = await getProducts(skip)
+	renderProducts(products)
+})
+
+async function getProducts(skip = 0) {
+	const url = `https://dummyjson.com/products?skip=${skip}&limit=${limit}`
+
+	const response = await fetch(url)
 	const data = await response.json()
 	const products = data.products
+	return products
+}
 
+function renderProducts(products) {
 	products.forEach((product) => {
 		const clone = item.content.cloneNode(true)
 
@@ -22,8 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		const price = clone.querySelector('.price')
 		price.removeAttribute('x-html')
-		price.textContent = product.price
+		price.textContent = `$${product.price}`
 
 		list.appendChild(clone)
 	})
-})
+}
