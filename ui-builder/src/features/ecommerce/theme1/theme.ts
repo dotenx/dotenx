@@ -1,10 +1,10 @@
-import heroImg from '../../../assets/themes/sofa/hero.png'
-import infoImg from '../../../assets/themes/sofa/info-1.png'
-import logoImg1 from '../../../assets/themes/sofa/logo-1.png'
-import logoImg2 from '../../../assets/themes/sofa/logo-2.png'
-import logoImg3 from '../../../assets/themes/sofa/logo-3.png'
-import logoImg4 from '../../../assets/themes/sofa/logo-4.png'
-import logoImg5 from '../../../assets/themes/sofa/logo-5.png'
+import heroImg from '../../../assets/themes/theme1/hero.png'
+import infoImg from '../../../assets/themes/theme1/info-1.png'
+import logoImg1 from '../../../assets/themes/theme1/logo-1.png'
+import logoImg2 from '../../../assets/themes/theme1/logo-2.png'
+import logoImg3 from '../../../assets/themes/theme1/logo-3.png'
+import logoImg4 from '../../../assets/themes/theme1/logo-4.png'
+import logoImg5 from '../../../assets/themes/theme1/logo-5.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, btn, grid, icn, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -393,7 +393,7 @@ const outlineBtn = (text: string) =>
 		whiteSpace: 'nowrap',
 	})
 
-export const sofa = {
+export const theme1 = {
 	navbar,
 	hero,
 	logos,

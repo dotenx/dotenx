@@ -1,10 +1,10 @@
-import ctaImg from '../../../assets/themes/sofa/preview/cta.png'
-import featuresTextImg from '../../../assets/themes/sofa/preview/features-text.png'
-import featuresImg from '../../../assets/themes/sofa/preview/features.png'
-import heroImg from '../../../assets/themes/sofa/preview/hero.png'
-import infoImg from '../../../assets/themes/sofa/preview/info.png'
-import logosImg from '../../../assets/themes/sofa/preview/logos.png'
-import navbarImg from '../../../assets/themes/sofa/preview/navbar.png'
+import ctaImg from '../../../assets/themes/theme1/preview/cta.png'
+import featuresTextImg from '../../../assets/themes/theme1/preview/features-text.png'
+import featuresImg from '../../../assets/themes/theme1/preview/features.png'
+import heroImg from '../../../assets/themes/theme1/preview/hero.png'
+import infoImg from '../../../assets/themes/theme1/preview/info.png'
+import logosImg from '../../../assets/themes/theme1/preview/logos.png'
+import navbarImg from '../../../assets/themes/theme1/preview/navbar.png'
 import { Controller, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
@@ -21,18 +21,18 @@ import { ButtonStyler } from '../../simple/stylers/button-styler'
 import { IconStyler } from '../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
-import { sofa } from './theme'
+import { theme1 } from './theme'
 
 class Navbar extends Controller {
-	name = 'Sofa Navbar'
+	name = 'Theme 1 Navbar'
 	image = navbarImg
-	defaultData = sofa.navbar()
+	defaultData = theme1.navbar()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const links = wrapper.find<BoxElement>(sofa.tags.navbar.links)!
-		const button = wrapper.find<ButtonElement>(sofa.tags.navbar.button)!
+		const links = wrapper.find<BoxElement>(theme1.tags.navbar.links)!
+		const button = wrapper.find<ButtonElement>(theme1.tags.navbar.button)!
 
 		return (
-			<ControllerWrapper name="Sofa Navbar">
+			<ControllerWrapper name={this.name}>
 				<ButtonStyler label="Button" element={button} />
 				<DndTabs
 					containerElement={links}
@@ -47,15 +47,15 @@ class Navbar extends Controller {
 }
 
 class Hero extends Controller {
-	name = 'Sofa Hero'
+	name = 'Theme 1 Hero'
 	image = heroImg
-	defaultData = sofa.hero()
+	defaultData = theme1.hero()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const title = wrapper.find<TextElement>(sofa.tags.hero.title)!
-		const desc = wrapper.find<TextElement>(sofa.tags.hero.desc)!
-		const button = wrapper.find<ButtonElement>(sofa.tags.hero.button)!
-		const stats = wrapper.find<BoxElement>(sofa.tags.hero.stats)!
-		const img = wrapper.find<ImageElement>(sofa.tags.hero.img)!
+		const title = wrapper.find<TextElement>(theme1.tags.hero.title)!
+		const desc = wrapper.find<TextElement>(theme1.tags.hero.desc)!
+		const button = wrapper.find<ButtonElement>(theme1.tags.hero.button)!
+		const stats = wrapper.find<BoxElement>(theme1.tags.hero.stats)!
+		const img = wrapper.find<ImageElement>(theme1.tags.hero.img)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -65,7 +65,7 @@ class Hero extends Controller {
 				<ImageStyler element={img} />
 				<DndTabs
 					containerElement={stats}
-					insertElement={() => sofa.stat({ title: 'title', desc: 'description' })}
+					insertElement={() => theme1.stat({ title: 'title', desc: 'description' })}
 					renderItemOptions={(item) => <StatOptions item={item} />}
 				/>
 			</ControllerWrapper>
@@ -74,9 +74,9 @@ class Hero extends Controller {
 }
 
 function StatOptions({ item }: { item: Element }) {
-	const line = item.find<BoxElement>(sofa.tags.hero.stat.line)!
-	const title = item.find<TextElement>(sofa.tags.hero.stat.title)!
-	const desc = item.find<TextElement>(sofa.tags.hero.stat.desc)!
+	const line = item.find<BoxElement>(theme1.tags.hero.stat.line)!
+	const title = item.find<TextElement>(theme1.tags.hero.stat.title)!
+	const desc = item.find<TextElement>(theme1.tags.hero.stat.desc)!
 
 	return (
 		<OptionsWrapper>
@@ -88,11 +88,11 @@ function StatOptions({ item }: { item: Element }) {
 }
 
 class Logos extends Controller {
-	name = 'Sofa Logos'
+	name = 'Theme 1 Logos'
 	image = logosImg
-	defaultData = sofa.logos()
+	defaultData = theme1.logos()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const logos = wrapper.find<BoxElement>(sofa.tags.logos)!
+		const logos = wrapper.find<BoxElement>(theme1.tags.logos)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -107,12 +107,12 @@ class Logos extends Controller {
 }
 
 class FeaturesText extends Controller {
-	name = 'Sofa Features Text'
+	name = 'Theme 1 Features Text'
 	image = featuresTextImg
-	defaultData = sofa.featuresText()
+	defaultData = theme1.featuresText()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const title = wrapper.find<TextElement>(sofa.tags.featuresText.title)!
-		const desc = wrapper.find<TextElement>(sofa.tags.featuresText.desc)!
+		const title = wrapper.find<TextElement>(theme1.tags.featuresText.title)!
+		const desc = wrapper.find<TextElement>(theme1.tags.featuresText.desc)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -124,11 +124,11 @@ class FeaturesText extends Controller {
 }
 
 class Features extends Controller {
-	name = 'Sofa Features'
+	name = 'Theme 1 Features'
 	image = featuresImg
-	defaultData = sofa.features()
+	defaultData = theme1.features()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const features = wrapper.find<BoxElement>(sofa.tags.features.grid)!
+		const features = wrapper.find<BoxElement>(theme1.tags.features.grid)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -143,9 +143,9 @@ class Features extends Controller {
 }
 
 function FeatureOptions({ item }: { item: Element }) {
-	const icon = item.find<IconElement>(sofa.tags.features.icon)!
-	const title = item.find<TextElement>(sofa.tags.features.title)!
-	const desc = item.find<TextElement>(sofa.tags.features.desc)!
+	const icon = item.find<IconElement>(theme1.tags.features.icon)!
+	const title = item.find<TextElement>(theme1.tags.features.title)!
+	const desc = item.find<TextElement>(theme1.tags.features.desc)!
 
 	return (
 		<OptionsWrapper>
@@ -157,14 +157,14 @@ function FeatureOptions({ item }: { item: Element }) {
 }
 
 class Info extends Controller {
-	name = 'Sofa Info'
+	name = 'Theme 1 Info'
 	image = infoImg
-	defaultData = sofa.info()
+	defaultData = theme1.info()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const title = wrapper.find<TextElement>(sofa.tags.info.title)!
-		const desc = wrapper.find<TextElement>(sofa.tags.info.desc)!
-		const button = wrapper.find<ButtonElement>(sofa.tags.info.button)!
-		const img = wrapper.find<ImageElement>(sofa.tags.info.img)!
+		const title = wrapper.find<TextElement>(theme1.tags.info.title)!
+		const desc = wrapper.find<TextElement>(theme1.tags.info.desc)!
+		const button = wrapper.find<ButtonElement>(theme1.tags.info.button)!
+		const img = wrapper.find<ImageElement>(theme1.tags.info.img)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -178,11 +178,11 @@ class Info extends Controller {
 }
 
 class Cta extends Controller {
-	name = 'Sofa Cta'
+	name = 'Theme 1 Cta'
 	image = ctaImg
-	defaultData = sofa.cta()
+	defaultData = theme1.cta()
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
-		const button = wrapper.find<ButtonElement>(sofa.tags.cta.button)!
+		const button = wrapper.find<ButtonElement>(theme1.tags.cta.button)!
 
 		return (
 			<ControllerWrapper name={this.name}>
@@ -192,4 +192,4 @@ class Cta extends Controller {
 	}
 }
 
-export const sofaControllers = [Navbar, Hero, Logos, FeaturesText, Features, Info, Cta]
+export const theme1Controllers = [Navbar, Hero, Logos, FeaturesText, Features, Info, Cta]

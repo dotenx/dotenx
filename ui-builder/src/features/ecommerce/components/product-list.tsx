@@ -89,7 +89,7 @@ const showMore = () =>
 			}),
 	]).css({
 		display: 'flex',
-		justifyContent: 'center',
+		justifyContent: 'end',
 		marginTop: '20px',
 	})
 
@@ -98,6 +98,7 @@ const column = () => {
 		flexGrow: '1',
 		backgroundColor: '#f5f5f5',
 		height: '300px',
+		borderRadius: '5px',
 	})
 	image.classes = ['image']
 

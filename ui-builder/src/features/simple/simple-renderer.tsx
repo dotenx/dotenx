@@ -127,7 +127,7 @@ function ElementActions({ element }: { element: Element }) {
 		})
 
 	return (
-		<div>
+		<div onClick={(event) => event.stopPropagation()}>
 			<ActionButton
 				style={{ borderRadius: '4px 4px 0 0' }}
 				onClick={moveUp}

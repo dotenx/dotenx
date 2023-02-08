@@ -9,7 +9,9 @@
 	const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
 	const items = Object.entries(cart)
 
-	items.forEach(([id, count]) => {
+	items.forEach(async ([id, count]) => {
+		const product = await getProduct(id)
+
 		const clone = cartItem.content.cloneNode(true)
 		const name = clone.querySelector('.name')
 		const quantity = clone.querySelector('.quantity')
@@ -17,13 +19,13 @@
 		const removeBtn = clone.querySelector('.remove-btn')
 
 		name.removeAttribute('x-html')
-		name.textContent = id
+		name.textContent = product.title
 
 		quantity.removeAttribute('x-html')
-		quantity.textContent = count
+		quantity.textContent = `${count}x`
 
 		price.removeAttribute('x-html')
-		price.textContent = `$${count * 100}`
+		price.textContent = `$${count * product.price}`
 
 		removeBtn.addEventListener('click', () => {
 			delete cart[id]
@@ -33,4 +35,10 @@
 
 		cartItems.appendChild(clone)
 	})
+
+	async function getProduct(id) {
+		const response = await fetch(`https://dummyjson.com/products/${id}`)
+		const product = await response.json()
+		return product
+	}
 })()

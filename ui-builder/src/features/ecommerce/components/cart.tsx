@@ -65,7 +65,7 @@ const cartItems = () =>
 					txt('Quantity').class('quantity').tag(tags.quantity),
 					txt('Price').class('price').tag(tags.price),
 				]).css({
-					gap: '1rem',
+					gap: '2rem',
 				}),
 				btn('Remove')
 					.css({
@@ -76,11 +76,13 @@ const cartItems = () =>
 						border: 'none',
 						cursor: 'pointer',
 					})
+					.cssHover({
+						backgroundColor: '#e5e5e5',
+					})
 					.tag(tags.removeBtn)
 					.class('remove-btn'),
 			]).css({
 				gap: '1rem',
-				padding: '1rem 0',
 				alignItems: 'center',
 				justifyContent: 'space-between',
 			})

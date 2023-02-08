@@ -68,7 +68,7 @@ const component = () => {
 			height: '500px',
 			width: '100%',
 			backgroundColor: '#f5f5f5',
-			marginTop: '1rem',
+			marginTop: '30px',
 			borderRadius: '0.5rem',
 		})
 		.class('image')

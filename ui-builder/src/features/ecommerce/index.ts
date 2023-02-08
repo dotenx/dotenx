@@ -33,22 +33,23 @@ import { Cart } from './components/cart'
 import { Header } from './components/header'
 import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
-import { sofaControllers } from './sofa/controller'
+import { theme1Controllers } from './theme1/controller'
 import { theme2Controllers } from './theme2/controller'
 import { theme3Controllers } from './theme3/controller'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
-		title: 'Theme 3',
-		items: theme3Controllers,
+		title: 'Theme 1',
+		items: theme1Controllers,
 	},
 	{
 		title: 'Theme 2',
 		items: theme2Controllers,
 	},
+
 	{
-		title: 'Sofa',
-		items: sofaControllers,
+		title: 'Theme 3',
+		items: theme3Controllers,
 	},
 	{
 		title: 'E-commerce',
