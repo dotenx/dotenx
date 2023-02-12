@@ -11,6 +11,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+/*
+ This function renders the page with a preview url and if the request's body is not empty and `WithoutPublish` is true in the request's body
+  responds with a json containing the html, scripts and styles without publishing the page.
+*/
 func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -41,6 +45,27 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
+		}
+
+		// if request's body is not empty and `WithoutPublish` is true in the request's body respond with a json containing the html, scripts and styles
+		if c.Request.Body != nil {
+			var body struct {
+				WithoutPublish bool `json:"without_publish"`
+			}
+			err := c.BindJSON(&body)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			if body.WithoutPublish {
+				c.JSON(http.StatusOK, gin.H{
+					"html":    html,
+					"scripts": scripts,
+					"styles":  styles,
+				})
+				return
+			}
 		}
 
 		// Publish the page
