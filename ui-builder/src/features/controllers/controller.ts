@@ -28,9 +28,13 @@ export abstract class Controller {
 		// noop
 	}
 
-	onCreate(root: Element) {
+	onCreate(root: Element, options: OnCreateOptions) {
 		// noop
 	}
+}
+
+export type OnCreateOptions = {
+	projectTag: string
 }
 
 export interface ElementOptions<T extends Element = Element> {

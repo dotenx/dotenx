@@ -1,11 +1,12 @@
 import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { Components, ControllerSection } from '../controllers'
 import { DividerCollapsible } from '../controllers/helpers'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
@@ -20,6 +21,7 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 
 function SimpleComponentList({ section: { title, items } }: { section: ControllerSection }) {
 	const insertComponent = useInsertComponent()
+	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
 		<DividerCollapsible closed title={title}>
@@ -34,7 +36,7 @@ function SimpleComponentList({ section: { title, items } }: { section: Controlle
 						onClick={() => {
 							const component = controller.transform()
 							insertComponent(component)
-							controller.onCreate(component)
+							controller.onCreate(component, { projectTag })
 						}}
 					/>
 				)
