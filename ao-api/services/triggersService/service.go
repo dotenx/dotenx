@@ -15,6 +15,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/go-co-op/gocron"
+	"github.com/sirupsen/logrus"
 )
 
 var ActiveSchedulers map[string]*gocron.Scheduler
@@ -33,12 +34,16 @@ type TriggerService interface {
 	GetDefinitionForTrigger(accountId, triggerType string) (models.TriggerDefinition, error)
 	AddTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
 	UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) error
+	DeleteTriggers(accountId, pipelineName, pipelineEndpoint string) (err error)
 	DeleteTrigger(accountId string, triggerName, pipeline string) error
+	EnableAllScheduledTriggers(pipelineEndpoint string) (err error)
+	DisableAllScheduledTriggers(pipelineEndpoint string) (err error)
 	StartChecking(store integrationStore.IntegrationStore) error
 	StartScheduller() error
 	StopScheduler(accId, pipelineName, triggerName string) error
 	StartSchedulling(trigger models.EventTrigger) error
 	HandleEventBridgeScheduler(pipelineEndpoint string) (err error)
+	HandleScheduledTriggers(pipelineEndpoint, accountId string) (err error)
 }
 
 type TriggerManager struct {
@@ -118,7 +123,8 @@ func (manager *TriggerManager) AddTriggers(accountId string, projectName string,
 		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
-				err = manager.StartSchedulling(*tr)
+				// err = manager.StartSchedulling(*tr)
+				err = manager.CreateEventBridgeScheduler(*tr)
 				if err != nil {
 					return
 				}
@@ -130,13 +136,20 @@ func (manager *TriggerManager) AddTriggers(accountId string, projectName string,
 	return
 }
 
+// TODO: UpdateTriggers doesn't enable triggers based on state of pipeline (is active or not)
+// probably we should delete this function
 func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, triggers []*models.EventTrigger, endpoint string) (err error) {
 	if len(triggers) == 0 {
 		return nil
 	}
-	err = manager.Store.DeleteTriggersForPipeline(context.Background(), accountId, triggers[0].Pipeline)
+	// err = manager.Store.DeleteTriggersForPipeline(context.Background(), accountId, triggers[0].Pipeline)
+	// if err != nil {
+	// 	return errors.New("error while deleting old triggers: " + err.Error())
+	// }
+
+	err = manager.DeleteTriggers(accountId, triggers[0].Pipeline, endpoint)
 	if err != nil {
-		return errors.New("error in deleting old triggers: " + err.Error())
+		return errors.New("error while deleting old triggers: " + err.Error())
 	}
 	for _, tr := range triggers {
 		tr.Endpoint = endpoint
@@ -147,7 +160,8 @@ func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, tri
 		err = manager.Store.AddTrigger(context.Background(), accountId, projectName, *tr)
 		if err == nil {
 			if tr.Type == "Schedule" {
-				err = manager.StartSchedulling(*tr)
+				// err = manager.StartSchedulling(*tr)
+				err = manager.CreateEventBridgeScheduler(*tr)
 				if err != nil {
 					return
 				}
@@ -155,6 +169,29 @@ func (manager *TriggerManager) UpdateTriggers(accountId, projectName string, tri
 		} else {
 			return
 		}
+	}
+	return
+}
+
+// DeleteTriggers deletes Event Bridge Scheduler from triggers that their type is 'Schedule' and delete all triggers from database
+func (manager *TriggerManager) DeleteTriggers(accountId, pipelineName, pipelineEndpoint string) (err error) {
+	triggers, err := manager.GetAllTriggersForPipelineByEndpoint(pipelineEndpoint)
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
+	for _, tr := range triggers {
+		tr.Endpoint = pipelineEndpoint
+		if tr.Type == "Schedule" {
+			err = manager.DeleteEventBridgeScheduler(pipelineEndpoint, tr.Name)
+			if err != nil {
+				return
+			}
+		}
+	}
+	err = manager.Store.DeleteTriggersForPipeline(context.Background(), accountId, pipelineName)
+	if err != nil {
+		return errors.New("error while deleting triggers: " + err.Error())
 	}
 	return
 }
@@ -167,7 +204,8 @@ func (manager *TriggerManager) DeleteTrigger(accountId string, triggerName, pipe
 	for _, tr := range triggers {
 		if tr.Name == triggerName {
 			if tr.Type == "Schedule" {
-				err = manager.StopScheduler(accountId, pipeline, triggerName)
+				// err = manager.StopScheduler(accountId, pipeline, triggerName)
+				manager.DeleteEventBridgeScheduler(tr.Endpoint, tr.Name)
 				if err != nil {
 					return err
 				}

@@ -73,6 +73,14 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 	if err != nil {
 		return err
 	}
+	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, newP.Endpoint, base.AccountId, newP.IsTemplate, base.ProjectName)
+	if err != nil {
+		return err
+	}
+	err = cm.TriggerService.AddTriggers(base.AccountId, p.ProjectName, triggers, newP.Endpoint)
+	if err != nil {
+		return err
+	}
 	if p.IsActive {
 		err := cm.ActivatePipeline(base.AccountId, newP.PipelineDetailes.Id)
 		if err != nil {
@@ -80,11 +88,8 @@ func (cm *crudManager) UpdatePipeline(base *models.Pipeline, pipeline *models.Pi
 			return err
 		}
 	}
-	triggers, err := cm.getTriggersArray(pipeline.Manifest.Triggers, base.Name, newP.Endpoint, base.AccountId, newP.IsTemplate, base.ProjectName)
-	if err != nil {
-		return err
-	}
-	return cm.TriggerService.UpdateTriggers(base.AccountId, p.ProjectName, triggers, newP.Endpoint)
+	return nil
+	// return cm.TriggerService.UpdateTriggers(base.AccountId, p.ProjectName, triggers, newP.Endpoint)
 }
 
 func (cm *crudManager) GetPipelineByName(accountId string, name, project_name string) (models.PipelineSummery, error) {
@@ -125,6 +130,10 @@ func (cm *crudManager) DeletePipeline(accountId, name, projectName string, delet
 		}
 	}
 	err = cm.DeleteEventBridgeScheduler(p.Endpoint)
+	if err != nil {
+		return
+	}
+	err = cm.TriggerService.DeleteTriggers(accountId, name, p.Endpoint)
 	if err != nil {
 		return
 	}
