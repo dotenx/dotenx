@@ -6,9 +6,11 @@ import { box, flex, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { ButtonElement } from '../../elements/extensions/button'
+import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import signUpScript from '../../scripts/sign-up.js?raw'
 import { ButtonStyler } from '../../simple/stylers/button-styler'
+import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
@@ -19,11 +21,13 @@ export class SignUp extends Controller {
 	renderOptions = ({ element: wrapper }: ElementOptions) => {
 		const title = wrapper.find<TextElement>(tags.title)!
 		const button = wrapper.find<ButtonElement>(tags.button)!
+		const signInLink = wrapper.find<LinkElement>(tags.signInLink)!
 
 		return (
 			<ControllerWrapper name={this.name}>
 				<TextStyler element={title} label="Title" />
 				<ButtonStyler element={button} label="Button" />
+				<LinkStyler element={signInLink} label="Sign in link" />
 			</ControllerWrapper>
 		)
 	}
@@ -38,6 +42,7 @@ export class SignUp extends Controller {
 const tags = {
 	title: 'title',
 	button: 'button',
+	signInLink: 'sign-in-link',
 }
 
 const component = () =>
@@ -52,7 +57,7 @@ const component = () =>
 				shared.button().txt('Sign up').tag(tags.button).class('submit'),
 				flex([
 					txt('Already have an account?'),
-					link().txt('Sign in').css({
+					link().txt('Sign in').tag(tags.signInLink).css({
 						marginLeft: '5px',
 						fontWeight: 'bold',
 						cursor: 'pointer',
