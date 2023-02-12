@@ -33,6 +33,8 @@ import { Cart } from './components/cart'
 import { Header } from './components/header'
 import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
+import { SignIn } from './components/sign-in'
+import { SignUp } from './components/sign-up'
 import { theme1Controllers } from './theme1/controller'
 import { theme2Controllers } from './theme2/controller'
 import { theme3Controllers } from './theme3/controller'
@@ -46,14 +48,13 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		title: 'Theme 2',
 		items: theme2Controllers,
 	},
-
 	{
 		title: 'Theme 3',
 		items: theme3Controllers,
 	},
 	{
 		title: 'E-commerce',
-		items: [Header, ProductList, ProductItem, Cart],
+		items: [Header, ProductList, ProductItem, Cart, SignIn, SignUp],
 	},
 	{
 		title: 'About',
