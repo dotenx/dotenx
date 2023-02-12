@@ -30,6 +30,7 @@ import { TeamRoundCenter } from '../controllers/team-round-center'
 import { TeamRoundLeft } from '../controllers/team-round-left'
 import { TestimonialSimple } from '../controllers/testimonial-simple'
 import { Cart } from './components/cart'
+import { FeaturedProduct } from './components/featured-product'
 import { Header } from './components/header'
 import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
@@ -54,7 +55,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	},
 	{
 		title: 'E-commerce',
-		items: [Header, ProductList, ProductItem, Cart, SignIn, SignUp],
+		items: [Header, ProductList, ProductItem, FeaturedProduct, Cart, SignIn, SignUp],
 	},
 	{
 		title: 'About',

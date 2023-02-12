@@ -35,7 +35,11 @@ export class ProductList extends Controller {
 
 	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(productsScript)
-		const script = compiled({ id: root.id, projectTag: options.projectTag, productTag: '' })
+		const script = compiled({
+			id: root.id,
+			projectTag: options.projectTag,
+			productTag: this.data.productTag,
+		})
 		setElement(root, (draft) => (draft.script = script))
 	}
 }
