@@ -28,6 +28,9 @@ type ObjectstoreService interface {
 	// List all objects of a project
 	ListFiles(accountId, projectTag string) ([]models.Objectstore, error)
 
+	// Returns a public url for file based on given expiration time (in seconds)
+	GetPresignUrl(accountId, projectTag, fileName, expiresIn string) (map[string]interface{}, error)
+
 	SetUserGroups(accountId, projectTag, fileName string, userGroups []string) error
 
 	SetAccess(accountId, projectTag, fileName, newUrl string, isPublic bool) error
