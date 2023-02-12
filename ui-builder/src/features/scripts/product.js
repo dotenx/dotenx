@@ -1,10 +1,12 @@
 /* eslint-disable no-undef */
 
 ;(async () => {
+	const id = '{{id}}'
+	const projectTag = '{{projectTag}}'
+
 	const searchParams = new URLSearchParams(window.location.search)
 	const productId = searchParams.get('id')
 
-	const id = '{{id}}'
 	const root = document.getElementById(id)
 	const title = root.querySelector('.title')
 	const price = root.querySelector('.price')
@@ -21,9 +23,32 @@
 	getProduct().then(renderProduct)
 
 	async function getProduct() {
-		const response = await fetch(`https://dummyjson.com/products/${productId}`)
-		const product = await response.json()
-		return product
+		const response = await fetch(
+			`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/products`,
+			{
+				method: 'POST',
+				body: JSON.stringify({
+					columns: [],
+					filters: {
+						filterSet: [
+							{
+								key: 'status',
+								operator: '=',
+								value: 'published',
+							},
+							{
+								key: 'id',
+								operator: '=',
+								value: productId,
+							},
+						],
+						conjunction: 'and',
+					},
+				}),
+			}
+		)
+		const products = await response.json()
+		return products.rows[0]
 	}
 
 	function renderProduct(product) {
@@ -32,9 +57,9 @@
 		image.removeAttribute('x-bind:src')
 		description.removeAttribute('x-html')
 
-		title.textContent = product.title
+		title.textContent = product.name
 		price.textContent = `$${product.price}`
-		image.src = product.images[0]
+		image.src = product.image_url
 		description.textContent = product.description
 	}
 })()
