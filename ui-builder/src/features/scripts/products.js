@@ -3,6 +3,8 @@
 ;(async () => {
 	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
+	const productTag = '{{productTag}}'
+
 	const root = document.getElementById(id)
 	const list = root.querySelector('.list')
 	const item = list.querySelector('.item')
@@ -19,6 +21,27 @@
 	})
 
 	async function getProducts() {
+		const filterSet = productTag
+			? [
+					{
+						key: 'status',
+						operator: '=',
+						value: 'published',
+					},
+					{
+						key: 'tags',
+						operator: 'has',
+						value: productTag,
+					},
+			  ]
+			: [
+					{
+						key: 'status',
+						operator: '=',
+						value: 'published',
+					},
+			  ]
+
 		const response = await fetch(
 			`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/products`,
 			{
@@ -26,13 +49,7 @@
 				body: JSON.stringify({
 					columns: [],
 					filters: {
-						filterSet: [
-							{
-								key: 'status',
-								operator: '=',
-								value: 'published',
-							},
-						],
+						filterSet,
 						conjunction: 'and',
 					},
 				}),

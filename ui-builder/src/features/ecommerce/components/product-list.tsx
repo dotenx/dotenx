@@ -1,4 +1,7 @@
+import { TextInput } from '@mantine/core'
+import { useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { useState } from 'react'
 import imageUrl from '../../../assets/themes/ecommerce/product-list.png'
 import { Controller, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
@@ -9,6 +12,7 @@ import { BoxElement } from '../../elements/extensions/box'
 import { ButtonElement } from '../../elements/extensions/button'
 import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
+import { projectTagAtom } from '../../page/top-bar'
 import productsScript from '../../scripts/products.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BoxStyler } from '../../simple/stylers/box-styler'
@@ -21,16 +25,28 @@ export class ProductList extends Controller {
 	name = 'Product list'
 	image = imageUrl
 	defaultData = component()
-	renderOptions = () => <ProductListOptions />
+	renderOptions = () => (
+		<ProductListOptions
+			initialProductTag={this.data.productTag}
+			changeControllerTag={(newTag) => (this.data.productTag = newTag)}
+		/>
+	)
+	data = { productTag: '' }
 
 	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(productsScript)
-		const script = compiled({ id: root.id, projectTag: options.projectTag })
+		const script = compiled({ id: root.id, projectTag: options.projectTag, productTag: '' })
 		setElement(root, (draft) => (draft.script = script))
 	}
 }
 
-function ProductListOptions() {
+function ProductListOptions({
+	initialProductTag,
+	changeControllerTag,
+}: {
+	initialProductTag: string
+	changeControllerTag: (newTag: string) => void
+}) {
 	const root = useSelectedElement<BoxElement>()!
 	const title = root.find<TextElement>(tags.title)!
 	const grid = root.find<ColumnsElement>(tags.grid)!
@@ -38,6 +54,9 @@ function ProductListOptions() {
 	const names = root.findAll<TextElement>(tags.name)!
 	const prices = root.findAll<TextElement>(tags.price)!
 	const showMore = root.find<ButtonElement>(tags.showMore)!
+
+	const [productTag, setProductTag] = useState(initialProductTag)
+	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
 		<ControllerWrapper name="Product list">
@@ -48,6 +67,22 @@ function ProductListOptions() {
 			<TextStyler label="Names" element={names} noText />
 			<TextStyler label="Prices" element={prices} noText />
 			<ButtonStyler label="Show more" element={showMore} />
+			<TextInput
+				size="xs"
+				label="Tag"
+				value={productTag}
+				onChange={(event) => {
+					const compiled = _.template(productsScript)
+					const script = compiled({
+						id: root.id,
+						projectTag,
+						productTag: event.target.value,
+					})
+					setElement(root, (draft) => (draft.script = script))
+					changeControllerTag(event.target.value)
+					setProductTag(event.target.value)
+				}}
+			/>
 		</ControllerWrapper>
 	)
 }
