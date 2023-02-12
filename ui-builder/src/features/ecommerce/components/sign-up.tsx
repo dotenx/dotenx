@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
+import imageUrl from '../../../assets/themes/ecommerce/sign-up.png'
 import { Controller, ElementOptions, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { box, flex, link, txt } from '../../elements/constructor'
