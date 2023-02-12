@@ -2,42 +2,63 @@
 
 ;(async () => {
 	const id = '{{id}}'
+	const projectTag = '{{projectTag}}'
 	const root = document.getElementById(id)
 	const list = root.querySelector('.list')
 	const item = list.querySelector('.item')
 	const showMore = root.querySelector('.show-more')
 
-	const limit = 9
-	let skip = 0
-
+	const size = 9
+	let page = 1
 	getProducts().then(renderProducts)
 
 	showMore.addEventListener('click', async () => {
-		skip += limit
-		const products = await getProducts(skip)
+		page += 1
+		const products = await getProducts()
 		renderProducts(products)
 	})
 
-	async function getProducts(skip = 0) {
-		const url = `https://dummyjson.com/products?skip=${skip}&limit=${limit}`
-
-		const response = await fetch(url)
+	async function getProducts() {
+		const response = await fetch(
+			`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/products`,
+			{
+				method: 'POST',
+				body: JSON.stringify({
+					columns: [],
+					filters: {
+						filterSet: [
+							{
+								key: 'status',
+								operator: '=',
+								value: 'published',
+							},
+						],
+						conjunction: 'and',
+					},
+				}),
+				headers: {
+					'Content-Type': 'application/json',
+					size,
+					page,
+				},
+			}
+		)
 		const data = await response.json()
-		const products = data.products
+		const products = data.rows
 		return products
 	}
 
 	function renderProducts(products) {
-		products.forEach((product) => {
+		products?.forEach((product) => {
 			const clone = item.content.cloneNode(true)
 
 			const image = clone.querySelector('.image')
 			image.removeAttribute('x-bind:src')
-			image.setAttribute('src', product.images[0])
+			image.setAttribute('src', product.image_url)
 
 			const name = clone.querySelector('.name')
 			name.removeAttribute('x-html')
-			name.textContent = product.title
+			name.textContent = product.name
 
 			const itemLink = clone.querySelector('.item-link')
 			itemLink.removeAttribute('href')
