@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/cart.png'
-import { Controller, ElementOptions } from '../../controllers/controller'
+import { Controller, ElementOptions, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { btn, flex, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -34,9 +34,9 @@ export class Cart extends Controller {
 		)
 	}
 
-	onCreate(root: Element) {
+	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(cartScript)
-		const script = compiled({ id: root.id })
+		const script = compiled({ id: root.id, projectTag: options.projectTag })
 		setElement(root, (draft) => (draft.script = script))
 	}
 }

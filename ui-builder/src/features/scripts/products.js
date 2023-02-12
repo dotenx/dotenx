@@ -12,6 +12,7 @@
 
 	const size = 9
 	let page = 1
+	let productCount = 0
 	getProducts().then(renderProducts)
 
 	showMore.addEventListener('click', async () => {
@@ -62,10 +63,12 @@
 		)
 		const data = await response.json()
 		const products = data.rows
-		return products
+		return { products, totalRows: data.totalRows }
 	}
 
-	function renderProducts(products) {
+	function renderProducts({ products, totalRows }) {
+		productCount += products.length
+		if (productCount >= totalRows) showMore.style.display = 'none'
 		products?.forEach((product) => {
 			const clone = item.content.cloneNode(true)
 

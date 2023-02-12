@@ -2,6 +2,8 @@
 
 ;(async () => {
 	const id = '{{id}}'
+	const projectTag = '{{projectTag}}'
+
 	const root = document.getElementById(id)
 	const cartItems = root.querySelector('.cart-items')
 	const cartItem = document.querySelector('.cart-item')
@@ -19,7 +21,7 @@
 		const removeBtn = clone.querySelector('.remove-btn')
 
 		name.removeAttribute('x-html')
-		name.textContent = product.title
+		name.textContent = product.name
 
 		quantity.removeAttribute('x-html')
 		quantity.textContent = `${count}x`
@@ -36,9 +38,32 @@
 		cartItems.appendChild(clone)
 	})
 
-	async function getProduct(id) {
-		const response = await fetch(`https://dummyjson.com/products/${id}`)
-		const product = await response.json()
-		return product
+	async function getProduct(productId) {
+		const response = await fetch(
+			`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/products`,
+			{
+				method: 'POST',
+				body: JSON.stringify({
+					columns: [],
+					filters: {
+						filterSet: [
+							{
+								key: 'status',
+								operator: '=',
+								value: 'published',
+							},
+							{
+								key: 'id',
+								operator: '=',
+								value: productId,
+							},
+						],
+						conjunction: 'and',
+					},
+				}),
+			}
+		)
+		const products = await response.json()
+		return products.rows[0]
 	}
 })()
