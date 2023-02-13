@@ -34,7 +34,7 @@ export class SignIn extends Controller {
 
 	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(signInScript)
-		const script = compiled({ projectTag: options.projectTag })
+		const script = compiled({ id: root.id, projectTag: options.projectTag })
 		setElement(root, (draft) => (draft.script = script))
 	}
 }
@@ -61,6 +61,7 @@ const component = () =>
 						fontWeight: 'bold',
 						cursor: 'pointer',
 						textDecoration: 'none',
+						color: 'inherit',
 					}),
 				]),
 			])

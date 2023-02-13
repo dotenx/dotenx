@@ -1,12 +1,15 @@
 /* eslint-disable no-undef */
 
 ;(async () => {
+	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
+
 	const url = `https://api.dotenx.com/user/management/project/${projectTag}/login`
 	const method = 'POST'
-	const emailInput = document.querySelector('.email > input')
-	const passwordInput = document.querySelector('.password > input')
-	const submitButton = document.querySelector('.submit')
+	const root = document.getElementById(id)
+	const emailInput = root.querySelector('.email > input')
+	const passwordInput = root.querySelector('.password > input')
+	const submitButton = root.querySelector('.submit')
 
 	submitButton.addEventListener('click', async () => {
 		const email = emailInput.value
@@ -29,6 +32,10 @@
 
 		if (data.error) {
 			alert(data.error)
+		} else {
+			const token = data.accessToken
+			// set token to cookie
+			document.cookie = `token=${token}`
 		}
 	})
 })()

@@ -1,13 +1,17 @@
 /* eslint-disable no-undef */
 
 ;(async () => {
+	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
+
+	const root = document.getElementById(id)
+	const nameInput = root.querySelector('.name > input')
+	const emailInput = root.querySelector('.email > input')
+	const passwordInput = root.querySelector('.password > input')
+	const submitButton = root.querySelector('.submit')
+
 	const url = `https://api.dotenx.com/user/management/project/${projectTag}/register`
 	const method = 'POST'
-	const nameInput = document.querySelector('.name > input')
-	const emailInput = document.querySelector('.email > input')
-	const passwordInput = document.querySelector('.password > input')
-	const submitButton = document.querySelector('.submit')
 
 	submitButton.addEventListener('click', async () => {
 		const name = nameInput.value

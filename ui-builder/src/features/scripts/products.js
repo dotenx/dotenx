@@ -62,7 +62,7 @@
 			}
 		)
 		const data = await response.json()
-		const products = data.rows
+		const products = data.rows ?? []
 		return { products, totalRows: data.totalRows }
 	}
 

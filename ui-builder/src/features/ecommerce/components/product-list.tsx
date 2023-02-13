@@ -107,7 +107,7 @@ const tags = {
 
 function component() {
 	const title = shared.title().tag(tags.title).txt('Products')
-	const grid = shared.grid().tag(tags.grid).populate(_.range(1).map(column)).class('list')
+	const grid = shared.grid().tag(tags.grid).populate([column()]).class('list')
 	const container = shared.container().populate([title, grid, showMore()])
 	const root = shared.paper().populate([container])
 	return root
