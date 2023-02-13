@@ -13,11 +13,11 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
-import { Controller } from './controller'
+import { Component } from './controller'
 import { ComponentName, Divider, DividerCollapsible } from './helpers'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
-export class NavbarWithProfile extends Controller {
+export class NavbarWithProfile extends Component {
 	name = 'Navbar with profile picture'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

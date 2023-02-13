@@ -12,12 +12,12 @@ import { ImageElement } from '../elements/extensions/image'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
 import Bio from './basic-components/bio'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class TeamRoundCenter extends Controller {
+export class TeamRoundCenter extends Component {
 	name = 'Team with round profiles centered'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

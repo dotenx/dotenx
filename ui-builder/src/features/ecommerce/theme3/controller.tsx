@@ -9,7 +9,7 @@ import featuredProductImg from '../../../assets/themes/theme3/featured-product.p
 import heroImg from '../../../assets/themes/theme3/hero.png'
 import navbarImg from '../../../assets/themes/theme3/navbar.png'
 import productListImg from '../../../assets/themes/theme3/product-list.png'
-import { Controller, ElementOptions, OnCreateOptions } from '../../controllers/controller'
+import { Component, ElementOptions, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
 import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
@@ -30,7 +30,7 @@ import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { theme3 } from './theme'
 
-class Navbar extends Controller {
+class Navbar extends Component {
 	name = 'Theme 3 Navbar'
 	image = navbarImg
 	defaultData = theme3.navbar()
@@ -57,7 +57,7 @@ class Navbar extends Controller {
 	}
 }
 
-class Hero extends Controller {
+class Hero extends Component {
 	name = 'Theme 3 Hero'
 	image = heroImg
 	defaultData = theme3.hero()
@@ -78,7 +78,7 @@ class Hero extends Controller {
 	}
 }
 
-class Collections extends Controller {
+class Collections extends Component {
 	name = 'Theme 3 Collections'
 	image = collectionsImg
 	defaultData = theme3.collections()
@@ -102,7 +102,7 @@ class Collections extends Controller {
 	}
 }
 
-class FeaturedProduct extends Controller {
+class FeaturedProduct extends Component {
 	name = 'Theme 3 Featured Product'
 	image = featuredProductImg
 	defaultData = theme3.featuredProduct()
@@ -202,7 +202,7 @@ function FeaturedProductOptions({
 	)
 }
 
-class ProductList extends Controller {
+class ProductList extends Component {
 	name = 'Theme 3 Product List'
 	image = productListImg
 	defaultData = theme3.productList()

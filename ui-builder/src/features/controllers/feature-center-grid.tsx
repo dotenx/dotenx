@@ -20,11 +20,11 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FeatureCenterGrid extends Controller {
+export class FeatureCenterGrid extends Component {
 	name = 'Feature Center Grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

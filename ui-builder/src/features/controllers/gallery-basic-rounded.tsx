@@ -15,11 +15,11 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, repeatObject } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class GalleryBasicRounded extends Controller {
+export class GalleryBasicRounded extends Component {
 	name = 'Basic Gallery rounded'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

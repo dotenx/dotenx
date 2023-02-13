@@ -13,12 +13,12 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class CustomersGrid extends Controller {
+export class CustomersGrid extends Component {
 	name = 'Customers grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

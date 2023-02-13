@@ -15,11 +15,11 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
 import { viewportAtom } from '../viewport/viewport-store'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, repeatObject } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class ComparisonTableSimple extends Controller {
+export class ComparisonTableSimple extends Component {
 	name = 'Simple comparison table'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

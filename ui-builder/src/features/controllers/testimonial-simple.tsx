@@ -14,12 +14,12 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class TestimonialSimple extends Controller {
+export class TestimonialSimple extends Component {
 	name = 'Simple testimonial'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

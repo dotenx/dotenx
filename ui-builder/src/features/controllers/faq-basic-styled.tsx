@@ -12,12 +12,12 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FaqBasicStyled extends Controller {
+export class FaqBasicStyled extends Component {
 	name = 'Basic styled FAQ'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

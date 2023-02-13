@@ -13,11 +13,11 @@ import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class HeroFullWidth extends Controller {
+export class HeroFullWidth extends Component {
 	name = 'Full width background hero'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

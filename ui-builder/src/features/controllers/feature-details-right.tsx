@@ -12,12 +12,12 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, Divider } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FeatureDetailsRight extends Controller {
+export class FeatureDetailsRight extends Component {
 	name = 'Features with details on the right'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

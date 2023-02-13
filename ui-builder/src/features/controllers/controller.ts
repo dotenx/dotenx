@@ -3,7 +3,7 @@ import { regenElement } from '../clipboard/copy-paste'
 import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 
-export abstract class Controller {
+export abstract class Component {
 	abstract name: string
 	abstract image: string
 	protected abstract defaultData?: Element

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
-import { Controller } from '../controllers/controller'
+import { Component } from '../controllers/controller'
 import { Expression } from '../states/expression'
 import { ElementEvent } from './event'
 import { Style } from './style'
@@ -24,7 +24,7 @@ export abstract class Element {
 	bindings: Bindings = {}
 	children: Element[] | null = null
 	repeatFrom: RepeatFrom | null = null
-	controller: Controller | null = null
+	controller: Component | null = null
 	data?: Record<string, unknown>
 	elementId?: string
 	tagId?: string

@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useState } from 'react'
 import imageUrl from '../../../assets/themes/ecommerce/product-list.png'
-import { Controller, OnCreateOptions } from '../../controllers/controller'
+import { Component, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { box, btn, img, link, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -22,7 +22,7 @@ import { ColumnsStyler } from '../../simple/stylers/columns-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class ProductList extends Controller {
+export class ProductList extends Component {
 	name = 'Product list'
 	image = imageUrl
 	defaultData = component()

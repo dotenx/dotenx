@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/sign-up.png'
-import { Controller, ElementOptions, OnCreateOptions } from '../../controllers/controller'
+import { Component, ElementOptions, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { box, flex, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -14,7 +14,7 @@ import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class SignUp extends Controller {
+export class SignUp extends Component {
 	name = 'Sign up'
 	image = imageUrl
 	defaultData = component()

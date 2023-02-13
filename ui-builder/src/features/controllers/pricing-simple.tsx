@@ -16,13 +16,13 @@ import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 import VerticalOptions from './helpers/vertical-options'
 
-export class PricingSimple extends Controller {
+export class PricingSimple extends Component {
 	name = 'Simple pricing'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

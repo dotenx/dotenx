@@ -5,7 +5,7 @@ import heroImg from '../../../assets/themes/theme1/preview/hero.png'
 import infoImg from '../../../assets/themes/theme1/preview/info.png'
 import logosImg from '../../../assets/themes/theme1/preview/logos.png'
 import navbarImg from '../../../assets/themes/theme1/preview/navbar.png'
-import { Controller, ElementOptions } from '../../controllers/controller'
+import { Component, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
 import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
@@ -23,7 +23,7 @@ import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { theme1 } from './theme'
 
-class Navbar extends Controller {
+class Navbar extends Component {
 	name = 'Theme 1 Navbar'
 	image = navbarImg
 	defaultData = theme1.navbar()
@@ -46,7 +46,7 @@ class Navbar extends Controller {
 	}
 }
 
-class Hero extends Controller {
+class Hero extends Component {
 	name = 'Theme 1 Hero'
 	image = heroImg
 	defaultData = theme1.hero()
@@ -87,7 +87,7 @@ function StatOptions({ item }: { item: Element }) {
 	)
 }
 
-class Logos extends Controller {
+class Logos extends Component {
 	name = 'Theme 1 Logos'
 	image = logosImg
 	defaultData = theme1.logos()
@@ -106,7 +106,7 @@ class Logos extends Controller {
 	}
 }
 
-class FeaturesText extends Controller {
+class FeaturesText extends Component {
 	name = 'Theme 1 Features Text'
 	image = featuresTextImg
 	defaultData = theme1.featuresText()
@@ -123,7 +123,7 @@ class FeaturesText extends Controller {
 	}
 }
 
-class Features extends Controller {
+class Features extends Component {
 	name = 'Theme 1 Features'
 	image = featuresImg
 	defaultData = theme1.features()
@@ -156,7 +156,7 @@ function FeatureOptions({ item }: { item: Element }) {
 	)
 }
 
-class Info extends Controller {
+class Info extends Component {
 	name = 'Theme 1 Info'
 	image = infoImg
 	defaultData = theme1.info()
@@ -177,7 +177,7 @@ class Info extends Controller {
 	}
 }
 
-class Cta extends Controller {
+class Cta extends Component {
 	name = 'Theme 1 Cta'
 	image = ctaImg
 	defaultData = theme1.cta()

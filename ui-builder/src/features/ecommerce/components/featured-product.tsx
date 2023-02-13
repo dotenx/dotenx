@@ -5,7 +5,7 @@ import _ from 'lodash'
 import { useState } from 'react'
 import { api } from '../../../api'
 import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
-import { Controller, OnCreateOptions } from '../../controllers/controller'
+import { Component, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { btn, flex, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -23,7 +23,7 @@ import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class FeaturedProduct extends Controller {
+export class FeaturedProduct extends Component {
 	name = 'Featured product'
 	image = imageUrl
 	defaultData = component()

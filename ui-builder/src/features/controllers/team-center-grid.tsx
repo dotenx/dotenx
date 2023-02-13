@@ -15,12 +15,12 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import ColorOptions from './basic-components/color-options'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class TeamCenterGrid extends Controller {
+export class TeamCenterGrid extends Component {
 	name = 'Team Center Grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

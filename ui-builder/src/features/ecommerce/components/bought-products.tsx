@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/bought-products.png'
 import { gridCols } from '../../../utils/style-utils'
-import { Controller, OnCreateOptions } from '../../controllers/controller'
+import { Component, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { box, img, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -16,7 +16,7 @@ import { ColumnsStyler } from '../../simple/stylers/columns-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class BoughtProducts extends Controller {
+export class BoughtProducts extends Component {
 	name = 'Bought products'
 	image = imageUrl
 	defaultData = component()

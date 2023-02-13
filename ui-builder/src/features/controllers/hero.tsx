@@ -8,10 +8,10 @@ import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 
-export class Hero extends Controller {
+export class Hero extends Component {
 	//feature details left is similar to this component but better//
 	name = 'Hero'
 	image = imageUrl

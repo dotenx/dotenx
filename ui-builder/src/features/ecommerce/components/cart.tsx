@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/cart.png'
-import { Controller, ElementOptions, OnCreateOptions } from '../../controllers/controller'
+import { Component, ElementOptions, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { btn, flex, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -12,7 +12,7 @@ import { ButtonStyler } from '../../simple/stylers/button-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class Cart extends Controller {
+export class Cart extends Component {
 	name = 'Cart'
 	image = imageUrl
 	defaultData = component()

@@ -18,11 +18,11 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression, ExpressionKind } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
-import { Controller } from './controller'
+import { Component } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
-export class ListCard extends Controller {
+export class ListCard extends Component {
 	name = 'Card List'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

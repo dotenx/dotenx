@@ -13,12 +13,12 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FeatureGridImages extends Controller {
+export class FeatureGridImages extends Component {
 	name = 'Feature Grid with images'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

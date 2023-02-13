@@ -28,11 +28,11 @@ import { ScatterChart } from '../elements/extensions/chart-scatter'
 import { projectTagAtom } from '../page/top-bar'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
-export class ChartBar extends Controller {
+export class ChartBar extends Component {
 	name = 'Bar chart'
 	image = barChartImg
 	defaultData = deserializeElement(defaultData)

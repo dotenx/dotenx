@@ -14,11 +14,11 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class Navbar extends Controller {
+export class Navbar extends Component {
 	name = 'Navbar'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

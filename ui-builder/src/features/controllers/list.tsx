@@ -15,11 +15,11 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
-import { Controller } from './controller'
+import { Component } from './controller'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
-export class List extends Controller {
+export class List extends Component {
 	name = 'List'
 	image = imageUrl
 	defaultData = new BoxElement()

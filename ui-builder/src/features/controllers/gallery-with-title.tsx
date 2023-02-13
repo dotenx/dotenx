@@ -17,10 +17,10 @@ import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, extractUrl } from './helpers'
 
-export class GalleryWithTitle extends Controller {
+export class GalleryWithTitle extends Component {
 	name = 'Gallery with title on images'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

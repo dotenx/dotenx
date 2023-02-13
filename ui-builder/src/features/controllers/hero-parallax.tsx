@@ -3,13 +3,13 @@ import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-parallax.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 
 import { ImageDrop } from '../ui/image-drop'
 import TitleSubtitleCta from './basic-components/title-subtitle-cta'
 import { OptionsWrapper } from './helpers/options-wrapper'
-export class HeroParallax extends Controller {
+export class HeroParallax extends Component {
 	name = 'Hero with parallax'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

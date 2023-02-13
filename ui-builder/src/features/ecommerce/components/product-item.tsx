@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
-import { Controller, OnCreateOptions } from '../../controllers/controller'
+import { Component, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { btn, flex, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -17,7 +17,7 @@ import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class ProductItem extends Controller {
+export class ProductItem extends Component {
 	name = 'Product item'
 	image = imageUrl
 	defaultData = component()
@@ -25,7 +25,7 @@ export class ProductItem extends Controller {
 
 	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(productScript)
-		const script = compiled({ id: root.id, projectTag: options.projectTag  })
+		const script = compiled({ id: root.id, projectTag: options.projectTag })
 		setElement(root, (draft) => (draft.script = script))
 	}
 }

@@ -9,11 +9,11 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 
-export class CustomersLogoGrid extends Controller {
+export class CustomersLogoGrid extends Component {
 	name = 'Customers logo grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

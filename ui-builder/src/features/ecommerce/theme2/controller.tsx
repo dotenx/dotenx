@@ -4,7 +4,7 @@ import featureTextImg from '../../../assets/themes/theme2/featureText.png'
 import heroImg from '../../../assets/themes/theme2/hero.png'
 import navbarImg from '../../../assets/themes/theme2/navbar.png'
 import testimonialImg from '../../../assets/themes/theme2/testimonial.png'
-import { Controller, ElementOptions } from '../../controllers/controller'
+import { Component, ElementOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'
 import { DndTabs } from '../../controllers/helpers/dnd-tabs'
 import { icn, txt } from '../../elements/constructor'
@@ -19,7 +19,7 @@ import { ImageStyler } from '../../simple/stylers/image-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { theme2 } from './theme'
 
-class Navbar extends Controller {
+class Navbar extends Component {
 	name = 'Theme 2 Navbar'
 	image = navbarImg
 	defaultData = theme2.navbar()
@@ -46,7 +46,7 @@ class Navbar extends Controller {
 	}
 }
 
-class Hero extends Controller {
+class Hero extends Component {
 	name = 'Theme 2 Hero'
 	image = heroImg
 	defaultData = theme2.hero()
@@ -67,7 +67,7 @@ class Hero extends Controller {
 	}
 }
 
-class FeatureText extends Controller {
+class FeatureText extends Component {
 	name = 'Theme 2 FeatureText'
 	image = featureTextImg
 	defaultData = theme2.featureText()
@@ -84,7 +84,7 @@ class FeatureText extends Controller {
 	}
 }
 
-class Features extends Controller {
+class Features extends Component {
 	name = 'Theme 2 Features'
 	image = featuresImg
 	defaultData = theme2.features()
@@ -108,7 +108,7 @@ class Features extends Controller {
 	}
 }
 
-class Testimonial extends Controller {
+class Testimonial extends Component {
 	name = 'Theme 2 Testimonial'
 	image = testimonialImg
 	defaultData = theme2.testimonial()
@@ -137,7 +137,7 @@ class Testimonial extends Controller {
 	}
 }
 
-class Cta extends Controller {
+class Cta extends Component {
 	name = 'Theme 2 CTA'
 	image = ctaImg
 	defaultData = theme2.cta()

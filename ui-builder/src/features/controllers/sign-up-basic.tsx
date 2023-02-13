@@ -21,10 +21,10 @@ import { ImageDrop } from '../ui/image-drop'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './controller'
 import { ComponentName } from './helpers'
 
-export class SignUpBasic extends Controller {
+export class SignUpBasic extends Component {
 	name = 'Basic Sign-up '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

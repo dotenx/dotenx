@@ -14,12 +14,12 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Controller } from './controller'
+import { Component } from './controller'
 import { ComponentName, DividerCollapsible } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class AboutLeft extends Controller {
+export class AboutLeft extends Component {
 	name = 'About us with details on the left'
 	image = imageUrl
 	defaultData = defaultData

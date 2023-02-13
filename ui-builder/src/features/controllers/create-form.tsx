@@ -20,10 +20,10 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
-import { Controller } from './controller'
+import { Component } from './controller'
 import { ComponentName } from './helpers'
 
-export class CreateForm extends Controller {
+export class CreateForm extends Component {
 	name = 'Create Form'
 	image = imageUrl
 	defaultData = new FormElement()
