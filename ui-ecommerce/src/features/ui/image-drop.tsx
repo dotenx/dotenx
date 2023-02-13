@@ -1,4 +1,4 @@
-import { CloseButton, Group, Image, TextInput } from "@mantine/core"
+import { CloseButton, Group, Image } from "@mantine/core"
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone"
 import { useMutation } from "react-query"
 import { ReactNode } from "react"
@@ -22,7 +22,7 @@ export function ImageDrop({
 	const projectTag = projectQuery.projectTag
 
 	const imagePart = src ? (
-		<div className="h-[200px]">
+		<div className=" bg-white border border-gray-300  rounded">
 			<CloseButton
 				onClick={() => onChange("")}
 				mb="xs"
@@ -70,14 +70,6 @@ export function ImageDrop({
 				{label && <p className="mb-0.5 font-medium">{label}</p>}
 				{imagePart}
 			</div>
-			<TextInput
-				size="xs"
-				label="Source"
-				value={src ?? ""}
-				onChange={(event) => onChange(event.target.value)}
-				rightSection={rightSection}
-				name="image"
-			/>
 		</div>
 	)
 }
