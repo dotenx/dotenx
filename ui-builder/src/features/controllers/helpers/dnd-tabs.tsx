@@ -13,7 +13,7 @@ export function DndTabs({
 	insertElement,
 }: {
 	containerElement: BoxElement | NavMenuElement
-	renderItemOptions: (item: Element) => ReactNode
+	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 }) {
 	const set = useSetWithElement(containerElement)
@@ -36,7 +36,7 @@ export function DndTabs({
 		() =>
 			listElements.map((item, index) => ({
 				id: item.id,
-				content: renderItemOptions(item),
+				content: renderItemOptions(item, index),
 				onTabDelete: () => set((draft) => draft.children.splice(index, 1)),
 			})),
 		[listElements, renderItemOptions, set]

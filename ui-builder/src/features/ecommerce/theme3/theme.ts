@@ -1,6 +1,5 @@
-import _ from 'lodash'
 import { gridCols } from '../../../utils/style-utils'
-import { box, btn, flex, grid, icn, img, txt } from '../../elements/constructor'
+import { box, btn, flex, grid, icn, img, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 
 const theme = {
@@ -47,6 +46,7 @@ const tags = {
 	},
 	productList: {
 		list: 'list',
+		tabs: 'tabs',
 		item: {
 			title: 'title',
 			price: 'price',
@@ -249,24 +249,33 @@ const featuredProduct = () =>
 		container([
 			grid(2)
 				.populate([
-					img().tag(tags.featuredProduct.image).css({
-						height: '410px',
-						backgroundColor: theme.colors.gray,
-						boxShadow: theme.shadows.normal,
-						width: '100%',
-					}),
+					img()
+						.tag(tags.featuredProduct.image)
+						.css({
+							height: '410px',
+							backgroundColor: theme.colors.gray,
+							boxShadow: theme.shadows.normal,
+							width: '100%',
+						})
+						.class('image'),
 					box([
-						txt('FLORAL JACKQUARD PULLOVER').tag(tags.featuredProduct.title).css({
-							fontWeight: '700',
-							fontSize: '30px',
-							color: theme.colors.white,
-						}),
-						txt('$50.00').tag(tags.featuredProduct.price).css({
-							marginTop: '32px',
-							fontWeight: '700',
-							fontSize: '30px',
-							color: theme.colors.white,
-						}),
+						txt('FLORAL JACKQUARD PULLOVER')
+							.tag(tags.featuredProduct.title)
+							.css({
+								fontWeight: '700',
+								fontSize: '30px',
+								color: theme.colors.white,
+							})
+							.class('title'),
+						txt('$50.00')
+							.tag(tags.featuredProduct.price)
+							.css({
+								marginTop: '32px',
+								fontWeight: '700',
+								fontSize: '30px',
+								color: theme.colors.white,
+							})
+							.class('price'),
 						box([
 							icn('basket-shopping').size('40px'),
 							btn('ADD TO CART')
@@ -274,7 +283,8 @@ const featuredProduct = () =>
 									fontWeight: '500',
 									fontSize: '32px',
 								})
-								.tag(tags.featuredProduct.button),
+								.tag(tags.featuredProduct.button)
+								.class('add-to-cart'),
 						]).css({
 							marginTop: '32px',
 							color: theme.colors.primary,
@@ -313,21 +323,23 @@ const productList = () =>
 				txt('SALE').css({
 					padding: '10px 0',
 				}),
-			]).css({
-				gap: '40px',
-				fontSize: '22px',
-				fontWeight: '500',
-			}),
+			])
+				.css({
+					gap: '40px',
+					fontSize: '22px',
+					fontWeight: '500',
+				})
+				.tag(tags.productList.tabs)
+				.class('tabs'),
 			grid(4)
-				.populate(
-					_.range(8).map(() =>
-						productItem({
-							title: 'FLORAL JACKQUARD PULLOVER',
-							price: '$50.00',
-							image: '',
-						})
-					)
-				)
+				.populate([
+					productItem({
+						title: 'Product name',
+						price: 'Price',
+						image: '',
+					}),
+				])
+				.class('list')
 				.tag(tags.productList.list)
 				.css({
 					gap: '66px 46px',
@@ -340,14 +352,16 @@ const productList = () =>
 					gridTemplateColumns: gridCols(1),
 				}),
 			flex([
-				btn('Show More').css({
-					marginTop: '88px',
-					fontSize: '32px',
-					fontWeight: '500',
-					backgroundColor: theme.colors.gray4,
-					color: theme.colors.white,
-					padding: '20px 56px',
-				}),
+				btn('Show More')
+					.css({
+						marginTop: '88px',
+						fontSize: '32px',
+						fontWeight: '500',
+						backgroundColor: theme.colors.gray2,
+						color: theme.colors.white,
+						padding: '20px 56px',
+					})
+					.class('show-more'),
 			]).css({
 				justifyContent: 'center',
 			}),
@@ -357,58 +371,70 @@ const productList = () =>
 	})
 
 const productItem = ({ title, price, image }: { title: string; price: string; image: string }) =>
-	box([
+	template(
 		box([
-			grid(2)
-				.populate([
-					btn('ADD TO CART').css({
-						backgroundColor: theme.colors.white,
-						color: theme.colors.primary,
-						fontWeight: '500',
-						fontSize: '12px',
-						padding: '10px 20px',
+			box([
+				grid(2)
+					.populate([
+						btn('ADD TO CART')
+							.css({
+								backgroundColor: theme.colors.white,
+								color: theme.colors.primary,
+								fontWeight: '500',
+								fontSize: '12px',
+								padding: '10px 20px',
+							})
+							.class('add-to-cart'),
+						btn('BUY NOW').css({
+							backgroundColor: theme.colors.primary,
+							color: theme.colors.white,
+							fontWeight: '500',
+							fontSize: '12px',
+							padding: '10px 20px',
+						}),
+					])
+					.css({
+						gap: '20px',
 					}),
-					btn('BUY NOW').css({
-						backgroundColor: theme.colors.primary,
-						color: theme.colors.white,
-						fontWeight: '500',
-						fontSize: '12px',
-						padding: '10px 20px',
-					}),
-				])
+			])
 				.css({
+					backgroundColor: theme.colors.gray5,
+					backgroundImage: `url(${image})`,
+					backgroundSize: 'cover',
+					backgroundPosition: 'center',
+					minHeight: '254px',
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'end',
+					alignItems: 'center',
 					gap: '20px',
-				}),
-		]).css({
-			backgroundColor: theme.colors.gray5,
-			backgroundImage: `url(${image})`,
-			backgroundSize: 'cover',
-			backgroundPosition: 'center',
-			minHeight: '254px',
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'end',
-			alignItems: 'center',
-			gap: '20px',
-			padding: '18px',
-			border: `1px solid ${theme.colors.gray5}`,
-		}),
-		box([
-			txt(title).tag(tags.featuredProduct.title).css({
-				fontWeight: '300',
+					padding: '18px',
+					border: `1px solid ${theme.colors.gray5}`,
+				})
+				.class('image'),
+			box([
+				txt(title)
+					.tag(tags.featuredProduct.title)
+					.css({
+						fontWeight: '300',
+					})
+					.class('name'),
+				txt(price)
+					.tag(tags.featuredProduct.price)
+					.css({
+						marginTop: '6px',
+						fontWeight: '500',
+					})
+					.class('price'),
+			]).css({
+				border: `1px solid ${theme.colors.gray5}`,
+				padding: '14px 10px',
+				backgroundColor: theme.colors.white,
 			}),
-			txt(price).tag(tags.featuredProduct.price).css({
-				marginTop: '6px',
-				fontWeight: '500',
-			}),
 		]).css({
-			border: `1px solid ${theme.colors.gray5}`,
-			padding: '14px 10px',
-			backgroundColor: theme.colors.white,
-		}),
-	]).css({
-		boxShadow: theme.shadows.normal,
-	})
+			boxShadow: theme.shadows.normal,
+		})
+	).class('item')
 
 // ----------------------------------------------
 
