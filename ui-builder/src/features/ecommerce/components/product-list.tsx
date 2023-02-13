@@ -1,4 +1,4 @@
-import { TextInput } from '@mantine/core'
+import { Select } from '@mantine/core'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useState } from 'react'
@@ -12,6 +12,7 @@ import { BoxElement } from '../../elements/extensions/box'
 import { ButtonElement } from '../../elements/extensions/button'
 import { ColumnsElement } from '../../elements/extensions/columns'
 import { TextElement } from '../../elements/extensions/text'
+import { useTags } from '../../misc/tags-query'
 import { projectTagAtom } from '../../page/top-bar'
 import productsScript from '../../scripts/products.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
@@ -61,6 +62,7 @@ function ProductListOptions({
 
 	const [productTag, setProductTag] = useState(initialProductTag)
 	const projectTag = useAtomValue(projectTagAtom)
+	const productTags = useTags()
 
 	return (
 		<ControllerWrapper name="Product list">
@@ -71,20 +73,22 @@ function ProductListOptions({
 			<TextStyler label="Names" element={names} noText />
 			<TextStyler label="Prices" element={prices} noText />
 			<ButtonStyler label="Show more" element={showMore} />
-			<TextInput
+			<Select
+				data={productTags}
 				size="xs"
 				label="Tag"
 				value={productTag}
-				onChange={(event) => {
+				onChange={(value) => {
+					if (!value) return
 					const compiled = _.template(productsScript)
 					const script = compiled({
 						id: root.id,
 						projectTag,
-						productTag: event.target.value,
+						productTag: value,
 					})
 					setElement(root, (draft) => (draft.script = script))
-					changeControllerTag(event.target.value)
-					setProductTag(event.target.value)
+					changeControllerTag(value)
+					setProductTag(value)
 				}}
 			/>
 		</ControllerWrapper>

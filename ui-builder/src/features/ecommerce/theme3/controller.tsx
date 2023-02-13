@@ -1,4 +1,4 @@
-import { Select, TextInput } from '@mantine/core'
+import { Select } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
@@ -20,6 +20,7 @@ import { BoxElement } from '../../elements/extensions/box'
 import { ButtonElement } from '../../elements/extensions/button'
 import { ImageElement } from '../../elements/extensions/image'
 import { TextElement } from '../../elements/extensions/text'
+import { useTags } from '../../misc/tags-query'
 import { projectTagAtom } from '../../page/top-bar'
 import featuredProductScript from '../../scripts/featured-product-3.js?raw'
 import productsScript from '../../scripts/products-3.js?raw'
@@ -234,6 +235,7 @@ function ProductListOptions({
 	const tabs = wrapper.find<BoxElement>(theme3.tags.productList.tabs)!
 	const [productTags, setProductTags] = useState(initialProductTags)
 	const projectTag = useAtomValue(projectTagAtom)
+	const tags = useTags()
 
 	return (
 		<ControllerWrapper name="Theme 3 Product List">
@@ -244,13 +246,15 @@ function ProductListOptions({
 					return (
 						<OptionsWrapper>
 							<TextStyler element={item as TextElement} label="Name" />
-							<TextInput
+							<Select
+								data={tags}
 								size="xs"
 								label="Tag"
 								value={productTags[index]}
-								onChange={(event) => {
+								onChange={(value) => {
+									if (!value) return
 									const newTags = [...productTags]
-									newTags[index] = event.target.value
+									newTags[index] = value
 									const compiled = _.template(productsScript)
 									const script = compiled({
 										id: wrapper.id,
