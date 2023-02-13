@@ -9,6 +9,7 @@ export abstract class Component {
 	protected abstract defaultData?: Element
 	abstract renderOptions(options?: ElementOptions): ReactNode
 	data: unknown
+	tags: string[] = ['any']
 
 	transform(): Element {
 		const newElement = regenElement(this.defaultData ?? new BoxElement())
