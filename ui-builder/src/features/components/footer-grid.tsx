@@ -21,7 +21,7 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import {
 	ComponentName,
 	DividerCollapsible,

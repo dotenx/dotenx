@@ -4,8 +4,8 @@ import featureTextImg from '../../../assets/themes/theme2/featureText.png'
 import heroImg from '../../../assets/themes/theme2/hero.png'
 import navbarImg from '../../../assets/themes/theme2/navbar.png'
 import testimonialImg from '../../../assets/themes/theme2/testimonial.png'
-import { Component, ElementOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, ElementOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { DndTabs } from '../../components/helpers/dnd-tabs'
 import { icn, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
@@ -30,7 +30,7 @@ class Navbar extends Component {
 		const navLinks = wrapper.find<BoxElement>(theme2.tags.navbar.navLinks)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<ImageStyler element={logo} />
 				<ButtonStyler element={signIn} label="Sign in" />
 				<ButtonStyler element={signUp} label="Sign up" />
@@ -41,7 +41,7 @@ class Navbar extends Component {
 						<TextStyler element={item as TextElement} label="Text" />
 					)}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -57,12 +57,12 @@ class Hero extends Component {
 		const button = wrapper.find<ButtonElement>(theme2.tags.hero.button)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<ImageStyler element={image} />
 				<TextStyler element={title} label="Title" />
 				<TextStyler element={subtitle} label="Subtitle" />
 				<ButtonStyler element={button} label="Button" />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -76,10 +76,10 @@ class FeatureText extends Component {
 		const image = wrapper.find<ImageElement>(theme2.tags.featureText.image)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler element={text} label="Text" />
 				<ImageStyler element={image} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -92,7 +92,7 @@ class Features extends Component {
 		const features = wrapper.find<BoxElement>(theme2.tags.features.list)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<DndTabs
 					containerElement={features}
 					insertElement={() => theme2.feature({ title: 'Lorem ipsum', color: 'black' })}
@@ -103,7 +103,7 @@ class Features extends Component {
 						/>
 					)}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -120,7 +120,7 @@ class Testimonial extends Component {
 		const icons = wrapper.find<BoxElement>(theme2.tags.testimonial.icons)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler element={title} label="Title" />
 				<TextStyler element={subtitle} label="Subtitle" />
 				<ImageStyler element={image} />
@@ -132,7 +132,7 @@ class Testimonial extends Component {
 						<IconStyler element={item as IconElement} label="Icon" />
 					)}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -145,11 +145,11 @@ class Cta extends Component {
 		const button = wrapper.find<ButtonElement>(theme2.tags.cta.button)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<ButtonStyler element={button} label="Button" />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
 
-export const theme2Controllers = { Navbar, Hero, FeatureText, Features, Testimonial, Cta }
+export const theme2Components = { Navbar, Hero, FeatureText, Features, Testimonial, Cta }

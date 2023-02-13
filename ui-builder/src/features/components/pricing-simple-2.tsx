@@ -5,7 +5,7 @@ import imageUrl from '../../assets/components/pricing-simple-2.jpg'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, Divider, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

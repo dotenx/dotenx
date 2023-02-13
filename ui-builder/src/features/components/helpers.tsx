@@ -1,7 +1,7 @@
 import { Collapse } from '@mantine/core'
 import { useState } from 'react'
 import { BsChevronUp } from 'react-icons/bs'
-import { ElementOptions } from './controller'
+import { ElementOptions } from './component'
 
 export function repeatObject<T>(source: T, times: number): T[] {
 	const result = []

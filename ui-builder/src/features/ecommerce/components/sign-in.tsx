@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/sign-in.png'
-import { Component, ElementOptions, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, ElementOptions, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { box, flex, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -24,11 +24,11 @@ export class SignIn extends Component {
 		const signUpLink = wrapper.find<LinkElement>(tags.signUpLink)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler element={title} label="Title" />
 				<ButtonStyler element={button} label="Button" />
 				<LinkStyler element={signUpLink} label="Sign up link" />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 

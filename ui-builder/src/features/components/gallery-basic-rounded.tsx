@@ -15,7 +15,7 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, repeatObject } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 

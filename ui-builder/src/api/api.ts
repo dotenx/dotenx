@@ -1,7 +1,7 @@
 import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
-import { addControllers } from '../utils/controller-utils'
+import { addComponents } from '../utils/components-utils'
 import {
 	deserializeAction,
 	deserializeAnimation,
@@ -95,7 +95,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			...response.data,
 			content: {
 				...response.data.content,
-				layout: addControllers(elements),
+				layout: addComponents(elements),
 				classNames: classNames,
 				dataSources: response.data.content.dataSources.map((source) => ({
 					...source,

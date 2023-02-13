@@ -3,8 +3,8 @@ import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useState } from 'react'
 import imageUrl from '../../../assets/themes/ecommerce/product-list.png'
-import { Component, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { box, btn, img, link, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -29,7 +29,7 @@ export class ProductList extends Component {
 	renderOptions = () => (
 		<ProductListOptions
 			initialProductTag={this.data.productTag}
-			changeControllerTag={(newTag) => (this.data.productTag = newTag)}
+			changeComponentTag={(newTag) => (this.data.productTag = newTag)}
 		/>
 	)
 	data = { productTag: '' }
@@ -47,10 +47,10 @@ export class ProductList extends Component {
 
 function ProductListOptions({
 	initialProductTag,
-	changeControllerTag,
+	changeComponentTag,
 }: {
 	initialProductTag: string
-	changeControllerTag: (newTag: string) => void
+	changeComponentTag: (newTag: string) => void
 }) {
 	const root = useSelectedElement<BoxElement>()!
 	const title = root.find<TextElement>(tags.title)!
@@ -65,7 +65,7 @@ function ProductListOptions({
 	const productTags = useTags()
 
 	return (
-		<ControllerWrapper name="Product list">
+		<ComponentWrapper name="Product list">
 			<TextStyler label="Title" element={title} />
 			<ColumnsStyler element={grid} />
 			<BoxStyler label="Wrapper" element={root} />
@@ -87,11 +87,11 @@ function ProductListOptions({
 						productTag: value,
 					})
 					setElement(root, (draft) => (draft.script = script))
-					changeControllerTag(value)
+					changeComponentTag(value)
 					setProductTag(value)
 				}}
 			/>
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 

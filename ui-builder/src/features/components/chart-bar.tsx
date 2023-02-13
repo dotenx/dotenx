@@ -28,7 +28,7 @@ import { ScatterChart } from '../elements/extensions/chart-scatter'
 import { projectTagAtom } from '../page/top-bar'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
@@ -39,21 +39,15 @@ export class ChartBar extends Component {
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <ChartBarOptions options={options} controller={this} />
+		return <ChartBarOptions options={options} component={this} />
 	}
 }
 
 // =============  renderOptions =============
 
-function ChartBarOptions({
-	options,
-	controller,
-}: {
-	options: ElementOptions
-	controller: ChartBar
-}) {
+function ChartBarOptions({ options, component }: { options: ElementOptions; component: ChartBar }) {
 	const element = options.element as BarChart
-	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
+	const [selectedTable, setSelectedTable] = useInputState(component.data.tableName)
 
 	const projectTag = useAtomValue(projectTagAtom)
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
@@ -73,7 +67,7 @@ function ChartBarOptions({
 					`${API_URL}/database/query/select/project/${projectTag}/table/${selectedTable}`
 				),
 			})
-			controller.data.tableName = selectedTable
+			component.data.tableName = selectedTable
 		},
 	})
 

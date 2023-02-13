@@ -21,7 +21,7 @@ import { ImageDrop } from '../ui/image-drop'
 import { elementBase } from './basic-components/base'
 import roundButton from './basic-components/round-button'
 import roundInputWithLabel from './basic-components/round-input-with-label'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
 
 export class SignUpBasic extends Component {

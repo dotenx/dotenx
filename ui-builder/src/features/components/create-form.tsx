@@ -20,7 +20,7 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
-import { Component } from './controller'
+import { Component } from './component'
 import { ComponentName } from './helpers'
 
 export class CreateForm extends Component {
@@ -30,21 +30,21 @@ export class CreateForm extends Component {
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions(): ReactNode {
-		return <CreateFormOptions controller={this} />
+		return <CreateFormOptions component={this} />
 	}
 }
 
-function CreateFormOptions({ controller }: { controller: CreateForm }) {
+function CreateFormOptions({ component }: { component: CreateForm }) {
 	const formElement = useSelectedElement() as FormElement
 	const projectTag = useAtomValue(projectTagAtom)
 	const addDataSource = useDataSourceStore((store) => store.add)
 	const { set, remove } = useElementsStore((store) => ({ set: store.set, remove: store.remove }))
-	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
+	const [selectedTable, setSelectedTable] = useInputState(component.data.tableName)
 	const columnsQuery = useColumnsQuery({
 		tableName: selectedTable,
 		onSuccess: (data) => {
 			if (!formElement || !selectedTable) return
-			controller.data.tableName = selectedTable
+			component.data.tableName = selectedTable
 			const columns =
 				data.data.columns.filter((col) => col.name !== 'id' && col.name !== 'creator_id') ??
 				[]

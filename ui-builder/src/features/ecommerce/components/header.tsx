@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/header.png'
-import { Component } from '../../components/controller'
+import { Component } from '../../components/component'
 import { ComponentName } from '../../components/helpers'
 import { DndTabs } from '../../components/helpers/dnd-tabs'
 import { OptionsWrapper } from '../../components/helpers/options-wrapper'

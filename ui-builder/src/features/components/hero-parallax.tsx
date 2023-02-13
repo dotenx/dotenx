@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-parallax.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, extractUrl, SimpleComponentOptionsProps } from './helpers'
 
 import { ImageDrop } from '../ui/image-drop'

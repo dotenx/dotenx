@@ -18,7 +18,7 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression, ExpressionKind } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
-import { Component } from './controller'
+import { Component } from './component'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
@@ -29,18 +29,18 @@ export class ListCard extends Component {
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions() {
-		return <ListCardOptions controller={this} />
+		return <ListCardOptions component={this} />
 	}
 }
 
-function ListCardOptions({ controller }: { controller: ListCard }) {
+function ListCardOptions({ component }: { component: ListCard }) {
 	const columnsElement = useSelectedElement() as ColumnsElement
 	const titleElement = columnsElement.children?.[0].children?.[0].children?.[0]
 		.children?.[0] as TextElement
 	const imageElement = columnsElement.children?.[0].children?.[0].children?.[1] as ImageElement
 	const nameElement = columnsElement.children?.[0].children?.[1] as TextElement
 	const set = useSetElement()
-	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
+	const [selectedTable, setSelectedTable] = useInputState(component.data.tableName)
 	const dataSourceName = `${selectedTable}s`
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
 	const projectTag = useAtomValue(projectTagAtom)
@@ -59,7 +59,7 @@ function ListCardOptions({ controller }: { controller: ListCard }) {
 				),
 				isPrivate: true,
 			})
-			controller.data.tableName = selectedTable
+			component.data.tableName = selectedTable
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []

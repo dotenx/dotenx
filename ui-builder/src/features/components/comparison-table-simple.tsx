@@ -15,7 +15,7 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
 import { viewportAtom } from '../viewport/viewport-store'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, Divider, DividerCollapsible, repeatObject } from './helpers'
 import { OptionsWrapper } from './helpers/options-wrapper'
 

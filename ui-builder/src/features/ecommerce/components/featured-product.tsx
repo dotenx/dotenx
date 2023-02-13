@@ -5,8 +5,8 @@ import _ from 'lodash'
 import { useState } from 'react'
 import { api } from '../../../api'
 import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
-import { Component, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { btn, flex, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -30,7 +30,7 @@ export class FeaturedProduct extends Component {
 	renderOptions = () => (
 		<FeaturedProductOptions
 			initialProductId={this.data.productId}
-			changeControllerId={(newId) => (this.data.productId = newId)}
+			changeComponentId={(newId) => (this.data.productId = newId)}
 		/>
 	)
 	data = { productId: '' }
@@ -48,10 +48,10 @@ export class FeaturedProduct extends Component {
 
 function FeaturedProductOptions({
 	initialProductId,
-	changeControllerId,
+	changeComponentId,
 }: {
 	initialProductId: string
-	changeControllerId: (newId: string) => void
+	changeComponentId: (newId: string) => void
 }) {
 	const root = useSelectedElement<BoxElement>()!
 	const title = root.find<TextElement>(tags.title)!
@@ -88,7 +88,7 @@ function FeaturedProductOptions({
 	const productOptions = products.map((product) => ({ label: product.name, value: product.id }))
 
 	return (
-		<ControllerWrapper name="Featured product">
+		<ComponentWrapper name="Featured product">
 			<Select
 				size="xs"
 				label="Product"
@@ -103,7 +103,7 @@ function FeaturedProductOptions({
 						productId: value,
 					})
 					setElement(root, (draft) => (draft.script = script))
-					changeControllerId(value)
+					changeComponentId(value)
 					setProductId(value)
 					const selected = products.find((product) => product.id === value)
 					if (!selected) return
@@ -119,7 +119,7 @@ function FeaturedProductOptions({
 			<TextStyler label="Price" element={price} />
 			<ImageStyler element={image} />
 			<ButtonStyler label="Add to cart" element={addToCart} />
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 

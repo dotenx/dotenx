@@ -37,16 +37,16 @@ import { ProductItem } from './components/product-item'
 import { ProductList } from './components/product-list'
 import { SignIn } from './components/sign-in'
 import { SignUp } from './components/sign-up'
-import { theme1Controllers } from './theme1/controller'
-import { theme2Controllers } from './theme2/controller'
-import { theme3Controllers } from './theme3/controller'
+import { theme1Components } from './theme1/components'
+import { theme2Components } from './theme2/components'
+import { theme3Components } from './theme3/components'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
 		title: 'About',
 		items: [AboutRight],
 	},
-	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid, theme1Controllers.Logos] },
+	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid, theme1Components.Logos] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
 	{ title: 'Divider', items: [DividerSimpleTitle] },
@@ -60,19 +60,19 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			FeatureDetailsRight,
 			ProductItem,
 			Cart,
-			theme1Controllers.FeaturesText,
-			theme1Controllers.Features,
-			theme1Controllers.Info,
-			theme2Controllers.FeatureText,
-			theme2Controllers.Features,
-			theme3Controllers.FeaturedProduct,
+			theme1Components.FeaturesText,
+			theme1Components.Features,
+			theme1Components.Info,
+			theme2Components.FeatureText,
+			theme2Components.Features,
+			theme3Components.FeaturedProduct,
 		],
 	},
 	{
 		title: 'Collections',
 		items: [
-			theme3Controllers.Collections,
-			theme3Controllers.ProductList,
+			theme3Components.Collections,
+			theme3Components.ProductList,
 			ProductList,
 			BoughtProducts,
 		],
@@ -95,9 +95,9 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			HeroCtaLeft,
 			HeroCtaRight,
 			HeroParallax,
-			theme1Controllers.Hero,
-			theme2Controllers.Hero,
-			theme3Controllers.Hero,
+			theme1Components.Hero,
+			theme2Components.Hero,
+			theme3Components.Hero,
 		],
 	},
 	{
@@ -105,14 +105,14 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		items: [
 			Header,
 			Navbar,
-			theme1Controllers.Navbar,
-			theme2Controllers.Navbar,
-			theme3Controllers.Navbar,
+			theme1Components.Navbar,
+			theme2Components.Navbar,
+			theme3Components.Navbar,
 		],
 	},
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Sign In/Up', items: [SignIn, SignUp, SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
-	{ title: 'Testimonial', items: [TestimonialSimple, theme2Controllers.Testimonial] },
-	{ title: 'Call to action', items: [theme1Controllers.Cta, theme2Controllers.Cta] },
+	{ title: 'Testimonial', items: [TestimonialSimple, theme2Components.Testimonial] },
+	{ title: 'Call to action', items: [theme1Components.Cta, theme2Components.Cta] },
 ]

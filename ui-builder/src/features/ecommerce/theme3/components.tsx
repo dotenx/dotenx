@@ -9,8 +9,8 @@ import featuredProductImg from '../../../assets/themes/theme3/featured-product.p
 import heroImg from '../../../assets/themes/theme3/hero.png'
 import navbarImg from '../../../assets/themes/theme3/navbar.png'
 import productListImg from '../../../assets/themes/theme3/product-list.png'
-import { Component, ElementOptions, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, ElementOptions, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { DndTabs } from '../../components/helpers/dnd-tabs'
 import { OptionsWrapper } from '../../components/helpers/options-wrapper'
 import { txt } from '../../elements/constructor'
@@ -41,7 +41,7 @@ class Navbar extends Component {
 		const links = wrapper.find<BoxElement>(theme3.tags.navbar.links)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler element={text} label="Text" />
 				<ButtonStyler element={signIn} label="Sign in" />
 				<ButtonStyler element={signUp} label="Sign up" />
@@ -52,7 +52,7 @@ class Navbar extends Component {
 						<TextStyler element={item as TextElement} label="Text" />
 					)}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -68,12 +68,12 @@ class Hero extends Component {
 		const image = wrapper.find<ImageElement>(theme3.tags.hero.image)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler element={title} label="Title" />
 				<TextStyler element={subtitle} label="Subtitle" />
 				<ButtonStyler element={button} label="Button" />
 				<ImageStyler element={image} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -86,7 +86,7 @@ class Collections extends Component {
 		const list = wrapper.find<BoxElement>(theme3.tags.collections.list)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<DndTabs
 					containerElement={list}
 					insertElement={() =>
@@ -97,7 +97,7 @@ class Collections extends Component {
 						return <TextStyler element={title} label="Title" />
 					}}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -170,7 +170,7 @@ function FeaturedProductOptions({
 	}))
 
 	return (
-		<ControllerWrapper name="Theme 3 Featured Product">
+		<ComponentWrapper name="Theme 3 Featured Product">
 			<Select
 				size="xs"
 				label="Product"
@@ -198,7 +198,7 @@ function FeaturedProductOptions({
 			<ButtonStyler element={button} label="Button" />
 			<ImageStyler element={image} />
 			<TextStyler element={price} label="Price" />
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -238,7 +238,7 @@ function ProductListOptions({
 	const tags = useTags()
 
 	return (
-		<ControllerWrapper name="Theme 3 Product List">
+		<ComponentWrapper name="Theme 3 Product List">
 			<DndTabs
 				containerElement={tabs}
 				insertElement={() => txt('Tab').css({ padding: '10px 0' })}
@@ -270,8 +270,8 @@ function ProductListOptions({
 					)
 				}}
 			/>
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 
-export const theme3Controllers = { Navbar, Hero, Collections, FeaturedProduct, ProductList }
+export const theme3Components = { Navbar, Hero, Collections, FeaturedProduct, ProductList }

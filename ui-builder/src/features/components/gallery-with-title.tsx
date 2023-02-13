@@ -17,7 +17,7 @@ import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, extractUrl } from './helpers'
 
 export class GalleryWithTitle extends Component {

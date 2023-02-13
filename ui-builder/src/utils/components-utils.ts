@@ -1,22 +1,22 @@
 import produce from 'immer'
-import { CONTROLLERS } from '../features/components'
+import { COMPONENTS } from '../features/components'
 import { Element } from '../features/elements/element'
 
-export function removeControllers(elements: Element[]) {
+export function removeComponents(elements: Element[]) {
 	return elements.map((element) => ({
 		...element,
 		controller: element.controller ? { name: element.controller.constructor.name } : undefined,
 	}))
 }
 
-export function addControllers(elements: Element[]): Element[] {
+export function addComponents(elements: Element[]): Element[] {
 	return produce(elements, (draft) => {
 		for (const element of draft) {
 			if (element.controller) {
-				const Controller = CONTROLLERS.flatMap((section) => section.items).find(
+				const Component = COMPONENTS.flatMap((section) => section.items).find(
 					(c) => c.name === element.controller?.name
 				)
-				if (Controller) element.controller = new (Controller as any)()
+				if (Component) element.controller = new (Component as any)()
 			}
 		}
 	})

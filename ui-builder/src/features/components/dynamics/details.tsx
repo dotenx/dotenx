@@ -15,7 +15,7 @@ import { projectTagAtom } from '../../page/top-bar'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { Expression, ExpressionKind } from '../../states/expression'
 import { inteliState } from '../../ui/intelinput'
-import { Component } from '../controller'
+import { Component } from '../component'
 import { TableSelect, useColumnsQuery } from '../create-form'
 import { ComponentName } from '../helpers'
 
@@ -26,13 +26,13 @@ export class Details extends Component {
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions() {
-		return <DetailsOptions controller={this} />
+		return <DetailsOptions component={this} />
 	}
 }
 
-function DetailsOptions({ controller }: { controller: Details }) {
+function DetailsOptions({ component }: { component: Details }) {
 	const set = useSetElement()
-	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
+	const [selectedTable, setSelectedTable] = useInputState(component.data.tableName)
 	const root = useSelectedElement() as BoxElement
 	const imageElement = root.children[0] as ImageElement
 	const titleElement = root.children?.[1] as TextElement
@@ -59,7 +59,7 @@ function DetailsOptions({ controller }: { controller: Details }) {
 				]),
 				isPrivate: true,
 			})
-			controller.data.tableName = selectedTable
+			component.data.tableName = selectedTable
 		},
 	})
 	const columns = columnsQuery.data?.data.columns.map((col) => col.name) ?? []

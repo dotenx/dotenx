@@ -5,8 +5,8 @@ import heroImg from '../../../assets/themes/theme1/preview/hero.png'
 import infoImg from '../../../assets/themes/theme1/preview/info.png'
 import logosImg from '../../../assets/themes/theme1/preview/logos.png'
 import navbarImg from '../../../assets/themes/theme1/preview/navbar.png'
-import { Component, ElementOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, ElementOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { DndTabs } from '../../components/helpers/dnd-tabs'
 import { OptionsWrapper } from '../../components/helpers/options-wrapper'
 import { box, img, txt } from '../../elements/constructor'
@@ -32,7 +32,7 @@ class Navbar extends Component {
 		const button = wrapper.find<ButtonElement>(theme1.tags.navbar.button)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<ButtonStyler label="Button" element={button} />
 				<DndTabs
 					containerElement={links}
@@ -41,7 +41,7 @@ class Navbar extends Component {
 						<TextStyler label="Link" element={item as TextElement} />
 					)}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -58,7 +58,7 @@ class Hero extends Component {
 		const img = wrapper.find<ImageElement>(theme1.tags.hero.img)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler label="Title" element={title} />
 				<TextStyler label="Description" element={desc} />
 				<ButtonStyler label="Button" element={button} />
@@ -68,7 +68,7 @@ class Hero extends Component {
 					insertElement={() => theme1.stat({ title: 'title', desc: 'description' })}
 					renderItemOptions={(item) => <StatOptions item={item} />}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -95,13 +95,13 @@ class Logos extends Component {
 		const logos = wrapper.find<BoxElement>(theme1.tags.logos)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<DndTabs
 					containerElement={logos}
 					insertElement={img}
 					renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -115,10 +115,10 @@ class FeaturesText extends Component {
 		const desc = wrapper.find<TextElement>(theme1.tags.featuresText.desc)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler label="Title" element={title} />
 				<TextStyler label="Description" element={desc} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -131,13 +131,13 @@ class Features extends Component {
 		const features = wrapper.find<BoxElement>(theme1.tags.features.grid)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<DndTabs
 					containerElement={features}
 					insertElement={box}
 					renderItemOptions={(item) => <FeatureOptions item={item} />}
 				/>
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -167,12 +167,12 @@ class Info extends Component {
 		const img = wrapper.find<ImageElement>(theme1.tags.info.img)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler label="Title" element={title} />
 				<TextStyler label="Description" element={desc} />
 				<ButtonStyler label="Button" element={button} />
 				<ImageStyler element={img} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
@@ -185,11 +185,11 @@ class Cta extends Component {
 		const button = wrapper.find<ButtonElement>(theme1.tags.cta.button)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<ButtonStyler label="Button" element={button} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 }
 
-export const theme1Controllers = { Navbar, Hero, Logos, FeaturesText, Features, Info, Cta }
+export const theme1Components = { Navbar, Hero, Logos, FeaturesText, Features, Info, Cta }

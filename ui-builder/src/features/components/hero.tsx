@@ -8,7 +8,7 @@ import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
 import ColorOptions from './basic-components/color-options'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName, DividerCollapsible } from './helpers'
 
 export class Hero extends Component {

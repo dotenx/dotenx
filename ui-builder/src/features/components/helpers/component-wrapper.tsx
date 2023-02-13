@@ -4,7 +4,7 @@ import { BoxStyler } from '../../simple/stylers/box-styler'
 import { ComponentName } from '../helpers'
 import { OptionsWrapper } from './options-wrapper'
 
-export function ControllerWrapper({ children, name }: { children?: ReactNode; name: string }) {
+export function ComponentWrapper({ children, name }: { children?: ReactNode; name: string }) {
 	const wrapper = useSelectedElement()!
 
 	return (

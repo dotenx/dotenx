@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
-import { Component, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { btn, flex, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -39,14 +39,14 @@ function ProductItemOptions() {
 	const addToCart = root.find<ButtonElement>(tags.addToCart)!
 
 	return (
-		<ControllerWrapper name="Product item">
+		<ComponentWrapper name="Product item">
 			<TextStyler label="Title" element={title} />
 			<BoxStyler label="Wrapper" element={root} />
 			<TextStyler label="Description" element={description} />
 			<TextStyler label="Price" element={price} />
 			<ImageStyler element={image} />
 			<ButtonStyler label="Add to cart" element={addToCart} />
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 

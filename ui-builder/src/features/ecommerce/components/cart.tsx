@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/cart.png'
-import { Component, ElementOptions, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, ElementOptions, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { btn, flex, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -24,13 +24,13 @@ export class Cart extends Component {
 		const removeBtn = wrapper.find<ButtonElement>(tags.removeBtn)!
 
 		return (
-			<ControllerWrapper name={this.name}>
+			<ComponentWrapper name={this.name}>
 				<TextStyler label="Title" element={title} />
 				<TextStyler label="Name" element={name} />
 				<TextStyler label="Quantity" element={quantity} />
 				<TextStyler label="Price" element={price} />
 				<ButtonStyler label="Remove button" element={removeBtn} />
-			</ControllerWrapper>
+			</ComponentWrapper>
 		)
 	}
 

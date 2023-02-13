@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import imageUrl from '../../../assets/themes/ecommerce/bought-products.png'
 import { gridCols } from '../../../utils/style-utils'
-import { Component, OnCreateOptions } from '../../components/controller'
-import { ControllerWrapper } from '../../components/helpers/controller-wrapper'
+import { Component, OnCreateOptions } from '../../components/component'
+import { ComponentWrapper } from '../../components/helpers/component-wrapper'
 import { box, img, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -40,13 +40,13 @@ function BoughtProductsOptions() {
 	const names = root.findAll<TextElement>(tags.name)!
 
 	return (
-		<ControllerWrapper name="Bought products">
+		<ComponentWrapper name="Bought products">
 			<TextStyler label="Title" element={title} />
 			<ColumnsStyler element={grid} />
 			<BoxStyler label="Wrapper" element={root} />
 			<BoxStyler label="Columns" element={columns} />
 			<TextStyler label="Names" element={names} noText />
-		</ControllerWrapper>
+		</ComponentWrapper>
 	)
 }
 

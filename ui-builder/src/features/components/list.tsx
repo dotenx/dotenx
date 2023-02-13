@@ -15,7 +15,7 @@ import { projectTagAtom } from '../page/top-bar'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { inteliState, inteliText } from '../ui/intelinput'
-import { Component } from './controller'
+import { Component } from './component'
 import { TableSelect, useColumnsQuery } from './create-form'
 import { ComponentName } from './helpers'
 
@@ -26,14 +26,14 @@ export class List extends Component {
 	data: { tableName: string | null } = { tableName: null }
 
 	renderOptions(): ReactNode {
-		return <ListOptions controller={this} />
+		return <ListOptions component={this} />
 	}
 }
 
-function ListOptions({ controller }: { controller: List }) {
+function ListOptions({ component }: { component: List }) {
 	const boxElement = useSelectedElement() as BoxElement
 	const set = useElementsStore((store) => store.set)
-	const [selectedTable, setSelectedTable] = useInputState(controller.data.tableName)
+	const [selectedTable, setSelectedTable] = useInputState(component.data.tableName)
 	const { addDataSource } = useAddDataSource({ mode: 'add' })
 	const projectTag = useAtomValue(projectTagAtom)
 	const columnsQuery = useColumnsQuery({
@@ -53,7 +53,7 @@ function ListOptions({ controller }: { controller: List }) {
 				),
 				isPrivate: true,
 			})
-			controller.data.tableName = selectedTable
+			component.data.tableName = selectedTable
 			const columns =
 				data.data.columns.filter((col) => col.name !== 'id' && col.name !== 'creator_id') ??
 				[]

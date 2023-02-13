@@ -9,7 +9,7 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { Component, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
 import { DndTabs } from './helpers/dnd-tabs'
 

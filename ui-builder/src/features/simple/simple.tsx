@@ -1,6 +1,6 @@
 import { AppShell } from '@mantine/core'
 import { useAtomValue } from 'jotai'
-import { CONTROLLERS } from '../components'
+import { COMPONENTS } from '../components'
 import { previewAtom, TopBar } from '../page/top-bar'
 import { AppHeader } from '../ui/header'
 import { LeftSidebar } from '../ui/left-sidebar'
@@ -30,7 +30,7 @@ export function Simple() {
 
 const Navbar = () => (
 	<LeftSidebar>
-		<SimpleLeftSidebar components={CONTROLLERS} />
+		<SimpleLeftSidebar components={COMPONENTS} />
 	</LeftSidebar>
 )
 

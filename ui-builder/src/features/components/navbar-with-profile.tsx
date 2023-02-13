@@ -13,7 +13,7 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Intelinput } from '../ui/intelinput'
-import { Component } from './controller'
+import { Component } from './component'
 import { ComponentName, Divider, DividerCollapsible } from './helpers'
 import { DraggableTab, DraggableTabs } from './helpers/draggable-tabs'
 
