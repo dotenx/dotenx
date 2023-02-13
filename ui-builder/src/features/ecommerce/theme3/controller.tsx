@@ -274,4 +274,4 @@ function ProductListOptions({
 	)
 }
 
-export const theme3Controllers = [Navbar, Hero, Collections, FeaturedProduct, ProductList]
+export const theme3Controllers = { Navbar, Hero, Collections, FeaturedProduct, ProductList }

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import imageUrl from '../../../assets/themes/ecommerce/product-item.png'
+import imageUrl from '../../../assets/themes/ecommerce/bought-products.png'
 import { gridCols } from '../../../utils/style-utils'
 import { Controller, OnCreateOptions } from '../../controllers/controller'
 import { ControllerWrapper } from '../../controllers/helpers/controller-wrapper'

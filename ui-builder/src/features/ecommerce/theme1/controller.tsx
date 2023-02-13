@@ -192,4 +192,4 @@ class Cta extends Controller {
 	}
 }
 
-export const theme1Controllers = [Navbar, Hero, Logos, FeaturesText, Features, Info, Cta]
+export const theme1Controllers = { Navbar, Hero, Logos, FeaturesText, Features, Info, Cta }
