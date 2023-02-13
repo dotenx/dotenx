@@ -1,5 +1,5 @@
 import produce from 'immer'
-import { CONTROLLERS } from '../features/controllers'
+import { CONTROLLERS } from '../features/components'
 import { Element } from '../features/elements/element'
 
 export function removeControllers(elements: Element[]) {

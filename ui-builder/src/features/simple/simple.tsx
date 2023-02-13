@@ -1,6 +1,6 @@
 import { AppShell } from '@mantine/core'
 import { useAtomValue } from 'jotai'
-import { CONTROLLERS } from '../controllers'
+import { CONTROLLERS } from '../components'
 import { previewAtom, TopBar } from '../page/top-bar'
 import { AppHeader } from '../ui/header'
 import { LeftSidebar } from '../ui/left-sidebar'
