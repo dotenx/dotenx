@@ -174,8 +174,7 @@ export function StatBlock({ title, value, isLoading }: StatData) {
 		<div className={`bg-white rounded-lg p-4 ${isLoading && "animate-pulse"}`}>
 			<p className="text-gray-500 text-sm pb-2">{title}</p>
 			<p className="text-2xl font-bold">
-				{!isLoading &&
-					(!["$undefined", "$null"].includes(_.toString(value)) ? value : "N/A")}
+				{!isLoading && (!["$undefined", "$null"].includes(_.toString(value)) ? value : 0)}
 			</p>
 		</div>
 	)
