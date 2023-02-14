@@ -30,7 +30,7 @@ export function IntegrationForm({ integrationKind, onSuccess, onBack }: Integrat
 		<Form className="flex flex-col h-full gap-10 -mt-10">
 			<div className="flex flex-col gap-5 grow">
 				<div className="flex items-center justify-between">
-					{integrationKind && (
+					{integrationKind && onBack && (
 						<button type="button" onClick={onBack}>
 							<IoChevronBackSharp />
 						</button>
