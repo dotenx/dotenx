@@ -333,7 +333,7 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 			logrus.Error(err.Error())
 			return err
 		}
-		// we should nake this interaction public to be accessible by tp users
+		// we should make this interaction public to be accessible by tp users
 		err = cService.SetInteractionAccess(pipelineId, true)
 		if err != nil {
 			logrus.Error(err.Error())
