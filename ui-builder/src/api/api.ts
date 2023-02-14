@@ -1,13 +1,14 @@
 import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
-import { addControllers } from '../utils/controller-utils'
+import { addComponents } from '../utils/components-utils'
 import {
 	deserializeAction,
 	deserializeAnimation,
 	deserializeElement,
 	deserializeExpression,
 } from '../utils/deserialize'
+import { joinScripts } from '../utils/join-scripts'
 import { serializeAnimation } from '../utils/serialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
@@ -94,7 +95,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			...response.data,
 			content: {
 				...response.data.content,
-				layout: addControllers(elements),
+				layout: addComponents(elements),
 				classNames: classNames,
 				dataSources: response.data.content.dataSources.map((source) => ({
 					...source,
@@ -132,6 +133,9 @@ export const addPage = ({
 			},
 		])
 	)
+	const transformCodes = produce(customCodes, (draft) => {
+		draft.footer = `<script>${joinScripts(elements)}</script>`
+	})
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
@@ -145,7 +149,7 @@ export const addPage = ({
 			pageParams,
 			globals,
 			fonts,
-			customCodes,
+			customCodes: transformCodes,
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
 		},

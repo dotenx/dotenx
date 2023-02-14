@@ -1,6 +1,8 @@
 import { gridCols } from '../../utils/style-utils'
+import { btn, flex, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
+import { InputElement } from '../elements/extensions/input'
 import { TextElement } from '../elements/extensions/text'
 
 const title = () =>
@@ -47,10 +49,44 @@ const group = () =>
 		alignItems: 'center',
 	})
 
+const button = () =>
+	btn('Button')
+		.css({
+			backgroundColor: '#f5f5f5',
+			border: 'none',
+			borderRadius: '5px',
+			paddingTop: '10px',
+			paddingRight: '20px',
+			paddingBottom: '10px',
+			paddingLeft: '20px',
+		})
+		.cssHover({
+			backgroundColor: '#e0e0e0',
+		})
+
+const input = (label: string, type: 'text' | 'password' = 'text') =>
+	flex([
+		txt(label),
+		new InputElement()
+			.css({
+				width: '100%',
+				border: '1px solid #e0e0e0',
+				borderRadius: '5px',
+				height: '40px',
+				paddingLeft: '10px',
+			})
+			.type(type),
+	]).css({
+		flexDirection: 'column',
+		gap: '2px',
+	})
+
 export const shared = {
 	title,
 	container,
 	grid,
 	paper,
 	group,
+	button,
+	input,
 }
