@@ -75,7 +75,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 			})
 			return
 		}
-		// we check validity of integration secrets in this switch case.
+		// we check validity of integration secrets in this switch case
 		switch dto.IntegrationType {
 		case "stripe":
 			secretKey := dto.IntegrationSecrets["SECRET_KEY"]
