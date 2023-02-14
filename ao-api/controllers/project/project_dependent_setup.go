@@ -56,7 +56,10 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 		project.AccountId = accountId
 
 		integrationName := fmt.Sprintf("%s-%s", dto.IntegrationType, utils.RandStringRunes(8, utils.FullRunes))
-		integrationSecretsCopy := dto.IntegrationSecrets
+		integrationSecretsCopy := make(map[string]string)
+		for k, v := range dto.IntegrationSecrets {
+			integrationSecretsCopy[k] = v
+		}
 		if reflect.DeepEqual(models.AvaliableIntegrations[dto.IntegrationType], models.IntegrationDefinition{}) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "invalid integration type",
@@ -72,6 +75,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 			})
 			return
 		}
+		// we check validity of integration secrets in this switch case
 		switch dto.IntegrationType {
 		case "stripe":
 			secretKey := dto.IntegrationSecrets["SECRET_KEY"]
