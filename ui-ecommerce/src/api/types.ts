@@ -107,7 +107,7 @@ export type GetMembersSummaryResponse = {
 		email: string
 		name: string
 		total_orders: string
-		monthly_revenue: string
+		updated_at: string
 	}[]
 }
 
