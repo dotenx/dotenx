@@ -150,8 +150,8 @@ export function getLast24HoursSales(projectTag: string, page: number) {
 
 export function getMembersSummary(projectTag: string, page: number) {
 	return api.post<GetMembersSummaryResponse | null>(
-		`/database/query/select/project/${projectTag}/table/members`, //TODO: Use a view
-		{ columns: ["email", "name", "total_orders", "monthly_revenue"] },
+		`/database/query/select/project/${projectTag}/table/orders`, //TODO: Use a view
+		{ columns: ["email", "updated_at"] },
 		{
 			headers: {
 				page: page,

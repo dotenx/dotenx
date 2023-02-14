@@ -2,11 +2,12 @@ import { ActionIcon, Button } from "@mantine/core"
 import { useQuery, useQueryClient } from "react-query"
 import { useState } from "react"
 import { IoMail, IoReload } from "react-icons/io5"
-import { getMembersSummary, QueryKey } from "../api"
+import { getMembersSummary, QueryKey, runCustomQuery } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
+import { FaUserCircle } from "react-icons/fa"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")
@@ -49,17 +50,30 @@ function MembersTab() {
 		() => getMembersSummary(projectTag, currentPage),
 		{ enabled: !!projectTag }
 	)
+
 	const members = membersQuery.data?.data?.rows ?? []
+	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
+	const newMembers = members.filter((m) => m.updated_at >= yesterday)
 	const nPages = Math.ceil((membersQuery.data?.data?.totalRows as number) / 10)
 	const queryClient = useQueryClient()
 	const refetchMembers = () => queryClient.invalidateQueries([QueryKey.GetMembersSummary])
-
+	const stats = [
+		{
+			title: "Total members",
+			value: members.length,
+			isLoading: membersQuery.isLoading || !projectTag,
+		},
+		{
+			title: "New Members (24h)",
+			value: newMembers.length,
+			isLoading: membersQuery.isLoading || !projectTag,
+		},
+	]
 	return (
 		<div>
-			<div className="my-10">
-				<AudienceStats />
+			<div>
+				<AudienceStats stats={stats} />
 			</div>
-			{/* TODO: on row click => open slider from right and show the orders of the user */}
 			<Table
 				withPagination
 				currentPage={currentPage}
@@ -76,18 +90,12 @@ function MembersTab() {
 					{
 						Header: "Email",
 						accessor: "email",
-					},
-					{
-						Header: "Name",
-						accessor: "name",
-					},
-					{
-						Header: "Total Orders",
-						accessor: "total_orders",
-					},
-					{
-						Header: "Monthly Revenue",
-						accessor: "monthly_revenue",
+						Cell: ({ value }: { value: string }) => (
+							<span className="flex items-center gap-x-2">
+								<FaUserCircle className="h-5 w-5" />
+								{value}
+							</span>
+						),
 					},
 				]}
 				data={members}

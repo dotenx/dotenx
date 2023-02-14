@@ -183,24 +183,28 @@ function BestStat({
 //#region audience
 
 function AudienceTab() {
+	const totalUsers = 1900
+	const last24 = 4
+
+	const stats = [
+		{ title: "Total Members", value: totalUsers, isLoading: false },
+		{ title: "New Members (24h)", value: last24, isLoading: false },
+	]
+
 	return (
 		<div className="gap-10 flex flex-col">
-			<AudienceStats />
+			<AudienceStats stats={stats} />
 			<AudienceChart mode="daily" />
 			<ReferrerChart mode="daily" />
 		</div>
 	)
 }
 
-export function AudienceStats() {
-	const totalUsers = 1900
-	const last24 = 4
-
-	const stats = [
-		{ title: "Total Members", value: `${totalUsers}` },
-		{ title: "New Members (24h)", value: `${last24}` },
-	]
-
+export function AudienceStats({
+	stats,
+}: {
+	stats: { title: string; value: number; isLoading: boolean }[]
+}) {
 	return <Stats stats={stats} />
 }
 
