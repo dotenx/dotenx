@@ -8,6 +8,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/database"
+	"github.com/dotenx/dotenx/ao-api/controllers/ecommerce"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/gitIntegration"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
@@ -192,6 +193,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
+	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService}
 
 	// Routes
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
@@ -250,6 +252,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstore := r.Group("/objectstore")
 	marketplace := r.Group("/marketplace")
 	gitIntegration := r.Group("/git/integration")
+	ecommerce := r.Group("/ecommerce")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
@@ -404,6 +407,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.Upload())
 	objectstore.GET("/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.ListFiles())
 	objectstore.GET("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.GetFile())
+	objectstore.POST("/project/:project_tag/file/:file_name/presign/url", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.GetPresignUrl())
 	objectstore.PATCH("/project/:project_tag/file/:file_name/access", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetAccess())
 	objectstore.PATCH("/project/:project_tag/file/:file_name/user_groups", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.SetUserGroups())
 	objectstore.DELETE("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.DeleteFile())
@@ -458,6 +462,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	gitIntegration.POST("/provider/:provider/branch", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ListBranches())
 	gitIntegration.POST("/provider/:provider/export", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ExportProject(marketplaceService, ProjectService, DatabaseService, crudServices))
 	gitIntegration.POST("/provider/:provider/import", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ImportProject(marketplaceService, ProjectService, DatabaseService, crudServices, uibuilderService))
+
+	// ecommerce router (just for projects with 'ecommerce' type)
+	ecommerce.POST("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateProduct())
+	ecommerce.PUT("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateProduct())
+	ecommerce.GET("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
+	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
+	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())

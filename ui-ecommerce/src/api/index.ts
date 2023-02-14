@@ -72,6 +72,9 @@ export function getIntegrations() {
 export function getProject(name: string) {
 	return api.get<GetProjectResponse>(`/project/${name}`)
 }
+export function createProduct({ tag, payload }: { tag: string, payload: any }) {
+	return api.post(`/ecommerce/project/${tag}/product`, payload)
+}
 
 export function getTables(projectName: string) {
 	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)

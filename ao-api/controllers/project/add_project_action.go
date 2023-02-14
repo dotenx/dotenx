@@ -97,9 +97,10 @@ type ProjectRequest struct {
 }
 
 func EcommerceInitialSetup(project models.Project, dbService databaseService.DatabaseService) (err error) {
-	initialTablesList := []string{"integrations", "products", "orders", "reviews"}
-	for _, tableName := range initialTablesList {
-		err = dbService.AddTable(project.AccountId, project.Name, tableName, false, false)
+	initialTablesList := []string{"integrations", "products", "orders", "reviews", "user_products"}
+	isPublicList := []bool{false, true, false, false, false}
+	for i, tableName := range initialTablesList {
+		err = dbService.AddTable(project.AccountId, project.Name, tableName, isPublicList[i], false)
 		if err != nil {
 			return err
 		}
@@ -185,7 +186,7 @@ func EcommerceInitialSetup(project models.Project, dbService databaseService.Dat
 				"type": "dtx_json",
 			},
 			{
-				"name": "file_urls",
+				"name": "file_names",
 				"type": "text_array",
 			},
 			{
@@ -243,6 +244,20 @@ func EcommerceInitialSetup(project models.Project, dbService databaseService.Dat
 			{
 				"name": "confirmed",
 				"type": "yes_no",
+			},
+		},
+		"user_products": []map[string]string{
+			{
+				"name": "__products",
+				"type": "link_field",
+			},
+			{
+				"name": "email",
+				"type": "email",
+			},
+			{
+				"name": "valid_until",
+				"type": "date_time",
 			},
 		},
 	}
