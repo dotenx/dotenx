@@ -52,7 +52,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 		}
 		project.AccountId = accountId
 
-		var err error
+		var setupErr error
 		switch project.Type {
 		case "ecommerce":
 			authCookie, err := c.Cookie("dotenx")
@@ -63,12 +63,12 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 				})
 				return
 			}
-			err = EcommerceDependentSetup(authCookie, project, dto.IntegrationName, dto.IntegrationType, dbService, cService)
+			setupErr = EcommerceDependentSetup(authCookie, project, dto.IntegrationName, dto.IntegrationType, dbService, cService)
 		}
-		if err != nil {
-			logrus.Error(err)
+		if setupErr != nil {
+			logrus.Error(setupErr)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
+				"error": setupErr.Error(),
 			})
 			return
 		}
@@ -328,7 +328,13 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 			logrus.Error(err.Error())
 			return err
 		}
-		err = CreateAndActivatePipeline(project, dto, cService)
+		pipelineId, err := CreateAndActivatePipeline(project, dto, cService)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		// we should nake this interaction public to be accessible by tp users
+		err = cService.SetInteractionAccess(pipelineId, true)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
@@ -380,7 +386,7 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 			logrus.Error(err.Error())
 			return err
 		}
-		err = CreateAndActivatePipeline(project, dto, cService)
+		_, err = CreateAndActivatePipeline(project, dto, cService)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
@@ -389,7 +395,7 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 	return
 }
 
-func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cService crudService.CrudService) (err error) {
+func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cService crudService.CrudService) (pipelineId string, err error) {
 	base := models.Pipeline{
 		AccountId:     project.AccountId,
 		Name:          dto.Name,
@@ -403,17 +409,17 @@ func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cServ
 
 	err = cService.CreatePipeLine(&base, &pipeline, dto.IsTemplate, dto.IsInteraction, project.Name)
 	if err != nil {
-		return err
+		return "", err
 	}
 	newP, err := cService.GetPipelineByName(base.AccountId, base.Name, base.ProjectName)
 	if err != nil {
 		log.Println(err)
-		return err
+		return "", err
 	}
 	err = cService.ActivatePipeline(base.AccountId, newP.PipelineDetailes.Id)
 	if err != nil {
 		log.Println(err)
-		return err
+		return "", err
 	}
-	return
+	return newP.PipelineDetailes.Id, nil
 }
