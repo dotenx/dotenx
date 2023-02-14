@@ -1,13 +1,13 @@
 import { ActionIcon, Button } from "@mantine/core"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
+import { FaUserCircle } from "react-icons/fa"
 import { IoMail, IoReload } from "react-icons/io5"
-import { getMembersSummary, QueryKey, runCustomQuery } from "../api"
+import { getMembersSummary, QueryKey } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
-import { FaUserCircle } from "react-icons/fa"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")

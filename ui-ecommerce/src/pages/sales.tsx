@@ -1,5 +1,5 @@
 import { ActionIcon } from "@mantine/core"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -14,10 +14,10 @@ import _ from "lodash"
 import { useState } from "react"
 import { Bar } from "react-chartjs-2"
 import { IoReload } from "react-icons/io5"
+import { useParams } from "react-router-dom"
 import { getColumns, getTableRecords, QueryKey, runCustomQuery } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { useParams } from "react-router-dom"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

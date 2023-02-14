@@ -10,19 +10,19 @@ import {
 	TextInput,
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
+import { useMutation } from "@tanstack/react-query"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
-import { TiDelete } from "react-icons/ti"
-import { ContentWrapper, Header } from "../features/ui"
-import { ImageDrop } from "../features/ui/image-drop"
 import { MdClose } from "react-icons/md"
-import { createProduct, currency, getProject } from "../api"
-import { AttachmentPage } from "../features/app/attachment"
-import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { useMutation } from "react-query"
-import { toast } from "react-toastify"
+import { TiDelete } from "react-icons/ti"
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import { createProduct, currency } from "../api"
+import { AttachmentPage } from "../features/app/attachment"
+import { ContentWrapper, Header } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
+import { ImageDrop } from "../features/ui/image-drop"
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
@@ -106,7 +106,7 @@ function DetailsTab({
 	>(values.recurring_payment?.prices || [])
 	const [limitation, setLimitation] = useState(values.limitation)
 	const [categories, setCategories] = useState<string[]>(values.tags)
-	let details = {}
+	const details = {}
 	for (let i = 0; i < attributesList.length; i++) {
 		Object.assign(details, attributesList[i])
 	}

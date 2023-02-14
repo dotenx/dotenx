@@ -1,16 +1,16 @@
 import { getIntegrations, QueryKey } from "../../api"
 
-import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
-import { BiPlus } from "react-icons/bi"
 import { Button, Modal } from "@mantine/core"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
+import { BiPlus } from "react-icons/bi"
 import { IntegrationForm } from "./addIntegrationForm"
 
 export default function CheckIntegration() {
 	//use this component later for integrations
 	const [openModal, setOpenModal] = useState(false)
 	const [integration, setIntegration] = useState("")
-	const query = useQuery(QueryKey.GetIntegrations, getIntegrations)
+	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
 
 	const integrations =
 		query?.data?.data
