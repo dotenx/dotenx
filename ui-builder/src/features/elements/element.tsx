@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
-import { Controller } from '../controllers/controller'
+import { Component } from '../components/component'
 import { Expression } from '../states/expression'
 import { ElementEvent } from './event'
 import { Style } from './style'
@@ -24,7 +24,7 @@ export abstract class Element {
 	bindings: Bindings = {}
 	children: Element[] | null = null
 	repeatFrom: RepeatFrom | null = null
-	controller: Controller | null = null
+	controller: Component | null = null
 	data?: Record<string, unknown>
 	elementId?: string
 	tagId?: string
@@ -55,6 +55,7 @@ export abstract class Element {
 			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style) },
 			elementId: this.elementId,
 			tagId: this.tagId,
+			script: this.script,
 		}
 	}
 
@@ -81,6 +82,7 @@ export abstract class Element {
 				if (found) return found as T
 			}
 		}
+		console.info(`Element with tagId ${tagId} not found`)
 	}
 
 	_findByTagIdRecursive(tagId: string): Element | undefined {
@@ -122,6 +124,12 @@ export abstract class Element {
 		return this
 	}
 
+	cssHover(css: CSSProperties) {
+		const merged = _.assign({}, this.style.desktop?.hover, css)
+		_.set(this.style, 'desktop.hover', merged)
+		return this
+	}
+
 	tag(tagId: string) {
 		this.tagId = tagId
 		return this
@@ -139,6 +147,11 @@ export abstract class Element {
 
 	unstyled() {
 		this.style = {}
+		return this
+	}
+
+	class(classes: string[] | string) {
+		this.classes = [classes].flat()
 		return this
 	}
 }

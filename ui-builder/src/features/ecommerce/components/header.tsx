@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import imageUrl from '../../../assets/components/about-left.png'
-import { Controller } from '../../controllers/controller'
-import { ComponentName } from '../../controllers/helpers'
-import { DndTabs } from '../../controllers/helpers/dnd-tabs'
-import { OptionsWrapper } from '../../controllers/helpers/options-wrapper'
+import imageUrl from '../../../assets/themes/ecommerce/header.png'
+import { Component } from '../../components/component'
+import { ComponentName } from '../../components/helpers'
+import { DndTabs } from '../../components/helpers/dnd-tabs'
+import { OptionsWrapper } from '../../components/helpers/options-wrapper'
 import { Element } from '../../elements/element'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
@@ -13,7 +13,7 @@ import { BoxStyler } from '../../simple/stylers/box-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { shared } from '../shared'
 
-export class Header extends Controller {
+export class Header extends Component {
 	name = 'Header'
 	image = imageUrl
 	defaultData = component()

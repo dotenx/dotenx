@@ -1,11 +1,12 @@
 import { Image, Portal } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
-import { Components, ControllerSection } from '../controllers'
-import { DividerCollapsible } from '../controllers/helpers'
+import { Components, ComponentSection } from '../components'
+import { DividerCollapsible } from '../components/helpers'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
@@ -18,23 +19,26 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 	)
 }
 
-function SimpleComponentList({ section: { title, items } }: { section: ControllerSection }) {
+function SimpleComponentList({ section: { title, items } }: { section: ComponentSection }) {
 	const insertComponent = useInsertComponent()
+	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
 		<DividerCollapsible closed title={title}>
 			{items.map((Item) => {
-				const controller = new (Item as any)()
+				const newComponent = new (Item as any)()
 				return (
 					<SimpleComponentItem
-						src={controller.image}
-						key={controller.name}
-						image={<Image height={100} src={controller.image} alt={controller.name} />}
-						label={controller.name}
+						src={newComponent.image}
+						key={newComponent.name}
+						image={
+							<Image height={100} src={newComponent.image} alt={newComponent.name} />
+						}
+						label={newComponent.name}
 						onClick={() => {
-							const component = controller.transform()
+							const component = newComponent.transform()
 							insertComponent(component)
-							controller.onCreate(component)
+							newComponent.onCreate(component, { projectTag })
 						}}
 					/>
 				)
