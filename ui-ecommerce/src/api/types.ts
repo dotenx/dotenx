@@ -2,8 +2,8 @@ import { z } from "zod"
 
 export enum QueryKey {
 	GetProductsSummary = "get-products-summary",
-	GetProductsOnlyRecords = 'get-products-only-records',
-	GetMembershipOnlyRecords = 'get-membership-only-records',
+	GetProductsOnlyRecords = "get-products-only-records",
+	GetMembershipOnlyRecords = "get-membership-only-records",
 	GetColumns = "get-columns",
 	GetTableRecords = "get-table-records",
 	GetTables = "get-tables",
@@ -68,7 +68,7 @@ export type QueryBuilderValues = z.infer<typeof schema>
 
 export interface RecordsFilters {
 	columns: string[]
-	filters?: { filterSet: [{ key: string, operator: string, value: string }] }
+	filters?: { filterSet: [{ key: string; operator: string; value: string }] }
 }
 
 export type GetTableRecordsRequest = RecordsFilters
@@ -129,7 +129,6 @@ export interface Column {
 
 export type CreateTableRequest = Table
 
-
 export type GetTablesResponse = {
 	tables: {
 		name: string
@@ -173,8 +172,6 @@ export interface Secret {
 	internal: boolean
 }
 
-
-
 export type GetProfileResponse = {
 	account_id: string
 }
@@ -199,125 +196,125 @@ export type UploadImageResponse = {
 }
 
 export const currency = [
-	"USD"
-	, "AED"
-	, "AFN"
-	, "ALL"
-	, "AMD"
-	, "ANG"
-	, "AOA"
-	, "ARS"
-	, "AUD"
-	, "AWG"
-	, "AZN"
-	, "BAM"
-	, "BBD"
-	, "BDT"
-	, "BGN"
-	, "BMD"
-	, "BND"
-	, "BOB"
-	, "BRL"
-	, "BSD"
-	, "BWP"
-	, "BYN"
-	, "BZD"
-	, "CAD"
-	, "CDF"
-	, "CHF"
-	, "CNY"
-	, "COP"
-	, "CRC"
-	, "CVE"
-	, "CZK"
-	, "DKK"
-	, "DOP"
-	, "DZD"
-	, "EGP"
-	, "ETB"
-	, "EUR"
-	, "FJD"
-	, "FKP"
-	, "GBP"
-	, 'GEL'
-	, 'GIP'
-	, 'GMD'
-	, 'GTQ'
-	, 'GYD'
-	, 'HKD'
-	, 'HNL'
-	, 'HRK'
-	, 'HTG'
-	, 'HUF'
-	, 'IDR'
-	, 'ILS'
-	, 'INR'
-	, 'ISK'
-	, 'JMD'
-	, 'KES'
-	, 'KGS'
-	, 'KHR'
-	, 'KYD'
-	, 'KZT'
-	, 'LAK'
-	, 'LBP'
-	, 'LKR'
-	, 'LRD'
-	, 'LSL'
-	, 'MAD'
-	, 'MDL'
-	, 'MKD'
-	, 'MMK'
-	, 'MNT'
-	, 'MOP'
-	, 'MRO'
-	, 'MUR'
-	, 'MVR'
-	, 'MWK'
-	, 'MXN'
-	, 'MYR'
-	, 'MZN'
-	, 'NAD'
-	, 'NGN'
-	, 'NIO'
-	, 'NOK'
-	, 'NPR'
-	, 'NZD'
-	, 'PAB'
-	, 'PEN'
-	, 'PGK'
-	, 'PHP'
-	, 'PKR'
-	, 'PLN'
-	, 'QAR'
-	, 'RON'
-	, 'RSD'
-	, 'RUB'
-	, 'SAR'
-	, 'SBD'
-	, 'SCR'
-	, 'SEK'
-	, 'SGD'
-	, 'SHP'
-	, 'SLE'
-	, 'SLL'
-	, 'SOS'
-	, 'SRD'
-	, 'STD'
-	, 'SZL'
-	, 'THB'
-	, 'TJS'
-	, 'TOP'
-	, 'TRY'
-	, 'TTD'
-	, 'TWD'
-	, 'TZS'
-	, 'UAH'
-	, 'UYU'
-	, 'UZS'
-	, 'WST'
-	, 'XCD'
-	, 'YER'
-	, 'ZAR'
-	, 'ZMW'
+	"USD",
+	"AED",
+	"AFN",
+	"ALL",
+	"AMD",
+	"ANG",
+	"AOA",
+	"ARS",
+	"AUD",
+	"AWG",
+	"AZN",
+	"BAM",
+	"BBD",
+	"BDT",
+	"BGN",
+	"BMD",
+	"BND",
+	"BOB",
+	"BRL",
+	"BSD",
+	"BWP",
+	"BYN",
+	"BZD",
+	"CAD",
+	"CDF",
+	"CHF",
+	"CNY",
+	"COP",
+	"CRC",
+	"CVE",
+	"CZK",
+	"DKK",
+	"DOP",
+	"DZD",
+	"EGP",
+	"ETB",
+	"EUR",
+	"FJD",
+	"FKP",
+	"GBP",
+	"GEL",
+	"GIP",
+	"GMD",
+	"GTQ",
+	"GYD",
+	"HKD",
+	"HNL",
+	"HRK",
+	"HTG",
+	"HUF",
+	"IDR",
+	"ILS",
+	"INR",
+	"ISK",
+	"JMD",
+	"KES",
+	"KGS",
+	"KHR",
+	"KYD",
+	"KZT",
+	"LAK",
+	"LBP",
+	"LKR",
+	"LRD",
+	"LSL",
+	"MAD",
+	"MDL",
+	"MKD",
+	"MMK",
+	"MNT",
+	"MOP",
+	"MRO",
+	"MUR",
+	"MVR",
+	"MWK",
+	"MXN",
+	"MYR",
+	"MZN",
+	"NAD",
+	"NGN",
+	"NIO",
+	"NOK",
+	"NPR",
+	"NZD",
+	"PAB",
+	"PEN",
+	"PGK",
+	"PHP",
+	"PKR",
+	"PLN",
+	"QAR",
+	"RON",
+	"RSD",
+	"RUB",
+	"SAR",
+	"SBD",
+	"SCR",
+	"SEK",
+	"SGD",
+	"SHP",
+	"SLE",
+	"SLL",
+	"SOS",
+	"SRD",
+	"STD",
+	"SZL",
+	"THB",
+	"TJS",
+	"TOP",
+	"TRY",
+	"TTD",
+	"TWD",
+	"TZS",
+	"UAH",
+	"UYU",
+	"UZS",
+	"WST",
+	"XCD",
+	"YER",
+	"ZAR",
+	"ZMW",
 ]

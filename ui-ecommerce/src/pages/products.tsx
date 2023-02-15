@@ -168,9 +168,15 @@ export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 			),
 		{ enabled: !!projectTag }
 	)
+<<<<<<< HEAD
 	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue ?? 0
 	const last24 = lastDayRevQuery?.data?.data?.rows?.[0]?.total_revenue ?? 0
 	const mrr = mrrQuery?.data?.data?.rows?.[0]?.mrr ?? 0
+=======
+	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue
+	const last24 = lastDayRevQuery?.data?.data.rows[0].total_revenue
+	const mrr = mrrQuery?.data?.data.rows[0].mrr
+>>>>>>> master
 	const stats = [
 		{
 			title: "Total Revenue",
