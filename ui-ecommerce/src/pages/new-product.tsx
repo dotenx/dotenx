@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { createProduct, currency } from "../api"
 import { AttachmentPage } from "../features/app/attachment"
+import { Editor } from "../features/editor/editor"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { ImageDrop } from "../features/ui/image-drop"
@@ -69,9 +70,7 @@ export function NewProductPage() {
 							setValues={setValues}
 						/>
 					)}
-					{activeTab === "content" && (
-						<ContentTab getInputProps={getInputProps} values={values} />
-					)}
+					{activeTab === "content" && <ContentTab />}
 				</form>
 				{activeTab === "attachment" && (
 					<AttachmentPage tag={projectTag} setValues={setValues} values={values} />
@@ -595,17 +594,6 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 	)
 }
 
-const ContentTab = ({ getInputProps, values }: { getInputProps: any; values: any }) => {
-	return (
-		<div>
-			<Textarea
-				value={values.connect}
-				label="Content"
-				placeholder=""
-				minRows={5}
-				name="content"
-				{...getInputProps("content")}
-			/>
-		</div>
-	)
+const ContentTab = () => {
+	return <Editor />
 }
