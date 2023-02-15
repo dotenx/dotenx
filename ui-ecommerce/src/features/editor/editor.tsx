@@ -6,7 +6,7 @@ import { createEditor, EDITOR_ID } from "./config"
 
 const edjsParser = edjsHTML()
 
-export function Editor() {
+export function Editor({ onSave }: { onSave: (value: string[]) => void }) {
 	const editorRef = useRef<EditorJS | null>(null)
 
 	useEffect(() => {
@@ -17,7 +17,7 @@ export function Editor() {
 	const handleSave = async () => {
 		const data = await editorRef.current?.save()
 		const html = edjsParser.parse(data)
-		console.log(html)
+		onSave(html)
 	}
 
 	return (

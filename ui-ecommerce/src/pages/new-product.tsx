@@ -595,5 +595,5 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 }
 
 const ContentTab = () => {
-	return <Editor />
+	return <Editor onSave={(value) => console.log(value)} />
 }
