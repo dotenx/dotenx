@@ -17,12 +17,12 @@ import { TiDelete } from "react-icons/ti"
 import { ContentWrapper, Header } from "../features/ui"
 import { ImageDrop } from "../features/ui/image-drop"
 import { MdClose } from "react-icons/md"
-import { createProduct, currency, getProject } from "../api"
+import { createProduct, currency } from "../api"
 import { AttachmentPage } from "../features/app/attachment"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { useMutation } from "react-query"
 import { toast } from "react-toastify"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
@@ -577,14 +577,13 @@ const MonthlyPricingInput = ({
 }
 function ActionBar({ values, tag }: { values: any; tag: string }) {
 	const navigate = useNavigate()
+	const { projectName = "" } = useParams()
 
 	const { mutate, isLoading } = useMutation(() => createProduct({ tag, payload: values }), {
 		onSuccess: () => {
-			toast("Product added successfully", { type: "success", autoClose: 2000 }), navigate(-1)
+			toast("Product added successfully", { type: "success", autoClose: 2000 }),
+				navigate(`/projects/${projectName}/products`)
 		},
-		// onError: () => {
-		// 	toast("External domain is not verified", { type: "error", autoClose: 2000 })
-		// },
 	})
 	return (
 		<div className="flex gap-2">
