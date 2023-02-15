@@ -2,22 +2,28 @@ package project
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
+	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/stripe/stripe-go/v72/client"
 )
 
 type DependentSetupRequest struct {
-	ProjectName     string `json:"project_name"`
-	IntegrationName string `json:"integration_name"`
-	IntegrationType string `json:"integration_type"`
+	ProjectName        string            `json:"project_name"`
+	IntegrationSecrets map[string]string `json:"integration_secrets"`
+	IntegrationType    string            `json:"integration_type"`
 }
 
 type AddPipelineDto struct {
@@ -28,7 +34,7 @@ type AddPipelineDto struct {
 	Manifest      models.Manifest `json:"manifest"`
 }
 
-func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.DatabaseService, cService crudService.CrudService) gin.HandlerFunc {
+func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.DatabaseService, cService crudService.CrudService, iService integrationService.IntegrationService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dto DependentSetupRequest
 		accountId, _ := utils.GetAccountId(c)
@@ -49,11 +55,52 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 		}
 		project.AccountId = accountId
 
-		var err error
-		switch project.Type {
-		case "ecommerce":
-			err = EcommerceDependentSetup(project, dto.IntegrationName, dto.IntegrationType, dbService, cService)
+		integrationName := fmt.Sprintf("%s-%s", dto.IntegrationType, utils.RandStringRunes(8, utils.FullRunes))
+		integrationSecretsCopy := make(map[string]string)
+		for k, v := range dto.IntegrationSecrets {
+			integrationSecretsCopy[k] = v
 		}
+		if reflect.DeepEqual(models.AvaliableIntegrations[dto.IntegrationType], models.IntegrationDefinition{}) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid integration type",
+			})
+			return
+		}
+		for _, secret := range models.AvaliableIntegrations[dto.IntegrationType].Secrets {
+			delete(integrationSecretsCopy, secret.Key)
+		}
+		if len(integrationSecretsCopy) != 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid integration secrets",
+			})
+			return
+		}
+		// we check validity of integration secrets in this switch case
+		switch dto.IntegrationType {
+		case "stripe":
+			secretKey := dto.IntegrationSecrets["SECRET_KEY"]
+			sc := &client.API{}
+			sc.Init(secretKey, nil)
+			_, err := sc.Account.Get()
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid stripe secret key",
+				})
+				return
+			}
+		}
+		refreshToken, ok := dto.IntegrationSecrets["REFRESH_TOKEN"]
+		hasRefreshToken := ok && refreshToken != ""
+		err := iService.AddIntegration(accountId, models.Integration{
+			Name:            integrationName,
+			AccountId:       accountId,
+			Type:            dto.IntegrationType,
+			Secrets:         dto.IntegrationSecrets,
+			HasRefreshToken: hasRefreshToken,
+			Provider:        "",
+			TpAccountId:     "",
+		})
 		if err != nil {
 			logrus.Error(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -62,165 +109,166 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 			return
 		}
 
+		var setupErr error
+		switch project.Type {
+		case "ecommerce":
+			addIntegrationToTableQuery := fmt.Sprintf(`
+			insert into integrations(type, integration_name) values ('%s', '%s');`, dto.IntegrationType, integrationName)
+			_, err := dbService.RunDatabaseQuery(project.Tag, addIntegrationToTableQuery)
+			if err != nil {
+				logrus.Error(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			authCookie, err := c.Cookie("dotenx")
+			if err != nil {
+				logrus.Error(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			setupErr = EcommerceDependentSetup(authCookie, project, integrationName, dto.IntegrationType, dbService, cService)
+		}
+		if setupErr != nil {
+			logrus.Error(setupErr)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": setupErr.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{"message": "Project setup completed successfully"})
 	}
 }
 
-func EcommerceDependentSetup(project models.Project, integrationName, integrationType string, dbService databaseService.DatabaseService, cService crudService.CrudService) (err error) {
+func EcommerceDependentSetup(authCookie string, project models.Project, integrationName, integrationType string, dbService databaseService.DatabaseService, cService crudService.CrudService) (err error) {
 	switch integrationType {
 	case "stripe":
-		createStripeProductJsonDtoStr := fmt.Sprintf(`
+		dtxAccessToken := ""
+		if !config.Configs.App.RunLocally {
+			getDtxTokenUrl := config.Configs.Endpoints.Admin + "/auth/access/token"
+			requestHeaders := []utils.Header{
+				{
+					Key:   "Cookie",
+					Value: fmt.Sprintf("dotenx=%s", authCookie),
+				},
+				{
+					Key:   "Content-Type",
+					Value: "application/json",
+				},
+			}
+			httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+			out, err, status, _ := httpHelper.HttpRequest(http.MethodGet, getDtxTokenUrl, nil, requestHeaders, time.Minute, true)
+			if err != nil {
+				return err
+			}
+			getTokenRespMap := make(map[string]interface{})
+			jsonErr := json.Unmarshal(out, &getTokenRespMap)
+			if status == http.StatusBadRequest && jsonErr == nil && fmt.Sprint(getTokenRespMap["message"]) != "" {
+				createDtxTokenUrl := config.Configs.Endpoints.Admin + "/auth/access/token/create"
+				out, err, status, _ = httpHelper.HttpRequest(http.MethodPost, createDtxTokenUrl, nil, requestHeaders, time.Minute, true)
+				if err != nil {
+					return err
+				}
+				createTokenRespMap := make(map[string]interface{})
+				jsonErr := json.Unmarshal(out, &createTokenRespMap)
+				if status == http.StatusOK && jsonErr == nil && fmt.Sprint(createTokenRespMap["accessToken"]) != "" {
+					dtxAccessToken = fmt.Sprint(createTokenRespMap["accessToken"])
+				} else {
+					return errors.New("can't get DTX access token")
+				}
+			} else if status == http.StatusOK && jsonErr == nil && fmt.Sprint(getTokenRespMap["accessToken"]) != "" {
+				dtxAccessToken = fmt.Sprint(getTokenRespMap["accessToken"])
+			} else {
+				return errors.New("can't get DTX access token")
+			}
+		}
+
+		createStripePaymentAutomationJsonDtoStr := fmt.Sprintf(`
 		{
-			"name": "create-product",
+			"name": "stripe-new-payment",
 			"manifest": {
 			  "tasks": {
-				"create-product": {
-				  "executeAfter": {},
-				  "type": "Stripe create product",
+				"http-request": {
+				  "type": "Http request",
 				  "body": {
-					"currency": {
-					  "nestedKey": "interactionRunTime.currency",
-					  "type": "nested"
+					"method": {
+					  "type": "directValue",
+					  "value": "POST"
 					},
-					"name": {
-					  "nestedKey": "interactionRunTime.name",
-					  "type": "nested"
+					"url": {
+					  "type": "directValue",
+					  "value": "https://api.dotenx.com/public/ecommerce/project/%s/order"
 					},
-					"recurring_interval": {
-					  "nestedKey": "interactionRunTime.recurring_interval",
-					  "type": "nested"
+					"headers": {
+					  "type": "directValue",
+					  "value": {}
 					},
-					"recurring_interval_count": {
-					  "nestedKey": "interactionRunTime.recurring_interval_count",
-					  "type": "nested"
-					},
-					"unit_amount": {
-					  "nestedKey": "interactionRunTime.unit_amount",
-					  "type": "nested"
+					"body": {
+					  "type": "json",
+					  "value": {
+						"payment_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.id"
+						},
+						"price_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.id"
+						},
+						"customer_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.customer_id"
+						},
+						"created_at": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.created"
+						},
+						"unit_amount": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.unit_amount"
+						},
+						"product_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.product.id"
+						},
+						"quantity": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.quantity"
+						}
+					  }
 					}
 				  },
-				  "integration": "%s"
+				  "integration": "",
+				  "executeAfter": {}
 				}
 			  },
-			  "triggers": {}
+			  "triggers": {
+				"new-payment": {
+				  "name": "new-payment",
+				  "type": "Stripe payment completed",
+				  "pipeline_name": "default",
+				  "integration": "%s",
+				  "credentials": {
+					"PAYMENT_STATUS": "succeeded",
+					"passed_seconds": "3660"
+				  }
+				}
+			  }
 			},
 			"is_template": false,
-			"is_interaction": true
+			"is_interaction": false
 		}
-		`, integrationName)
+		`, project.Tag, integrationName)
 		var dto AddPipelineDto
-		err = json.Unmarshal([]byte(createStripeProductJsonDtoStr), &dto)
+		err = json.Unmarshal([]byte(createStripePaymentAutomationJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
 		}
-		err = CreateAndActivatePipeline(project, dto, cService)
-		if err != nil {
-			logrus.Error(err.Error())
-			return err
-		}
-
-		createStripePriceJsonDtoStr := fmt.Sprintf(`
-		{
-			"name": "create-price",
-			"manifest": {
-			  "tasks": {
-				"create-price": {
-				  "executeAfter": {},
-				  "type": "Stripe create price",
-				  "body": {
-					"currency": {
-					  "nestedKey": "interactionRunTime.currency",
-					  "type": "nested"
-					},
-					"product_id": {
-					  "nestedKey": "interactionRunTime.product_id",
-					  "type": "nested"
-					},
-					"recurring_interval": {
-					  "nestedKey": "interactionRunTime.recurring_interval",
-					  "type": "nested"
-					},
-					"recurring_interval_count": {
-					  "nestedKey": "interactionRunTime.recurring_interval_count",
-					  "type": "nested"
-					},
-					"unit_amount": {
-					  "nestedKey": "interactionRunTime.unit_amount",
-					  "type": "nested"
-					}
-				  },
-				  "integration": "%s"
-				}
-			  },
-			  "triggers": {}
-			},
-			"is_template": false,
-			"is_interaction": true
-		}
-		`, integrationName)
-		dto = AddPipelineDto{}
-		err = json.Unmarshal([]byte(createStripePriceJsonDtoStr), &dto)
-		if err != nil {
-			logrus.Error(err.Error())
-			return err
-		}
-		err = CreateAndActivatePipeline(project, dto, cService)
-		if err != nil {
-			logrus.Error(err.Error())
-			return err
-		}
-
-		updateStripeProductJsonDtoStr := fmt.Sprintf(`
-		{
-			"name": "update-product",
-			"manifest": {
-			  "tasks": {
-				"update-product": {
-				  "executeAfter": {},
-				  "type": "Stripe update product",
-				  "body": {
-					"currency": {
-					  "nestedKey": "interactionRunTime.currency",
-					  "type": "nested"
-					},
-					"name": {
-					  "nestedKey": "interactionRunTime.name",
-					  "type": "nested"
-					},
-					"product_id": {
-					  "nestedKey": "interactionRunTime.product_id",
-					  "type": "nested"
-					},
-					"recurring_interval": {
-					  "nestedKey": "interactionRunTime.recurring_interval",
-					  "type": "nested"
-					},
-					"recurring_interval_count": {
-					  "nestedKey": "interactionRunTime.recurring_interval_count",
-					  "type": "nested"
-					},
-					"unit_amount": {
-					  "nestedKey": "interactionRunTime.unit_amount",
-					  "type": "nested"
-					}
-				  },
-				  "integration": "%s"
-				}
-			  },
-			  "triggers": {}
-			},
-			"is_template": false,
-			"is_interaction": true
-		}
-		`, integrationName)
-		dto = AddPipelineDto{}
-		err = json.Unmarshal([]byte(updateStripeProductJsonDtoStr), &dto)
-		if err != nil {
-			logrus.Error(err.Error())
-			return err
-		}
-		err = CreateAndActivatePipeline(project, dto, cService)
+		_, err = CreateAndActivatePipeline(project, dto, cService)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
@@ -229,7 +277,6 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 		/*
 			Create Stripe payment link inputs:
 			{
-				"access_token": "{dotenx_user_access_token_that_starts_with_dtx}",
 				"email": "{email_of_third_party_user_who_want_buy_products}",
 				"success_url": "{success_url}",
 				"cancel_url": "{cancel_url}",
@@ -242,7 +289,6 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 
 			example:
 			{
-				"access_token": "dtx_abcdefghijklmnopqrstuvwxyz",
 				"email": "test_name_04@mail.com",
 				"success_url": "https://example.web.dotenx.com/payment/success",
 				"cancel_url": "https://example.web.dotenx.com/payment/cancel",
@@ -296,7 +342,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 								}
 							  },
 							  "headers": {
-								"DTX-auth": "inputs.access_token"
+								"DTX-auth": "\"%s\""
 							  },
 							  "method": "POST",
 							  "output": "find_result",
@@ -327,7 +373,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 										  }
 										},
 										"headers": {
-										  "DTX-auth": "inputs.access_token"
+										  "DTX-auth": "\"%s\""
 										},
 										"method": "POST",
 										"output": "create_result",
@@ -354,7 +400,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 										  }
 										},
 										"headers": {
-										  "DTX-auth": "inputs.access_token"
+										  "DTX-auth": "\"%s\""
 										},
 										"method": "POST",
 										"output": "link_result",
@@ -393,7 +439,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 									  }
 									},
 									"headers": {
-									  "DTX-auth": "inputs.access_token"
+									  "DTX-auth": "\"%s\""
 									},
 									"method": "POST",
 									"output": "link_result",
@@ -430,14 +476,20 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 			"is_template": false,
 			"is_interaction": true
 		}
-		`, integrationName, integrationName, integrationName, integrationName)
+		`, integrationName, dtxAccessToken, integrationName, dtxAccessToken, integrationName, dtxAccessToken, integrationName, dtxAccessToken)
 		dto = AddPipelineDto{}
 		err = json.Unmarshal([]byte(createStripePaymentLinkJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
 		}
-		err = CreateAndActivatePipeline(project, dto, cService)
+		pipelineId, err := CreateAndActivatePipeline(project, dto, cService)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		// we should make this interaction public to be accessible by tp users
+		err = cService.SetInteractionAccess(pipelineId, true)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
@@ -489,7 +541,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 			logrus.Error(err.Error())
 			return err
 		}
-		err = CreateAndActivatePipeline(project, dto, cService)
+		_, err = CreateAndActivatePipeline(project, dto, cService)
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
@@ -498,7 +550,7 @@ func EcommerceDependentSetup(project models.Project, integrationName, integratio
 	return
 }
 
-func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cService crudService.CrudService) (err error) {
+func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cService crudService.CrudService) (pipelineId string, err error) {
 	base := models.Pipeline{
 		AccountId:     project.AccountId,
 		Name:          dto.Name,
@@ -512,17 +564,17 @@ func CreateAndActivatePipeline(project models.Project, dto AddPipelineDto, cServ
 
 	err = cService.CreatePipeLine(&base, &pipeline, dto.IsTemplate, dto.IsInteraction, project.Name)
 	if err != nil {
-		return err
+		return "", err
 	}
 	newP, err := cService.GetPipelineByName(base.AccountId, base.Name, base.ProjectName)
 	if err != nil {
 		log.Println(err)
-		return err
+		return "", err
 	}
 	err = cService.ActivatePipeline(base.AccountId, newP.PipelineDetailes.Id)
 	if err != nil {
 		log.Println(err)
-		return err
+		return "", err
 	}
-	return
+	return newP.PipelineDetailes.Id, nil
 }
