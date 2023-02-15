@@ -1,10 +1,10 @@
 import { Button } from "@mantine/core"
-import { useMutation } from "react-query"
-import { useEffect, useState } from "react"
 import { useForm } from "@mantine/form"
+import { useMutation } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
+import { BiCloudUpload } from "react-icons/bi"
 import { BsFillFolderSymlinkFill } from "react-icons/bs"
 import { uploadFile } from "../../api"
-import { BiCloudUpload } from "react-icons/bi"
 
 export function AttachmentPage({
 	tag,

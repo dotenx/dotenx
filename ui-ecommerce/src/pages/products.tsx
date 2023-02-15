@@ -1,18 +1,18 @@
 import { Button } from "@mantine/core"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
+import _ from "lodash"
 import { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useParams } from "react-router-dom"
 import { getColumns, getTableRecords, QueryKey, runCustomQuery } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import _ from "lodash"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
 	const { projectName = "" } = useParams()
 
-	const columnsQuery = useQuery(QueryKey.GetColumns, () => getColumns(projectName, "products"))
+	const columnsQuery = useQuery([QueryKey.GetColumns], () => getColumns(projectName, "products"))
 
 	const columns = columnsQuery.data?.data.columns ?? []
 	const headers = columns
@@ -128,7 +128,7 @@ export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 			),
 		{ enabled: !!projectTag }
 	)
-	const totalRevenue = totalRevenueQuery?.data?.data.rows[0].total_revenue
+	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue
 	const last24 = lastDayRevQuery?.data?.data.rows[0].total_revenue
 	const mrr = mrrQuery?.data?.data.rows[0].mrr
 	const stats = [
