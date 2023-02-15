@@ -2,8 +2,24 @@ lockfileVersion: 5.4
 
 specifiers:
   '@babel/core': ^7.20.12
+  '@editorjs/checklist': ^1.4.0
+  '@editorjs/code': ^2.8.0
+  '@editorjs/delimiter': ^1.3.0
   '@editorjs/editorjs': ^2.26.5
+  '@editorjs/embed': ^2.5.3
+  '@editorjs/header': ^2.7.0
+  '@editorjs/inline-code': ^1.4.0
+  '@editorjs/list': ^1.8.0
+  '@editorjs/marker': ^1.3.0
+  '@editorjs/nested-list': ^1.3.0
   '@editorjs/paragraph': ^2.9.0
+  '@editorjs/quote': ^2.5.0
+  '@editorjs/raw': ^2.4.0
+  '@editorjs/simple-image': ^1.5.1
+  '@editorjs/table': ^2.2.0
+  '@editorjs/text-variant-tune': ^1.0.1
+  '@editorjs/underline': ^1.1.0
+  '@editorjs/warning': ^1.3.0
   '@emotion/react': ^11.10.5
   '@hookform/error-message': ^2.0.1
   '@hookform/resolvers': ^2.9.11
@@ -12,6 +28,7 @@ specifiers:
   '@mantine/form': ^5.10.3
   '@mantine/hooks': ^5.10.3
   '@mantine/modals': ^5.10.3
+  '@tailwindcss/typography': ^0.5.9
   '@tanstack/react-query': ^4.24.6
   '@types/lodash': ^4.14.191
   '@types/react': ^18.0.28
@@ -27,6 +44,10 @@ specifiers:
   chart.js: ^4.2.1
   clsx: ^1.2.1
   date-fns: ^2.29.3
+  editorjs-drag-drop: ^1.1.13
+  editorjs-html: ^3.4.2
+  editorjs-text-alignment-blocktune: ^1.0.3
+  editorjs-undo: ^2.0.18
   eslint: ^8.34.0
   eslint-config-prettier: ^8.6.0
   eslint-plugin-react: ^7.32.2
@@ -55,8 +76,19 @@ specifiers:
 
 dependencies:
   '@babel/core': 7.20.12
+  '@editorjs/checklist': 1.4.0
   '@editorjs/editorjs': 2.26.5
+  '@editorjs/embed': 2.5.3
+  '@editorjs/header': 2.7.0
+  '@editorjs/list': 1.8.0
+  '@editorjs/nested-list': 1.3.0
   '@editorjs/paragraph': 2.9.0
+  '@editorjs/quote': 2.5.0
+  '@editorjs/raw': 2.4.0
+  '@editorjs/simple-image': 1.5.1
+  '@editorjs/table': 2.2.0
+  '@editorjs/text-variant-tune': 1.0.1
+  '@editorjs/underline': 1.1.0
   '@emotion/react': 11.10.5_wkiylh6bncbdhwh6tncqb3s2nm
   '@hookform/error-message': 2.0.1_zf7ga3u4zrffjlingb6kh5ipva
   '@hookform/resolvers': 2.9.11_react-hook-form@7.43.1
@@ -71,6 +103,8 @@ dependencies:
   chart.js: 4.2.1
   clsx: 1.2.1
   date-fns: 2.29.3
+  editorjs-html: 3.4.2
+  editorjs-text-alignment-blocktune: 1.0.3
   framer-motion: 9.0.2_biqbaboplfbrettd7655fr4n2y
   fuse.js: 6.6.2
   jotai: 2.0.1_react@18.2.0
@@ -88,6 +122,12 @@ dependencies:
   zod: 3.20.6
 
 devDependencies:
+  '@editorjs/code': 2.8.0
+  '@editorjs/delimiter': 1.3.0
+  '@editorjs/inline-code': 1.4.0
+  '@editorjs/marker': 1.3.0
+  '@editorjs/warning': 1.3.0
+  '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.6
   '@types/lodash': 4.14.191
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.10
@@ -97,6 +137,8 @@ devDependencies:
   '@typescript-eslint/parser': 5.52.0_7kw3g6rralp5ps6mg3uyzz6azm
   '@vitejs/plugin-react': 3.1.0_vite@4.1.1
   autoprefixer: 10.4.13_postcss@8.4.21
+  editorjs-drag-drop: 1.1.13
+  editorjs-undo: 2.0.18
   eslint: 8.34.0
   eslint-config-prettier: 8.6.0_eslint@8.34.0
   eslint-plugin-react: 7.32.2_eslint@8.34.0
@@ -331,13 +373,41 @@ packages:
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
 
+  /@codexteam/icons/0.0.2:
+    resolution: {integrity: sha512-KdeKj3TwaTHqM3IXd5YjeJP39PBUZTb+dtHjGlf5+b0VgsxYD4qzsZkb11lzopZbAuDsHaZJmAYQ8LFligIT6Q==}
+    dev: false
+
   /@codexteam/icons/0.0.4:
     resolution: {integrity: sha512-V8N/TY2TGyas4wLrPIFq7bcow68b3gu8DfDt1+rrHPtXxcexadKauRJL6eQgfG7Z0LCrN4boLRawR4S9gjIh/Q==}
+
+  /@codexteam/icons/0.0.5:
+    resolution: {integrity: sha512-s6H2KXhLz2rgbMZSkRm8dsMJvyUNZsEjxobBEg9ztdrb1B2H3pEzY6iTwI4XUPJWJ3c3qRKwV4TrO3J5jUdoQA==}
+
+  /@codexteam/icons/0.0.6:
+    resolution: {integrity: sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==}
     dev: false
 
   /@codexteam/icons/0.1.0:
     resolution: {integrity: sha512-jW1fWnwtWzcP4FBGsaodbJY3s1ZaRU+IJy1pvJ7ygNQxkQinybJcwXoyt0a5mWwu/4w30A42EWhCrZn8lp4fdw==}
     dev: false
+
+  /@editorjs/checklist/1.4.0:
+    resolution: {integrity: sha512-KmkgWFYwkcFFvh7oBaUiqg8NBmJSnB87EC0P6obfqo3uDjCXXnen+KJfP+7JBcQx/OsiDlOS/lTxkyhxNtKtsA==}
+    dependencies:
+      '@codexteam/icons': 0.0.4
+    dev: false
+
+  /@editorjs/code/2.8.0:
+    resolution: {integrity: sha512-qlv1OqSEPKnLv/ZQgNFmVgqsMbGDkh/qgTEnbVWsS+yujo1nlwgVkqCB8tOkQGVsrpmAYLiWRlA413nKxxCN5w==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: true
+
+  /@editorjs/delimiter/1.3.0:
+    resolution: {integrity: sha512-/qz+3yRSPmx6dJpBcwnDfgKtCjOrCsQRoDhXR+wLWirGOchOifhYwQ/6JZyTvcgmY84UEoYY29/dgdWOGVPEEQ==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: true
 
   /@editorjs/editorjs/2.26.5:
     resolution: {integrity: sha512-imwXZi9NmzxKjNosa1xQf286liJYsTe2J2DWCiV5TwKhvYZ1INg5Y+FietcM2v65QmeLqP7wgBUhoI7wiCB+yQ==}
@@ -349,11 +419,85 @@ packages:
       nanoid: 3.3.4
     dev: false
 
+  /@editorjs/embed/2.5.3:
+    resolution: {integrity: sha512-+X0xX2tiwQjU/B2rPDv8DOwg0suiqrt2h/o9frjR308YuY1VTpqjLRF1lIV4TmelQyVr9cXkZruaa4Ty1wvfJg==}
+    dev: false
+
+  /@editorjs/header/2.7.0:
+    resolution: {integrity: sha512-4fGKGe2ZYblVqR/P/iw5ieG00uXInFgNMftBMqJRYcB2hUPD30kuu7Sn6eJDcLXoKUMOeqi8Z2AlUxYAmvw7zQ==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: false
+
+  /@editorjs/inline-code/1.4.0:
+    resolution: {integrity: sha512-nJJx2eBgQyml7U8MdMdJNFY2RgZCOuvvXHEW73xsdu36ZXCd44eAo7vq1S5Jz9l8bC676SvNbRfeH/nojXK37A==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: true
+
+  /@editorjs/list/1.8.0:
+    resolution: {integrity: sha512-Vq6cjyTXBzgegYv/MtTfuDdiz59yGhDEc/yAVXr6lmvoWAFs9cJ4TLuh4/9SbrbhIptcQLDvUjMDKmRrV6v2NQ==}
+    dependencies:
+      '@codexteam/icons': 0.0.4
+    dev: false
+
+  /@editorjs/marker/1.3.0:
+    resolution: {integrity: sha512-RYWYDnFPjNBJgR7KIGjB9gPnUwGvn2aIoRevAm422Wx1mg5eT4gcvwc0T5V76pYPSoD2Z0T2GPkzl9d1hl398w==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: true
+
+  /@editorjs/nested-list/1.3.0:
+    resolution: {integrity: sha512-diRsa64YjR4Xnf5jbSxnRn9kfFc0ZOQBqp0dx3ZwHkm5wxN9D46KI7qXdIyOoUNzAFyK+/Q5c29PcoBJLOp01w==}
+    dependencies:
+      '@codexteam/icons': 0.0.2
+    dev: false
+
   /@editorjs/paragraph/2.9.0:
     resolution: {integrity: sha512-lI6x1eiqFx2X3KmMak6gBlimFqXhG35fQpXMxzrjIphNLr4uPsXhVbyMPimPoLUnS9rM6Q00vptXmP2QNDd0zg==}
     dependencies:
       '@codexteam/icons': 0.0.4
     dev: false
+
+  /@editorjs/quote/2.5.0:
+    resolution: {integrity: sha512-24Mu8cESaj34a0kg1Enj7qiZ3yiCOsZI59+8xpfXLO/NkO7hBYWNForVcBy5yIWs/VLlEZK11FP37f/mHrKugQ==}
+    dependencies:
+      '@codexteam/icons': 0.0.5
+    dev: false
+
+  /@editorjs/raw/2.4.0:
+    resolution: {integrity: sha512-6k7ngx1T8+ztTG4/i5QcGPKXkF2YvdqgKgtzpOTaG6Pzm17D7Hr30Krbqz2E2Y/uoV8SiR/X1UAyKTQxrk9B6Q==}
+    dependencies:
+      '@codexteam/icons': 0.0.4
+    dev: false
+
+  /@editorjs/simple-image/1.5.1:
+    resolution: {integrity: sha512-eXfNzYMOPE7I/HllX00XvEO1MGiFu34lzOIyQzxQ3GdD+GlEJgIN9IhLGN7glsyAhCVmNyxNXGa9kUHzWQ9c5Q==}
+    dependencies:
+      '@codexteam/icons': 0.0.6
+    dev: false
+
+  /@editorjs/table/2.2.0:
+    resolution: {integrity: sha512-vVfiNEk1EHFj1ohObX4g7iB/mVhPkx0o8yMb+v5gV/XnOysbRk46hiLmntJfgYp/NZvbYxcZk3mPvrE/NAe+pg==}
+    dependencies:
+      '@codexteam/icons': 0.0.6
+    dev: false
+
+  /@editorjs/text-variant-tune/1.0.1:
+    resolution: {integrity: sha512-uVRbiMeJ14XjlP4cLqHxgQpdqbQnuQgUhlMQUFDLi7yanbEqWmb0gguZjmbdl6gnBYeUYRv9IbyOva3Iaif6ZQ==}
+    dev: false
+
+  /@editorjs/underline/1.1.0:
+    resolution: {integrity: sha512-vQj2ROW1KreD31QHlhaPikmDJGWYzRBusN4Zyfwl9nIIQCByt4S8fZQpsrRvH4sct5mkirsHllNT00rJlqHK7Q==}
+    dependencies:
+      '@codexteam/icons': 0.0.6
+    dev: false
+
+  /@editorjs/warning/1.3.0:
+    resolution: {integrity: sha512-b03oXNTxeqLXEH8Sqtzy0OXY3+Bbx6jpl2UnfFw9bN4KxTgrx3sIf5YtkavZmhZRmOFRFYdrl7bHxvr6KstO9Q==}
+    dependencies:
+      '@codexteam/icons': 0.0.4
+    dev: true
 
   /@emotion/babel-plugin/11.10.5_@babel+core@7.20.12:
     resolution: {integrity: sha512-xE7/hyLHJac7D2Ve9dKroBBZqBT7WuPQmWcq7HSGb84sUuP4mlOWoB8dvVfD9yk5DHkU1m6RW7xSoDtnQHNQeA==}
@@ -1104,6 +1248,18 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
+  /@tailwindcss/typography/0.5.9_tailwindcss@3.2.6:
+    resolution: {integrity: sha512-t8Sg3DyynFysV9f4JDOVISGsjazNb48AeIYQwcL+Bsq5uf4RYL75C1giZ43KISjeDGBaTN3Kxh7Xj/vRSMJUUg==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      postcss-selector-parser: 6.0.10
+      tailwindcss: 3.2.6_postcss@8.4.21
+    dev: true
+
   /@tanstack/query-core/4.24.6:
     resolution: {integrity: sha512-Tfru6YTDTCpX7dKVwHp/sosw/dNjEdzrncduUjIkQxn7n7u+74HT2ZrGtwwrU6Orws4x7zp3FKRqBPWVVhpx9w==}
     dev: false
@@ -1753,6 +1909,24 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       esutils: 2.0.3
+    dev: true
+
+  /editorjs-drag-drop/1.1.13:
+    resolution: {integrity: sha512-/82RIXP8/zix6Y8/Mnonk1z7XljFvKmsIFbCrP6JTbdWztqoApyUCsnouHTZ4tF51/BTszYV3Z9ennQrXrHCzA==}
+    dev: true
+
+  /editorjs-html/3.4.2:
+    resolution: {integrity: sha512-Gy8FV4oHMvnPDXLsdpZYW0Dgjaagff9bPd28/WW9aFdy87FvktJxQz8H+NKpxiGcGoNY27MmjFffurK2yhXjEg==}
+    dev: false
+
+  /editorjs-text-alignment-blocktune/1.0.3:
+    resolution: {integrity: sha512-DAJ2LJP+WjETvU4lVOJCqZ1kZkKHp0GkujkqZgza9DRv7bO46m1M/s2d5Ba5hPFdmqk1vA/ci++MQXgWD7mWYw==}
+    dev: false
+
+  /editorjs-undo/2.0.18:
+    resolution: {integrity: sha512-ItlEDXoSDvZY4hqfELeFo189rhxUN+GKJesh6TkO/wXfk8HMSMZEPuBmNGiIsB8lIwFcJ8baqU/wHRyllzi6VA==}
+    dependencies:
+      vanilla-caret-js: 1.1.0
     dev: true
 
   /electron-to-chromium/1.4.284:
@@ -2584,6 +2758,14 @@ packages:
       p-locate: 5.0.0
     dev: true
 
+  /lodash.castarray/4.4.0:
+    resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
+    dev: true
+
+  /lodash.isplainobject/4.0.6:
+    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
+    dev: true
+
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
@@ -2873,6 +3055,14 @@ packages:
     dependencies:
       postcss: 8.4.21
       postcss-selector-parser: 6.0.11
+    dev: true
+
+  /postcss-selector-parser/6.0.10:
+    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
+    engines: {node: '>=4'}
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
     dev: true
 
   /postcss-selector-parser/6.0.11:
@@ -3460,6 +3650,10 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: true
+
+  /vanilla-caret-js/1.1.0:
+    resolution: {integrity: sha512-vl3R4Xjqb+xnM0gYyg+wcqWGYwKKnkz58Yj29/FQB+w+yP7R8IR1DGoJnDIs05moEZiGlQUTabPMoEtnQNcrpQ==}
     dev: true
 
   /vite/4.1.1:
