@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -12,7 +13,6 @@ import {
 import _ from "lodash"
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
-import { useQuery } from "react-query"
 import { runCustomQuery } from "../api"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
