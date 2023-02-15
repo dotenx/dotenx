@@ -1,5 +1,4 @@
 import { Badge, Button, Image, Textarea } from "@mantine/core"
-import { useQuery } from "react-query"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useParams } from "react-router-dom"
@@ -10,6 +9,7 @@ import _ from "lodash"
 import { FaExternalLinkAlt, FaHashtag } from "react-icons/fa"
 import { useClipboard } from "@mantine/hooks"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
+import { useQuery } from "@tanstack/react-query"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
@@ -104,7 +104,7 @@ function AllTab({
 		{ enabled: !!projectTag }
 	)
 
-	const products = (recordsQuery.data?.data?.rows || []).map((record) =>
+	const products = (recordsQuery.data?.data?.rows || []).map((record: any) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === "boolean"
@@ -168,15 +168,9 @@ export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 			),
 		{ enabled: !!projectTag }
 	)
-<<<<<<< HEAD
 	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue ?? 0
 	const last24 = lastDayRevQuery?.data?.data?.rows?.[0]?.total_revenue ?? 0
 	const mrr = mrrQuery?.data?.data?.rows?.[0]?.mrr ?? 0
-=======
-	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue
-	const last24 = lastDayRevQuery?.data?.data.rows[0].total_revenue
-	const mrr = mrrQuery?.data?.data.rows[0].mrr
->>>>>>> master
 	const stats = [
 		{
 			title: "Total Revenue",

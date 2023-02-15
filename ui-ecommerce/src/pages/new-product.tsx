@@ -20,10 +20,10 @@ import { AttachmentPage } from "../features/app/attachment"
 import { Editor } from "../features/editor/editor"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { useMutation } from "react-query"
 import { toast } from "react-toastify"
 import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
+import { useMutation } from "@tanstack/react-query"
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
