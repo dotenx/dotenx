@@ -1,4 +1,4 @@
-// image: stripe/stripe-create-payment-link:lambda3
+// image: stripe/stripe-create-payment-link:lambda4
 package main
 
 import (
@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/client"
+	"github.com/stripe/stripe-go/v74"
+	"github.com/stripe/stripe-go/v74/client"
 )
 
 type Event struct {
@@ -107,6 +107,9 @@ func createSession(sc *client.API, successUrl, cancelUrl, customerId string, sho
 		sessionMode = string(stripe.CheckoutSessionModePayment)
 	}
 	params := &stripe.CheckoutSessionParams{
+		InvoiceCreation: &stripe.CheckoutSessionInvoiceCreationParams{
+			Enabled: stripe.Bool(true),
+		},
 		SuccessURL:        stripe.String(successUrl),
 		CancelURL:         stripe.String(cancelUrl),
 		LineItems:         bag,
