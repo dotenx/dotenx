@@ -59,11 +59,11 @@ function AllTab() {
 	]
 
 	const ordersHeaders = columns
-		.map((column) => ({
+		.map((column: any) => ({
 			Header: column.name,
 			accessor: column.name,
 		}))
-		.filter((d) => d.accessor !== "creator_id")
+		.filter((d: any) => d.accessor !== "creator_id")
 	const headers = ordersHeaders.concat(productsHeaders)
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
@@ -89,7 +89,7 @@ function AllTab() {
 			}),
 		{ enabled: !!projectTag }
 	)
-	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+	const sales = (recordsQuery.data?.data?.rows || []).map((record: any) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === "boolean"
@@ -180,7 +180,7 @@ function CurrentMonthSalesChart() {
 		labels,
 		datasets: [
 			{
-				data: currentMonthSales?.map((s) => {
+				data: currentMonthSales?.map((s: any) => {
 					return s.sale_amount
 				}),
 				backgroundColor: "#8d99ae",
@@ -216,11 +216,11 @@ function ProductsTab() {
 	]
 
 	const ordersHeaders = columns
-		.map((column) => ({
+		.map((column: any) => ({
 			Header: column.name,
 			accessor: column.name,
 		}))
-		.filter((d) => d.accessor !== "creator_id")
+		.filter((d: any) => d.accessor !== "creator_id")
 	const headers = ordersHeaders.concat(productsHeaders)
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
@@ -249,7 +249,7 @@ function ProductsTab() {
 			}),
 		{ enabled: !!projectTag }
 	)
-	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+	const sales = (recordsQuery.data?.data?.rows || []).map((record: any) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === "boolean"
@@ -302,11 +302,11 @@ function MembershipsTab() {
 	]
 
 	const ordersHeaders = columns
-		.map((column) => ({
+		.map((column: any) => ({
 			Header: column.name,
 			accessor: column.name,
 		}))
-		.filter((d) => d.accessor !== "creator_id")
+		.filter((d: any) => d.accessor !== "creator_id")
 	const headers = ordersHeaders.concat(productsHeaders)
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
@@ -335,7 +335,7 @@ function MembershipsTab() {
 			}),
 		{ enabled: !!projectTag }
 	)
-	const sales = (recordsQuery.data?.data?.rows || []).map((record) =>
+	const sales = (recordsQuery.data?.data?.rows || []).map((record: any) =>
 		_.fromPairs(
 			_.toPairs(record).map(([key, value]) =>
 				typeof value === "boolean"

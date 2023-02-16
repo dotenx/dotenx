@@ -247,11 +247,11 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 		{ enabled: !!projectTag }
 	)
 	const labels =
-		audianceChartQuery.data?.data?.rows.map((d) =>
+		audianceChartQuery.data?.data?.rows?.map((d) =>
 			_.toNumber(d.date.split("-")[2].slice(0, 2))
 		) ?? []
 	const audianceChartData =
-		audianceChartQuery.data?.data?.rows.map((d: any) => {
+		audianceChartQuery.data?.data?.rows?.map((d: any) => {
 			return d.count
 		}) ?? []
 	const options = {
