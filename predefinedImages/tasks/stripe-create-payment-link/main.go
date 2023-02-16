@@ -126,7 +126,6 @@ func createSession(sc *client.API, successUrl, cancelUrl, customerId string, sho
 			Customer:          stripe.String(customerId),
 		}
 	}
-
 	sess, err := sc.CheckoutSessions.New(params)
 	if err != nil {
 		fmt.Println(err)
