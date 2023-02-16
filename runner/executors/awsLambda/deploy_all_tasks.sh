@@ -178,14 +178,14 @@
 # echo $image_name
 # echo $function_name
 
-export region="us-east-1"
-export repository_name="stripe/stripe-create-payment-link"
-export tag="lambda4"
-export directory_address="stripe-create-payment-link"
-export image_name="${repository_name}:${tag}"
-export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
-echo $image_name
-echo $function_name
+# export region="us-east-1"
+# export repository_name="stripe/stripe-create-payment-link"
+# export tag="lambda4"
+# export directory_address="stripe-create-payment-link"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
 
 # export region="us-east-1"
 # export repository_name="hojjat12/mailchimp-add-new-subscriber"
