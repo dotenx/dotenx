@@ -101,22 +101,32 @@ func createSession(sc *client.API, successUrl, cancelUrl, customerId string, sho
 		i++
 	}
 	sessionMode := ""
+	var params *stripe.CheckoutSessionParams
 	if isRecurring {
 		sessionMode = string(stripe.CheckoutSessionModeSubscription)
+		params = &stripe.CheckoutSessionParams{
+			SuccessURL:        stripe.String(successUrl),
+			CancelURL:         stripe.String(cancelUrl),
+			LineItems:         bag,
+			Mode:              stripe.String(sessionMode),
+			ClientReferenceID: stripe.String(customerId),
+			Customer:          stripe.String(customerId),
+		}
 	} else {
 		sessionMode = string(stripe.CheckoutSessionModePayment)
+		params = &stripe.CheckoutSessionParams{
+			InvoiceCreation: &stripe.CheckoutSessionInvoiceCreationParams{
+				Enabled: stripe.Bool(true),
+			},
+			SuccessURL:        stripe.String(successUrl),
+			CancelURL:         stripe.String(cancelUrl),
+			LineItems:         bag,
+			Mode:              stripe.String(sessionMode),
+			ClientReferenceID: stripe.String(customerId),
+			Customer:          stripe.String(customerId),
+		}
 	}
-	params := &stripe.CheckoutSessionParams{
-		InvoiceCreation: &stripe.CheckoutSessionInvoiceCreationParams{
-			Enabled: stripe.Bool(true),
-		},
-		SuccessURL:        stripe.String(successUrl),
-		CancelURL:         stripe.String(cancelUrl),
-		LineItems:         bag,
-		Mode:              stripe.String(sessionMode),
-		ClientReferenceID: stripe.String(customerId),
-		Customer:          stripe.String(customerId),
-	}
+
 	sess, err := sc.CheckoutSessions.New(params)
 	if err != nil {
 		fmt.Println(err)
