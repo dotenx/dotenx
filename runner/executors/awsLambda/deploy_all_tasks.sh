@@ -17,7 +17,7 @@
 # # stripe/stripe-update-customer:lambda5
 # # hojjat12/twitter-send-tweet:lambda5
 # # hojjat12/youtube-upload-file:lambda4
-# # stripe/stripe-create-payment-link:lambda3
+# # stripe/stripe-create-payment-link:lambda4
 # # hojjat12/mailchimp-add-new-subscriber:lambda
 # # hojjat12/mailchimp-archive-subscriber:lambda
 # # hojjat12/airtable-create-record:lambda
@@ -178,14 +178,14 @@
 # echo $image_name
 # echo $function_name
 
-# export region="us-east-1"
-# export repository_name="stripe/stripe-create-payment-link"
-# export tag="lambda3"
-# export directory_address="stripe-create-payment-link"
-# export image_name="${repository_name}:${tag}"
-# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
-# echo $image_name
-# echo $function_name
+export region="us-east-1"
+export repository_name="stripe/stripe-create-payment-link"
+export tag="lambda4"
+export directory_address="stripe-create-payment-link"
+export image_name="${repository_name}:${tag}"
+export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+echo $image_name
+echo $function_name
 
 # export region="us-east-1"
 # export repository_name="hojjat12/mailchimp-add-new-subscriber"
