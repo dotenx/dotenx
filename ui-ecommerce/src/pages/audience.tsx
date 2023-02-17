@@ -1,13 +1,16 @@
-import { ActionIcon, Button } from "@mantine/core"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { IoMail, IoReload } from "react-icons/io5"
-import { QueryKey, runCustomQuery } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
+import { ActionIcon, Button, Modal } from "@mantine/core"
+import _ from "lodash"
+import { getIntegrations, runCustomQuery, QueryKey } from "../api"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
+import { toast } from "react-toastify"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")
@@ -33,11 +36,49 @@ export function AudiencePage() {
 
 function ActionBar() {
 	const modal = useModal()
+	const [openModal, setOpenModal] = useState(false)
+	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
+	const client = useQueryClient()
+	const noIntegration =
+		(
+			query?.data?.data
+				.map((d) => {
+					if (["sendGrid"].includes(d.type)) return d.type
+				})
+				.filter((d) => d !== undefined) || []
+		).length === 0
 
 	return (
-		<Button leftIcon={<IoMail />} onClick={() => modal.open(Modals.UserManagementEndpoint)}>
-			Send Email
-		</Button>
+		<div className="flex gap-x-5 items-center">
+			{noIntegration && query.isSuccess && (
+				<div className="text-sm p-1 px-2 bg-blue-50 rounded text-gray-600 flex items-center gap-x-2">
+					You must connect your account to SendGrid to send emails{" "}
+					<Button onClick={() => setOpenModal(true)} color="blue" size="xs">
+						Connect
+					</Button>
+				</div>
+			)}
+			<Button
+				disabled={noIntegration}
+				leftIcon={<IoMail />}
+				onClick={() => modal.open(Modals.UserManagementEndpoint)}
+			>
+				Send Email
+			</Button>
+			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
+				<IntegrationForm
+					integrationKind={"sendGrid"}
+					onSuccess={() => {
+						toast("Send-Grid integration added successfully", {
+							type: "success",
+							autoClose: 2000,
+						}),
+							client.invalidateQueries([QueryKey.GetIntegrations]),
+							setOpenModal(false)
+					}}
+				/>
+			</Modal>
+		</div>
 	)
 }
 

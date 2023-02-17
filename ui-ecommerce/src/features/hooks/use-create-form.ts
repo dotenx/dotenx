@@ -2,12 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom"
+import { toast } from "react-toastify"
+
 import * as z from "zod"
 import {
-	createIntegration,
 	getIntegrationKindFields,
 	getIntegrationKinds,
 	QueryKey,
+	setupIntegration,
 } from "../../api"
 import { useOauth } from "./use-oauth"
 
@@ -54,7 +57,7 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		() => getIntegrationKindFields(integrationType),
 		{ enabled: !!integrationType }
 	)
-	const mutation = useMutation(createIntegration)
+	const mutation = useMutation(setupIntegration)
 	const client = useQueryClient()
 	const toOption = (value: string) => ({
 		label: value,
@@ -79,15 +82,25 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 	useEffect(() => {
 		if (integrationKind) setValue("type", integrationKind)
 	}, [integrationKind, setValue])
+	const { projectName = '' } = useParams()
 
 	const onSave = () => {
+
 		const fieldValues = getValues()
-		mutation.mutate(fieldValues, {
+		const payload = {
+			project_name: projectName,
+			integration_secrets: fieldValues.secrets as { SECRET_KEY: string },
+			integration_type: fieldValues.type
+		}
+		mutation.mutate(payload, {
 			onSuccess: () => {
 				client.invalidateQueries([QueryKey.GetIntegrations])
 				client.invalidateQueries([QueryKey.GetIntegrationsByType])
 				onSuccess?.(fieldValues.name)
 			},
+			onError: (e: any) => {
+				toast(e.response.data.message, { type: "error", autoClose: 2000 })
+			}
 		})
 	}
 

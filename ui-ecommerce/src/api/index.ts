@@ -17,6 +17,7 @@ import {
 	GetTablesResponse,
 	GetUserGroupsResponse,
 	RunCustomQueryResponse,
+	SetupIntegrationRequest,
 	UploadImageRequest,
 	UploadImageResponse,
 } from "./types"
@@ -37,6 +38,9 @@ export function getIntegrationKindFields(kind: string) {
 }
 export function createIntegration(payload: CreateIntegrationRequest) {
 	return api.post<void>("/integration", payload)
+}
+export function setupIntegration(payload: SetupIntegrationRequest) {
+	return api.post<void>("/project/setup/dependent", payload)
 }
 
 export function setFileUserGroup({

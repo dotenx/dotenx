@@ -589,7 +589,6 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 	const [openModal, setOpenModal] = useState(false)
 	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
 	const client = useQueryClient()
-	// WIP
 	const noIntegration =
 		(
 			query?.data?.data
