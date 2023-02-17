@@ -29,7 +29,6 @@ export const api = axios.create({
 	withCredentials: true,
 })
 
-
 export function getIntegrationKinds() {
 	return api.get<GetIntegrationKindsResponse>("/integration/avaliable")
 }
@@ -72,15 +71,13 @@ export function getIntegrations() {
 export function getProject(name: string) {
 	return api.get<GetProjectResponse>(`/project/${name}`)
 }
-export function createProduct({ tag, payload }: { tag: string, payload: any }) {
+export function createProduct({ tag, payload }: { tag: string; payload: any }) {
 	return api.post(`/ecommerce/project/${tag}/product`, payload)
 }
 
 export function getTables(projectName: string) {
 	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
 }
-
-
 
 export function createTable(projectName: string, payload: CreateTableRequest) {
 	return api.post<void>("/database/table", { projectName, ...payload })

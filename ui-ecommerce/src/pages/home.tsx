@@ -10,7 +10,7 @@ import {
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { closeAllModals, openModal } from "@mantine/modals"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BsPlusLg } from "react-icons/bs"
 import { TbTrash } from "react-icons/tb"
 import { Link } from "react-router-dom"

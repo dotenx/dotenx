@@ -1,7 +1,7 @@
 import { Button, Checkbox, MultiSelect } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useClipboard } from "@mantine/hooks"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { BiCloudUpload } from "react-icons/bi"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
@@ -135,16 +135,16 @@ export function Files() {
 							accessor: "url",
 							Cell: ({ value }: { value: string }) => (
 								<div
-									className="text-xs flex items-center justify-end cursor-pointer hover:text-cyan-800"
+									className="text-xs flex items-center  w-full  cursor-pointer hover:text-cyan-800"
 									onClick={() => {
 										clipboard.copy(value), setClicked(value)
 									}}
 								>
-									<span className="mr-2 truncate max-w-sm">{value}</span>
+									<span className="mr-2 truncate max-w-[250px]">{value}</span>
 									{clipboard.copied && clicked === value ? (
-										<IoCheckmark />
+										<IoCheckmark className="h-4 w-4 " />
 									) : (
-										<IoCopy />
+										<IoCopy className="h-4 w-4 " />
 									)}
 								</div>
 							),

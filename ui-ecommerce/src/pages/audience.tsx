@@ -1,13 +1,13 @@
 import { ActionIcon, Button } from "@mantine/core"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
+import { FaUserCircle } from "react-icons/fa"
 import { IoMail, IoReload } from "react-icons/io5"
-import { getMembersSummary, QueryKey, runCustomQuery } from "../api"
+import { QueryKey, runCustomQuery } from "../api"
 import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
-import { FaUserCircle } from "react-icons/fa"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")
@@ -46,15 +46,15 @@ function MembersTab() {
 	const projectTag = projectQuery.projectTag
 	const [currentPage, setCurrentPage] = useState(1)
 	const membersQuery = useQuery(
-		[QueryKey.GetMembersSummary, projectTag, currentPage],
-		() => getMembersSummary(projectTag, currentPage),
+		["get-members", projectTag],
+		() => runCustomQuery(projectTag, "SELECT DISTINCT email FROM orders;"),
 		{ enabled: !!projectTag }
 	)
 
 	const members = membersQuery.data?.data?.rows ?? []
 	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
 	const newMembers = members.filter((m) => m.updated_at >= yesterday)
-	const nPages = Math.ceil((membersQuery.data?.data?.totalRows as number) / 10)
+	const nPages = Math.ceil((membersQuery.data?.data?.total_rows as number) / 10)
 	const queryClient = useQueryClient()
 	const refetchMembers = () => queryClient.invalidateQueries([QueryKey.GetMembersSummary])
 	const stats = [
@@ -69,6 +69,7 @@ function MembersTab() {
 			isLoading: membersQuery.isLoading || !projectTag,
 		},
 	]
+
 	return (
 		<div>
 			<div>

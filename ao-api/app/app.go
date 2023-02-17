@@ -193,7 +193,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
-	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService}
+	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService, PipelineService: crudServices}
 
 	// Routes
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
@@ -361,7 +361,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.GET("/tag/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
 	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
 	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyExternalDomain())
-	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices))
+	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices, IntegrationService))
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
@@ -469,6 +469,8 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ecommerce.GET("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
 	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
 	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())
+	public.GET("/ecommerce/project/:project_tag/payment/link/stripe", EcommerceController.GetStripePaymentLinkEndpoint())
+	public.POST("/ecommerce/project/:project_tag/order", EcommerceController.CreateOrder())
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())

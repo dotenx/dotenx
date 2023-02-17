@@ -14,17 +14,18 @@ import { useForm } from "@mantine/form"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
-import { TiDelete } from "react-icons/ti"
-import { ContentWrapper, Header } from "../features/ui"
-import { ImageDrop } from "../features/ui/image-drop"
 import { MdClose } from "react-icons/md"
 import { createProduct, currency, getIntegrations, getProject, QueryKey } from "../api"
+import { TiDelete } from "react-icons/ti"
 import { AttachmentPage } from "../features/app/attachment"
+import { Editor } from "../features/editor/editor"
+import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { useMutation, useQuery, useQueryClient } from "react-query"
-import { toast } from "react-toastify"
-import { useNavigate } from "react-router-dom"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
+import { toast } from "react-toastify"
+import { useNavigate, useParams } from "react-router-dom"
+import { ImageDrop } from "../features/ui/image-drop"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
@@ -71,9 +72,7 @@ export function NewProductPage() {
 							setValues={setValues}
 						/>
 					)}
-					{activeTab === "content" && (
-						<ContentTab getInputProps={getInputProps} values={values} />
-					)}
+					{activeTab === "content" && <ContentTab />}
 				</form>
 				{activeTab === "attachment" && (
 					<AttachmentPage tag={projectTag} setValues={setValues} values={values} />
@@ -108,7 +107,7 @@ function DetailsTab({
 	>(values.recurring_payment?.prices || [])
 	const [limitation, setLimitation] = useState(values.limitation)
 	const [categories, setCategories] = useState<string[]>(values.tags)
-	let details = {}
+	const details = {}
 	for (let i = 0; i < attributesList.length; i++) {
 		Object.assign(details, attributesList[i])
 	}
@@ -579,14 +578,16 @@ const MonthlyPricingInput = ({
 }
 function ActionBar({ values, tag }: { values: any; tag: string }) {
 	const navigate = useNavigate()
+	const { projectName = "" } = useParams()
 
 	const { mutate, isLoading } = useMutation(() => createProduct({ tag, payload: values }), {
 		onSuccess: () => {
-			toast("Product added successfully", { type: "success", autoClose: 2000 }), navigate(-1)
+			toast("Product added successfully", { type: "success", autoClose: 2000 }),
+				navigate(`/projects/${projectName}/products`)
 		},
 	})
 	const [openModal, setOpenModal] = useState(false)
-	const query = useQuery(QueryKey.GetIntegrations, getIntegrations)
+	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
 	const client = useQueryClient()
 	// WIP
 	const noIntegration =
@@ -627,17 +628,6 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 	)
 }
 
-const ContentTab = ({ getInputProps, values }: { getInputProps: any; values: any }) => {
-	return (
-		<div>
-			<Textarea
-				value={values.connect}
-				label="Content"
-				placeholder=""
-				minRows={5}
-				name="content"
-				{...getInputProps("content")}
-			/>
-		</div>
-	)
+const ContentTab = () => {
+	return <Editor onSave={(value) => console.log(value)} />
 }

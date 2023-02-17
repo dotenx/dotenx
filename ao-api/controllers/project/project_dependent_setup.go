@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
@@ -13,14 +14,16 @@ import (
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/stripe/stripe-go/v72/client"
 )
 
 type DependentSetupRequest struct {
-	ProjectName     string `json:"project_name"`
-	IntegrationName string `json:"integration_name"`
-	IntegrationType string `json:"integration_type"`
+	ProjectName        string            `json:"project_name"`
+	IntegrationSecrets map[string]string `json:"integration_secrets"`
+	IntegrationType    string            `json:"integration_type"`
 }
 
 type AddPipelineDto struct {
@@ -31,7 +34,7 @@ type AddPipelineDto struct {
 	Manifest      models.Manifest `json:"manifest"`
 }
 
-func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.DatabaseService, cService crudService.CrudService) gin.HandlerFunc {
+func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.DatabaseService, cService crudService.CrudService, iService integrationService.IntegrationService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dto DependentSetupRequest
 		accountId, _ := utils.GetAccountId(c)
@@ -52,9 +55,73 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 		}
 		project.AccountId = accountId
 
+		integrationName := fmt.Sprintf("%s-%s", dto.IntegrationType, utils.RandStringRunes(8, utils.FullRunes))
+		integrationSecretsCopy := make(map[string]string)
+		for k, v := range dto.IntegrationSecrets {
+			integrationSecretsCopy[k] = v
+		}
+		if reflect.DeepEqual(models.AvaliableIntegrations[dto.IntegrationType], models.IntegrationDefinition{}) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid integration type",
+			})
+			return
+		}
+		for _, secret := range models.AvaliableIntegrations[dto.IntegrationType].Secrets {
+			delete(integrationSecretsCopy, secret.Key)
+		}
+		if len(integrationSecretsCopy) != 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid integration secrets",
+			})
+			return
+		}
+		// we check validity of integration secrets in this switch case
+		switch dto.IntegrationType {
+		case "stripe":
+			secretKey := dto.IntegrationSecrets["SECRET_KEY"]
+			sc := &client.API{}
+			sc.Init(secretKey, nil)
+			_, err := sc.Account.Get()
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid stripe secret key",
+				})
+				return
+			}
+		}
+		refreshToken, ok := dto.IntegrationSecrets["REFRESH_TOKEN"]
+		hasRefreshToken := ok && refreshToken != ""
+		err := iService.AddIntegration(accountId, models.Integration{
+			Name:            integrationName,
+			AccountId:       accountId,
+			Type:            dto.IntegrationType,
+			Secrets:         dto.IntegrationSecrets,
+			HasRefreshToken: hasRefreshToken,
+			Provider:        "",
+			TpAccountId:     "",
+		})
+		if err != nil {
+			logrus.Error(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
 		var setupErr error
 		switch project.Type {
 		case "ecommerce":
+			addIntegrationToTableQuery := fmt.Sprintf(`
+			insert into integrations(type, integration_name) values ('%s', '%s');`, dto.IntegrationType, integrationName)
+			_, err := dbService.RunDatabaseQuery(project.Tag, addIntegrationToTableQuery)
+			if err != nil {
+				logrus.Error(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
 			authCookie, err := c.Cookie("dotenx")
 			if err != nil {
 				logrus.Error(err)
@@ -63,7 +130,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 				})
 				return
 			}
-			setupErr = EcommerceDependentSetup(authCookie, project, dto.IntegrationName, dto.IntegrationType, dbService, cService)
+			setupErr = EcommerceDependentSetup(authCookie, project, integrationName, dto.IntegrationType, dbService, cService)
 		}
 		if setupErr != nil {
 			logrus.Error(setupErr)
@@ -119,6 +186,94 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 				return errors.New("can't get DTX access token")
 			}
 		}
+
+		createStripePaymentAutomationJsonDtoStr := fmt.Sprintf(`
+		{
+			"name": "stripe-new-payment",
+			"manifest": {
+			  "tasks": {
+				"http-request": {
+				  "type": "Http request",
+				  "body": {
+					"method": {
+					  "type": "directValue",
+					  "value": "POST"
+					},
+					"url": {
+					  "type": "directValue",
+					  "value": "https://api.dotenx.com/public/ecommerce/project/%s/order"
+					},
+					"headers": {
+					  "type": "directValue",
+					  "value": {}
+					},
+					"body": {
+					  "type": "json",
+					  "value": {
+						"payment_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.id"
+						},
+						"price_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.id"
+						},
+						"customer_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.customer_id"
+						},
+						"created_at": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.created"
+						},
+						"unit_amount": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.unit_amount"
+						},
+						"product_id": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.price.product.id"
+						},
+						"quantity": {
+						  "type": "nested",
+						  "nestedKey": "new-payment.items.quantity"
+						}
+					  }
+					}
+				  },
+				  "integration": "",
+				  "executeAfter": {}
+				}
+			  },
+			  "triggers": {
+				"new-payment": {
+				  "name": "new-payment",
+				  "type": "Stripe payment completed",
+				  "pipeline_name": "default",
+				  "integration": "%s",
+				  "credentials": {
+					"PAYMENT_STATUS": "succeeded",
+					"passed_seconds": "3660"
+				  }
+				}
+			  }
+			},
+			"is_template": false,
+			"is_interaction": false
+		}
+		`, project.Tag, integrationName)
+		var dto AddPipelineDto
+		err = json.Unmarshal([]byte(createStripePaymentAutomationJsonDtoStr), &dto)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		_, err = CreateAndActivatePipeline(project, dto, cService)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
 		/*
 			Create Stripe payment link inputs:
 			{
@@ -322,7 +477,7 @@ func EcommerceDependentSetup(authCookie string, project models.Project, integrat
 			"is_interaction": true
 		}
 		`, integrationName, dtxAccessToken, integrationName, dtxAccessToken, integrationName, dtxAccessToken, integrationName, dtxAccessToken)
-		var dto AddPipelineDto
+		dto = AddPipelineDto{}
 		err = json.Unmarshal([]byte(createStripePaymentLinkJsonDtoStr), &dto)
 		if err != nil {
 			logrus.Error(err.Error())

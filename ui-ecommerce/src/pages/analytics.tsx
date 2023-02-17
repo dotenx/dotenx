@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query"
 import {
 	BarElement,
 	CategoryScale,
@@ -9,8 +10,10 @@ import {
 	Title,
 	Tooltip,
 } from "chart.js"
+import _ from "lodash"
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
+import { runCustomQuery } from "../api"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { SalesStats, Stats } from "./products"
@@ -183,12 +186,27 @@ function BestStat({
 //#region audience
 
 function AudienceTab() {
-	const totalUsers = 1900
-	const last24 = 4
-
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const membersQuery = useQuery(
+		["get-members", projectTag],
+		() => runCustomQuery(projectTag, "SELECT DISTINCT email FROM orders;"),
+		{ enabled: !!projectTag }
+	)
+	const members = membersQuery.data?.data?.rows ?? []
+	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
+	const newMembers = members.filter((m) => m.updated_at >= yesterday)
 	const stats = [
-		{ title: "Total Members", value: totalUsers, isLoading: false },
-		{ title: "New Members (24h)", value: last24, isLoading: false },
+		{
+			title: "Total members",
+			value: members.length,
+			isLoading: membersQuery.isLoading || !projectTag,
+		},
+		{
+			title: "New Members (24h)",
+			value: newMembers.length,
+			isLoading: membersQuery.isLoading || !projectTag,
+		},
 	]
 
 	return (
@@ -209,6 +227,33 @@ export function AudienceStats({
 }
 
 function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
+	const audianceChartQuery = useQuery(
+		["get-daily-members", projectTag],
+		() =>
+			runCustomQuery(
+				projectTag,
+				`select count(audience.email), date(audience.updated_at) 
+		from (
+			select min(updated_at) as updated_at, email 
+			from orders 
+			group by email
+			) as audience
+		where audience.updated_at >= '${lastMonth}'
+		group by date(audience.updated_at);`
+			),
+		{ enabled: !!projectTag }
+	)
+	const labels =
+		audianceChartQuery.data?.data?.rows?.map((d) =>
+			_.toNumber(d.date.split("-")[2].slice(0, 2))
+		) ?? []
+	const audianceChartData =
+		audianceChartQuery.data?.data?.rows?.map((d: any) => {
+			return d.count
+		}) ?? []
 	const options = {
 		responsive: true,
 		plugins: {
@@ -233,15 +278,12 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 			},
 		},
 	}
-
-	const labels = monthDays()
-
 	const data = {
 		labels,
 		datasets: [
 			{
 				label: `${mode === "daily" ? "Daily" : "Monthly"} New Members`,
-				data: labels.map(() => Math.floor(Math.random() * 100)),
+				data: audianceChartData,
 				backgroundColor: "#2b2d42",
 			},
 		],
