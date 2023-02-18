@@ -2,6 +2,7 @@ import {
 	Button,
 	Checkbox,
 	Image,
+	Modal,
 	NumberInput,
 	Popover,
 	Select,
@@ -14,16 +15,17 @@ import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
+import { createProduct, currency, getIntegrations, getProject, QueryKey } from "../api"
 import { TiDelete } from "react-icons/ti"
-import { createProduct, currency } from "../api"
 import { AttachmentPage } from "../features/app/attachment"
 import { Editor } from "../features/editor/editor"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
 import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
@@ -584,11 +586,43 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 				navigate(`/projects/${projectName}/products`)
 		},
 	})
+	const [openModal, setOpenModal] = useState(false)
+	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
+	const client = useQueryClient()
+	const noIntegration =
+		(
+			query?.data?.data
+				.map((d) => {
+					if (["stripe"].includes(d.type)) return d.type
+				})
+				.filter((d) => d !== undefined) || []
+		).length === 0
 	return (
-		<div className="flex gap-2">
-			<Button loading={isLoading} onClick={() => mutate()}>
+		<div className="flex gap-x-5 items-center">
+			{noIntegration && query.isSuccess && (
+				<div className="text-sm p-1 px-2 bg-blue-50 rounded text-gray-600 flex items-center gap-x-2">
+					You must connect your account to Stripe to create products{" "}
+					<Button onClick={() => setOpenModal(true)} color="blue" size="xs">
+						Connect
+					</Button>
+				</div>
+			)}
+			<Button disabled={noIntegration} loading={isLoading} onClick={() => mutate()}>
 				Create product
 			</Button>
+			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
+				<IntegrationForm
+					integrationKind={"stripe"}
+					onSuccess={() => {
+						toast("Stripe integration added successfully", {
+							type: "success",
+							autoClose: 2000,
+						}),
+							client.invalidateQueries([QueryKey.GetIntegrations]),
+							setOpenModal(false)
+					}}
+				/>
+			</Modal>
 		</div>
 	)
 }

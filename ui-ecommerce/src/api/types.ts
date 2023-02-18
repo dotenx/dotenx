@@ -159,6 +159,13 @@ export type CreateIntegrationRequest = {
 	type: string
 	secrets: Record<string, string>
 }
+export type SetupIntegrationRequest = {
+	project_name: string,
+	integration_secrets: {
+		SECRET_KEY: string
+	},
+	integration_type: string
+}
 
 export type GetIntegrationKindsResponse = IntegrationKind[]
 export interface IntegrationKind {
