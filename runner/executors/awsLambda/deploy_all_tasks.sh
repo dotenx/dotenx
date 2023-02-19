@@ -24,6 +24,7 @@
 # # hojjat12/stripe-create-product:lambda
 # # hojjat12/stripe-update-product:lambda
 # # hojjat12/stripe-create-price:lambda
+# # hojjat12/database-run-custom-query:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -236,6 +237,15 @@
 # export repository_name="hojjat12/stripe-create-price"
 # export tag="lambda"
 # export directory_address="stripe-create-price"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/database-run-custom-query"
+# export tag="lambda"
+# export directory_address="database-run-custom-query"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name
