@@ -17,3 +17,5 @@ type EcommerceController struct {
 	IntegrationService    integrationService.IntegrationService
 	PipelineService       crudService.CrudService
 }
+
+var DefaultPipelineNames = []string{"stripe-new-payment", "stripe-payment", "send-email"}
