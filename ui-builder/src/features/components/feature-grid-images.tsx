@@ -9,12 +9,12 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { BoxStyler } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
-import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -37,17 +37,16 @@ function FeatureGridImagesOptions() {
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Feature Grid with images" />
+		<ComponentWrapper name="Feature Grid with images">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
-			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <TileOptions item={item} />}
 				insertElement={() => regenElement(tile)}
+				autoAdjustGridTemplateColumns={false}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -61,6 +60,7 @@ function TileOptions({ item }: { item: Element }) {
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Details" element={details} />
 			<ImageStyler element={image} />
+			<BoxStyler label="Block" element={item} />
 		</OptionsWrapper>
 	)
 }
@@ -113,6 +113,18 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
+	draft.style.tablet = {
+		default: {
+			fontSize: '28px',
+		},
+	}
+
+	draft.style.mobile = {
+		default: {
+			fontSize: '24px',
+		},
+	}
+
 	draft.data.text = Expression.fromString('Features')
 	draft.tagId = tagIds.title
 }).serialize()
@@ -124,6 +136,19 @@ const subtitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
+
+	draft.style.tablet = {
+		default: {
+			fontSize: '20px',
+		},
+	}
+
+	draft.style.mobile = {
+		default: {
+			fontSize: '16px',
+		},
+	}
+
 	draft.data.text = Expression.fromString('With our platform you can do this and that')
 	draft.tagId = tagIds.subtitle
 }).serialize()

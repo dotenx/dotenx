@@ -15,11 +15,9 @@ import { FooterGrid } from '../components/footer-grid'
 import { GalleryBasic } from '../components/gallery-basic'
 import { GalleryBasicRounded } from '../components/gallery-basic-rounded'
 import { GalleryWithCaptions } from '../components/gallery-with-caption'
-import { GalleryWithTitle } from '../components/gallery-with-title'
 import { HeroCtaLeft } from '../components/hero-cta-left'
 import { HeroCtaRight } from '../components/hero-cta-right'
 import { HeroFullWidth } from '../components/hero-full-width'
-import { HeroParallax } from '../components/hero-parallax'
 import { Navbar } from '../components/navbar'
 import { PricingSimple } from '../components/pricing-simple'
 import { PricingSimple2 } from '../components/pricing-simple-2'
@@ -83,7 +81,6 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		items: [
 			GalleryBasic,
 			GalleryBasicRounded,
-			GalleryWithTitle,
 			GalleryWithCaptions,
 			FeaturedProduct,
 		],
@@ -94,7 +91,6 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			HeroFullWidth,
 			HeroCtaLeft,
 			HeroCtaRight,
-			HeroParallax,
 			theme1Components.Hero,
 			theme2Components.Hero,
 			theme3Components.Hero,

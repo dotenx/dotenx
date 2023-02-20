@@ -12,6 +12,7 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
 export class GalleryBasic extends Component {
@@ -35,8 +36,7 @@ function GalleryBasicOptions() {
 	const grid = component.find(tagIds.grid) as ColumnsElement
 
 	return (
-		<div className="space-y-6">
-			<ComponentName name="Basic Gallery" />
+		<ComponentWrapper name="Basic Gallery">
 			<ColumnsStyler element={grid} />
 			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
@@ -44,13 +44,13 @@ function GalleryBasicOptions() {
 				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={insertTab}
 			/>
-		</div>
+		</ComponentWrapper>
 	)
 }
 
 const insertTab = () =>
 	createTile({
-		image: 'https://images.unsplash.com/photo-1657310217253-176cd053e07e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-n84.jpeg',
 	})
 
 // =============  defaultData =============
@@ -69,67 +69,64 @@ const divFlex = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const imgEl = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			backgroundColor: '#fff',
-			aspectRatio: '1',
-			backgroundSize: 'cover',
-			backgroundPosition: 'center center',
-			height: '210px',
-			objectFit: 'cover',
-			width: '100%',
-		},
-	}
-})
-
 const container = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr',
 			gridGap: '0px',
-			width: '70%',
+			paddingLeft: '15%',
+			paddingRight: '15%',
 		},
 	}
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: '1fr 1fr',
+			paddingLeft: '10%',
+			paddingRight: '10%',
 		},
 	}
 	draft.style.mobile = {
 		default: {
 			gridTemplateColumns: '1fr',
+			paddingLeft: '5%',
+			paddingRight: '5%',
 		},
 	}
 	draft.tagId = tagIds.grid
 }).serialize()
 
 function createTile({ image }: { image: string }) {
-	return produce(imgEl, (draft) => {
+	return produce(new ImageElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				objectFit: 'cover',
+				width: '100%',
+			},
+		}
 		draft.data.src = Expression.fromString(image)
 	})
 }
 
 const tiles = [
 	createTile({
-		image: 'https://images.unsplash.com/photo-1577234286642-fc512a5f8f11?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-42.jpeg',
 	}),
 
 	createTile({
-		image: 'https://images.unsplash.com/photo-1595475207225-428b62bda831?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-bnb1.jpeg',
 	}),
 	createTile({
-		image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-b4.jpeg',
 	}),
 	createTile({
-		image: 'https://images.unsplash.com/photo-1543076659-9380cdf10613?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-0o.jpeg',
 	}),
 	createTile({
-		image: 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=464&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-ower.jpeg',
 	}),
 	createTile({
-		image: 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80',
+		image: 'https://files.dotenx.com/assets/fruit-nq1.jpeg',
 	}),
 ]
 const defaultData = {

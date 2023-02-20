@@ -28,11 +28,9 @@ import { FooterGrid } from './footer-grid'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryWithCaptions } from './gallery-with-caption'
-import { GalleryWithTitle } from './gallery-with-title'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
-import { HeroParallax } from './hero-parallax'
 import { ListCard } from './list-card'
 import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
@@ -80,11 +78,11 @@ export const COMPONENTS: Components = [
 	{ title: 'Footers', items: [FooterGrid] },
 	{
 		title: 'Gallery',
-		items: [GalleryBasic, GalleryBasicRounded, GalleryWithTitle, GalleryWithCaptions],
+		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions],
 	},
 	{
 		title: 'Hero',
-		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroParallax],
+		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight],
 	},
 	{ title: 'Navbar', items: [Navbar] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },

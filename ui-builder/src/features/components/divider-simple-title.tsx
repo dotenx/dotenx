@@ -9,8 +9,7 @@ import { BoxStylerSimple } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
 import { Component, ElementOptions } from './component'
-import { ComponentName } from './helpers'
-import { OptionsWrapper } from './helpers/options-wrapper'
+import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class DividerSimpleTitle extends Component {
 	name = 'Divider simple title'
@@ -30,12 +29,11 @@ function DividerSimpleTitleOptions() {
 	const subtitle = component.find(tagIds.subtitle) as TextElement
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Divider simple title" />
+		<ComponentWrapper name="Divider simple title">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
 			<BoxStylerSimple label="Background color" element={component} />
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 

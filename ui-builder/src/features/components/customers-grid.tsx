@@ -14,9 +14,8 @@ import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { inteliText } from '../ui/intelinput'
 import { Component, ElementOptions } from './component'
-import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
-import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class CustomersGrid extends Component {
 	name = 'Customers grid'
@@ -36,13 +35,11 @@ function CustomersGridOptions() {
 	const subtitleText = component.find<TextElement>(tagIds.subtitleText)!
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
-	const addGridItem = () =>
-		createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png')
+	const addGridItem = () => createTile('https://files.dotenx.com/assets/logo1-fwe14we.png')
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Customers grid" />
-			<ColumnsStyler element={grid} />
+		<ComponentWrapper name="Customers grid">
+			<ColumnsStyler element={grid} maxColumns={6} />
 			<BoxStylerSimple label="Background color" element={component} />
 			<TextStyler label="Title" element={titleText} />
 			<TextStyler label="Subtitle" element={subtitleText} />
@@ -51,7 +48,7 @@ function CustomersGridOptions() {
 				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={addGridItem}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -85,17 +82,6 @@ const topDiv = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const divFlex = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			width: '100%',
-		},
-	}
-}).serialize()
-
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -103,7 +89,7 @@ const title = produce(new TextElement(), (draft) => {
 			marginBottom: '8px',
 		},
 	}
-	draft.data.text = inteliText('Trusted by the world’s best')
+	draft.data.text = inteliText("Trusted by the world's best")
 	draft.tagId = tagIds.titleText
 }).serialize()
 
@@ -114,46 +100,35 @@ const subtitle = produce(new TextElement(), (draft) => {
 			marginBottom: '12px',
 		},
 	}
-	draft.data.text = inteliText('We’re proud to work with the world’s best brands')
+	draft.data.text = inteliText("We're proud to work with the world's best brands")
 	draft.tagId = tagIds.subtitleText
 }).serialize()
 
-const tile = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'center',
-			alignItems: 'center',
-			aspectRatio: '1',
-		},
-	}
-	draft.data.src = Expression.fromString(
-		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/87_Diaspora_logo_logos-256.png'
-	)
-})
-
 const createTile = (image: string) => {
-	return produce(tile, (draft) => {
+	return produce(new ImageElement(), (draft) => {
 		draft.data.src = Expression.fromString(image)
+		draft.style.desktop = {
+			default: {
+				marginLeft: 'auto',
+				marginRight: 'auto',
+				width: 'min(120px, 60%)',
+			},
+		}
+		draft.style.tablet = {
+			default: {
+				width: 'min(80px, 60%)',
+			},
+		}
 	})
 }
 
 const tiles = [
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/117-Evernote-256.png'
-	),
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/11_Airbnb_logo_logos-256.png'
-	),
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/53-pandora-256.png'
-	),
-	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/50-picasa-256.png'),
-	createTile(
-		'https://cdn0.iconfinder.com/data/icons/brands-flat-2/187/vimeo-social-network-brand-logo-256.png'
-	),
-	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png'),
+	createTile('https://files.dotenx.com/assets/Logo10-nmi1.png'),
+	createTile('https://files.dotenx.com/assets/Logo7-32bn9.png'),
+	createTile('https://files.dotenx.com/assets/Logo6-98ju.png'),
+	createTile('https://files.dotenx.com/assets/Logo2-o234snoi.png'),
+	createTile('https://files.dotenx.com/assets/Logo3-oo23coi.png'),
+	createTile('https://files.dotenx.com/assets/Logo11-mn91.png'),
 ]
 
 const grid = produce(new ColumnsElement(), (draft) => {
@@ -161,18 +136,28 @@ const grid = produce(new ColumnsElement(), (draft) => {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
+			justifyContent: 'space-between',
+			alignItems: 'center',
 			gridGap: '20px',
-			width: '70%',
+			width: '100%',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			paddingTop: '40px',
+			paddingBottom: '40px',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			gridTemplateColumns: '1fr 1fr',
+			gridTemplateColumns: '1fr 1fr 1fr 1fr',
+			paddingTop: '30px',
+			paddingBottom: '30px',
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			gridTemplateColumns: '1fr',
+			gridTemplateColumns: '1fr 1fr',
+			paddingTop: '20px',
+			paddingBottom: '20px',
 		},
 	}
 	draft.tagId = tagIds.grid
@@ -186,13 +171,8 @@ const defaultData = {
 			components: [title, subtitle],
 		},
 		{
-			...divFlex,
-			components: [
-				{
-					...grid,
-					components: tiles.map((tile) => tile.serialize()),
-				},
-			],
+			...grid,
+			components: tiles.map((tile) => tile.serialize()),
 		},
 	],
 }

@@ -3,19 +3,17 @@ import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-cta-left.png'
 
 import { deserializeElement } from '../../utils/deserialize'
-import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { ImageDrop } from '../ui/image-drop'
 import { Component, ElementOptions } from './component'
-import { ComponentName, extractUrl } from './helpers'
-import { OptionsWrapper } from './helpers/options-wrapper'
+import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class HeroCtaLeft extends Component {
 	name = 'Hero with CTA on the left'
@@ -31,63 +29,76 @@ export class HeroCtaLeft extends Component {
 
 function HeroCtaLeftOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.children?.[0].children?.[0] as TextElement
-	const subtitle = component.children?.[0].children?.[1] as TextElement
-	const cta = component.children?.[0].children?.[2] as LinkElement
+	const image = component.find<ImageElement>(tagIds.image)!
+	const title = component.find<TextElement>(tagIds.title)!
+	const subtitle = component.find<TextElement>(tagIds.subtitle)!
+	const cta = component.find<LinkElement>(tagIds.cta)!
 	const ctaText = cta.children?.[0] as TextElement
-	const set = useSetElement()
+	
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Hero with CTA on the left" />
-			<ImageDrop
-				onChange={(src) =>
-					set(
-						component,
-						(draft) => (draft.style.desktop!.default!.backgroundImage = `url(${src})`)
-					)
-				}
-				src={extractUrl(component.style.desktop!.default!.backgroundImage as string)}
-			/>
+		<ComponentWrapper name="Hero with CTA on the left">
+			<ImageStyler element={image} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
-			<BoxStylerSimple label="Background color" element={component} />
 			<TextStyler label="CTA" element={ctaText} />
 			<LinkStyler label="CTA Link" element={cta} />
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
 // =============  defaultData =============
+const tagIds = {
+	image: 'image',
+	title: 'title',
+	subtitle: 'subtitle',
+	cta: 'cta',
+}
 
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			display: 'flex',
+			display: 'grid',
+			gap: '20px',
+			gridTemplateColumns: '1fr 1fr',
 			width: '100%',
-			height: '600px',
 			alignItems: 'center',
-			justifyContent: 'flex-start',
-			fontFamily: 'Rubik sans-serif',
-			backgroundImage:
-				'url(https://img.freepik.com/free-vector/tired-overworked-secretary-accountant-working-laptop-near-pile-folders-throwing-papers-vector-illustration-stress-work-workaholic-busy-office-employee-concept_74855-13264.jpg?w=1380&t=st=1665974691~exp=1665975291~hmac=099a0bacfb35efb0ab7f891c9e84d97e5f1adfe24049895efe2a1514964f8106)',
-			backgroundRepeat: 'no-repeat',
-			backgroundAttachment: 'fixed',
-			backgroundPosition: 'right',
-			backgroundSize: '60% auto',
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			justifyContent: 'center',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			paddingTop: '5%',
+			paddingBottom: '5%',
 		},
 	}
-	draft.style.mobile = {
+
+	draft.style.tablet = {
 		default: {
-			height: '350px',
-			backgroundPosition: 'right 10% bottom 80%', // todo: check why this is not working as expected. Expected right center to work
-			backgroundSize: '60% auto',
+			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
+		}
+	}
+	
+	draft.style.tablet = {
+		default: {
+			gridTemplateColumns: '1fr',
+			paddingLeft: '5%',
+			paddingRight: '5%',
+		}
+	}
+}).serialize()
+
+const imageContainer = produce(new ImageElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			width: '100%',
+			height: 'auto',
 		},
 	}
+	draft.data.src = Expression.fromString(
+		'https://files.dotenx.com/assets/hero-bg-wo4.jpeg'
+	)
+	draft.tagId = tagIds.image
 }).serialize()
 
 const detailsWrapper = produce(new BoxElement(), (draft) => {
@@ -95,8 +106,8 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'flex-start',
-			maxWidth: '30%',
+			justifyContent: 'space-between',
+			alignItems: 'flex-start',
 			lineHeight: '1.6',
 		},
 	}
@@ -105,10 +116,8 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			lineHeight: '1.3',
 		},
 	}
-
 	draft.style.mobile = {
 		default: {
-			maxWidth: '50%',
 			lineHeight: '1.2',
 		},
 	}
@@ -133,6 +142,7 @@ const title = produce(new TextElement(), (draft) => {
 	}
 
 	draft.data.text = Expression.fromString('Simplify your business')
+	draft.tagId = tagIds.title
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -152,19 +162,19 @@ const subTitle = produce(new TextElement(), (draft) => {
 	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
+	draft.tagId = tagIds.subtitle
 }).serialize()
 
 const cta = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			backgroundColor: '#7670f1',
+			backgroundColor: '#000000',
 			border: 'none',
-			padding: '15px',
+			paddingTop: '15px',
+			paddingBottom: '15px',
+			paddingLeft: '30px',
+			paddingRight: '30px',
 			borderRadius: '10px',
-			marginTop: '10px',
-			width: '180px',
-			height: 'auto',
-			color: 'white',
 			fontSize: '24px',
 			fontWeight: 'bold',
 			textAlign: 'center',
@@ -172,24 +182,39 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 		},
 	}
+	
+	draft.style.tablet = {
+		default: {
+			fontSize: '20px',
+			paddingTop: '10px',
+			paddingBottom: '10px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+		},
+	}
+
 	draft.style.mobile = {
 		default: {
-			padding: '10px',
-			borderRadius: '8px',
-			marginTop: '8px',
-			width: '100px',
 			fontSize: '16px',
-			fontWeight: 'bold',
+			paddingTop: '10px',
+			paddingBottom: '10px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
 		},
 	}
 
 	const element = new TextElement()
 	element.data.text = Expression.fromString('Get Started')
+	element.style.desktop = {
+		default: {
+			color: '#ffffff',
+		},
+	}
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
-
 	draft.children = [element]
+	draft.tagId = tagIds.cta
 }).serialize()
 
 const defaultData = {
@@ -198,6 +223,9 @@ const defaultData = {
 		{
 			...detailsWrapper,
 			components: [title, subTitle, cta],
+		},
+		{
+			...imageContainer,
 		},
 	],
 }

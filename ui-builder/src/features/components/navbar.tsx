@@ -15,6 +15,7 @@ import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -34,14 +35,14 @@ function NavbarOptions() {
 	const navMenu = root.children[1] as NavMenuElement
 
 	return (
-		<OptionsWrapper>
+		<ComponentWrapper name="Navbar">
 			<ImageStyler element={logo} />
 			<DndTabs
 				containerElement={navMenu}
 				insertElement={navLink}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -82,12 +83,12 @@ const defaultData = {
 					bindings: {},
 					data: {
 						alt: '',
-						src: 'https://files.dotenx.com/d924aaa8-245a-425b-bffa-f7d34023dcaf.png',
+						src: 'https://files.dotenx.com/assets/logo1-fwe14we.png',
 						style: {
 							desktop: {
 								default: {
-									width: '200px',
-									height: '80px',
+									maxWidth: '200px',
+									height: 'auto',
 								},
 							},
 						},
@@ -101,7 +102,11 @@ const defaultData = {
 			data: {
 				style: {
 					desktop: {
-						default: { 'min-width': '100px', 'min-height': '60px' },
+						default: {
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						},
 					},
 				},
 			},
@@ -135,10 +140,10 @@ const defaultData = {
 					desktop: {
 						default: {
 							display: 'flex',
-							'row-gap': '20px',
-							'column-gap': '20px',
-							'align-items': 'center',
-							'margin-right': '0px',
+							rowGap: '20px',
+							columnGap: '20px',
+							alignItems: 'center',
+							marginRight: '0px',
 						},
 					},
 					tablet: {
@@ -147,12 +152,12 @@ const defaultData = {
 							left: 0,
 							right: 0,
 							display: 'none',
-							'z-index': 100,
+							zIndex: 100,
 							position: 'absolute',
-							'padding-top': '20px',
-							'flex-direction': 'column',
-							'padding-bottom': '20px',
-							'background-color': '#eeeeee',
+							paddingTop: '20px',
+							flexDirection: 'column',
+							paddingBottom: '20px',
+							backgroundColor: '#eeeeee',
 						},
 					},
 				},
@@ -194,10 +199,10 @@ const defaultData = {
 					desktop: {
 						default: {
 							display: 'none',
-							'padding-top': '20px',
-							'padding-left': '20px',
-							'padding-right': '20px',
-							'padding-bottom': '20px',
+							paddingTop: '20px',
+							paddingLeft: '20px',
+							paddingRight: '20px',
+							paddingBottom: '20px',
 						},
 					},
 					tablet: { default: { display: 'flex' } },
@@ -216,12 +221,26 @@ const defaultData = {
 				default: {
 					display: 'flex',
 					position: 'relative',
-					'box-shadow':
-						'0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
-					'align-items': 'center',
-					'justify-content': 'space-between',
-					'padding-left': '30px',
-					'padding-right': '30px',
+					boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					paddingLeft: '30px',
+					paddingRight: '30px',
+					minHeight: '80px',
+				},
+			},
+			tablet: {
+				default: {
+					paddingLeft: '20px',
+					paddingRight: '20px',
+					minHeight: '60px',
+				},
+			},
+			mobile: {
+				default: {
+					paddingLeft: '15px',
+					paddingRight: '15px',
+					minHeight: '50px',
 				},
 			},
 		},

@@ -14,8 +14,8 @@ import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { ImageDrop } from '../ui/image-drop'
 import { Component, ElementOptions } from './component'
-import { ComponentName, extractUrl } from './helpers'
-import { OptionsWrapper } from './helpers/options-wrapper'
+import { extractUrl } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class HeroFullWidth extends Component {
 	name = 'Full width background hero'
@@ -31,15 +31,14 @@ export class HeroFullWidth extends Component {
 
 function HeroFullWidthOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.children?.[0].children?.[0] as TextElement
-	const subTitle = component.children?.[0].children?.[1] as TextElement
-	const cta = component.children?.[0].children?.[2] as LinkElement
-	const ctaText = cta.children?.[0] as TextElement
+	const title = component.find(tagIds.title) as TextElement
+	const subTitle = component.find(tagIds.subTitle) as TextElement
+	const cta = component.find(tagIds.cta) as LinkElement
+	const ctaText = cta.children[0]! as TextElement
 	const set = useSetElement()
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Full width background hero" />
+		<ComponentWrapper name="Full width background hero">
 			<ImageDrop
 				onChange={(src) =>
 					set(
@@ -51,68 +50,58 @@ function HeroFullWidthOptions() {
 			/>
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Sub-title" element={subTitle} />
-			<BoxStylerSimple label="Background color" element={component} />
-			<BoxStylerSimple label="CTA background color" element={component} />
-			<TextStyler label="CTA" element={ctaText} />
+			<BoxStylerSimple label="CTA background color" element={cta} />
 			<LinkStyler label="CTA Link" element={cta} />
-		</OptionsWrapper>
+			<TextStyler label="CTA" element={ctaText} />
+		</ComponentWrapper>
 	)
 }
 
 // =============  defaultData =============
 
+const tagIds = {
+	title: 'title',
+	subTitle: 'subTitle',
+	cta: 'cta',
+}
+
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'flex',
+			flexDirection: 'column',
 			width: '100%',
 			height: '600px',
 			alignItems: 'center',
-			justifyContent: 'flex-start',
-			fontFamily: 'Rubik sans-serif',
+			justifyContent: 'center',
 			backgroundImage:
-				'url(https://img.freepik.com/free-vector/tired-overworked-secretary-accountant-working-laptop-near-pile-folders-throwing-papers-vector-illustration-stress-work-workaholic-busy-office-employee-concept_74855-13264.jpg?w=1380&t=st=1665974691~exp=1665975291~hmac=099a0bacfb35efb0ab7f891c9e84d97e5f1adfe24049895efe2a1514964f8106)',
+				'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundRepeat: 'no-repeat',
-			backgroundAttachment: 'fixed',
-			backgroundPosition: 'right',
-			backgroundSize: '100% auto',
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			backgroundAttachment: 'contain',
+			backgroundPosition: 'center center',
+			paddingLeft: '15%',
+			paddingRight: '15%',
 		},
 	}
-	draft.style.mobile = {
-		default: {
-			height: '350px',
-			backgroundPosition: 'right 10% bottom 80%', // todo: check why this is not working as expected. Expected right center to work
-			backgroundSize: '60% auto',
-			paddingLeft: '10%',
-			paddingRight: '10%',
-		},
-	}
-}).serialize()
 
-const detailsWrapper = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'flex-start',
-			maxWidth: '30%',
-			lineHeight: '1.78',
-		},
-	}
 	draft.style.tablet = {
 		default: {
-			lineHeight: '1.3',
+			height: '500px',
+			paddingLeft: '10%',
+			paddingRight: '10%',
 		},
 	}
+
 	draft.style.mobile = {
 		default: {
-			maxWidth: '50%',
-			lineHeight: '1.2',
+			height: '400px',
+			paddingLeft: '5%',
+			paddingRight: '5%',
 		},
 	}
+	
 }).serialize()
+
 
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
@@ -120,17 +109,24 @@ const title = produce(new TextElement(), (draft) => {
 			fontSize: '50px',
 			fontWeight: 'bold',
 			marginBottom: '30px',
-			color: '#333333',
+			color: '#ffffff',
 		},
 	}
+
+	draft.style.tablet = {
+		default: {
+			fontSize: '40px',
+		},
+	}
+
 	draft.style.mobile = {
 		default: {
 			fontSize: '30px',
-			marginBottom: '20px',
-			color: '#333333',
 		},
 	}
+	
 	draft.data.text = Expression.fromString('Simplify your business')
+	draft.tagId = tagIds.title
 }).serialize()
 
 const subTitle = produce(new TextElement(), (draft) => {
@@ -138,31 +134,40 @@ const subTitle = produce(new TextElement(), (draft) => {
 		default: {
 			fontSize: '18px',
 			marginBottom: '30px',
-			color: '#696969',
+			color: '#ffffff',
 		},
 	}
+
+	draft.style.tablet = {
+		default: {
+			fontSize: '16px',
+		},
+	}
+
 	draft.style.mobile = {
 		default: {
 			fontSize: '14px',
-			marginBottom: '20px',
 		},
 	}
+	
 	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
+	draft.tagId = tagIds.subTitle
 }).serialize()
 
 const cta = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			backgroundColor: '#7670f1',
+			backgroundColor: '#ffffff',
 			border: 'none',
-			padding: '15px',
+			paddingTop: '15px',
+			paddingBottom: '15px',
+			paddingLeft: '30px',
+			paddingRight: '30px',
 			borderRadius: '10px',
 			marginTop: '10px',
-			width: '180px',
-			height: 'auto',
-			color: 'white',
+			color: '#000000',
 			fontSize: '24px',
 			fontWeight: 'bold',
 			textAlign: 'center',
@@ -170,29 +175,37 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 		},
 	}
-	draft.style.mobile = {
+
+	draft.style.tablet = {
 		default: {
-			padding: '10px',
-			borderRadius: '8px',
-			marginTop: '8px',
-			width: '100px',
-			fontSize: '16px',
-			fontWeight: 'bold',
+			fontSize: '20px',
+			paddingTop: '10px',
+			paddingBottom: '10px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
 		},
 	}
+
+	draft.style.mobile = {
+		default: {
+			fontSize: '16px',
+			paddingTop: '10px',
+			paddingBottom: '10px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+		},
+	}
+
+
 	const element = new TextElement()
 	element.data.text = Expression.fromString('Get Started')
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false
 	draft.children = [element]
+	draft.tagId = tagIds.cta
 }).serialize()
 
 const defaultData = {
 	...wrapper,
-	components: [
-		{
-			...detailsWrapper,
-			components: [title, subTitle, cta],
-		},
-	],
+	components: [title, subTitle, cta],
 }

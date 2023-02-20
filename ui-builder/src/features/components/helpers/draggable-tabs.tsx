@@ -9,8 +9,8 @@ import {
 } from '@dnd-kit/core'
 import { horizontalListSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { ActionIcon, Tabs } from '@mantine/core'
-import { ReactNode } from 'react'
+import { ActionIcon, Tabs, Text, Tooltip } from '@mantine/core'
+import { ReactNode, useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 
 export type DraggableTabsProps = {
@@ -41,8 +41,10 @@ export function DraggableTabs({
 }: DraggableTabsProps) {
 	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 10 } }))
 
+	const [activeTab, setActiveTab] = useState<string | null>(tabs[0].id as string)
+
 	return (
-		<Tabs defaultValue={tabs[0].id as string}>
+		<Tabs keepMounted={false} value={activeTab} onTabChange={setActiveTab}>
 			<div className="flex w-full">
 				<Tabs.List className="basis-full">
 					<DndContext
@@ -69,41 +71,52 @@ export function DraggableTabs({
 					</DndContext>
 				</Tabs.List>
 				<div className="ml-auto">
-					<ActionIcon
-						onClick={onAddNewTab}
-						variant="transparent"
-						disabled={maxLength !== undefined && tabs.length === maxLength}
-					>
-						<TbPlus
-							size={16}
-							className={
-								maxLength && tabs.length === maxLength
-									? 'text-gray-400'
-									: 'text-red-500 rounded-full border-red-500 border'
-							}
-						/>
-					</ActionIcon>
+					<Tooltip withinPortal withArrow label={<Text size="xs">Add new block</Text>}>
+						<ActionIcon
+							onClick={onAddNewTab}
+							variant="transparent"
+							disabled={maxLength !== undefined && tabs.length === maxLength}
+						>
+							<TbPlus
+								size={16}
+								className={
+									maxLength && tabs.length === maxLength
+										? 'text-gray-400'
+										: 'text-red-500 rounded-full border-red-500 border'
+								}
+							/>
+						</ActionIcon>
+					</Tooltip>
 				</div>
 			</div>
 			{tabs.map((tab) => (
 				<Tabs.Panel key={tab.id} value={tab.id as string} pt="xs">
-					<div className="relative pt-2">
+					<div className="relative pt-6">
 						{tab.content}
 						<div className="absolute top-0 right-0">
-							<ActionIcon
-								onClick={tab.onTabDelete}
-								variant="transparent"
-								disabled={minLength !== undefined && tabs.length === minLength}
+							<Tooltip
+								withinPortal
+								withArrow
+								label={<Text size="xs">Delete this block</Text>}
 							>
-								<TbTrash
-									size={16}
-									className={
-										minLength && tabs.length === minLength
-											? 'text-gray'
-											: 'text-red-500'
-									}
-								/>
-							</ActionIcon>
+								<ActionIcon
+									onClick={() => {
+										setActiveTab(tabs[0].id as string)
+										tab.onTabDelete()
+									}}
+									variant="transparent"
+									disabled={minLength !== undefined && tabs.length === minLength}
+								>
+									<TbTrash
+										size={16}
+										className={
+											minLength && tabs.length === minLength
+												? 'text-gray'
+												: 'text-red-500'
+										}
+									/>
+								</ActionIcon>
+							</Tooltip>
 						</div>
 					</div>
 				</Tabs.Panel>
