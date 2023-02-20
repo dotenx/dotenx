@@ -11,10 +11,12 @@ export function DndTabs({
 	containerElement,
 	renderItemOptions,
 	insertElement,
+	autoAdjustGridTemplateColumns = true,
 }: {
 	containerElement: BoxElement | NavMenuElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
+	autoAdjustGridTemplateColumns?: boolean
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -37,7 +39,38 @@ export function DndTabs({
 			listElements.map((item, index) => ({
 				id: item.id,
 				content: renderItemOptions(item, index),
-				onTabDelete: () => set((draft) => draft.children.splice(index, 1)),
+				onTabDelete: () =>
+					set((draft) => {
+						draft.children.splice(index, 1)
+						if (!autoAdjustGridTemplateColumns) return
+						// remove one 1fr from the grid template columns in all the modes if the number of columns is more than the number of 1frs
+						if (draft.style.desktop?.default?.gridTemplateColumns) {
+							const columns = (
+								draft.style.desktop.default.gridTemplateColumns as string
+							).split(' ')
+							if (columns.length <= draft.children.length) return
+							columns.pop()
+							draft.style.desktop.default.gridTemplateColumns = columns.join(' ')
+						}
+
+						if (draft.style.tablet?.default?.gridTemplateColumns) {
+							const columns = (
+								draft.style.tablet.default.gridTemplateColumns as string
+							).split(' ')
+							if (columns.length <= draft.children.length) return
+							columns.pop()
+							draft.style.tablet.default.gridTemplateColumns = columns.join(' ')
+						}
+
+						if (draft.style.mobile?.default?.gridTemplateColumns) {
+							const columns = (
+								draft.style.mobile.default.gridTemplateColumns as string
+							).split(' ')
+							if (columns.length <= draft.children.length) return
+							columns.pop()
+							draft.style.mobile.default.gridTemplateColumns = columns.join(' ')
+						}
+					}),
 			})),
 		[listElements, renderItemOptions, set]
 	)

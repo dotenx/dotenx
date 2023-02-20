@@ -7,10 +7,12 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
 export class CustomersLogoGrid extends Component {
@@ -26,92 +28,50 @@ export class CustomersLogoGrid extends Component {
 // =============  renderOptions =============
 
 function CustomersLogoGridOptions() {
-	const component = useSelectedElement()!
-	const grid = component.find<BoxElement>(tagIds.grid)!
+	const component = useSelectedElement<ColumnsElement>()!
 
-	const addGridItem = () =>
-		createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png')
+	const addGridItem = () => createTile('https://files.dotenx.com/assets/logo1-fwe14we.png')
 
 	return (
-		<div className="space-y-6">
-			<ComponentName name="Customers logo grid" />
+		<ComponentWrapper name="Customers logo grid">
+			<ColumnsStyler element={component} maxColumns={6} />
 			<BoxStylerSimple label="Background color" element={component} />
 			<DndTabs
-				containerElement={grid}
+				containerElement={component}
 				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
 				insertElement={addGridItem}
 			/>
-		</div>
+		</ComponentWrapper>
 	)
 }
 
 // =============  defaultData =============
 
-const tagIds = {
-	grid: 'grid',
-}
-
-const wrapperDiv = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'center',
-			alignItems: 'center',
-			width: '100%',
-			paddingTop: '40px',
-			paddingBottom: '40px',
-		},
-	}
-}).serialize()
-
-const divFlex = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			width: '100%',
-		},
-	}
-}).serialize()
-
-const tile = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'center',
-			alignItems: 'center',
-			aspectRatio: '1',
-		},
-	}
-	draft.data.src = Expression.fromString(
-		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/87_Diaspora_logo_logos-256.png'
-	)
-})
-
 const createTile = (image: string) => {
-	return produce(tile, (draft) => {
+	return produce(new ImageElement(), (draft) => {
 		draft.data.src = Expression.fromString(image)
+		draft.style.desktop = {
+			default: {
+				marginLeft: 'auto',
+				marginRight: 'auto',
+				width: 'min(120px, 60%)',
+			},
+		}
+		draft.style.tablet = {
+			default: {
+				width: 'min(80px, 60%)',
+			},
+		}
 	})
 }
 
 const tiles = [
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/117-Evernote-256.png'
-	),
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/11_Airbnb_logo_logos-256.png'
-	),
-	createTile(
-		'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/53-pandora-256.png'
-	),
-	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/50-picasa-256.png'),
-	createTile(
-		'https://cdn0.iconfinder.com/data/icons/brands-flat-2/187/vimeo-social-network-brand-logo-256.png'
-	),
-	createTile('https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/88-kik-256.png'),
+	createTile('https://files.dotenx.com/assets/Logo10-nmi1.png'),
+	createTile('https://files.dotenx.com/assets/Logo7-32bn9.png'),
+	createTile('https://files.dotenx.com/assets/Logo6-98ju.png'),
+	createTile('https://files.dotenx.com/assets/Logo2-o234snoi.png'),
+	createTile('https://files.dotenx.com/assets/Logo3-oo23coi.png'),
+	createTile('https://files.dotenx.com/assets/Logo11-mn91.png'),
 ]
 
 const grid = produce(new ColumnsElement(), (draft) => {
@@ -119,34 +79,33 @@ const grid = produce(new ColumnsElement(), (draft) => {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
+			justifyContent: 'space-between',
+			alignItems: 'center',
 			gridGap: '20px',
-			width: '70%',
+			width: '100%',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			paddingTop: '40px',
+			paddingBottom: '40px',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			gridTemplateColumns: '1fr 1fr',
+			gridTemplateColumns: '1fr 1fr 1fr 1fr',
+			paddingTop: '30px',
+			paddingBottom: '30px',
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			gridTemplateColumns: '1fr',
+			gridTemplateColumns: '1fr 1fr',
+			paddingTop: '20px',
+			paddingBottom: '20px',
 		},
 	}
-	draft.tagId = tagIds.grid
 }).serialize()
 
 const defaultData = {
-	...wrapperDiv,
-	components: [
-		{
-			...divFlex,
-			components: [
-				{
-					...grid,
-					components: tiles.map((tile) => tile.serialize()),
-				},
-			],
-		},
-	],
+	...grid,
+	components: tiles.map((tile) => tile.serialize()),
 }

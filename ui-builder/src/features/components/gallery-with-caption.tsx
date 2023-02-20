@@ -6,6 +6,7 @@ import { TbMinus, TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/gelly-with-caption.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
+import { Element } from '../elements/element'
 import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
@@ -19,6 +20,9 @@ import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
+import { DndTabs } from './helpers/dnd-tabs'
+import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class GalleryWithCaptions extends Component {
 	name = 'Gallery with image captions'
@@ -32,66 +36,46 @@ export class GalleryWithCaptions extends Component {
 
 // =============  renderOptions =============
 
+const tagIds = {
+	grid: 'grid',
+}
+
 function GalleryWithCaptionsOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const [selectedTile, setSelectedTile] = useState(0)
-	const set = useSetElement()
-	const grid = component.children?.[0].children?.[0] as ColumnsElement
-	const selectedItem = grid.children?.[selectedTile] as BoxElement
-	const selectedTileImage = selectedItem.children?.[0] as ImageElement
-	const tiles = grid.children?.map((_child, index) => ({
-		label: `Tile ${index + 1}`,
-		value: index.toString(),
-	}))
-
-	const addFeature = () => {
-		set(grid, (draft) => draft.children?.push(regenElement(tile)))
-	}
-
-	const deleteFeature = () => {
-		set(grid, (draft) => draft.children?.splice(selectedTile, 1))
-		setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-	}
+	const grid = component.find(tagIds.grid) as ColumnsElement
 
 	return (
-		<div className="space-y-6">
-			<ComponentName name="Gallery with image captions" />
+		<ComponentWrapper name="Gallery with image captions">
 			<ColumnsStyler element={grid} />
 			<BoxStylerSimple label="Background color" element={component} />
-			<Button
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={addFeature}
-				leftIcon={<TbPlus />}
-			>
-				Add feature
-			</Button>
-			<Select
-				label="Tiles"
-				size="xs"
-				placeholder="Select a tile"
-				data={tiles}
-				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
-				value={selectedTile.toString()}
+			<DndTabs
+				containerElement={grid}
+				renderItemOptions={(item) => <CellOptions item={item} />}
+				insertElement={insertTab}
 			/>
-			<TextStyler label="Image caption" element={selectedItem.children?.[1] as TextElement} />
-			<ImageStyler element={selectedTileImage} />
-			<Button
-				disabled={grid.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={deleteFeature}
-				leftIcon={<TbMinus />}
-			>
-				Delete feature
-			</Button>
-		</div>
+		</ComponentWrapper>
 	)
 }
 
+const insertTab = () =>
+	createTile({
+		src: 'https://img.freepik.com/free-vector/green-shades-wavy-background_23-2148897829.jpg?w=740&t=st=1667653664~exp=1667654264~hmac=9526cd24b0865b9b6ed785cf3cfb27993f80343136cfb88551550d143f5b6b44',
+		title: 'Customizable',
+	})
+
 // =============  defaultData =============
+
+function CellOptions({ item }: { item: Element }) {
+	const image = item.children?.[0] as ImageElement
+	const caption = item.children?.[1] as TextElement
+
+	return (
+		<OptionsWrapper>
+			<ImageStyler element={image} />
+			<TextStyler label="Caption" element={caption} />
+		</OptionsWrapper>
+	)
+}
 
 const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -134,19 +118,16 @@ const tileImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '100%',
-			maxHeight: '400px',
-			height: '100%',
-			minHeight: '300px',
+			height: 'auto',
 			objectFit: 'cover',
-			objectPosition: 'center center',
 		},
 	}
 	draft.data.src = Expression.fromString(
-		'https://img.freepik.com/free-vector/pink-purple-shades-wavy-background_23-2148897830.jpg?w=740&t=st=1667653845~exp=1667654445~hmac=16b4314931be627c9c54ac2fc0ea554a9ee1b5d74458608932743cc34ac5cc56'
+		'https://files.dotenx.com/assets/abstract-bg-1k.jpeg'
 	)
 })
 
-const tile = produce(new BoxElement(), (draft) => {
+const newTile = () => produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			padding: '10px',
@@ -162,7 +143,7 @@ const tile = produce(new BoxElement(), (draft) => {
 })
 
 function createTile({ src, title }: { src: string; title: string }) {
-	return produce(tile, (draft) => {
+	return produce(newTile(), (draft) => {
 		const imageElement = draft.children[0] as ImageElement
 		imageElement.data.src = Expression.fromString(src)
 		const titleElement = draft.children?.[1] as TextElement
@@ -171,27 +152,27 @@ function createTile({ src, title }: { src: string; title: string }) {
 }
 const tiles = [
 	createTile({
-		src: 'https://img.freepik.com/free-vector/green-shades-wavy-background_23-2148897829.jpg?w=740&t=st=1667653664~exp=1667654264~hmac=9526cd24b0865b9b6ed785cf3cfb27993f80343136cfb88551550d143f5b6b44',
+		src: 'https://files.dotenx.com/assets/abstract-bg-34k.jpeg',
 		title: 'Customizable',
 	}),
 	createTile({
-		src: 'https://img.freepik.com/free-vector/abstract-wallpaper-with-halftone_23-2148585152.jpg?t=st=1667653639~exp=1667654239~hmac=da2ff3def2e5cb24eeab3a1979b8701238081a3ed82ef3f58dd6216e8381fdae',
+		src: 'https://files.dotenx.com/assets/abstract-bg-152.jpeg',
 		title: 'Fast',
 	}),
 	createTile({
-		src: 'https://img.freepik.com/free-vector/abstract-halftone-background-concept_23-2148605018.jpg?t=st=1667653639~exp=1667654239~hmac=00369d4f05fcda0c7131e9487f27e583f7a557ab648e593326d9fe9c86b10293',
+		src: 'https://files.dotenx.com/assets/abstract-bg-018.jpeg',
 		title: 'Made with Love',
 	}),
 	createTile({
-		src: 'https://img.freepik.com/free-vector/halftone-effect-gradient-background_23-2148593366.jpg?w=740&t=st=1667653718~exp=1667654318~hmac=f661bfe1fc3b108ae80e4178f12893c7b2c9364f818de2ceb276edb9004cbfef',
+		src: 'https://files.dotenx.com/assets/abstract-bg-117.jpeg',
 		title: 'Easy to Use',
 	}),
 	createTile({
-		src: 'https://img.freepik.com/free-vector/abstract-backgroud-concept_52683-43706.jpg?t=st=1667653639~exp=1667654239~hmac=45b124f9def8278922834cc158986cfaf6b3fc10f1a0f5a0d54e9c30b385800b',
+		src: 'https://files.dotenx.com/assets/abstract-bg-1k.jpeg',
 		title: 'Cloud Storage',
 	}),
 	createTile({
-		src: 'https://img.freepik.com/free-vector/abstract-neon-lights-background_52683-45117.jpg?t=st=1667653639~exp=1667654239~hmac=44d9c26a7c8f22bd2752f6785556945db7e7cb42b65987a534bfc28ec962ccdd',
+		src: 'https://files.dotenx.com/assets/abstract-bg-8k.jpeg',
 		title: 'Instant Setup',
 	}),
 ]
@@ -215,6 +196,8 @@ const grid = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 		},
 	}
+
+	draft.tagId = tagIds.grid
 }).serialize()
 
 const defaultData = {

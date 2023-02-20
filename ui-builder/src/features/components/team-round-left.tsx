@@ -1,9 +1,5 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import profile1Url from '../../assets/components/profile1.jpg'
-import profile2Url from '../../assets/components/profile2.jpg'
-import profile3Url from '../../assets/components/profile3.jpg'
-import profile4Url from '../../assets/components/profile4.jpg'
 import imageUrl from '../../assets/components/team-round-left.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
@@ -14,6 +10,7 @@ import { Expression } from '../states/expression'
 import Bio from './basic-components/bio'
 import { Component, ElementOptions } from './component'
 import { ComponentName, SimpleComponentOptionsProps } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -33,20 +30,20 @@ function TeamRoundLeftOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element as BoxElement
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Team with round profile image on left" />
+		<ComponentWrapper name="Team with round profile image on left">
 			<DndTabs
 				containerElement={containerDiv}
 				insertElement={() =>
 					createBioWithImage({
-						image: profile4Url,
+						image: 'https://files.dotenx.com/assets/profile1-v13.jpeg',
 						name: 'Alex Smith',
 						description: 'All rounder no-code developer with 10+ years of experience',
 					})
 				}
 				renderItemOptions={(item) => <ItemOptions item={item} options={options} />}
+				autoAdjustGridTemplateColumns={false}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -68,9 +65,30 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
-			gridTemplateColumns: '1fr 1fr 1fr',
+			gridTemplateColumns: '1fr 1fr',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			paddingTop: '50px',
+			paddingBottom: '50px',
+		},
+	}
+
+	draft.style.tablet = {
+		default: {
+			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
+			paddingTop: '40px',
+			paddingBottom: '40px',
+		},
+	}
+
+	draft.style.mobile = {
+		default: {
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			paddingTop: '30px',
+			paddingBottom: '30px',
 		},
 	}
 }).serialize()
@@ -80,18 +98,18 @@ const teamDetails = [
 		name: 'John Doe',
 		description:
 			'Professional Photographer with 10 years of experience, specialized in wedding photography.',
-		image: profile1Url,
+		image: 'https://files.dotenx.com/assets/profile2-ba1.jpeg',
 	},
 	{
 		name: 'Jane Doe',
 		description: 'Master of Arts in Graphic Design, with 5 years of experience in the field.',
-		image: profile2Url,
+		image: 'https://files.dotenx.com/assets/profile1-v13.jpeg',
 	},
 	{
 		name: 'Jack Smith',
 		description:
 			'Managing Director of a large company, with 15 years of experience in the field.',
-		image: profile3Url,
+		image: 'https://files.dotenx.com/assets/profile4-k38.jpeg',
 	},
 ]
 

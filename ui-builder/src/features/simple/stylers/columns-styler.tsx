@@ -8,7 +8,8 @@ import { useSetWithElement } from '../../elements/elements-store'
 import { ColumnsElement } from '../../elements/extensions/columns'
 import { viewportAtom } from '../../viewport/viewport-store'
 
-export function ColumnsStyler({ element }: { element: ColumnsElement }) {
+// get element and optionally max columns
+export function ColumnsStyler({ element, maxColumns }: { element: ColumnsElement, maxColumns?: number}) {
 	const set = useSetWithElement(element)
 	const viewport = useAtomValue(viewportAtom)
 	const columns =
@@ -42,7 +43,7 @@ export function ColumnsStyler({ element }: { element: ColumnsElement }) {
 					size="xs"
 					step={1}
 					min={1}
-					max={5}
+					max={maxColumns ?? 5}
 					styles={{ markLabel: { display: 'none' } }}
 					value={columns}
 					onChange={setColumns}

@@ -16,7 +16,8 @@ import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
-import { ComponentName, DividerCollapsible } from './helpers'
+import { DividerCollapsible } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -42,8 +43,7 @@ function AboutRightOptions() {
 	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="About us with details on the right" />
+		<ComponentWrapper name="About us with details on the right">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
@@ -58,7 +58,7 @@ function AboutRightOptions() {
 				renderItemOptions={(item) => <ItemOptions item={item} />}
 				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -91,7 +91,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr ',
 			width: '100%',
-			minHeight: '600px',
+			height: '110%',
 			alignItems: 'center',
 			justifyContent: 'flex-start',
 			fontFamily: 'Rubik sans-serif',
@@ -103,7 +103,6 @@ const wrapper = produce(new BoxElement(), (draft) => {
 	}
 	draft.style.tablet = {
 		default: {
-			height: 'auto',
 			gridTemplateColumns: ' 1fr ',
 		},
 	}
@@ -119,7 +118,6 @@ const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '100%',
-			maxWidth: '600px',
 			height: 'auto',
 		},
 	}
@@ -135,14 +133,10 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'center',
-			maxWidth: '50%',
-			lineHeight: '1.6',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			width: '100%',
-			maxWidth: '100%',
 			textAlign: 'center',
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -289,14 +283,11 @@ const featureLines = [
 const cta = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			alignSelf: 'center',
 			backgroundColor: '#7670f1',
-			border: 'none',
-			padding: '15px',
 			borderRadius: '15px',
 			marginTop: '10px',
-			width: '180px',
-			height: 'auto',
-			color: 'white',
+			color: '#ffffff',
 			fontSize: '26px',
 			fontWeight: 'bold',
 			textAlign: 'center',
@@ -312,7 +303,6 @@ const cta = produce(new LinkElement(), (draft) => {
 	draft.style.mobile = {
 		default: {
 			marginTop: '8px',
-			width: '120px',
 			fontSize: '14px',
 			fontWeight: 'bold',
 		},
@@ -321,6 +311,14 @@ const cta = produce(new LinkElement(), (draft) => {
 	const element = new TextElement()
 	element.data.text = Expression.fromString('Get Started')
 	element.tagId = tagIds.ctaText
+	element.style.desktop = {
+		default: {
+			paddingLeft: '15px',
+			paddingRight: '15px',
+			paddingTop: '15px',
+			paddingBottom: '15px',
+		},
+	}
 
 	draft.data.href = Expression.fromString('#')
 	draft.data.openInNewTab = false

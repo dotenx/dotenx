@@ -13,6 +13,7 @@ import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName, Divider } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -34,8 +35,7 @@ function FeatureDetailsLeftOptions() {
 	const features = component.find<BoxElement>(tagIds.features)!
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Feature with details on the left" />
+		<ComponentWrapper name="Feature with details on the left">
 			<ImageStyler element={image} />
 			<BoxStylerSimple label="Background color" element={component} />
 			<Divider title="Rows" />
@@ -44,7 +44,7 @@ function FeatureDetailsLeftOptions() {
 				renderItemOptions={(item) => <FeatureOptions item={item} />}
 				insertElement={() => createRow('title', 'Lorem ipsum dolor sit amet')}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -72,24 +72,31 @@ const wrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'grid',
 			gap: '20px',
-			gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+			gridTemplateColumns: '1fr 1fr',
 			width: '100%',
-			height: '600px',
 			alignItems: 'center',
-			justifyContent: 'flex-start',
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			justifyContent: 'center',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			paddingTop: '5%',
+			paddingBottom: '5%',
 		},
 	}
-	draft.style.mobile = {
+
+	draft.style.tablet = {
 		default: {
-			height: '350px',
-			backgroundPosition: 'right 10% bottom 80%', // todo: check why this is not working as expected. Expected right center to work
-			gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
-			backgroundSize: '60% auto',
+			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
-		},
+		}
+	}
+	
+	draft.style.tablet = {
+		default: {
+			gridTemplateColumns: '1fr',
+			paddingLeft: '5%',
+			paddingRight: '5%',
+		}
 	}
 }).serialize()
 
@@ -99,8 +106,9 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			display: 'flex',
 			flexDirection: 'column',
 			justifyContent: 'flex-start',
-			width: '100%',
+			alignItems: 'stretch',
 			lineHeight: '1.6',
+			gap: '20px',
 		},
 	}
 	draft.style.tablet = {
@@ -112,7 +120,6 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			maxWidth: '100%',
 			lineHeight: '1.2',
-			order: 1,
 		},
 	}
 }).serialize()
@@ -121,15 +128,7 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '100%',
-			maxHeight: '400px',
 			height: 'auto',
-			objectFit: 'cover',
-			objectPosition: 'center center',
-		},
-	}
-	draft.style.mobile = {
-		default: {
-			order: 0,
 		},
 	}
 	draft.data.src = Expression.fromString(
@@ -160,11 +159,8 @@ const createFeatureRow = () =>
 	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
-				alignItems: 'center',
 				marginTop: '15px',
 				marginBottom: '15px',
-				marginLeft: '0px',
-				marginRight: '0px',
 			},
 		}
 		const title = produce(new TextElement(), (draft) => {
@@ -173,8 +169,23 @@ const createFeatureRow = () =>
 					fontSize: '26px',
 					fontWeight: '600',
 					color: 'rgb(17, 24, 39)',
+					marginBottom: '4px',
 				},
 			}
+
+			draft.style.tablet = {
+				default: {
+					fontSize: '20px',
+					marginBottom: '3px',
+				},
+			}
+
+			draft.style.mobile = {
+				default: {
+					fontSize: '16px',
+				},
+			}
+
 			draft.data.text = Expression.fromString('title')
 		})
 		const details = produce(new TextElement(), (draft) => {
@@ -185,6 +196,19 @@ const createFeatureRow = () =>
 					fontWeight: '400',
 				},
 			}
+
+			draft.style.tablet = {
+				default: {
+					fontSize: '14px',
+				},
+			}
+
+			draft.style.mobile = {
+				default: {
+					fontSize: '12px',
+				},
+			}
+
 			draft.data.text = Expression.fromString(
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 			)
@@ -204,7 +228,7 @@ const createRow = (title: string, details: string) => {
 const featureRows = [
 	createRow(
 		'Scalable',
-		"Scalable is a tool that helps you create business solutions that scale with your business.Let's take a look at an example.Say you have a business that generates a lot of leads.You have a list of 200,000 leads and you want to send each of them a customized welcome email."
+		"Scalable is a tool that helps you create business solutions that scale with your business.Let's take a look at an example."
 	).serialize(),
 	createRow(
 		'Functionality',
@@ -212,7 +236,7 @@ const featureRows = [
 	).serialize(),
 	createRow(
 		'Security',
-		'This is not just limited to your files but also your emails, your social media profiles, and your phone.Security is a hot topic in technology and people are always looking for the newest hacks and solutions, so it’s no surprise that some of the most popular tools are also the most complex to use.'
+		'This is not just limited to your files but also your emails, your social media profiles, and your phone.Security is a hot topic in technology.'
 	).serialize(),
 ]
 

@@ -8,12 +8,13 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { BoxStyler, BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -35,17 +36,15 @@ function FaqBasicBasicOptions() {
 	const faqTitle = component.find<TextElement>(tagIds.faqTitle)!
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Basic FAQ" />
-			<TextStyler label="FAQ title" element={faqTitle} />
+		<ComponentWrapper name="Basic FAQ">
+			<TextStyler label="Main title" element={faqTitle} />
 			<ColumnsStyler element={grid} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <CellOptions item={item} />}
 				insertElement={() => regenElement(tile)}
 			/>
-			<BoxStylerSimple label="Background color" element={component} />
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 
@@ -57,6 +56,7 @@ function CellOptions({ item }: { item: Element }) {
 		<OptionsWrapper>
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Description" element={description} />
+			<BoxStyler label="Block" element={item} />
 		</OptionsWrapper>
 	)
 }

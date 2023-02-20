@@ -17,6 +17,8 @@ import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName, repeatObject } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
+import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class GalleryBasicRounded extends Component {
@@ -31,55 +33,31 @@ export class GalleryBasicRounded extends Component {
 
 // =============  renderOptions =============
 
+const tagIds = {
+	grid: 'grid',
+}
+
 function GalleryBasicRoundedOptions() {
-	const [selectedTile, setSelectedTile] = useState(0)
-	const set = useSetElement()
 	const component = useSelectedElement<BoxElement>()!
-	const grid = component.children?.[0] as ColumnsElement
-	const selectedCell = grid.children?.[selectedTile] as ImageElement
-	const tiles = grid.children?.map((child, index) => ({
-		label: `Tile ${index + 1}`,
-		value: index + '',
-	}))
+	const grid = component.find(tagIds.grid) as ColumnsElement
 
-	const addImage = () => {
-		set(grid, (draft) => draft.children?.push(regenElement(deserializeElement(imgEl))))
-	}
-
-	const deleteImage = () => {
-		set(grid, (draft) => draft.children?.splice(selectedTile, 1))
-		setSelectedTile(selectedTile > 0 ? selectedTile - 1 : 0)
-	}
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Basic Gallery rounded" />
+		<ComponentWrapper name="Gallery with rounded images">
 			<ColumnsStyler element={grid} />
-			<Button size="xs" fullWidth variant="outline" onClick={addImage} leftIcon={<TbPlus />}>
-				Add image
-			</Button>
 			<BoxStylerSimple label="Background color" element={component} />
-			<Select
-				label="Tiles"
-				size="xs"
-				placeholder="Select a tile"
-				data={tiles}
-				onChange={(value) => setSelectedTile(_.parseInt(value ?? '0'))}
-				value={selectedTile.toString()}
+			<DndTabs
+				containerElement={grid}
+				renderItemOptions={(item) => <ImageStyler element={item as ImageElement} />}
+				insertElement={insertTab}
 			/>
-			<ImageStyler element={selectedCell} />
-			<Button
-				disabled={grid.children?.length === 1}
-				size="xs"
-				fullWidth
-				variant="outline"
-				onClick={deleteImage}
-				leftIcon={<TbMinus />}
-			>
-				Delete image
-			</Button>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
+
+const insertTab = () =>
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-12455.jpeg',
+	})
 
 // =============  defaultData =============
 
@@ -97,50 +75,73 @@ const divFlex = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const imgEl = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			borderRadius: '15px',
-			boxShadow:
-				'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
-			backgroundColor: '#ee0000',
-			aspectRatio: '1',
-			backgroundSize: 'cover',
-			backgroundPosition: 'center center',
-		},
-	}
-	draft.data.src = Expression.fromString(
-		'https://images.unsplash.com/photo-1665636605198-c480dd90aefc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDM1fHhqUFI0aGxrQkdBfHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60'
-	)
-}).serialize()
-
 const container = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr',
 			gridGap: '20px',
-			width: '70%',
+			paddingLeft: '15%',
+			paddingRight: '15%',
 		},
 	}
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: '1fr 1fr',
+			paddingLeft: '10%',
+			paddingRight: '10%',
 		},
 	}
 	draft.style.mobile = {
 		default: {
 			gridTemplateColumns: '1fr',
+			paddingLeft: '5%',
+			paddingRight: '5%',
 		},
 	}
+	draft.tagId = tagIds.grid
 }).serialize()
 
+function createTile({ image }: { image: string }) {
+	return produce(new ImageElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				objectFit: 'cover',
+				width: '100%',
+				borderRadius: '15px',
+			},
+		}
+		draft.data.src = Expression.fromString(image)
+	})
+}
+
+const tiles = [
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-iwr.jpeg',
+	}),
+
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-4324.jpeg',
+	}),
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-n234.jpeg',
+	}),
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-374.jpeg',
+	}),
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-v123.jpeg',
+	}),
+	createTile({
+		image: 'https://files.dotenx.com/assets/dessert-12455.jpeg',
+	}),
+]
 const defaultData = {
 	...divFlex,
 	components: [
 		{
 			...container,
-			components: repeatObject(imgEl, 6),
+			components: tiles.map((tile) => tile.serialize()),
 		},
 	],
 }

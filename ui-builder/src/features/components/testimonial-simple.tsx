@@ -1,16 +1,12 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import profile1Url from '../../assets/components/profile1.jpg'
-import profile2Url from '../../assets/components/profile2.jpg'
-import profile3Url from '../../assets/components/profile3.jpg'
-import profile4Url from '../../assets/components/profile4.jpg'
 import imageUrl from '../../assets/components/testimonial-simple.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { BoxStyler, BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
@@ -42,13 +38,12 @@ function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 			<ComponentName name="Simple testimonial" />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
-			<BoxStylerSimple label="Background color" element={containerDiv} />
 			<Divider title="Testimonials" />
 			<DndTabs
 				containerElement={gridContainer}
 				insertElement={() =>
 					createBioWithImage({
-						image: profile4Url,
+						image: 'https://files.dotenx.com/assets/profile1-v13.jpeg',
 						name: 'Alex Smith',
 						description:
 							' Vitae suscipit tellus mauris a diam maecenas sed enim ut. Mauris augue neque gravida in fermentum.',
@@ -73,6 +68,7 @@ function ItemOptions({ item }: { item: Element }) {
 			<TextStyler label="Name" element={name} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Description" element={description} />
+			<BoxStyler label="Block" element={item} />
 		</OptionsWrapper>
 	)
 }
@@ -83,39 +79,46 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			textAlign: 'center',
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			display: 'flex',
+			flexDirection: 'column',
+			justifyContent: 'center',
+			alignItems: 'center',
+			paddingLeft: '15%',
+			paddingRight: '15%',
 			paddingTop: '50px',
+			paddingBottom: '50px',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			paddingLeft: '5%',
-			paddingRight: '5%',
+			paddingLeft: '10%',
+			paddingRight: '10%',
+			paddingTop: '40px',
+			paddingBottom: '40px',
 		},
 	}
+
 	draft.style.mobile = {
 		default: {
-			paddingLeft: '0%',
-			paddingRight: '0%',
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			paddingTop: '30px',
+			paddingBottom: '30px',
 		},
 	}
+	
 }).serialize()
 const gridWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr',
-			paddingLeft: '5%',
-			paddingRight: '5%',
-			paddingTop: '50px',
 		},
 	}
 
 	draft.style.tablet = {
 		default: {
-			paddingLeft: '0%',
-			paddingRight: '0%',
+			gridTemplateColumns: '1fr 1fr',
 		},
 	}
 
@@ -126,27 +129,27 @@ const gridWrapper = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const teamDetails = [
+const testimonialDetails = [
 	{
 		name: 'Bob Roberts',
 		title: 'CO-founder & CEO',
 		description:
-			' Vitae suscipit tellus mauris a diam maecenas sed enim ut. Mauris augue neque gravida in fermentum.',
-		image: profile1Url,
+			'Vitae suscipit tellus mauris a diam maecenas sed enim ut. Mauris augue neque gravida in fermentum.',
+		image: 'https://files.dotenx.com/assets/profile2-ba1.jpeg',
 	},
 	{
 		name: 'Celia Almeda',
 		title: 'Sales Manager',
 		description:
 			'Pharetra vel turpis nunc eget lorem. Quisque id diam vel quam elementum pulvinar etiam.',
-		image: profile2Url,
+		image: 'https://files.dotenx.com/assets/profile1-v13.jpeg',
 	},
 	{
 		name: 'Jack Smith',
 		title: 'Chief Accountant',
 		description:
 			'Mauris augue neque gravida in fermentum. Praesent semper feugiat nibh sed pulvinar proin.',
-		image: profile3Url,
+		image: 'https://files.dotenx.com/assets/profile4-k38.jpeg',
 	},
 ]
 const title = produce(new TextElement(), (draft) => {
@@ -170,19 +173,22 @@ const description = produce(new TextElement(), (draft) => {
 		default: {
 			fontSize: '24px',
 			marginBottom: '8px',
-			maxWidth: '60%',
-			marginLeft: 'auto',
-			marginRight: 'auto',
 		},
 	}
 	draft.style.tablet = {
 		default: {
 			fontSize: '18px',
-			maxWidth: '100%',
 		},
 	}
+
+	draft.style.mobile = {
+		default: {
+			fontSize: '16px',
+		},
+	}
+
 	draft.data.text = Expression.fromString(
-		'we place huge value on strong relationships and have seen the benefits they bring to our business. Customers feedback is vital in helping us to get it right'
+		'we place huge value on strong relationships and have seen the benefits they bring to our business.'
 	)
 }).serialize()
 const createBioWithImage = ({
@@ -207,13 +213,7 @@ const createBioWithImage = ({
 				paddingRight: '5%',
 				paddingTop: '20px',
 				paddingBottom: '20px',
-				gap: '5',
 				textAlign: 'center',
-			},
-		}
-		draft.style.tablet = {
-			default: {
-				gap: '5',
 			},
 		}
 
@@ -223,6 +223,7 @@ const createBioWithImage = ({
 					maxWidth: '100px',
 					height: 'auto',
 					borderRadius: '50%',
+					marginBottom: '15px',
 				},
 			}
 			draft.data.src = Expression.fromString(image)
@@ -231,7 +232,7 @@ const createBioWithImage = ({
 			draft.style.desktop = {
 				default: {
 					fontSize: '16px',
-					marginTop: '10px',
+					marginBottom: '5px',
 				},
 			}
 			draft.style.tablet = {
@@ -239,19 +240,35 @@ const createBioWithImage = ({
 					fontSize: '14px',
 				},
 			}
+
+			draft.style.mobile = {
+				default: {
+					fontSize: '12px',
+				},
+			}
+
+
 			draft.data.text = Expression.fromString(name)
 		})
 		const titleText = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
-					fontSize: '22px',
+					fontSize: '18px',
+					marginBottom: '15px',
 				},
 			}
 			draft.style.tablet = {
 				default: {
-					fontSize: '18px',
+					fontSize: '16px',
 				},
 			}
+
+			draft.style.mobile = {
+				default: {
+					fontSize: '14px',
+				},
+			}
+
 			draft.data.text = Expression.fromString(title)
 		})
 		const descriptionText = produce(new TextElement(), (draft) => {
@@ -279,7 +296,7 @@ const defaultData = {
 		description,
 		{
 			...gridWrapper,
-			components: teamDetails.map((teamDetail) => createBioWithImage(teamDetail).serialize()),
+			components: testimonialDetails.map((teamDetail) => createBioWithImage(teamDetail).serialize()),
 		},
 	],
 }
