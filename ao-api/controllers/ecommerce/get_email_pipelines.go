@@ -28,7 +28,7 @@ func (ec *EcommerceController) GetEmailPipelines() gin.HandlerFunc {
 			return
 		}
 
-		pipelines, err := ec.PipelineService.GetPipelines(accountId)
+		pipelines, err := ec.PipelineService.ListProjectPipelines(accountId, project.Name)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -43,10 +43,20 @@ func (ec *EcommerceController) GetEmailPipelines() gin.HandlerFunc {
 				if utils.ContainsString(DefaultPipelineNames, p.Name) {
 					continue
 				}
+				pipeline, err := ec.PipelineService.GetPipelineByName(accountId, p.Name, project.Name)
+				if err != nil {
+					logrus.Error(err.Error())
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"message": err.Error(),
+					})
+					return
+				}
+				metadate := pipeline.PipelineDetailes.Manifest.Triggers["scheduler"].Credentials["ecommerce_metadata"].(map[string]interface{})
 				emailPipelines = append(emailPipelines, map[string]interface{}{
 					"name":      p.Name,
 					"is_active": p.IsActive,
 					"endpoint":  p.Endpoint,
+					"metadata":  metadate,
 				})
 			}
 		}
