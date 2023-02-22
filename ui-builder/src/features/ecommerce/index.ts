@@ -36,6 +36,7 @@ import { SignUp } from './components/sign-up'
 import { theme1Components } from './theme1/components'
 import { theme2Components } from './theme2/components'
 import { theme3Components } from './theme3/components'
+import { theme4Components } from './theme4/components'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
@@ -62,6 +63,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			theme2Components.FeatureText,
 			theme2Components.Features,
 			theme3Components.FeaturedProduct,
+			theme4Components.BoughtItemDetails,
 		],
 	},
 	{
@@ -69,6 +71,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		items: [
 			theme3Components.Collections,
 			theme3Components.ProductList,
+			theme4Components.BoughtItems,
 			ProductList,
 			BoughtProducts,
 		],

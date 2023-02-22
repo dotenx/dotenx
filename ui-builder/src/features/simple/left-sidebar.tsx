@@ -45,7 +45,13 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 
 	return (
 		<div>
-			<Select data={tags} value={selectedTag} onChange={setSelectedTag} clearable />
+			<Select
+				data={tags}
+				value={selectedTag}
+				onChange={setSelectedTag}
+				clearable
+				placeholder="Filter"
+			/>
 			<div className="flex flex-col">
 				{filtered.map((section) => (
 					<SimpleComponentList key={section.title} section={section} />
