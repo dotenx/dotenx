@@ -1,5 +1,8 @@
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
+import { BasicButton } from './basic-button'
+import { BasicImage } from './basic-image'
+import { BasicText } from './basic-text'
 import {
 	ChartArea,
 	ChartBar,
@@ -39,6 +42,10 @@ import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
 
 export const COMPONENTS: Components = [
+	{
+		title: 'Basic',
+		items: [BasicImage, BasicText, BasicButton],
+	},
 	{
 		title: 'About',
 		items: [AboutLeft, AboutRight],
