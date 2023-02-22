@@ -6,7 +6,7 @@ import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ButtonStyler } from '../simple/stylers/button-styler'
-import { Component, ElementOptions } from './Component'
+import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class BasicButton extends Component {

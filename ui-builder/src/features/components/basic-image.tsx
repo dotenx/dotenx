@@ -7,7 +7,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { Expression } from '../states/expression'
-import { Component, ElementOptions } from './Component'
+import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class BasicImage extends Component {

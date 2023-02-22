@@ -7,7 +7,7 @@ import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { inteliText } from '../ui/intelinput'
-import { Component, ElementOptions } from './Component'
+import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class BasicText extends Component {
