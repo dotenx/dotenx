@@ -16,7 +16,6 @@ import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { DividerSimpleTitle } from './divider-simple-title'
-import { Details } from './dynamics/details'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FeatureCenterCards } from './feature-center-cards'
@@ -31,12 +30,9 @@ import { GalleryWithCaptions } from './gallery-with-caption'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
-import { ListCard } from './list-card'
 import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
-import { SignInBasic } from './sign-in-basic'
-import { SignUpBasic } from './sign-up-basic'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
@@ -86,17 +82,8 @@ export const COMPONENTS: Components = [
 	},
 	{ title: 'Navbar', items: [Navbar] },
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Sign In/Up', items: [SignInBasic, SignUpBasic] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple] },
-	{
-		title: 'Dynamic',
-		items: [
-			// CreateForm, List,
-			ListCard,
-			Details,
-		],
-	},
 ]
 
 export type ComponentSection = (typeof COMPONENTS)[number]

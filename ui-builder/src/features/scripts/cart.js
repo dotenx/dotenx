@@ -7,11 +7,37 @@
 	const root = document.getElementById(id)
 	const cartItems = root.querySelector('.cart-items')
 	const cartItem = document.querySelector('.cart-item')
+	const checkoutBtn = root.querySelector('.checkout')
+	const emailInput = root.querySelector('.email > input')
 
 	const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
 	const items = Object.entries(cart)
 
-	items.forEach(async ([id, count]) => {
+	checkoutBtn.addEventListener('click', async () => {
+		const bag = items.reduce(
+			(bag, [, { count, priceId }]) => ({ ...bag, [priceId]: count }),
+			{}
+		)
+		const pipelineEndpoint = await getPaymentEndpoint({ projectTag })
+		const result = await startPayment({
+			pipelineEndpoint,
+			payload: {
+				interactionRunTime: {
+					'stripe-payment-flow': {
+						inputs: {
+							email: emailInput.value,
+							success_url: `${window.location.hostname}/success.html`,
+							cancel_url: `${window.location.hostname}/cancel.html`,
+							bag,
+						},
+					},
+				},
+			},
+		})
+		window.location.href = result.return_value.result.payment_url
+	})
+
+	items.forEach(async ([id, { count }]) => {
 		const product = await getProduct(id)
 
 		const clone = cartItem.content.cloneNode(true)
@@ -64,6 +90,29 @@
 			}
 		)
 		const products = await response.json()
-		return products.rows[0]
+		return products.rows?.[0]
+	}
+
+	async function getPaymentEndpoint({ projectTag }) {
+		const resp = await fetch(
+			`https://api.dotenx.com/public/ecommerce/project/${projectTag}/payment/link/stripe`
+		)
+		const body = await resp.json()
+		return body.endpoint
+	}
+
+	async function startPayment({ pipelineEndpoint, payload }) {
+		const resp = await fetch(
+			`https://api.dotenx.com/public/execution/ep/${pipelineEndpoint}/start`,
+			{
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		)
+		const body = await resp.json()
+		return body
 	}
 })()

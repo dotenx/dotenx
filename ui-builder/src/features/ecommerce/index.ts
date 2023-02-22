@@ -21,8 +21,6 @@ import { HeroFullWidth } from '../components/hero-full-width'
 import { Navbar } from '../components/navbar'
 import { PricingSimple } from '../components/pricing-simple'
 import { PricingSimple2 } from '../components/pricing-simple-2'
-import { SignInBasic } from '../components/sign-in-basic'
-import { SignUpBasic } from '../components/sign-up-basic'
 import { TeamCenterGrid } from '../components/team-center-grid'
 import { TeamRoundCenter } from '../components/team-round-center'
 import { TeamRoundLeft } from '../components/team-round-left'
@@ -78,12 +76,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	{ title: 'Footers', items: [FooterGrid] },
 	{
 		title: 'Gallery',
-		items: [
-			GalleryBasic,
-			GalleryBasicRounded,
-			GalleryWithCaptions,
-			FeaturedProduct,
-		],
+		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions, FeaturedProduct],
 	},
 	{
 		title: 'Hero',
@@ -107,7 +100,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		],
 	},
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Sign In/Up', items: [SignIn, SignUp, SignInBasic, SignUpBasic] },
+	{ title: 'Sign In/Up', items: [SignIn, SignUp] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple, theme2Components.Testimonial] },
 	{ title: 'Call to action', items: [theme1Components.Cta, theme2Components.Cta] },

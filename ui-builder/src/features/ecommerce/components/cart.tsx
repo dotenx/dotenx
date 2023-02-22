@@ -33,6 +33,7 @@ export class Cart extends Component {
 			</ComponentWrapper>
 		)
 	}
+	tags = ['all', 'cart']
 
 	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(cartScript)
@@ -47,50 +48,60 @@ const tags = {
 	quantity: 'quantity',
 	price: 'price',
 	removeBtn: 'remove-btn',
+	checkout: 'checkout',
 }
 
 const component = () =>
-	shared
-		.paper()
-		.populate([
-			shared.container().populate([shared.title().txt('Cart').tag(tags.title), cartItems()]),
-		])
-
-const cartItems = () =>
-	flex([
-		template(
+	shared.paper().populate([
+		shared.container().populate([
+			shared.title().txt('Cart').tag(tags.title),
 			flex([
-				flex([
-					txt('Product').class('name').tag(tags.name),
-					txt('Quantity').class('quantity').tag(tags.quantity),
-					txt('Price').class('price').tag(tags.price),
-				]).css({
-					gap: '2rem',
-				}),
-				btn('Remove')
-					.css({
-						padding: '0.5rem 1rem',
-						borderRadius: '0.5rem',
-						backgroundColor: '#f5f5f5',
-						color: '#000',
-						border: 'none',
-						cursor: 'pointer',
+				template(
+					flex([
+						flex([
+							txt('Product').class('name').tag(tags.name),
+							txt('Quantity').class('quantity').tag(tags.quantity),
+							txt('Price').class('price').tag(tags.price),
+						]).css({
+							gap: '2rem',
+						}),
+						button('Remove').tag(tags.removeBtn).class('remove-btn'),
+					]).css({
+						gap: '1rem',
+						alignItems: 'center',
+						justifyContent: 'space-between',
 					})
-					.cssHover({
-						backgroundColor: '#e5e5e5',
-					})
-					.tag(tags.removeBtn)
-					.class('remove-btn'),
-			]).css({
-				gap: '1rem',
-				alignItems: 'center',
-				justifyContent: 'space-between',
-			})
-		).class('cart-item'),
+				).class('cart-item'),
+			])
+				.css({
+					flexDirection: 'column',
+					gap: '1rem',
+					padding: '1rem 0',
+				})
+				.class('cart-items'),
+			shared.input('Email').class('email').css({
+				marginTop: '1rem',
+				maxWidth: '400px',
+			}),
+			button('Checkout')
+				.css({
+					marginTop: '1rem',
+				})
+				.tag(tags.checkout)
+				.class('checkout'),
+		]),
 	])
+
+const button = (text: string) =>
+	btn(text)
 		.css({
-			flexDirection: 'column',
-			gap: '1rem',
-			padding: '1rem 0',
+			padding: '0.5rem 1rem',
+			borderRadius: '0.5rem',
+			backgroundColor: '#f5f5f5',
+			color: '#000',
+			border: 'none',
+			cursor: 'pointer',
 		})
-		.class('cart-items')
+		.cssHover({
+			backgroundColor: '#e5e5e5',
+		})
