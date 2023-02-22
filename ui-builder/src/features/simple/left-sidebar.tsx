@@ -1,7 +1,8 @@
-import { Image, Portal } from '@mantine/core'
+import { Image, Portal, Select } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { useAtom, useAtomValue } from 'jotai'
-import { ReactElement } from 'react'
+import _ from 'lodash'
+import { ReactElement, useMemo, useState } from 'react'
 import { Components, ComponentSection } from '../components'
 import { DividerCollapsible } from '../components/helpers'
 import { Element } from '../elements/element'
@@ -10,11 +11,46 @@ import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
+	const [selectedTag, setSelectedTag] = useState<null | string>(null)
+
+	const tags = useMemo(
+		() =>
+			_.uniq(
+				components.flatMap((component) =>
+					component.items.flatMap((Item) => {
+						const item = new (Item as any)()
+						const tags: string[] = item.tags
+						return tags
+					})
+				)
+			),
+		[components]
+	)
+
+	const filtered = useMemo(
+		() =>
+			components
+				.map((component) => ({
+					...component,
+					items: component.items.filter((Item) => {
+						const item = new (Item as any)()
+						const tags: string[] = item.tags
+						if (selectedTag) return tags.includes(selectedTag)
+						return true
+					}),
+				}))
+				.filter((component) => component.items.length !== 0),
+		[components, selectedTag]
+	)
+
 	return (
-		<div className="flex flex-col ">
-			{components.map((section) => (
-				<SimpleComponentList key={section.title} section={section} />
-			))}
+		<div>
+			<Select data={tags} value={selectedTag} onChange={setSelectedTag} clearable />
+			<div className="flex flex-col">
+				{filtered.map((section) => (
+					<SimpleComponentList key={section.title} section={section} />
+				))}
+			</div>
 		</div>
 	)
 }

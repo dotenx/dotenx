@@ -14,12 +14,6 @@
 	const description = root.querySelector('.description')
 	const addToCart = root.querySelector('.add-to-cart')
 
-	addToCart.addEventListener('click', () => {
-		const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
-		cart[productId] = cart[productId] ? cart[productId] + 1 : 1
-		localStorage.setItem('cart', JSON.stringify(cart))
-	})
-
 	getProduct().then(renderProduct)
 
 	async function getProduct() {
@@ -48,7 +42,7 @@
 			}
 		)
 		const products = await response.json()
-		return products.rows[0]
+		return products.rows?.[0]
 	}
 
 	function renderProduct(product) {
@@ -61,5 +55,13 @@
 		price.textContent = `$${product.price}`
 		image.src = product.image_url
 		description.textContent = product.description
+
+		addToCart.addEventListener('click', () => {
+			const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
+			cart[productId] = cart[productId]
+				? { priceId: product.stripe_price_id, count: cart[productId].count + 1 }
+				: { priceId: product.stripe_price_id, count: 1 }
+			localStorage.setItem('cart', JSON.stringify(cart))
+		})
 	}
 })()
