@@ -83,7 +83,7 @@ function ActionBar() {
 			to={`/projects/${projectName}/products/new`}
 			leftIcon={<BsPlusLg />}
 		>
-			New product
+			New Product
 		</Button>
 	)
 }
