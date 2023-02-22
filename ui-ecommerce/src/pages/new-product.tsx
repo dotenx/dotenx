@@ -188,7 +188,7 @@ function DetailsTab({
 								searchable
 								className="w-24"
 								defaultValue={currency[0]}
-								label="currency"
+								label="Currency"
 								data={currency}
 								{...getInputProps("currency")}
 							/>
@@ -544,7 +544,7 @@ const MonthlyPricingInput = ({
 					className="w-24"
 					defaultValue={currency[0]}
 					searchable
-					label="currency"
+					label="Currency"
 					data={currency}
 					{...getInputProps("currency")}
 				/>

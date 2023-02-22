@@ -3,6 +3,7 @@ import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
 import { AnalyticsPage } from "../../pages/analytics"
 import { AudiencePage } from "../../pages/audience"
+import { CreateSchedulePage } from "../../pages/create-schedule"
 import { DomainsPage } from "../../pages/domains"
 import { Files } from "../../pages/files"
 import { HomePage } from "../../pages/home"
@@ -39,6 +40,10 @@ const routes: Routes = [
 	{
 		path: "/projects/:projectName/audience",
 		element: <AudiencePage />,
+	},
+	{
+		path: "/projects/:projectName/audience/new",
+		element: <CreateSchedulePage />,
 	},
 	{
 		path: "/projects/:projectName/files",

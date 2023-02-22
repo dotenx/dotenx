@@ -129,7 +129,7 @@ export function Table<D extends object = Record<string, string>>({
 												return (
 													<td
 														className="text-slate-500 font-medium text-xs !overflow-hidden !whitespace-nowrap !text-ellipsis max-w-xs !border-gray-500 border-b"
-														title={cell.value.toString()}
+														title={cell?.value?.toString()}
 														{...cell.getCellProps()}
 													>
 														{cell.render("Cell")}

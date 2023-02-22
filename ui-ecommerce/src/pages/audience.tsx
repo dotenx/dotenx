@@ -11,14 +11,15 @@ import _ from "lodash"
 import { getIntegrations, runCustomQuery, QueryKey } from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
+import { Link } from "react-router-dom"
 
 export function AudiencePage() {
-	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "drafts">("members")
+	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "schedules">("members")
 
 	return (
 		<div>
 			<Header
-				tabs={["members", "sent emails", "drafts"]}
+				tabs={["members", "sent emails", "schedules"]}
 				title="Audience"
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
@@ -28,7 +29,7 @@ export function AudiencePage() {
 			<ContentWrapper>
 				{activeTab === "members" && <MembersTab />}
 				{activeTab === "sent emails" && <SentEmailsTab />}
-				{activeTab === "drafts" && <DraftsTab />}
+				{activeTab === "schedules" && <SchedulesTab />}
 			</ContentWrapper>
 		</div>
 	)
@@ -62,8 +63,10 @@ function ActionBar() {
 				disabled={noIntegration}
 				leftIcon={<IoMail />}
 				onClick={() => modal.open(Modals.UserManagementEndpoint)}
+				component={Link}
+				to="new"
 			>
-				Send Email
+				New Schedule
 			</Button>
 			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
 				<IntegrationForm
@@ -147,21 +150,25 @@ function MembersTab() {
 }
 
 function SentEmailsTab() {
-	const emails = [
-		{
-			subject: "Subject",
-			date: "Date",
-			recipients: "Recipients",
-			views: "Views",
-			clicks: "Clicks",
-			opens: "Opens",
-			bounces: "Bounces",
-		},
-	]
+	// const emails = [
+	// 	{
+	// 		subject: "Subject",
+	// 		date: "Date",
+	// 		recipients: "Recipients",
+	// 		views: "Views",
+	// 		clicks: "Clicks",
+	// 		opens: "Opens",
+	// 		bounces: "Bounces",
+	// 	},
+	// ]
 
 	return (
 		<Table
 			columns={[
+				{
+					Header: "name",
+					accessor: "name",
+				},
 				{
 					Header: "Subject",
 					accessor: "subject",
@@ -170,34 +177,14 @@ function SentEmailsTab() {
 					Header: "Date",
 					accessor: "date",
 				},
-				{
-					Header: "Recipients",
-					accessor: "recipients",
-				},
-				{
-					Header: "Views",
-					accessor: "views",
-				},
-				{
-					Header: "Clicks",
-					accessor: "clicks",
-				},
-				{
-					Header: "Opens",
-					accessor: "opens",
-				},
-				{
-					Header: "Bounces",
-					accessor: "bounces",
-				},
 			]}
-			data={emails}
+			data={[] as any}
 		/>
 	)
 }
 
-function DraftsTab() {
-	const drafts = [
+function SchedulesTab() {
+	const schedules = [
 		{
 			subject: "Subject",
 			last_edited: "Last Edited",
@@ -217,7 +204,7 @@ function DraftsTab() {
 					accessor: "last_edited",
 				},
 			]}
-			data={drafts}
+			data={schedules}
 		/>
 	)
 }
