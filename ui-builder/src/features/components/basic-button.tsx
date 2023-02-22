@@ -6,10 +6,10 @@ import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ButtonStyler } from '../simple/stylers/button-styler'
-import { Controller, ElementOptions } from './controller'
+import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
-export class BasicButton extends Controller {
+export class BasicButton extends Component {
 	name = 'Button'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)

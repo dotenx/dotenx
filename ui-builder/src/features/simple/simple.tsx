@@ -1,13 +1,13 @@
-import { AppShell } from '@mantine/core'
-import { useAtomValue } from 'jotai'
+import { AppShell, Drawer } from '@mantine/core'
+import { useAtom, useAtomValue } from 'jotai'
 import { COMPONENTS } from '../components'
 import { previewAtom, TopBar } from '../page/top-bar'
+import { useSelectionStore } from '../selection/selection-store'
+import { useSelectedElement } from '../selection/use-selected-component'
 import { AppHeader } from '../ui/header'
-import { LeftSidebar } from '../ui/left-sidebar'
-import { RightSidebar } from '../ui/right-sidebar'
 import { SimpleLeftSidebar } from './left-sidebar'
 import { SimpleRightSidebar } from './right-sidebar'
-import { SimpleCanvas } from './simple-canvas'
+import { insertingAtom, SimpleCanvas } from './simple-canvas'
 
 export function Simple() {
 	const { isFullscreen } = useAtomValue(previewAtom)
@@ -28,14 +28,38 @@ export function Simple() {
 	)
 }
 
-const Navbar = () => (
-	<LeftSidebar>
-		<SimpleLeftSidebar components={COMPONENTS} />
-	</LeftSidebar>
-)
+const Navbar = () => {
+	const [inserting, setInserting] = useAtom(insertingAtom)
 
-const Aside = () => (
-	<RightSidebar>
-		<SimpleRightSidebar />
-	</RightSidebar>
-)
+	return (
+		<Drawer
+			size={310}
+			opened={!!inserting}
+			onClose={() => setInserting(null)}
+			overlayOpacity={0.1}
+			padding="md"
+			className="overflow-y-scroll"
+		>
+			<SimpleLeftSidebar components={COMPONENTS} />
+		</Drawer>
+	)
+}
+
+const Aside = () => {
+	const selectedElement = useSelectedElement()
+	const deselect = useSelectionStore((store) => store.deselect)
+
+	return (
+		<Drawer
+			size={310}
+			opened={!!selectedElement}
+			onClose={deselect}
+			overlayOpacity={0.1}
+			padding="md"
+			className="overflow-y-scroll"
+			position="right"
+		>
+			<SimpleRightSidebar />
+		</Drawer>
+	)
+}
