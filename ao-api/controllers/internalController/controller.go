@@ -67,7 +67,8 @@ func (c *InternalController) GetCurrentPlan(ctx *gin.Context) {
 
 func (c *InternalController) ListProjects(ctx *gin.Context) {
 	type body struct {
-		AccountId string `json:"accountId"`
+		AccountId   string `json:"accountId"`
+		ProjectType string `json:"projectType"`
 	}
 	var dto body
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
@@ -78,7 +79,7 @@ func (c *InternalController) ListProjects(ctx *gin.Context) {
 		return
 	}
 
-	projects, err := c.Service.ListProjects(dto.AccountId)
+	projects, err := c.Service.ListProjects(dto.AccountId, dto.ProjectType)
 	if err != nil {
 		logrus.Error(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -194,7 +195,8 @@ func (c *InternalController) ListUiPages(ctx *gin.Context) {
 // ListDomains returns list of external domains for a specific user
 func (c *InternalController) ListDomains(ctx *gin.Context) {
 	type body struct {
-		AccountId string `json:"accountId"`
+		AccountId   string `json:"accountId"`
+		ProjectType string `json:"projectType"`
 	}
 	var dto body
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
@@ -205,7 +207,7 @@ func (c *InternalController) ListDomains(ctx *gin.Context) {
 		return
 	}
 
-	domains, err := c.Service.ListDomains(dto.AccountId)
+	domains, err := c.Service.ListDomains(dto.AccountId, dto.ProjectType)
 	if err != nil {
 		logrus.Error(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{
