@@ -69,7 +69,11 @@ func convertButton(component map[string]interface{}, styleStore *StyleStore, fun
 	functionStore.AddEvents(button.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(button.Id, button.Data.Style.Desktop, button.Data.Style.Tablet, button.Data.Style.Mobile)
+	id := button.Id
+	if button.ElementId != "" {
+		id = button.ElementId
+	}
+	styleStore.AddStyle(id, button.Data.Style.Desktop, button.Data.Style.Tablet, button.Data.Style.Mobile)
 
 	return out.String(), nil
 }

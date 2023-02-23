@@ -95,7 +95,11 @@ func convertCollapsibleContent(component map[string]interface{}, styleStore *Sty
 	functionStore.AddEvents(collapsibleContent.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(collapsibleContent.Id, collapsibleContent.Data.Style.Desktop, collapsibleContent.Data.Style.Tablet, collapsibleContent.Data.Style.Mobile)
+	id := collapsibleContent.Id
+	if collapsibleContent.ElementId != "" {
+		id = collapsibleContent.ElementId
+	}
+	styleStore.AddStyle(id, collapsibleContent.Data.Style.Desktop, collapsibleContent.Data.Style.Tablet, collapsibleContent.Data.Style.Mobile)
 
 	return out.String(), nil
 }

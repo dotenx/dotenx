@@ -69,7 +69,11 @@ func convertIcon(component map[string]interface{}, styleStore *StyleStore, funct
 	functionStore.AddEvents(icon.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(icon.Id, icon.Data.Style.Desktop, icon.Data.Style.Tablet, icon.Data.Style.Mobile)
+	id := icon.Id
+	if icon.ElementId != "" {
+		id = icon.ElementId
+	}
+	styleStore.AddStyle(id, icon.Data.Style.Desktop, icon.Data.Style.Tablet, icon.Data.Style.Mobile)
 
 	return out.String(), nil
 }
