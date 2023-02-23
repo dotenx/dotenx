@@ -6,7 +6,7 @@
 
 	const root = document.getElementById(id)
 	const list = root.querySelector('.list')
-	const item = list.querySelector('.item')
+	const item = root.querySelector('.item')
 
 	getProducts().then(renderProducts)
 

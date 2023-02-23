@@ -26,8 +26,8 @@
 					'stripe-payment-flow': {
 						inputs: {
 							email: emailInput.value,
-							success_url: `${window.location.hostname}/success.html`,
-							cancel_url: `${window.location.hostname}/cancel.html`,
+							success_url: `https://${window.location.hostname}/success.html`,
+							cancel_url: `https://${window.location.hostname}/cancel.html`,
 							bag,
 						},
 					},
