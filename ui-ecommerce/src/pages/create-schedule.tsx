@@ -17,7 +17,7 @@ import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 export function CreateSchedulePage() {
 	const navigate = useNavigate()
 	const [stage, setStage] = useState<"content" | "schedule">("content")
-	const [values, setValues] = useState<{ editor: EditorValue }>()
+	const [editorValues, setEditorValues] = useState<EditorValue>()
 	const emailMutation = useMutation(createEmailPipeline, {
 		onSuccess: () => {
 			toast("Schedule added successfully", { type: "success", autoClose: 2000 })
@@ -29,7 +29,7 @@ export function CreateSchedulePage() {
 	})
 
 	const submitEditor = (values: EditorValue): void => {
-		setValues({ editor: values })
+		setEditorValues(values)
 		setStage("schedule")
 	}
 
@@ -54,7 +54,15 @@ export function CreateSchedulePage() {
 							Back
 						</Button>
 						<CreateSchedule
-							onSave={(values) => emailMutation.mutate(values)}
+							onSave={(values) => {
+								emailMutation.mutate({
+									...values,
+									payload: {
+										...values.payload,
+										html_content: editorValues?.html,
+									},
+								})
+							}}
 							submitting={emailMutation.isLoading}
 						/>
 					</div>
@@ -102,7 +110,7 @@ function CreateSchedule({
 	const isTargetEmpty = target !== "send_to_all" && (targetValue?.length === 0 || !targetValue)
 	const [scheduleValue, setScheduleValue] = useState("")
 	useEffect(() => {
-		setValues({ schedule_expression: `cron(${scheduleValue})` })
+		setValues({ schedule_expression: `cron(${_.tail(scheduleValue.split(" ")).join(" ")})` })
 	}, [scheduleValue, setValues])
 
 	const projectQuery = useGetProjectTag()
@@ -218,7 +226,7 @@ function CreateSchedule({
 					/>
 					<div className="col-span-2">
 						<Cron
-							onChange={(value) => setScheduleValue(value)}
+							onChange={setScheduleValue}
 							value={scheduleValue}
 							options={{
 								headers: [
