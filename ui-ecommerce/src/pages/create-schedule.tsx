@@ -4,6 +4,8 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import cronstrue from "cronstrue"
 import _ from "lodash"
 import { useEffect, useState } from "react"
+import Cron, { HEADER } from "react-cron-generator"
+import { TbArrowLeft } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
@@ -43,10 +45,19 @@ export function CreateSchedulePage() {
 			<ContentWrapper>
 				{stage === "content" && <Editor onSave={submitEditor} />}
 				{stage === "schedule" && (
-					<CreateSchedule
-						onSave={(values) => emailMutation.mutate(values)}
-						submitting={emailMutation.isLoading}
-					/>
+					<div>
+						<Button
+							size="xs"
+							leftIcon={<TbArrowLeft />}
+							onClick={() => setStage("content")}
+						>
+							Back
+						</Button>
+						<CreateSchedule
+							onSave={(values) => emailMutation.mutate(values)}
+							submitting={emailMutation.isLoading}
+						/>
+					</div>
 				)}
 			</ContentWrapper>
 		</div>
@@ -90,11 +101,6 @@ function CreateSchedule({
 
 	const isTargetEmpty = target !== "send_to_all" && (targetValue?.length === 0 || !targetValue)
 	const [scheduleValue, setScheduleValue] = useState("")
-	const cronError = cronstrue
-		.toString(scheduleValue, {
-			throwExceptionOnParseError: false,
-		})
-		.includes("error")
 	useEffect(() => {
 		setValues({ schedule_expression: `cron(${scheduleValue})` })
 	}, [scheduleValue, setValues])
@@ -210,13 +216,23 @@ function CreateSchedule({
 						placeholder=""
 						{...getInputProps("text_content")}
 					/>
-					<TextInput
-						error={scheduleValue.length > 0 && cronError}
-						label="Schedule expression"
-						placeholder="Cron expression"
-						value={scheduleValue}
-						onChange={(e) => setScheduleValue(e.target.value)}
-					/>
+					<div className="col-span-2">
+						<Cron
+							onChange={(value) => setScheduleValue(value)}
+							value={scheduleValue}
+							options={{
+								headers: [
+									HEADER.MONTHLY,
+									HEADER.WEEKLY,
+									HEADER.MINUTES,
+									HEADER.HOURLY,
+									HEADER.DAILY,
+								],
+							}}
+							showResultText={false}
+							showResultCron={false}
+						/>
+					</div>
 					<div className="text-gray-700 text-xs flex items-end pb-2 ">
 						{scheduleValue &&
 							cronstrue.toString(scheduleValue, {
@@ -227,7 +243,7 @@ function CreateSchedule({
 					<div className="col-span-2">
 						<Button
 							loading={submitting}
-							disabled={isTargetEmpty || cronError}
+							disabled={isTargetEmpty}
 							type="submit"
 							className="float-right "
 						>
