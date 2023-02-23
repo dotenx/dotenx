@@ -20,13 +20,14 @@ import (
 )
 
 type emailPipelineDTO struct {
-	Name               string        `json:"name"`
-	From               string        `json:"from"`
-	Target             targetPattern `json:"target"`
-	Subject            string        `json:"subject"`
-	TextContent        string        `json:"text_content"`
-	HtmlContent        string        `json:"html_content"`
-	ScheduleExpression string        `json:"schedule_expression"`
+	Name               string                 `json:"name" binding:"required"`
+	From               string                 `json:"from" binding:"required"`
+	Target             targetPattern          `json:"target"`
+	Subject            string                 `json:"subject" binding:"required"`
+	TextContent        string                 `json:"text_content"`
+	HtmlContent        string                 `json:"html_content"`
+	JsonContent        map[string]interface{} `json:"json_content"`
+	ScheduleExpression string                 `json:"schedule_expression" binding:"required"`
 }
 
 type targetPattern struct {

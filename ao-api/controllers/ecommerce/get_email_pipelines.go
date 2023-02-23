@@ -51,12 +51,12 @@ func (ec *EcommerceController) GetEmailPipelines() gin.HandlerFunc {
 					})
 					return
 				}
-				metadate := pipeline.PipelineDetailes.Manifest.Triggers["scheduler"].Credentials["ecommerce_metadata"].(map[string]interface{})
+				metadata := pipeline.PipelineDetailes.Manifest.Triggers["scheduler"].Credentials["ecommerce_metadata"].(map[string]interface{})
 				emailPipelines = append(emailPipelines, map[string]interface{}{
 					"name":      p.Name,
 					"is_active": p.IsActive,
 					"endpoint":  p.Endpoint,
-					"metadata":  metadate,
+					"metadata":  metadata,
 				})
 			}
 		}
