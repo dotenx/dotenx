@@ -98,7 +98,11 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 	functionStore.AddEvents(form.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(form.Id, form.Data.Style.Desktop, form.Data.Style.Tablet, form.Data.Style.Mobile)
+	id := form.Id
+	if form.ElementId != "" {
+		id = form.ElementId
+	}
+	styleStore.AddStyle(id, form.Data.Style.Desktop, form.Data.Style.Tablet, form.Data.Style.Mobile)
 
 	return out.String(), nil
 }

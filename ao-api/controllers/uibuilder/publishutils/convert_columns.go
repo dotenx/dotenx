@@ -112,7 +112,11 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 	functionStore.AddEvents(columns.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(columns.Id, columns.Data.Style.Desktop, columns.Data.Style.Tablet, columns.Data.Style.Mobile)
+	id := columns.Id
+	if columns.ElementId != "" {
+		id = columns.ElementId
+	}
+	styleStore.AddStyle(id, columns.Data.Style.Desktop, columns.Data.Style.Tablet, columns.Data.Style.Mobile)
 
 	return out.String(), nil
 }
