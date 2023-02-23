@@ -68,7 +68,11 @@ func convertSelect(component map[string]interface{}, styleStore *StyleStore, fun
 	}
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(sel.Id, sel.Data.Style.Desktop, sel.Data.Style.Tablet, sel.Data.Style.Mobile)
+	id := sel.Id
+	if sel.ElementId != "" {
+		id = sel.ElementId
+	}
+	styleStore.AddStyle(id, sel.Data.Style.Desktop, sel.Data.Style.Tablet, sel.Data.Style.Mobile)
 
 	return out.String(), nil
 }

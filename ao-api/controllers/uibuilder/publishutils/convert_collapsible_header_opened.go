@@ -90,7 +90,11 @@ func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore
 	functionStore.AddEvents(collapsibleHeaderOpened.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(collapsibleHeaderOpened.Id, collapsibleHeaderOpened.Data.Style.Desktop, collapsibleHeaderOpened.Data.Style.Tablet, collapsibleHeaderOpened.Data.Style.Mobile)
+	id := collapsibleHeaderOpened.Id
+	if collapsibleHeaderOpened.ElementId != "" {
+		id = collapsibleHeaderOpened.ElementId
+	}
+	styleStore.AddStyle(id, collapsibleHeaderOpened.Data.Style.Desktop, collapsibleHeaderOpened.Data.Style.Tablet, collapsibleHeaderOpened.Data.Style.Mobile)
 
 	return out.String(), nil
 }

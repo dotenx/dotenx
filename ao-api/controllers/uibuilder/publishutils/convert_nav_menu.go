@@ -72,7 +72,11 @@ func convertNavMenu(component map[string]interface{}, styleStore *StyleStore, fu
 	functionStore.AddEvents(box.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(box.Id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
+	id := box.Id
+	if box.ElementId != "" {
+		id = box.ElementId
+	}
+	styleStore.AddStyle(id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
 
 	return out.String(), nil
 }

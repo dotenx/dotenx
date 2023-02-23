@@ -62,7 +62,11 @@ func convertInput(component map[string]interface{}, styleStore *StyleStore, func
 	}
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(input.Id, input.Data.Style.Desktop, input.Data.Style.Tablet, input.Data.Style.Mobile)
+	id := input.Id
+	if input.ElementId != "" {
+		id = input.ElementId
+	}
+	styleStore.AddStyle(id, input.Data.Style.Desktop, input.Data.Style.Tablet, input.Data.Style.Mobile)
 
 	return out.String(), nil
 }

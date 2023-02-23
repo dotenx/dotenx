@@ -90,7 +90,11 @@ func convertMenuButton(component map[string]interface{}, styleStore *StyleStore,
 	functionStore.AddEvents(menuButton.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(menuButton.Id, menuButton.Data.Style.Desktop, menuButton.Data.Style.Tablet, menuButton.Data.Style.Mobile)
+	id := menuButton.Id
+	if menuButton.ElementId != "" {
+		id = menuButton.ElementId
+	}
+	styleStore.AddStyle(id, menuButton.Data.Style.Desktop, menuButton.Data.Style.Tablet, menuButton.Data.Style.Mobile)
 
 	return out.String(), nil
 }

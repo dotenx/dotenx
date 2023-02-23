@@ -64,7 +64,11 @@ func convertTextArea(component map[string]interface{}, styleStore *StyleStore, f
 	}
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(textArea.Id, textArea.Data.Style.Desktop, textArea.Data.Style.Tablet, textArea.Data.Style.Mobile)
+	id := textArea.Id
+	if textArea.ElementId != "" {
+		id = textArea.ElementId
+	}
+	styleStore.AddStyle(id, textArea.Data.Style.Desktop, textArea.Data.Style.Tablet, textArea.Data.Style.Mobile)
 
 	return out.String(), nil
 }
