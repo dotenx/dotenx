@@ -134,7 +134,11 @@ func convertChartPie(component map[string]interface{}, styleStore *StyleStore, f
 	functionStore.AddEvents(chart.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(chart.Id, chart.Data.Style.Desktop, chart.Data.Style.Tablet, chart.Data.Style.Mobile)
+	id := chart.Id
+	if chart.ElementId != "" {
+		id = chart.ElementId
+	}
+	styleStore.AddStyle(id, chart.Data.Style.Desktop, chart.Data.Style.Tablet, chart.Data.Style.Mobile)
 
 	return out.String(), nil
 }

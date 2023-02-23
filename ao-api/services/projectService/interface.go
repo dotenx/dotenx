@@ -29,12 +29,12 @@ type ProjectService interface {
 	GetProjectDomain(accountId, projectTag string) (models.ProjectDomain, error)
 	UpsertProjectDomain(projectDomain models.ProjectDomain) error
 	ImportProject(accountId, newProjectName, newProjectDescription string, itemId int, mService marketplaceService.MarketplaceService, dbService databaseService.DatabaseService, cService crudService.CrudService, uiBuilderService uibuilderService.UIbuilderService) error
-	CheckCreateProjectAccess(accountId string) (bool, error)
+	CheckCreateProjectAccess(accountId, projectType string) (bool, error)
 	CheckCreateDatabaseAccess(accountId string) (bool, error)
 	// DeleteProject deletes a project and all its associated resources
 	DeleteProject(accountId, projectTag string, ubService uibuilderService.UIbuilderService, dbService databaseService.DatabaseService, cService crudService.CrudService) error
 
-	CheckCreateDomainAccess(accountId string) (bool, error)
+	CheckCreateDomainAccess(accountId, projectType string) (bool, error)
 }
 
 type projectService struct {

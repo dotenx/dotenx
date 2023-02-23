@@ -107,7 +107,11 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 	functionStore.AddEvents(link.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(link.Id, link.Data.Style.Desktop, link.Data.Style.Tablet, link.Data.Style.Mobile)
+	id := link.Id
+	if link.ElementId != "" {
+		id = link.ElementId
+	}
+	styleStore.AddStyle(id, link.Data.Style.Desktop, link.Data.Style.Tablet, link.Data.Style.Mobile)
 
 	return out.String(), nil
 }
