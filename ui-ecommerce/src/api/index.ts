@@ -78,7 +78,7 @@ export function getProject(name: string) {
 export function createProduct({ tag, payload }: { tag: string; payload: any }) {
 	return api.post(`/ecommerce/project/${tag}/product`, payload)
 }
-export function createEmailPipleLine({ tag, payload }: { tag: string; payload: any }) {
+export function createEmailPipeline({ tag, payload }: { tag: string; payload: any }) {
 	return api.post(`/ecommerce/project/${tag}/pipeline/email`, payload)
 }
 export function getTables(projectName: string) {
