@@ -1,5 +1,9 @@
+import _ from 'lodash'
 import productListImg from '../../../assets/themes/theme3/product-list.png'
-import { Component } from '../../components/component'
+import { Component, OnCreateOptions } from '../../components/component'
+import { Element } from '../../elements/element'
+import { setElement } from '../../elements/elements-store'
+import boughtItemDetails from './bought-item-details.js?raw'
 import { theme4 } from './theme'
 
 class BoughtItems extends Component {
@@ -14,6 +18,14 @@ class BoughtItemDetails extends Component {
 	image = productListImg
 	defaultData = theme4.boughtItemDetails()
 	renderOptions = () => null
+	onCreate(root: Element, options: OnCreateOptions) {
+		const compiled = _.template(boughtItemDetails)
+		const script = compiled({
+			id: root.id,
+			projectTag: options.projectTag,
+		})
+		setElement(root, (draft) => (draft.script = script))
+	}
 }
 
 export const theme4Components = { BoughtItems, BoughtItemDetails }
