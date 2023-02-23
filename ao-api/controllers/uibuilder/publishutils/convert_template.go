@@ -86,7 +86,11 @@ func convertTemplate(component map[string]interface{}, styleStore *StyleStore, f
 	functionStore.AddEvents(templateElement.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(templateElement.Id, templateElement.Data.Style.Desktop, templateElement.Data.Style.Tablet, templateElement.Data.Style.Mobile)
+	id := templateElement.Id
+	if templateElement.ElementId != "" {
+		id = templateElement.ElementId
+	}
+	styleStore.AddStyle(id, templateElement.Data.Style.Desktop, templateElement.Data.Style.Tablet, templateElement.Data.Style.Mobile)
 
 	return out.String(), nil
 }

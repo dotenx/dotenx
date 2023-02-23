@@ -136,7 +136,11 @@ func convertExtension(component map[string]interface{}, styleStore *StyleStore, 
 	}
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(extension.Id, extension.Data.Style.Desktop, extension.Data.Style.Tablet, extension.Data.Style.Mobile)
+	id := extension.Id
+	if extension.ElementId != "" {
+		id = extension.ElementId
+	}
+	styleStore.AddStyle(id, extension.Data.Style.Desktop, extension.Data.Style.Tablet, extension.Data.Style.Mobile)
 
 	return out.String(), nil
 }

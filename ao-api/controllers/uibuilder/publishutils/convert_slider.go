@@ -98,7 +98,11 @@ func convertSlider(component map[string]interface{}, styleStore *StyleStore, fun
 	functionStore.AddEvents(slider.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(slider.Id, slider.Data.Style.Desktop, slider.Data.Style.Tablet, slider.Data.Style.Mobile)
+	id := slider.Id
+	if slider.ElementId != "" {
+		id = slider.ElementId
+	}
+	styleStore.AddStyle(id, slider.Data.Style.Desktop, slider.Data.Style.Tablet, slider.Data.Style.Mobile)
 
 	return out.String(), nil
 }
