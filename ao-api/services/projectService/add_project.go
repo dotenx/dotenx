@@ -14,7 +14,7 @@ import (
 
 func (ps *projectService) AddProject(accountId string, project models.Project, uiBuilderService uibuilderService.UIbuilderService) error {
 
-	tag, err := ps.initializeProject(accountId, project.Name, project.DefaultUserGroup, project.HasDatabase, uiBuilderService)
+	tag, err := ps.initializeProject(accountId, project.Type, project.Name, project.DefaultUserGroup, project.HasDatabase, uiBuilderService)
 	if err != nil {
 		return err
 	}
@@ -30,9 +30,9 @@ func (ps *projectService) AddProject(accountId string, project models.Project, u
 }
 
 // This function checks the plan limits for creating a project, creates the database if can and should and sets the default user group
-func (ps *projectService) initializeProject(accountId, projectName, defaultUserGroup string, hasDatabase bool, uiBuilderService uibuilderService.UIbuilderService) (string, error) {
+func (ps *projectService) initializeProject(accountId, projectType, projectName, defaultUserGroup string, hasDatabase bool, uiBuilderService uibuilderService.UIbuilderService) (string, error) {
 	// Check if use is allowed to create a new project based on his plan
-	err := ps.canCreateProject(accountId)
+	err := ps.canCreateProject(accountId, projectType)
 	if err != nil {
 		return "", err
 	}
@@ -134,8 +134,8 @@ func (ps *projectService) canCreateDatabase(accountId string) error {
 }
 
 // This utility function checks if the user can create a new project based on their plan
-func (ps *projectService) canCreateProject(accountId string) error {
-	hasAccess, err := ps.CheckCreateProjectAccess(accountId)
+func (ps *projectService) canCreateProject(accountId, projectType string) error {
+	hasAccess, err := ps.CheckCreateProjectAccess(accountId, projectType)
 	if err != nil {
 		logrus.Error(err.Error())
 		return err

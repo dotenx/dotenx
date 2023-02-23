@@ -40,7 +40,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'freestyle', 'landing_page', 'ecommerce', 'ui_portfolio'",
+				"message": err.Error(),
 			})
 			return
 		}
