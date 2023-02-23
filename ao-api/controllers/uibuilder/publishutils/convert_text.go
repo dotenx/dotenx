@@ -94,7 +94,11 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 	functionStore.AddEvents(text.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(text.Id, text.Data.Style.Desktop, text.Data.Style.Tablet, text.Data.Style.Mobile)
+	id := text.Id
+	if text.ElementId != "" {
+		id = text.ElementId
+	}
+	styleStore.AddStyle(id, text.Data.Style.Desktop, text.Data.Style.Tablet, text.Data.Style.Mobile)
 
 	return out.String(), nil
 }

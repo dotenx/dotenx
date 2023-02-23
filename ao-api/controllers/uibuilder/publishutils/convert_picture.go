@@ -78,7 +78,11 @@ func convertPicture(component map[string]interface{}, styleStore *StyleStore, fu
 	functionStore.AddEvents(picture.Events)
 
 	// Add the styles to the styleStore to be rendered later
-	styleStore.AddStyle(picture.Id, picture.Data.Style.Desktop, picture.Data.Style.Tablet, picture.Data.Style.Mobile)
+	id := picture.Id
+	if picture.ElementId != "" {
+		id = picture.ElementId
+	}
+	styleStore.AddStyle(id, picture.Data.Style.Desktop, picture.Data.Style.Tablet, picture.Data.Style.Mobile)
 
 	return out.String(), nil
 }

@@ -29,11 +29,20 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			return
 		}
 
+		project, err := pc.Service.GetProjectByTag(projectTag)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
 		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
 		if err != nil {
 			if err.Error() == "project_domain not found" { // The project domain is created in this controller too. If it doesn't exists, create it.
 
-				hasAccess, err := pc.Service.CheckCreateDomainAccess(accountId)
+				hasAccess, err := pc.Service.CheckCreateDomainAccess(accountId, project.Type)
 				if err != nil {
 					logrus.Error(err.Error())
 					c.JSON(http.StatusInternalServerError, gin.H{
