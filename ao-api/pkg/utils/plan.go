@@ -11,9 +11,10 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 )
 
-func GetUserPlan(accountId string) (map[string]interface{}, error) {
+func GetUserPlan(accountId, projectType string) (map[string]interface{}, error) {
 	dt := map[string]interface{}{
-		"account_id": accountId,
+		"account_id":   accountId,
+		"project_type": projectType,
 	}
 	json_data, err := json.Marshal(dt)
 	if err != nil {
