@@ -1,34 +1,35 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/basic-text.png'
+import imageUrl from '../../assets/components/basic-youtube.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
-import { TextElement } from '../elements/extensions/text'
+import { YouTubeElement } from '../elements/extensions/youtube'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { TextStyler } from '../simple/stylers/text-styler'
-import { inteliText } from '../ui/intelinput'
+import { YoutubeStyler } from '../simple/stylers/youtube-styler'
 import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
-export class BasicText extends Component {
-	name = 'Text'
+export class BasicYouTube extends Component {
+	name = 'YouTube'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <BasicTextOptions />
+		return <BasicYouTubeOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function BasicTextOptions() {
+function BasicYouTubeOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const text = component.children[0] as TextElement
+	const element = component.children[0] as YouTubeElement
+	const set = useSetElement()
 
 	return (
 		<ComponentWrapper name="Text">
-			<TextStyler label="Text" element={text} />
+			<YoutubeStyler element={element} />
 		</ComponentWrapper>
 	)
 }
@@ -44,9 +45,6 @@ const defaultData = produce(new BoxElement(), (draft) => {
 			width: '100%',
 		},
 	}
-	const element = produce(new TextElement(), (draft) => {
-		draft.data.text = inteliText('Add Your Custom Text')
-	})
 
-	draft.children = [element]
+	draft.children = [new YouTubeElement()]
 }).serialize()
