@@ -24,8 +24,9 @@ type Page struct {
 		Content string
 	}
 	CustomCodes struct {
-		Head   string
-		Footer string
+		Head    string
+		Footer  string
+		Scripts string
 	}
 	Fonts string
 }
@@ -66,6 +67,7 @@ var pageTemplate = `<!DOCTYPE html>
 	{{.Body.Content}}
 	<script src="./{{.Name}}.js"></script>
 	{{if .CustomCodes.Footer}}{{.CustomCodes.Footer}}{{end}}
+	{{if .CustomCodes.Scripts}}{{.CustomCodes.Scripts}}{{end}}
 </body>
 </html>
 `
@@ -93,8 +95,9 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 	}
 
 	var customCodes struct {
-		Head   string `json:"head"`
-		Footer string `json:"footer"`
+		Head    string `json:"head"`
+		Footer  string `json:"footer"`
+		Scripts string `json:"scripts"`
 	}
 
 	err = json.Unmarshal(b, &customCodes)
@@ -132,9 +135,10 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 			Content: code,
 		},
 		CustomCodes: struct {
-			Head   string
-			Footer string
-		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer},
+			Head    string
+			Footer  string
+			Scripts string
+		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer, Scripts: customCodes.Scripts},
 		Fonts: fonts,
 	}
 
@@ -227,6 +231,10 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertText(component, styleStore, functionStore)
 	case "Image":
 		return convertImage(component, styleStore, functionStore)
+	case "Video":
+		return convertVideo(component, styleStore, functionStore)
+	case "YouTube":
+		return convertYouTube(component, styleStore, functionStore)
 	case "Picture":
 		return convertPicture(component, styleStore, functionStore)
 	case "Select":
