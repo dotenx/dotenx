@@ -68,7 +68,6 @@ function ProductListOptions({
 		<ComponentWrapper name="Product list">
 			<TextStyler label="Title" element={title} />
 			<ColumnsStyler element={grid} />
-			<BoxStyler label="Wrapper" element={root} />
 			<BoxStyler label="Columns" element={columns} />
 			<TextStyler label="Names" element={names} noText />
 			<TextStyler label="Prices" element={prices} noText />
@@ -76,7 +75,8 @@ function ProductListOptions({
 			<Select
 				data={productTags}
 				size="xs"
-				label="Tag"
+				label="Product tag"
+				description="Show only products with this tag"
 				value={productTag}
 				onChange={(value) => {
 					if (!value) return

@@ -45,7 +45,7 @@ import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { CustomCode } from './custom-code'
-import { pageModeAtom, pageParamsAtom, projectTagAtom } from './top-bar'
+import { pageModeAtom, pageParamsAtom, projectTagAtom, useHasUnsavedChanges } from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
 export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
@@ -393,6 +393,7 @@ export function SaveButton() {
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = useAtomValue(animationsAtom)
+	const unsaved = useHasUnsavedChanges()
 
 	const save = () => {
 		savePageMutation.mutate(
@@ -423,6 +424,7 @@ export function SaveButton() {
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button
 				onClick={save}
+				disabled={!unsaved}
 				loading={savePageMutation.isLoading}
 				size="xs"
 				variant="default"
@@ -496,7 +498,7 @@ export function PreviewButton({ url, isLoading }: { url: string; isLoading: bool
 
 	return (
 		<div className="cursor-default" ref={outsideClickRef}>
-			<Tooltip withinPortal openDelay={1000} withArrow label={<Text size="xs">Preview</Text>}>
+			<Tooltip withinPortal withArrow label={<Text size="xs">Preview</Text>}>
 				<Button
 					onClick={() => {
 						setOpen(!open)
@@ -624,12 +626,7 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 
 	return (
 		<div className="cursor-default" ref={outsideClickRef}>
-			<Tooltip
-				withinPortal
-				openDelay={1000}
-				withArrow
-				label={<Text size="xs">Publish Page</Text>}
-			>
+			<Tooltip withinPortal withArrow label={<Text size="xs">Publish Page</Text>}>
 				<Button
 					onClick={() => {
 						setOpen(!open)
@@ -692,8 +689,7 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 
 						<Button
 							onClick={save}
-							disabled={savePageMutation.isLoading}
-							loading={publishPageMutation.isLoading}
+							loading={publishPageMutation.isLoading || savePageMutation.isLoading}
 							className={'!rounded-md  !w-[270px] mt-4'}
 							size="md"
 						>

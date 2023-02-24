@@ -79,13 +79,16 @@ export function TopBarWrapper({ left, right }: { left: ReactNode; right: ReactNo
 	)
 }
 
-export function UnsavedMessage() {
+export const useHasUnsavedChanges = () => {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
-
 	const savedHash = useMemo(() => safeHash(saved), [saved])
 	const currentHash = useMemo(() => safeHash(elements), [elements])
-	const unsaved = savedHash !== currentHash
+	return savedHash !== currentHash
+}
+
+export function UnsavedMessage() {
+	const unsaved = useHasUnsavedChanges()
 
 	useEffect(() => {
 		if (import.meta.env.MODE === 'development') return
@@ -345,10 +348,10 @@ export function UndoRedo() {
 
 	return (
 		<Button.Group>
-			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default">
+			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default" title="Undo">
 				<TbCornerUpLeft className="w-5 h-5" />
 			</Button>
-			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default">
+			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default" title="Redo">
 				<TbCornerUpRight className="w-5 h-5" />
 			</Button>
 		</Button.Group>
