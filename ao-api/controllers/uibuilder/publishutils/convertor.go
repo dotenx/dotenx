@@ -231,6 +231,10 @@ func convertComponentToHTML(component map[string]interface{}, styleStore *StyleS
 		return convertText(component, styleStore, functionStore)
 	case "Image":
 		return convertImage(component, styleStore, functionStore)
+	case "Video":
+		return convertVideo(component, styleStore, functionStore)
+	case "YouTube":
+		return convertYouTube(component, styleStore, functionStore)
 	case "Picture":
 		return convertPicture(component, styleStore, functionStore)
 	case "Select":
