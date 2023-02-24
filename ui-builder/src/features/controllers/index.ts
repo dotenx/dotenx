@@ -4,6 +4,7 @@ import { BasicButton } from './basic-button'
 import { BasicImage } from './basic-image'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
+import { BasicYouTube } from './basic-youtube'
 import {
 	ChartArea,
 	ChartBar,
@@ -51,7 +52,7 @@ import { TestimonialSimple } from './testimonial-simple'
 export const CONTROLLERS: Components = [
 	{
 		title: 'Basic',
-		items: [BasicImage, BasicText, BasicButton, BasicVideo],
+		items: [BasicImage, BasicText, BasicButton, BasicVideo, BasicYouTube],
 	},
 	{
 		title: 'About',
