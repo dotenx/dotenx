@@ -167,6 +167,7 @@ export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
 }
 
+// This method can be used to upload both images and videos
 export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	const formData = new FormData()
 	formData.append('file', image)

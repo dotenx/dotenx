@@ -27,7 +27,7 @@ function BasicTextOptions() {
 	const text = component.children[0] as TextElement
 
 	return (
-		<ComponentWrapper name="Image" stylers={['alignment', 'backgrounds', 'spacing']}>
+		<ComponentWrapper name="Text">
 			<TextStyler label="Text" element={text} />
 		</ComponentWrapper>
 	)
