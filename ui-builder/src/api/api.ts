@@ -169,7 +169,9 @@ export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	)
 }
 export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
-	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
+	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`, {
+		without_publish: import.meta.env.DEV,
+	})
 }
 
 // This method can be used to upload both images and videos

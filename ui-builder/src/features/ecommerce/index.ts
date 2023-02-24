@@ -36,12 +36,28 @@ import { SignUp } from './components/sign-up'
 import { theme1Components } from './theme1/components'
 import { theme2Components } from './theme2/components'
 import { theme3Components } from './theme3/components'
+import { theme4Components } from './theme4/components'
 
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
-		title: 'About',
-		items: [AboutRight],
+		title: 'Product',
+		items: [
+			ProductList,
+			ProductItem,
+			FeaturedProduct,
+			Cart,
+			BoughtProducts,
+			theme3Components.ProductList,
+			theme4Components.BoughtItems,
+			theme4Components.BoughtItemDetails,
+			theme3Components.FeaturedProduct,
+		],
 	},
+	{
+		title: 'Sign In/Up',
+		items: [SignIn, SignUp],
+	},
+	{ title: 'About', items: [AboutRight] },
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid, theme1Components.Logos] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
@@ -54,30 +70,16 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			FeatureGridImages,
 			FeatureDetailsLeft,
 			FeatureDetailsRight,
-			ProductItem,
-			Cart,
 			theme1Components.FeaturesText,
 			theme1Components.Features,
 			theme1Components.Info,
 			theme2Components.FeatureText,
 			theme2Components.Features,
-			theme3Components.FeaturedProduct,
 		],
 	},
-	{
-		title: 'Collections',
-		items: [
-			theme3Components.Collections,
-			theme3Components.ProductList,
-			ProductList,
-			BoughtProducts,
-		],
-	},
+	{ title: 'Collections', items: [theme3Components.Collections] },
 	{ title: 'Footers', items: [FooterGrid] },
-	{
-		title: 'Gallery',
-		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions, FeaturedProduct],
-	},
+	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions] },
 	{
 		title: 'Hero',
 		items: [
@@ -100,7 +102,6 @@ export const ECOMMERCE_COMPONENTS: Components = [
 		],
 	},
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Sign In/Up', items: [SignIn, SignUp] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple, theme2Components.Testimonial] },
 	{ title: 'Call to action', items: [theme1Components.Cta, theme2Components.Cta] },

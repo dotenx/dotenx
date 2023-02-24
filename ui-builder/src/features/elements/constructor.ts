@@ -7,6 +7,7 @@ import { ImageElement } from './extensions/image'
 import { LinkElement } from './extensions/link'
 import { TemplateElement } from './extensions/template'
 import { TextElement } from './extensions/text'
+import { TextareaElement } from './extensions/textarea'
 
 export const box = (children?: Element[]) => new BoxElement().populate(children ?? [])
 export const btn = (txt: string) => new ButtonElement().unstyled().txt(txt)
@@ -17,3 +18,4 @@ export const img = (src?: string) => new ImageElement().src(src ?? '')
 export const icn = (name: string) => new IconElement().type('fas').setName(name)
 export const template = (children: Element) => new TemplateElement().populate([children])
 export const flex = (children: Element[]) => box(children).css({ display: 'flex' })
+export const textarea = () => new TextareaElement()

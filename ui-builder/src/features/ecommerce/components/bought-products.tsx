@@ -84,7 +84,7 @@ const component = () =>
 							txt('Name').class('name').css({ fontWeight: '500' }).tag(tags.name),
 						])
 							.tag(tags.column)
-							.class('item')
+
 							.css({
 								paddingTop: '10px',
 								paddingRight: '10px',
@@ -95,7 +95,7 @@ const component = () =>
 								justifyContent: 'space-between',
 								gap: '10px',
 							})
-					),
+					).class('item'),
 				]),
 		]),
 	])

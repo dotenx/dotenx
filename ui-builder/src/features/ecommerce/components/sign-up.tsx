@@ -57,7 +57,7 @@ const component = () =>
 				shared.button().txt('Sign up').tag(tags.button).class('submit'),
 				flex([
 					txt('Already have an account?'),
-					link().txt('Sign in').tag(tags.signInLink).css({
+					link().txt('Sign in').href('/sign-in').tag(tags.signInLink).css({
 						marginLeft: '5px',
 						fontWeight: 'bold',
 						cursor: 'pointer',

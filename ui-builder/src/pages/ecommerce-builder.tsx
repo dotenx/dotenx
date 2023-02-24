@@ -77,6 +77,7 @@ const SimpleNavbar = () => {
 			overlayOpacity={0.1}
 			padding="md"
 			className="overflow-y-scroll"
+			withCloseButton={false}
 		>
 			<SimpleLeftSidebar components={ECOMMERCE_COMPONENTS} />
 		</Drawer>
@@ -96,6 +97,7 @@ const Aside = () => {
 			padding="md"
 			className="overflow-y-scroll"
 			position="right"
+			withCloseButton={false}
 		>
 			<SimpleRightSidebar />
 		</Drawer>
