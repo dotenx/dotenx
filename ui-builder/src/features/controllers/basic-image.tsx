@@ -27,7 +27,7 @@ function BasicImageOptions() {
 	const image = component.children[0] as ImageElement
 
 	return (
-		<ComponentWrapper name="Image">
+		<ComponentWrapper name="Image" stylers={["alignment", "backgrounds", "borders", "spacing"]}>
 			<ImageStyler element={image} />
 		</ComponentWrapper>
 	)
