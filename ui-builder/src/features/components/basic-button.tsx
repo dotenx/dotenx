@@ -26,7 +26,7 @@ function BasicButtonOptions() {
 	const button = component.children[0] as ButtonElement
 
 	return (
-		<ComponentWrapper name="Image">
+		<ComponentWrapper name="Button" stylers={["alignment", "backgrounds", "borders", "spacing"]}>
 			<ButtonStyler label="Button" element={button} />
 		</ComponentWrapper>
 	)
