@@ -46,6 +46,17 @@ export const createEditor = () => {
 			new Undo({ editor })
 			new DragDrop(editor)
 		},
+		data: {
+			blocks: [
+				{
+					type: "header",
+					data: {
+						text: "Start typing here",
+						level: 2,
+					},
+				},
+			],
+		},
 	})
 	return editor
 }

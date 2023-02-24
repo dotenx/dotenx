@@ -48,6 +48,7 @@
 		"lodash": "^4.17.21",
 		"react": "^18.2.0",
 		"react-chartjs-2": "^5.2.0",
+		"react-cron-generator": "^2.0.8",
 		"react-dom": "^18.2.0",
 		"react-editor-js": "^2.1.0",
 		"react-hook-form": "^7.43.1",

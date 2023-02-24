@@ -27,7 +27,6 @@ export default function CheckIntegration() {
 		if (integrations.includes("stripe") && integrations.includes("sendGrid"))
 			setOpenModal(false)
 	}, [query?.data?.data])
-	// console.log(integrations, !integrations.includes("stripe" || "sendGrid"), "integration")
 	return (
 		<>
 			<Modal

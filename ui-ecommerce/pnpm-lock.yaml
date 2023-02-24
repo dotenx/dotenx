@@ -61,6 +61,7 @@ specifiers:
   prettier: ^2.8.4
   react: ^18.2.0
   react-chartjs-2: ^5.2.0
+  react-cron-generator: ^2.0.8
   react-dom: ^18.2.0
   react-editor-js: ^2.1.0
   react-hook-form: ^7.43.1
@@ -113,6 +114,7 @@ dependencies:
   lodash: 4.17.21
   react: 18.2.0
   react-chartjs-2: 5.2.0_t5yjg6ab35jnsudnh2qdighszm
+  react-cron-generator: 2.0.8_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   react-editor-js: 2.1.0_zxarmw3p2pxcs632a2b5chqv2a
   react-hook-form: 7.43.1_react@18.2.0
@@ -148,7 +150,7 @@ devDependencies:
   postcss: 8.4.21
   prettier: 2.8.4
   tailwind-scrollbar: 2.1.0_tailwindcss@3.2.6
-  tailwindcss: 3.2.6
+  tailwindcss: 3.2.6_postcss@8.4.21
   typescript: 4.9.5
   vite: 4.1.1
 
@@ -1259,7 +1261,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.2.6
+      tailwindcss: 3.2.6_postcss@8.4.21
     dev: true
 
   /@tanstack/query-core/4.24.6:
@@ -3139,6 +3141,17 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-cron-generator/2.0.8_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-D2fA/Tva8aODTFrhzn76ReGFqf2IQVcY+sNOgD+pKJS8hr7z6wy+Ix7KhcdOknq4UvkP7VJxUgFj87md1MvBwA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      cronstrue: 2.23.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -3491,13 +3504,15 @@ packages:
     peerDependencies:
       tailwindcss: 3.x
     dependencies:
-      tailwindcss: 3.2.6
+      tailwindcss: 3.2.6_postcss@8.4.21
     dev: true
 
-  /tailwindcss/3.2.6:
+  /tailwindcss/3.2.6_postcss@8.4.21:
     resolution: {integrity: sha512-BfgQWZrtqowOQMC2bwaSNe7xcIjdDEgixWGYOd6AL0CbKHJlvhfdbINeAW76l1sO+1ov/MJ93ODJ9yluRituIw==}
     engines: {node: '>=12.13.0'}
     hasBin: true
+    peerDependencies:
+      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3
