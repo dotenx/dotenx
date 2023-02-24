@@ -4,9 +4,7 @@ import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { PageActions } from '../features/page/actions'
 import { PageSelection } from '../features/page/page-selection'
 import {
-	FullscreenButton,
 	Logo,
-	PageScaling,
 	previewAtom,
 	TopBarWrapper,
 	UndoRedo,
@@ -51,13 +49,11 @@ function TopBar() {
 					<Logo />
 					<PageSelection />
 					<ViewportSelection />
-					<FullscreenButton />
 					<UnsavedMessage />
 				</>
 			}
 			right={
 				<>
-					<PageScaling />
 					<UndoRedo />
 					<PageActions showSettings={false} />
 				</>

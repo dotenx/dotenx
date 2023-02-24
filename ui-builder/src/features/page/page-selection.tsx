@@ -18,7 +18,7 @@ export function PageSelection() {
 		.filter((page) => !!page)
 		.map((page) => (
 			<Menu.Item key={page} component={Link} to={`/projects/${projectName}/${page}`}>
-				/{page}
+				{page}
 			</Menu.Item>
 		))
 
@@ -31,14 +31,14 @@ export function PageSelection() {
 					sx={{ minWidth: 200 }}
 					loading={pagesQuery.isLoading}
 				>
-					{`/${pageName}`}
+					{pageName}
 				</Button>
 			</Menu.Target>
 
 			<Menu.Dropdown>
 				<Menu.Label>Page</Menu.Label>
 				{pageList}
-				<Divider label="or add a new page" labelPosition="center" />
+				<Divider label="add a new page" labelPosition="center" />
 				<AddPageForm onSuccess={closeMenu} />
 			</Menu.Dropdown>
 		</Menu>
