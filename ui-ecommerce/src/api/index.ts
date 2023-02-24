@@ -72,6 +72,12 @@ export function setFilesAccess({
 export function getIntegrations() {
 	return api.get<GetIntegrationsResponse>(`/integration`)
 }
+export function getEmailPipelineList({ tag }: { tag: string; }) {
+	return api.get(`/ecommerce/project/${tag}/pipeline/email`)
+}
+export function deleteEmailPipeline({ projectName, pipelineName }: { projectName: string, pipelineName: string }) {
+	return api.delete(`/pipeline/project/${projectName}/name/${pipelineName}`)
+}
 export function getProject(name: string) {
 	return api.get<GetProjectResponse>(`/project/${name}`)
 }

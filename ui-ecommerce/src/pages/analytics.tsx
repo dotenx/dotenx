@@ -64,6 +64,75 @@ function SalesTab() {
 }
 
 function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
+	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
+
+	const projectQuery = useGetProjectTag()
+	const projectTag = projectQuery.projectTag
+	const monthSalesMembershipQuery = useQuery(
+		["get-membership-sales", projectTag],
+		() =>
+			runCustomQuery(
+				projectTag,
+				`
+			select sum(paid_amount) as sale_amount, date(updated_at) 
+			from orders join products on orders.__products = products.id
+			where products.type = 'membership' and orders.updated_at >= '${lastMonth}' 
+			group by date(orders.updated_at);`
+			),
+		{ enabled: !!projectTag }
+	)
+	const monthSalesOneTimeQuery = useQuery(
+		["get-one-time-sales", projectTag],
+		() =>
+			runCustomQuery(
+				projectTag,
+				`
+			select sum(paid_amount) as sale_amount, date(updated_at) 
+			from orders join products on orders.__products = products.id
+			where products.type = 'one-time' and orders.updated_at >= '${lastMonth}' 
+			group by date(orders.updated_at);`
+			),
+		{ enabled: !!projectTag }
+	)
+
+	const membershiplabels =
+		monthSalesMembershipQuery.data?.data?.rows?.map((d) =>
+			_.toNumber(d.date.split("-")[2].slice(0, 2))
+		) ?? []
+
+	const oneTimelabels =
+		monthSalesOneTimeQuery.data?.data?.rows?.map((d) =>
+			_.toNumber(d.date.split("-")[2].slice(0, 2))
+		) ?? []
+
+	const labels = _.uniq(membershiplabels.concat(oneTimelabels).sort())
+	const membershipChartData =
+		monthSalesMembershipQuery.data?.data?.rows?.map((d: any) => {
+			return { date: _.toNumber(d.date.split("-")[2].slice(0, 2)), value: d.sale_amount }
+		}) ?? []
+
+	const oneTimeChartData =
+		monthSalesOneTimeQuery.data?.data?.rows?.map((d: any) => {
+			return { date: _.toNumber(d.date.split("-")[2].slice(0, 2)), value: d.sale_amount }
+		}) ?? []
+	const membershipChartDataWithEqualValues = labels.map((l) => {
+		const allValues = membershipChartData
+			.map((d) => {
+				const sales = d.date === l ? d.value : 0
+				return sales
+			})
+			.reduce((accumulator, currentValue) => accumulator + currentValue)
+		return allValues
+	})
+	const oneTimeChartDataWithEqualValues = labels.map((l) => {
+		const allValues = oneTimeChartData
+			.map((d) => {
+				const sales = d.date === l ? d.value : 0
+				return sales
+			})
+			.reduce((accumulator, currentValue) => accumulator + currentValue)
+		return allValues
+	})
 	const options = {
 		responsive: true,
 		plugins: {
@@ -90,20 +159,17 @@ function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
 			},
 		},
 	}
-
-	const labels = monthDays()
-
 	const data = {
 		labels,
 		datasets: [
 			{
 				label: `${mode === "daily" ? "Daily" : "Monthly"} One-off sales`,
-				data: labels.map(() => Math.floor(Math.random() * 100)),
+				data: membershipChartDataWithEqualValues,
 				backgroundColor: "#9ca3af",
 			},
 			{
 				label: `${mode === "daily" ? "Daily" : "Monthly"} Membership Sales`,
-				data: labels.map(() => Math.floor(Math.random() * 100)),
+				data: oneTimeChartDataWithEqualValues,
 				backgroundColor: "#f43f5e",
 			},
 		],

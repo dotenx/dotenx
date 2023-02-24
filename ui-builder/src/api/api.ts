@@ -133,9 +133,7 @@ export const addPage = ({
 			},
 		])
 	)
-	const transformCodes = produce(customCodes, (draft) => {
-		draft.footer = `<script>${joinScripts(elements)}</script>`
-	})
+
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
@@ -149,7 +147,10 @@ export const addPage = ({
 			pageParams,
 			globals,
 			fonts,
-			customCodes: transformCodes,
+			customCodes: {
+				...customCodes,
+				scripts: `<script>${joinScripts(elements)}</script>`,
+			},
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
 		},

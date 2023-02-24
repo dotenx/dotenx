@@ -1,4 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { RiDeleteBin2Line } from "react-icons/ri"
 import { useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { IoMail, IoReload } from "react-icons/io5"
@@ -6,20 +7,26 @@ import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
-import { ActionIcon, Button, Modal } from "@mantine/core"
+import { ActionIcon, Button, Modal, Checkbox, Tooltip } from "@mantine/core"
 import _ from "lodash"
-import { getIntegrations, runCustomQuery, QueryKey } from "../api"
+import {
+	getIntegrations,
+	runCustomQuery,
+	QueryKey,
+	getEmailPipelineList,
+	deleteEmailPipeline,
+} from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
 import { Link } from "react-router-dom"
 
 export function AudiencePage() {
-	const [activeTab, setActiveTab] = useState<"members" | "sent emails" | "schedules">("members")
+	const [activeTab, setActiveTab] = useState<"members" | "schedules">("members")
 
 	return (
 		<div>
 			<Header
-				tabs={["members", "sent emails", "schedules"]}
+				tabs={["members", "schedules"]}
 				title="Audience"
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
@@ -28,7 +35,6 @@ export function AudiencePage() {
 			</Header>
 			<ContentWrapper>
 				{activeTab === "members" && <MembersTab />}
-				{activeTab === "sent emails" && <SentEmailsTab />}
 				{activeTab === "schedules" && <SchedulesTab />}
 			</ContentWrapper>
 		</div>
@@ -190,21 +196,126 @@ function SchedulesTab() {
 			last_edited: "Last Edited",
 		},
 	]
-
-	// todo: add edit, and delete buttons
+	const projectQuery = useGetProjectTag()
+	console.log(projectQuery.projectName)
+	const projectTag = projectQuery.projectTag
+	const { mutate, isLoading } = useMutation(
+		(pipelineName: string) =>
+			deleteEmailPipeline({ pipelineName, projectName: projectQuery.projectName }),
+		{
+			onSuccess: () => {
+				toast("Product added successfully", { type: "success", autoClose: 2000 })
+			},
+		}
+	)
+	const query = useQuery(
+		[QueryKey.GetEmailPipelineList],
+		() => getEmailPipelineList({ tag: projectTag }),
+		{ enabled: !!projectTag }
+	)
+	const scheduleTableData = query?.data?.data.pipelines
+	console.log(scheduleTableData)
 	return (
 		<Table
 			columns={[
 				{
-					Header: "Subject",
-					accessor: "subject",
+					Header: "Name",
+					accessor: "name",
 				},
 				{
-					Header: "Last Edited",
-					accessor: "last_edited",
+					Header: "Subject",
+					accessor: "",
+					Cell: ({ row }: { row: any }) => {
+						return <span>{row.original.metadata.subject}</span>
+					},
+				},
+
+				{
+					Header: "Target",
+					accessor: "",
+					Cell: ({ row }: { row: any }) => {
+						console.log(row?.original?.metadata?.target)
+						if (row?.original?.metadata?.target?.send_to_all)
+							return (
+								<div className="flex items-center ">
+									<div className="mr-1">Send to all</div>
+								</div>
+							)
+						if (row?.original?.metadata?.target?.product_ids !== null)
+							return (
+								<div className="flex items-center ">
+									<div className="mr-1">Product IDs:</div>
+									{row?.original?.metadata?.target?.product_ids?.map(
+										(id: number) => {
+											return (
+												<div className="mx-[2px] bg-gray-800 text-white rounded p-1 px-[6px] ">
+													{id}
+												</div>
+											)
+										}
+									)}
+								</div>
+							)
+						if (row?.original?.metadata?.target?.tags !== null)
+							return (
+								<div className="flex items-center ">
+									<div className="mr-1">Tags:</div>
+									{row?.original?.metadata?.target?.tags?.map((tag: string) => {
+										return (
+											<div className="mx-[2px] bg-gray-800 text-white rounded p-1 px-[6px] ">
+												{tag}
+											</div>
+										)
+									})}
+								</div>
+							)
+						else return <span>-</span>
+					},
+				},
+				{
+					Header: "Active",
+					accessor: "is_active",
+					Cell: ({ value }: { value: boolean }) => {
+						return (
+							<Tooltip
+								withArrow
+								openDelay={700}
+								label={`${value ? "Deactivate" : "Activate"} email pipeline`}
+							>
+								<div className="w-fit">
+									<Checkbox
+										className="ml-4"
+										name="is_active"
+										checked={value}
+										onClick={() => {
+											console.log(!value)
+										}}
+									/>
+								</div>
+							</Tooltip>
+						)
+					},
+				},
+				{
+					Header: "",
+					accessor: "_",
+					Cell: ({ row }: { row: any }) => {
+						return (
+							<Tooltip withArrow openDelay={500} label="Delete email pipeline">
+								<div className="w-fit">
+									<RiDeleteBin2Line
+										onClick={() => mutate(row.original.name)}
+										className={`cursor-pointer h-5 w-5 ${
+											isLoading && "animate-pulse"
+										}`}
+									/>
+								</div>
+							</Tooltip>
+						)
+					},
 				},
 			]}
-			data={schedules}
+			data={scheduleTableData}
 		/>
 	)
 }
