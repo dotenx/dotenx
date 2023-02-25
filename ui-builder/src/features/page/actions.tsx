@@ -4,6 +4,7 @@ import {
 	Collapse,
 	Divider,
 	Loader,
+	Modal,
 	Text,
 	TextInput,
 	Tooltip,
@@ -14,6 +15,7 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
+import { IoSaveOutline } from 'react-icons/io5'
 import {
 	TbCheck,
 	TbCloudUpload,
@@ -347,11 +349,39 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 }
 
 export function DeletePageButton() {
+	const [opened, setOpened] = useState(false)
+	const { pageName = '' } = useParams()
+
+	return (
+		<>
+			<DeletePageModal opened={opened} setOpened={setOpened} />
+			<Tooltip withinPortal withArrow label={<Text size="xs">Delete Page</Text>}>
+				<Button
+					onClick={() => setOpened(true)}
+					size="xs"
+					variant="default"
+					disabled={pageName === 'index'}
+				>
+					<TbTrash className="w-5 h-5" />
+				</Button>
+			</Tooltip>
+		</>
+	)
+}
+
+function DeletePageModal({
+	opened,
+	setOpened,
+}: {
+	opened: boolean
+	setOpened: (value: boolean) => void
+}) {
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
 	const projectTag = useAtomValue(projectTagAtom)
 	const resetElements = useElementsStore((store) => store.reset)
 	const { projectName, pageName = '' } = useParams()
+
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
 			navigate(`/projects/${projectName}`)
@@ -362,17 +392,28 @@ export function DeletePageButton() {
 	const remove = () => deletePageMutation.mutate({ projectTag, pageName })
 
 	return (
-		<Tooltip withinPortal withArrow label={<Text size="xs">Delete Page</Text>}>
-			<Button
-				onClick={remove}
-				loading={deletePageMutation.isLoading}
-				size="xs"
-				variant="default"
-				disabled={pageName === 'index'}
-			>
-				<TbTrash className="w-5 h-5" />
-			</Button>
-		</Tooltip>
+		<Modal opened={opened} onClose={() => setOpened(false)} title="CAUTION!">
+			<div className="flex flex-col items-center justify-center space-y-4">
+				<Text size="sm" weight="medium">
+					Are you sure you want to <Text weight="bold" className='inline'>DELETE</Text> this page?
+				</Text>
+				<div className="flex space-x-4">
+					<Button variant="default" onClick={() => setOpened(false)}>
+						Cancel
+					</Button>
+					<Button
+						variant="filled"
+						color={'red'}
+						onClick={() => {
+							setOpened(false)
+							remove()
+						}}
+					>
+						Delete
+					</Button>
+				</div>
+			</div>
+		</Modal>
 	)
 }
 
@@ -428,7 +469,7 @@ export function SaveButton() {
 				variant="default"
 				radius={0}
 			>
-				<TbCloudUpload className="w-5 h-5" />
+				<IoSaveOutline className="w-5 h-5" />
 			</Button>
 		</Tooltip>
 	)
