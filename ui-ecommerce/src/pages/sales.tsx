@@ -143,7 +143,9 @@ function CurrentMonthSalesChart() {
 		{ enabled: !!projectTag }
 	)
 
-	const currentMonthSales = currentMonthSalesQuery?.data?.data.rows
+	const currentMonthSales = currentMonthSalesQuery?.data?.data.rows?.sort((d1, d2) =>
+		d1.date > d2.date ? 1 : d1.date < d2.date ? -1 : 0
+	)
 	if (currentMonthSalesQuery.isLoading || !currentMonthSales) return <></>
 
 	const options = {
