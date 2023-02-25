@@ -14,10 +14,9 @@ import _ from "lodash"
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
 import { runCustomQuery } from "../api"
-import { ContentWrapper, Header } from "../features/ui"
+import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { SalesStats, Stats } from "./products"
-import { monthDays } from "./sales"
 
 ChartJS.register(
 	CategoryScale,
@@ -58,7 +57,7 @@ function SalesTab() {
 		<div className="gap-10 flex flex-col">
 			<SalesStats projectTag={projectTag} />
 			<SalesChart mode="daily" />
-			<BestStats />
+			{/* <BestStats /> */}
 		</div>
 	)
 }
@@ -94,43 +93,44 @@ function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
 			),
 		{ enabled: !!projectTag }
 	)
-
+	if (
+		projectQuery.isLoading ||
+		monthSalesOneTimeQuery.isLoading ||
+		monthSalesMembershipQuery.isLoading
+	)
+		return <Loader />
 	const membershiplabels =
-		monthSalesMembershipQuery.data?.data?.rows?.map((d) =>
-			_.toNumber(d.date.split("-")[2].slice(0, 2))
-		) ?? []
+		monthSalesMembershipQuery.data?.data?.rows?.map((d) => d?.date?.substring(0, 10)) ?? []
 
 	const oneTimelabels =
-		monthSalesOneTimeQuery.data?.data?.rows?.map((d) =>
-			_.toNumber(d.date.split("-")[2].slice(0, 2))
-		) ?? []
+		monthSalesOneTimeQuery.data?.data?.rows?.map((d) => d?.date?.substring(0, 10)) ?? []
 
 	const labels = _.uniq(membershiplabels.concat(oneTimelabels).sort())
 	const membershipChartData =
 		monthSalesMembershipQuery.data?.data?.rows?.map((d: any) => {
-			return { date: _.toNumber(d.date.split("-")[2].slice(0, 2)), value: d.sale_amount }
+			return { date: d?.date?.substring(0, 10), value: d.sale_amount }
 		}) ?? []
 
 	const oneTimeChartData =
 		monthSalesOneTimeQuery.data?.data?.rows?.map((d: any) => {
-			return { date: _.toNumber(d.date.split("-")[2].slice(0, 2)), value: d.sale_amount }
+			return { date: d?.date?.substring(0, 10), value: d.sale_amount }
 		}) ?? []
-	const membershipChartDataWithEqualValues = labels.map((l) => {
+	const membershipChartDataWithEqualValues = labels?.map((l) => {
 		const allValues = membershipChartData
-			.map((d) => {
+			?.map((d) => {
 				const sales = d.date === l ? d.value : 0
 				return sales
 			})
-			.reduce((accumulator, currentValue) => accumulator + currentValue)
+			?.reduce((accumulator = 0, currentValue = 0) => accumulator + currentValue)
 		return allValues
 	})
-	const oneTimeChartDataWithEqualValues = labels.map((l) => {
+	const oneTimeChartDataWithEqualValues = labels?.map((l) => {
 		const allValues = oneTimeChartData
-			.map((d) => {
+			?.map((d) => {
 				const sales = d.date === l ? d.value : 0
 				return sales
 			})
-			.reduce((accumulator, currentValue) => accumulator + currentValue)
+			?.reduce((accumulator = 0, currentValue = 0) => accumulator + currentValue)
 		return allValues
 	})
 	const options = {
@@ -279,7 +279,7 @@ function AudienceTab() {
 		<div className="gap-10 flex flex-col">
 			<AudienceStats stats={stats} />
 			<AudienceChart mode="daily" />
-			<ReferrerChart mode="daily" />
+			{/* <ReferrerChart mode="daily" /> */}
 		</div>
 	)
 }
@@ -312,10 +312,11 @@ function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 			),
 		{ enabled: !!projectTag }
 	)
+
 	const labels =
-		audianceChartQuery.data?.data?.rows?.map((d) =>
-			_.toNumber(d.date.split("-")[2].slice(0, 2))
-		) ?? []
+		audianceChartQuery.data?.data?.rows
+			?.sort((d1, d2) => (d1.date > d2.date ? 1 : d1.date < d2.date ? -1 : 0))
+			?.map((d) => d?.date?.substring(0, 10)) ?? []
 	const audianceChartData =
 		audianceChartQuery.data?.data?.rows?.map((d: any) => {
 			return d.count

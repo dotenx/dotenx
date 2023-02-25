@@ -4,9 +4,10 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
 import { BiDollarCircle } from "react-icons/bi"
 import { BsChevronLeft, BsFiles, BsGlobe, BsPeopleFill } from "react-icons/bs"
-import { FaBoxOpen, FaChartLine } from "react-icons/fa"
-import { Link, NavLink as RouterNavLink, useParams } from "react-router-dom"
+import { FaBoxOpen, FaChartLine, FaExternalLinkAlt } from "react-icons/fa"
+import { NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
+import { useGetProjectTag } from "../ui/hooks/use-get-project-tag"
 
 const ANIMATION_DURATION = 0.15
 
@@ -32,7 +33,7 @@ export function Sidebar({ closable }: { closable: boolean }) {
 	const closed = closable && !hovered
 	const opened = !closable || (closable && hovered)
 	const smallScreen = window.innerHeight < 750
-
+	const { projectName } = useGetProjectTag()
 	return (
 		<motion.aside
 			ref={ref}
@@ -53,6 +54,34 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				</div>
 				<div className="mt-10">
 					<NavLinks closed={closed} links={sidebar.navLinks} />
+				</div>
+				<div className="mt-10 pt-5 px-5  border-t -mx-5">
+					<a
+						target={"_blank"}
+						href={`https://ui.dotenx.com/ecommerce/${projectName}/index`}
+						className={clsx(
+							" text-white hover:bg-rose-500   w-full rounded-md flex items-center  font-medium gap-2 transition-all  px-3 whitespace-nowrap",
+							smallScreen ? "text-sm h-9  " : "text-xl h-14 "
+						)}
+					>
+						<div
+							className={`shrink-0 transition-all ${
+								smallScreen ? "text-sm " : "text-lg "
+							} ${!closed && "hidden"} mt-1 `}
+						>
+							UI
+						</div>
+						<FadeIn visible={!closed}>
+							<div className="flex items-center p-1">
+								<FaExternalLinkAlt className="w-4 h-4 mr-4" />
+								<span
+									className={` shrink-0 ${smallScreen ? "text-sm " : "text-lg "}`}
+								>
+									UI builder
+								</span>
+							</div>
+						</FadeIn>
+					</a>
 				</div>
 			</div>
 		</motion.aside>
