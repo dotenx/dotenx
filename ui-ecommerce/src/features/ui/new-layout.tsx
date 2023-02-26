@@ -1,5 +1,5 @@
-import { ReactNode } from "react"
-import { useNavigate } from "react-router-dom"
+import { ReactNode, useEffect } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 export function Header({
 	title,
@@ -20,11 +20,19 @@ export function Header({
 }) {
 	const navigate = useNavigate()
 	const smallScreen = window.innerHeight < 750
+	const [searchParams] = useSearchParams()
+	searchParams.get("tab")
+	const urlActiveTab = !!tabs?.includes(searchParams.get("tab") ?? "")
+		? searchParams.get("tab")
+		: undefined
+	useEffect(() => {
+		if (urlActiveTab) onTabChange(urlActiveTab)
+	}, [urlActiveTab])
 
 	return (
 		<div className={` w-full bg-white shadow-sm`}>
 			<div className="flex items-center justify-between pl-10 p-6">
-				<div className="h-10  ">
+				<div className="min-h-10  ">
 					<div
 						onClick={() => {
 							if (headerLink) navigate(headerLink)
