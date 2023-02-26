@@ -96,6 +96,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 			request := sendgrid.GetRequest(apiKey, "/v3/scopes", host)
 			request.Method = "GET"
 			response, err := sendgrid.API(request)
+			// TODO: check scopes and insure that this api key has access to send email
 			if err != nil || response.StatusCode != http.StatusOK {
 				if err == nil {
 					err = errors.New("invalid sendGrid api key")

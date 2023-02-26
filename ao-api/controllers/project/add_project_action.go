@@ -189,7 +189,7 @@ func EcommerceInitialSetup(project models.Project, dbService databaseService.Dat
 			},
 			{
 				"name": "json_content",
-				"type": "long_text",
+				"type": "dtx_json",
 			},
 			{
 				"name": "tags",
