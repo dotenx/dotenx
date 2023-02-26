@@ -12,8 +12,8 @@ import (
 
 func (ds *objectstoreStore) AddObject(ctx context.Context, objectstore models.Objectstore) error {
 	addObject := `
-INSERT INTO object_store (key, account_id, tpaccount_id, project_tag, size, is_public, user_groups, url)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO object_store (key, account_id, tpaccount_id, project_tag, size, is_public, user_groups, url, display_name)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 `
 
 	fmt.Println("userGroups", objectstore.UserGroups)
@@ -24,7 +24,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	_, err := ds.db.Connection.Exec(stmt, objectstore.Key, objectstore.AccountId, objectstore.TpAccountId, objectstore.ProjectTag, objectstore.Size, objectstore.IsPublic, pq.StringArray(objectstore.UserGroups), objectstore.Url)
+	_, err := ds.db.Connection.Exec(stmt, objectstore.Key, objectstore.AccountId, objectstore.TpAccountId, objectstore.ProjectTag, objectstore.Size, objectstore.IsPublic, pq.StringArray(objectstore.UserGroups), objectstore.Url, objectstore.DisplayName)
 	if err != nil {
 		logrus.Error(err.Error())
 		return err
