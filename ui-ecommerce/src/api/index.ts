@@ -75,6 +75,13 @@ export function getIntegrations() {
 export function getEmailPipelineList({ tag }: { tag: string; }) {
 	return api.get(`/ecommerce/project/${tag}/pipeline/email`)
 }
+export function activateEmailPipeline({ projectName, pipelineName, action }: { projectName: string, pipelineName: string, action: string }) {
+	return api.get(`/pipeline/project/${projectName}/name/${pipelineName}/${action}`)
+}
+export function getEmailPipelineExecutions({ projectName, pipelineName }: { projectName: string, pipelineName: string }) {
+	return api.get(`/pipeline/project/${projectName}/name/${pipelineName}/executions`)
+}
+
 export function deleteEmailPipeline({ projectName, pipelineName }: { projectName: string, pipelineName: string }) {
 	return api.delete(`/pipeline/project/${projectName}/name/${pipelineName}`)
 }

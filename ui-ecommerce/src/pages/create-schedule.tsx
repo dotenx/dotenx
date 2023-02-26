@@ -17,11 +17,12 @@ import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 export function CreateSchedulePage() {
 	const navigate = useNavigate()
 	const [stage, setStage] = useState<"content" | "schedule">("content")
+	const { projectName } = useGetProjectTag()
 	const [editorValues, setEditorValues] = useState<EditorValue>()
 	const emailMutation = useMutation(createEmailPipeline, {
 		onSuccess: () => {
 			toast("Schedule added successfully", { type: "success", autoClose: 2000 })
-			navigate(-1)
+			navigate(`/projects/${projectName}/audience?tab=schedules`)
 		},
 		onError: (e: any) => {
 			toast(e.response.data.message, { type: "error", autoClose: 2000 })
@@ -36,6 +37,9 @@ export function CreateSchedulePage() {
 	return (
 		<div>
 			<Header
+				tabs={["content", "schedule"]}
+				activeTab={stage}
+				onTabChange={setStage}
 				title={
 					<span className="cursor-pointer" onClick={() => navigate(-1)}>
 						New Schedule
