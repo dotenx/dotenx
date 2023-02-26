@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { BoxStyler } from '../../simple/stylers/box-styler'
-import { AlignmentEditor } from '../../style/alignment-editor'
 import { ComponentName } from '../helpers'
 import { OptionsWrapper } from './options-wrapper'
 
@@ -13,7 +12,9 @@ export function ComponentWrapper({
 }: {
 	children?: ReactNode
 	name: string
-	stylers?: Array<'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'>
+	stylers?: Array<
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+	>
 	stylerOptions?: {
 		alignment?: {
 			direction?: 'row' | 'column'
@@ -25,7 +26,12 @@ export function ComponentWrapper({
 	return (
 		<OptionsWrapper>
 			<ComponentName name={name} />
-			<BoxStyler label="Container" element={wrapper} stylers={stylers} stylerOptions={stylerOptions} />
+			<BoxStyler
+				label="Container"
+				element={wrapper}
+				stylers={stylers}
+				stylerOptions={stylerOptions}
+			/>
 			{children}
 		</OptionsWrapper>
 	)

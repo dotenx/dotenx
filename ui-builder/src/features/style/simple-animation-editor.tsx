@@ -1,9 +1,8 @@
 import { Select, Slider } from '@mantine/core'
-import _ from 'lodash'
-import { Element } from '../elements/element'
-import { CollapseLine } from '../ui/collapse-line'
 import { PRESETS } from '../animations/presets'
+import { Element } from '../elements/element'
 import { useSetWithElement } from '../elements/elements-store'
+import { CollapseLine } from '../ui/collapse-line'
 
 export function SimpleAnimationEditor({ element }: { element: Element}) {
 	const presets = PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))
