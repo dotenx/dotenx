@@ -25,7 +25,6 @@ export class BasicYouTube extends Component {
 function BasicYouTubeOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const element = component.children[0] as YouTubeElement
-	const set = useSetElement()
 
 	return (
 		<ComponentWrapper name="Text">
