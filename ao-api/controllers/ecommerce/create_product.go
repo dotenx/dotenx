@@ -26,6 +26,8 @@ type productDTO struct {
 	StripePriceId    string                 `json:"stripe_price_id"`
 	StripeProductId  string                 `json:"stripe_product_id"`
 	Content          string                 `json:"content"`
+	HtmlContent      string                 `json:"html_content"`
+	JsonContent      map[string]interface{} `json:"json_content"`
 	Tags             []string               `json:"tags"`
 	Currency         string                 `json:"currency"`
 	RecurringPayment recurringPayments      `json:"recurring_payment"`
