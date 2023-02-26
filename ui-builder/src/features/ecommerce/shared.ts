@@ -64,7 +64,28 @@ const button = () =>
 			backgroundColor: '#e0e0e0',
 		})
 
-const input = (label: string, type: 'text' | 'password' = 'text') =>
+const input = (
+	label: string,
+	type:
+		| 'text'
+		| 'number'
+		| 'email'
+		| 'url'
+		| 'checkbox'
+		| 'radio'
+		| 'range'
+		| 'date'
+		| 'datetime-local'
+		| 'search'
+		| 'tel'
+		| 'time'
+		| 'file'
+		| 'month'
+		| 'week'
+		| 'password'
+		| 'color'
+		| 'hidden' = 'text'
+) =>
 	flex([
 		txt(label),
 		new InputElement()
