@@ -16,6 +16,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/integrationService"
 	"github.com/gin-gonic/gin"
+	"github.com/sendgrid/sendgrid-go"
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v72/client"
 )
@@ -86,6 +87,22 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 				logrus.Error(err.Error())
 				c.JSON(http.StatusBadRequest, gin.H{
 					"message": "invalid stripe secret key",
+				})
+				return
+			}
+		case "sendGrid":
+			apiKey := dto.IntegrationSecrets["ACCESS_TOKEN"]
+			host := "https://api.sendgrid.com"
+			request := sendgrid.GetRequest(apiKey, "/v3/scopes", host)
+			request.Method = "GET"
+			response, err := sendgrid.API(request)
+			if err != nil || response.StatusCode != http.StatusOK {
+				if err == nil {
+					err = errors.New("invalid sendGrid api key")
+				}
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid sendGrid api key",
 				})
 				return
 			}
