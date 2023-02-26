@@ -30,6 +30,7 @@ export abstract class Element {
 	tagId?: string
 	hidden?: boolean
 	script?: string
+	animation?: Animation
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -197,3 +198,12 @@ export const CONDITIONS = [
 	Condition.Contains,
 	Condition.NotContains,
 ]
+
+type Animation = {
+	name?: string
+	duration?: number
+	delay?: number
+	event?: 'onVisible' | 'onHover'
+	easing?: 'linear' | 'spring'
+}
+
