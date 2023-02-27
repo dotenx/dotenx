@@ -10,16 +10,16 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core"
-import { useForm, zodResolver } from "@mantine/form"
+import { useForm } from "@mantine/form"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
-import { createProduct, currency, getIntegrations, getProject, QueryKey } from "../api"
+import { currency, getIntegrations, getProductsById, QueryKey, updateProduct } from "../api"
 import { TiDelete } from "react-icons/ti"
 import { AttachmentPage } from "../features/app/attachment"
 import { Editor } from "../features/editor/editor"
-import { ContentWrapper, Header } from "../features/ui"
+import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
@@ -27,10 +27,18 @@ import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-export function NewProductPage() {
+export function EditProductPage() {
+	const { id = "" } = useParams()
+	const { projectTag, isLoading: loadingProjectTag } = useGetProjectTag()
+	const { data, isLoading, isSuccess } = useQuery(
+		[QueryKey.getDetailsByID],
+		() => getProductsById(projectTag, id),
+		{
+			enabled: !!projectTag,
+		}
+	)
+	const details = data?.data?.rows?.[0]
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
-	const projectQuery = useGetProjectTag()
-	const projectTag = projectQuery.projectTag
 	const { getInputProps, values, setValues } = useForm({
 		initialValues: {
 			name: "",
@@ -53,15 +61,39 @@ export function NewProductPage() {
 			status: "unpublished",
 		},
 	})
+	useEffect(() => {
+		if (isSuccess)
+			setValues({
+				name: details?.name,
+				type: details?.type,
+				price: details?.price,
+				recurring_payment: details?.recurring_payment,
+				currency: details?.currency,
+				thumbnails: !!details.thumbnails?.[0] ? details?.thumbnails : [],
+				description: details?.description,
+				summary: details?.summary,
+				limitation: details?.limitation,
+				file_names: details?.file_names,
+				tags: details?.tags,
+				image_url: details?.image_url,
+				details: details?.details,
+				metadata: details?.metadata,
+				content: details?.content,
+				preview_link: details?.preview_link,
+				download_link: details?.download_link,
+				status: details?.status,
+			})
+	}, [data])
+	if (!values.name || loadingProjectTag || isLoading) return <Loader />
 	return (
 		<div>
 			<Header
 				tabs={["details", "content", "attachment"]}
-				title="New Product"
+				title={`Edit Product ${details.name}`}
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 			>
-				<ActionBar values={values} tag={projectTag} />
+				<ActionBar values={values} id={id} tag={projectTag} />
 			</Header>
 			<ContentWrapper>
 				<form>
@@ -108,7 +140,7 @@ function DetailsTab({
 			is_default: false
 			recurring_interval: "month"
 		}[]
-	>(values.recurring_payment?.prices || [])
+	>(values?.recurring_payment?.prices || [])
 	const [limitation, setLimitation] = useState(values.limitation)
 	const [categories, setCategories] = useState<string[]>(values.tags)
 	const details = attributesList.length === 0 ? values?.details ?? {} : {}
@@ -118,26 +150,33 @@ function DetailsTab({
 	const handleClick = () => {
 		setCategories((current) => [...current, tag])
 	}
+
 	useEffect(() => {
 		setValues({
 			thumbnails: thumbnailList,
+		})
+	}, [thumbnailList])
+	useEffect(() => {
+		setValues({
 			limitation: limitation,
+		})
+	}, [limitation])
+	useEffect(() => {
+		setValues({
 			tags: categories,
+		})
+	}, [categories])
+	useEffect(() => {
+		setValues({
 			details: details,
+		})
+	}, [attributesList])
+	useEffect(() => {
+		setValues({
 			price: oneTimePrice,
 			recurring_payment: values.type === "one-time" ? {} : { prices: priceList },
 		})
-	}, [
-		thumbnailList,
-		limitation,
-		categories,
-		values.type,
-		values.details,
-		attributesList,
-		priceList,
-		oneTimePrice,
-	])
-
+	}, [values.type, priceList, oneTimePrice])
 	return (
 		<div className="grid grid-cols-3 gap-20">
 			<div className="flex flex-col w-full gap-5 col-span-2">
@@ -185,7 +224,7 @@ function DetailsTab({
 								label="Price"
 								placeholder="0"
 								name="price"
-								value={values.price}
+								value={oneTimePrice}
 								onChange={(event) =>
 									setOneTimePrice(_.toNumber(event.currentTarget.value))
 								}
@@ -399,19 +438,20 @@ function DetailsTab({
 					</Popover>
 
 					<div>
-						{thumbnailList.map((t, index) => (
-							<div
-								key={index}
-								className="flex relative group items-center border p-1  mb-2 hover:bg-red-50 hover:border-red-300 transition-all cursor-pointer gap-x-5"
-								onClick={() =>
-									setThumbnailList(thumbnailList.filter((tl) => tl !== t))
-								}
-							>
-								<Image height={"50px"} width="50px" src={t} />
-								<div className="text-sm">Thumbnail {index + 1}</div>
-								<MdClose className="opacity-0 group-hover:opacity-100  transition-all absolute top-[2px] text-red-600 right-[2px] h-3 w-3" />
-							</div>
-						))}
+						{thumbnailList.length > 0 &&
+							thumbnailList.map((t, index) => (
+								<div
+									key={index}
+									className="flex relative group items-center border p-1  mb-2 hover:bg-red-50 hover:border-red-300 transition-all cursor-pointer gap-x-5"
+									onClick={() =>
+										setThumbnailList(thumbnailList.filter((tl) => tl !== t))
+									}
+								>
+									<Image height={"50px"} width="50px" src={t} />
+									<div className="text-sm">Thumbnail {index + 1}</div>
+									<MdClose className="opacity-0 group-hover:opacity-100  transition-all absolute top-[2px] text-red-600 right-[2px] h-3 w-3" />
+								</div>
+							))}
 					</div>
 				</div>
 			</div>
@@ -586,16 +626,19 @@ const MonthlyPricingInput = ({
 		</div>
 	)
 }
-function ActionBar({ values, tag }: { values: any; tag: string }) {
+function ActionBar({ values, tag, id }: { values: any; tag: string; id: string }) {
 	const navigate = useNavigate()
 	const { projectName = "" } = useParams()
+	const { mutate: mutateUpdateProduct, isLoading } = useMutation(
+		() => updateProduct({ productId: id, tag, payload: values }),
+		{
+			onSuccess: () => {
+				toast("Product updated successfully", { type: "success", autoClose: 2000 }),
+					navigate(`/projects/${projectName}/products`)
+			},
+		}
+	)
 
-	const { mutate, isLoading } = useMutation(() => createProduct({ tag, payload: values }), {
-		onSuccess: () => {
-			toast("Product added successfully", { type: "success", autoClose: 2000 }),
-				navigate(`/projects/${projectName}/products`)
-		},
-	})
 	const [openModal, setOpenModal] = useState(false)
 	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
 	const client = useQueryClient()
@@ -627,9 +670,9 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 					!values.image_url
 				}
 				loading={isLoading}
-				onClick={() => mutate()}
+				onClick={() => mutateUpdateProduct()}
 			>
-				Create product
+				Update product
 			</Button>
 			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
 				<IntegrationForm

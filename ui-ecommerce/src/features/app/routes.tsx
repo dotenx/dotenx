@@ -5,6 +5,7 @@ import { AnalyticsPage } from "../../pages/analytics"
 import { AudiencePage } from "../../pages/audience"
 import { CreateSchedulePage } from "../../pages/create-schedule"
 import { DomainsPage } from "../../pages/domains"
+import { EditProductPage } from "../../pages/edit-product"
 import { Files } from "../../pages/files"
 import { HomePage } from "../../pages/home"
 import { NewProductPage } from "../../pages/new-product"
@@ -24,6 +25,10 @@ const routes: Routes = [
 	{
 		path: "/projects/:projectName/products/New",
 		element: <NewProductPage />,
+	},
+	{
+		path: "/projects/:projectName/products/:id",
+		element: <EditProductPage />,
 	},
 	{
 		path: "/projects/:projectName/products",
