@@ -9,7 +9,13 @@ import { ColumnsElement } from '../../elements/extensions/columns'
 import { viewportAtom } from '../../viewport/viewport-store'
 
 // get element and optionally max columns
-export function ColumnsStyler({ element, maxColumns }: { element: ColumnsElement, maxColumns?: number}) {
+export function ColumnsStyler({
+	element,
+	maxColumns,
+}: {
+	element: ColumnsElement
+	maxColumns?: number
+}) {
 	const set = useSetWithElement(element)
 	const viewport = useAtomValue(viewportAtom)
 	const columns =
@@ -65,7 +71,7 @@ export function ColumnsStyler({ element, maxColumns }: { element: ColumnsElement
 	)
 }
 
-function SliderNoMemo(props: SliderProps) {
+export function SliderNoMemo(props: SliderProps) {
 	const [value, setValue] = useState(props.value)
 
 	useDidUpdate(() => {

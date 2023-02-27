@@ -2,7 +2,6 @@ import { ColorInput } from '@mantine/core'
 import { Element } from '../../elements/element'
 import { useSetWithElement } from '../../elements/elements-store'
 import { AlignmentEditor } from '../../style/alignment-editor'
-import { AnimationEditor } from '../../style/animation-editor'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { BordersEditor } from '../../style/border-editor'
 import { SimpleAnimationEditor } from '../../style/simple-animation-editor'
@@ -18,7 +17,9 @@ export function BoxStyler({
 }: {
 	element: Element | Element[]
 	label: string
-	stylers?: Array<'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'>
+	stylers?: Array<
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+	>
 	stylerOptions?: {
 		alignment?: {
 			direction?: 'row' | 'column'
@@ -39,7 +40,9 @@ function StyleEditor({
 	stylerOptions,
 }: {
 	element: Element | Element[]
-	stylers?: Array<'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'>
+	stylers?: Array<
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+	>
 	stylerOptions?: {
 		alignment?: {
 			direction?: 'row' | 'column'
@@ -65,11 +68,9 @@ function StyleEditor({
 				<TypographyEditor simple element={element} />
 			)}
 			{/* has animation styler and element is of type Element */}
-			{stylers?.includes('animation') && element instanceof Element &&
-			(
+			{stylers?.includes('animation') && element instanceof Element && (
 				<SimpleAnimationEditor element={element as Element} />
 			)}
-
 		</Styler>
 	)
 }
