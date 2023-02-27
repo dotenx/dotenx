@@ -386,8 +386,6 @@ function LogoColumnLines({ column }: { column: BoxElement }): JSX.Element {
 const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			position: 'fixed',
-			bottom: '0',
 			boxSizing: 'border-box',
 			flexDirection: 'column',
 			paddingLeft: '10%',

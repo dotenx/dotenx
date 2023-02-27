@@ -29,6 +29,7 @@ import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
+import { FooterSimple } from './footer-simple'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryWithCaptions } from './gallery-with-caption'
@@ -80,7 +81,7 @@ export const COMPONENTS: Components = [
 			FeatureDetailsRight,
 		],
 	},
-	{ title: 'Footers', items: [FooterGrid] },
+	{ title: 'Footers', items: [FooterGrid, FooterSimple] },
 	{
 		title: 'Gallery',
 		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions],
