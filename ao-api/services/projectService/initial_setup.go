@@ -1,15 +1,16 @@
 package projectService
 
 import (
+	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/dotenx/dotenx/ao-api/models"
-	"github.com/dotenx/dotenx/ao-api/services/databaseService"
+	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/sirupsen/logrus"
 )
 
-func (ps *projectService) InitialSetup(project models.Project, dbService databaseService.DatabaseService) (err error) {
+func (ps *projectService) InitialSetup(project models.Project) (err error) {
 	switch project.Type {
 	case "ecommerce":
-		err = EcommerceInitialSetup(project, dbService)
+		err = EcommerceInitialSetup(project, ps.DbStore)
 	}
 	if err != nil {
 		logrus.Error(err)
@@ -18,11 +19,22 @@ func (ps *projectService) InitialSetup(project models.Project, dbService databas
 	return
 }
 
-func EcommerceInitialSetup(project models.Project, dbService databaseService.DatabaseService) (err error) {
+func EcommerceInitialSetup(project models.Project, dbStore databaseStore.DatabaseStore) (err error) {
+
+	// get database instance of DoTenX user database
+	db, fn, err := dbutil.GetDbInstance(project.AccountId, project.Name)
+	if db != nil {
+		defer fn(db.Connection)
+	}
+	if err != nil {
+		logrus.Error("Error getting database connection:", err)
+		return err
+	}
+
 	initialTablesList := []string{"integrations", "products", "orders", "reviews", "user_products"}
 	isPublicList := []bool{false, true, false, false, false}
 	for i, tableName := range initialTablesList {
-		err = dbService.AddTable(project.AccountId, project.Name, tableName, isPublicList[i], false)
+		err = dbStore.AddTable(noContext, db, project.AccountId, project.Name, tableName, isPublicList[i], false)
 		if err != nil {
 			return err
 		}
@@ -193,7 +205,7 @@ func EcommerceInitialSetup(project models.Project, dbService databaseService.Dat
 	}
 	for tableName, columns := range initialTableColumnsList {
 		for _, column := range columns.([]map[string]string) {
-			err = dbService.AddTableColumn(project.AccountId, project.Name, tableName, column["name"], column["type"])
+			err = dbStore.AddTableColumn(noContext, db, project.AccountId, project.Name, tableName, column["name"], column["type"])
 			if err != nil {
 				return err
 			}

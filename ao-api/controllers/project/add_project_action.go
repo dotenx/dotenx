@@ -77,7 +77,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		}
 		project.AccountId = accountId
 
-		err = pc.Service.InitialSetup(project, dbService)
+		err = pc.Service.InitialSetup(project)
 		if err != nil {
 			logrus.Error(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
