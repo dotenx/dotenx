@@ -1,13 +1,13 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/hero-cta-left.png'
-
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { BoxStyler } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
@@ -34,7 +34,6 @@ function HeroCtaLeftOptions() {
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const cta = component.find<LinkElement>(tagIds.cta)!
 	const ctaText = cta.children?.[0] as TextElement
-	
 
 	return (
 		<ComponentWrapper name="Hero with CTA on the left">
@@ -43,6 +42,7 @@ function HeroCtaLeftOptions() {
 			<TextStyler label="Subtitle" element={subtitle} />
 			<TextStyler label="CTA" element={ctaText} />
 			<LinkStyler label="CTA Link" element={cta} />
+			<BoxStyler label="Animation" element={cta} stylers={['animation']} />
 		</ComponentWrapper>
 	)
 }
@@ -76,15 +76,15 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
-		}
+		},
 	}
-	
+
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '5%',
 			paddingRight: '5%',
-		}
+		},
 	}
 }).serialize()
 
@@ -95,9 +95,7 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 			height: 'auto',
 		},
 	}
-	draft.data.src = Expression.fromString(
-		'https://files.dotenx.com/assets/hero-bg-wo4.jpeg'
-	)
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/hero-bg-wo4.jpeg')
 	draft.tagId = tagIds.image
 }).serialize()
 
@@ -182,7 +180,7 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 		},
 	}
-	
+
 	draft.style.tablet = {
 		default: {
 			fontSize: '20px',

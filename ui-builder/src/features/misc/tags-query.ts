@@ -8,6 +8,6 @@ export const useTags = () => {
 	const tagsQuery = useQuery([EcommerceQueryKey.GetProducts, projectTag], () =>
 		getTags({ projectTag })
 	)
-	const tags = tagsQuery.data?.data.rows.map((row) => row.tag) ?? []
+	const tags = tagsQuery.data?.data.rows?.map((row) => row.tag) ?? []
 	return tags
 }

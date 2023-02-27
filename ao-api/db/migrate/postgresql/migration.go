@@ -323,6 +323,14 @@ var migrations = []struct {
 		name: "add-theme-field-to-projects-table",
 		stmt: addThemeFieldToProjectsTable,
 	},
+	{
+		name: "create-ui-form-table",
+		stmt: createUIFormTable,
+	},
+	{
+		name: "add-display-name-field-to-object-store-table",
+		stmt: addDisplayNameFieldToObjectStoreTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -907,4 +915,18 @@ ADD COLUMN IF NOT EXISTS type VARCHAR(64) NOT NULL DEFAULT 'freestyle';
 var addThemeFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS theme VARCHAR(64) DEFAULT '';
+`
+
+var createUIFormTable = `
+CREATE TABLE IF NOT EXISTS ui_forms (
+project_tag              VARCHAR(32) NOT NULL,
+page_name                VARCHAR(64) NOT NULL,
+form_id                  VARCHAR(64) NOT NULL,
+response                 JSONB NOT NULL
+)
+`
+
+var addDisplayNameFieldToObjectStoreTable = `
+ALTER TABLE object_store
+ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
 `

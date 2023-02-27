@@ -1,24 +1,36 @@
-import { Badge, Button, Image, Textarea } from "@mantine/core"
+import { Badge, Button, Image, Switch, Textarea } from "@mantine/core"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useParams } from "react-router-dom"
-import { getTableRecords, QueryKey, runCustomQuery } from "../api"
+import { getTableRecords, QueryKey, runCustomQuery, updateProduct } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import _ from "lodash"
 import { FaExternalLinkAlt, FaHashtag } from "react-icons/fa"
 import { useClipboard } from "@mantine/hooks"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
 	const [details, setDetails] = useState<any>()
-
+	const client = useQueryClient()
+	const { projectTag } = useGetProjectTag()
 	useEffect(() => {
 		setDetails(false)
 	}, [activeTab])
-
+	const { mutate: mutateUpdateProduct, isLoading: loadingUpdateProduct } = useMutation(
+		({ productId, payload }: { productId: string; payload: any }) =>
+			updateProduct({ productId, tag: projectTag, payload }),
+		{
+			onSuccess: () => {
+				setDetails(false)
+				client.invalidateQueries([QueryKey.GetTableRecords])
+				client.invalidateQueries([QueryKey.GetMembershipOnlyRecords])
+				client.invalidateQueries([QueryKey.GetProductsOnlyRecords])
+			},
+		}
+	)
 	const tableColumns = [
 		{
 			Header: "id",
@@ -49,6 +61,39 @@ export function ProductsPage() {
 		{
 			Header: "type",
 			accessor: "type",
+		},
+		{
+			Header: "Publish product",
+			accessor: "status",
+			Cell: (rows: any) => {
+				const status =
+					rows.row.original.status === "published" ? "unpublished" : "published"
+				return (
+					<Switch
+						disabled={loadingUpdateProduct}
+						onClick={() =>
+							mutateUpdateProduct({
+								productId: rows.row.original.id,
+								payload: {
+									...rows.row.original,
+									details: JSON.parse(rows.row.original.details),
+									file_names: rows.row.original.file_names.split(","),
+									tags: rows.row.original.tags.split(","),
+									thumbnails: rows.row.original.thumbnails.split(","),
+									metadata: JSON.parse(rows.row.original.metadata),
+									recurring_payment: JSON.parse(
+										rows.row.original.recurring_payment
+									),
+									json_content: JSON.parse(rows.row.original.json_content),
+									status: status,
+								},
+							})
+						}
+						className="ml-10"
+						checked={rows.row.original.status === "published"}
+					/>
+				)
+			},
 		},
 	]
 	return (

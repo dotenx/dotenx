@@ -16,7 +16,7 @@ import (
 func (ds *objectstoreStore) GetObject(ctx context.Context, accountId, projectTag, fileName string) (models.Objectstore, error) {
 
 	getObject := `
-SELECT key, account_id, tpaccount_id, project_tag, size, is_public, user_groups, url FROM object_store
+SELECT key, account_id, tpaccount_id, project_tag, size, is_public, user_groups, url, display_name FROM object_store
 WHERE account_id = $1 AND project_tag = $2 AND key = $3
 `
 	var stmt string
@@ -28,7 +28,7 @@ WHERE account_id = $1 AND project_tag = $2 AND key = $3
 	}
 	var objectStore models.Objectstore
 	var ug pq.StringArray
-	err := ds.db.Connection.QueryRowx(stmt, accountId, projectTag, fileName).Scan(&objectStore.Key, &objectStore.AccountId, &objectStore.TpAccountId, &objectStore.ProjectTag, &objectStore.Size, &objectStore.IsPublic, &ug, &objectStore.Url)
+	err := ds.db.Connection.QueryRowx(stmt, accountId, projectTag, fileName).Scan(&objectStore.Key, &objectStore.AccountId, &objectStore.TpAccountId, &objectStore.ProjectTag, &objectStore.Size, &objectStore.IsPublic, &ug, &objectStore.Url, &objectStore.DisplayName)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = errors.New("entity not found")

@@ -23,6 +23,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/project"
 	"github.com/dotenx/dotenx/ao-api/controllers/trigger"
 	"github.com/dotenx/dotenx/ao-api/controllers/uiExtension"
+	"github.com/dotenx/dotenx/ao-api/controllers/uiForm"
 	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder"
 	"github.com/dotenx/dotenx/ao-api/controllers/uicomponent"
 	"github.com/dotenx/dotenx/ao-api/controllers/userManagement"
@@ -46,6 +47,7 @@ import (
 	triggerService "github.com/dotenx/dotenx/ao-api/services/triggersService"
 	"github.com/dotenx/dotenx/ao-api/services/uiComponentService"
 	"github.com/dotenx/dotenx/ao-api/services/uiExtensionService"
+	"github.com/dotenx/dotenx/ao-api/services/uiFormService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/services/userManagementService"
 	"github.com/dotenx/dotenx/ao-api/services/utopiopsService"
@@ -62,6 +64,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/triggerStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uiComponentStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uiExtensionStore"
+	"github.com/dotenx/dotenx/ao-api/stores/uiFormStore"
 	"github.com/dotenx/dotenx/ao-api/stores/uibuilderStore"
 	"github.com/dotenx/dotenx/ao-api/stores/userManagementStore"
 	"github.com/dotenx/goth"
@@ -153,6 +156,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplaceStore := marketplaceStore.New(db)
 	componentStort := uiComponentStore.New(db)
 	extensionStore := uiExtensionStore.New(db)
+	formStore := uiFormStore.New(db)
 	gitIntegrationStore := gitIntegrationStore.New(db)
 
 	// Services
@@ -170,6 +174,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplaceService := marketplaceService.NewMarketplaceService(marketplaceStore, uibuilderStore)
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
+	uiFormService := uiFormService.NewUIFormService(formStore)
 	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
@@ -192,6 +197,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
+	uiFormController := uiForm.UIFormController{Service: uiFormService}
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
 	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService, PipelineService: crudServices}
 
@@ -448,6 +454,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.ListExtensions())
 	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.GetExtension())
 
+	// uiForm router
+	public.POST("/uibuilder/project/:project_tag/page/:page_name/form/:form_id", uiFormController.AddNewResponse(ProjectService))
+	uibuilder.GET("/project/:project_tag/page/:page_name/form", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiFormController.GetUiPageResponseList())
+
 	// gitIntegration router
 	gothic.Store = store
 	gitIntegrationCallbackUrl := config.Configs.Endpoints.AoApiLocal + "/git/integration/callback/"
@@ -469,6 +479,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ecommerce.POST("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateEmailPipeline())
 	ecommerce.PUT("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateEmailPipeline())
 	ecommerce.GET("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipelines())
+	ecommerce.GET("/project/:project_tag/pipeline/email/:pipeline_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipeline())
 	ecommerce.GET("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
 	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
 	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())

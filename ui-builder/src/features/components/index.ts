@@ -20,6 +20,7 @@ import { ComparisonTableSimple } from './comparison-table-simple'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
+import { DividerSimpleLine } from './divider-simple-line'
 import { DividerSimpleTitle } from './divider-simple-title'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
@@ -30,6 +31,7 @@ import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { Form } from './form'
+import { FooterSimple } from './footer-simple'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryWithCaptions } from './gallery-with-caption'
@@ -70,7 +72,7 @@ export const COMPONENTS: Components = [
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
-	{ title: 'Divider', items: [DividerSimpleTitle] },
+	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine] },
 	{
 		title: 'Features',
 		items: [
@@ -81,7 +83,7 @@ export const COMPONENTS: Components = [
 			FeatureDetailsRight,
 		],
 	},
-	{ title: 'Footers', items: [FooterGrid] },
+	{ title: 'Footers', items: [FooterGrid, FooterSimple] },
 	{
 		title: 'Gallery',
 		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions],
