@@ -219,15 +219,15 @@ export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 	const stats = [
 		{
 			title: "Total Revenue",
-			value: `$${totalRevenue}`,
+			value: `$${totalRevenue.toFixed(2)}`,
 			isLoading: totalRevenueQuery.isLoading || !projectTag,
 		},
 		{
 			title: "Last 24h",
-			value: `$${last24}`,
+			value: `$${last24.toFixed(2)}`,
 			isLoading: lastDayRevQuery.isLoading || !projectTag,
 		},
-		{ title: "MRR", value: `$${mrr}`, isLoading: mrrQuery.isLoading || !projectTag },
+		{ title: "MRR", value: `$${mrr.toFixed(2)}`, isLoading: mrrQuery.isLoading || !projectTag },
 	]
 
 	return <Stats stats={stats} />
