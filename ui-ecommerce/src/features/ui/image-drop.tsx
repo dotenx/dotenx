@@ -15,7 +15,7 @@ export function ImageDrop({
 	src: string | null
 	onChange: (src: string) => void
 	rightSection?: ReactNode
-	label?: string
+	label?: string | JSX.Element
 }) {
 	const uploadImageMutation = useMutation(uploadImage)
 	const projectQuery = useGetProjectTag()

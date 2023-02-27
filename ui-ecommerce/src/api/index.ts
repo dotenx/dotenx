@@ -81,6 +81,9 @@ export function activateEmailPipeline({ projectName, pipelineName, action }: { p
 export function getEmailPipelineExecutions({ projectName, pipelineName }: { projectName: string, pipelineName: string }) {
 	return api.get(`/pipeline/project/${projectName}/name/${pipelineName}/executions`)
 }
+export function updateProduct({ productId, tag, payload }: { productId: string, tag: string, payload: any }) {
+	return api.put(`/ecommerce/project/${tag}/product/${productId}`, payload)
+}
 
 export function deleteEmailPipeline({ projectName, pipelineName }: { projectName: string, pipelineName: string }) {
 	return api.delete(`/pipeline/project/${projectName}/name/${pipelineName}`)
