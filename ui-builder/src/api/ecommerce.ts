@@ -6,7 +6,7 @@ export enum EcommerceQueryKey {
 
 export function getTags({ projectTag }: { projectTag: string }) {
 	return api.get<{
-		rows: { tag: string }[]
+		rows?: { tag: string }[]
 		rows_affected: number
 		successful: boolean
 		total_rows: number
