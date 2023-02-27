@@ -25,7 +25,7 @@ export function ComponentWrapper({
 	return (
 		<OptionsWrapper>
 			<ComponentName name={name} />
-			<BoxStyler label="Container" element={wrapper} stylers={stylers} stylerOptions={stylerOptions} />
+			<BoxStyler label="Frame" element={wrapper} stylers={stylers} stylerOptions={stylerOptions} />
 			{children}
 		</OptionsWrapper>
 	)
