@@ -1,10 +1,11 @@
 import { Select, Slider } from '@mantine/core'
+import _ from 'lodash'
 import { PRESETS } from '../animations/presets'
 import { Element } from '../elements/element'
 import { useSetWithElement } from '../elements/elements-store'
 import { CollapseLine } from '../ui/collapse-line'
 
-export function SimpleAnimationEditor({ element }: { element: Element}) {
+export function SimpleAnimationEditor({ element }: { element: Element }) {
 	const presets = PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))
 	const set = useSetWithElement(element)
 
@@ -15,13 +16,12 @@ export function SimpleAnimationEditor({ element }: { element: Element}) {
 					data={[{ label: 'No animation', value: 'No animation' }, ...presets]}
 					label="Style"
 					size="xs"
-					defaultValue={'No animation'}
-					onChange={(value) =>
-						{
-							if (value === 'No animation') {
-								set(draft => (draft.animation = {}))
-							} else {
-								set(draft =>( draft.animation!.name = value as string))
+					value={element.animation?.name}
+					onChange={(value) => {
+						if (value === 'No animation') {
+							set((draft) => (draft.animation = {}))
+						} else {
+							set((draft) => _.set(draft, 'animation.name', value ?? undefined))
 						}
 					}}
 				/>
@@ -34,7 +34,7 @@ export function SimpleAnimationEditor({ element }: { element: Element}) {
 					step={0.1}
 					styles={{ markLabel: { display: 'none' } }}
 					onChange={(value) =>
-						set(draft => draft.animation!.duration = value  * 1000)
+						set((draft) => _.set(draft, 'animation.duration', value * 1000))
 					}
 				/>
 				<p>Delay</p>
@@ -46,7 +46,7 @@ export function SimpleAnimationEditor({ element }: { element: Element}) {
 					step={0.1}
 					styles={{ markLabel: { display: 'none' } }}
 					onChange={(value) =>
-						set(draft => draft.animation!.delay = value  * 1000)
+						set((draft) => _.set(draft, 'animation.delay', value * 1000))
 					}
 				/>
 				<Select
@@ -57,7 +57,7 @@ export function SimpleAnimationEditor({ element }: { element: Element}) {
 					data={['linear', 'spring']}
 					defaultValue="linear"
 					onChange={(value) =>
-						set(draft => draft.animation!.easing = value as 'linear' | 'spring')
+						set((draft) => _.set(draft, 'animation.easing', value ?? undefined))
 					}
 				/>
 			</div>
