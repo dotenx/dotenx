@@ -12,7 +12,7 @@ import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
 export class DividerSimpleTitle extends Component {
-	name = 'Divider simple title'
+	name = 'Simple title divider'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -29,7 +29,7 @@ function DividerSimpleTitleOptions() {
 	const subtitle = component.find(tagIds.subtitle) as TextElement
 
 	return (
-		<ComponentWrapper name="Divider simple title">
+		<ComponentWrapper name="Simple title divider">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
 			<BoxStylerSimple label="Background color" element={component} />
