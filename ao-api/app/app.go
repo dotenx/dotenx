@@ -434,7 +434,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.GetExtension())
 
 	// uiForm router
-	public.POST("/uibuilder/project/:project_tag/form", uiFormController.AddNewResponse(ProjectService))
+	public.POST("/uibuilder/project/:project_tag/page/:page_name/form/:form_id", uiFormController.AddNewResponse(ProjectService))
 	uibuilder.GET("/project/:project_tag/page/:page_name/form", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiFormController.GetUiPageResponseList())
 
 	// gitIntegration router

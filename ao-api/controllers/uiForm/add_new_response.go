@@ -15,10 +15,10 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 	return func(c *gin.Context) {
 
 		projectTag := c.Param("project_tag")
+		pageName := c.Param("page_name")
+		formId := c.Param("form_id")
 
 		type FormDto struct {
-			PageName string          `json:"page_name" required:"true"`
-			FormId   string          `json:"form_id" required:"true"`
 			Response json.RawMessage `json:"response" required:"true"`
 		}
 
@@ -30,6 +30,14 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 		}
 		if formDto.Response == nil || len(formDto.Response) == 0 {
 			err := errors.New("response can't be empty")
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		if pageName == "" || formId == "" {
+			err := errors.New("page name and form id can't be empty")
 			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
@@ -48,8 +56,8 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 
 		form := models.UIForm{
 			ProjectTag: projectTag,
-			PageName:   formDto.PageName,
-			FormId:     formDto.FormId,
+			PageName:   pageName,
+			FormId:     formId,
 			Response:   formDto.Response,
 		}
 
