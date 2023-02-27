@@ -113,9 +113,10 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			ProjectTag:  projectTag,
 			Size:        int(size),
 			// Access:      access,
-			Url:        url,
-			IsPublic:   isPublic,
-			UserGroups: userGroups,
+			Url:         url,
+			IsPublic:    isPublic,
+			UserGroups:  userGroups,
+			DisplayName: file.Filename,
 		}
 
 		err = controller.Service.AddObject(toAdd)
@@ -141,7 +142,11 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"fileName": fileName, "url": url})
+		c.JSON(http.StatusOK, gin.H{
+			"fileName":    fileName,
+			"url":         url,
+			"displayName": toAdd.DisplayName,
+		})
 	}
 }
 

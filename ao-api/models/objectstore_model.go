@@ -10,4 +10,5 @@ type Objectstore struct {
 	Url         string   `db:"url" json:"url"`
 	IsPublic    bool     `db:"is_public" json:"is_public"`
 	UserGroups  []string `db:"user_groups" json:"user_groups"`
+	DisplayName string   `db:"display_name" json:"display_name"`
 }
