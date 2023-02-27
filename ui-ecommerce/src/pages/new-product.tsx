@@ -10,7 +10,7 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core"
-import { useForm } from "@mantine/form"
+import { useForm, zodResolver } from "@mantine/form"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
@@ -26,6 +26,8 @@ import { toast } from "react-toastify"
 import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { z } from "zod"
+
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
 	const projectQuery = useGetProjectTag()
@@ -49,10 +51,9 @@ export function NewProductPage() {
 			content: "",
 			preview_link: "",
 			download_link: "",
-			status: "",
+			status: "unpublished",
 		},
 	})
-
 	return (
 		<div>
 			<Header
@@ -95,7 +96,11 @@ function DetailsTab({
 	const [thumbnailPopOpen, setThumbnailPopOpen] = useState(false)
 	const [thumbnailSrc, setThumbnailSrc] = useState("")
 	const [oneTimePrice, setOneTimePrice] = useState<number>(values.price)
-	const [attributesList, setAttributesList] = useState([])
+	const formDetailsValue =
+		Object.keys(values?.details).map((key) => {
+			return { [key]: values?.details[key] }
+		}) ?? []
+	const [attributesList, setAttributesList] = useState(formDetailsValue)
 	const [thumbnailList, setThumbnailList] = useState<string[]>(values.thumbnails)
 	const [priceList, setPriceList] = useState<
 		{
@@ -107,7 +112,7 @@ function DetailsTab({
 	>(values.recurring_payment?.prices || [])
 	const [limitation, setLimitation] = useState(values.limitation)
 	const [categories, setCategories] = useState<string[]>(values.tags)
-	const details = {}
+	const details = attributesList.length === 0 ? values?.details ?? {} : {}
 	for (let i = 0; i < attributesList.length; i++) {
 		Object.assign(details, attributesList[i])
 	}
@@ -128,10 +133,12 @@ function DetailsTab({
 		limitation,
 		categories,
 		values.type,
+		values.details,
 		attributesList,
 		priceList,
 		oneTimePrice,
 	])
+
 	return (
 		<div className="grid grid-cols-3 gap-20">
 			<div className="flex flex-col w-full gap-5 col-span-2">
@@ -329,15 +336,15 @@ function DetailsTab({
 						)}
 					</div>
 					<KeyValueInput list={attributesList} setList={setAttributesList} />
-					{attributesList.length > 0 && (
+					{(formDetailsValue.length > 0 || attributesList.length > 0) && (
 						<div className="grid grid-cols-3 my-2 gap-y-2 gap-x-5 mt-5 rounded">
-							{attributesList.map((a, index) => (
+							{(attributesList || formDetailsValue).map((a, index) => (
 								<div
 									key={index}
 									className="flex group relative items-center px-5 gap-x-1 hover:border-red-300  bg-white border  p-1 justify-between cursor-pointer text-sm  transition-all hover:bg-red-50 "
 									onClick={() =>
 										setAttributesList(
-											attributesList.filter((attr) => attr !== a)
+											attributesList.filter((attr: any) => attr !== a)
 										)
 									}
 								>
@@ -352,7 +359,11 @@ function DetailsTab({
 			</div>
 			<div className="space-y-8 bg-white p-2 rounded ">
 				<ImageDrop
-					label="Cover image"
+					label={
+						<span>
+							Cover image <span className="text-red-500">*</span>
+						</span>
+					}
 					src={values.image_url}
 					onChange={(src) => setValues({ image_url: src })}
 				/>
@@ -607,7 +618,18 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 					</Button>
 				</div>
 			)}
-			<Button disabled={noIntegration} loading={isLoading} onClick={() => mutate()}>
+			<Button
+				disabled={
+					noIntegration ||
+					(values.type === "membership"
+						? values?.recurring_payment?.prices?.length === 0
+						: values?.price === 0) ||
+					!values.name ||
+					!values.image_url
+				}
+				loading={isLoading}
+				onClick={() => mutate()}
+			>
 				Create product
 			</Button>
 			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
