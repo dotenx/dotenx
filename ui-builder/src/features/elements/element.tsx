@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
 import { mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
+import { Animation } from '../animations/schema'
 import { Component } from '../components/component'
 import { Expression } from '../states/expression'
 import { ElementEvent } from './event'
@@ -30,7 +31,10 @@ export abstract class Element {
 	tagId?: string
 	hidden?: boolean
 	script?: string
-	animation?: Animation
+	animation?: {
+		data: Animation
+		event: 'onVisible' | 'onHover'
+	}
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -57,6 +61,7 @@ export abstract class Element {
 			elementId: this.elementId,
 			tagId: this.tagId,
 			script: this.script,
+			animation: this.animation,
 		}
 	}
 
@@ -198,12 +203,3 @@ export const CONDITIONS = [
 	Condition.Contains,
 	Condition.NotContains,
 ]
-
-type Animation = {
-	name?: string
-	duration?: number
-	delay?: number
-	event?: 'onVisible' | 'onHover'
-	easing?: 'linear' | 'spring'
-}
-

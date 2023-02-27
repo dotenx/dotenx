@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react'
 import { IoSaveOutline } from 'react-icons/io5'
 import {
 	TbCheck,
-	TbCloudUpload,
 	TbCode,
 	TbCopy,
 	TbExternalLink,
@@ -40,6 +39,7 @@ import {
 	QueryKey,
 	updatePage,
 } from '../../api'
+import { joinAnimations } from '../../utils/join-scripts'
 import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
@@ -395,7 +395,11 @@ function DeletePageModal({
 		<Modal opened={opened} onClose={() => setOpened(false)} title="CAUTION!">
 			<div className="flex flex-col items-center justify-center space-y-4">
 				<Text size="sm" weight="medium">
-					Are you sure you want to <Text weight="bold" className='inline'>DELETE</Text> this page?
+					Are you sure you want to{' '}
+					<Text weight="bold" className="inline">
+						DELETE
+					</Text>{' '}
+					this page?
 				</Text>
 				<div className="flex space-x-4">
 					<Button variant="default" onClick={() => setOpened(false)}>
@@ -417,6 +421,13 @@ function DeletePageModal({
 	)
 }
 
+const usePageAnimations = () => {
+	const elements = useElementsStore((store) => store.elements)
+	const animations = useAtomValue(animationsAtom)
+	const elementAnimations = joinAnimations(elements)
+	return [...animations, ...elementAnimations]
+}
+
 export function SaveButton() {
 	const setSaved = useElementsStore((store) => store.save)
 	const { pageName = '' } = useParams()
@@ -433,8 +444,8 @@ export function SaveButton() {
 	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = useAtomValue(animationsAtom)
 	const unsaved = useHasUnsavedChanges()
+	const animations = usePageAnimations()
 
 	const save = () => {
 		savePageMutation.mutate(
@@ -626,7 +637,7 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 	const setSaved = useElementsStore((store) => store.save)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = useAtomValue(animationsAtom)
+	const animations = usePageAnimations()
 	const publish = () =>
 		publishPageMutation.mutate(
 			{ projectTag, pageName },

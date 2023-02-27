@@ -1,3 +1,4 @@
+import { Animation } from '../features/animations/schema'
 import { Element } from '../features/elements/element'
 
 export function joinScripts(elements: Element[]): string {
@@ -8,4 +9,22 @@ export function joinScripts(elements: Element[]): string {
 	return elements
 		.map((element) => joinScripts(element.children ?? []) + '\n' + (element.script ?? ''))
 		.join('\n')
+}
+
+export function joinAnimations(elements: Element[]): Animation[] {
+	if (elements.length === 0) {
+		return []
+	}
+
+	return elements
+		.map((element) =>
+			joinAnimations(element.children ?? []).concat(element.animation?.data ?? [])
+		)
+		.flat()
+		.map(addSpringParams)
+}
+
+const addSpringParams = (animation: Animation): Animation => {
+	if (animation.easing === 'spring') return { ...animation, easingParams: [1, 100, 10, 0] }
+	return animation
 }
