@@ -12,6 +12,7 @@ import { NewProductPage } from "../../pages/new-product"
 import { NotFoundPage } from "../../pages/not-found"
 import { ProductsPage } from "../../pages/products"
 import { SalesPage } from "../../pages/sales"
+import { UpdateSchedulePage } from "../../pages/update-schedule"
 import { Layout } from "../ui"
 
 type Routes = {
@@ -49,6 +50,10 @@ const routes: Routes = [
 	{
 		path: "/projects/:projectName/audience/new",
 		element: <CreateSchedulePage />,
+	},
+	{
+		path: "/projects/:projectName/audience/:name",
+		element: <UpdateSchedulePage />,
 	},
 	{
 		path: "/projects/:projectName/files",

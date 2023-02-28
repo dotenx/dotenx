@@ -30,7 +30,7 @@ import {
 } from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { MdOutlineTimer } from "react-icons/md"
 
 export function AudiencePage() {
@@ -62,12 +62,11 @@ function ActionBar() {
 	const noIntegration =
 		(
 			query?.data?.data
-				.map((d) => {
+				?.map((d) => {
 					if (["sendGrid"].includes(d.type)) return d.type
 				})
 				.filter((d) => d !== undefined) || []
 		).length === 0
-
 	return (
 		<div className="flex gap-x-5 items-center">
 			{noIntegration && query.isSuccess && (
@@ -358,13 +357,14 @@ function SchedulesTab() {
 const PipelineDetails = ({ details, onClose }: { details: any; onClose: () => void }) => {
 	const [activeTab, setActiveTab] = useState<"details" | "content">("details")
 	const scheduleExpression = details?.metadata?.schedule_expression
+	const navigate = useNavigate()
 	return (
 		<div className="mt-10 bg-white">
 			<div className="w-full justify-end pr-3 flex pt-2 cursor-pointer">
 				<IoClose onClick={() => onClose()} />
 			</div>
 			<Header
-				children={<Button>Edit</Button>}
+				children={<Button onClick={() => navigate(`${details.name}`)}>Edit</Button>}
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 				tabs={["details", "content"]}
@@ -456,7 +456,10 @@ const DetailsTab = ({ details }: { details: any }) => {
 							Categories:{" "}
 							{details?.metadata?.target?.tags?.map((t: string) => {
 								return (
-									<div className="p-1 bg-gray-800 px-2 text-white rounded-md">
+									<div
+										key={t}
+										className="p-1 bg-gray-800 px-2 text-white rounded-md"
+									>
 										{t}
 									</div>
 								)
