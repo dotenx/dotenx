@@ -3,6 +3,7 @@ import { useHover } from '@mantine/hooks'
 import { useAtom, useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { ReactElement, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Components, ComponentSection } from '../components'
 import { DividerCollapsible } from '../components/helpers'
 import { Element } from '../elements/element'
@@ -64,6 +65,7 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 function SimpleComponentList({ section: { title, items } }: { section: ComponentSection }) {
 	const insertComponent = useInsertComponent()
 	const projectTag = useAtomValue(projectTagAtom)
+	const { pageName = '' } = useParams()
 
 	return (
 		<DividerCollapsible closed title={title}>
@@ -80,7 +82,7 @@ function SimpleComponentList({ section: { title, items } }: { section: Component
 						onClick={() => {
 							const component = newComponent.transform()
 							insertComponent(component)
-							newComponent.onCreate(component, { projectTag })
+							newComponent.onCreate(component, { projectTag, pageName })
 						}}
 					/>
 				)

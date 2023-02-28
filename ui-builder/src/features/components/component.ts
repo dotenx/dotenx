@@ -36,6 +36,7 @@ export abstract class Component {
 
 export type OnCreateOptions = {
 	projectTag: string
+	pageName: string
 }
 
 export interface ElementOptions<T extends Element = Element> {

@@ -12,11 +12,13 @@ export function TextStyler({
 	element,
 	placeholder,
 	noText,
+	onChange,
 }: {
 	label: string
 	element: TextElement | TextElement[]
 	placeholder?: string
 	noText?: boolean
+	onChange?: (text: string) => void
 }) {
 	if (noText) return <TextStylerNoText label={label} element={element} />
 
@@ -25,6 +27,7 @@ export function TextStyler({
 			label={label}
 			element={_.isArray(element) ? element[0] : element}
 			placeholder={placeholder}
+			onChange={onChange}
 		/>
 	)
 }
@@ -33,12 +36,12 @@ function TextStylerWithText({
 	label,
 	element,
 	placeholder,
-	noText,
+	onChange,
 }: {
 	label: string
 	element: TextElement
 	placeholder?: string
-	noText?: boolean
+	onChange?: (text: string) => void
 }) {
 	const set = useSetWithElement(element)
 	const setText = (text: string) => {
@@ -52,7 +55,10 @@ function TextStylerWithText({
 			name={label}
 			placeholder={placeholder}
 			value={element.data.text.toString()}
-			onChange={(event) => setText(event.target.value)}
+			onChange={(event) => {
+				setText(event.target.value)
+				onChange?.(event.target.value)
+			}}
 			rightSection={<StyleEditor element={element} />}
 		/>
 	)
