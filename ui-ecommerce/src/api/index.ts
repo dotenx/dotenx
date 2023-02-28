@@ -177,6 +177,11 @@ export function runCustomQuery(projectTag: string, query: string) {
 		query: query,
 	})
 }
+export function runPredefinedQuery(projectTag: string, query: string) {
+	return api.post<RunCustomQueryResponse>(`/ecommerce/project/${projectTag}/database/query/predefined`, {
+		goal: query,
+	})
+}
 export function getLast24HoursSales(projectTag: string, page: number) {
 	return api.post<GetLastDaySalesResponse | null>(
 		`/database/query/select/project/${projectTag}/table/sales`, //TODO: Use a view

@@ -13,7 +13,7 @@ import {
 import _ from "lodash"
 import { useState } from "react"
 import { Bar, Line } from "react-chartjs-2"
-import { runCustomQuery } from "../api"
+import { runPredefinedQuery } from "../api"
 import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { SalesStats, Stats } from "./products"
@@ -63,34 +63,21 @@ function SalesTab() {
 }
 
 function SalesChart({ mode }: { mode: "daily" | "monthly" }) {
-	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
-
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
 	const monthSalesMembershipQuery = useQuery(
 		["get-membership-sales", projectTag],
 		() =>
-			runCustomQuery(
+			runPredefinedQuery(
 				projectTag,
-				`
-			select sum(paid_amount) as sale_amount, date(updated_at) 
-			from orders join products on orders.__products = products.id
-			where products.type = 'membership' and orders.updated_at >= '${lastMonth}' 
-			group by date(orders.updated_at);`
+				"get_daily_sale_of_membership_products_in_current_month"
 			),
 		{ enabled: !!projectTag }
 	)
 	const monthSalesOneTimeQuery = useQuery(
 		["get-one-time-sales", projectTag],
 		() =>
-			runCustomQuery(
-				projectTag,
-				`
-			select sum(paid_amount) as sale_amount, date(updated_at) 
-			from orders join products on orders.__products = products.id
-			where products.type = 'one-time' and orders.updated_at >= '${lastMonth}' 
-			group by date(orders.updated_at);`
-			),
+			runPredefinedQuery(projectTag, "get_daily_sale_of_one_time_products_in_current_month"),
 		{ enabled: !!projectTag }
 	)
 	if (
@@ -256,21 +243,25 @@ function AudienceTab() {
 	const projectTag = projectQuery.projectTag
 	const membersQuery = useQuery(
 		["get-members", projectTag],
-		() => runCustomQuery(projectTag, "SELECT DISTINCT email FROM orders;"),
+		() => runPredefinedQuery(projectTag, "get_total_members"),
 		{ enabled: !!projectTag }
 	)
-	const members = membersQuery.data?.data?.rows ?? []
-	const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
-	const newMembers = members.filter((m) => m.updated_at >= yesterday)
+	const newMembersQuery = useQuery(
+		["get_number_of_new_members_in_last_24h", projectTag],
+		() => runPredefinedQuery(projectTag, "get_number_of_new_members_in_last_24h"),
+		{ enabled: !!projectTag }
+	)
+	const members = membersQuery.data?.data?.rows?.[0]?.total_members ?? 0
+	const newMembers = newMembersQuery.data?.data?.rows?.[0]?.new_members ?? 0
 	const stats = [
 		{
 			title: "Total members",
-			value: members.length,
+			value: members,
 			isLoading: membersQuery.isLoading || !projectTag,
 		},
 		{
 			title: "New Members (24h)",
-			value: newMembers.length,
+			value: newMembers,
 			isLoading: membersQuery.isLoading || !projectTag,
 		},
 	]
@@ -295,21 +286,10 @@ export function AudienceStats({
 function AudienceChart({ mode }: { mode: "daily" | "monthly" }) {
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
-	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
 	const audianceChartQuery = useQuery(
 		["get-daily-members", projectTag],
-		() =>
-			runCustomQuery(
-				projectTag,
-				`select count(audience.email), date(audience.updated_at) 
-		from (
-			select min(updated_at) as updated_at, email 
-			from orders 
-			group by email
-			) as audience
-		where audience.updated_at >= '${lastMonth}'
-		group by date(audience.updated_at);`
-			),
+
+		() => runPredefinedQuery(projectTag, "get_daily_new_members_in_current_month"),
 		{ enabled: !!projectTag }
 	)
 

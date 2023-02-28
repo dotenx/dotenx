@@ -74,10 +74,14 @@ export function Files() {
 					columns={[
 						{
 							Header: "Name",
-							accessor: "key",
-							Cell: ({ value }: { value: string }) => (
-								<span className="text-xs truncate">{value}</span>
-							),
+							accessor: "display_name",
+							Cell: ({ value, row }: { value: string; row: any }) => {
+								return (
+									<span className="text-xs truncate">
+										{value ? value : row.original.key}
+									</span>
+								)
+							},
 						},
 						{
 							Header: "Size",

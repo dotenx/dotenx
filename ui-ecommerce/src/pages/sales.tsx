@@ -15,7 +15,7 @@ import { useState } from "react"
 import { Bar } from "react-chartjs-2"
 import { IoReload } from "react-icons/io5"
 import { useParams } from "react-router-dom"
-import { getColumns, getTableRecords, QueryKey, runCustomQuery } from "../api"
+import { getColumns, getTableRecords, QueryKey, runCustomQuery, runPredefinedQuery } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 
@@ -129,17 +129,9 @@ function AllTab() {
 function CurrentMonthSalesChart() {
 	const projectQuery = useGetProjectTag()
 	const projectTag = projectQuery.projectTag
-	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
 	const currentMonthSalesQuery = useQuery(
-		["get-total-revenue", projectTag],
-		() =>
-			runCustomQuery(
-				projectTag,
-				`select sum(paid_amount) as sale_amount, date(updated_at) 
-					from orders 
-					where updated_at >= '${lastMonth}' 
-					group by date(updated_at);`
-			),
+		["get-daily-sales", projectTag],
+		() => runPredefinedQuery(projectTag, "get_daily_sale_of_current_month"),
 		{ enabled: !!projectTag }
 	)
 
