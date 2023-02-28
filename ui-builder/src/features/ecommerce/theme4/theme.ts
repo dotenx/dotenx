@@ -1,5 +1,16 @@
 import { gridCols } from '../../../utils/style-utils'
-import { box, btn, flex, grid, icn, img, template, textarea, txt } from '../../elements/constructor'
+import {
+	box,
+	btn,
+	flex,
+	grid,
+	icn,
+	img,
+	link,
+	template,
+	textarea,
+	txt,
+} from '../../elements/constructor'
 import { Element } from '../../elements/element'
 
 const boughItems = () =>
@@ -137,13 +148,18 @@ const boughtItemDetails = () => {
 				template(
 					flex([
 						icn('file').size('10px'),
-						txt('file name'),
+						txt('file name').class('file-name'),
 						flex([
-							btn('Download').css({
-								backgroundColor: 'white',
-								border: '1px solid #D1D1D1',
-								padding: '4px 10px',
-							}),
+							link()
+								.txt('Download')
+								.css({
+									backgroundColor: 'white',
+									border: '1px solid #D1D1D1',
+									padding: '4px 10px',
+									color: 'inherit',
+									textDecoration: 'none',
+								})
+								.class('file-download'),
 						]).css({
 							justifyContent: 'end',
 							flexGrow: '1',
@@ -156,7 +172,11 @@ const boughtItemDetails = () => {
 						gap: '10px',
 					})
 				).class('attachment'),
-			]).class('attachments'),
+			])
+				.class('attachments')
+				.css({
+					flexDirection: 'column',
+				}),
 		]).css({
 			flexDirection: 'column',
 			gap: '10px',
