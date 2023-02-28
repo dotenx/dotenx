@@ -10,13 +10,14 @@ import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
 import { getEmailPipelineDetail, QueryKey, runCustomQuery, updateEmailPipeline } from "../api"
-import { Editor, EditorValue } from "../features/editor/editor"
+import { Editor, useEditor } from "../features/editor/editor"
 import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 
 export function UpdateSchedulePage() {
 	const navigate = useNavigate()
 	const { name = "" } = useParams()
+	const editor = useEditor()
 
 	const [stage, setStage] = useState<"content" | "schedule">("content")
 	const { projectName, projectTag: tag, isLoading: loadingTag } = useGetProjectTag()
@@ -25,7 +26,6 @@ export function UpdateSchedulePage() {
 		() => getEmailPipelineDetail({ name, tag }),
 		{ enabled: !!tag }
 	)
-	const [editorValues, setEditorValues] = useState<EditorValue>()
 	const emailMutation = useMutation(updateEmailPipeline, {
 		onSuccess: () => {
 			toast("Schedule updated successfully", { type: "success", autoClose: 2000 })
@@ -36,10 +36,6 @@ export function UpdateSchedulePage() {
 		},
 	})
 
-	const submitEditor = (values: EditorValue): void => {
-		setEditorValues(values)
-		setStage("schedule")
-	}
 	if (isLoading || loadingTag) return <Loader />
 	return (
 		<div>
@@ -54,7 +50,9 @@ export function UpdateSchedulePage() {
 				}
 			/>
 			<ContentWrapper>
-				{stage === "content" && <Editor onSave={submitEditor} />}
+				<div hidden={stage !== "content"}>
+					<Editor editor={editor} />
+				</div>
 				{stage === "schedule" && (
 					<div>
 						<Button
@@ -66,12 +64,13 @@ export function UpdateSchedulePage() {
 						</Button>
 						<UpdateSchedule
 							details={scheduleDetails?.data}
-							onSave={(values) => {
+							onSave={async (values) => {
 								emailMutation.mutate({
 									...values,
 									payload: {
 										...values.payload,
-										html_content: editorValues?.html,
+										html_content: await editor.html(),
+										json_content: await editor.json(),
 									},
 								})
 							}}
