@@ -5,12 +5,11 @@ import cronstrue from "cronstrue"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import Cron, { HEADER } from "react-cron-generator"
-import { TbArrowLeft } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
 import { createEmailPipeline, runCustomQuery } from "../api"
-import { Editor, EditorValue } from "../features/editor/editor"
+import { Editor, useEditor } from "../features/editor/editor"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 
@@ -18,7 +17,6 @@ export function CreateSchedulePage() {
 	const navigate = useNavigate()
 	const [stage, setStage] = useState<"content" | "schedule">("content")
 	const { projectName } = useGetProjectTag()
-	const [editorValues, setEditorValues] = useState<EditorValue>()
 	const emailMutation = useMutation(createEmailPipeline, {
 		onSuccess: () => {
 			toast("Schedule added successfully", { type: "success", autoClose: 2000 })
@@ -29,10 +27,7 @@ export function CreateSchedulePage() {
 		},
 	})
 
-	const submitEditor = (values: EditorValue): void => {
-		setEditorValues(values)
-		setStage("schedule")
-	}
+	const editor = useEditor()
 
 	return (
 		<div>
@@ -47,29 +42,23 @@ export function CreateSchedulePage() {
 				}
 			/>
 			<ContentWrapper>
-				{stage === "content" && <Editor onSave={submitEditor} />}
+				<div hidden={stage !== "content"}>
+					<Editor editor={editor} />
+				</div>
 				{stage === "schedule" && (
-					<div>
-						<Button
-							size="xs"
-							leftIcon={<TbArrowLeft />}
-							onClick={() => setStage("content")}
-						>
-							Back
-						</Button>
-						<CreateSchedule
-							onSave={(values) => {
-								emailMutation.mutate({
-									...values,
-									payload: {
-										...values.payload,
-										html_content: editorValues?.html,
-									},
-								})
-							}}
-							submitting={emailMutation.isLoading}
-						/>
-					</div>
+					<CreateSchedule
+						onSave={async (values) => {
+							emailMutation.mutate({
+								...values,
+								payload: {
+									...values.payload,
+									html_content: await editor.html(),
+									json_content: await editor.json(),
+								},
+							})
+						}}
+						submitting={emailMutation.isLoading}
+					/>
 				)}
 			</ContentWrapper>
 		</div>
