@@ -97,6 +97,12 @@ export function createProduct({ tag, payload }: { tag: string; payload: any }) {
 export function createEmailPipeline({ tag, payload }: { tag: string; payload: any }) {
 	return api.post(`/ecommerce/project/${tag}/pipeline/email`, payload)
 }
+export function updateEmailPipeline({ tag, payload }: { tag: string; payload: any }) {
+	return api.put(`/ecommerce/project/${tag}/pipeline/email`, payload)
+}
+export function getEmailPipelineDetail({ tag, name }: { tag: string; name: string }) {
+	return api.get(`/ecommerce/project/${tag}/pipeline/email/${name}`)
+}
 export function getTables(projectName: string) {
 	return api.get<GetTablesResponse>(`/database/project/${projectName}/table`)
 }
