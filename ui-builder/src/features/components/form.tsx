@@ -16,7 +16,7 @@ import formScript from '../scripts/form.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
-import { Component } from './component'
+import { Component, OnCreateOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -30,9 +30,13 @@ export class Form extends Component {
 		return <FormOptions />
 	}
 
-	onCreate(root: Element) {
+	onCreate(root: Element, options: OnCreateOptions) {
 		const compiled = _.template(formScript)
-		const script = compiled({ id: root.id })
+		const script = compiled({
+			id: root.id,
+			projectTag: options.projectTag,
+			pageName: options.pageName,
+		})
 		setElement(root, (draft) => (draft.script = script))
 	}
 }
