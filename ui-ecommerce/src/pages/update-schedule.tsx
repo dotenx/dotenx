@@ -138,7 +138,9 @@ function UpdateSchedule({
 	}, [target, targetValue])
 
 	const isTargetEmpty = target !== "send_to_all" && (targetValue?.length === 0 || !targetValue)
-	const [scheduleValue, setScheduleValue] = useState("")
+	const [scheduleValue, setScheduleValue] = useState(
+		`* ${details?.metadata?.schedule_expression.replace("cron(", "").replace(")", "")}`
+	)
 	useEffect(() => {
 		setValues({ schedule_expression: `cron(${_.tail(scheduleValue.split(" ")).join(" ")})` })
 	}, [scheduleValue, setValues])
