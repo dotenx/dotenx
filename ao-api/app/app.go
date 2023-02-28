@@ -476,6 +476,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// ecommerce router (just for projects with 'ecommerce' type)
 	ecommerce.POST("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateProduct())
 	ecommerce.PUT("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateProduct())
+	ecommerce.POST("/project/:project_tag/database/query/predefined", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.RunPredefinedQueries())
 	ecommerce.POST("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateEmailPipeline())
 	ecommerce.PUT("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateEmailPipeline())
 	ecommerce.GET("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipelines())
