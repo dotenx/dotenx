@@ -1,7 +1,7 @@
 import { Badge, Button, Image, Switch, Textarea } from "@mantine/core"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { getTableRecords, QueryKey, runCustomQuery, updateProduct } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
@@ -219,15 +219,15 @@ export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 	const stats = [
 		{
 			title: "Total Revenue",
-			value: `$${totalRevenue}`,
+			value: `$${totalRevenue.toFixed(2)}`,
 			isLoading: totalRevenueQuery.isLoading || !projectTag,
 		},
 		{
 			title: "Last 24h",
-			value: `$${last24}`,
+			value: `$${last24.toFixed(2)}`,
 			isLoading: lastDayRevQuery.isLoading || !projectTag,
 		},
-		{ title: "MRR", value: `$${mrr}`, isLoading: mrrQuery.isLoading || !projectTag },
+		{ title: "MRR", value: `$${mrr.toFixed(2)}`, isLoading: mrrQuery.isLoading || !projectTag },
 	]
 
 	return <Stats stats={stats} />
@@ -368,12 +368,23 @@ function MembershipsTab({
 }
 
 const ProductDetails = ({ details }: { details: any }) => {
-	const fileName = _.isArray(details?.file_names) ? details?.file_names : [details?.file_names]
+	const fileName = details?.file_names?.split(",")
 	const clipboard = useClipboard({ timeout: 3000 })
 	const [copiedValue, setCopiedValue] = useState("")
+	const navigate = useNavigate()
+
 	return (
 		<div className="bg-white mt-5 w-full rounded p-5  ">
 			<div className=" gap-x-5 grid grid-cols-3  ">
+				<div className="flex justify-end col-span-3">
+					<Button
+						onClick={() => {
+							navigate(`${details.id}`)
+						}}
+					>
+						Edit
+					</Button>
+				</div>
 				<Image
 					caption={``}
 					width={"100%"}
@@ -402,7 +413,7 @@ const ProductDetails = ({ details }: { details: any }) => {
 					<div className="w-fit ">
 						{Object.entries(JSON.parse(details.details) || {})?.map((d: any) => {
 							return (
-								<div className="flex items-center gap-x-1">
+								<div key={d[0]} className="flex items-center gap-x-1">
 									<div>{d[0]} :</div> <div className="text-gray-500">{d[1]}</div>
 								</div>
 							)
@@ -433,7 +444,7 @@ const ProductDetails = ({ details }: { details: any }) => {
 						<div className="w-full  grid grid-cols-6 gap-x-5">
 							{details.thumbnails?.split(",").map((t: string) => (
 								<Image
-									key="t"
+									key={t}
 									caption={``}
 									width={"100%"}
 									height={"100%"}
@@ -571,9 +582,9 @@ const ProductDetails = ({ details }: { details: any }) => {
 					</div>
 				</div>
 			</div>
-			<div className="mt-5 w-1/2 pr-5">
-				attachments
-				{fileName.length > 0 && (
+			{!!fileName?.[0] && (
+				<div className="mt-5 w-1/2 pr-5">
+					attachments
 					<div className="mt-2 border">
 						{fileName.map((n: string, index: number) => (
 							<div
@@ -586,8 +597,8 @@ const ProductDetails = ({ details }: { details: any }) => {
 							</div>
 						))}
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 			<div className="mt-5">
 				content
 				<Textarea readOnly value={details.content || ""} />

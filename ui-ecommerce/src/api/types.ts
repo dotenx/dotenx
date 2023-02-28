@@ -2,6 +2,7 @@ import { z } from "zod"
 
 export enum QueryKey {
 	GetProductsSummary = "get-products-summary",
+	getDetailsByID = "get-details-by-id",
 	GetProductsOnlyRecords = "get-products-only-records",
 	GetMembershipOnlyRecords = "get-membership-only-records",
 	GetColumns = "get-columns",

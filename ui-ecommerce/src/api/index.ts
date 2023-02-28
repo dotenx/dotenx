@@ -129,6 +129,23 @@ export function getProductsSummary(projectTag: string, page: number) {
 		}
 	)
 }
+export function getProductsById(projectTag: string, product_id: string) {
+	return api.post(
+		`/database/query/select/project/${projectTag}/table/products`,
+		{
+			columns: [],
+			filters: {
+				filterSet: [
+					{
+						key: "id",
+						operator: "=",
+						value: product_id
+					}
+				],
+			}
+		}
+	)
+}
 export function getColumns(projectName: string, tableName: string) {
 	return api.get<GetColumnsResponse>(`/database/project/${projectName}/table/${tableName}/column`)
 }
