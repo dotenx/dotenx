@@ -645,7 +645,7 @@ function ActionBar({ values, tag, id }: { values: any; tag: string; id: string }
 	const noIntegration =
 		(
 			query?.data?.data
-				.map((d) => {
+				?.map((d) => {
 					if (["stripe"].includes(d.type)) return d.type
 				})
 				.filter((d) => d !== undefined) || []

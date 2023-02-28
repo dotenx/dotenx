@@ -12,6 +12,7 @@ export enum QueryKey {
 	GetIntegrationTypeFields = "get-integration-type-fields",
 	GetEmailPipelineList = "get-email-pipeline-list ",
 	GetIntegrations = "get-integrations",
+	GetPipelineDetails = "get-pipeline-details",
 	GetLastDaySales = "get-last-day-sales",
 	GetMembersSummary = "get-members-summary",
 	GetIntegrationsByType = "get-integration-by-type",
