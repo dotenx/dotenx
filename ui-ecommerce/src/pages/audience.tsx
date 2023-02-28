@@ -27,6 +27,7 @@ import {
 	deleteEmailPipeline,
 	activateEmailPipeline,
 	getEmailPipelineExecutions,
+	runPredefinedQuery,
 } from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { toast } from "react-toastify"
@@ -108,8 +109,8 @@ function MembersTab() {
 	const projectTag = projectQuery.projectTag
 	const [currentPage, setCurrentPage] = useState(1)
 	const membersQuery = useQuery(
-		["get-members", projectTag],
-		() => runCustomQuery(projectTag, "SELECT DISTINCT email FROM orders;"),
+		["get_all_audience", projectTag],
+		() => runPredefinedQuery(projectTag, "get_all_audience"),
 		{ enabled: !!projectTag }
 	)
 

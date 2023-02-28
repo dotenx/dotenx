@@ -17,7 +17,9 @@ export function AttachmentPage({
 }) {
 	const [file, setFile] = useState<File>()
 	const [fileNames, setFileNames] = useState<string[]>(values.file_names)
-
+	const [fileDisplayNames, setDisplayFileNames] = useState<
+		{ display_name: string; file_name: string }[]
+	>(values.metadata.files ?? [])
 	const form = useForm({
 		initialValues: { file: undefined, isPublic: false },
 	})
@@ -31,12 +33,22 @@ export function AttachmentPage({
 		},
 		{
 			onSuccess: (data: any) => {
-				setFileNames((current) => [...current, data.data.fileName])
+				setFile(undefined),
+					setFileNames((current) => [...current, data.data.fileName]),
+					setDisplayFileNames((current) => [
+						...current,
+						{ display_name: data.data.displayName, file_name: data.data.fileName },
+					])
 			},
 		}
 	)
 	useEffect(() => {
-		setValues({ file_names: fileNames })
+		setValues({
+			file_names: fileNames,
+			metadata: {
+				files: fileDisplayNames,
+			},
+		})
 	}, [fileNames])
 	const onSubmit = form.onSubmit(() => mutation.mutate())
 
@@ -78,6 +90,7 @@ export function AttachmentPage({
 				</div>
 				<div className="flex justify-end">
 					<Button
+						disabled={!file}
 						leftIcon={<BiCloudUpload className="w-6 h-6" />}
 						onClick={() => onSubmit()}
 						loading={mutation.isLoading}
@@ -88,16 +101,16 @@ export function AttachmentPage({
 					</Button>
 				</div>
 			</form>
-			{fileNames.length > 0 && (
+			{fileDisplayNames?.length > 0 && (
 				<div className="mt-2 border">
-					{fileNames.map((n, index) => (
+					{fileDisplayNames?.map((n, index) => (
 						<div
 							key={index}
 							className={`text-xs ${
 								index % 2 !== 0 ? "bg-white" : "bg-slate-50"
 							} w-full p-1 `}
 						>
-							{n}
+							{n.display_name}
 						</div>
 					))}
 				</div>

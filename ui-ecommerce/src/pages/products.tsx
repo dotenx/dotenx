@@ -2,7 +2,7 @@ import { Badge, Button, Image, Switch, Textarea } from "@mantine/core"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import { getTableRecords, QueryKey, runCustomQuery, updateProduct } from "../api"
+import { getTableRecords, QueryKey, runPredefinedQuery, updateProduct } from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import _ from "lodash"
@@ -185,32 +185,17 @@ function AllTab({
 export function SalesStats({ projectTag = "" }: { projectTag?: string }) {
 	const totalRevenueQuery = useQuery(
 		["get-total-revenue", projectTag],
-		() =>
-			runCustomQuery(
-				projectTag,
-				"select sum(paid_amount) as total_revenue from orders where payment_status='succeeded';"
-			),
+		() => runPredefinedQuery(projectTag, "get_total_revenue"),
 		{ enabled: !!projectTag }
 	)
-
-	const yesterday = ((d) => new Date(d.setDate(d.getDate() - 1)).toISOString())(new Date())
-	const lastMonth = ((d) => new Date(d.setMonth(d.getMonth() - 1)).toISOString())(new Date())
 	const lastDayRevQuery = useQuery(
 		["get-last-day-revenue", projectTag],
-		() =>
-			runCustomQuery(
-				projectTag,
-				`select sum(paid_amount) as total_revenue from orders where payment_status='succeeded' and updated_at >= '${yesterday}';`
-			),
+		() => runPredefinedQuery(projectTag, "get_last_24h_revenue"),
 		{ enabled: !!projectTag }
 	)
 	const mrrQuery = useQuery(
 		["get-mrr", projectTag],
-		() =>
-			runCustomQuery(
-				projectTag,
-				`select sum(paid_amount) as mrr from orders join products on orders.__products = products.id where payment_status='succeeded' and updated_at >= '${lastMonth}' and products.type = 'membership';`
-			),
+		() => runPredefinedQuery(projectTag, "get_MRR"),
 		{ enabled: !!projectTag }
 	)
 	const totalRevenue = totalRevenueQuery?.data?.data?.rows?.[0]?.total_revenue ?? 0
@@ -368,11 +353,10 @@ function MembershipsTab({
 }
 
 const ProductDetails = ({ details }: { details: any }) => {
-	const fileName = details?.file_names?.split(",")
+	const fileName = JSON.parse(details?.metadata)?.files ?? []
 	const clipboard = useClipboard({ timeout: 3000 })
 	const [copiedValue, setCopiedValue] = useState("")
 	const navigate = useNavigate()
-
 	return (
 		<div className="bg-white mt-5 w-full rounded p-5  ">
 			<div className=" gap-x-5 grid grid-cols-3  ">
@@ -459,17 +443,13 @@ const ProductDetails = ({ details }: { details: any }) => {
 					</div>
 				)}
 			</div>
-			<div className="grid grid-cols-3 mt-5 ">
+			<div className="grid grid-cols-2  gap-x-10  mt-5 ">
 				<div>
 					ID <span className="text-gray-400 pl-1 ">{details.id || "-"}</span>
 				</div>
 				<div>
 					LIMITATION
 					<span className="text-gray-400 pl-1 ">{details.limitation || "-"}</span>
-				</div>
-				<div>
-					METADATA
-					<span className="text-gray-400 pl-1 ">{details.metadata || "-"}</span>
 				</div>
 			</div>
 			<div className="grid grid-cols-2 gap-x-10  mt-10">
@@ -582,18 +562,18 @@ const ProductDetails = ({ details }: { details: any }) => {
 					</div>
 				</div>
 			</div>
-			{!!fileName?.[0] && (
+			{fileName.length > 0 && (
 				<div className="mt-5 w-1/2 pr-5">
 					attachments
 					<div className="mt-2 border">
-						{fileName.map((n: string, index: number) => (
+						{fileName.map((n: any, index: number) => (
 							<div
 								key={index}
 								className={`text-xs ${
 									index % 2 !== 0 ? "bg-white" : "bg-slate-50"
 								} w-full p-1 `}
 							>
-								{n}
+								{n.display_name}
 							</div>
 						))}
 					</div>
