@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dotenx/dotenx/ao-api/db/dbutil"
+	dbPkg "github.com/dotenx/dotenx/ao-api/db"
 )
 
 var addTable = `
@@ -20,17 +20,9 @@ var addCommentToTable = `
 COMMENT ON TABLE %s IS '%s';
 `
 
-func (ds *databaseStore) AddTable(ctx context.Context, accountId string, projectName string, tableName string, isPublic, isWritePublic bool) error {
-	db, fn, err := dbutil.GetDbInstance(accountId, projectName)
+func (ds *databaseStore) AddTable(ctx context.Context, db *dbPkg.DB, accountId string, projectName string, tableName string, isPublic, isWritePublic bool) error {
 
-	if db != nil {
-		defer fn(db.Connection)
-	}
-	if err != nil {
-		log.Println("Error getting database connection:", err)
-		return err
-	}
-	_, err = db.Connection.Exec(fmt.Sprintf(addTable, tableName))
+	_, err := db.Connection.Exec(fmt.Sprintf(addTable, tableName))
 	if err != nil {
 		log.Println("Error creating table:", err)
 		return err
