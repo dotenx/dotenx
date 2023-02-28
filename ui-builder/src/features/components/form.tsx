@@ -1,4 +1,4 @@
-import { Select, TextInput } from '@mantine/core'
+import { Select } from '@mantine/core'
 import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
@@ -67,7 +67,11 @@ function InputOptions({ item }: { item: Element }) {
 
 	return (
 		<OptionsWrapper>
-			<TextStyler label="Label" element={label} />
+			<TextStyler
+				label="Label"
+				element={label}
+				onChange={(text) => set(input, (draft) => (draft.data.name = text))}
+			/>
 			<Select
 				size="xs"
 				data={[
@@ -90,12 +94,6 @@ function InputOptions({ item }: { item: Element }) {
 						}
 					})
 				}}
-			/>
-			<TextInput
-				size="xs"
-				label="Name"
-				value={input.data.name}
-				onChange={(event) => set(input, (draft) => (draft.data.name = event.target.value))}
 			/>
 		</OptionsWrapper>
 	)
@@ -240,6 +238,7 @@ const createInput = (
 	const inputElement = produce(new InputElement(), (draft) => {
 		draft.data.type = inputType
 		draft.data.placeholder = label
+		draft.data.name = label
 		draft.style.desktop = {
 			default: {
 				width: '100%',
