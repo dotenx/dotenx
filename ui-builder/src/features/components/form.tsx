@@ -1,33 +1,39 @@
-import { Select } from '@mantine/core'
+import { Select, TextInput } from '@mantine/core'
 import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/gallery-basic-rounded.png'
 import { deserializeElement } from '../../utils/deserialize'
+import { txt } from '../elements/constructor'
 import { Element } from '../elements/element'
+import { setElement, useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { FormElement } from '../elements/extensions/form'
 import { InputElement } from '../elements/extensions/input'
 import { SubmitElement } from '../elements/extensions/submit'
 import { TextElement } from '../elements/extensions/text'
+import formScript from '../scripts/form.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStyler } from '../simple/stylers/box-styler'
-import { Component, ElementOptions } from './component'
+import { TextStyler } from '../simple/stylers/text-styler'
+import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
-import { txt } from '../elements/constructor'
-import { TextStyler } from '../simple/stylers/text-styler'
-import { useSetElement } from '../elements/elements-store'
-import { SelectElement } from '../elements/extensions/select'
 
 export class Form extends Component {
 	name = 'Form'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ElementOptions): ReactNode {
+	renderOptions(): ReactNode {
 		return <FormOptions />
+	}
+
+	onCreate(root: Element) {
+		const compiled = _.template(formScript)
+		const script = compiled({ id: root.id })
+		setElement(root, (draft) => (draft.script = script))
 	}
 }
 
@@ -58,11 +64,12 @@ function InputOptions({ item }: { item: Element }) {
 	const label = item.children?.[0] as TextElement
 	const input = item.children?.[1] as InputElement
 	const set = useSetElement()
-  
+
 	return (
 		<OptionsWrapper>
 			<TextStyler label="Label" element={label} />
 			<Select
+				size="xs"
 				data={[
 					{ label: 'Text', value: 'text' },
 					{ label: 'Email', value: 'email' },
@@ -76,13 +83,19 @@ function InputOptions({ item }: { item: Element }) {
 				onChange={(value) => {
 					set(input, (draft) => {
 						draft.data.type = value ?? 'text'
-            if (value === 'checkbox') {
-              draft.style.desktop!.default!.width = 'auto'
-            } else {
-              draft.style.desktop!.default!.width = '100%'
-            }
+						if (value === 'checkbox') {
+							draft.style.desktop!.default!.width = 'auto'
+						} else {
+							draft.style.desktop!.default!.width = '100%'
+						}
 					})
 				}}
+			/>
+			<TextInput
+				size="xs"
+				label="Name"
+				value={input.data.name}
+				onChange={(event) => set(input, (draft) => (draft.data.name = event.target.value))}
 			/>
 		</OptionsWrapper>
 	)
@@ -211,7 +224,7 @@ const createInput = (
 	const container = new BoxElement().css({
 		display: 'grid',
 		gridTemplateColumns: '1fr 2fr',
-    justifyItems: 'self-start',
+		justifyItems: 'self-start',
 		paddingTop: '10px',
 		paddingBottom: '10px',
 	})
