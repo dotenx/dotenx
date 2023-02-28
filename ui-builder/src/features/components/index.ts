@@ -30,6 +30,7 @@ import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
+import { Form } from './form'
 import { FooterSimple } from './footer-simple'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
@@ -95,6 +96,7 @@ export const COMPONENTS: Components = [
 	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
 	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
 	{ title: 'Testimonial', items: [TestimonialSimple] },
+	{ title: 'Form', items: [Form] },
 ]
 
 export type ComponentSection = (typeof COMPONENTS)[number]
