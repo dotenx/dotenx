@@ -20,7 +20,7 @@ export function Editor({ editor }: { editor: EditorContext }) {
 	)
 }
 
-type EditorContext = {
+export type EditorContext = {
 	ref: MutableRefObject<EditorJS | null>
 	html: () => Promise<string>
 	json: () => Promise<OutputData | undefined>

@@ -10,22 +10,22 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core"
-import { useForm, zodResolver } from "@mantine/form"
+import { useForm } from "@mantine/form"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
-import { createProduct, currency, getIntegrations, getProject, QueryKey } from "../api"
 import { TiDelete } from "react-icons/ti"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
+import { createProduct, currency, getIntegrations, QueryKey } from "../api"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { AttachmentPage } from "../features/app/attachment"
-import { Editor } from "../features/editor/editor"
+import { Editor, EditorContext, useEditor } from "../features/editor/editor"
 import { ContentWrapper, Header } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { IntegrationForm } from "../features/app/addIntegrationForm"
-import { toast } from "react-toastify"
-import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export function NewProductPage() {
 	const [activeTab, setActiveTab] = useState<"details" | "content" | "attachment">("details")
@@ -53,6 +53,9 @@ export function NewProductPage() {
 			status: "unpublished",
 		},
 	})
+
+	const editor = useEditor()
+
 	return (
 		<div>
 			<Header
@@ -61,7 +64,7 @@ export function NewProductPage() {
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 			>
-				<ActionBar values={values} tag={projectTag} />
+				<ActionBar values={values} tag={projectTag} editor={editor} />
 			</Header>
 			<ContentWrapper>
 				<form>
@@ -72,7 +75,9 @@ export function NewProductPage() {
 							setValues={setValues}
 						/>
 					)}
-					{activeTab === "content" && <ContentTab />}
+					<div hidden={activeTab !== "content"}>
+						<Editor editor={editor} />
+					</div>
 				</form>
 				{activeTab === "attachment" && (
 					<AttachmentPage tag={projectTag} setValues={setValues} values={values} />
@@ -586,16 +591,27 @@ const MonthlyPricingInput = ({
 		</div>
 	)
 }
-function ActionBar({ values, tag }: { values: any; tag: string }) {
+function ActionBar({ values, tag, editor }: { values: any; tag: string; editor: EditorContext }) {
 	const navigate = useNavigate()
 	const { projectName = "" } = useParams()
 
-	const { mutate, isLoading } = useMutation(() => createProduct({ tag, payload: values }), {
-		onSuccess: () => {
-			toast("Product added successfully", { type: "success", autoClose: 2000 }),
-				navigate(`/projects/${projectName}/products`)
-		},
-	})
+	const { mutate, isLoading } = useMutation(
+		async () =>
+			createProduct({
+				tag,
+				payload: {
+					...values,
+					html_content: await editor.html(),
+					json_content: await editor.json(),
+				},
+			}),
+		{
+			onSuccess: () => {
+				toast("Product added successfully", { type: "success", autoClose: 2000 }),
+					navigate(`/projects/${projectName}/products`)
+			},
+		}
+	)
 	const [openModal, setOpenModal] = useState(false)
 	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
 	const client = useQueryClient()
@@ -646,8 +662,4 @@ function ActionBar({ values, tag }: { values: any; tag: string }) {
 			</Modal>
 		</div>
 	)
-}
-
-const ContentTab = () => {
-	return <Editor onSave={(value) => console.log(value)} />
 }
