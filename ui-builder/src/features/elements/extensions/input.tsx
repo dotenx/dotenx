@@ -19,14 +19,13 @@ export class InputElement extends Element {
 
 	render(): ReactNode {
 		return (
-			// <input
-			// 	defaultValue={this.data.defaultValue.toString()}
-			// 	name={this.data.name}
-			// 	placeholder={this.data.placeholder}
-			// 	type={this.data.type}
-			// 	className={this.generateClasses()}
-			// />`
-			<></>
+			<input
+				defaultValue={this.data.defaultValue.toString()}
+				name={this.data.name}
+				placeholder={this.data.placeholder}
+				type={this.data.type}
+				className={this.generateClasses()}
+			/>
 		)
 	}
 
