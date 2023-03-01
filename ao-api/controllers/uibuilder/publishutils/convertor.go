@@ -196,7 +196,6 @@ func convertBodyToHTML(components []interface{}, styleStore *StyleStore, functio
 }
 
 func convertComponentToHTML(component map[string]interface{}, styleStore *StyleStore, functionStore *FunctionStore) (string, error) {
-	logrus.Info("kind: ", component["kind"])
 
 	switch component["kind"] {
 	case "Form":
