@@ -1,7 +1,7 @@
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure, useElementSize } from '@mantine/hooks'
 import { Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useContext, useState } from 'react'
+import { ReactNode, useCallback, useContext, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { TbArrowDown, TbArrowUp, TbTrash } from 'react-icons/tb'
@@ -59,6 +59,16 @@ export function ElementOverlay({
 		  }
 		: {}
 
+	const { ref, height } = useElementSize()
+
+	const handleRef = useCallback(
+		(el: HTMLDivElement) => {
+			setReferenceElement(el)
+			ref.current = el
+		},
+		[ref]
+	)
+
 	return (
 		<div
 			style={{
@@ -69,7 +79,7 @@ export function ElementOverlay({
 				...backgroundImage,
 			}}
 			className={withoutStyle ? undefined : element.generateClasses()}
-			ref={setReferenceElement}
+			ref={handleRef}
 			onMouseOver={handleMouseOver}
 			onMouseOut={unsetHovered}
 			onMouseEnter={handleMouseEnter}
@@ -99,9 +109,9 @@ export function ElementOverlay({
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="left-start"
-						offset={[8, -30]}
+						offset={[8, height < 100 ? -80 : -30]}
 					>
-						<ElementActions element={element} />
+						<ElementActions element={element} horizontal={height < 100} />
 					</ElementOverlayPiece>
 				</>
 			)}
@@ -109,7 +119,7 @@ export function ElementOverlay({
 	)
 }
 
-function ElementActions({ element }: { element: Element }) {
+function ElementActions({ element, horizontal }: { element: Element; horizontal: boolean }) {
 	const elements = useElementsStore((store) => store.elements)
 	const { remove, move } = useElementsStore((store) => ({
 		remove: store.remove,
@@ -129,7 +139,13 @@ function ElementActions({ element }: { element: Element }) {
 		})
 
 	return (
-		<div onClick={(event) => event.stopPropagation()}>
+		<div
+			onClick={(event) => event.stopPropagation()}
+			style={{
+				display: 'flex',
+				flexDirection: horizontal ? 'row' : 'column',
+			}}
+		>
 			<ActionButton
 				style={{ borderRadius: '4px 4px 0 0' }}
 				onClick={moveUp}
@@ -183,7 +199,10 @@ function ElementOverlayPiece({
 	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
 	const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
 		placement,
-		modifiers: [{ name: 'offset', options: { offset } }],
+		modifiers: [
+			{ name: 'offset', options: { offset } },
+			{ name: 'flip', options: { mainAxis: false } },
+		],
 	})
 	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 	useDidUpdate(() => {
