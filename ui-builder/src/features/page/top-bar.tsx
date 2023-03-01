@@ -15,7 +15,7 @@ import {
 	TbZoomIn,
 	TbZoomOut,
 } from 'react-icons/tb'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
@@ -177,6 +177,7 @@ export const useFetchPage = () => {
 	const setCustomCodes = useSetAtom(customCodesAtom)
 	const setStatesDefaultValues = useSetAtom(statesDefaultValuesAtom)
 	const setAnimations = useSetAtom(animationsAtom)
+	const isEcommerce = useMatch('/ecommerce/:projectName/:pageName')
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -203,7 +204,8 @@ export const useFetchPage = () => {
 						.then((data) => setPageState(source.stateName, data.data))
 				)
 			},
-			onError: () => navigate(`/projects/${projectName}/index`),
+			onError: () =>
+				navigate(`/${isEcommerce ? 'ecommerce' : 'projects'}/${projectName}/index`),
 			enabled: !!projectTag && !!pageName,
 		}
 	)

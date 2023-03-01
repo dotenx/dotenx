@@ -2,7 +2,7 @@ import { Button, Divider, Menu } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useMatch, useParams } from 'react-router-dom'
 import { getPages, QueryKey } from '../../api'
 import { AddPageForm } from './add-page-form'
 import { projectTagAtom } from './top-bar'
@@ -13,11 +13,16 @@ export function PageSelection() {
 	const pagesQuery = usePagesQuery()
 	const pages = pagesQuery.data?.data ?? []
 	const closeMenu = () => setMenuOpened(false)
+	const isEcommerce = useMatch('/ecommerce/:projectName/:pageName')
 
 	const pageList = pages
 		.filter((page) => !!page)
 		.map((page) => (
-			<Menu.Item key={page} component={Link} to={`/projects/${projectName}/${page}`}>
+			<Menu.Item
+				key={page}
+				component={Link}
+				to={`/${isEcommerce ? 'ecommerce' : 'projects'}/${projectName}/${page}`}
+			>
 				{page}
 			</Menu.Item>
 		))
