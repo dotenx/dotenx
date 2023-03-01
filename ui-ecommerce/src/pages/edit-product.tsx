@@ -11,24 +11,25 @@ import {
 	TextInput,
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import _ from "lodash"
 import { useEffect, useState } from "react"
 import { FaHashtag, FaPlus } from "react-icons/fa"
 import { MdClose } from "react-icons/md"
-import { currency, getIntegrations, getProductsById, QueryKey, updateProduct } from "../api"
 import { TiDelete } from "react-icons/ti"
+import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
+import { currency, getIntegrations, getProductsById, QueryKey, updateProduct } from "../api"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
 import { AttachmentPage } from "../features/app/attachment"
-import { Editor } from "../features/editor/editor"
+import { Editor, EditorContext, useEditor } from "../features/editor/editor"
 import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import { IntegrationForm } from "../features/app/addIntegrationForm"
-import { toast } from "react-toastify"
-import { useNavigate, useParams } from "react-router-dom"
 import { ImageDrop } from "../features/ui/image-drop"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export function EditProductPage() {
 	const { id = "" } = useParams()
+	const editor = useEditor()
 	const { projectTag, isLoading: loadingProjectTag } = useGetProjectTag()
 	const { data, isLoading, isSuccess } = useQuery(
 		[QueryKey.getDetailsByID],
@@ -69,7 +70,7 @@ export function EditProductPage() {
 				price: details?.price,
 				recurring_payment: details?.recurring_payment,
 				currency: details?.currency,
-				thumbnails: !!details.thumbnails?.[0] ? details?.thumbnails : [],
+				thumbnails: details.thumbnails?.[0] ? details?.thumbnails : [],
 				description: details?.description,
 				summary: details?.summary,
 				limitation: details?.limitation,
@@ -93,7 +94,7 @@ export function EditProductPage() {
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 			>
-				<ActionBar values={values} id={id} tag={projectTag} />
+				<ActionBar values={values} id={id} tag={projectTag} editor={editor} />
 			</Header>
 			<ContentWrapper>
 				<form>
@@ -104,7 +105,9 @@ export function EditProductPage() {
 							setValues={setValues}
 						/>
 					)}
-					{activeTab === "content" && <ContentTab />}
+					<div hidden={activeTab !== "content"}>
+						<Editor editor={editor} />
+					</div>
 				</form>
 				{activeTab === "attachment" && (
 					<AttachmentPage tag={projectTag} setValues={setValues} values={values} />
@@ -626,15 +629,34 @@ const MonthlyPricingInput = ({
 		</div>
 	)
 }
-function ActionBar({ values, tag, id }: { values: any; tag: string; id: string }) {
+function ActionBar({
+	values,
+	tag,
+	id,
+	editor,
+}: {
+	values: any
+	tag: string
+	id: string
+	editor: EditorContext
+}) {
 	const navigate = useNavigate()
 	const { projectName = "" } = useParams()
 	const { mutate: mutateUpdateProduct, isLoading } = useMutation(
-		() => updateProduct({ productId: id, tag, payload: values }),
+		async () =>
+			updateProduct({
+				productId: id,
+				tag,
+				payload: {
+					...values,
+					html_content: await editor.html(),
+					json_content: await editor.json(),
+				},
+			}),
 		{
 			onSuccess: () => {
-				toast("Product updated successfully", { type: "success", autoClose: 2000 }),
-					navigate(`/projects/${projectName}/products`)
+				toast("Product updated successfully", { type: "success", autoClose: 2000 })
+				navigate(`/projects/${projectName}/products`)
 			},
 		}
 	)
@@ -689,8 +711,4 @@ function ActionBar({ values, tag, id }: { values: any; tag: string; id: string }
 			</Modal>
 		</div>
 	)
-}
-
-const ContentTab = () => {
-	return <Editor onSave={(value) => console.log(value)} />
 }
