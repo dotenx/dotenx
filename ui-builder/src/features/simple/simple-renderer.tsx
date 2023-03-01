@@ -19,10 +19,12 @@ export function ElementOverlay({
 	children,
 	element,
 	isDirectRootChildren,
+	withoutStyle,
 }: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
+	withoutStyle?: boolean
 }) {
 	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
 		select: store.select,
@@ -66,7 +68,7 @@ export function ElementOverlay({
 				outlineColor: '#fb7185',
 				...backgroundImage,
 			}}
-			className={element.generateClasses()}
+			className={withoutStyle ? undefined : element.generateClasses()}
 			ref={setReferenceElement}
 			onMouseOver={handleMouseOver}
 			onMouseOut={unsetHovered}
