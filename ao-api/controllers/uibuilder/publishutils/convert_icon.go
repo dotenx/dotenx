@@ -25,6 +25,11 @@ type Icon struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Name string `json:"name"`
 		Type string `json:"type"`
 	} `json:"data"`
@@ -74,6 +79,7 @@ func convertIcon(component map[string]interface{}, styleStore *StyleStore, funct
 		id = icon.ElementId
 	}
 	styleStore.AddStyle(id, icon.Data.Style.Desktop, icon.Data.Style.Tablet, icon.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, icon.Data.CustomStyle.Desktop, icon.Data.CustomStyle.Tablet, icon.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

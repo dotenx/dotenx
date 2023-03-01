@@ -25,6 +25,11 @@ type Video struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Src      string `json:"src"`
 		Poster   string `json:"poster"`
 		Controls bool   `json:"controls"`
@@ -81,6 +86,7 @@ func convertVideo(component map[string]interface{}, styleStore *StyleStore, func
 		id = video.ElementId
 	}
 	styleStore.AddStyle(id, video.Data.Style.Desktop, video.Data.Style.Tablet, video.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, video.Data.CustomStyle.Desktop, video.Data.CustomStyle.Tablet, video.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

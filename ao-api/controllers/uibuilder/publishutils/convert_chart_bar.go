@@ -26,6 +26,11 @@ type ChartBar struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Options struct {
 			Plugins struct {
 				Title struct {
@@ -150,6 +155,7 @@ func convertChartBar(component map[string]interface{}, styleStore *StyleStore, f
 		id = chart.ElementId
 	}
 	styleStore.AddStyle(id, chart.Data.Style.Desktop, chart.Data.Style.Tablet, chart.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, chart.Data.CustomStyle.Desktop, chart.Data.CustomStyle.Tablet, chart.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

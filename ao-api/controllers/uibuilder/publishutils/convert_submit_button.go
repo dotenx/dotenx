@@ -24,6 +24,11 @@ type SubmitButton struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Text string `json:"text"`
 	} `json:"data"`
 }
@@ -62,6 +67,7 @@ func convertSubmitButton(component map[string]interface{}, styleStore *StyleStor
 		id = button.ElementId
 	}
 	styleStore.AddStyle(id, button.Data.Style.Desktop, button.Data.Style.Tablet, button.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, button.Data.CustomStyle.Desktop, button.Data.CustomStyle.Tablet, button.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

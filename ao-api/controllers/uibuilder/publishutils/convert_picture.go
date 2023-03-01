@@ -25,6 +25,11 @@ type Picture struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Alt        string `json:"alt"`
 		DesktopSrc string `json:"desktopSrc"`
 		TabletSrc  string `json:"tabletSrc"`
@@ -83,6 +88,7 @@ func convertPicture(component map[string]interface{}, styleStore *StyleStore, fu
 		id = picture.ElementId
 	}
 	styleStore.AddStyle(id, picture.Data.Style.Desktop, picture.Data.Style.Tablet, picture.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, picture.Data.CustomStyle.Desktop, picture.Data.CustomStyle.Tablet, picture.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

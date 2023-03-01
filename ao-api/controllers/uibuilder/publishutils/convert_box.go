@@ -26,6 +26,11 @@ type Box struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Name string `json:"name"`
 		As   string `json:"as"`
 	} `json:"data"`
@@ -111,6 +116,7 @@ func convertBox(component map[string]interface{}, styleStore *StyleStore, functi
 		id = box.ElementId
 	}
 	styleStore.AddStyle(id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, box.Data.CustomStyle.Desktop, box.Data.CustomStyle.Tablet, box.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

@@ -3,7 +3,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { showNotification } from '@mantine/notifications'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { addPage, QueryKey } from '../../api'
 import { projectTagAtom } from './top-bar'
@@ -19,6 +19,7 @@ const schema = z.object({
 })
 
 export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
+	const isEcommerce = useMatch('/ecommerce/:projectName/:pageName')
 	const { projectName } = useParams()
 	const navigate = useNavigate()
 	const queryClient = useQueryClient()
@@ -47,7 +48,12 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				animations: [],
 			},
 			{
-				onSuccess: () => navigate(`/projects/${projectName}/${values.pageName}`),
+				onSuccess: () =>
+					navigate(
+						`/${isEcommerce ? 'ecommerce' : 'projects'}/${projectName}/${
+							values.pageName
+						}`
+					),
 				onError: (e: any) => {
 					if (e.response.status === 400) {
 						showNotification({
