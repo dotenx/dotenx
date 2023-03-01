@@ -22,6 +22,7 @@ import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { DividerSimpleLine } from './divider-simple-line'
 import { DividerSimpleTitle } from './divider-simple-title'
+import { DividerTextSections } from './divider-text-sections'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FeatureCenterCards } from './feature-center-cards'
@@ -72,7 +73,7 @@ export const COMPONENTS: Components = [
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
-	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine] },
+	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections] },
 	{
 		title: 'Features',
 		items: [

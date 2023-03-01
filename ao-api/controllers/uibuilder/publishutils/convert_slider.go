@@ -21,6 +21,11 @@ type Slider struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Name string `json:"name"`
 	} `json:"data"`
 }
@@ -103,6 +108,7 @@ func convertSlider(component map[string]interface{}, styleStore *StyleStore, fun
 		id = slider.ElementId
 	}
 	styleStore.AddStyle(id, slider.Data.Style.Desktop, slider.Data.Style.Tablet, slider.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, slider.Data.CustomStyle.Desktop, slider.Data.CustomStyle.Tablet, slider.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

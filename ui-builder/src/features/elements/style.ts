@@ -6,6 +6,14 @@ export interface Style {
 	mobile?: SelectorStyle
 }
 
+export interface CustomStyle {
+	desktop?: CustomSelectorStyle
+	tablet?: CustomSelectorStyle
+	mobile?: CustomSelectorStyle
+}
+
+export type CustomSelectorStyle = Partial<Record<string, CSSProperties>>
+
 export type SelectorStyle = Partial<Record<CssSelector, CSSProperties>>
 
 export enum CssSelector {

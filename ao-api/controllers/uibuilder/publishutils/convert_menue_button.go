@@ -25,6 +25,11 @@ type MenuButton struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		MenuId string `json:"menuId"` // This is not even used
 	} `json:"data"`
 }
@@ -95,6 +100,7 @@ func convertMenuButton(component map[string]interface{}, styleStore *StyleStore,
 		id = menuButton.ElementId
 	}
 	styleStore.AddStyle(id, menuButton.Data.Style.Desktop, menuButton.Data.Style.Tablet, menuButton.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, menuButton.Data.CustomStyle.Desktop, menuButton.Data.CustomStyle.Tablet, menuButton.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

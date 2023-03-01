@@ -24,6 +24,11 @@ type Input struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
 		Placeholder  string `json:"placeholder"`
@@ -67,6 +72,7 @@ func convertInput(component map[string]interface{}, styleStore *StyleStore, func
 		id = input.ElementId
 	}
 	styleStore.AddStyle(id, input.Data.Style.Desktop, input.Data.Style.Tablet, input.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, input.Data.CustomStyle.Desktop, input.Data.CustomStyle.Tablet, input.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

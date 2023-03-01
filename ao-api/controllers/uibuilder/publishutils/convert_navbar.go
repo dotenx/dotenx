@@ -77,6 +77,7 @@ func convertNavbar(component map[string]interface{}, styleStore *StyleStore, fun
 		id = box.ElementId
 	}
 	styleStore.AddStyle(id, box.Data.Style.Desktop, box.Data.Style.Tablet, box.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, box.Data.CustomStyle.Desktop, box.Data.CustomStyle.Tablet, box.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

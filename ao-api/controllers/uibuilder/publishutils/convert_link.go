@@ -26,6 +26,11 @@ type Link struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Href struct {
 			Value []TextSource
 		} `json:"href"`
@@ -112,6 +117,7 @@ func convertLink(component map[string]interface{}, styleStore *StyleStore, funct
 		id = link.ElementId
 	}
 	styleStore.AddStyle(id, link.Data.Style.Desktop, link.Data.Style.Tablet, link.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, link.Data.CustomStyle.Desktop, link.Data.CustomStyle.Tablet, link.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }
