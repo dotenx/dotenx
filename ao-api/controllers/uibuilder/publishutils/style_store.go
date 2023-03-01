@@ -26,9 +26,12 @@ type StyleModes struct {
 type StyleStore struct {
 	lock *sync.RWMutex
 
-	DesktopStyles map[string]StyleModes
-	TabletStyles  map[string]StyleModes
-	MobileStyles  map[string]StyleModes
+	DesktopStyles       map[string]StyleModes
+	TabletStyles        map[string]StyleModes
+	MobileStyles        map[string]StyleModes
+	CustomDesktopStyles map[string]map[string]map[string]string
+	CustomTabletStyles  map[string]map[string]map[string]string
+	CustomMobileStyles  map[string]map[string]map[string]string
 }
 
 // Add the functionality to add new imports to the import store
@@ -39,6 +42,16 @@ func (i *StyleStore) AddStyle(id string, desktopStyles, tabletStyles, mobileStyl
 	i.DesktopStyles[id] = desktopStyles
 	i.TabletStyles[id] = tabletStyles
 	i.MobileStyles[id] = mobileStyles
+
+}
+
+func (i *StyleStore) AddCustomStyle(id string, desktopStyles, tabletStyles, mobileStyles map[string]map[string]string) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	i.CustomDesktopStyles[id] = desktopStyles
+	i.CustomTabletStyles[id] = tabletStyles
+	i.CustomMobileStyles[id] = mobileStyles
 
 }
 
@@ -109,6 +122,31 @@ isolation: isolate;
 }{{end}}
 {{if $styles.Active}}#{{$id}}:active {
 {{range $attr, $value := $styles.Active}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+}
+
+{{range $id, $styles := .CustomDesktopStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$customStyles.Selector}} {
+{{range $attr, $value := $customStyles.Selector}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+
+@media (max-width: 767px) {
+{{range $id, $styles := .CustomTabletStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$customStyles.Selector}} {
+{{range $attr, $value := $customStyles.Selector}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+}
+
+@media (max-width: 478px) {
+{{range $id, $styles := .CustomMobileStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$customStyles.Selector}} {
+{{range $attr, $value := $customStyles.Selector}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
 }{{end}}
 {{end}}{{end}}
 }

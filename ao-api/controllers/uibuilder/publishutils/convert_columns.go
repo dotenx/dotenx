@@ -26,6 +26,11 @@ type Columns struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
 		Placeholder  string `json:"placeholder"`
@@ -117,6 +122,7 @@ func convertColumns(component map[string]interface{}, styleStore *StyleStore, fu
 		id = columns.ElementId
 	}
 	styleStore.AddStyle(id, columns.Data.Style.Desktop, columns.Data.Style.Tablet, columns.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, columns.Data.CustomStyle.Desktop, columns.Data.CustomStyle.Tablet, columns.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

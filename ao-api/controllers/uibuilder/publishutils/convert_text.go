@@ -29,6 +29,11 @@ type Text struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Text struct {
 			Value []TextSource `json:"value"`
 		} `json:"text"`
@@ -99,6 +104,7 @@ func convertText(component map[string]interface{}, styleStore *StyleStore, funct
 		id = text.ElementId
 	}
 	styleStore.AddStyle(id, text.Data.Style.Desktop, text.Data.Style.Tablet, text.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, text.Data.CustomStyle.Desktop, text.Data.CustomStyle.Tablet, text.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

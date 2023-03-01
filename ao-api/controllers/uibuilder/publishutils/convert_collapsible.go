@@ -26,6 +26,11 @@ type Collapsible struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		IsToggle bool `json:"isToggle"`
 	} `json:"data"`
 }
@@ -104,6 +109,7 @@ func convertCollapsible(component map[string]interface{}, styleStore *StyleStore
 		id = collapsible.ElementId
 	}
 	styleStore.AddStyle(id, collapsible.Data.Style.Desktop, collapsible.Data.Style.Tablet, collapsible.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, collapsible.Data.CustomStyle.Desktop, collapsible.Data.CustomStyle.Tablet, collapsible.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

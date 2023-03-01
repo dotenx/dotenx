@@ -69,6 +69,7 @@ interface PageDetails {
 }
 
 export type BackendSelectorStyle = Record<CssSelector, Record<string, string>>
+export type BackendCustomSelectorStyle = Record<string, Record<string, string>>
 
 export interface BackendStyle {
 	desktop: BackendSelectorStyle
