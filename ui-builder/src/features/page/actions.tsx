@@ -9,7 +9,7 @@ import {
 	TextInput,
 	Tooltip,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { useForm, zodResolver } from '@mantine/form'
 import { useClickOutside, useClipboard } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -28,6 +28,7 @@ import {
 	TbWorldUpload,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
+import { z } from 'zod'
 import {
 	changeGlobalStates,
 	deletePage,
@@ -307,8 +308,16 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = useAtomValue(animationsAtom)
-	const form = useForm<{ name: string }>({ initialValues: { name: '' } })
 	const queryClient = useQueryClient()
+	const schema = z.object({
+		name: z.string().min(1),
+	})
+	const form = useForm<z.infer<typeof schema>>({
+		validate: zodResolver(schema),
+		initialValues: {
+			name: '',
+		},
+	})
 
 	const onSubmit = form.onSubmit((value) => {
 		savePageMutation.mutate(
