@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { gridCols } from '../../../utils/style-utils'
 import {
 	box,
@@ -9,7 +10,7 @@ import {
 	link,
 	template,
 	textarea,
-	txt,
+	txt
 } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 
@@ -109,7 +110,10 @@ const boughtItemDetails = () => {
 
 	const feedback = () =>
 		box([
-			flex([txt('Rate this product')]).css({
+			flex([
+				txt('Rate this product'),
+				flex(_.range(5).map(() => icn('star').size('20px'))).class('stars'),
+			]).css({
 				alignItems: 'center',
 				justifyContent: 'space-between',
 			}),

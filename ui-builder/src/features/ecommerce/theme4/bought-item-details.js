@@ -31,6 +31,38 @@
 	const content = clone.querySelector('.content')
 	const image = clone.querySelector('.image')
 	const attachments = clone.querySelector('.attachments')
+	const starList = clone.querySelector('.stars')
+	const submit = clone.querySelector('.submit')
+	const feedback = clone.querySelector('.feedback')
+
+	let rating = 0
+	const stars = [...starList.children]
+	stars.forEach((star, index) => {
+		star.addEventListener('mouseover', () => {
+			rating = index + 1
+			stars.forEach((star, i) => {
+				if (i <= index) star.style.color = '#FBBF24'
+				else star.style.color = '#D1D5DB'
+			})
+		})
+	})
+
+	submit.addEventListener('click', async () => {
+		const method = 'POST'
+		const url = `https://api.dotenx.com/database/query/insert/project/${projectTag}/table/reviews`
+		const response = await fetch(url, {
+			method,
+			headers: { Authorization: `Bearer ${token}` },
+			body: JSON.stringify({
+				__products: boughtProductId,
+				message: feedback.value,
+				rate: rating,
+				confirmed: true,
+			}),
+		})
+		const data = await response.json()
+		console.log(data)
+	})
 
 	name.removeAttribute('x-html')
 	price.removeAttribute('x-html')
@@ -52,4 +84,22 @@
 	})
 
 	root.appendChild(clone)
+
+	function handleRating() {
+		const stars = root.querySelectorAll('.star')
+		// style the stars before the hovered one
+		stars.forEach((star, index) => {
+			star.addEventListener('mouseover', () => {
+				stars.forEach((star, i) => {
+					if (i <= index) {
+						star.classList.add('text-yellow-400')
+						star.classList.remove('text-gray-300')
+					} else {
+						star.classList.add('text-gray-300')
+						star.classList.remove('text-yellow-400')
+					}
+				})
+			})
+		})
+	}
 })()
