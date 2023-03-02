@@ -46,6 +46,7 @@ import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
+import { DividerStats } from './divider-stats'
 
 export const COMPONENTS: Components = [
 	{
@@ -73,7 +74,7 @@ export const COMPONENTS: Components = [
 	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
 	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
 	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
-	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections] },
+	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections, DividerStats] },
 	{
 		title: 'Features',
 		items: [

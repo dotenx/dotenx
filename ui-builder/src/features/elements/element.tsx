@@ -130,6 +130,23 @@ export abstract class Element {
 		_.set(this.style, 'mobile.default', merged)
 		return this
 	}
+	customCss(selector: string, css: CSSProperties) {
+		const merged = _.assign({}, this.customStyle.desktop?.[selector], css)
+		_.set(this.customStyle, 'desktop.default', merged)
+		return this
+	}
+
+	customCssTablet(selector: string, css: CSSProperties) {
+		const merged = _.assign({}, this.customStyle.tablet?.[selector], css)
+		_.set(this.customStyle, 'tablet.default', merged)
+		return this
+	}
+
+	customCssMobile(selector: string, css: CSSProperties) {
+		const merged = _.assign({}, this.customStyle.mobile?.[selector], css)
+		_.set(this.customStyle, 'mobile.default', merged)
+		return this
+	}
 
 	cssHover(css: CSSProperties) {
 		const merged = _.assign({}, this.style.desktop?.hover, css)
