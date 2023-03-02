@@ -47,7 +47,8 @@ import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
 import { DividerStats } from './divider-stats'
-import { GalleryMasonaryOne } from './gallery-masonry-1'
+import { GalleryMasonryOne } from './gallery-masonry-1'
+import { GalleryMasonryTwo } from './gallery-masonry-2'
 
 export const COMPONENTS: Components = [
 	{
@@ -89,7 +90,7 @@ export const COMPONENTS: Components = [
 	{ title: 'Footers', items: [FooterGrid, FooterSimple] },
 	{
 		title: 'Gallery',
-		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions, GalleryMasonaryOne],
+		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions, GalleryMasonryOne, GalleryMasonryTwo],
 	},
 	{
 		title: 'Hero',
