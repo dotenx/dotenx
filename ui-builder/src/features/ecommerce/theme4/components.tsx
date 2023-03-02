@@ -1,5 +1,6 @@
 import _ from 'lodash'
-import productListImg from '../../../assets/themes/theme3/product-list.png'
+import boughtItemDetailsImg from '../../../assets/themes/theme4/bought-item-details.png'
+import boughtItemsImg from '../../../assets/themes/theme4/bought-items.png'
 import { Component, OnCreateOptions } from '../../components/component'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -8,14 +9,14 @@ import { theme4 } from './theme'
 
 class BoughtItems extends Component {
 	name = 'Theme 4 Bought Items'
-	image = productListImg
+	image = boughtItemsImg
 	defaultData = theme4.boughItems()
 	renderOptions = () => null
 }
 
 class BoughtItemDetails extends Component {
 	name = 'Theme 4 Bought Item Details'
-	image = productListImg
+	image = boughtItemDetailsImg
 	defaultData = theme4.boughtItemDetails()
 	renderOptions = () => null
 	onCreate(root: Element, options: OnCreateOptions) {
