@@ -47,6 +47,15 @@ export const api = axios.create({
 	withCredentials: true,
 })
 
+api.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response.status === 401 && import.meta.env.PROD)
+			window.location.href = 'https://admin.dotenx.com/login'
+		return Promise.reject(error)
+	}
+)
+
 export enum QueryKey {
 	ProjectDetails = 'project-details',
 	Pages = 'pages',
