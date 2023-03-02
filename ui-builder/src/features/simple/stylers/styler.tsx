@@ -16,7 +16,7 @@ export function Styler({ children }: { children: ReactNode }) {
 				onClose={openedHandlers.close}
 				position="right"
 				padding="lg"
-				overlayOpacity={0}
+				overlayProps={{ opacity: 0.1 }}
 				size={310}
 			>
 				<div className="space-y-6 text-xs">{children}</div>

@@ -36,7 +36,7 @@ const Navbar = () => {
 			size={310}
 			opened={!!inserting}
 			onClose={() => setInserting(null)}
-			overlayOpacity={0.1}
+			overlayProps={{ opacity: 0.1 }}
 			padding="md"
 			className="overflow-y-scroll"
 		>
@@ -54,7 +54,7 @@ const Aside = () => {
 			size={310}
 			opened={!!selectedElement}
 			onClose={deselect}
-			overlayOpacity={0.1}
+			overlayProps={{ opacity: 0.1 }}
 			padding="md"
 			className="overflow-y-scroll"
 			position="right"
