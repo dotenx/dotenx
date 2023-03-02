@@ -485,6 +485,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
 	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())
 	public.GET("/ecommerce/project/:project_tag/payment/link/stripe", EcommerceController.GetStripePaymentLinkEndpoint())
+	public.POST("/ecommerce/project/:project_tag/payment/link", EcommerceController.CreateStripePaymentLink())
 	public.POST("/ecommerce/project/:project_tag/order", EcommerceController.CreateOrder())
 
 	// tp users profile router
