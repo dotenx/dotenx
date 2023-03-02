@@ -31,6 +31,20 @@
 	const content = clone.querySelector('.content')
 	const image = clone.querySelector('.image')
 	const attachments = clone.querySelector('.attachments')
+	const stars = root.querySelectorAll('.star')
+
+	// style the stars before the hovered one
+	stars.forEach((star, index) => {
+		star.addEventListener('mouseover', () => {
+			stars.forEach((star, i) => {
+				if (i <= index) {
+					star.style.color = '#FBBF24'
+				} else {
+					star.style.color = '#D1D5DB'
+				}
+			})
+		})
+	})
 
 	name.removeAttribute('x-html')
 	price.removeAttribute('x-html')
@@ -52,4 +66,22 @@
 	})
 
 	root.appendChild(clone)
+
+	function handleRating() {
+		const stars = root.querySelectorAll('.star')
+		// style the stars before the hovered one
+		stars.forEach((star, index) => {
+			star.addEventListener('mouseover', () => {
+				stars.forEach((star, i) => {
+					if (i <= index) {
+						star.classList.add('text-yellow-400')
+						star.classList.remove('text-gray-300')
+					} else {
+						star.classList.add('text-gray-300')
+						star.classList.remove('text-yellow-400')
+					}
+				})
+			})
+		})
+	}
 })()
