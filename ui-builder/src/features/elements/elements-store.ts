@@ -17,6 +17,7 @@ interface ElementsState {
 	add: (elements: Element | Element[], where: ElementPlacement) => void
 	move: (id: string, where: ElementPlacement) => void
 	set: (element: Element) => void
+	silenceSet: (element: Element) => void
 	remove: (ids: string[]) => void
 	reset: (elements?: Element[]) => void
 	undo: () => void
@@ -55,6 +56,12 @@ export const useElementsStore = create<ElementsState>()(
 				_.assign(foundElement, element)
 				state.history = [...state.history.slice(0, state.historyIndex + 1), state.elements]
 				state.historyIndex = state.historyIndex + 1
+			})
+		},
+		silenceSet: (element) => {
+			set((state) => {
+				const foundElement = findElement(element.id, state.elements)
+				_.assign(foundElement, element)
 			})
 		},
 		remove: (ids) => {
@@ -176,7 +183,7 @@ export function useSetElement() {
 }
 
 export function setElement<T extends Element = Element>(element: T, fn: (draft: Draft<T>) => void) {
-	const set = useElementsStore.getState().set
+	const set = useElementsStore.getState().silenceSet
 	set(
 		produce(element, (draft) => {
 			fn(draft)
