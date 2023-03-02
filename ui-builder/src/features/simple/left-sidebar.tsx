@@ -1,8 +1,9 @@
-import { Image, Portal, Select } from '@mantine/core'
-import { useHover } from '@mantine/hooks'
+import { Image, Portal, TextInput } from '@mantine/core'
+import { useHover, useInputState } from '@mantine/hooks'
 import { useAtom, useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { ReactElement, useMemo, useState } from 'react'
+import { TbSearch } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
 import { Components, ComponentSection } from '../components'
 import { DividerCollapsible } from '../components/helpers'
@@ -13,6 +14,7 @@ import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
 	const [selectedTag, setSelectedTag] = useState<null | string>(null)
+	const [searched, setSearched] = useInputState('')
 
 	const tags = useMemo(
 		() =>
@@ -44,17 +46,40 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 		[components, selectedTag]
 	)
 
+	const filteredBySearch = useMemo(
+		() =>
+			filtered
+				.map((section) => ({
+					...section,
+					items: section.items.filter((Item) => {
+						const item = new (Item as any)()
+						return item.name.toLowerCase().includes(searched.toLowerCase())
+					}),
+				}))
+				.filter((component) => component.items.length !== 0),
+
+		[filtered, searched]
+	)
+
 	return (
 		<div>
-			<Select
+			{/* TODO: add this back when more tags are added */}
+			{/* <Select
 				data={tags}
 				value={selectedTag}
 				onChange={setSelectedTag}
 				clearable
 				placeholder="Filter"
+			/> */}
+			<TextInput
+				size="xs"
+				icon={<TbSearch />}
+				value={searched}
+				onChange={setSearched}
+				placeholder="Search"
 			/>
 			<div className="flex flex-col">
-				{filtered.map((section) => (
+				{filteredBySearch.map((section) => (
 					<SimpleComponentList key={section.title} section={section} />
 				))}
 			</div>

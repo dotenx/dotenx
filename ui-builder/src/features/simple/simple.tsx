@@ -39,6 +39,7 @@ const Navbar = () => {
 			overlayProps={{ opacity: 0.1 }}
 			padding="md"
 			className="overflow-y-scroll"
+			withCloseButton={false}
 		>
 			<SimpleLeftSidebar components={COMPONENTS} />
 		</Drawer>
@@ -58,6 +59,7 @@ const Aside = () => {
 			padding="md"
 			className="overflow-y-scroll"
 			position="right"
+			withCloseButton={false}
 		>
 			<SimpleRightSidebar />
 		</Drawer>
