@@ -12,6 +12,7 @@ import {
 import { useForm, zodResolver } from '@mantine/form'
 import { useClickOutside, useClipboard } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
+import { notifications } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
@@ -654,6 +655,11 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 				onSuccess: (data) => {
 					setPublishUrl(data.data.url)
 					setSaved()
+					notifications.show({
+						title: 'Page published successfully',
+						message: 'Your page is now live',
+						color: 'green',
+					})
 				},
 			}
 		)
