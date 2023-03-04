@@ -252,11 +252,6 @@ function UpdateSchedule({
 						{...getInputProps("from")}
 					/>
 					<TextInput label="Subject" placeholder="" {...getInputProps("subject")} />
-					<TextInput
-						label="Text content"
-						placeholder=""
-						{...getInputProps("text_content")}
-					/>
 					<div className="col-span-2">
 						<Cron
 							onChange={setScheduleValue}
