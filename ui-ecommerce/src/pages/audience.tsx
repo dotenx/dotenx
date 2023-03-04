@@ -1,38 +1,27 @@
+import { ActionIcon, Badge, Button, Modal, Switch, TextInput, Tooltip } from "@mantine/core"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { RiDeleteBin2Line, RiFileList2Fill, RiMailSettingsFill } from "react-icons/ri"
+import cronstrue from "cronstrue"
 import { useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { IoClose, IoMail, IoReload } from "react-icons/io5"
-import { Modals, useModal } from "../features/hooks"
-import { ContentWrapper, Header, Table } from "../features/ui"
-import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import cronstrue from "cronstrue"
-import { AudienceStats } from "./analytics"
+import { MdOutlineTimer } from "react-icons/md"
+import { RiDeleteBin2Line, RiFileList2Fill, RiMailSettingsFill } from "react-icons/ri"
+import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import {
-	ActionIcon,
-	Button,
-	Modal,
-	Tooltip,
-	TextInput,
-	Textarea,
-	Switch,
-	Badge,
-} from "@mantine/core"
-import _ from "lodash"
-import {
-	getIntegrations,
-	runCustomQuery,
-	QueryKey,
-	getEmailPipelineList,
-	deleteEmailPipeline,
 	activateEmailPipeline,
+	deleteEmailPipeline,
 	getEmailPipelineExecutions,
+	getEmailPipelineList,
+	getIntegrations,
+	QueryKey,
 	runPredefinedQuery,
 } from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
-import { toast } from "react-toastify"
-import { Link, useNavigate } from "react-router-dom"
-import { MdOutlineTimer } from "react-icons/md"
+import { Modals, useModal } from "../features/hooks"
+import { ContentWrapper, Header, Table } from "../features/ui"
+import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
+import { AudienceStats } from "./analytics"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "schedules">("members")
@@ -359,6 +348,7 @@ const PipelineDetails = ({ details, onClose }: { details: any; onClose: () => vo
 	const [activeTab, setActiveTab] = useState<"details" | "content">("details")
 	const scheduleExpression = details?.metadata?.schedule_expression
 	const navigate = useNavigate()
+
 	return (
 		<div className="mt-10 bg-white">
 			<div className="w-full justify-end pr-3 flex pt-2 cursor-pointer">
@@ -405,8 +395,12 @@ const PipelineDetails = ({ details, onClose }: { details: any; onClose: () => vo
 			<ContentWrapper>
 				{activeTab === "details" && <DetailsTab details={details} />}
 				{activeTab === "content" && (
-					<div>
-						<Textarea label="Content" value={details?.metadata?.html_content} />
+					<div className="prose">
+						<div
+							dangerouslySetInnerHTML={{
+								__html: details?.metadata?.html_content,
+							}}
+						/>
 					</div>
 				)}
 			</ContentWrapper>
@@ -469,12 +463,6 @@ const DetailsTab = ({ details }: { details: any }) => {
 					</div>
 				)}
 			</div>
-			<Textarea
-				readOnly
-				label="Text Content"
-				value={details?.metadata?.text_content}
-				className="w-full p-2"
-			/>
 		</div>
 	)
 }
