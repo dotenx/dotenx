@@ -1,6 +1,7 @@
 import { useViewportSize } from "@mantine/hooks"
 import { ReactNode } from "react"
 import { Route, Routes as ReactRoutes } from "react-router-dom"
+import { FormsPage } from "../../pages/forms"
 import { HomePage } from "../../pages/home"
 import { NotFoundPage } from "../../pages/not-found"
 import { Layout } from "../ui/layout"
@@ -13,6 +14,10 @@ type Routes = {
 }[]
 
 const routes: Routes = [
+	{
+		path: "/:projectName/:page",
+		element: <FormsPage />,
+	},
 	{
 		path: "/:projectName",
 		element: <HomePage />,

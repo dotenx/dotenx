@@ -14,6 +14,20 @@ const getProject = ({ name }: { name: string }) =>
 		tag: string
 	}>(`/project/${name}`)
 
+const getSubmittedForms = ({ projectTag, pageName }: { projectTag: string; pageName: string }) =>
+	request.get<
+		{
+			form_id: string
+			response: Record<string, string>
+		}[]
+	>(`/uibuilder/project/${projectTag}/page/${pageName}/form`)
+
+const getPages = ({ projectTag }: { projectTag: string }) => {
+	return request.get<string[] | null>(`/uibuilder/project/${projectTag}/page`)
+}
+
 export const api = {
 	getProject,
+	getSubmittedForms,
+	getPages,
 }

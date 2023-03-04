@@ -1,13 +1,11 @@
 import { useHover } from "@mantine/hooks"
-import { useQuery } from "@tanstack/react-query"
 import clsx from "clsx"
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
-import { BsChevronLeft } from "react-icons/bs"
+import { TbChevronLeft, TbFiles } from "react-icons/tb"
 import { NavLink as RouterNavLink, useParams } from "react-router-dom"
-import { api } from "../../api"
-import { QueryKey } from "../../api/types"
 import logo from "../../assets/images/logo.png"
+import { useGetProjectTag } from "../hooks/use-project-query"
 
 const ANIMATION_DURATION = 0.15
 
@@ -33,7 +31,6 @@ export function Sidebar({ closable }: { closable: boolean }) {
 	const closed = closable && !hovered
 	const opened = !closable || (closable && hovered)
 	const smallScreen = window.innerHeight < 750
-	const { projectName } = useGetProjectTag()
 	return (
 		<motion.aside
 			ref={ref}
@@ -61,8 +58,16 @@ export function Sidebar({ closable }: { closable: boolean }) {
 }
 
 const useSidebar = () => {
+	const { projectName } = useGetProjectTag()
+
 	const sidebar: SidebarData = {
-		navLinks: [],
+		navLinks: [
+			{
+				label: "Pages",
+				icon: <TbFiles />,
+				to: `/${projectName}`,
+			},
+		],
 		subLinks: [],
 	}
 
@@ -80,7 +85,7 @@ function BackToProjects({ closed }: { closed: boolean }) {
 				smallScreen ? "h-8 " : "h-10 "
 			} text-xl bg-white w-full rounded-md flex items-center font-medium gap-2 transition hover:bg-rose-100 px-3 whitespace-nowrap`}
 		>
-			<BsChevronLeft className={`shrink-0 ${smallScreen ? "text-sm " : "text-lg "} mt-1`} />
+			<TbChevronLeft className={`shrink-0 ${smallScreen ? "text-sm " : "text-lg "} mt-1`} />
 			<FadeIn visible={!closed}>
 				<span className={`shrink-0 ${smallScreen ? "text-base " : "text-xl "}`}>
 					{projectName}
@@ -141,15 +146,4 @@ function FadeIn({ children, visible }: { children: ReactNode; visible: boolean }
 			)}
 		</AnimatePresence>
 	)
-}
-
-const useGetProjectTag = () => {
-	const { projectName = "" } = useParams()
-	const projectQuery = useQuery(
-		[QueryKey.GetProject, projectName],
-		() => api.getProject({ name: projectName }),
-		{ enabled: !!projectName }
-	)
-	const projectTag = projectQuery.data?.data.tag ?? ""
-	return { projectTag, projectName, isLoading: projectQuery.isLoading }
 }
