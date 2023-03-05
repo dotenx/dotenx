@@ -19,7 +19,6 @@ func (ec *EcommerceController) SetTpUserReview() gin.HandlerFunc {
 
 		projectTag := c.Param("project_tag")
 		productId := c.Param("product_id")
-
 		project, err := ec.ProjectService.GetProjectByTag(projectTag)
 		if err != nil {
 			logrus.Error(err.Error())
