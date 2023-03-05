@@ -1,9 +1,9 @@
 import { Select, Switch, TextInput } from '@mantine/core'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { TbFileImport } from 'react-icons/tb'
 import { Expression } from '../../states/expression'
 import { SingleIntelinput } from '../../ui/intelinput'
-import { Element } from '../element'
+import { Element, RenderFn } from '../element'
 import { useSetElement } from '../elements-store'
 
 export class InputElement extends Element {
@@ -19,13 +19,13 @@ export class InputElement extends Element {
 
 	render(): ReactNode {
 		return (
-			<input
-				defaultValue={this.data.defaultValue.toString()}
-				name={this.data.name}
-				placeholder={this.data.placeholder}
-				type={this.data.type}
-				className={this.generateClasses()}
-			/>
+			<input type={this.data.type} className={this.generateClasses()} id={this.elementId} />
+		)
+	}
+
+	renderPreview(renderFn: RenderFn, style?: CSSProperties): JSX.Element {
+		return (
+			<input type={this.data.type} className={this.generateClasses()} id={this.elementId} />
 		)
 	}
 
