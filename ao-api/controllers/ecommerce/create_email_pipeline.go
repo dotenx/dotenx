@@ -21,11 +21,11 @@ import (
 
 type emailPipelineDTO struct {
 	Name               string                 `json:"name" binding:"required"`
-	From               string                 `json:"from" binding:"required"`
+	From               string                 `json:"from" binding:"required,email"`
 	Target             targetPattern          `json:"target"`
 	Subject            string                 `json:"subject" binding:"required"`
 	TextContent        string                 `json:"text_content"`
-	HtmlContent        string                 `json:"html_content"`
+	HtmlContent        string                 `json:"html_content" binding:"html"`
 	JsonContent        map[string]interface{} `json:"json_content"`
 	ScheduleExpression string                 `json:"schedule_expression" binding:"required"`
 }
