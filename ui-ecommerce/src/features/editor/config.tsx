@@ -1,6 +1,6 @@
 import CodeTool from "@editorjs/code"
 import Delimiter from "@editorjs/delimiter"
-import EditorJS from "@editorjs/editorjs"
+import EditorJS, { OutputData } from "@editorjs/editorjs"
 import Embed from "@editorjs/embed"
 import Header from "@editorjs/header"
 import InlineCode from "@editorjs/inline-code"
@@ -14,7 +14,7 @@ import Undo from "editorjs-undo"
 
 export const EDITOR_ID = "editorjs"
 
-export const createEditor = () => {
+export const createEditor = (defaultData?: OutputData) => {
 	const editor = new EditorJS({
 		holder: EDITOR_ID,
 		tools: {
@@ -33,7 +33,7 @@ export const createEditor = () => {
 			new Undo({ editor })
 			new DragDrop(editor)
 		},
-		data: {
+		data: defaultData ?? {
 			blocks: [
 				{
 					type: "header",
