@@ -19,10 +19,10 @@ import (
 )
 
 type orderDTO struct {
-	PaymentId  string `json:"payment_id"`
+	PaymentId  string `json:"payment_id" binding:"required"`
 	PriceId    string `json:"price_id"` // this field can be multiple and separated by ','
-	CustomerId string `json:"customer_id"`
-	CreatedAt  string `json:"created_at"`
+	CustomerId string `json:"customer_id" binding:"required"`
+	CreatedAt  string `json:"created_at" binding:"required"`
 	UnitAmount string `json:"unit_amount"` // this field can be multiple and separated by ','
 	ProductId  string `json:"product_id"`  // this field can be multiple and separated by ','
 	Quantity   string `json:"quantity"`    // this field can be multiple and separated by ','

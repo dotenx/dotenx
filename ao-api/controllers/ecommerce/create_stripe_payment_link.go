@@ -14,9 +14,9 @@ import (
 )
 
 type paymentLinkDto struct {
-	Email      string                 `json:"email" binding:"required"`
-	SuccessUrl string                 `json:"success_url" binding:"required"`
-	CancelUrl  string                 `json:"cancel_url" binding:"required"`
+	Email      string                 `json:"email" binding:"required,email"`
+	SuccessUrl string                 `json:"success_url" binding:"required,url"`
+	CancelUrl  string                 `json:"cancel_url" binding:"required,url"`
 	Bag        map[string]interface{} `json:"bag" binding:"required"`
 }
 
