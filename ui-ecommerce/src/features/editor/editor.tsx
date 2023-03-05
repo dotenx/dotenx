@@ -43,7 +43,7 @@ export function useEditor(): EditorContext {
 	const html = async () => {
 		const data = await json()
 		const html = edjsParser.parse(data) as string[]
-		return html.join("\n")
+		return html.join("")
 	}
 
 	return {
