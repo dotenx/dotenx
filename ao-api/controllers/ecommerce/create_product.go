@@ -4,33 +4,36 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 )
 
 type productDTO struct {
-	Type             string                 `json:"type"`
-	Name             string                 `json:"name"`
+	Type             string                 `json:"type" binding:"required,oneof='one-time' 'membership'"`
+	Name             string                 `json:"name" binding:"required"`
 	Description      string                 `json:"description"`
-	Price            float64                `json:"price"`
-	Status           string                 `json:"status"`
+	Price            float64                `json:"price" binding:"validpricing"`
+	Status           string                 `json:"status" binding:"required,oneof='unpublished' 'published' 'archived'"`
 	ImageUrl         string                 `json:"image_url"`
-	Limitation       int64                  `json:"limitation"`
+	Limitation       int64                  `json:"limitation" binding:"gte=-1"`
 	PreviewLink      string                 `json:"preview_link"`
 	DownloadLink     string                 `json:"download_link"`
 	Metadata         map[string]interface{} `json:"metadata"`
 	StripePriceId    string                 `json:"stripe_price_id"`
 	StripeProductId  string                 `json:"stripe_product_id"`
 	Content          string                 `json:"content"`
-	HtmlContent      string                 `json:"html_content"`
+	HtmlContent      string                 `json:"html_content" binding:"html"`
 	JsonContent      map[string]interface{} `json:"json_content"`
 	Tags             []string               `json:"tags"`
-	Currency         string                 `json:"currency"`
-	RecurringPayment recurringPayments      `json:"recurring_payment"`
+	Currency         string                 `json:"currency" binding:"required"`
+	RecurringPayment recurringPayments      `json:"recurring_payment" binding:"validpricing"`
 	Details          map[string]interface{} `json:"details"`
 	Summary          string                 `json:"summary"`
 	Thumbnails       []string               `json:"thumbnails"`
@@ -42,15 +45,60 @@ type recurringPayments struct {
 }
 
 type recurringPayment struct {
-	Price                  float64 `json:"price"`
-	RecurringInterval      string  `json:"recurring_interval"`
+	Price                  float64 `json:"price" binding:"required"`
+	RecurringInterval      string  `json:"recurring_interval" binding:"required,oneof='day' 'week' 'month' 'year'"`
 	RecurringIntervalCount int64   `json:"recurring_interval_count"`
 	IsDefault              bool    `json:"is_default"`
 	StripePriceId          string  `json:"stripe_price_id"`
 }
 
+var validPricing validator.Func = func(fl validator.FieldLevel) bool {
+	product, ok := fl.Top().Interface().(productDTO)
+	if ok {
+		if product.Type == "membership" && fl.FieldName() == "RecurringPayment" {
+			recurringPaymentBytes, ok := fl.Field().Interface().([]byte)
+			var recurringPayment recurringPayments
+			json.Unmarshal(recurringPaymentBytes, &recurringPayment)
+			if !ok {
+				return false
+			}
+			if len(recurringPayment.Prices) == 0 {
+				return false
+			}
+			for _, price := range recurringPayment.Prices {
+				if price.Price < 0 {
+					return false
+				}
+				possibleValues := []string{"day", "week", "month", "year"}
+				if !utils.ContainsString(possibleValues, price.RecurringInterval) {
+					return false
+				}
+			}
+		} else if product.Type == "one-time" && fl.FieldName() == "Price" {
+			if price, ok := fl.Field().Interface().(float64); !ok || price < 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// ValidateRecurringPaymentsType implements validator.CustomTypeFunc
+var ValidateRecurringPaymentsType validator.CustomTypeFunc = func(field reflect.Value) interface{} {
+	if rps, ok := field.Interface().(recurringPayments); ok {
+		rpsBytes, _ := json.Marshal(rps)
+		return rpsBytes
+	}
+	return nil
+}
+
 func (ec *EcommerceController) CreateProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+			v.RegisterCustomTypeFunc(ValidateRecurringPaymentsType, recurringPayments{})
+			v.RegisterValidation("validpricing", validPricing)
+		}
 
 		projectTag := c.Param("project_tag")
 		accountId, _ := utils.GetAccountId(c)
