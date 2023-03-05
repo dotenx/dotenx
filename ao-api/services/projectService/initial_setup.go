@@ -176,6 +176,10 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 				"type": "link_field",
 			},
 			{
+				"name": "email",
+				"type": "email",
+			},
+			{
 				"name": "message",
 				"type": "long_text",
 			},
