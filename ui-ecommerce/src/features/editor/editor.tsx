@@ -7,11 +7,17 @@ const edjsParser = edjsHTML()
 
 export type EditorValue = { html: string; json?: OutputData }
 
-export function Editor({ editor }: { editor: EditorContext }) {
+export function Editor({
+	editor,
+	defaultData,
+}: {
+	editor: EditorContext
+	defaultData?: OutputData
+}) {
 	useEffect(() => {
 		if (editor.ref.current) return
-		editor.ref.current = createEditor()
-	}, [editor.ref])
+		editor.ref.current = createEditor(defaultData)
+	}, [defaultData, editor.ref])
 
 	return (
 		<div className="bg-white rounded-md p-6 prose max-w-none">
