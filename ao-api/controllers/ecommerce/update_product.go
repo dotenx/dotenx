@@ -8,6 +8,8 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
@@ -15,6 +17,11 @@ import (
 
 func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+			v.RegisterCustomTypeFunc(ValidateRecurringPaymentsType, recurringPayments{})
+			v.RegisterValidation("validpricing", validPricing)
+		}
 
 		projectTag := c.Param("project_tag")
 		productId := c.Param("product_id")
