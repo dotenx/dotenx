@@ -20,6 +20,7 @@ type Integration struct {
 	HasRefreshToken bool              `db:"hasRefreshToken" json:"hasRefreshToken"`
 	Provider        string            `db:"provider" json:"provider"`
 	TpAccountId     string            `db:"tp_account_id" json:"tp_account_id"`
+	ProjectName     string            `db:"project_name" json:"project_name"`
 }
 
 func (intg Integration) IsValid() bool {
