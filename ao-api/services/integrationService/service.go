@@ -23,8 +23,8 @@ type IntegrationService interface {
 	GetIntegrationForThirdPartyAccount(accountId, tpAccountId, intgType string) (models.Integration, error)
 	DeleteIntegration(accountId string, integrationName string) error
 	GetIntegrationTypes() ([]models.IntegrationDefinition, error)
-	GetAllIntegrations(accountId string) ([]models.Integration, error)
-	GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error)
+	GetAllIntegrations(accountId, projectName string) ([]models.Integration, error)
+	GetAllIntegrationsForAccountByType(accountId, projectName string, integrationTypes []string) ([]models.Integration, error)
 	AddIntegration(accountId string, integration models.Integration) error
 	SetRedisPair(key, value string, ttl time.Duration) (err error)
 }
@@ -81,9 +81,9 @@ func (manager *IntegrationManager) DeleteIntegration(accountId string, integrati
 	return manager.Store.DeleteIntegration(context.Background(), accountId, integrationName)
 }
 
-func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]models.Integration, error) {
+func (manager *IntegrationManager) GetAllIntegrations(accountId, projectName string) ([]models.Integration, error) {
 	selected := make([]models.Integration, 0)
-	integrations, err := manager.Store.GetAllintegrations(context.Background(), accountId)
+	integrations, err := manager.Store.GetAllintegrations(context.Background(), accountId, projectName)
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +95,11 @@ func (manager *IntegrationManager) GetAllIntegrations(accountId string) ([]model
 	return selected, nil
 }
 
-func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId string, integrationTypes []string) ([]models.Integration, error) {
+func (manager *IntegrationManager) GetAllIntegrationsForAccountByType(accountId, projectName string, integrationTypes []string) ([]models.Integration, error) {
 	integrations := make([]models.Integration, 0)
 	var err error
 	for _, intgType := range integrationTypes {
-		intgs, err := manager.Store.GetIntegrationsByType(context.Background(), accountId, intgType)
+		intgs, err := manager.Store.GetIntegrationsByType(context.Background(), accountId, intgType, projectName)
 		if err == nil {
 			integrations = append(integrations, intgs...)
 		}

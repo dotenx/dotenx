@@ -331,6 +331,10 @@ var migrations = []struct {
 		name: "add-display-name-field-to-object-store-table",
 		stmt: addDisplayNameFieldToObjectStoreTable,
 	},
+	{
+		name: "add-project-name-field-to-integrations-table",
+		stmt: addProjectNameFieldToIntegrationsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -929,4 +933,9 @@ response                 JSONB NOT NULL
 var addDisplayNameFieldToObjectStoreTable = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
+`
+
+var addProjectNameFieldToIntegrationsTable = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS project_name VARCHAR(128) DEFAULT '';
 `
