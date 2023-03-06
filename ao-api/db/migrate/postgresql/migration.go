@@ -331,6 +331,10 @@ var migrations = []struct {
 		name: "add-display-name-field-to-object-store-table",
 		stmt: addDisplayNameFieldToObjectStoreTable,
 	},
+	{
+		name: "add-infrastructure-fields-to-project-domain-table",
+		stmt: addInfrastructureFieldsToProjectDomainTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -929,4 +933,14 @@ response                 JSONB NOT NULL
 var addDisplayNameFieldToObjectStoreTable = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
+`
+
+// Add columns cdn_arn, cdn_domain, s3_bucket to project_domain table all of them are varchar(64) default ''. Also drop columns hosted_zone_id and ns_records
+var addInfrastructureFieldsToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS cdn_arn VARCHAR(64) DEFAULT '',
+ADD COLUMN IF NOT EXISTS cdn_domain VARCHAR(64) DEFAULT '',
+ADD COLUMN IF NOT EXISTS s3_bucket VARCHAR(64) DEFAULT '',
+DROP COLUMN IF EXISTS hosted_zone_id,
+DROP COLUMN IF EXISTS ns_records;
 `

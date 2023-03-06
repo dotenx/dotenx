@@ -1,7 +1,6 @@
 package uibuilder
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder/publishutils"
@@ -75,10 +74,8 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 				projectDomain = models.ProjectDomain{
 					AccountId:      accountId,
 					ProjectTag:     projectTag,
-					HostedZoneId:   "",
 					TlsArn:         "",
 					ExternalDomain: "",
-					NsRecords:      []string{},
 					InternalDomain: GetRandomName(10),
 				}
 				err = controller.ProjectService.UpsertProjectDomain(projectDomain)
@@ -102,7 +99,7 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 			bucket = "water-static-qrpwasd239472lde2se348uuii8923n2" // TODO: Get from config
 			prefix = projectDomain.InternalDomain + ".web" + "/"
 			domain = projectDomain.InternalDomain + ".web.dotenx.com"
-			err = CreateRoute53Record(projectDomain.InternalDomain+".web.dotenx.com", "d2hhdj7tyolioa.cloudfront.net", "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
+			err = utils.UpsertRoute53Record(projectDomain.InternalDomain+".web.dotenx.com", "d2hhdj7tyolioa.cloudfront.net", "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
 			if err != nil {
 				logrus.Error(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -111,57 +108,14 @@ func (controller *UIbuilderController) PreviewPage() gin.HandlerFunc {
 
 		} else {
 
-			// get the status of cdn infra and if it's not ready, first deploy the cdn
-			uiInfra, err := controller.Service.GetUiInfrastructure(accountId, projectTag)
-
-			if err != nil {
-				if err.Error() == "not found" { // The cdn infrastructure is not created, deploy it
-
-					distributionArn, distributionDomainName, bucketName, err := createCloudFrontDistribution(projectDomain.ExternalDomain, projectDomain.TlsArn, projectTag)
-					if err != nil {
-						logrus.Error(err.Error())
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
-					fmt.Println(distributionArn, distributionDomainName, bucketName)
-
-					err = CreateRoute53Record(projectDomain.ExternalDomain, distributionDomainName, projectDomain.HostedZoneId, "Alias")
-					if err != nil {
-						logrus.Error(err.Error())
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
-					bucket = bucketName
-					prefix = ""
-
-					uiInfra.AccountId = accountId
-					uiInfra.ProjectTag = projectTag
-					uiInfra.CdnArn = distributionArn
-					uiInfra.CdnDomain = distributionDomainName
-					uiInfra.S3Bucket = bucketName
-
-					err = controller.Service.UpsertUiInfrastructure(uiInfra)
-					if err != nil {
-						logrus.Error(err.Error())
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
-				} else { // This is an internal server error
-					logrus.Error(err.Error())
-					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-					return
-				}
-			}
-
 			domain = projectDomain.ExternalDomain
-
-			bucket = uiInfra.S3Bucket
+			bucket = projectDomain.S3Bucket
 			prefix = ""
 		}
 
-		UploadFileToS3(bucket, []byte(html), prefix+pageName+".html", int64(len(html)), "text/html")
-		UploadFileToS3(bucket, []byte(scripts), prefix+pageName+".js", int64(len(scripts)), "application/javascript")
-		UploadFileToS3(bucket, []byte(styles), prefix+pageName+".css", int64(len(styles)), "text/css")
+		utils.UploadByteSliceToS3([]byte(html), bucket, prefix+pageName+".html", int64(len(html)), "text/html")
+		utils.UploadByteSliceToS3([]byte(scripts), bucket, prefix+pageName+".js", int64(len(scripts)), "application/javascript")
+		utils.UploadByteSliceToS3([]byte(styles), bucket, prefix+pageName+".css", int64(len(styles)), "text/css")
 
 		// TODO: currently status of page should be one of these values: ['published', 'modified']
 		// (note: this condition checks by postgres because this condition defined in creating table statement)
