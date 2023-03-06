@@ -70,6 +70,16 @@ build ui-ecommerce:
     - changes:
       - "ui-ecommerce/**/*"
 
+build ui-form:
+  <<: *build_ui
+  variables:
+    environment: prod
+    folder: ui-form
+    build_dest: dist
+  rules:
+    - changes:
+      - "ui-form/**/*"
+
 build ui builder:
   <<: *build_ui
   variables:
@@ -170,6 +180,27 @@ deploy ui-ecommerce:
       - master
     changes:
       - "ui-ecommerce/**/*"
+
+deploy ui-form:
+  <<: *deploy_ui
+  variables:
+    CORE_USERNAME: ${DEV_CORE_USERNAME}
+    CORE_PASSWORD: ${DEV_CORE_PASSWORD}
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+    BUCKET: website.dotenx.com
+    environment: prod
+    DISTRIBUTION_ID: E322LZO7GK3ALW
+    build_dest: dist
+    folder: ui-form
+  environment:
+    name: production-ui-website
+    url: https://website.dotenx.com
+  only:
+    refs:
+      - master
+    changes:
+      - "ui-form/**/*"
 
 deploy ui builder:
   <<: *deploy_ui
