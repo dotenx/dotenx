@@ -1,3 +1,22 @@
+import { ReactNode } from 'react'
+import {
+	TbArticle,
+	TbBorderHorizontal,
+	TbChartBar,
+	TbClick,
+	TbForms,
+	TbLayoutBottombar,
+	TbLayoutNavbar,
+	TbList,
+	TbMessageChatbot,
+	TbPhoto,
+	TbQuestionCircle,
+	TbReportMoney,
+	TbSection,
+	TbTableAlias,
+	TbUser,
+	TbUsers,
+} from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
 import { BasicButton } from './basic-button'
@@ -22,6 +41,7 @@ import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { DividerSimpleLine } from './divider-simple-line'
 import { DividerSimpleTitle } from './divider-simple-title'
+import { DividerStats } from './divider-stats'
 import { DividerTextSections } from './divider-text-sections'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
@@ -31,10 +51,12 @@ import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
-import { Form } from './form'
 import { FooterSimple } from './footer-simple'
+import { Form } from './form'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
+import { GalleryMasonryOne } from './gallery-masonry-1'
+import { GalleryMasonryTwo } from './gallery-masonry-2'
 import { GalleryWithCaptions } from './gallery-with-caption'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
@@ -46,21 +68,21 @@ import { TeamCenterGrid } from './team-center-grid'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TestimonialSimple } from './testimonial-simple'
-import { DividerStats } from './divider-stats'
-import { GalleryMasonryOne } from './gallery-masonry-1'
-import { GalleryMasonryTwo } from './gallery-masonry-2'
 
 export const COMPONENTS: Components = [
 	{
 		title: 'Basic',
+		icon: <TbClick />,
 		items: [BasicImage, BasicText, BasicButton, BasicVideo, BasicYouTube],
 	},
 	{
 		title: 'About',
+		icon: <TbArticle />,
 		items: [AboutLeft, AboutRight],
 	},
 	{
 		title: 'Charts',
+		icon: <TbChartBar />,
 		items: [
 			ChartBar,
 			ChartArea,
@@ -73,12 +95,29 @@ export const COMPONENTS: Components = [
 			ChartScatter,
 		],
 	},
-	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
-	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
-	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
-	{ title: 'Divider', items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections, DividerStats] },
+	{
+		title: 'Customers',
+		icon: <TbUser />,
+		items: [CustomersLogoGrid, CustomersGrid],
+	},
+	{
+		title: 'Comparison Table',
+		icon: <TbTableAlias />,
+		items: [ComparisonTableSimple],
+	},
+	{
+		title: 'FAQ',
+		icon: <TbQuestionCircle />,
+		items: [FaqBasic, FaqBasicStyled],
+	},
+	{
+		title: 'Divider',
+		icon: <TbBorderHorizontal />,
+		items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections, DividerStats],
+	},
 	{
 		title: 'Features',
+		icon: <TbList />,
 		items: [
 			FeatureCenterGrid,
 			FeatureCenterCards,
@@ -87,22 +126,54 @@ export const COMPONENTS: Components = [
 			FeatureDetailsRight,
 		],
 	},
-	{ title: 'Footers', items: [FooterGrid, FooterSimple] },
+	{
+		title: 'Footers',
+		icon: <TbLayoutBottombar />,
+		items: [FooterGrid, FooterSimple],
+	},
 	{
 		title: 'Gallery',
-		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions, GalleryMasonryOne, GalleryMasonryTwo],
+		icon: <TbPhoto />,
+		items: [
+			GalleryBasic,
+			GalleryBasicRounded,
+			GalleryWithCaptions,
+			GalleryMasonryOne,
+			GalleryMasonryTwo,
+		],
 	},
 	{
 		title: 'Hero',
+		icon: <TbSection />,
 		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight],
 	},
-	{ title: 'Navbar', items: [Navbar] },
-	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
-	{ title: 'Testimonial', items: [TestimonialSimple] },
-	{ title: 'Form', items: [Form] },
+	{
+		title: 'Navbar',
+		icon: <TbLayoutNavbar />,
+		items: [Navbar],
+	},
+	{
+		title: 'Pricing',
+		icon: <TbReportMoney />,
+		items: [PricingSimple, PricingSimple2],
+	},
+	{
+		title: 'Team',
+		icon: <TbUsers />,
+		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft],
+	},
+	{
+		title: 'Testimonial',
+		icon: <TbMessageChatbot />,
+		items: [TestimonialSimple],
+	},
+	{
+		title: 'Form',
+		icon: <TbForms />,
+		items: [Form],
+	},
 ]
 
 export type ComponentSection = (typeof COMPONENTS)[number]
 
-export type Components = { title: string; items: (typeof Component)[] }[]
+export type Components = { title: string; items: (typeof Component)[]; icon?: ReactNode }[]

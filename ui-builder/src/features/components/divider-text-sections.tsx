@@ -31,10 +31,11 @@ function DividerTextSectionsOptions() {
 		<ComponentWrapper name="Simple title divider">
 			<DndTabs
 				containerElement={sectionsDiv}
-				renderItemOptions={(element) => <TextStyler label='Text' element={element.children![0] as TextElement} />}
+				renderItemOptions={(element) => (
+					<TextStyler label="Text" element={element.children![0] as TextElement} />
+				)}
 				insertElement={() => createSection()}
 			/>
-			
 		</ComponentWrapper>
 	)
 }
@@ -45,21 +46,22 @@ const tagIds = {
 	sectionsDiv: 'sectionsDiv',
 }
 
-const wrapperDiv = box().css(
-		{
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			fontSize: '24px',
-			paddingTop: '5%',
-			paddingBottom: '5%',
-			paddingLeft: '0%',
-			paddingRight: '0%',
-			width: '100%',
-		},
-	).cssTablet({
+const wrapperDiv = box()
+	.css({
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		fontSize: '24px',
+		paddingTop: '5%',
+		paddingBottom: '5%',
+		paddingLeft: '0%',
+		paddingRight: '0%',
+		width: '100%',
+	})
+	.cssTablet({
 		fontSize: '16px',
-	}).cssMobile({
+	})
+	.cssMobile({
 		fontSize: '12px',
 	})
 	.serialize()
@@ -78,38 +80,41 @@ const sectionsDiv = produce(new BoxElement(), (draft) => {
 	draft.style.tablet = {
 		default: {
 			rowGap: '15px',
-		}
+		},
 	}
 
 	draft.style.mobile = {
 		default: {
 			rowGap: '10px',
-			flexDirection: "column",
-			flexWrap: "wrap",
-			alignItems: "stretch",
-		}
+			flexDirection: 'column',
+			flexWrap: 'wrap',
+			alignItems: 'stretch',
+		},
 	}
 
 	draft.customStyle.desktop = {
 		'div:not(:last-child)': {
-			borderRightWidth: "1px",
-			borderRightStyle: "solid",
-			borderRightColor: "#303030"
-		}
+			borderRightWidth: '1px',
+			borderRightStyle: 'solid',
+			borderRightColor: '#303030',
+		},
 	}
 	draft.customStyle.mobile = {
 		'div:not(:last-child)': {
-			border: "none"
-		}
+			border: 'none',
+		},
 	}
 	draft.tagId = tagIds.sectionsDiv
 }).serialize()
 
-const createSection = () => box([txt('Text Section').css({
-	textAlign: 'center',
-})]).css({
-	width: '100%',
-})
+const createSection = () =>
+	box([
+		txt('Text Section').css({
+			textAlign: 'center',
+		}),
+	]).css({
+		width: '100%',
+	})
 
 const sections = [
 	createSection(),
@@ -130,5 +135,3 @@ const defaultData = {
 		},
 	],
 }
-
-console.log(`defaultData`, defaultData)
