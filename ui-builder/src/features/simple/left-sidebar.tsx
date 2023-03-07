@@ -1,12 +1,12 @@
-import { Image, Portal, TextInput } from '@mantine/core'
-import { useHover, useInputState } from '@mantine/hooks'
+import { Image, Overlay } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
+import { closeAllModals, openModal } from '@mantine/modals'
 import { useAtom, useAtomValue } from 'jotai'
 import _ from 'lodash'
-import { ReactElement, useMemo, useState } from 'react'
-import { TbSearch } from 'react-icons/tb'
+import { ReactNode, useMemo, useState } from 'react'
+import { TbBox, TbPlus } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
 import { Components, ComponentSection } from '../components'
-import { DividerCollapsible } from '../components/helpers'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { projectTagAtom } from '../page/top-bar'
@@ -71,85 +71,90 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 				clearable
 				placeholder="Filter"
 			/> */}
-			<TextInput
+			{/* <TextInput
 				size="xs"
 				icon={<TbSearch />}
 				value={searched}
 				onChange={setSearched}
 				placeholder="Search"
-			/>
-			<div className="flex flex-col">
+			/> */}
+			<div className="grid grid-cols-2 gap-3">
 				{filteredBySearch.map((section) => (
-					<SimpleComponentList key={section.title} section={section} />
+					<ComponentCard
+						key={section.title}
+						label={section.title}
+						icon={section?.icon ?? <TbBox />}
+						onClick={() => {
+							closeAllModals()
+							openModal({
+								title: section.title,
+								children: <SimpleComponentList section={section} />,
+								size: 'xl',
+							})
+						}}
+					/>
 				))}
 			</div>
 		</div>
 	)
 }
 
-function SimpleComponentList({ section: { title, items } }: { section: ComponentSection }) {
+function SimpleComponentList({ section: { items } }: { section: ComponentSection }) {
 	const insertComponent = useInsertComponent()
 	const projectTag = useAtomValue(projectTagAtom)
 	const { pageName = '' } = useParams()
 
 	return (
-		<DividerCollapsible closed title={title}>
+		<div className="grid grid-cols-2 gap-4">
 			{items.map((Item) => {
 				const newComponent = new (Item as any)()
 				return (
-					<SimpleComponentItem
-						src={newComponent.image}
+					<div
 						key={newComponent.name}
-						image={
-							<Image height={100} src={newComponent.image} alt={newComponent.name} />
-						}
-						label={newComponent.name}
 						onClick={() => {
 							const component = newComponent.transform()
 							insertComponent(component)
 							newComponent.onCreate(component, { projectTag, pageName })
+							closeAllModals()
 						}}
-					/>
+						className="rounded-lg border text-center cursor-pointer hover:bg-gray-50 overflow-clip flex flex-col group"
+					>
+						<div className="relative">
+							<Image src={newComponent.image} height={200} />
+							<Overlay
+								blur={2}
+								center
+								opacity={0.5}
+								className="group-hover:visible invisible"
+							>
+								<TbPlus size={30} className="text-white" />
+							</Overlay>
+						</div>
+						<p>{newComponent.name}</p>
+					</div>
 				)
 			})}
-		</DividerCollapsible>
+		</div>
 	)
 }
 
-export function SimpleComponentItem({
+function ComponentCard({
 	label,
-	src,
-	image,
+	icon,
 	onClick,
 }: {
 	label: string
-	src: string
-	image: ReactElement
-	onClick: () => void
+	icon: ReactNode
+	onClick?: () => void
 }) {
-	const { hovered, ref } = useHover<HTMLButtonElement>()
-
 	return (
-		<button
-			ref={ref}
-			className="flex flex-col items-center w-full gap-1 overflow-hidden border rounded bg-gray-50 text-slate-600 hover:text-slate-900"
+		<div
 			onClick={onClick}
+			className="flex flex-col items-center gap-2 p-2 rounded bg-gray-50 cursor-pointer text-slate-600 hover:text-slate-900"
 		>
-			{image}
-			<p className="pb-1 text-xs text-center ">{label}</p>
-			{hovered && (
-				<Portal>
-					<Image
-						className="border border rounded-r absolute z-[999999] top-[35%] left-[310px] bg-white"
-						src={src}
-						alt="Preview"
-						width={700}
-						height={300}
-						fit="contain"
-					/>
-				</Portal>
-			)}
-		</button>
+			<div className="pt-1 text-2xl">{icon}</div>
+			<p className="text-xs text-center">{label}</p>
+		</div>
 	)
 }
 

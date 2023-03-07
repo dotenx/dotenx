@@ -122,30 +122,38 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 
 const createSection = () =>
 	box([
-		txt('Stat').css({
-			textAlign: 'center',
-			fontSize: '24px',
-			fontWeight: 'bold',
-		}).cssTablet({
-			fontSize: '20px'
-		}).cssMobile({
-			fontSize: '16px'
-		}),
-		txt('100k').css({
-			textAlign: 'center',
-			fontSize: '20px',
-			color: '#cacaca'
-		}).cssTablet({
-			fontSize: '16px'
-		}).cssMobile({
-			fontSize: '12px'
-		}),
-	]).css({
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'stretch',
-		width: '100%',
-	}).class(['section']) // This is not necessary in the rendered code but I've added it as we add extra divs in the ui-builder 
+		txt('Stat')
+			.css({
+				textAlign: 'center',
+				fontSize: '24px',
+				fontWeight: 'bold',
+			})
+			.cssTablet({
+				fontSize: '20px',
+			})
+			.cssMobile({
+				fontSize: '16px',
+			}),
+		txt('100k')
+			.css({
+				textAlign: 'center',
+				fontSize: '20px',
+				color: '#cacaca',
+			})
+			.cssTablet({
+				fontSize: '16px',
+			})
+			.cssMobile({
+				fontSize: '12px',
+			}),
+	])
+		.css({
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'stretch',
+			width: '100%',
+		})
+		.class(['section']) // This is not necessary in the rendered code but I've added it as we add extra divs in the ui-builder
 
 const sections = [
 	createSection(),
@@ -166,5 +174,3 @@ const defaultData = {
 		},
 	],
 }
-
-console.log(`defaultData`, defaultData)

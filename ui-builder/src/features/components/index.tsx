@@ -1,3 +1,19 @@
+import { ReactNode } from 'react'
+import {
+	TbArticle,
+	TbBorderHorizontal,
+	TbClick,
+	TbForms,
+	TbLayoutBottombar,
+	TbLayoutNavbar,
+	TbList,
+	TbMessageChatbot, TbPhoto, TbQuestionCircle,
+	TbReportMoney,
+	TbSection,
+	TbTableAlias,
+	TbUser,
+	TbUsers
+} from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
 import { BasicButton } from './basic-button'
@@ -6,17 +22,6 @@ import { BasicImage } from './basic-image'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
 import { BasicYouTube } from './basic-youtube'
-import {
-	ChartArea,
-	ChartBar,
-	ChartBubble,
-	ChartDoughnut,
-	ChartLine,
-	ChartPie,
-	ChartPolarArea,
-	ChartRadar,
-	ChartScatter,
-} from './chart-bar'
 import { ComparisonTableSimple } from './comparison-table-simple'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
@@ -54,35 +59,37 @@ import { TestimonialSimple } from './testimonial-simple'
 export const COMPONENTS: Components = [
 	{
 		title: 'Basic',
+		icon: <TbClick />,
 		items: [BasicImage, BasicText, BasicButton, BasicVideo, BasicYouTube, BasicColumns],
 	},
 	{
 		title: 'About',
+		icon: <TbArticle />,
 		items: [AboutLeft, AboutRight],
 	},
 	{
-		title: 'Charts',
-		items: [
-			ChartBar,
-			ChartArea,
-			ChartBubble,
-			ChartDoughnut,
-			ChartLine,
-			ChartPie,
-			ChartPolarArea,
-			ChartRadar,
-			ChartScatter,
-		],
+		title: 'Customers',
+		icon: <TbUser />,
+		items: [CustomersLogoGrid, CustomersGrid],
 	},
-	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid] },
-	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
-	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
+	{
+		title: 'Comparison Table',
+		icon: <TbTableAlias />,
+		items: [ComparisonTableSimple],
+	},
+	{
+		title: 'FAQ',
+		icon: <TbQuestionCircle />,
+		items: [FaqBasic, FaqBasicStyled],
+	},
 	{
 		title: 'Divider',
+		icon: <TbBorderHorizontal />,
 		items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections, DividerStats],
 	},
 	{
 		title: 'Features',
+		icon: <TbList />,
 		items: [
 			FeatureCenterGrid,
 			FeatureCenterCards,
@@ -91,9 +98,14 @@ export const COMPONENTS: Components = [
 			FeatureDetailsRight,
 		],
 	},
-	{ title: 'Footers', items: [FooterGrid, FooterSimple] },
+	{
+		title: 'Footers',
+		icon: <TbLayoutBottombar />,
+		items: [FooterGrid, FooterSimple],
+	},
 	{
 		title: 'Gallery',
+		icon: <TbPhoto />,
 		items: [
 			GalleryBasic,
 			GalleryBasicRounded,
@@ -104,15 +116,36 @@ export const COMPONENTS: Components = [
 	},
 	{
 		title: 'Hero',
+		icon: <TbSection />,
 		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight],
 	},
-	{ title: 'Navbar', items: [Navbar] },
-	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
-	{ title: 'Testimonial', items: [TestimonialSimple] },
-	{ title: 'Form', items: [Form] },
+	{
+		title: 'Navbar',
+		icon: <TbLayoutNavbar />,
+		items: [Navbar],
+	},
+	{
+		title: 'Pricing',
+		icon: <TbReportMoney />,
+		items: [PricingSimple, PricingSimple2],
+	},
+	{
+		title: 'Team',
+		icon: <TbUsers />,
+		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft],
+	},
+	{
+		title: 'Testimonial',
+		icon: <TbMessageChatbot />,
+		items: [TestimonialSimple],
+	},
+	{
+		title: 'Form',
+		icon: <TbForms />,
+		items: [Form],
+	},
 ]
 
 export type ComponentSection = (typeof COMPONENTS)[number]
 
-export type Components = { title: string; items: (typeof Component)[] }[]
+export type Components = { title: string; items: (typeof Component)[]; icon?: ReactNode }[]
