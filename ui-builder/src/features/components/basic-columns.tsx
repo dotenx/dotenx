@@ -4,7 +4,6 @@ import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
-import { BasicImage } from './basic-image'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
@@ -12,7 +11,7 @@ export class BasicColumns extends Component {
 	name = 'Basic Columns'
 	image = imageUrl
 	defaultData = box([
-		grid(2).populate([new BasicImage().transform(), new BasicImage().transform()]).css({
+		grid(2).populate([]).css({
 			gap: '40px',
 		}),
 	]).css({
