@@ -12,7 +12,6 @@ import { CollapseLine } from '../ui/collapse-line'
 export function SimpleAnimationEditor({ element }: { element: Element }) {
 	const presets = PRESETS.map((preset) => ({ label: preset.name, value: preset.id }))
 	const set = useSetWithElement(element)
-	console.log(element)
 
 	return (
 		<CollapseLine label="Animation" defaultClosed>

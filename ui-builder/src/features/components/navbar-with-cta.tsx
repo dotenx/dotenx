@@ -51,7 +51,6 @@ function NavbarWithCTAOptions() {
 
 function ItemOptions({ item }: { item: Element }) {
 	const link = item as LinkElement
-	console.log(link)
 	const text = link.children[0] as TextElement
 
 	return (

@@ -9,7 +9,7 @@ import {
 	TbEye,
 	TbEyeOff,
 	TbGripVertical,
-	TbPackgeExport,
+	TbPackageExport,
 } from 'react-icons/tb'
 import { Draggable, DraggableMode } from '../dnd/draggable'
 import { DroppableMode } from '../dnd/droppable'
@@ -221,7 +221,7 @@ function ExtractButton({ element }: { element: Element }) {
 				})
 			}
 		>
-			<TbPackgeExport />
+			<TbPackageExport />
 		</ActionIcon>
 	)
 }
