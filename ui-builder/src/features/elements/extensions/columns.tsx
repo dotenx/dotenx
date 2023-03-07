@@ -1,15 +1,17 @@
 import { Button, CloseButton, NumberInput, SegmentedControl, TextInput } from '@mantine/core'
 import produce from 'immer'
+import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbLayoutColumns, TbPlus } from 'react-icons/tb'
-import { gridCols } from '../../../utils/style-utils'
+import { getGridCols, gridCols } from '../../../utils/style-utils'
 import { useSelectedElement } from '../../selection/use-selected-component'
+import { AddElementButton } from '../../simple/simple-canvas'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { simpleFlexAligns } from '../../style/layout-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { useEditStyle } from '../../style/use-edit-style'
 import { getStyleNumber } from '../../ui/style-input'
-import { Element, RenderFn } from '../element'
+import { Element, RenderFn, RenderFnOptions } from '../element'
 import { useElementsStore, useSetElement } from '../elements-store'
 import { Style } from '../style'
 import { BoxElement } from './box'
@@ -29,8 +31,33 @@ export class ColumnsElement extends Element {
 	}
 	data = { as: 'div' }
 
-	render(renderFn: RenderFn): ReactNode {
-		return renderFn(this)
+	render(renderFn: RenderFn, options: RenderFnOptions): ReactNode {
+		if (!options.isSimple) return renderFn(this)
+
+		const diffCols =
+			getGridCols(this.style.desktop?.default?.gridTemplateColumns?.toString() ?? '') -
+			this.children.length
+
+		return (
+			<>
+				{renderFn(this)}
+				{diffCols > 0 &&
+					_.range(diffCols).map((i) => (
+						<div
+							key={i}
+							style={{
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+								backgroundColor: 'rgba(0,0,0,0.05)',
+								padding: '10px',
+							}}
+						>
+							<AddElementButton insert={{ where: this.id, placement: 'initial' }} />
+						</div>
+					))}
+			</>
+		)
 	}
 
 	renderOptions(): ReactNode {

@@ -1,7 +1,7 @@
 import { immerable } from 'immer'
 import _ from 'lodash'
 import { CSSProperties, ReactNode } from 'react'
-import { mapCustomSelectorStyleToKebabCase, mapCustomStyleToKebabCaseStyle, mapStyleToKebabCaseStyle } from '../../api/mapper'
+import { mapCustomStyleToKebabCaseStyle, mapStyleToKebabCaseStyle } from '../../api/mapper'
 import { uuid } from '../../utils'
 import { Animation } from '../animations/schema'
 import { Component } from '../components/component'
@@ -11,12 +11,16 @@ import { CustomStyle, Style } from './style'
 
 export type RenderFn = (element: Element) => ReactNode
 
+export type RenderFnOptions = {
+	isSimple?: boolean
+}
+
 export abstract class Element {
 	[immerable] = true
 
 	abstract readonly name: string
 	abstract readonly icon: ReactNode
-	abstract render(renderFn: RenderFn): ReactNode
+	abstract render(renderFn: RenderFn, options?: RenderFnOptions): ReactNode
 	abstract renderOptions(options: RenderOptions): ReactNode
 	id: string = uuid()
 	style: Style = {}
@@ -58,7 +62,11 @@ export abstract class Element {
 			})),
 			bindings: this.bindings,
 			controller: this.controller?.serialize(),
-			data: { ...this.data, style: mapStyleToKebabCaseStyle(this.style), customStyle:  mapCustomStyleToKebabCaseStyle(this.customStyle) },
+			data: {
+				...this.data,
+				style: mapStyleToKebabCaseStyle(this.style),
+				customStyle: mapCustomStyleToKebabCaseStyle(this.customStyle),
+			},
 			elementId: this.elementId,
 			tagId: this.tagId,
 			script: this.script,

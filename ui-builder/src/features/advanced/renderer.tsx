@@ -4,6 +4,7 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { AnyJson, JsonArray } from '../../utils'
 import { Element } from '../elements/element'
+import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { InputElement } from '../elements/extensions/input'
 import { SelectElement } from '../elements/extensions/select'
@@ -20,12 +21,16 @@ export function RenderElements({
 	overlay,
 	isDirectRootChildren,
 	parentHidden,
+	isGridChild,
+	isSimple,
 }: {
 	elements: Element[]
 	states?: AnyJson
 	overlay: Overlay
 	isDirectRootChildren?: boolean
 	parentHidden?: boolean
+	isGridChild?: boolean
+	isSimple: boolean
 }) {
 	return (
 		<>
@@ -37,6 +42,8 @@ export function RenderElements({
 					overlay={overlay}
 					isDirectRootChildren={isDirectRootChildren}
 					parentHidden={parentHidden}
+					isGridChild={isGridChild}
+					isSimple={isSimple}
 				/>
 			))}
 		</>
@@ -49,6 +56,7 @@ export type Overlay = (props: {
 	isDirectRootChildren?: boolean
 	parentHidden?: boolean
 	withoutStyle?: boolean
+	isGridChild?: boolean
 }) => JSX.Element
 
 function RenderElement({
@@ -57,12 +65,16 @@ function RenderElement({
 	overlay,
 	isDirectRootChildren,
 	parentHidden,
+	isGridChild,
+	isSimple,
 }: {
 	element: Element
 	states?: AnyJson
 	overlay: Overlay
 	isDirectRootChildren?: boolean
 	parentHidden?: boolean
+	isGridChild?: boolean
+	isSimple: boolean
 }) {
 	const { isFullscreen } = useAtomValue(previewAtom)
 
@@ -73,6 +85,7 @@ function RenderElement({
 				states={states}
 				overlay={overlay}
 				isDirectRootChildren={isDirectRootChildren}
+				isSimple={isSimple}
 			/>
 		)
 	}
@@ -90,15 +103,21 @@ function RenderElement({
 			element={element}
 			isDirectRootChildren={isDirectRootChildren}
 			parentHidden={parentHidden}
+			isGridChild={isGridChild}
 		>
-			{element.render((element) => (
-				<RenderElements
-					elements={element.children ?? []}
-					states={states}
-					overlay={overlay}
-					parentHidden={parentHidden || element.hidden}
-				/>
-			))}
+			{element.render(
+				(element) => (
+					<RenderElements
+						elements={element.children ?? []}
+						states={states}
+						overlay={overlay}
+						parentHidden={parentHidden || element.hidden}
+						isGridChild={element instanceof ColumnsElement}
+						isSimple={isSimple}
+					/>
+				),
+				{ isSimple }
+			)}
 		</Overlay>
 	)
 }
@@ -108,11 +127,15 @@ function RenderElementPreview({
 	states,
 	overlay,
 	isDirectRootChildren,
+	isGridChild,
+	isSimple,
 }: {
 	element: Element
 	states?: AnyJson
 	overlay: Overlay
 	isDirectRootChildren?: boolean
+	isGridChild?: boolean
+	isSimple: boolean
 }) {
 	const pageStates = usePageStateStore((store) => store.states)
 
@@ -133,6 +156,8 @@ function RenderElementPreview({
 						})}
 						states={item}
 						overlay={overlay}
+						isGridChild={isGridChild}
+						isSimple={isSimple}
 					/>
 				))}
 			</>
@@ -153,6 +178,8 @@ function RenderElementPreview({
 				key={element.id}
 				element={valuedElement}
 				overlay={overlay}
+				isGridChild={isGridChild}
+				isSimple={isSimple}
 			/>
 		)
 	}
@@ -171,6 +198,8 @@ function RenderElementPreview({
 				key={element.id}
 				element={valuedElement}
 				overlay={overlay}
+				isGridChild={isGridChild}
+				isSimple={isSimple}
 			/>
 		)
 	}
@@ -196,6 +225,7 @@ function RenderElementPreview({
 						elements={element.children ?? []}
 						states={states}
 						overlay={overlay}
+						isSimple={isSimple}
 					/>
 				),
 				style
