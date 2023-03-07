@@ -3,6 +3,7 @@
 ;(async () => {
 	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
+	const redirect = '{{redirect}}'
 
 	const root = document.getElementById(id)
 	const nameInput = root.querySelector('.name > input')
@@ -31,11 +32,8 @@
 			},
 			body: JSON.stringify(body),
 		})
-
 		const data = await response.json()
-
-		if (data.error) {
-			alert(data.error)
-		}
+		if (response.ok) window.location.href = redirect
+		alert(data.message)
 	})
 })()

@@ -3,6 +3,7 @@
 ;(async () => {
 	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
+	const redirect = '{{redirect}}'
 
 	const url = `https://api.dotenx.com/user/management/project/${projectTag}/login`
 	const method = 'POST'
@@ -27,15 +28,13 @@
 			},
 			body: JSON.stringify(body),
 		})
-
 		const data = await response.json()
-
-		if (data.error) {
-			alert(data.error)
-		} else {
+		if (response.ok) {
 			const token = data.accessToken
-			// set token to cookie
 			document.cookie = `token=${token}`
+			window.location.href = redirect
+		} else {
+			alert(data.message)
 		}
 	})
 })()
