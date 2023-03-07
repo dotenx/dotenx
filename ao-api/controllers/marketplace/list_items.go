@@ -11,7 +11,7 @@ import (
 func (controller *MarketplaceController) ListItems() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		var accountId, category, itemType string
+		var accountId, category, itemType, projectType string
 		var enable bool
 		// get accountId, category, itemType from query params
 		if a, ok := c.Get("accountId"); ok {
@@ -22,6 +22,9 @@ func (controller *MarketplaceController) ListItems() gin.HandlerFunc {
 		}
 		if t, ok := c.GetQuery("type"); ok {
 			itemType = t
+		}
+		if pt, ok := c.GetQuery("project_type"); ok {
+			projectType = pt
 		}
 		if e, ok := c.GetQuery("enabled"); ok {
 			enable = e == "true"
@@ -37,7 +40,7 @@ func (controller *MarketplaceController) ListItems() gin.HandlerFunc {
 			}
 		}
 
-		items, err := controller.Service.ListItems(accountId, category, itemType, enable)
+		items, err := controller.Service.ListItems(accountId, category, itemType, projectType, enable)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)

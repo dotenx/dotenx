@@ -20,7 +20,7 @@ type MarketplaceStore interface {
 	ListItemsByCategory(ctx context.Context, category string) ([]models.MarketplaceItem, error)
 	ListItemsByAccount(ctx context.Context, accountId int) ([]models.MarketplaceItem, error)
 	ListItemsByType(ctx context.Context, itemType string) ([]models.MarketplaceItem, error)
-	ListItems(ctx context.Context, accountId, category, itemType string, enabled bool) ([]models.MarketplaceItem, error)
+	ListItems(ctx context.Context, accountId, category, itemType, projectType string, enabled bool) ([]models.MarketplaceItem, error)
 	CreateFunction(ctx context.Context, function models.Function) error
 	GetFunction(ctx context.Context, name string) (models.Function, error)
 	UpdateFunction(ctx context.Context, function models.Function) error

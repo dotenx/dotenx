@@ -62,6 +62,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			PreviewUrl:       dto.TemplateUrl,
 			Features:         dto.Features,
 			ProjectName:      dto.ProjectName,
+			ProjectType:      project.Type,
 			ProjectTag:       project.Tag,
 			ProjectHasDb:     project.HasDatabase,
 			ComponentName:    dto.ComponentName,

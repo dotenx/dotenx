@@ -335,6 +335,10 @@ var migrations = []struct {
 		name: "add-project-name-field-to-integrations-table",
 		stmt: addProjectNameFieldToIntegrationsTable,
 	},
+	{
+		name: "add-project-type-field-to-marketplace-items-table",
+		stmt: addProjectTypeFieldToMarketplaceItemsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -938,4 +942,9 @@ ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
 var addProjectNameFieldToIntegrationsTable = `
 ALTER TABLE integrations
 ADD COLUMN IF NOT EXISTS project_name VARCHAR(128) DEFAULT '';
+`
+
+var addProjectTypeFieldToMarketplaceItemsTable = `
+ALTER TABLE marketplace_items
+ADD COLUMN IF NOT EXISTS project_type VARCHAR DEFAULT '';
 `
