@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (store *marketplaceStore) ListItems(ctx context.Context, accountId, category, itemType string, enabled bool) ([]models.MarketplaceItem, error) {
+func (store *marketplaceStore) ListItems(ctx context.Context, accountId, category, itemType, projectType string, enabled bool) ([]models.MarketplaceItem, error) {
 
 	listItems := "SELECT * FROM marketplace_items WHERE "
 
@@ -32,6 +32,11 @@ func (store *marketplaceStore) ListItems(ctx context.Context, accountId, categor
 		listItems += fmt.Sprintf("item_type = $%d and ", i)
 		i++
 		args = append(args, itemType)
+	}
+	if projectType != "" {
+		listItems += fmt.Sprintf("project_type = $%d and ", i)
+		i++
+		args = append(args, projectType)
 	}
 	if enabled {
 		listItems += "enabled = true"
