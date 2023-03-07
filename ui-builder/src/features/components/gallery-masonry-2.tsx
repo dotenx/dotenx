@@ -81,7 +81,7 @@ const defaultData = box([
 	box(tiles).tag(tagIds.grid).css({
 		columnCount: '4',
 		columnGap: '0px',
-		rowGap: '0px'
+		rowGap: '0px',
 	}),
 ])
 	.css({

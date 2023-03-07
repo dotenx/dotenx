@@ -74,8 +74,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			height: '600px',
 			alignItems: 'center',
 			justifyContent: 'center',
-			backgroundImage:
-				'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
+			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundRepeat: 'no-repeat',
 			backgroundAttachment: 'contain',
 			backgroundPosition: 'center center',
@@ -99,9 +98,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			paddingRight: '5%',
 		},
 	}
-	
 }).serialize()
-
 
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
@@ -124,7 +121,7 @@ const title = produce(new TextElement(), (draft) => {
 			fontSize: '30px',
 		},
 	}
-	
+
 	draft.data.text = Expression.fromString('Simplify your business')
 	draft.tagId = tagIds.title
 }).serialize()
@@ -149,7 +146,7 @@ const subTitle = produce(new TextElement(), (draft) => {
 			fontSize: '14px',
 		},
 	}
-	
+
 	draft.data.text = Expression.fromString(
 		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
 	)
@@ -195,7 +192,6 @@ const cta = produce(new LinkElement(), (draft) => {
 			paddingRight: '20px',
 		},
 	}
-
 
 	const element = new TextElement()
 	element.data.text = Expression.fromString('Get Started')

@@ -4,6 +4,7 @@ import { ReactNode, useMemo } from 'react'
 import { Element } from '../../elements/element'
 import { useSetWithElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
+import { ColumnsElement } from '../../elements/extensions/columns'
 import { NavMenuElement } from '../../elements/extensions/nav/nav-menu'
 import { DraggableTabs } from './draggable-tabs'
 
@@ -13,7 +14,7 @@ export function DndTabs({
 	insertElement,
 	autoAdjustGridTemplateColumns = true,
 }: {
-	containerElement: BoxElement | NavMenuElement
+	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 	autoAdjustGridTemplateColumns?: boolean

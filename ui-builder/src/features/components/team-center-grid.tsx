@@ -95,7 +95,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			paddingBottom: '20px',
 		},
 	}
-
 }).serialize()
 
 const topDiv = produce(new BoxElement(), (draft) => {

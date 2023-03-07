@@ -10,12 +10,7 @@ import { useEditStyle } from '../../style/use-edit-style'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 
 // TODO: This allows us to pick an icon. It's better to merge this with icon styler and also add options for size, color, etc.
-export function IconPicker({
-	element,
-}: {
-	element: IconElement
-}) {
-
+export function IconPicker({ element }: { element: IconElement }) {
 	const [iconType, setIconType] = useState('far')
 	const [searchValue, setSearchValue] = useState('')
 	const set = useSetWithElement(element)
@@ -132,7 +127,6 @@ export function IconPicker({
 		</Tabs>
 	)
 }
-
 
 const handleSearch = (IconNames: string[], searchValue: string) => {
 	return IconNames.filter((name) => name.includes(searchValue)).length > 0

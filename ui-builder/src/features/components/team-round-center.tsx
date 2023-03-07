@@ -92,7 +92,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			paddingBottom: '30px',
 		},
 	}
-
 }).serialize()
 
 const teamDetails = [

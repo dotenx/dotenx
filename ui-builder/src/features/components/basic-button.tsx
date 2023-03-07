@@ -26,7 +26,10 @@ function BasicButtonOptions() {
 	const button = component.children[0] as ButtonElement
 
 	return (
-		<ComponentWrapper name="Button" stylers={["alignment", "backgrounds", "borders", "spacing"]}>
+		<ComponentWrapper
+			name="Button"
+			stylers={['alignment', 'backgrounds', 'borders', 'spacing']}
+		>
 			<ButtonStyler label="Button" element={button} />
 		</ComponentWrapper>
 	)
@@ -58,7 +61,7 @@ const defaultData = produce(new BoxElement(), (draft) => {
 			},
 			hover: {
 				backgroundColor: 'hsla(100, 0%, 39%, 1)',
-			}
+			},
 		}
 
 		draft.style.tablet = {
@@ -67,7 +70,7 @@ const defaultData = produce(new BoxElement(), (draft) => {
 				paddingRight: '15px',
 				paddingTop: '5px',
 				paddingBottom: '5px',
-			}
+			},
 		}
 
 		draft.style.mobile = {
@@ -76,11 +79,9 @@ const defaultData = produce(new BoxElement(), (draft) => {
 				paddingRight: '10px',
 				paddingTop: '3px',
 				paddingBottom: '3px',
-			}
+			},
 		}
 	})
 
 	draft.children = [element]
-
 }).serialize()
-

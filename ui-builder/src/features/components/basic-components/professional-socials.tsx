@@ -73,7 +73,7 @@ type OptionsProps = {
 }
 
 function Options({ set, root, rootIsContainer }: OptionsProps): JSX.Element {
-	const containerDiv = rootIsContainer ? root : root.children[0] as BoxElement
+	const containerDiv = rootIsContainer ? root : (root.children[0] as BoxElement)
 	const [addIconOpened, setAddIconOpened] = useState(false)
 	const [unusedIcons, setUnusedIcons] = useState<SocialIcon[]>([])
 
@@ -163,9 +163,15 @@ function Options({ set, root, rootIsContainer }: OptionsProps): JSX.Element {
 
 export default class ProfessionalSocials {
 	static getComponent = () => createLayout(['facebook', 'twitter', 'linkedin'])
-	static getOptions = ({ set, root, rootIsContainer }: { set: (element: Element) => void; root: BoxElement, rootIsContainer?: boolean }) => (
-		<Options set={set} root={root} rootIsContainer={rootIsContainer} />
-	)
+	static getOptions = ({
+		set,
+		root,
+		rootIsContainer,
+	}: {
+		set: (element: Element) => void
+		root: BoxElement
+		rootIsContainer?: boolean
+	}) => <Options set={set} root={root} rootIsContainer={rootIsContainer} />
 }
 
 export class Socials {
@@ -180,7 +186,13 @@ export class Socials {
 			'vimeo',
 			'whatsapp',
 		] as SocialIcon[])
-		static getOptions = ({ set, root, rootIsContainer }: { set: (element: Element) => void; root: BoxElement, rootIsContainer?: boolean }) => (
-			<Options set={set} root={root} rootIsContainer={rootIsContainer} />
-		)
+	static getOptions = ({
+		set,
+		root,
+		rootIsContainer,
+	}: {
+		set: (element: Element) => void
+		root: BoxElement
+		rootIsContainer?: boolean
+	}) => <Options set={set} root={root} rootIsContainer={rootIsContainer} />
 }

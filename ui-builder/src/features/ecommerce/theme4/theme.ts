@@ -10,7 +10,7 @@ import {
 	link,
 	template,
 	textarea,
-	txt
+	txt,
 } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 

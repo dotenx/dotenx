@@ -1,7 +1,7 @@
 import { useDidUpdate, useDisclosure, useElementSize } from '@mantine/hooks'
 import { Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useCallback, useContext, useState } from 'react'
+import { MouseEvent, ReactNode, useCallback, useContext, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { TbArrowDown, TbArrowUp, TbTrash } from 'react-icons/tb'
@@ -20,11 +20,13 @@ export function ElementOverlay({
 	element,
 	isDirectRootChildren,
 	withoutStyle,
+	isGridChild,
 }: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
 	withoutStyle?: boolean
+	isGridChild?: boolean
 }) {
 	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
 		select: store.select,
@@ -35,16 +37,19 @@ export function ElementOverlay({
 	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
 	const [showSettings, showSettingsHandlers] = useDisclosure(false)
 	const { isFullscreen } = useAtomValue(previewAtom)
-	const handleMouseOver = () => {
-		if (isFullscreen) return
+	const handleMouseOver = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
 		setHovered(element.id)
 	}
-	const handleMouseEnter = () => {
-		if (isFullscreen) return
+	const handleMouseEnter = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
 		showSettingsHandlers.open()
 	}
-	const handleClick = () => {
-		if (!isDirectRootChildren || isFullscreen) return
+	const handleClick = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
 		select(element.id)
 	}
 
@@ -69,12 +74,25 @@ export function ElementOverlay({
 		[ref]
 	)
 
+	const handleMouseOut = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
+		unsetHovered()
+	}
+
+	const handleMouseLeave = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
+		showSettingsHandlers.close()
+	}
+
 	return (
 		<div
 			style={{
 				outlineWidth: isHovered ? 2 : 1,
 				cursor: 'default',
-				outlineStyle: isHighlighted && isDirectRootChildren ? 'solid' : undefined,
+				outlineStyle:
+					isHighlighted && (isDirectRootChildren || isGridChild) ? 'solid' : undefined,
 				outlineColor: '#fb7185',
 				width: withoutStyle ? '100%' : undefined,
 				...backgroundImage,
@@ -82,9 +100,9 @@ export function ElementOverlay({
 			className={withoutStyle ? undefined : element.generateClasses()}
 			ref={handleRef}
 			onMouseOver={handleMouseOver}
-			onMouseOut={unsetHovered}
+			onMouseOut={handleMouseOut}
 			onMouseEnter={handleMouseEnter}
-			onMouseLeave={showSettingsHandlers.close}
+			onMouseLeave={handleMouseLeave}
 			onClick={handleClick}
 		>
 			{children}
@@ -116,7 +134,32 @@ export function ElementOverlay({
 					</ElementOverlayPiece>
 				</>
 			)}
+			{isGridChild && showSettings && (
+				<ElementOverlayPiece
+					referenceElement={referenceElement}
+					updateDeps={[element]}
+					placement="left-start"
+					offset={[8, height < 100 ? -80 : -30]}
+				>
+					<RemoveButton element={element} />
+				</ElementOverlayPiece>
+			)}
 		</div>
+	)
+}
+
+function RemoveButton({ element }: { element: Element }) {
+	const remove = useElementsStore((store) => store.remove)
+
+	return (
+		<ActionButton
+			onClick={(event) => {
+				event.stopPropagation()
+				remove([element.id])
+			}}
+		>
+			<TbTrash />
+		</ActionButton>
 	)
 }
 
@@ -178,7 +221,7 @@ const ActionButton = styled.button`
 	padding: 0;
 	background-color: #eeeeee88;
 	:not([disabled]):hover {
-		background-color: #eeeeee44;
+		background-color: #eeeeee66;
 		cursor: pointer;
 	}
 `

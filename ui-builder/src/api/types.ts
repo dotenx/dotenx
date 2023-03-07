@@ -37,7 +37,7 @@ export type AddPageRequest = {
 	pageParams: string[]
 	globals: string[]
 	fonts: Record<string, string>
-	customCodes: { head: string; footer: string;  }
+	customCodes: { head: string; footer: string }
 	statesDefaultValues: Record<string, string>
 	animations: Animation[]
 }

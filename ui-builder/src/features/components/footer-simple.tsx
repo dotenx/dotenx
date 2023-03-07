@@ -79,15 +79,19 @@ const logo = img('https://files.dotenx.com/assets/logo1-fwe14we.png')
 	})
 
 const createLink = (text: string) => {
-	const l = link().txt(text).href('#').css({
-		borderBottomWidth: '2px',
-		borderBottomStyle: 'solid',
-		borderBottomColor: 'white',
-		textDecoration: 'none',
-	}).cssHover({
-		borderBottomColor: '#0e0e0e',
-		transition: 'border-bottom-color 0.2s',
-	})
+	const l = link()
+		.txt(text)
+		.href('#')
+		.css({
+			borderBottomWidth: '2px',
+			borderBottomStyle: 'solid',
+			borderBottomColor: 'white',
+			textDecoration: 'none',
+		})
+		.cssHover({
+			borderBottomColor: '#0e0e0e',
+			transition: 'border-bottom-color 0.2s',
+		})
 	l.children[0].css({
 		fontSize: '1rem',
 		color: '#000000',

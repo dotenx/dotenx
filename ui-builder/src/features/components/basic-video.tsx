@@ -30,7 +30,7 @@ function BasicVideoOptions() {
 	const set = useSetElement()
 
 	return (
-		<ComponentWrapper name="Video" stylers={["alignment", "backgrounds", "borders", "spacing"]}>
+		<ComponentWrapper name="Video" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
 			<VideoStyler element={element} />
 			<Switch
 				size="xs"
@@ -79,8 +79,6 @@ const defaultData = produce(new BoxElement(), (draft) => {
 			width: '100%',
 		},
 	}
-	
+
 	draft.children = [new VideoElement()]
-
 }).serialize()
-
