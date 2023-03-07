@@ -1,3 +1,22 @@
+import {
+	TbArticle,
+	TbBorderHorizontal,
+	TbClick,
+	TbLayoutBottombar,
+	TbLayoutNavbar,
+	TbList,
+	TbListDetails,
+	TbLogin,
+	TbMessageChatbot,
+	TbPhoto,
+	TbQuestionCircle,
+	TbReportMoney,
+	TbSection,
+	TbShoppingBag,
+	TbTableAlias,
+	TbUser,
+	TbUsers,
+} from 'react-icons/tb'
 import { Components } from '../components'
 import { AboutRight } from '../components/about-right'
 import { ComparisonTableSimple } from '../components/comparison-table-simple'
@@ -41,6 +60,7 @@ import { theme4Components } from './theme4/components'
 export const ECOMMERCE_COMPONENTS: Components = [
 	{
 		title: 'Product',
+		icon: <TbShoppingBag />,
 		items: [
 			ProductList,
 			ProductItem,
@@ -55,15 +75,37 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	},
 	{
 		title: 'Sign In/Up',
+		icon: <TbLogin />,
 		items: [SignIn, SignUp],
 	},
-	{ title: 'About', items: [AboutRight] },
-	{ title: 'Customers', items: [CustomersLogoGrid, CustomersGrid, theme1Components.Logos] },
-	{ title: 'Comparison Table', items: [ComparisonTableSimple] },
-	{ title: 'FAQ', items: [FaqBasic, FaqBasicStyled] },
-	{ title: 'Divider', items: [DividerSimpleTitle] },
+	{
+		title: 'About',
+		icon: <TbArticle />,
+		items: [AboutRight],
+	},
+	{
+		title: 'Customers',
+		icon: <TbUser />,
+		items: [CustomersLogoGrid, CustomersGrid, theme1Components.Logos],
+	},
+	{
+		title: 'Comparison Table',
+		icon: <TbTableAlias />,
+		items: [ComparisonTableSimple],
+	},
+	{
+		title: 'FAQ',
+		icon: <TbQuestionCircle />,
+		items: [FaqBasic, FaqBasicStyled],
+	},
+	{
+		title: 'Divider',
+		icon: <TbBorderHorizontal />,
+		items: [DividerSimpleTitle],
+	},
 	{
 		title: 'Features',
+		icon: <TbList />,
 		items: [
 			FeatureCenterGrid,
 			FeatureCenterCards,
@@ -77,11 +119,24 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			theme2Components.Features,
 		],
 	},
-	{ title: 'Collections', items: [theme3Components.Collections] },
-	{ title: 'Footers', items: [FooterGrid] },
-	{ title: 'Gallery', items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions] },
+	{
+		title: 'Collections',
+		icon: <TbListDetails />,
+		items: [theme3Components.Collections],
+	},
+	{
+		title: 'Footers',
+		icon: <TbLayoutBottombar />,
+		items: [FooterGrid],
+	},
+	{
+		title: 'Gallery',
+		icon: <TbPhoto />,
+		items: [GalleryBasic, GalleryBasicRounded, GalleryWithCaptions],
+	},
 	{
 		title: 'Hero',
+		icon: <TbSection />,
 		items: [
 			HeroFullWidth,
 			HeroCtaLeft,
@@ -93,6 +148,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	},
 	{
 		title: 'Navbar',
+		icon: <TbLayoutNavbar />,
 		items: [
 			Header,
 			Navbar,
@@ -101,8 +157,24 @@ export const ECOMMERCE_COMPONENTS: Components = [
 			theme3Components.Navbar,
 		],
 	},
-	{ title: 'Pricing', items: [PricingSimple, PricingSimple2] },
-	{ title: 'Team', items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft] },
-	{ title: 'Testimonial', items: [TestimonialSimple, theme2Components.Testimonial] },
-	{ title: 'Call to action', items: [theme1Components.Cta, theme2Components.Cta] },
+	{
+		title: 'Pricing',
+		icon: <TbReportMoney />,
+		items: [PricingSimple, PricingSimple2],
+	},
+	{
+		title: 'Team',
+		icon: <TbUsers />,
+		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft],
+	},
+	{
+		title: 'Testimonial',
+		icon: <TbMessageChatbot />,
+		items: [TestimonialSimple, theme2Components.Testimonial],
+	},
+	{
+		title: 'Call to action',
+		icon: <TbClick />,
+		items: [theme1Components.Cta, theme2Components.Cta],
+	},
 ]
