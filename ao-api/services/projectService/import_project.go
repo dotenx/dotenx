@@ -14,13 +14,23 @@ func (ps *projectService) ImportProject(accountId, newProjectName, newProjectDes
 	if err != nil {
 		return err
 	}
-
 	hasDatabase := false
 	if len(project.DataBaseTables) > 0 {
 		hasDatabase = true
 	}
+	item, err := mService.GetItem(itemId)
+	if err != nil {
+		return err
+	}
+	newProjectModel := models.Project{
+		Name:        newProjectName,
+		Description: newProjectDescription,
+		HasDatabase: hasDatabase,
+		Type:        item.ProjectType,
+		Theme:       item.Theme,
+	}
 
-	err = ps.AddProject(accountId, models.Project{Name: newProjectName, Description: newProjectDescription, HasDatabase: hasDatabase}, uiBuilderService)
+	err = ps.AddProject(accountId, newProjectModel, uiBuilderService)
 	if err != nil {
 		return err
 	}
