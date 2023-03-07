@@ -14,27 +14,18 @@ import { Editor, useEditor } from "../features/editor/editor"
 import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 
+type Tabs = "content" | "schedule"
+
 export function UpdateSchedulePage() {
 	const navigate = useNavigate()
 	const { name = "" } = useParams()
-	const editor = useEditor()
-
-	const [stage, setStage] = useState<"content" | "schedule">("content")
+	const [stage, setStage] = useState<Tabs>("content")
 	const { projectName, projectTag: tag, isLoading: loadingTag } = useGetProjectTag()
 	const { data: scheduleDetails, isLoading } = useQuery(
 		[QueryKey.GetPipelineDetails],
 		() => getEmailPipelineDetail({ name, tag }),
 		{ enabled: !!tag }
 	)
-	const emailMutation = useMutation(updateEmailPipeline, {
-		onSuccess: () => {
-			toast("Schedule updated successfully", { type: "success", autoClose: 2000 })
-			navigate(`/projects/${projectName}/audience?tab=schedules`)
-		},
-		onError: (e: any) => {
-			toast(e.response.data.message, { type: "error", autoClose: 2000 })
-		},
-	})
 
 	if (isLoading || loadingTag) return <Loader />
 	return (
@@ -50,35 +41,71 @@ export function UpdateSchedulePage() {
 				}
 			/>
 			<ContentWrapper>
-				<div hidden={stage !== "content"}>
-					<Editor editor={editor} />
-				</div>
-				{stage === "schedule" && (
-					<div>
-						<Button
-							size="xs"
-							leftIcon={<TbArrowLeft />}
-							onClick={() => setStage("content")}
-						>
-							Back
-						</Button>
-						<UpdateSchedule
-							details={scheduleDetails?.data}
-							onSave={async (values) => {
-								emailMutation.mutate({
-									...values,
-									payload: {
-										...values.payload,
-										html_content: await editor.html(),
-										json_content: await editor.json(),
-									},
-								})
-							}}
-							submitting={emailMutation.isLoading}
-						/>
-					</div>
-				)}
+				<UpdateScheduleSection
+					scheduleDetails={scheduleDetails}
+					projectName={projectName}
+					stage={stage}
+					setStage={setStage}
+				/>
 			</ContentWrapper>
+		</div>
+	)
+}
+
+function UpdateScheduleSection({
+	scheduleDetails,
+	projectName,
+	setStage,
+	stage,
+}: {
+	stage: Tabs
+	setStage: (stage: Tabs) => void
+	scheduleDetails: any
+	projectName: string
+}) {
+	const navigate = useNavigate()
+	const editor = useEditor()
+
+	const emailMutation = useMutation(updateEmailPipeline, {
+		onSuccess: () => {
+			toast("Schedule updated successfully", { type: "success", autoClose: 2000 })
+			navigate(`/projects/${projectName}/audience?tab=schedules`)
+		},
+		onError: (e: any) => {
+			toast(e.response.data.message, { type: "error", autoClose: 2000 })
+		},
+	})
+
+	return (
+		<div>
+			<div hidden={stage !== "content"}>
+				<Editor editor={editor} defaultData={scheduleDetails.data.metadata.json_content} />
+			</div>
+			{stage === "schedule" && (
+				<div>
+					<Button
+						size="xs"
+						leftIcon={<TbArrowLeft />}
+						onClick={() => setStage("content")}
+					>
+						Back
+					</Button>
+					<UpdateSchedule
+						details={scheduleDetails?.data}
+						onSave={async (values) => {
+							emailMutation.mutate({
+								...values,
+								payload: {
+									...values.payload,
+									html_content: await editor.html(),
+									json_content: await editor.json(),
+								},
+							})
+						}}
+						submitting={emailMutation.isLoading}
+					/>
+				</div>
+			)}
 		</div>
 	)
 }
@@ -252,11 +279,6 @@ function UpdateSchedule({
 						{...getInputProps("from")}
 					/>
 					<TextInput label="Subject" placeholder="" {...getInputProps("subject")} />
-					<TextInput
-						label="Text content"
-						placeholder=""
-						{...getInputProps("text_content")}
-					/>
 					<div className="col-span-2">
 						<Cron
 							onChange={setScheduleValue}

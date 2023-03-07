@@ -76,6 +76,7 @@ export function ElementOverlay({
 				cursor: 'default',
 				outlineStyle: isHighlighted && isDirectRootChildren ? 'solid' : undefined,
 				outlineColor: '#fb7185',
+				width: withoutStyle ? '100%' : undefined,
 				...backgroundImage,
 			}}
 			className={withoutStyle ? undefined : element.generateClasses()}

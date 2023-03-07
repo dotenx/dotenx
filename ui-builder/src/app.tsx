@@ -1,6 +1,6 @@
 import { createEmotionCache, MantineProvider, MantineThemeOverride } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
-import { NotificationsProvider } from '@mantine/notifications'
+import { Notifications } from '@mantine/notifications'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
@@ -46,13 +46,12 @@ export function App() {
 				emotionCache={emotionCache}
 				theme={theme}
 			>
-				<NotificationsProvider>
-					<ModalsProvider>
-						<BrowserRouter>
-							<Router />
-						</BrowserRouter>
-					</ModalsProvider>
-				</NotificationsProvider>
+				<Notifications />
+				<ModalsProvider>
+					<BrowserRouter>
+						<Router />
+					</BrowserRouter>
+				</ModalsProvider>
 			</MantineProvider>
 		</QueryClientProvider>
 	)

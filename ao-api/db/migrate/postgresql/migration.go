@@ -339,6 +339,10 @@ var migrations = []struct {
 		name: "add-tls-validation-fields-to-project-domain-table",
 		stmt: addTLSValidationFieldsToProjectDomainTable,
 	},
+	{
+		name: "add-project-name-field-to-integrations-table",
+		stmt: addProjectNameFieldToIntegrationsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -939,7 +943,6 @@ ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
 `
 
-// Add columns cdn_arn, cdn_domain, s3_bucket to project_domain table all of them are varchar(64) default ''. Also drop columns hosted_zone_id and ns_records
 var addInfrastructureFieldsToProjectDomainTable = `
 ALTER TABLE project_domain
 ADD COLUMN IF NOT EXISTS cdn_arn VARCHAR(64) DEFAULT '',
@@ -949,9 +952,13 @@ DROP COLUMN IF EXISTS hosted_zone_id,
 DROP COLUMN IF EXISTS ns_records;
 `
 
-// Add columns tls_validation_record_name and tls_validation_record_value to project_domain table both of them are varchar(256) default ''
 var addTLSValidationFieldsToProjectDomainTable = `
 ALTER TABLE project_domain
 ADD COLUMN IF NOT EXISTS tls_validation_record_name VARCHAR(256) DEFAULT '',
 ADD COLUMN IF NOT EXISTS tls_validation_record_value VARCHAR(256) DEFAULT '';
+`
+
+var addProjectNameFieldToIntegrationsTable = `
+ALTER TABLE integrations
+ADD COLUMN IF NOT EXISTS project_name VARCHAR(128) DEFAULT '';
 `

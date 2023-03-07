@@ -118,6 +118,7 @@ func (pc *ProjectController) ProjectDependentSetup(dbService databaseService.Dat
 			HasRefreshToken: hasRefreshToken,
 			Provider:        "",
 			TpAccountId:     "",
+			ProjectName:     dto.ProjectName,
 		})
 		if err != nil {
 			logrus.Error(err)

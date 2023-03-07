@@ -10,6 +10,7 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/jmoiron/sqlx"
 )
 
 type IntegrationStore interface {
@@ -17,8 +18,8 @@ type IntegrationStore interface {
 	DeleteIntegration(ctx context.Context, accountId string, integrationName string) error
 	CheckTasksForIntegration(ctx context.Context, accountId string, integrationName string) (bool, error)
 	CheckTriggersForIntegration(ctx context.Context, accountId string, integrationName string) (bool, error)
-	GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error)
-	GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error)
+	GetIntegrationsByType(ctx context.Context, accountId, integrationType, projectName string) ([]models.Integration, error)
+	GetAllintegrations(ctx context.Context, accountId, projectName string) ([]models.Integration, error)
 	GetIntegrationByName(ctx context.Context, accountId, name string) (models.Integration, error)
 	GetIntegrationForThirdPartyUser(ctx context.Context, accountId, tpAccountId, integrationType string) (models.Integration, error)
 }
@@ -32,8 +33,8 @@ func New(db *db.DB) IntegrationStore {
 }
 
 var storeIntegration = `
-INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO integrations (account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id, project_name)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 func (store *integrationStore) AddIntegration(ctx context.Context, accountId string, integration models.Integration) error {
@@ -45,7 +46,7 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 		return fmt.Errorf("driver not supported")
 	}
 	marshalled, _ := json.Marshal(integration.Secrets)
-	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken, integration.Provider, integration.TpAccountId)
+	res, err := store.db.Connection.Exec(stmt, accountId, integration.Type, integration.Name, marshalled, integration.HasRefreshToken, integration.Provider, integration.TpAccountId, integration.ProjectName)
 	if err != nil {
 		return err
 	}
@@ -56,16 +57,27 @@ func (store *integrationStore) AddIntegration(ctx context.Context, accountId str
 }
 
 var getIntegrationsByType = `
-select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
-where account_id = $1 and type = $2;
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id, project_name from integrations 
+where account_id = $1 and type = $2 and tp_account_id='';
 `
 
-func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accountId, integrationType string) ([]models.Integration, error) {
+var getIntegrationsByTypeAndProjectName = `
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id, project_name from integrations 
+where account_id = $1 and type = $2 and project_name = $3 and tp_account_id='';
+`
+
+func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accountId, integrationType, projectName string) ([]models.Integration, error) {
 	res := make([]models.Integration, 0)
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection
-		rows, err := conn.Queryx(getIntegrationsByType, accountId, integrationType)
+		var rows *sqlx.Rows
+		var err error
+		if projectName != "" {
+			rows, err = conn.Queryx(getIntegrationsByTypeAndProjectName, accountId, integrationType, projectName)
+		} else {
+			rows, err = conn.Queryx(getIntegrationsByType, accountId, integrationType)
+		}
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -77,7 +89,7 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId, &cur.ProjectName)
 			if err != nil {
 				return res, err
 			}
@@ -92,16 +104,27 @@ func (store *integrationStore) GetIntegrationsByType(ctx context.Context, accoun
 }
 
 var getIntegrations = `
-select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id from integrations 
-where account_id = $1;
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id, project_name from integrations 
+where account_id = $1 and tp_account_id='';
 `
 
-func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId string) ([]models.Integration, error) {
+var getIntegrationsByProjectName = `
+select account_id, type, name, secrets, hasRefreshToken, provider, tp_account_id, project_name from integrations 
+where account_id = $1 and project_name = $2 and tp_account_id='';
+`
+
+func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId, projectName string) ([]models.Integration, error) {
 	res := make([]models.Integration, 0)
 	switch store.db.Driver {
 	case db.Postgres:
 		conn := store.db.Connection
-		rows, err := conn.Queryx(getIntegrations, accountId)
+		var rows *sqlx.Rows
+		var err error
+		if projectName != "" {
+			rows, err = conn.Queryx(getIntegrationsByProjectName, accountId, projectName)
+		} else {
+			rows, err = conn.Queryx(getIntegrations, accountId)
+		}
 		if err != nil {
 			log.Println(err.Error())
 			if err == sql.ErrNoRows {
@@ -113,7 +136,7 @@ func (store *integrationStore) GetAllintegrations(ctx context.Context, accountId
 		for rows.Next() {
 			var cur models.Integration
 			var secrets []byte
-			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId)
+			rows.Scan(&cur.AccountId, &cur.Type, &cur.Name, &secrets, &cur.HasRefreshToken, &cur.Provider, &cur.TpAccountId, &cur.ProjectName)
 			if err != nil {
 				return res, err
 			}

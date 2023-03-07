@@ -3,8 +3,7 @@ import { openConfirmModal } from '@mantine/modals'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import hash from 'object-hash'
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -82,9 +81,7 @@ export function TopBarWrapper({ left, right }: { left: ReactNode; right: ReactNo
 export const useHasUnsavedChanges = () => {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
-	const savedHash = useMemo(() => safeHash(saved), [saved])
-	const currentHash = useMemo(() => safeHash(elements), [elements])
-	return savedHash !== currentHash
+	return saved !== elements
 }
 
 export function UnsavedMessage() {
@@ -108,14 +105,6 @@ export function UnsavedMessage() {
 			You have unsaved changes
 		</Text>
 	)
-}
-
-const safeHash = (object: hash.NotUndefined) => {
-	try {
-		return hash(object)
-	} catch (error) {
-		console.warn({ object }, error)
-	}
 }
 
 export const pageScaleAtom = atom(1)
