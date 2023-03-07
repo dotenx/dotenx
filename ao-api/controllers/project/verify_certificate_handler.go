@@ -17,13 +17,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-/*
-
-
-
-NOTE: This endpoint has a 10 seconds sleep to make sure the verification records of the certificate are available.
-*/
-
 func (pc *ProjectController) VerifyCertificate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accountId, _ := utils.GetAccountId(c)
@@ -142,7 +135,6 @@ func createCloudFrontDistribution(domain, certificateArn, projectTag string) (di
 		},
 	})
 
-	// time.Sleep(time.Second * 10)
 	fmt.Println("origin access identity: ", *originAccessIdentity.CloudFrontOriginAccessIdentity.Id)
 
 	// Create a distribution with s3 origin and the origin access identity
