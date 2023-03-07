@@ -7,3 +7,4 @@ vendor/
 # ao-api/providers.json
 predefinedImages/tasks/twitter-send-tweet/twitter_app_credentials.json
 deploy-dotenx.sh
+ao-api/__debug_bin

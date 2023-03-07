@@ -332,6 +332,14 @@ var migrations = []struct {
 		stmt: addDisplayNameFieldToObjectStoreTable,
 	},
 	{
+		name: "add-infrastructure-fields-to-project-domain-table",
+		stmt: addInfrastructureFieldsToProjectDomainTable,
+	},
+	{
+		name: "add-tls-validation-fields-to-project-domain-table",
+		stmt: addTLSValidationFieldsToProjectDomainTable,
+	},
+	{
 		name: "add-project-name-field-to-integrations-table",
 		stmt: addProjectNameFieldToIntegrationsTable,
 	},
@@ -933,6 +941,21 @@ response                 JSONB NOT NULL
 var addDisplayNameFieldToObjectStoreTable = `
 ALTER TABLE object_store
 ADD COLUMN IF NOT EXISTS display_name varchar(256) DEFAULT '';
+`
+
+var addInfrastructureFieldsToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS cdn_arn VARCHAR(64) DEFAULT '',
+ADD COLUMN IF NOT EXISTS cdn_domain VARCHAR(64) DEFAULT '',
+ADD COLUMN IF NOT EXISTS s3_bucket VARCHAR(64) DEFAULT '',
+DROP COLUMN IF EXISTS hosted_zone_id,
+DROP COLUMN IF EXISTS ns_records;
+`
+
+var addTLSValidationFieldsToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS tls_validation_record_name VARCHAR(256) DEFAULT '',
+ADD COLUMN IF NOT EXISTS tls_validation_record_value VARCHAR(256) DEFAULT '';
 `
 
 var addProjectNameFieldToIntegrationsTable = `
