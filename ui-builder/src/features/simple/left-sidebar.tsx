@@ -1,10 +1,10 @@
-import { Image } from '@mantine/core'
+import { Image, Overlay } from '@mantine/core'
 import { useInputState } from '@mantine/hooks'
 import { closeAllModals, openModal } from '@mantine/modals'
 import { useAtom, useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
-import { TbBox } from 'react-icons/tb'
+import { TbBox, TbPlus } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
 import { Components, ComponentSection } from '../components'
 import { Element } from '../elements/element'
@@ -117,9 +117,19 @@ function SimpleComponentList({ section: { items } }: { section: ComponentSection
 							newComponent.onCreate(component, { projectTag, pageName })
 							closeAllModals()
 						}}
-						className="rounded-lg border text-center cursor-pointer hover:bg-gray-50 overflow-clip flex flex-col"
+						className="rounded-lg border text-center cursor-pointer hover:bg-gray-50 overflow-clip flex flex-col group"
 					>
-						<Image src={newComponent.image} height={200} />
+						<div className="relative">
+							<Image src={newComponent.image} height={200} />
+							<Overlay
+								blur={2}
+								center
+								opacity={0.5}
+								className="group-hover:visible invisible"
+							>
+								<TbPlus size={30} className="text-white" />
+							</Overlay>
+						</div>
 						<p>{newComponent.name}</p>
 					</div>
 				)

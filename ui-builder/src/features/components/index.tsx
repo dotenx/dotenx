@@ -2,7 +2,6 @@ import { ReactNode } from 'react'
 import {
 	TbArticle,
 	TbBorderHorizontal,
-	TbChartBar,
 	TbClick,
 	TbForms,
 	TbLayoutBottombar,
@@ -24,17 +23,6 @@ import { BasicImage } from './basic-image'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
 import { BasicYouTube } from './basic-youtube'
-import {
-	ChartArea,
-	ChartBar,
-	ChartBubble,
-	ChartDoughnut,
-	ChartLine,
-	ChartPie,
-	ChartPolarArea,
-	ChartRadar,
-	ChartScatter,
-} from './chart-bar'
 import { ComparisonTableSimple } from './comparison-table-simple'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
@@ -79,21 +67,6 @@ export const COMPONENTS: Components = [
 		title: 'About',
 		icon: <TbArticle />,
 		items: [AboutLeft, AboutRight],
-	},
-	{
-		title: 'Charts',
-		icon: <TbChartBar />,
-		items: [
-			ChartBar,
-			ChartArea,
-			ChartBubble,
-			ChartDoughnut,
-			ChartLine,
-			ChartPie,
-			ChartPolarArea,
-			ChartRadar,
-			ChartScatter,
-		],
 	},
 	{
 		title: 'Customers',
