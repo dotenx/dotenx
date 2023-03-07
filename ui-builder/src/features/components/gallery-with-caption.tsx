@@ -122,25 +122,24 @@ const tileImage = produce(new ImageElement(), (draft) => {
 			objectFit: 'cover',
 		},
 	}
-	draft.data.src = Expression.fromString(
-		'https://files.dotenx.com/assets/abstract-bg-1k.jpeg'
-	)
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/abstract-bg-1k.jpeg')
 })
 
-const newTile = () => produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			padding: '10px',
-			textAlign: 'center',
-			borderRadius: '8px',
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'center',
-			alignItems: 'center',
-		},
-	}
-	draft.children = [tileImage, tileTitle]
-})
+const newTile = () =>
+	produce(new BoxElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				padding: '10px',
+				textAlign: 'center',
+				borderRadius: '8px',
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				alignItems: 'center',
+			},
+		}
+		draft.children = [tileImage, tileTitle]
+	})
 
 function createTile({ src, title }: { src: string; title: string }) {
 	return produce(newTile(), (draft) => {

@@ -35,7 +35,9 @@ function GalleryMasonryOneOptions() {
 		<ComponentWrapper name="Basic Gallery">
 			<DndTabs
 				containerElement={grid}
-				renderItemOptions={(item) => <ImageStyler element={item.children![0] as ImageElement} />}
+				renderItemOptions={(item) => (
+					<ImageStyler element={item.children![0] as ImageElement} />
+				)}
 				insertElement={insertTab}
 				autoAdjustGridTemplateColumns={false}
 			/>
@@ -71,14 +73,18 @@ const tiles = [
 	createTile('https://files.dotenx.com/assets/random-70-qoc.jpg'),
 ]
 const defaultData = box([
-	box(tiles).tag(tagIds.grid).css({
-		columnCount: '4',
-		columnGap: '16px',
-	}).cssTablet({
-		columnCount: '2'
-	}).cssMobile({
-		columnCount: '1'
-	}),
+	box(tiles)
+		.tag(tagIds.grid)
+		.css({
+			columnCount: '4',
+			columnGap: '16px',
+		})
+		.cssTablet({
+			columnCount: '2',
+		})
+		.cssMobile({
+			columnCount: '1',
+		}),
 ])
 	.css({
 		display: 'flex',
@@ -90,26 +96,17 @@ const defaultData = box([
 		paddingRight: '10%',
 		paddingTop: '40px',
 		paddingBottom: '40px',
-	}).cssTablet({	
+	})
+	.cssTablet({
 		paddingLeft: '8%',
 		paddingRight: '8%',
 		paddingTop: '20px',
 		paddingBottom: '20px',
-	}).css({
+	})
+	.css({
 		paddingLeft: '3%',
 		paddingRight: '3%',
 		paddingTop: '10px',
 		paddingBottom: '10px',
 	})
 	.serialize()
-
-
-
-
-
-
-
-
-
-
-

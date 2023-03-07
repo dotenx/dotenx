@@ -9,7 +9,7 @@ import { Style } from '../style'
 export class VideoElement extends Element {
 	name = 'Video'
 	icon = (<TbVideo />)
-	style: Style = { desktop: { default: {  width: '100%' } } }
+	style: Style = { desktop: { default: { width: '100%' } } }
 	data = { src: '', poster: '', controls: true, autoplay: false, loop: false, muted: false }
 
 	render(): ReactNode {

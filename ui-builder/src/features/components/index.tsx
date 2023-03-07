@@ -7,12 +7,14 @@ import {
 	TbLayoutBottombar,
 	TbLayoutNavbar,
 	TbList,
-	TbMessageChatbot, TbPhoto, TbQuestionCircle,
+	TbMessageChatbot,
+	TbPhoto,
+	TbQuestionCircle,
 	TbReportMoney,
 	TbSection,
 	TbTableAlias,
 	TbUser,
-	TbUsers
+	TbUsers,
 } from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'

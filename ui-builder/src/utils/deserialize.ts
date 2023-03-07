@@ -25,7 +25,9 @@ export function deserializeElement(serialized: any): Element {
 	const element = new Constructor()
 	element.id = serialized.id ? serialized.id : element.id
 	element.style = serialized.data?.style ? mapStyleToCamelCaseStyle(serialized.data?.style) : {}
-	element.customStyle = serialized.data?.customStyle ? mapCustomStyleToCamelCaseStyle(serialized.data?.customStyle) : {}
+	element.customStyle = serialized.data?.customStyle
+		? mapCustomStyleToCamelCaseStyle(serialized.data?.customStyle)
+		: {}
 	element.children =
 		serialized.components?.map((child: any) => deserializeElement(child)) ?? element.children
 	element.classes = serialized.classNames ?? []

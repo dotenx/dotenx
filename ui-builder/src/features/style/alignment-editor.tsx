@@ -57,7 +57,6 @@ export function AlignmentEditor({
 				>
 					{direction === 'row' ? <TbLayoutAlignRight /> : <TbLayoutAlignBottom />}
 				</ActionIcon>
-
 			</div>
 		</CollapseLine>
 	)

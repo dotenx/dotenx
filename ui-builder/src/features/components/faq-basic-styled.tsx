@@ -124,7 +124,7 @@ const title = produce(new TextElement(), (draft) => {
 		},
 	}
 
-	draft.data.text = Expression.fromString("FAQs")
+	draft.data.text = Expression.fromString('FAQs')
 	draft.tagId = tagIds.faqTitle
 }).serialize()
 

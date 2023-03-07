@@ -27,7 +27,10 @@ function BasicImageOptions() {
 	const image = component.children[0] as ImageElement
 
 	return (
-		<ComponentWrapper name="Image" stylers={["alignment", "backgrounds", "borders", "spacing", "animation"]}>
+		<ComponentWrapper
+			name="Image"
+			stylers={['alignment', 'backgrounds', 'borders', 'spacing', 'animation']}
+		>
 			<ImageStyler element={image} />
 		</ComponentWrapper>
 	)
@@ -49,6 +52,4 @@ const defaultData = produce(new BoxElement(), (draft) => {
 	})
 
 	draft.children = [element]
-
 }).serialize()
-

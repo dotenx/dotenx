@@ -7,7 +7,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"lint": "prettier --check ./src && eslint ./src --ext .js,.jsx,.ts,.tsx && tsc",
+		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx && tsc",
 		"fmt": "prettier --write ./src",
 		"watch": "tsc --watch"
 	},

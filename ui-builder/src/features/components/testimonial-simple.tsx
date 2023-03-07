@@ -106,7 +106,6 @@ const wrapperDiv = produce(new BoxElement(), (draft) => {
 			paddingBottom: '30px',
 		},
 	}
-	
 }).serialize()
 const gridWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
@@ -247,7 +246,6 @@ const createBioWithImage = ({
 				},
 			}
 
-
 			draft.data.text = Expression.fromString(name)
 		})
 		const titleText = produce(new TextElement(), (draft) => {
@@ -296,7 +294,9 @@ const defaultData = {
 		description,
 		{
 			...gridWrapper,
-			components: testimonialDetails.map((teamDetail) => createBioWithImage(teamDetail).serialize()),
+			components: testimonialDetails.map((teamDetail) =>
+				createBioWithImage(teamDetail).serialize()
+			),
 		},
 	],
 }

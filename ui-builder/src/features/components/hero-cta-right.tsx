@@ -33,7 +33,6 @@ function HeroCtaRightOptions() {
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const cta = component.find<LinkElement>(tagIds.cta)!
 	const ctaText = cta.children?.[0] as TextElement
-	
 
 	return (
 		<ComponentWrapper name="Hero with CTA on the right">
@@ -75,15 +74,15 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
-		}
+		},
 	}
-	
+
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '5%',
 			paddingRight: '5%',
-		}
+		},
 	}
 }).serialize()
 
@@ -94,9 +93,7 @@ const imageContainer = produce(new ImageElement(), (draft) => {
 			height: 'auto',
 		},
 	}
-	draft.data.src = Expression.fromString(
-		'https://files.dotenx.com/assets/hero-bg-wo4.jpeg'
-	)
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/hero-bg-wo4.jpeg')
 	draft.tagId = tagIds.image
 }).serialize()
 
@@ -181,7 +178,7 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 		},
 	}
-	
+
 	draft.style.tablet = {
 		default: {
 			fontSize: '20px',

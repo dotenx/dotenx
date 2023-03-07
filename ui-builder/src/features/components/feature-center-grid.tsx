@@ -59,14 +59,10 @@ function CellOptions({ item }: { item: Element }) {
 	const title = item.children?.[1] as TextElement
 	const description = item.children?.[2] as TextElement
 
-
 	return (
 		<OptionsWrapper>
 			<TextStyler label="Feature title" element={title} />
-			<TextStyler
-				label="Feature description"
-				element={description}
-			/>
+			<TextStyler label="Feature description" element={description} />
 			<BoxStyler label="Block" element={item} />
 			<IconPicker element={icon} />
 		</OptionsWrapper>

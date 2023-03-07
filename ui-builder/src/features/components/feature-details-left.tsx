@@ -88,15 +88,15 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
-		}
+		},
 	}
-	
+
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: '1fr',
 			paddingLeft: '5%',
 			paddingRight: '5%',
-		}
+		},
 	}
 }).serialize()
 
