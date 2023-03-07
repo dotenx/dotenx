@@ -29,6 +29,7 @@ type MarketplaceItem struct {
 	ProjectHasDb     bool                     `db:"-" json:"project_has_db"`
 	ComponentName    string                   `db:"component_name" json:"-"`
 	ExtensionName    string                   `db:"-" json:"-"`
+	Theme            string                   `db:"theme" json:"theme"`
 	S3Key            string                   `db:"s3_key" json:"-"`
 }
 

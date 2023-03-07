@@ -67,6 +67,7 @@ func (controller *MarketplaceController) AddItem(dbService databaseService.Datab
 			ProjectHasDb:     project.HasDatabase,
 			ComponentName:    dto.ComponentName,
 			ExtensionName:    dto.ExtensionName,
+			Theme:            project.Theme,
 		}
 
 		if err := controller.Service.AddItem(item, dbService, cService, componentservice, extService); err != nil {
