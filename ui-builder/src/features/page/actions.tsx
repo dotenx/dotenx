@@ -31,6 +31,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import {
+	AddPageRequest,
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
@@ -360,23 +361,50 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 
 export function DeletePageButton() {
 	const [opened, setOpened] = useState(false)
-	const { pageName = '' } = useParams()
 
 	return (
 		<>
 			<DeletePageModal opened={opened} setOpened={setOpened} />
 			<Tooltip withinPortal withArrow label={<Text size="xs">Delete Page</Text>}>
-				<Button
-					onClick={() => setOpened(true)}
-					size="xs"
-					variant="default"
-					disabled={pageName === 'index'}
-				>
+				<Button onClick={() => setOpened(true)} size="xs" variant="default">
 					<TbTrash className="w-5 h-5" />
 				</Button>
 			</Tooltip>
 		</>
 	)
+}
+
+const useResetPage = () => {
+	const queryClient = useQueryClient()
+	const projectTag = useAtomValue(projectTagAtom)
+	const { pageName = '' } = useParams()
+
+	const setSaved = useElementsStore((store) => store.save)
+	const savePageMutation = useMutation(
+		() =>
+			updatePage({
+				projectTag,
+				pageName,
+				elements: [],
+				dataSources: [],
+				classNames: {},
+				mode: 'simple',
+				pageParams: [],
+				globals: [],
+				fonts: {},
+				customCodes: { head: '', footer: '' },
+				statesDefaultValues: {},
+				animations: [],
+			}),
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries([QueryKey.PageDetails])
+				setSaved()
+			},
+		}
+	)
+
+	return savePageMutation
 }
 
 function DeletePageModal({
@@ -392,6 +420,7 @@ function DeletePageModal({
 	const resetElements = useElementsStore((store) => store.reset)
 	const { projectName, pageName = '' } = useParams()
 
+	const resetMutation = useResetPage()
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
 			navigate(`/projects/${projectName}`)
@@ -399,7 +428,8 @@ function DeletePageModal({
 			resetElements()
 		},
 	})
-	const remove = () => deletePageMutation.mutate({ projectTag, pageName })
+	const remove = () =>
+		deletePageMutation.mutate({ projectTag, pageName }, { onSuccess: () => setOpened(false) })
 
 	return (
 		<Modal opened={opened} onClose={() => setOpened(false)} title="CAUTION!">
@@ -418,9 +448,13 @@ function DeletePageModal({
 					<Button
 						variant="filled"
 						color={'red'}
+						loading={resetMutation.isLoading || deletePageMutation.isLoading}
 						onClick={() => {
-							setOpened(false)
-							remove()
+							if (pageName === 'index')
+								resetMutation.mutate(undefined, {
+									onSuccess: () => setOpened(false),
+								})
+							else remove()
 						}}
 					>
 						Delete
@@ -438,56 +472,61 @@ const usePageAnimations = () => {
 	return [...animations, ...elementAnimations]
 }
 
-export function SaveButton() {
-	const setSaved = useElementsStore((store) => store.save)
+export const usePageData = () => {
 	const { pageName = '' } = useParams()
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
 	const projectTag = useAtomValue(projectTagAtom)
-	const setPageMode = useSetAtom(pageModeAtom)
 	const elements = useElementsStore((store) => store.elements)
 	const dataSources = useDataSourceStore((store) => store.sources)
 	const classNames = useClassesStore((store) => store.classes)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const globals = useAtomValue(globalStatesAtom)
 	const fonts = useAtomValue(fontsAtom)
-	const savePageMutation = useMutation(updatePage)
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const unsaved = useHasUnsavedChanges()
 	const animations = usePageAnimations()
 
-	const save = () => {
-		savePageMutation.mutate(
-			{
-				projectTag,
-				pageName,
-				elements,
-				dataSources,
-				classNames,
-				mode: isSimple ? 'simple' : 'advanced',
-				pageParams,
-				globals,
-				fonts,
-				customCodes,
-				statesDefaultValues,
-				animations,
-			},
-			{
-				onSuccess: () => {
-					setPageMode(isSimple ? 'simple' : 'advanced')
-					setSaved()
-				},
-			}
-		)
+	return {
+		projectTag,
+		pageName,
+		elements,
+		dataSources,
+		classNames,
+		mode: isSimple ? ('simple' as const) : ('advanced' as const),
+		pageParams,
+		globals,
+		fonts,
+		customCodes,
+		statesDefaultValues,
+		animations,
 	}
+}
+
+const useSavePage = (pageData: AddPageRequest) => {
+	const setSaved = useElementsStore((store) => store.save)
+	const setPageMode = useSetAtom(pageModeAtom)
+	const savePageMutation = useMutation(() => updatePage(pageData), {
+		onSuccess: () => {
+			setPageMode(pageData.mode)
+			setSaved()
+		},
+	})
+
+	return savePageMutation
+}
+
+export function SaveButton() {
+	const unsaved = useHasUnsavedChanges()
+	const pageData = usePageData()
+	const saveMutation = useSavePage(pageData)
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button
-				onClick={save}
+				onClick={() => saveMutation.mutate()}
 				disabled={!unsaved}
-				loading={savePageMutation.isLoading}
+				loading={saveMutation.isLoading}
 				size="xs"
 				variant="default"
 				radius={0}
