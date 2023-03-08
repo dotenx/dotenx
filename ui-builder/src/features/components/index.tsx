@@ -21,6 +21,7 @@ import { AboutRight } from './about-right'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
 import { BasicImage } from './basic-image'
+import { BasicSlideshow } from './basic-slideshow'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
 import { BasicYouTube } from './basic-youtube'
@@ -62,7 +63,15 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Basic',
 		icon: <TbClick />,
-		items: [BasicImage, BasicText, BasicButton, BasicVideo, BasicYouTube, BasicColumns],
+		items: [
+			BasicImage,
+			BasicText,
+			BasicButton,
+			BasicVideo,
+			BasicYouTube,
+			BasicColumns,
+			BasicSlideshow,
+		],
 	},
 	{
 		title: 'About',
