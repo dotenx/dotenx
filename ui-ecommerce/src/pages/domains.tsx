@@ -1,9 +1,7 @@
 import { Button, Loader, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
-import { useClipboard } from "@mantine/hooks"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { IoCheckmark, IoCopy } from "react-icons/io5"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
@@ -13,15 +11,16 @@ import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
 
 export function DomainsPage() {
-	const { projectTag, projectName, isLoading: projectTagIsLoading } = useGetProjectTag()
+	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
 	const [isDomainAdded, setIsDomainAdded] = useState<boolean>()
 	const getDomainsQuery = useQuery(
 		[QueryKey.GetDomains, projectTag],
 		() => getDomains(projectTag),
 		{
 			enabled: !!projectTag,
-			onSuccess: (data) => {
-				if (data.data.external_domain) setIsDomainAdded(true)
+			onSuccess: (data: any) => {
+				if (data.data.tls_arn) setIsDomainAdded(true)
+				else setIsDomainAdded(false)
 			},
 			onError: (err: any) => {
 				if (err.response.status === 404) setIsDomainAdded(false)
@@ -31,12 +30,20 @@ export function DomainsPage() {
 
 	if (!projectName) return <Navigate to="/" replace />
 
+	const helpDetails = {
+		title: "Set a custom domain for your application instead of using the default domain",
+		description:
+			"You can set a custom domain for your application to be used by your users. In order to use the domain you need to verify it first.",
+		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
+		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/domains",
+	}
+
 	return (
 		<div>
 			<Header title={"Domains"} />
 			<ContentWrapper>
 				{getDomainsQuery.isLoading ||
-				projectTagIsLoading ||
+				projectTagisLoading ||
 				getDomainsQuery.isRefetching ? (
 					<Loader className="mx-auto" />
 				) : (
@@ -67,7 +74,7 @@ const Domain = ({
 
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
-			toast("Domain verified successfully", { type: "success", autoClose: 2000 }),
+			toast("Domain verified successfuly", { type: "success", autoClose: 2000 }),
 				client.invalidateQueries([QueryKey.GetDomains])
 		},
 		onError: () => {
@@ -76,7 +83,7 @@ const Domain = ({
 	})
 	return (
 		<div className="grid grid-cols-1 gap-3 ">
-			<div className="p-3 text-left border-2 rounded-md ">
+			<div className="p-3 text-left border-2 rounded-md bg-white ">
 				<h1 className="font-semibold">Domain</h1>
 				<a
 					target={"_blank"}
@@ -86,7 +93,7 @@ const Domain = ({
 				>
 					{domainData?.external_domain}
 				</a>
-				{domainData && !!domainData.tls_arn ? (
+				{domainData && !!domainData.cdn_arn ? (
 					<span className="float-right font-medium text-green-500">verified</span>
 				) : (
 					<Button
@@ -98,9 +105,6 @@ const Domain = ({
 						Verify
 					</Button>
 				)}
-			</div>
-			<div className="p-3 text-left border-2 rounded-md ">
-				<NSList nsList={domainData?.ns_records} />
 			</div>
 		</div>
 	)
@@ -121,14 +125,14 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 	const { mutate, isLoading } = useMutation(addDomain, {
 		onSuccess: () => client.invalidateQueries([QueryKey.GetDomains]),
 		onError: (e: any) => {
-			toast(e.response.data.message, {
+			toast(e.response.data.message || "Something went wrong!", {
 				type: "error",
 				autoClose: 2000,
 			})
 		},
 	})
 	return (
-		<div className="font-medium border-2 rounded-[10px] p-3 bg-white">
+		<div className="font-medium border-2  rounded-[10px]  p-3 bg-white">
 			<p className="my-2 ">You have not added any domains yet.</p>
 			<form
 				onSubmit={onSubmit((domainName) =>
@@ -149,38 +153,6 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 					</Button>
 				</div>
 			</form>
-		</div>
-	)
-}
-
-const NSList = ({ nsList = [] }: { nsList: string[] | undefined }) => {
-	const clipboard = useClipboard({ timeout: 3000 })
-	const [copiedValue, setCopiedValue] = useState("")
-	return (
-		<div className="font-semibold">
-			<h1 className="text-lg">Name Servers</h1>
-			<h3 className="mt-2 mb-1 text-base ">
-				Point your domain&apos;s name servers to Dotenx
-			</h3>
-			<p className="mb-3 text-sm font-medium text-zinc-500">
-				To use Dotenx DNS, go to your domain registrar and change your domain&apos;s name
-				server to the following custom host hostnames assigned to your DNS zone.
-			</p>
-			{nsList.map((ns: string, index: number) => (
-				<div
-					onClick={() => {
-						setCopiedValue(ns), clipboard.copy(ns)
-					}}
-					className={` p-2 px-4 hover:bg-cyan-200 transition-colors cursor-pointer flex items-center justify-between ${
-						index % 2 !== 0 && "bg-slate-100"
-					} `}
-					key={index}
-				>
-					{ns}
-
-					{clipboard.copied && copiedValue === ns ? <IoCheckmark /> : <IoCopy />}
-				</div>
-			))}
 		</div>
 	)
 }
