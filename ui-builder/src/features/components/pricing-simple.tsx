@@ -47,7 +47,7 @@ function PricingSimpleOptions({ options }: SimpleComponentOptionsProps) {
 				renderItemOptions={(item) => (
 					<MemTabOptions set={options.set} tileDiv={item as BoxElement} />
 				)}
-				insertElement={newTile}
+				insertElement={() => regenElement(newTile())}
 			/>
 		</OptionsWrapper>
 	)
