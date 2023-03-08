@@ -20,8 +20,11 @@ export function verifyDomain({ projectTag }: { projectTag: string }) {
 
 export interface GetDomainResponse {
 	external_domain: string
-	hosted_zone_id: string
+	cdn_arn: string
+	cdn_domain: string
+	s3_bucket: string
 	internal_domain: string
-	ns_records: string[]
 	tls_arn: string
+	tls_validation_record_name: string
+	tls_validation_record_value: string
 }
