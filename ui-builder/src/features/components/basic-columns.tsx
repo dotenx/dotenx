@@ -11,7 +11,7 @@ export class BasicColumns extends Component {
 	name = 'Basic Columns'
 	image = imageUrl
 	defaultData = box([
-		grid(2).populate([]).css({
+		grid(2).unlock().populate([]).css({
 			gap: '40px',
 		}),
 	]).css({

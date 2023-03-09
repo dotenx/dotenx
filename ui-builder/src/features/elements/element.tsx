@@ -40,6 +40,12 @@ export abstract class Element {
 		data: Animation
 		event: 'onVisible' | 'onHover'
 	}
+	unlocked?: boolean
+
+	unlock() {
+		this.unlocked = true
+		return this
+	}
 
 	isContainer() {
 		return !(this.children === null || this.children === undefined)
@@ -71,6 +77,7 @@ export abstract class Element {
 			tagId: this.tagId,
 			script: this.script,
 			animation: this.animation,
+			unlocked: this.unlocked,
 		}
 	}
 
