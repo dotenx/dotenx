@@ -62,6 +62,7 @@ export function deserializeElement(serialized: any): Element {
 	element.elementId = serialized.elementId
 	element.script = serialized.script
 	element.animation = serialized.animation
+	element.unlocked = serialized.unlocked
 	return element
 }
 

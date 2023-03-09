@@ -4,7 +4,6 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { AnyJson, JsonArray } from '../../utils'
 import { Element } from '../elements/element'
-import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { InputElement } from '../elements/extensions/input'
 import { SelectElement } from '../elements/extensions/select'
@@ -112,7 +111,7 @@ function RenderElement({
 						states={states}
 						overlay={overlay}
 						parentHidden={parentHidden || element.hidden}
-						isGridChild={element instanceof ColumnsElement}
+						isGridChild={element.unlocked}
 						isSimple={isSimple}
 					/>
 				),
