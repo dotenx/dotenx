@@ -18,6 +18,7 @@ import {
 } from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutRight } from './about-right'
+import { BasicBox } from './basic-box'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
 import { BasicImage } from './basic-image'
@@ -72,6 +73,7 @@ export const COMPONENTS: Components = [
 			BasicYouTube,
 			BasicColumns,
 			BasicSlideshow,
+			BasicBox,
 		],
 	},
 	{

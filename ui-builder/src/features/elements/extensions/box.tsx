@@ -1,12 +1,13 @@
 import { TextInput } from '@mantine/core'
 import { ReactNode } from 'react'
 import { TbSquare } from 'react-icons/tb'
+import { AddElementButton } from '../../simple/simple-canvas'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { BordersEditor } from '../../style/border-editor'
 import { SimpleShadowsEditor } from '../../style/simple-shadows-editor'
 import { SizeEditor } from '../../style/size-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
-import { Element, RenderFn, RenderOptions } from '../element'
+import { Element, RenderFn, RenderFnOptions, RenderOptions } from '../element'
 import { useSetElement } from '../elements-store'
 
 export class BoxElement extends Element {
@@ -15,10 +16,24 @@ export class BoxElement extends Element {
 	children: Element[] = []
 	data = { as: 'div' }
 
-	render(renderFn: RenderFn): ReactNode {
-		return renderFn(this)
-	}
+	render(renderFn: RenderFn, options: RenderFnOptions): ReactNode {
+		if (!options.isSimple || this.children.length !== 0) return renderFn(this)
 
+		if (this.children.length === 0)
+			return (
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
+						backgroundColor: 'rgba(0,0,0,0.05)',
+						padding: '10px',
+					}}
+				>
+					<AddElementButton insert={{ where: this.id, placement: 'initial' }} />
+				</div>
+			)
+	}
 	renderOptions(options: RenderOptions): ReactNode {
 		return <BoxOptions element={this} />
 	}
