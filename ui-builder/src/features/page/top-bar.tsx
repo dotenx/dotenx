@@ -38,19 +38,22 @@ import { useProjectStore } from './project-store'
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
+export const projectTypeAtom = atom<'none' | 'web_application' | 'website'>('none')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
+	const projectType = useAtomValue(projectTypeAtom)
+
 	return (
 		<TopBarWrapper
 			left={
 				<>
 					<Logo />
-					<BackToBackEnd />
+					{projectType === 'web_application' && <BackToBackEnd />}
 					<PageSelection />
 					<ViewportSelection />
 					<FullscreenButton />
-					<AdvancedModeButton />
+					{projectType === 'web_application' && <AdvancedModeButton />}
 					<UnsavedMessage />
 				</>
 			}
@@ -138,12 +141,14 @@ export const useFetchProjectTag = () => {
 	const setTag = useProjectStore((store) => store.setTag)
 	const { projectName = '' } = useParams()
 	const setProjectTag = useSetAtom(projectTagAtom)
+	const setProjectType = useSetAtom(projectTypeAtom)
 	const query = useQuery(
 		[QueryKey.ProjectDetails, projectName],
 		() => getProjectDetails({ projectName }),
 		{
 			onSuccess: (data) => {
 				setProjectTag(data.data.tag)
+				setProjectType(data.data.type)
 				setTag(data.data.tag)
 			},
 			enabled: !!projectName,
