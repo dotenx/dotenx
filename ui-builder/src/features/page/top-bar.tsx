@@ -38,7 +38,7 @@ import { useProjectStore } from './project-store'
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
-export const projectTypeAtom = atom<'none' | 'web_application' | 'website'>('none')
+export const projectTypeAtom = atom<'none' | 'web_application' | 'website' | 'ecommerce'>('none')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {

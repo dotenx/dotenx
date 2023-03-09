@@ -32,7 +32,7 @@
 		if (response.ok) {
 			const token = data.accessToken
 			document.cookie = `token=${token}`
-			window.location.href = redirect
+			window.location.href = `${redirect}.html`
 		} else {
 			alert(data.message)
 		}

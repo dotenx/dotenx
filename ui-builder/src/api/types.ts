@@ -12,7 +12,7 @@ export type GetProjectDetailsResponse = {
 	name: string
 	description: string
 	tag: string
-	type: 'web_application' | 'website'
+	type: 'web_application' | 'website' | 'ecommerce'
 }
 
 export type GetPagesRequest = {

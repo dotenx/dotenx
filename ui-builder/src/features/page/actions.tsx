@@ -50,7 +50,13 @@ import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { CustomCode } from './custom-code'
-import { pageModeAtom, pageParamsAtom, projectTagAtom, useHasUnsavedChanges } from './top-bar'
+import {
+	pageModeAtom,
+	pageParamsAtom,
+	projectTagAtom,
+	projectTypeAtom,
+	useHasUnsavedChanges,
+} from './top-bar'
 
 export const globalStatesAtom = atom<string[]>([])
 export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
@@ -419,11 +425,16 @@ function DeletePageModal({
 	const projectTag = useAtomValue(projectTagAtom)
 	const resetElements = useElementsStore((store) => store.reset)
 	const { projectName, pageName = '' } = useParams()
+	const projectType = useAtomValue(projectTypeAtom)
 
 	const resetMutation = useResetPage()
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
-			navigate(`/projects/${projectName}`)
+			navigate(
+				projectType === 'ecommerce'
+					? `/ecommerce/${projectName}/index`
+					: `/projects/${projectName}`
+			)
 			queryClient.invalidateQueries([QueryKey.Pages])
 			resetElements()
 		},

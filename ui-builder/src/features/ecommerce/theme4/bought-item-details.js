@@ -49,15 +49,12 @@
 
 	submit.addEventListener('click', async () => {
 		const method = 'POST'
-		const url = `https://api.dotenx.com/database/query/insert/project/${projectTag}/table/reviews`
+		const url = `https://api.dotenx.com/ecommerce/project/${projectTag}/product/${boughtProductId}/review`
 		const response = await fetch(url, {
 			method,
 			headers: { Authorization: `Bearer ${token}` },
 			body: JSON.stringify({
-				__products: boughtProductId,
-				message: feedback.value,
 				rate: rating,
-				confirmed: true,
 			}),
 		})
 		const data = await response.json()

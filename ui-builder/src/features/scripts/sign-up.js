@@ -33,7 +33,7 @@
 			body: JSON.stringify(body),
 		})
 		const data = await response.json()
-		if (response.ok) window.location.href = redirect
+		if (response.ok) window.location.href = `${redirect}.html`
 		alert(data.message)
 	})
 })()
