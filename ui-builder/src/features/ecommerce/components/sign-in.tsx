@@ -28,7 +28,7 @@ export class SignIn extends Component {
 	name = 'Sign in'
 	image = imageUrl
 	defaultData = component()
-	data: DataType = { redirect: '/' }
+	data: DataType = { redirect: '/index' }
 
 	renderOptions = () => (
 		<SignInOptions data={this.data} changeData={(value) => (this.data = value)} />
