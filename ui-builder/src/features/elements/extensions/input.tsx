@@ -5,6 +5,7 @@ import { Expression } from '../../states/expression'
 import { SingleIntelinput } from '../../ui/intelinput'
 import { Element, RenderFn } from '../element'
 import { useSetElement } from '../elements-store'
+import { Style } from '../style'
 
 export class InputElement extends Element {
 	name = 'Input'
@@ -15,6 +16,14 @@ export class InputElement extends Element {
 		placeholder: '',
 		required: false,
 		type: 'text',
+	}
+
+	style: Style = {
+		desktop: {
+			default: {
+				width: '150px',
+			},
+		},
 	}
 
 	render(): ReactNode {
