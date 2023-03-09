@@ -649,6 +649,13 @@ function ActionBar({
 				tag,
 				payload: {
 					...values,
+					recurring_payment: {
+						...values.recurring_payment,
+						prices: values.recurring_payment.prices.map((price: any) => ({
+							...price,
+							recurring_interval: "month",
+						})),
+					},
 					html_content: await editor.html(),
 					json_content: await editor.json(),
 				},
