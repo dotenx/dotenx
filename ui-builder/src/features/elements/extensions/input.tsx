@@ -46,6 +46,16 @@ export class InputElement extends Element {
 		this.data.type = type
 		return this
 	}
+
+	placeholder(placeholder: string) {
+		this.data.placeholder = placeholder
+		return this
+	}
+
+	setName(name: string) {
+		this.data.name = name
+		return this
+	}
 }
 
 function InputOptions({ element }: { element: InputElement }) {

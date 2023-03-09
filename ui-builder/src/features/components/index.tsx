@@ -43,6 +43,7 @@ import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { Form } from './form'
+import { FormEmailInput1 } from './form-email-input-1'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryMasonryOne } from './gallery-masonry-1'
@@ -153,7 +154,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Form',
 		icon: <TbForms />,
-		items: [Form],
+		items: [Form, FormEmailInput1],
 	},
 ]
 
