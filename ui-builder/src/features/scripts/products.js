@@ -82,7 +82,7 @@
 
 			const itemLink = clone.querySelector('.item-link')
 			itemLink.removeAttribute('href')
-			itemLink.setAttribute('href', `/product?id=${product.id}`)
+			itemLink.setAttribute('href', `/product.html?id=${product.id}`)
 
 			const price = clone.querySelector('.price')
 			price.removeAttribute('x-html')
