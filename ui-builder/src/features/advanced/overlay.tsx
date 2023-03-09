@@ -129,7 +129,7 @@ export function ElementOverlay({
 			visibility: invisible ? 'hidden' : undefined,
 			minHeight: canContain && element.children?.length === 0 ? 100 : undefined,
 			minWidth: canContain && element.children?.length === 0 ? 100 : undefined,
-			width: withoutStyle ? '100%' : undefined,
+			width: withoutStyle ? '100%' : undefined, // TODO: fix this, this makes the element 100% even if it has a width
 		}),
 		[canContain, element.children?.length, invisible, isHighlighted, isSelected, withoutStyle]
 	)

@@ -16,11 +16,11 @@ import { InputWithUnit } from '../../ui/style-input'
 export class IconElement extends Element {
 	name = 'Icon'
 	icon = (<TbTarget />)
-	public children: Element[] = []
 	data = { name: 'bell', type: 'fas' }
 	style: Style = {
 		desktop: {
 			default: {
+				fontSize: '50px',
 				width: '50px',
 				height: '50px',
 				flexShrink: 0,
@@ -29,7 +29,7 @@ export class IconElement extends Element {
 	}
 
 	render(renderFn: RenderFn): ReactNode {
-		return <FontAwesomeIcon icon={[this.data.type as IconPrefix, this.data.name as IconName]} />
+		return <FontAwesomeIcon icon={[this.data.type as IconPrefix, this.data.name as IconName]}  />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
