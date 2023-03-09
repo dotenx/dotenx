@@ -23,8 +23,7 @@
 
 		const response = await fetch(url, { method, headers, body })
 
-		const data = await response.json()
-		alert(JSON.stringify(data))
+		alert('Form submitted successfully!')
 	}
 
 	submit.addEventListener('click', submitForm)
