@@ -49,7 +49,7 @@ export function TopBar() {
 			left={
 				<>
 					<Logo />
-					{projectType === 'web_application' && <BackToBackEnd />}
+					<DashboardLink />
 					<PageSelection />
 					<ViewportSelection />
 					<FullscreenButton />
@@ -226,18 +226,22 @@ export function Logo() {
 	)
 }
 
-function BackToBackEnd() {
+function DashboardLink() {
 	const { projectName = '' } = useParams()
+	const projectType = useAtomValue(projectTypeAtom)
+
+	const link =
+		projectType === 'web_application'
+			? `https://app.dotenx.com/builder/projects/${projectName}/tables`
+			: projectType === 'ecommerce'
+			? `https://ecommerce.dotenx.com/projects/${projectName}/products`
+			: projectType === 'website'
+			? `https://website.dotenx.com/${projectName}`
+			: ''
 
 	return (
 		<Tooltip withArrow label={<Text size="xs">Backend builder</Text>}>
-			<a
-				href={`${
-					import.meta.env.VITE_BACKEND_BUILDER_URL
-				}/builder/projects/${projectName}/tables`}
-				rel="noopener noreferrer"
-				target={'_blank'}
-			>
+			<a href={link} rel="noopener noreferrer" target={'_blank'}>
 				<ActionIcon color="rose" variant="filled">
 					<IoArrowBack className="w-4 h-4" />
 				</ActionIcon>
