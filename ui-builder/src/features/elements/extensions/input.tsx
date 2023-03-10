@@ -21,20 +21,23 @@ export class InputElement extends Element {
 	style: Style = {
 		desktop: {
 			default: {
-				width: '150px',
+				width: '100%',
 			},
 		},
 	}
 
 	render(): ReactNode {
-		return (
-			<input type={this.data.type} className={this.generateClasses()} id={this.elementId} />
-		)
+		return <></>
 	}
 
 	renderPreview(renderFn: RenderFn, style?: CSSProperties): JSX.Element {
 		return (
-			<input type={this.data.type} className={this.generateClasses()} id={this.elementId} />
+			<input
+				readOnly
+				type={this.data.type}
+				className={this.generateClasses()}
+				id={this.elementId}
+			/>
 		)
 	}
 
