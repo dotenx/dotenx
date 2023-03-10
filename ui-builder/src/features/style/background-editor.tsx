@@ -20,7 +20,7 @@ export function BackgroundsEditor({
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	return (
-		<CollapseLine label="Backgrounds" defaultClosed>
+		<CollapseLine label="Background" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Color</p>
 				<ColorInput

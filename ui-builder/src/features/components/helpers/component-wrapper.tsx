@@ -13,7 +13,7 @@ export function ComponentWrapper({
 	children?: ReactNode
 	name: string
 	stylers?: Array<
-		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image'
 	>
 	stylerOptions?: {
 		alignment?: {
