@@ -1,4 +1,5 @@
 import imageUrl from '../../assets/components/columns.png'
+import { gridCols } from '../../utils/style-utils'
 import { box, grid } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
@@ -11,9 +12,15 @@ export class BasicColumns extends Component {
 	name = 'Basic Columns'
 	image = imageUrl
 	defaultData = box([
-		grid(2).unlock().populate([]).css({
-			gap: '40px',
-		}),
+		grid(2)
+			.unlock()
+			.populate([])
+			.css({
+				gap: '40px',
+			})
+			.cssTablet({
+				gridTemplateColumns: gridCols(1),
+			}),
 	]).css({
 		padding: '100px',
 	})
