@@ -12,6 +12,7 @@ import {
 	TbQuestionCircle,
 	TbReportMoney,
 	TbSection,
+	TbSlideshow,
 	TbTableAlias,
 	TbUser,
 	TbUsers,
@@ -73,7 +74,6 @@ export const COMPONENTS: Components = [
 			BasicVideo,
 			BasicYouTube,
 			BasicColumns,
-			BasicSlideshow,
 			BasicBox,
 		],
 	},
@@ -158,6 +158,11 @@ export const COMPONENTS: Components = [
 		title: 'Form',
 		icon: <TbForms />,
 		items: [Form, FormEmailInput1],
+	},
+	{
+		title: 'Slideshow',
+		icon: <TbSlideshow />,
+		items: [BasicSlideshow],
 	},
 ]
 

@@ -20,10 +20,21 @@ export class BasicColumns extends Component {
 			})
 			.cssTablet({
 				gridTemplateColumns: gridCols(1),
+				gap: '20px',
+			})
+			.cssMobile({
+				gap: '10px',
 			}),
-	]).css({
-		padding: '100px',
-	})
+	])
+		.css({
+			padding: '80px',
+		})
+		.cssTablet({
+			padding: '40px',
+		})
+		.cssMobile({
+			padding: '20px',
+		})
 
 	renderOptions() {
 		return <BasicColumnsOptions />

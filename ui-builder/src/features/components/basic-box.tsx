@@ -1,4 +1,4 @@
-import imageUrl from '../../assets/components/columns.png'
+import imageUrl from '../../assets/components/basic-box.png'
 import { box } from '../elements/constructor'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
@@ -6,9 +6,17 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 export class BasicBox extends Component {
 	name = 'Basic Box'
 	image = imageUrl
-	defaultData = box().unlock().css({
-		padding: '100px',
-	})
+	defaultData = box()
+		.unlock()
+		.css({
+			padding: '80px',
+		})
+		.cssTablet({
+			padding: '40px',
+		})
+		.cssMobile({
+			padding: '20px',
+		})
 
 	renderOptions() {
 		return <BasicBoxOptions />
