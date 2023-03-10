@@ -30,7 +30,7 @@ function StyleEditor({ element }: { element: ButtonElement | ButtonElement[] }) 
 		<Styler>
 			<TypographyEditor element={element} simple />
 			<BackgroundsEditor simple element={element} />
-			<BordersEditor simple element={element} />
+			<BordersEditor element={element} />
 			<SpacingEditor element={element} />
 		</Styler>
 	)

@@ -54,6 +54,7 @@ const defaultData = produce(new BoxElement(), (draft) => {
 				backgroundColor: 'hsla(210, 0%, 0%, 1)',
 				color: 'hsla(0, 0%, 100%, 1)',
 				borderRadius: '10px',
+				border: 'none',
 				paddingLeft: '20px',
 				paddingRight: '20px',
 				paddingTop: '8px',

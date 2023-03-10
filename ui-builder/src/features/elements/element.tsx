@@ -88,7 +88,7 @@ export abstract class Element {
 	renderPreview(renderFn: RenderFn, style: CSSProperties = {}) {
 		return (
 			<div style={style} className={this.generateClasses()} id={this.elementId}>
-				{this.render(renderFn)}
+				{this.render(renderFn, { isSimple: false })}
 			</div>
 		)
 	}
