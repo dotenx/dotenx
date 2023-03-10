@@ -41,7 +41,7 @@ function FeatureCenterGridOptions() {
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<ComponentWrapper name="Basic FAQ">
+		<ComponentWrapper name="Basic FAQ" stylers={['backgrounds', 'spacing', 'background-image']}>
 			<TextStyler label="Main title" element={title} />
 			<TextStyler label="Second title" element={subtitle} />
 			<ColumnsStyler element={grid} />

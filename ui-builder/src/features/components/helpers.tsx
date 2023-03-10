@@ -17,6 +17,7 @@ export type SimpleComponentOptionsProps = {
 
 export function extractUrl(url: string): string {
 	// extract the string inside ulr()
+	if (!url) return ''
 	return url.match(/^url\(([^)]*)\)$/)?.[1] ?? ''
 }
 

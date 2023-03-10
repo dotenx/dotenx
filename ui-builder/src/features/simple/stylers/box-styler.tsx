@@ -3,6 +3,7 @@ import { Element } from '../../elements/element'
 import { useSetWithElement } from '../../elements/elements-store'
 import { AlignmentEditor } from '../../style/alignment-editor'
 import { BackgroundsEditor } from '../../style/background-editor'
+import { BackgroundImageEditor } from '../../style/background-image-editor'
 import { BordersEditor } from '../../style/border-editor'
 import { SimpleAnimationEditor } from '../../style/simple-animation-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
@@ -18,7 +19,7 @@ export function BoxStyler({
 	element: Element | Element[]
 	label: string
 	stylers?: Array<
-		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image'
 	>
 	stylerOptions?: {
 		alignment?: {
@@ -41,7 +42,7 @@ function StyleEditor({
 }: {
 	element: Element | Element[]
 	stylers?: Array<
-		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation'
+	'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image'
 	>
 	stylerOptions?: {
 		alignment?: {
@@ -67,9 +68,11 @@ function StyleEditor({
 			{(!stylers || stylers.includes('typography')) && (
 				<TypographyEditor simple element={element} />
 			)}
-			{/* has animation styler and element is of type Element */}
 			{stylers?.includes('animation') && element instanceof Element && (
 				<SimpleAnimationEditor element={element as Element} />
+			)}
+			{stylers?.includes('background-image') && (
+				<BackgroundImageEditor element={element as Element} />
 			)}
 		</Styler>
 	)
