@@ -23,6 +23,8 @@ interface ElementsState {
 	undo: () => void
 	redo: () => void
 	save: () => void
+	moveUp: (id: string) => void
+	moveDown: (id: string) => void
 }
 
 export const useElementsStore = create<ElementsState>()(
@@ -103,6 +105,32 @@ export const useElementsStore = create<ElementsState>()(
 		save: () => {
 			set((state) => {
 				state.saved = state.elements
+			})
+		},
+		moveUp: (id) => {
+			set((state) => {
+				const element = findElement(id, state.elements)
+				if (!element) return
+				const parent = findParent(id, state.elements)
+				const siblings = parent?.children ?? state.elements
+				const index = siblings.indexOf(element)
+				if (index > 0) {
+					siblings.splice(index, 1)
+					siblings.splice(index - 1, 0, element)
+				}
+			})
+		},
+		moveDown: (id) => {
+			set((state) => {
+				const element = findElement(id, state.elements)
+				if (!element) return
+				const parent = findParent(id, state.elements)
+				const siblings = parent?.children ?? state.elements
+				const index = siblings.indexOf(element)
+				if (index < siblings.length - 1) {
+					siblings.splice(index, 1)
+					siblings.splice(index + 1, 0, element)
+				}
 			})
 		},
 	}))

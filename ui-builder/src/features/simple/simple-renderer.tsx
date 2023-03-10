@@ -106,7 +106,7 @@ export function ElementOverlay({
 			onClick={handleClick}
 		>
 			{children}
-			{isDirectRootChildren && showSettings && (
+			{(isDirectRootChildren || isGridChild) && showSettings && (
 				<>
 					<ElementOverlayPiece
 						referenceElement={referenceElement}
@@ -134,53 +134,19 @@ export function ElementOverlay({
 					</ElementOverlayPiece>
 				</>
 			)}
-			{isGridChild && showSettings && (
-				<ElementOverlayPiece
-					referenceElement={referenceElement}
-					updateDeps={[element]}
-					placement="left-start"
-					offset={[8, height < 100 ? -80 : -30]}
-				>
-					<RemoveButton element={element} />
-				</ElementOverlayPiece>
-			)}
 		</div>
-	)
-}
-
-function RemoveButton({ element }: { element: Element }) {
-	const remove = useElementsStore((store) => store.remove)
-
-	return (
-		<ActionButton
-			onClick={(event) => {
-				event.stopPropagation()
-				remove([element.id])
-			}}
-		>
-			<TbTrash />
-		</ActionButton>
 	)
 }
 
 function ElementActions({ element, horizontal }: { element: Element; horizontal: boolean }) {
 	const elements = useElementsStore((store) => store.elements)
-	const { remove, move } = useElementsStore((store) => ({
+	const { remove, moveUp, moveDown } = useElementsStore((store) => ({
 		remove: store.remove,
-		move: store.move,
+		moveUp: store.moveUp,
+		moveDown: store.moveDown,
 	}))
 	const isFirst = elements.findIndex((c) => c.id === element.id) === 0
 	const isLast = elements.findIndex((c) => c.id === element.id) === elements.length - 1
-	const moveUp = () =>
-		move(element.id, {
-			mode: 'before',
-			id: elements[elements.findIndex((e) => e.id === element.id) - 1].id,
-		})
-	const moveDown = () =>
-		move(element.id, {
-			mode: 'after',
-			id: elements[elements.findIndex((e) => e.id === element.id) + 1].id,
-		})
 
 	return (
 		<div
@@ -192,7 +158,7 @@ function ElementActions({ element, horizontal }: { element: Element; horizontal:
 		>
 			<ActionButton
 				style={{ borderRadius: '4px 4px 0 0' }}
-				onClick={moveUp}
+				onClick={() => moveUp(element.id)}
 				disabled={isFirst}
 			>
 				<TbArrowUp />
@@ -202,7 +168,7 @@ function ElementActions({ element, horizontal }: { element: Element; horizontal:
 			</ActionButton>
 			<ActionButton
 				style={{ borderRadius: '0 0 4px 4px' }}
-				onClick={moveDown}
+				onClick={() => moveDown(element.id)}
 				disabled={isLast}
 			>
 				<TbArrowDown />
