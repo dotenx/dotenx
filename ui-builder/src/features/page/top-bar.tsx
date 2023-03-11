@@ -218,7 +218,7 @@ export const useFetchGlobalStates = () => {
 
 export function Logo() {
 	return (
-		<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
+		<Tooltip withArrow label={<Text size="xs">Admin Panel</Text>}>
 			<Anchor href={ADMIN_PANEL_URL}>
 				<img src={logoUrl} className="w-8" alt="dotenx logo" />
 			</Anchor>
@@ -226,7 +226,7 @@ export function Logo() {
 	)
 }
 
-function DashboardLink() {
+export function DashboardLink() {
 	const { projectName = '' } = useParams()
 	const projectType = useAtomValue(projectTypeAtom)
 
@@ -240,7 +240,7 @@ function DashboardLink() {
 			: ''
 
 	return (
-		<Tooltip withArrow label={<Text size="xs">Backend builder</Text>}>
+		<Tooltip withArrow label={<Text size="xs">Project Dashboard</Text>}>
 			<a href={link} rel="noopener noreferrer" target={'_blank'}>
 				<ActionIcon color="rose" variant="filled">
 					<IoArrowBack className="w-4 h-4" />
@@ -278,7 +278,7 @@ export function FullscreenButton() {
 	)
 }
 
-function AdvancedModeButton() {
+export function AdvancedModeButton() {
 	const queryClient = useQueryClient()
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
