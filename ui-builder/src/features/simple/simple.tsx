@@ -1,11 +1,28 @@
-import { AppShell, Drawer } from '@mantine/core'
+import { AppShell, Button, Drawer, Text, Tooltip } from '@mantine/core'
+import { openModal } from '@mantine/modals'
 import { useAtom, useAtomValue } from 'jotai'
+import { TbSettings } from 'react-icons/tb'
 import { COMPONENTS } from '../components'
-import { previewAtom, TopBar } from '../page/top-bar'
+import { PageActions } from '../page/actions'
+import { PageSelection } from '../page/page-selection'
+import {
+	AdvancedModeButton,
+	DashboardLink,
+	FullscreenButton,
+	Logo,
+	PageScaling,
+	previewAtom,
+	projectTypeAtom,
+	TopBarWrapper,
+	UndoRedo,
+	UnsavedMessage,
+} from '../page/top-bar'
 import { useSelectionStore } from '../selection/selection-store'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { AppHeader } from '../ui/header'
+import { ViewportSelection } from '../viewport/viewport-selection'
 import { SimpleLeftSidebar } from './left-sidebar'
+import { Palette } from './palette'
 import { SimpleRightSidebar } from './right-sidebar'
 import { insertingAtom, SimpleCanvas } from './simple-canvas'
 
@@ -25,6 +42,50 @@ export function Simple() {
 		>
 			<SimpleCanvas />
 		</AppShell>
+	)
+}
+
+function TopBar() {
+	const projectType = useAtomValue(projectTypeAtom)
+
+	return (
+		<TopBarWrapper
+			left={
+				<>
+					<Logo />
+					<DashboardLink />
+					<PageSelection />
+					<ViewportSelection />
+					<FullscreenButton />
+					{projectType === 'web_application' && <AdvancedModeButton />}
+					<UnsavedMessage />
+				</>
+			}
+			right={
+				<>
+					<PageScaling />
+					<UndoRedo />
+					<PageActions
+						settings={
+							<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
+								<Button
+									onClick={() =>
+										openModal({
+											title: 'Page Settings',
+											children: <Palette />,
+										})
+									}
+									size="xs"
+									variant="default"
+								>
+									<TbSettings className="w-5 h-5" />
+								</Button>
+							</Tooltip>
+						}
+					/>
+				</>
+			}
+		/>
 	)
 }
 

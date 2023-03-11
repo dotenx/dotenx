@@ -5,6 +5,7 @@ import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
 import { ButtonElement } from '../elements/extensions/button'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { color } from '../simple/palette'
 import { ButtonStyler } from '../simple/stylers/button-styler'
 import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
@@ -51,7 +52,7 @@ const defaultData = produce(new BoxElement(), (draft) => {
 
 		draft.style.desktop = {
 			default: {
-				backgroundColor: 'hsla(210, 0%, 0%, 1)',
+				backgroundColor: color('primary'),
 				color: 'hsla(0, 0%, 100%, 1)',
 				borderRadius: '10px',
 				border: 'none',
@@ -61,7 +62,7 @@ const defaultData = produce(new BoxElement(), (draft) => {
 				paddingBottom: '8px',
 			},
 			hover: {
-				backgroundColor: 'hsla(100, 0%, 39%, 1)',
+				backgroundColor: color('primary', 0.75),
 			},
 		}
 

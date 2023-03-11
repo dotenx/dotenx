@@ -1,9 +1,11 @@
+import chroma from 'chroma-js'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useMemo } from 'react'
 import { mapStyleToKebabCase } from '../../api/mapper'
 import { Element } from '../elements/element'
 import { CssSelector, CustomStyle, SelectorStyle, Style } from '../elements/style'
+import { colorNames, selectedPaletteAtom } from '../simple/palette'
 import { ViewportDevice } from '../viewport/viewport-store'
 import { useClassesStore } from './classes-store'
 import { fontsAtom } from './typography-editor'
@@ -45,6 +47,7 @@ const globalPageStyles = `
 `
 
 export const useGenerateStyles = (elements: Element[]) => {
+	const palette = useGeneratePalette()
 	const flattenedElements = useMemo(() => flatElements(elements), [elements])
 
 	const fonts = useAtomValue(fontsAtom)
@@ -84,6 +87,7 @@ export const useGenerateStyles = (elements: Element[]) => {
 
 	const generatedStyles = useMemo(
 		() => `
+			${palette}
 			${fontsCss}
 			${globalPageStyles}
 			${desktopClasses}
@@ -97,13 +101,14 @@ export const useGenerateStyles = (elements: Element[]) => {
 			@media (max-width: 478px) { ${customMobileIds} }
 		`,
 		[
+			palette,
+			fontsCss,
 			desktopClasses,
 			desktopIds,
-			fontsCss,
-			mobileClasses,
-			mobileIds,
 			tabletClasses,
+			mobileClasses,
 			tabletIds,
+			mobileIds,
 			customDesktopIds,
 			customTabletIds,
 			customMobileIds,
@@ -111,6 +116,17 @@ export const useGenerateStyles = (elements: Element[]) => {
 	)
 
 	return generatedStyles
+}
+
+const useGeneratePalette = () => {
+	const palette = useAtomValue(selectedPaletteAtom)
+	return `
+		:root {
+			${palette.colors
+				.map((color, index) => `--${colorNames[index]}: ${chroma(color).rgb().join(' ')};`)
+				.join('\n')}
+		}
+	`
 }
 
 const generateCssIds = (flattenedElements: Element[], device: ViewportDevice) => {

@@ -15,7 +15,7 @@ import { closeAllModals, openModal } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { IoSaveOutline } from 'react-icons/io5'
 import {
 	TbCheck,
@@ -61,7 +61,13 @@ import {
 export const globalStatesAtom = atom<string[]>([])
 export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
 
-export function PageActions({ showSettings = true }: { showSettings?: boolean }) {
+export function PageActions({
+	showSettings = true,
+	settings,
+}: {
+	showSettings?: boolean
+	settings?: ReactNode
+}) {
 	const mode = useAtomValue(pageModeAtom)
 	const projectTag = useAtomValue(projectTagAtom)
 	const { pageName = 'index' } = useParams()
@@ -74,7 +80,8 @@ export function PageActions({ showSettings = true }: { showSettings?: boolean })
 
 	return (
 		<Button.Group>
-			{!isSimple && showSettings && <PageSettingsButton />}
+			{!isSimple && showSettings && !settings && <PageSettingsButton />}
+			{settings}
 			<DuplicatePageButton />
 			<DeletePageButton />
 			<SaveButton />
