@@ -264,6 +264,16 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 			return
 		}
 
+		var domainUrl string = "https://dotenx.com"
+		projectDomain, err := ec.ProjectService.GetProjectDomain(project.AccountId, projectTag)
+		if err == nil {
+			if projectDomain.CdnArn != "" {
+				domainUrl = fmt.Sprintf("https://%s/index.html", projectDomain.ExternalDomain)
+			} else {
+				domainUrl = fmt.Sprintf("https://%s.web.dotenx.com/index.html", projectDomain.InternalDomain)
+			}
+		}
+
 		emailSubject := "Thanks for your choice!"
 		emailContent := fmt.Sprintf(`
 		<html>
@@ -275,10 +285,20 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 			</style>
 		</head>
 		<h2>Thanks for your choice!</h2>
-		<p>You have recently purchased product(s) please register/login to DoTenX website for downloading your product contents</p>
-		<a href="%s">Invoice Link</a>
-		<a href="%s">Download Invoice As PDF</a>
-		</html>`, stripeInvoice.HostedInvoiceURL, stripeInvoice.InvoicePDF)
+		<p>You have recently purchased product(s) please register/login on website below for downloading your product contents</p>
+		<div>
+			<a href="%s">Homepage</a>
+			<p></p>
+		</div>
+		<div>
+			<a href="%s">Invoice Link</a>
+			<p></p>
+		</div>
+		<div>
+			<a href="%s">Download Invoice As PDF</a>
+			<p></p>
+		</div>
+		</html>`, domainUrl, stripeInvoice.HostedInvoiceURL, stripeInvoice.InvoicePDF)
 		_, err = SendEmailBySendgrid(config.Configs.Secrets.SendGridToken, "noreply@dotenx.com", stripeCustomer.Email, emailSubject, "", emailContent)
 		if err != nil {
 			logrus.Error(err.Error())
