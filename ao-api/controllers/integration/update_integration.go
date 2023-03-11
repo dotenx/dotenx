@@ -1,13 +1,16 @@
 package integration
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/oauth"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sendgrid/sendgrid-go"
 	"github.com/sirupsen/logrus"
+	"github.com/stripe/stripe-go/v72/client"
 )
 
 func (controller *IntegrationController) UpdateIntegration() gin.HandlerFunc {
@@ -16,8 +19,10 @@ func (controller *IntegrationController) UpdateIntegration() gin.HandlerFunc {
 		integrationName := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
 		var integration models.Integration
-		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" {
-			c.AbortWithStatus(http.StatusBadRequest)
+		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" || !integration.IsValid() {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "validation failed",
+			})
 			return
 		}
 		integration.Name = integrationName
@@ -32,6 +37,39 @@ func (controller *IntegrationController) UpdateIntegration() gin.HandlerFunc {
 			// This endpoint is called in studio mode so we should set provider empty
 			// to know that this integration use our provider not user's provider
 			integration.Provider = ""
+		}
+
+		// we check validity of integration secrets in this switch case
+		switch integration.Type {
+		case "stripe":
+			secretKey := integration.Secrets["SECRET_KEY"]
+			sc := &client.API{}
+			sc.Init(secretKey, nil)
+			_, err := sc.Account.Get()
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid stripe secret key",
+				})
+				return
+			}
+		case "sendGrid":
+			apiKey := integration.Secrets["ACCESS_TOKEN"]
+			host := "https://api.sendgrid.com"
+			request := sendgrid.GetRequest(apiKey, "/v3/scopes", host)
+			request.Method = "GET"
+			response, err := sendgrid.API(request)
+			// TODO: check scopes and insure that this api key has access to send email
+			if err != nil || response.StatusCode != http.StatusOK {
+				if err == nil {
+					err = errors.New("invalid sendGrid api key")
+				}
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid sendGrid api key",
+				})
+				return
+			}
 		}
 
 		// accessToken := integration.Secrets["ACCESS_TOKEN"]
