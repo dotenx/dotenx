@@ -82,7 +82,7 @@ function TextStylerNoText({
 function StyleEditor({ element }: { element: TextElement | TextElement[] }) {
 	return (
 		<Styler>
-			<TypographyEditor element={element} simple />
+			<TypographyEditor element={element} />
 			<SpacingEditor element={element} />
 		</Styler>
 	)
