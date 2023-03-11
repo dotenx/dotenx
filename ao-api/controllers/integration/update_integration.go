@@ -16,7 +16,7 @@ func (controller *IntegrationController) UpdateIntegration() gin.HandlerFunc {
 		integrationName := c.Param("name")
 		accountId, _ := utils.GetAccountId(c)
 		var integration models.Integration
-		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" || !integration.IsValid() {
+		if err := c.ShouldBindJSON(&integration); err != nil || accountId == "" {
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
