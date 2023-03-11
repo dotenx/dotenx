@@ -56,6 +56,6 @@ func (manager *IntegrationManager) GetConnectedAccount(accountId, integrationNam
 			"email": respBodyMap["email"],
 		}, nil
 	default:
-		return nil, errors.New("your integration isn't supported currently")
+		return nil, errors.New("this integration type isn't supported currently")
 	}
 }
