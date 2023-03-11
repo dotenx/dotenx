@@ -314,7 +314,9 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// integration router
 	integration.POST("", IntegrationController.AddIntegration())
+	integration.PUT("/name/:name", IntegrationController.UpdateIntegration())
 	integration.GET("", IntegrationController.GetAllIntegrations())
+	integration.GET("/name/:name", IntegrationController.GetConnectedAccount())
 	integration.DELETE("/name/:name", IntegrationController.DeleteIntegration())
 	integration.GET("/avaliable", IntegrationController.GetIntegrationTypes())
 	integration.GET("/type/:type/fields", IntegrationController.GetIntegrationTypeFields())
