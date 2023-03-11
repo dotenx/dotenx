@@ -27,6 +27,7 @@ type Page struct {
 		Head    string
 		Footer  string
 		Scripts string
+		Styles  string
 	}
 	Fonts string
 }
@@ -61,6 +62,7 @@ var pageTemplate = `<!DOCTYPE html>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 	{{if .Fonts}}{{.Fonts}}{{end}}
 	{{if .CustomCodes.Head}}{{.CustomCodes.Head}}{{end}}
+	{{if .CustomCodes.Styles}}{{.CustomCodes.Styles}}{{end}}
 
 </head>
 <body x-data>
@@ -98,6 +100,7 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 		Head    string `json:"head"`
 		Footer  string `json:"footer"`
 		Scripts string `json:"scripts"`
+		Styles  string `json:"styles"`
 	}
 
 	err = json.Unmarshal(b, &customCodes)
@@ -138,7 +141,8 @@ func convertToHTML(page map[string]interface{}, name string) (renderedPage, rend
 			Head    string
 			Footer  string
 			Scripts string
-		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer, Scripts: customCodes.Scripts},
+			Styles  string
+		}{Head: customCodes.Head + "\n" + strings.Join(functionStore.ExtensionHeads, "\n"), Footer: customCodes.Footer, Scripts: customCodes.Scripts, Styles: customCodes.Styles},
 		Fonts: fonts,
 	}
 
