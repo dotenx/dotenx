@@ -1,4 +1,4 @@
-import { useDidUpdate, useDisclosure, useElementSize } from '@mantine/hooks'
+import { useDidUpdate, useElementSize } from '@mantine/hooks'
 import { Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
 import { MouseEvent, ReactNode, useCallback, useContext, useState } from 'react'
@@ -35,18 +35,8 @@ export function ElementOverlay({
 	}))
 	const { isHighlighted, isHovered } = useIsHighlighted(element.id)
 	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
-	const [showSettings, showSettingsHandlers] = useDisclosure(false)
 	const { isFullscreen } = useAtomValue(previewAtom)
-	const handleMouseOver = (event: MouseEvent) => {
-		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
-		event.stopPropagation()
-		setHovered(element.id)
-	}
-	const handleMouseEnter = (event: MouseEvent) => {
-		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
-		event.stopPropagation()
-		showSettingsHandlers.open()
-	}
+
 	const handleClick = (event: MouseEvent) => {
 		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
 		event.stopPropagation()
@@ -74,16 +64,15 @@ export function ElementOverlay({
 		[ref]
 	)
 
+	const handleMouseOver = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
+		setHovered(element.id)
+	}
 	const handleMouseOut = (event: MouseEvent) => {
 		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
 		event.stopPropagation()
 		unsetHovered()
-	}
-
-	const handleMouseLeave = (event: MouseEvent) => {
-		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
-		event.stopPropagation()
-		showSettingsHandlers.close()
 	}
 
 	return (
@@ -100,13 +89,11 @@ export function ElementOverlay({
 			className={withoutStyle ? undefined : element.generateClasses()}
 			ref={handleRef}
 			onMouseOver={handleMouseOver}
-			onMouseOut={handleMouseOut}
-			onMouseEnter={handleMouseEnter}
-			onMouseLeave={handleMouseLeave}
+			onMouseLeave={handleMouseOut}
 			onClick={handleClick}
 		>
 			{children}
-			{(isDirectRootChildren || isGridChild) && showSettings && (
+			{(isDirectRootChildren || isGridChild) && isHovered && (
 				<>
 					<ElementOverlayPiece
 						referenceElement={referenceElement}
