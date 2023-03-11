@@ -2,6 +2,7 @@ package integrationStore
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/db"
@@ -23,7 +24,8 @@ func (store *integrationStore) UpdateIntegration(ctx context.Context, accountId,
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	res, err := store.db.Connection.Exec(stmt, integration.Secrets, accountId, integrationName)
+	marshalled, _ := json.Marshal(integration.Secrets)
+	res, err := store.db.Connection.Exec(stmt, marshalled, accountId, integrationName)
 	if err != nil {
 		return err
 	}
