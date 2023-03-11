@@ -20,6 +20,7 @@ func (controller *IntegrationController) GetConnectedAccount() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
+			return
 		}
 
 		c.JSON(http.StatusOK, details)
