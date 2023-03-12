@@ -1,8 +1,14 @@
-import { Badge, Button, Image, Switch, Textarea } from "@mantine/core"
+import { Badge, Button, Image, Modal, Switch, Textarea } from "@mantine/core"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import { getTableRecords, QueryKey, runPredefinedQuery, updateProduct } from "../api"
+import {
+	getIntegrations,
+	getTableRecords,
+	QueryKey,
+	runPredefinedQuery,
+	updateProduct,
+} from "../api"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import _ from "lodash"
@@ -10,6 +16,10 @@ import { FaExternalLinkAlt, FaHashtag } from "react-icons/fa"
 import { useClipboard } from "@mantine/hooks"
 import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "react-toastify"
+import { UpdateIntegrationForm } from "../features/app/updateIntegrationForm"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
+import { IoMdSettings } from "react-icons/io"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
@@ -120,16 +130,69 @@ export function ProductsPage() {
 }
 
 function ActionBar() {
-	const { projectName } = useParams()
-
+	const { projectName = "" } = useParams()
+	const client = useQueryClient()
+	const [openModal, setOpenModal] = useState(false)
+	const [openSettingsModal, setOpenSettingsModal] = useState(false)
+	const query = useQuery([QueryKey.GetIntegrations], () =>
+		getIntegrations({ type: "stripe", projectName })
+	)
+	const IntegrationName = query?.data?.data[0]?.name ?? ""
 	return (
-		<Button
-			component={Link}
-			to={`/projects/${projectName}/products/new`}
-			leftIcon={<BsPlusLg />}
-		>
-			New Product
-		</Button>
+		<div className="flex gap-x-5 items-center">
+			{!IntegrationName && query.isSuccess && (
+				<div className="text-sm p-1 px-2 bg-blue-50 rounded text-gray-600 flex items-center gap-x-2">
+					You must connect your project to Stripe to create products{" "}
+					<Button onClick={() => setOpenModal(true)} color="blue" size="xs">
+						Connect
+					</Button>
+				</div>
+			)}
+			{IntegrationName && query.isSuccess && (
+				<Button
+					leftIcon={<IoMdSettings className="h-5 w-5" />}
+					onClick={() => setOpenSettingsModal(true)}
+					color="blue"
+				>
+					Stripe
+				</Button>
+			)}
+			<Button
+				disabled={!IntegrationName}
+				component={Link}
+				to={`/projects/${projectName}/products/new`}
+				leftIcon={<BsPlusLg />}
+			>
+				New Product
+			</Button>
+			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
+				<IntegrationForm
+					integrationKind={"stripe"}
+					onSuccess={() => {
+						toast("Stripe integration added successfully", {
+							type: "success",
+							autoClose: 2000,
+						}),
+							client.invalidateQueries([QueryKey.GetIntegrations]),
+							setOpenModal(false)
+					}}
+				/>
+			</Modal>
+			<Modal opened={openSettingsModal} onClose={() => setOpenSettingsModal(false)}>
+				<UpdateIntegrationForm
+					name={IntegrationName}
+					integrationKind={"stripe"}
+					onSuccess={() => {
+						toast("Stripe integration updated successfully", {
+							type: "success",
+							autoClose: 2000,
+						}),
+							client.invalidateQueries([QueryKey.GetIntegrations]),
+							setOpenModal(false)
+					}}
+				/>
+			</Modal>
+		</div>
 	)
 }
 

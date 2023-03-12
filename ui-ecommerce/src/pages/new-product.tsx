@@ -612,30 +612,11 @@ function ActionBar({ values, tag, editor }: { values: any; tag: string; editor: 
 			},
 		}
 	)
-	const [openModal, setOpenModal] = useState(false)
-	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
-	const client = useQueryClient()
-	const noIntegration =
-		(
-			query?.data?.data
-				?.map((d) => {
-					if (["stripe"].includes(d.type)) return d.type
-				})
-				.filter((d) => d !== undefined) || []
-		).length === 0
+
 	return (
 		<div className="flex gap-x-5 items-center">
-			{noIntegration && query.isSuccess && (
-				<div className="text-sm p-1 px-2 bg-blue-50 rounded text-gray-600 flex items-center gap-x-2">
-					You must connect your account to Stripe to create products{" "}
-					<Button onClick={() => setOpenModal(true)} color="blue" size="xs">
-						Connect
-					</Button>
-				</div>
-			)}
 			<Button
 				disabled={
-					noIntegration ||
 					(values.type === "membership"
 						? values?.recurring_payment?.prices?.length === 0
 						: values?.price === 0) ||
@@ -647,19 +628,6 @@ function ActionBar({ values, tag, editor }: { values: any; tag: string; editor: 
 			>
 				Create product
 			</Button>
-			<Modal opened={openModal} onClose={() => setOpenModal(false)}>
-				<IntegrationForm
-					integrationKind={"stripe"}
-					onSuccess={() => {
-						toast("Stripe integration added successfully", {
-							type: "success",
-							autoClose: 2000,
-						}),
-							client.invalidateQueries([QueryKey.GetIntegrations]),
-							setOpenModal(false)
-					}}
-				/>
-			</Modal>
 		</div>
 	)
 }
