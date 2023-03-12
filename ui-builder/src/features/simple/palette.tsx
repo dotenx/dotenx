@@ -11,6 +11,18 @@ const palettes: ColorPalette[] = [
 		id: '133049dd-ce11-44a9-a507-5cf547085d27',
 		colors: ['#e63946', '#f1faee', '#a8dadc', '#457b9d', '#1d3557'],
 	},
+	{
+		id: '0cbb5062-ff20-469a-ad83-209e68cca2e0',
+		colors: ['#606c38', '#283618', '#fefae0', '#dda15e', '#bc6c25'],
+	},
+	{
+		id: '580d000b-1b72-4dcc-b906-c0db4e1a7d81',
+		colors: ['#8ecae6', '#219ebc', '#023047', '#ffb703', '#fb8500'],
+	},
+	{
+		id: '6c942f16-4539-4263-9ede-d834586ff281',
+		colors: ['#003049', '#d62828', '#f77f00', '#fcbf49', '#eae2b7'],
+	},
 ]
 
 type ColorPalette = {

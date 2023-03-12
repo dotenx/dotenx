@@ -21,6 +21,7 @@ export function BackgroundsEditor({
 }) {
 	const { style: styles, editStyle } = useEditStyle(element)
 	const bgColor = useParseBgColor(styles.backgroundColor ?? '')
+	const palette = useAtomValue(selectedPaletteAtom)
 
 	return (
 		<CollapseLine label="Background" defaultClosed>
@@ -32,6 +33,7 @@ export function BackgroundsEditor({
 					className="col-span-9"
 					size="xs"
 					format="hsla"
+					swatches={palette.colors}
 				/>
 
 				{!simple && (
@@ -53,9 +55,9 @@ export function BackgroundsEditor({
 
 const useParseBgColor = (color: string) => {
 	const palette = useAtomValue(selectedPaletteAtom)
-	const colorName = colorNamesSchema.parse(color.split('--')?.[1]?.split(')')?.[0])
-	const paletteColorIndex = colorNames.indexOf(colorName)
+	const colorName = colorNamesSchema.safeParse(color.split('--')?.[1]?.split(')')?.[0])
+	if (!colorName.success) return color
+	const paletteColorIndex = colorNames.indexOf(colorName.data)
 	const paletteColor = palette.colors[paletteColorIndex]
-	const bgColor = color.startsWith('rgba') ? paletteColor : color
-	return bgColor
+	return paletteColor
 }
