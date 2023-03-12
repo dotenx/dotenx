@@ -11,6 +11,7 @@ import {
 	getIntegrationKinds,
 	QueryKey,
 	setupIntegration,
+	updateIntegration,
 } from "../../api"
 import { useOauth } from "./use-oauth"
 
@@ -24,6 +25,8 @@ type Schema = z.infer<typeof schema>
 
 interface Options {
 	integrationKind?: string
+	integrationName?: string
+	update?: boolean
 	onSuccess?: (addedIntegrationName: string) => void
 }
 
@@ -35,7 +38,7 @@ function stringGen() {
 	}
 	return result
 }
-export function useNewIntegration({ integrationKind, onSuccess }: Options) {
+export function useNewIntegration({ integrationKind, onSuccess, integrationName = '', update }: Options) {
 	const result = stringGen()
 	const name = integrationKind + "-" + result
 	const {
@@ -58,6 +61,7 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		{ enabled: !!integrationType }
 	)
 	const mutation = useMutation(setupIntegration)
+	const updateMutation = useMutation(updateIntegration)
 	const client = useQueryClient()
 	const toOption = (value: string) => ({
 		label: value,
@@ -92,7 +96,16 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 			integration_secrets: fieldValues.secrets as { SECRET_KEY: string },
 			integration_type: fieldValues.type
 		}
-		mutation.mutate(payload, {
+		update ? updateMutation.mutate({ name: integrationName, ...payload }, {
+			onSuccess: () => {
+				client.invalidateQueries([QueryKey.GetIntegrations])
+				client.invalidateQueries([QueryKey.GetIntegrationsByType])
+				onSuccess?.(fieldValues.name)
+			},
+			onError: (e: any) => {
+				toast(e.response.data.message, { type: "error", autoClose: 2000 })
+			}
+		}) : mutation.mutate(payload, {
 			onSuccess: () => {
 				client.invalidateQueries([QueryKey.GetIntegrations])
 				client.invalidateQueries([QueryKey.GetIntegrationsByType])
@@ -119,6 +132,6 @@ export function useNewIntegration({ integrationKind, onSuccess }: Options) {
 		integrationKindOptions,
 		integrationTypeFields,
 		oauth,
-		isSubmitting: mutation.isLoading,
+		isSubmitting: mutation.isLoading || updateMutation.isLoading,
 	}
 }

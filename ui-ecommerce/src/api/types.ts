@@ -12,6 +12,7 @@ export enum QueryKey {
 	GetIntegrationTypeFields = "get-integration-type-fields",
 	GetEmailPipelineList = "get-email-pipeline-list ",
 	GetIntegrations = "get-integrations",
+	GetIntegrationDetails = "get-integration-details",
 	GetPipelineDetails = "get-pipeline-details",
 	GetLastDaySales = "get-last-day-sales",
 	GetMembersSummary = "get-members-summary",
@@ -164,6 +165,7 @@ export type CreateIntegrationRequest = {
 }
 export type SetupIntegrationRequest = {
 	project_name: string,
+	name?: string,
 	integration_secrets: {
 		SECRET_KEY: string
 	},
