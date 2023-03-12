@@ -2,7 +2,7 @@ import { useHover } from "@mantine/hooks"
 import clsx from "clsx"
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
-import { TbChevronLeft, TbFiles } from "react-icons/tb"
+import { TbChevronLeft, TbExternalLink, TbFiles } from "react-icons/tb"
 import { NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 import { useGetProjectTag } from "../hooks/use-project-query"
@@ -52,8 +52,44 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				<div className="mt-10">
 					<NavLinks closed={closed} links={sidebar.navLinks} />
 				</div>
+				<UiBuilderLink />
 			</div>
 		</motion.aside>
+	)
+}
+
+function UiBuilderLink() {
+	const { projectName } = useParams()
+	const smallScreen = window.innerHeight < 750
+
+	return (
+		<div className="px-5 pt-5 mt-10 -mx-5 border-t">
+			<a
+				target="_blank"
+				rel="noreferrer"
+				href={`https://ui.dotenx.com/ecommerce/${projectName}/index`}
+				className={clsx(
+					" text-white hover:bg-rose-500 w-full rounded-md flex items-center  font-medium gap-2 transition-all px-3 whitespace-nowrap",
+					smallScreen ? "text-sm h-9" : "text-xl h-14 "
+				)}
+			>
+				<div
+					className={`shrink-0 transition-all ${smallScreen ? "text-sm " : "text-lg "} ${
+						!closed && "hidden"
+					} mt-1 `}
+				>
+					UI
+				</div>
+				<FadeIn visible={!closed}>
+					<div className="flex items-center p-1">
+						<TbExternalLink className="w-4 h-4 mr-4" />
+						<span className={` shrink-0 ${smallScreen ? "text-sm " : "text-lg "}`}>
+							UI builder
+						</span>
+					</div>
+				</FadeIn>
+			</a>
+		</div>
 	)
 }
 
