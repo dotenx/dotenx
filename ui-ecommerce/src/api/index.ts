@@ -42,6 +42,9 @@ export function createIntegration(payload: CreateIntegrationRequest) {
 export function setupIntegration(payload: SetupIntegrationRequest) {
 	return api.post<void>("/project/setup/dependent", payload)
 }
+export function updateIntegration(payload: SetupIntegrationRequest) {
+	return api.put<void>(`/integration/name/${payload.name}`, payload)
+}
 
 export function setFileUserGroup({
 	name,
@@ -69,8 +72,11 @@ export function setFilesAccess({
 	})
 }
 
-export function getIntegrations() {
-	return api.get<GetIntegrationsResponse>(`/integration`)
+export function getIntegrations({ type, projectName }: { type: string, projectName: string }) {
+	return api.get<GetIntegrationsResponse>(`/integration?type=${type}&project_name=${projectName}`)
+}
+export function getIntegrationDetails(name: string) {
+	return api.get(`/integration/name/${name}`)
 }
 export function getEmailPipelineList({ tag }: { tag: string; }) {
 	return api.get(`/ecommerce/project/${tag}/pipeline/email`)

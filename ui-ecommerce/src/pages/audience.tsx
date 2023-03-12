@@ -4,6 +4,7 @@ import cronstrue from "cronstrue"
 import { useState } from "react"
 import { FaUserCircle } from "react-icons/fa"
 import { IoClose, IoMail, IoReload } from "react-icons/io5"
+import { IoMdSettings } from "react-icons/io"
 import { MdOutlineTimer } from "react-icons/md"
 import { RiDeleteBin2Line, RiFileList2Fill, RiMailSettingsFill } from "react-icons/ri"
 import { Link, useNavigate } from "react-router-dom"
@@ -18,10 +19,10 @@ import {
 	runPredefinedQuery,
 } from "../api"
 import { IntegrationForm } from "../features/app/addIntegrationForm"
-import { Modals, useModal } from "../features/hooks"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { AudienceStats } from "./analytics"
+import { UpdateIntegrationForm } from "../features/app/updateIntegrationForm"
 
 export function AudiencePage() {
 	const [activeTab, setActiveTab] = useState<"members" | "schedules">("members")
@@ -45,32 +46,37 @@ export function AudiencePage() {
 }
 
 function ActionBar() {
-	const modal = useModal()
+	const { projectName } = useGetProjectTag()
 	const [openModal, setOpenModal] = useState(false)
-	const query = useQuery([QueryKey.GetIntegrations], getIntegrations)
+	const [openSettingsModal, setOpenSettingsModal] = useState(false)
+	const query = useQuery([QueryKey.GetIntegrations], () =>
+		getIntegrations({ type: "sendGrid", projectName })
+	)
 	const client = useQueryClient()
-	const noIntegration =
-		(
-			query?.data?.data
-				?.map((d) => {
-					if (["sendGrid"].includes(d.type)) return d.type
-				})
-				.filter((d) => d !== undefined) || []
-		).length === 0
+	const IntegrationName = query?.data?.data[0]?.name ?? ""
 	return (
 		<div className="flex gap-x-5 items-center">
-			{noIntegration && query.isSuccess && (
+			{!IntegrationName && query.isSuccess && (
 				<div className="text-sm p-1 px-2 bg-blue-50 rounded text-gray-600 flex items-center gap-x-2">
-					You must connect your account to SendGrid to send emails{" "}
+					You must connect your poject to SendGrid to send emails{" "}
 					<Button onClick={() => setOpenModal(true)} color="blue" size="xs">
 						Connect
 					</Button>
 				</div>
 			)}
+			{IntegrationName && query.isSuccess && (
+				<Button
+					leftIcon={<IoMdSettings className="h-5 w-5" />}
+					onClick={() => setOpenSettingsModal(true)}
+					color="blue"
+				>
+					SendGrid
+				</Button>
+			)}
+
 			<Button
-				disabled={noIntegration}
-				leftIcon={<IoMail />}
-				onClick={() => modal.open(Modals.UserManagementEndpoint)}
+				disabled={!IntegrationName}
+				leftIcon={<IoMail className="h-5 w-5" />}
 				component={Link}
 				to="new"
 			>
@@ -81,6 +87,20 @@ function ActionBar() {
 					integrationKind={"sendGrid"}
 					onSuccess={() => {
 						toast("Send-Grid integration added successfully", {
+							type: "success",
+							autoClose: 2000,
+						}),
+							client.invalidateQueries([QueryKey.GetIntegrations]),
+							setOpenModal(false)
+					}}
+				/>
+			</Modal>
+			<Modal opened={openSettingsModal} onClose={() => setOpenSettingsModal(false)}>
+				<UpdateIntegrationForm
+					name={IntegrationName}
+					integrationKind={"sendGrid"}
+					onSuccess={() => {
+						toast("Send-Grid integration updated successfully", {
 							type: "success",
 							autoClose: 2000,
 						}),
