@@ -6,6 +6,7 @@ import { BackgroundsEditor } from '../../style/background-editor'
 import { BackgroundImageEditor } from '../../style/background-image-editor'
 import { BordersEditor } from '../../style/border-editor'
 import { SimpleAnimationEditor } from '../../style/simple-animation-editor'
+import { SimpleModeShadowsEditor } from '../../style/simple-mode-shadows-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
 import { Styler } from './styler'
@@ -19,7 +20,7 @@ export function BoxStyler({
 	element: Element | Element[]
 	label: string
 	stylers?: Array<
-		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image'
+		'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image' | 'shadow'
 	>
 	stylerOptions?: {
 		alignment?: {
@@ -42,7 +43,7 @@ function StyleEditor({
 }: {
 	element: Element | Element[]
 	stylers?: Array<
-	'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image'
+	'alignment' | 'backgrounds' | 'borders' | 'spacing' | 'typography' | 'animation' | 'background-image' | 'shadow'
 	>
 	stylerOptions?: {
 		alignment?: {
@@ -73,6 +74,9 @@ function StyleEditor({
 			)}
 			{stylers?.includes('background-image') && (
 				<BackgroundImageEditor element={element as Element} />
+			)}
+			{stylers?.includes('shadow') && (
+				<SimpleModeShadowsEditor />
 			)}
 		</Styler>
 	)
