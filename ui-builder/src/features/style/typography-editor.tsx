@@ -175,7 +175,7 @@ export function TypographyEditor({
 					onCreate={(fontName) => {
 						openModal({
 							title: 'Add Font',
-							children: <FontForm fontName={fontName} pageName={pageName} />,
+							children: <FontForm fontName={fontName} />,
 						})
 						return fontName
 					}}

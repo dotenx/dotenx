@@ -42,7 +42,7 @@
 		"chart.js": "^4.2.1",
 		"chroma-js": "^2.4.2",
 		"dnd-core": "^16.0.1",
-		"eslint": "^8.35.0",
+		"eslint": "^8.36.0",
 		"eslint-config-prettier": "^8.7.0",
 		"eslint-plugin-react": "^7.32.2",
 		"eslint-plugin-react-hooks": "^4.6.0",

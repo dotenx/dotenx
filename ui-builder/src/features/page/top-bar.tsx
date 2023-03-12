@@ -1,6 +1,6 @@
 import { ActionIcon, Anchor, Button, Group, Text, Tooltip } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ReactNode, useEffect } from 'react'
@@ -12,10 +12,10 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut,
+	TbZoomOut
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
-import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
+import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
@@ -34,6 +34,7 @@ import { ViewportSelection } from '../viewport/viewport-selection'
 import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
+import { usePageData, useUpdatePage } from './use-update'
 
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
@@ -279,38 +280,18 @@ export function FullscreenButton() {
 }
 
 export function AdvancedModeButton() {
-	const queryClient = useQueryClient()
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
-	const { pageName = '' } = useParams()
-	const projectTag = useAtomValue(projectTagAtom)
-	const elements = useElementsStore((state) => state.elements)
-	const dataSources = useDataSourceStore((state) => state.sources)
-	const classes = useClassesStore((state) => state.classes)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const setSaved = useElementsStore((store) => store.save)
-	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.PageDetails])
-			setSaved()
-		},
-	})
+	const pageData = usePageData()
+	const updatePage = useUpdatePage()
+	
 	const saveAdvanced = () => {
-		savePageMutation.mutate({
-			projectTag,
-			pageName,
-			elements,
-			dataSources,
-			classNames: classes,
+		updatePage.mutate({
+			...pageData,
 			mode: 'advanced',
-			pageParams: [],
-			globals: [],
-			fonts: {},
-			customCodes: { head: '', footer: '' },
-			statesDefaultValues,
-			animations: [],
 		})
 	}
+	
 	const handleClick = () => {
 		openConfirmModal({
 			title: 'Please confirm your action',

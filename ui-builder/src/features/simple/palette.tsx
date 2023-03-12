@@ -14,7 +14,7 @@ const palettes: ColorPalette[] = [
 
 type ColorPalette = {
 	id: string
-	colors: string[]
+	colors: [string, string, string, string, string]
 }
 
 export function Palette() {
@@ -22,7 +22,7 @@ export function Palette() {
 
 	return (
 		<div>
-			<Divider label="Color palette" />
+			<Divider label="Color palette" mb="xl" />
 			<div className="space-y-6">
 				{palettes.map((palette) => (
 					<div key={palette.id} className="flex justify-between items-center">
@@ -37,7 +37,7 @@ export function Palette() {
 							onClick={() => selectPalette(palette)}
 							disabled={palette.id === selectedPalette.id}
 						>
-							{palette.id === selectedPalette.id ? 'Selected' : 'Select'}
+							{palette.id === selectedPalette.id ? 'Active' : 'Select'}
 						</Button>
 					</div>
 				))}
@@ -48,7 +48,7 @@ export function Palette() {
 
 export const color = (color: Color, opacity = 1) => `rgba(var(--${color}) / ${opacity})`
 
-export const colorNames = ['primary', 'secondary', 'tertiary', 'quaternary', 'quinary'] as const
+export const colorNames = ['primary', 'secondary', 'accent', 'background', 'text'] as const
 
 type Color = (typeof colorNames)[number]
 

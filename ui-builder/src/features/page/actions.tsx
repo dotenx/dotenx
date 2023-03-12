@@ -7,7 +7,7 @@ import {
 	Modal,
 	Text,
 	TextInput,
-	Tooltip,
+	Tooltip
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useClickOutside, useClipboard } from '@mantine/hooks'
@@ -26,12 +26,11 @@ import {
 	TbPlus,
 	TbSettings,
 	TbTrash,
-	TbWorldUpload,
+	TbWorldUpload
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import {
-	AddPageRequest,
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
@@ -39,24 +38,18 @@ import {
 	GlobalStates,
 	previewPage,
 	publishPage,
-	QueryKey,
-	updatePage,
+	QueryKey
 } from '../../api'
-import { joinAnimations } from '../../utils/join-scripts'
-import { animationsAtom } from '../atoms'
-import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
-import { statesDefaultValuesAtom } from '../states/default-values-form'
-import { useClassesStore } from '../style/classes-store'
-import { fontsAtom } from '../style/typography-editor'
 import { CustomCode } from './custom-code'
 import {
 	pageModeAtom,
 	pageParamsAtom,
 	projectTagAtom,
 	projectTypeAtom,
-	useHasUnsavedChanges,
+	useHasUnsavedChanges
 } from './top-bar'
+import { usePageData, useResetPage, useUpdatePage } from './use-update'
 
 export const globalStatesAtom = atom<string[]>([])
 export const customCodesAtom = atom<{ head: string; footer: string }>({ head: '', footer: '' })
@@ -165,7 +158,7 @@ function PageSettings({ projectName, pageName }: { projectName: string; pageName
 				</Button>
 			</div>
 			<Divider label="URL params" my="xl" />
-			<QueryParamsForm pageName={pageName} />
+			<QueryParamsForm />
 			<Divider label="Persisted states" my="xl" />
 			<PersistedStatesForm projectName={projectName} />
 		</div>
@@ -216,45 +209,30 @@ function PersistedStatesForm({ projectName }: { projectName: string }) {
 	)
 }
 
-function QueryParamsForm({ pageName }: { pageName: string }) {
+function QueryParamsForm() {
 	const setSaved = useElementsStore((store) => store.save)
 	const pageParams = useAtomValue(pageParamsAtom)
 	const form = useForm<{ params: string[] }>({ initialValues: { params: pageParams ?? [] } })
 	const queryClient = useQueryClient()
-	const projectTag = useAtomValue(projectTagAtom)
-	const elements = useElementsStore((state) => state.elements)
-	const dataSources = useDataSourceStore((state) => state.sources)
-	const classes = useClassesStore((state) => state.classes)
-	const globals = useAtomValue(globalStatesAtom)
-	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.PageDetails])
-			setSaved()
-		},
-	})
-	const fonts = useAtomValue(fontsAtom)
-	const customCodes = useAtomValue(customCodesAtom)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = useAtomValue(animationsAtom)
+	const updatePageMutation = useUpdatePage()
+	const pageData = usePageData()
 
 	return (
 		<form
 			className="space-y-6"
 			onSubmit={form.onSubmit((values) =>
-				savePageMutation.mutate({
-					projectTag,
-					pageName,
-					elements,
-					dataSources,
-					classNames: classes,
-					pageParams: values.params,
-					mode: 'advanced',
-					globals,
-					fonts,
-					customCodes,
-					statesDefaultValues,
-					animations,
-				})
+				updatePageMutation.mutate(
+					{
+						...pageData,
+						pageParams: values.params,
+					},
+					{
+						onSuccess: () => {
+							queryClient.invalidateQueries([QueryKey.PageDetails])
+							setSaved()
+						},
+					}
+				)
 			)}
 		>
 			<div className="space-y-4">
@@ -272,7 +250,7 @@ function QueryParamsForm({ pageName }: { pageName: string }) {
 			>
 				Param
 			</Button>
-			<Button fullWidth type="submit" loading={savePageMutation.isLoading}>
+			<Button fullWidth type="submit" loading={updatePageMutation.isLoading}>
 				Save
 			</Button>
 		</form>
@@ -311,18 +289,7 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 	const setSaved = useElementsStore((store) => store.save)
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
-	const projectTag = useAtomValue(projectTagAtom)
 	const setPageMode = useSetAtom(pageModeAtom)
-	const elements = useElementsStore((store) => store.elements)
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const classNames = useClassesStore((store) => store.classes)
-	const pageParams = useAtomValue(pageParamsAtom)
-	const globals = useAtomValue(globalStatesAtom)
-	const fonts = useAtomValue(fontsAtom)
-	const savePageMutation = useMutation(updatePage)
-	const customCodes = useAtomValue(customCodesAtom)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = useAtomValue(animationsAtom)
 	const queryClient = useQueryClient()
 	const schema = z.object({
 		name: z.string().min(1),
@@ -333,39 +300,25 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 			name: '',
 		},
 	})
+	const updatePageMutation = useUpdatePage()
+	const pageData = usePageData()
 
 	const onSubmit = form.onSubmit((value) => {
-		savePageMutation.mutate(
-			{
-				projectTag,
-				pageName: value.name,
-				elements,
-				dataSources,
-				classNames,
-				mode: isSimple ? 'simple' : 'advanced',
-				pageParams,
-				globals,
-				fonts,
-				customCodes,
-				statesDefaultValues,
-				animations,
+		updatePageMutation.mutate(pageData, {
+			onSuccess: () => {
+				queryClient.invalidateQueries([QueryKey.Pages])
+				setPageMode(isSimple ? 'simple' : 'advanced')
+				setSaved()
+				closeAllModals()
+				onSuccess(value.name)
 			},
-			{
-				onSuccess: () => {
-					queryClient.invalidateQueries([QueryKey.Pages])
-					setPageMode(isSimple ? 'simple' : 'advanced')
-					setSaved()
-					closeAllModals()
-					onSuccess(value.name)
-				},
-			}
-		)
+		})
 	})
 
 	return (
 		<form onSubmit={onSubmit}>
 			<TextInput label="Page name" {...form.getInputProps('name')} />
-			<Button mt="xl" fullWidth type="submit" loading={savePageMutation.isLoading}>
+			<Button mt="xl" fullWidth type="submit" loading={updatePageMutation.isLoading}>
 				Duplicate page
 			</Button>
 		</form>
@@ -387,39 +340,6 @@ export function DeletePageButton() {
 	)
 }
 
-const useResetPage = () => {
-	const queryClient = useQueryClient()
-	const projectTag = useAtomValue(projectTagAtom)
-	const { pageName = '' } = useParams()
-
-	const setSaved = useElementsStore((store) => store.save)
-	const savePageMutation = useMutation(
-		() =>
-			updatePage({
-				projectTag,
-				pageName,
-				elements: [],
-				dataSources: [],
-				classNames: {},
-				mode: 'simple',
-				pageParams: [],
-				globals: [],
-				fonts: {},
-				customCodes: { head: '', footer: '' },
-				statesDefaultValues: {},
-				animations: [],
-			}),
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries([QueryKey.PageDetails])
-				setSaved()
-			},
-		}
-	)
-
-	return savePageMutation
-}
-
 function DeletePageModal({
 	opened,
 	setOpened,
@@ -433,8 +353,8 @@ function DeletePageModal({
 	const resetElements = useElementsStore((store) => store.reset)
 	const { projectName, pageName = '' } = useParams()
 	const projectType = useAtomValue(projectTypeAtom)
-
 	const resetMutation = useResetPage()
+
 	const deletePageMutation = useMutation(deletePage, {
 		onSuccess: () => {
 			navigate(
@@ -446,6 +366,7 @@ function DeletePageModal({
 			resetElements()
 		},
 	})
+
 	const remove = () =>
 		deletePageMutation.mutate({ projectTag, pageName }, { onSuccess: () => setOpened(false) })
 
@@ -483,68 +404,17 @@ function DeletePageModal({
 	)
 }
 
-const usePageAnimations = () => {
-	const elements = useElementsStore((store) => store.elements)
-	const animations = useAtomValue(animationsAtom)
-	const elementAnimations = joinAnimations(elements)
-	return [...animations, ...elementAnimations]
-}
-
-export const usePageData = () => {
-	const { pageName = '' } = useParams()
-	const mode = useAtomValue(pageModeAtom)
-	const isSimple = mode === 'simple'
-	const projectTag = useAtomValue(projectTagAtom)
-	const elements = useElementsStore((store) => store.elements)
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const classNames = useClassesStore((store) => store.classes)
-	const pageParams = useAtomValue(pageParamsAtom)
-	const globals = useAtomValue(globalStatesAtom)
-	const fonts = useAtomValue(fontsAtom)
-	const customCodes = useAtomValue(customCodesAtom)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = usePageAnimations()
-
-	return {
-		projectTag,
-		pageName,
-		elements,
-		dataSources,
-		classNames,
-		mode: isSimple ? ('simple' as const) : ('advanced' as const),
-		pageParams,
-		globals,
-		fonts,
-		customCodes,
-		statesDefaultValues,
-		animations,
-	}
-}
-
-const useSavePage = (pageData: AddPageRequest) => {
-	const setSaved = useElementsStore((store) => store.save)
-	const setPageMode = useSetAtom(pageModeAtom)
-	const savePageMutation = useMutation(() => updatePage(pageData), {
-		onSuccess: () => {
-			setPageMode(pageData.mode)
-			setSaved()
-		},
-	})
-
-	return savePageMutation
-}
-
 export function SaveButton() {
 	const unsaved = useHasUnsavedChanges()
 	const pageData = usePageData()
-	const saveMutation = useSavePage(pageData)
+	const updatePage = useUpdatePage()
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button
-				onClick={() => saveMutation.mutate()}
+				onClick={() => updatePage.mutate(pageData)}
 				disabled={!unsaved}
-				loading={saveMutation.isLoading}
+				loading={updatePage.isLoading}
 				size="xs"
 				variant="default"
 				radius={0}
@@ -557,14 +427,10 @@ export function SaveButton() {
 
 export function PreviewButton({ url, isLoading }: { url: string; isLoading: boolean }) {
 	const { pageName = 'index' } = useParams()
-
+	const outsideClickRef = useClickOutside(() => setOpen(false))
+	const copyPreview = useClipboard({ timeout: 1000 })
 	const projectTag = useAtomValue(projectTagAtom)
 	const [previewUrl, setPreviewUrl] = useState('')
-
-	useEffect(() => {
-		setPreviewUrl(url as string)
-	}, [isLoading])
-
 	const previewPageMutation = useMutation(previewPage, {
 		onSuccess: (data) => {
 			setPreviewUrl(data.data.url)
@@ -573,55 +439,30 @@ export function PreviewButton({ url, isLoading }: { url: string; isLoading: bool
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
 	const setPageMode = useSetAtom(pageModeAtom)
-	const elements = useElementsStore((store) => store.elements)
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const classNames = useClassesStore((store) => store.classes)
-	const pageParams = useAtomValue(pageParamsAtom)
-	const globals = useAtomValue(globalStatesAtom)
-	const fonts = useAtomValue(fontsAtom)
-	const savePageMutation = useMutation(updatePage)
 	const setSaved = useElementsStore((store) => store.save)
-	const customCodes = useAtomValue(customCodesAtom)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = useAtomValue(animationsAtom)
-
+	const updatePageMutation = useUpdatePage()
+	const pageData = usePageData()
 	const [open, setOpen] = useState(false)
 
 	const handleGetPreview = () => {
-		savePageMutation.mutate(
-			{
-				projectTag,
-				pageName,
-				elements,
-				dataSources,
-				classNames,
-				mode: isSimple ? 'simple' : 'advanced',
-				pageParams,
-				globals,
-				fonts,
-				customCodes,
-				statesDefaultValues,
-				animations,
+		updatePageMutation.mutate(pageData, {
+			onSuccess: () => {
+				previewPageMutation.mutate({ projectTag, pageName })
+				setPageMode(isSimple ? 'simple' : 'advanced')
+				setSaved()
 			},
-			{
-				onSuccess: () => {
-					previewPageMutation.mutate({ projectTag, pageName })
-					setPageMode(isSimple ? 'simple' : 'advanced')
-					setSaved()
-				},
-			}
-		)
+		})
 	}
-	const outsideClickRef = useClickOutside(() => setOpen(false))
-	const copyPreview = useClipboard({ timeout: 1000 })
+
+	useEffect(() => {
+		setPreviewUrl(url as string)
+	}, [isLoading, url])
 
 	return (
 		<div className="cursor-default" ref={outsideClickRef}>
 			<Tooltip withinPortal withArrow label={<Text size="xs">Preview</Text>}>
 				<Button
-					onClick={() => {
-						setOpen(!open)
-					}}
+					onClick={() => setOpen(!open)}
 					disabled={isLoading}
 					variant="light"
 					size="xs"
@@ -668,7 +509,7 @@ export function PreviewButton({ url, isLoading }: { url: string; isLoading: bool
 							className="!rounded-md !w-[270px] mt-6"
 							variant={'light'}
 							onClick={handleGetPreview}
-							disabled={savePageMutation.isLoading}
+							disabled={updatePageMutation.isLoading}
 							loading={previewPageMutation.isLoading}
 						>
 							Generate Preview link
@@ -684,27 +525,19 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 	const { pageName = 'index', projectName } = useParams()
 	const projectTag = useAtomValue(projectTagAtom)
 	const [publishUrl, setPublishUrl] = useState('')
-
-	useEffect(() => {
-		setPublishUrl(url as string)
-	}, [isLoading])
-
 	const publishPageMutation = useMutation(publishPage)
-
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
 	const setPageMode = useSetAtom(pageModeAtom)
-	const elements = useElementsStore((store) => store.elements)
-	const dataSources = useDataSourceStore((store) => store.sources)
-	const classNames = useClassesStore((store) => store.classes)
-	const pageParams = useAtomValue(pageParamsAtom)
-	const globals = useAtomValue(globalStatesAtom)
-	const fonts = useAtomValue(fontsAtom)
-	const savePageMutation = useMutation(updatePage)
 	const setSaved = useElementsStore((store) => store.save)
-	const customCodes = useAtomValue(customCodesAtom)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const animations = usePageAnimations()
+	const [open, setOpen] = useState(false)
+	const updatePageMutation = useUpdatePage()
+	const pageData = usePageData()
+
+	useEffect(() => {
+		setPublishUrl(url as string)
+	}, [isLoading, url])
+
 	const publish = () =>
 		publishPageMutation.mutate(
 			{ projectTag, pageName },
@@ -720,29 +553,14 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 				},
 			}
 		)
-	const [open, setOpen] = useState(false)
+
 	const save = () => {
-		savePageMutation.mutate(
-			{
-				projectTag,
-				pageName,
-				elements,
-				dataSources,
-				classNames,
-				mode: isSimple ? 'simple' : 'advanced',
-				pageParams,
-				globals,
-				fonts,
-				customCodes,
-				statesDefaultValues,
-				animations,
+		updatePageMutation.mutate(pageData, {
+			onSuccess: () => {
+				publish()
+				setPageMode(isSimple ? 'simple' : 'advanced')
 			},
-			{
-				onSuccess: () => {
-					publish(), setPageMode(isSimple ? 'simple' : 'advanced')
-				},
-			}
-		)
+		})
 	}
 
 	const outsideClickRef = useClickOutside(() => setOpen(false))
@@ -813,7 +631,7 @@ export function PublishButton({ url, isLoading }: { url: string; isLoading: bool
 
 						<Button
 							onClick={save}
-							loading={publishPageMutation.isLoading || savePageMutation.isLoading}
+							loading={publishPageMutation.isLoading || updatePageMutation.isLoading}
 							className={'!rounded-md  !w-[270px] mt-4'}
 							size="md"
 						>
