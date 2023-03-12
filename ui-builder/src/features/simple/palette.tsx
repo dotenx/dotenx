@@ -1,5 +1,6 @@
 import { Button, ColorSwatch, Divider } from '@mantine/core'
 import { atom, useAtom } from 'jotai'
+import { z } from 'zod'
 
 const palettes: ColorPalette[] = [
 	{
@@ -50,6 +51,8 @@ export const color = (color: Color, opacity = 1) => `rgba(var(--${color}) / ${op
 
 export const colorNames = ['primary', 'secondary', 'accent', 'background', 'text'] as const
 
-type Color = (typeof colorNames)[number]
+export const colorNamesSchema = z.enum(colorNames)
+
+export type Color = (typeof colorNames)[number]
 
 export const selectedPaletteAtom = atom<ColorPalette>(palettes[0])
