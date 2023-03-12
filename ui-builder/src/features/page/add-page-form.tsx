@@ -43,7 +43,7 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				pageParams: [],
 				globals: [],
 				fonts: {},
-				customCodes: { head: '', footer: '' },
+				customCodes: { head: '', footer: '', scripts: '', styles: '' },
 				statesDefaultValues: {},
 				animations: [],
 			},

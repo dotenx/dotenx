@@ -1,5 +1,6 @@
 import { Button, ColorSwatch, Divider } from '@mantine/core'
 import { atom, useAtom } from 'jotai'
+import { z } from 'zod'
 
 const palettes: ColorPalette[] = [
 	{
@@ -10,11 +11,23 @@ const palettes: ColorPalette[] = [
 		id: '133049dd-ce11-44a9-a507-5cf547085d27',
 		colors: ['#e63946', '#f1faee', '#a8dadc', '#457b9d', '#1d3557'],
 	},
+	{
+		id: '0cbb5062-ff20-469a-ad83-209e68cca2e0',
+		colors: ['#606c38', '#283618', '#fefae0', '#dda15e', '#bc6c25'],
+	},
+	{
+		id: '580d000b-1b72-4dcc-b906-c0db4e1a7d81',
+		colors: ['#8ecae6', '#219ebc', '#023047', '#ffb703', '#fb8500'],
+	},
+	{
+		id: '6c942f16-4539-4263-9ede-d834586ff281',
+		colors: ['#003049', '#d62828', '#f77f00', '#fcbf49', '#eae2b7'],
+	},
 ]
 
 type ColorPalette = {
 	id: string
-	colors: string[]
+	colors: [string, string, string, string, string]
 }
 
 export function Palette() {
@@ -22,7 +35,7 @@ export function Palette() {
 
 	return (
 		<div>
-			<Divider label="Color palette" />
+			<Divider label="Color palette" mb="xl" />
 			<div className="space-y-6">
 				{palettes.map((palette) => (
 					<div key={palette.id} className="flex justify-between items-center">
@@ -37,7 +50,7 @@ export function Palette() {
 							onClick={() => selectPalette(palette)}
 							disabled={palette.id === selectedPalette.id}
 						>
-							{palette.id === selectedPalette.id ? 'Selected' : 'Select'}
+							{palette.id === selectedPalette.id ? 'Active' : 'Select'}
 						</Button>
 					</div>
 				))}
@@ -48,8 +61,10 @@ export function Palette() {
 
 export const color = (color: Color, opacity = 1) => `rgba(var(--${color}) / ${opacity})`
 
-export const colorNames = ['primary', 'secondary', 'tertiary', 'quaternary', 'quinary'] as const
+export const colorNames = ['primary', 'secondary', 'accent', 'background', 'text'] as const
 
-type Color = (typeof colorNames)[number]
+export const colorNamesSchema = z.enum(colorNames)
+
+export type Color = (typeof colorNames)[number]
 
 export const selectedPaletteAtom = atom<ColorPalette>(palettes[0])

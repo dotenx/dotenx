@@ -118,7 +118,7 @@ export const useGenerateStyles = (elements: Element[]) => {
 	return generatedStyles
 }
 
-const useGeneratePalette = () => {
+export const useGeneratePalette = () => {
 	const palette = useAtomValue(selectedPaletteAtom)
 	return `
 		:root {
