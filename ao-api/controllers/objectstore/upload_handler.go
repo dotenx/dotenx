@@ -67,7 +67,7 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 		}
 
 		extension := filepath.Ext(file.Filename)
-		fileName := uuid.New().String() + extension
+		fileName := strings.Replace(strings.TrimSuffix(file.Filename, extension), " ", "_", -1) + "_" + uuid.New().String() + extension
 
 		// Get the existing usage
 		used, err := controller.Service.GetTotalUsage(accountId)
