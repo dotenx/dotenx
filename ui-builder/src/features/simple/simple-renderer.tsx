@@ -10,6 +10,8 @@ import styled from 'styled-components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'
+import { InputElement } from '../elements/extensions/input'
+import { SelectElement } from '../elements/extensions/select'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -19,22 +21,20 @@ export function ElementOverlay({
 	children,
 	element,
 	isDirectRootChildren,
-	withoutStyle,
 	isGridChild,
 }: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
-	withoutStyle?: boolean
 	isGridChild?: boolean
 }) {
-	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
+	const { select, setHovered } = useSelectionStore((store) => ({
 		select: store.select,
 		setHovered: store.setHovered,
 		unsetHovered: store.unsetHovered,
 	}))
 	const { isHighlighted, isHovered } = useIsHighlighted(element.id)
-	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
+	const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 	const { isFullscreen } = useAtomValue(previewAtom)
 
 	const handleClick = (event: MouseEvent) => {
@@ -57,7 +57,7 @@ export function ElementOverlay({
 	const { ref, height } = useElementSize()
 
 	const handleRef = useCallback(
-		(el: HTMLDivElement) => {
+		(el: HTMLElement | null) => {
 			setReferenceElement(el)
 			ref.current = el
 		},
@@ -69,30 +69,35 @@ export function ElementOverlay({
 		event.stopPropagation()
 		setHovered(element.id)
 	}
-	const handleMouseOut = (event: MouseEvent) => {
-		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
-		event.stopPropagation()
-		unsetHovered()
-	}
+
+	const hasNoChild = element instanceof InputElement || element instanceof SelectElement
+	const Rendered =
+		element instanceof InputElement
+			? 'input'
+			: element instanceof SelectElement
+			? 'select'
+			: 'div'
 
 	return (
-		<div
-			style={{
-				outlineWidth: isHovered ? 2 : 1,
-				cursor: 'default',
-				outlineStyle:
-					isHighlighted && (isDirectRootChildren || isGridChild) ? 'solid' : undefined,
-				outlineColor: '#fb7185',
-				width: withoutStyle ? '100%' : undefined,
-				...backgroundImage,
-			}}
-			className={withoutStyle ? undefined : element.generateClasses()}
-			ref={handleRef}
-			onMouseOver={handleMouseOver}
-			onMouseLeave={handleMouseOut}
-			onClick={handleClick}
-		>
-			{children}
+		<>
+			<Rendered
+				style={{
+					outlineWidth: isHovered ? 2 : 1,
+					cursor: 'default',
+					outlineStyle:
+						isHighlighted && (isDirectRootChildren || isGridChild)
+							? 'solid'
+							: undefined,
+					outlineColor: '#fb7185',
+					...backgroundImage,
+				}}
+				className={element.generateClasses()}
+				ref={handleRef}
+				onMouseOver={handleMouseOver}
+				onClick={handleClick}
+			>
+				{!hasNoChild ? children : undefined}
+			</Rendered>
 			{(isDirectRootChildren || isGridChild) && isHovered && (
 				<>
 					<ElementOverlayPiece
@@ -121,7 +126,7 @@ export function ElementOverlay({
 					</ElementOverlayPiece>
 				</>
 			)}
-		</div>
+		</>
 	)
 }
 
@@ -186,14 +191,14 @@ function ElementOverlayPiece({
 	children,
 	offset = [0, 0],
 }: {
-	referenceElement: HTMLDivElement | null
+	referenceElement: HTMLElement | null
 	updateDeps: unknown[]
 	placement: Placement
 	children: ReactNode
 	offset?: [number, number]
 }) {
 	const { window } = useContext(FrameContext)
-	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
+	const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
 	const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
 		placement,
 		modifiers: [

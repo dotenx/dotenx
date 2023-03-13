@@ -19,6 +19,7 @@ export type DraggableTabsProps = {
 	tabs: DraggableTab[]
 	maxLength?: number
 	minLength?: number
+	rightSection?: ReactNode
 }
 
 export type DraggableTab = {
@@ -38,6 +39,7 @@ export function DraggableTabs({
 	onAddNewTab,
 	maxLength,
 	minLength = 1,
+	rightSection,
 }: DraggableTabsProps) {
 	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 10 } }))
 
@@ -71,22 +73,29 @@ export function DraggableTabs({
 					</DndContext>
 				</Tabs.List>
 				<div className="ml-auto">
-					<Tooltip withinPortal withArrow label={<Text size="xs">Add new block</Text>}>
-						<ActionIcon
-							onClick={onAddNewTab}
-							variant="transparent"
-							disabled={maxLength !== undefined && tabs.length === maxLength}
+					{!rightSection && (
+						<Tooltip
+							withinPortal
+							withArrow
+							label={<Text size="xs">Add new block</Text>}
 						>
-							<TbPlus
-								size={16}
-								className={
-									maxLength && tabs.length === maxLength
-										? 'text-gray-400'
-										: 'text-red-500 rounded-full border-red-500 border'
-								}
-							/>
-						</ActionIcon>
-					</Tooltip>
+							<ActionIcon
+								onClick={onAddNewTab}
+								variant="transparent"
+								disabled={maxLength !== undefined && tabs.length === maxLength}
+							>
+								<TbPlus
+									size={16}
+									className={
+										maxLength && tabs.length === maxLength
+											? 'text-gray-400'
+											: 'text-red-500 rounded-full border-red-500 border'
+									}
+								/>
+							</ActionIcon>
+						</Tooltip>
+					)}
+					{rightSection}
 				</div>
 			</div>
 			{tabs.map((tab) => (

@@ -20,20 +20,7 @@ export class SelectElement extends Element {
 	}
 
 	render(): ReactNode {
-		return (
-			<select
-				defaultValue={this.data.defaultValue.toString()}
-				name={this.data.name}
-				required={this.data.required}
-				className={this.generateClasses()}
-			>
-				{this.data.options.map((option, index) => (
-					<option key={index} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
-		)
+		return <></>
 	}
 
 	renderOptions(): ReactNode {
@@ -47,7 +34,7 @@ type Option = {
 	key: string
 }
 
-function SelectOptions({ element }: { element: SelectElement }) {
+export function SelectOptions({ element, simple }: { element: SelectElement; simple?: boolean }) {
 	const set = useSetElement()
 	const { options, required } = element.data
 	const states = useGetStates()
@@ -73,59 +60,59 @@ function SelectOptions({ element }: { element: SelectElement }) {
 		})
 	}
 
-	return (
-		<div className="space-y-6">
-			<form className="space-y-4">
-				{options.map((item, index) => (
-					<div className="px-4 py-2 border rounded" key={item.key}>
-						<CloseButton
-							ml="auto"
-							size="xs"
-							onClick={() =>
-								changeOptions(options.filter((option) => item.key !== option.key))
-							}
-						/>
-						<TextInput
-							size="xs"
-							label="Label"
-							mb="xs"
-							value={options[index].label}
-							onChange={(event) =>
-								changeOptions(
-									options.map((option) =>
-										option.key === item.key
-											? { ...option, label: event.target.value }
-											: option
-									)
-								)
-							}
-						/>
-						<TextInput
-							size="xs"
-							label="Value"
-							value={options[index].value}
-							onChange={(event) =>
-								changeOptions(
-									options.map((option) =>
-										option.key === item.key
-											? { ...option, value: event.target.value }
-											: option
-									)
-								)
-							}
-						/>
-					</div>
-				))}
-				<div className="flex items-center gap-2">
-					<Button
-						leftIcon={<TbPlus />}
-						onClick={() =>
-							changeOptions([...options, { label: '', value: '', key: uuid() }])
-						}
+	const optionsForm = (
+		<form className="space-y-4">
+			{options.map((item, index) => (
+				<div className="px-4 py-2 border rounded" key={item.key}>
+					<CloseButton
+						ml="auto"
 						size="xs"
-					>
-						Option
-					</Button>
+						onClick={() =>
+							changeOptions(options.filter((option) => item.key !== option.key))
+						}
+					/>
+					<TextInput
+						size="xs"
+						label="Label"
+						mb="xs"
+						value={options[index].label}
+						onChange={(event) =>
+							changeOptions(
+								options.map((option) =>
+									option.key === item.key
+										? { ...option, label: event.target.value }
+										: option
+								)
+							)
+						}
+					/>
+					<TextInput
+						size="xs"
+						label="Value"
+						value={options[index].value}
+						onChange={(event) =>
+							changeOptions(
+								options.map((option) =>
+									option.key === item.key
+										? { ...option, value: event.target.value }
+										: option
+								)
+							)
+						}
+					/>
+				</div>
+			))}
+			<div className="flex items-center gap-2">
+				<Button
+					leftIcon={<TbPlus />}
+					onClick={() =>
+						changeOptions([...options, { label: '', value: '', key: uuid() }])
+					}
+					size="xs"
+				>
+					Option
+				</Button>
+				{!simple && (
 					<Select
 						size="xs"
 						placeholder="Get options from state"
@@ -137,8 +124,16 @@ function SelectOptions({ element }: { element: SelectElement }) {
 							})
 						}
 					/>
-				</div>
-			</form>
+				)}
+			</div>
+		</form>
+	)
+
+	if (simple) return optionsForm
+
+	return (
+		<div className="space-y-6">
+			{optionsForm}
 			<TextInput
 				size="xs"
 				label="Name"
