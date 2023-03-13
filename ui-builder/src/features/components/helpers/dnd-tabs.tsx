@@ -13,11 +13,13 @@ export function DndTabs({
 	renderItemOptions,
 	insertElement,
 	autoAdjustGridTemplateColumns = true,
+	rightSection,
 }: {
 	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 	autoAdjustGridTemplateColumns?: boolean
+	rightSection?: ReactNode
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -65,7 +67,14 @@ export function DndTabs({
 		[listElements, renderItemOptions, set]
 	)
 
-	return <DraggableTabs tabs={tabs} onDragEnd={onDragEnd} onAddNewTab={onAddNewTab} />
+	return (
+		<DraggableTabs
+			tabs={tabs}
+			onDragEnd={onDragEnd}
+			onAddNewTab={onAddNewTab}
+			rightSection={rightSection}
+		/>
+	)
 }
 
 function swap<T>(arr: T[], aIndex: number, bIndex: number) {

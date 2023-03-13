@@ -1,7 +1,8 @@
-import { Select } from '@mantine/core'
+import { ActionIcon, Menu, Select } from '@mantine/core'
 import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
+import { TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/form.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { txt } from '../elements/constructor'
@@ -10,6 +11,7 @@ import { setElement, useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { FormElement } from '../elements/extensions/form'
 import { InputElement } from '../elements/extensions/input'
+import { SelectElement, SelectOptions } from '../elements/extensions/select'
 import { SubmitElement } from '../elements/extensions/submit'
 import { TextElement } from '../elements/extensions/text'
 import formScript from '../scripts/form.js?raw'
@@ -47,6 +49,7 @@ function FormOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const form = component.find<FormElement>(tagIds.form)!
 	const inputsWrapper = component.find<BoxElement>(tagIds.inputs)!
+	const set = useSetElement()
 
 	return (
 		<ComponentWrapper name="Form" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
@@ -57,17 +60,50 @@ function FormOptions() {
 			/>
 			<DndTabs
 				containerElement={inputsWrapper}
-				renderItemOptions={(item) => <InputOptions item={item} />}
+				renderItemOptions={(item) => <ItemOptions item={item} />}
 				insertElement={insertInput}
+				rightSection={
+					<Menu position="left">
+						<Menu.Target>
+							<ActionIcon variant="transparent">
+								<TbPlus
+									size={16}
+									className="text-red-500 rounded-full border-red-500 border"
+								/>
+							</ActionIcon>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								onClick={() =>
+									set(inputsWrapper, (draft) =>
+										draft.children.push(createInput('New Field', 'text'))
+									)
+								}
+							>
+								Input
+							</Menu.Item>
+							<Menu.Item
+								onClick={() =>
+									set(inputsWrapper, (draft) =>
+										draft.children.push(createSelect('New Field'))
+									)
+								}
+							>
+								Select
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				}
 			/>
 		</ComponentWrapper>
 	)
 }
 
-function InputOptions({ item }: { item: Element }) {
+function ItemOptions({ item }: { item: Element }) {
 	const label = item.children?.[0] as TextElement
-	const input = item.children?.[1] as InputElement
+	const input = item.children?.[1] as InputElement | SelectElement
 	const set = useSetElement()
+	const isInput = input instanceof InputElement
 
 	return (
 		<OptionsWrapper>
@@ -76,30 +112,39 @@ function InputOptions({ item }: { item: Element }) {
 				element={label}
 				onChange={(text) => set(input, (draft) => (draft.data.name = text))}
 			/>
-			<Select
-				size="xs"
-				data={[
-					{ label: 'Text', value: 'text' },
-					{ label: 'Email', value: 'email' },
-					{ label: 'Password', value: 'password' },
-					{ label: 'Phone', value: 'tel' },
-					{ label: 'Date', value: 'date' },
-					{ label: 'Checkbox', value: 'checkbox' },
-				]}
-				label="Type"
-				defaultValue={input.data.type}
-				onChange={(value) => {
-					set(input, (draft) => {
-						draft.data.type = value ?? 'text'
-						if (value === 'checkbox') {
-							draft.style.desktop!.default!.width = 'auto'
-						} else {
-							draft.style.desktop!.default!.width = '100%'
-						}
-					})
-				}}
-			/>
+			{isInput && <InputOptions element={input} />}
+			{!isInput && <SelectOptions element={input} simple />}
 		</OptionsWrapper>
+	)
+}
+
+function InputOptions({ element }: { element: InputElement }) {
+	const set = useSetElement()
+
+	return (
+		<Select
+			size="xs"
+			data={[
+				{ label: 'Text', value: 'text' },
+				{ label: 'Email', value: 'email' },
+				{ label: 'Password', value: 'password' },
+				{ label: 'Phone', value: 'tel' },
+				{ label: 'Date', value: 'date' },
+				{ label: 'Checkbox', value: 'checkbox' },
+			]}
+			label="Type"
+			defaultValue={element.data.type}
+			onChange={(value) => {
+				set(element, (draft) => {
+					draft.data.type = value ?? 'text'
+					if (value === 'checkbox') {
+						draft.style.desktop!.default!.width = 'auto'
+					} else {
+						draft.style.desktop!.default!.width = '100%'
+					}
+				})
+			}}
+		/>
 	)
 }
 
@@ -176,6 +221,7 @@ const submit = produce(new SubmitElement(), (draft) => {
 			paddingTop: '8px',
 			paddingBottom: '8px',
 			alignSelf: 'self-end',
+			border: 'none',
 		},
 		hover: {
 			backgroundColor: 'hsla(100, 0%, 39%, 1)',
@@ -258,6 +304,44 @@ const createInput = (
 	})
 
 	container.populate([labelElement, inputElement])
+
+	return container
+}
+
+const createSelect = (label: string) => {
+	const container = new BoxElement().css({
+		display: 'grid',
+		gridTemplateColumns: '1fr 2fr',
+		justifyItems: 'self-start',
+		paddingTop: '10px',
+		paddingBottom: '10px',
+	})
+
+	container.cssTablet({
+		gridTemplateColumns: '1fr',
+	})
+
+	const labelElement = txt(label).css({
+		fontSize: '16px',
+	})
+
+	const selectElement = produce(new SelectElement(), (draft) => {
+		draft.data.name = label
+		draft.style.desktop = {
+			default: {
+				width: '100%',
+				border: '1px solid #e0e0e0',
+				borderRadius: '5px',
+				height: '40px',
+				paddingLeft: '5px',
+				paddingRight: '5px',
+				paddingTop: '3px',
+				paddingBottom: '3px',
+			},
+		}
+	})
+
+	container.populate([labelElement, selectElement])
 
 	return container
 }
