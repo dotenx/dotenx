@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'
+import { InputElement } from '../elements/extensions/input'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -19,16 +20,14 @@ export function ElementOverlay({
 	children,
 	element,
 	isDirectRootChildren,
-	withoutStyle,
 	isGridChild,
 }: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
-	withoutStyle?: boolean
 	isGridChild?: boolean
 }) {
-	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
+	const { select, setHovered } = useSelectionStore((store) => ({
 		select: store.select,
 		setHovered: store.setHovered,
 		unsetHovered: store.unsetHovered,
@@ -57,7 +56,7 @@ export function ElementOverlay({
 	const { ref, height } = useElementSize()
 
 	const handleRef = useCallback(
-		(el: HTMLDivElement) => {
+		(el: HTMLDivElement | null) => {
 			setReferenceElement(el)
 			ref.current = el
 		},
@@ -69,30 +68,30 @@ export function ElementOverlay({
 		event.stopPropagation()
 		setHovered(element.id)
 	}
-	const handleMouseOut = (event: MouseEvent) => {
-		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
-		event.stopPropagation()
-		unsetHovered()
-	}
+
+	const isInput = element instanceof InputElement
+	const Rendered = isInput ? 'input' : 'div'
 
 	return (
-		<div
-			style={{
-				outlineWidth: isHovered ? 2 : 1,
-				cursor: 'default',
-				outlineStyle:
-					isHighlighted && (isDirectRootChildren || isGridChild) ? 'solid' : undefined,
-				outlineColor: '#fb7185',
-				width: withoutStyle ? '100%' : undefined,
-				...backgroundImage,
-			}}
-			className={withoutStyle ? undefined : element.generateClasses()}
-			ref={handleRef}
-			onMouseOver={handleMouseOver}
-			onMouseLeave={handleMouseOut}
-			onClick={handleClick}
-		>
-			{children}
+		<>
+			<Rendered
+				style={{
+					outlineWidth: isHovered ? 2 : 1,
+					cursor: 'default',
+					outlineStyle:
+						isHighlighted && (isDirectRootChildren || isGridChild)
+							? 'solid'
+							: undefined,
+					outlineColor: '#fb7185',
+					...backgroundImage,
+				}}
+				className={element.generateClasses()}
+				ref={handleRef}
+				onMouseOver={handleMouseOver}
+				onClick={handleClick}
+			>
+				{!isInput ? children : undefined}
+			</Rendered>
 			{(isDirectRootChildren || isGridChild) && isHovered && (
 				<>
 					<ElementOverlayPiece
@@ -121,7 +120,7 @@ export function ElementOverlay({
 					</ElementOverlayPiece>
 				</>
 			)}
-		</div>
+		</>
 	)
 }
 
