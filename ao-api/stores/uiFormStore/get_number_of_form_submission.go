@@ -20,7 +20,7 @@ func (store *uiFormStore) GetNumberOfFormSubmission(ctx context.Context, project
 		return -1, fmt.Errorf("driver not supported")
 	}
 	var num int64
-	err := store.db.Connection.Select(&num, stmt, projectTag, pageName)
+	err := store.db.Connection.QueryRow(stmt, projectTag, pageName).Scan(&num)
 	if err != nil {
 		logrus.Error(err.Error())
 		return -1, err
