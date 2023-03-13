@@ -84,6 +84,9 @@ export function EditProductPage() {
 			})
 	}, [data])
 	if (!values.name || loadingProjectTag || isLoading) return <Loader />
+
+	console.log(details)
+
 	return (
 		<div>
 			<Header
@@ -104,7 +107,7 @@ export function EditProductPage() {
 						/>
 					)}
 					<div hidden={activeTab !== "content"}>
-						<Editor editor={editor} />
+						<Editor editor={editor} defaultData={details?.json_content} />
 					</div>
 				</form>
 				{activeTab === "attachment" && (

@@ -1,7 +1,14 @@
-import { Badge, Button, Image, Modal, Switch, Textarea } from "@mantine/core"
+import { Badge, Button, Divider, Image, Modal, Switch } from "@mantine/core"
+import { useClipboard } from "@mantine/hooks"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import _ from "lodash"
 import { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
+import { FaExternalLinkAlt, FaHashtag } from "react-icons/fa"
+import { IoMdSettings } from "react-icons/io"
+import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { Link, useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
 import {
 	getIntegrations,
 	getTableRecords,
@@ -9,17 +16,10 @@ import {
 	runPredefinedQuery,
 	updateProduct,
 } from "../api"
+import { IntegrationForm } from "../features/app/addIntegrationForm"
+import { UpdateIntegrationForm } from "../features/app/updateIntegrationForm"
 import { ContentWrapper, Header, Table } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
-import _ from "lodash"
-import { FaExternalLinkAlt, FaHashtag } from "react-icons/fa"
-import { useClipboard } from "@mantine/hooks"
-import { IoCheckmark, IoCopy } from "react-icons/io5"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "react-toastify"
-import { UpdateIntegrationForm } from "../features/app/updateIntegrationForm"
-import { IntegrationForm } from "../features/app/addIntegrationForm"
-import { IoMdSettings } from "react-icons/io"
 
 export function ProductsPage() {
 	const [activeTab, setActiveTab] = useState<"all" | "products" | "memberships">("all")
@@ -584,7 +584,11 @@ const ProductDetails = ({ details }: { details: any }) => {
 									) : (
 										<IoCopy className="h-4 w-4" />
 									)}
-									<a href={details.preview_link} target={"_blank"}>
+									<a
+										href={details.preview_link}
+										target={"_blank"}
+										rel="noreferrer"
+									>
 										<FaExternalLinkAlt className="h-4 w-4 hover:text-gray-800" />
 									</a>
 								</div>
@@ -612,7 +616,11 @@ const ProductDetails = ({ details }: { details: any }) => {
 									) : (
 										<IoCopy className="h-4 w-4" />
 									)}
-									<a href={details.download_link} target={"_blank"}>
+									<a
+										href={details.download_link}
+										target={"_blank"}
+										rel="noreferrer"
+									>
 										<FaExternalLinkAlt className="h-4 w-4 hover:text-gray-800" />
 									</a>
 								</div>
@@ -642,9 +650,14 @@ const ProductDetails = ({ details }: { details: any }) => {
 					</div>
 				</div>
 			)}
-			<div className="mt-5">
-				content
-				<Textarea readOnly value={details.content || ""} />
+			<div>
+				<Divider label="Content" mt="xl" mb="xs" />
+				<div
+					className="prose"
+					dangerouslySetInnerHTML={{
+						__html: details?.html_content,
+					}}
+				/>
 			</div>
 		</div>
 	)
