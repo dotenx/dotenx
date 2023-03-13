@@ -13,11 +13,12 @@ import {
 	TbUnderline,
 	TbX,
 } from 'react-icons/tb'
-import { useParams } from 'react-router-dom'
 import { toCenter } from '../../utils/center'
 import { Element } from '../elements/element'
+import { selectedPaletteAtom } from '../simple/palette'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
+import { useParseBgColor } from './background-editor'
 import { FontForm } from './font-form'
 import { useEditStyle } from './use-edit-style'
 
@@ -125,9 +126,10 @@ export function TypographyEditor({
 	simple?: boolean
 	element?: Element | Element[]
 }) {
-	const { pageName = '' } = useParams()
 	const fonts = useAtomValue(fontsAtom)
 	const { style, editStyle } = useEditStyle(element)
+	const color = useParseBgColor(style.color ?? '')
+	const palette = useAtomValue(selectedPaletteAtom)
 
 	const sizeAndHeight = (
 		<>
@@ -198,12 +200,13 @@ export function TypographyEditor({
 
 				<p className="col-span-3">Color</p>
 				<ColorInput
-					value={style.color ?? ''}
+					value={color}
 					onChange={(value) => editStyle('color', value)}
 					className="col-span-9"
 					size="xs"
 					format="hsla"
 					autoComplete="off"
+					swatches={palette.colors}
 				/>
 
 				<p className="col-span-3">Align</p>

@@ -1,9 +1,12 @@
 import { ColorInput, SegmentedControl } from '@mantine/core'
+import { useAtomValue } from 'jotai'
 import { TbLineDashed, TbLineDotted, TbMinus, TbX } from 'react-icons/tb'
 import { toCenter } from '../../utils/center'
 import { Element } from '../elements/element'
+import { selectedPaletteAtom } from '../simple/palette'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
+import { useParseBgColor } from './background-editor'
 import { useEditStyle } from './use-edit-style'
 
 const borderStyles = [
@@ -21,6 +24,8 @@ export function BordersEditor({
 	element?: Element | Element[]
 }) {
 	const { style: styles, editStyle } = useEditStyle(element)
+	const color = useParseBgColor(styles.borderColor ?? '')
+	const palette = useAtomValue(selectedPaletteAtom)
 
 	const nonSimple = (
 		<>
@@ -43,13 +48,14 @@ export function BordersEditor({
 
 			<p className="col-span-3">Color</p>
 			<ColorInput
-				value={styles.borderColor ?? ''}
+				value={color}
 				onChange={(value) => editStyle('borderColor', value)}
 				className="col-span-9"
 				size="xs"
 				autoComplete="off"
 				name="color"
 				format="hsla"
+				swatches={palette.colors}
 			/>
 		</>
 	)

@@ -53,7 +53,7 @@ export function BackgroundsEditor({
 	)
 }
 
-const useParseBgColor = (color: string) => {
+export const useParseBgColor = (color: string) => {
 	const palette = useAtomValue(selectedPaletteAtom)
 	const colorName = colorNamesSchema.safeParse(color.split('--')?.[1]?.split(')')?.[0])
 	if (!colorName.success) return color
