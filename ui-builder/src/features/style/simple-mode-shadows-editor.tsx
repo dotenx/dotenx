@@ -1,4 +1,7 @@
 import { ColorInput, Select } from '@mantine/core'
+import { useAtomValue } from 'jotai'
+import { selectedPaletteAtom } from '../simple/palette'
+import { useParseBgColor } from './background-editor'
 import { useEditStyle } from './use-edit-style'
 
 const shadows = [
@@ -30,6 +33,14 @@ const shadows = [
 
 export function SimpleModeShadowsEditor() {
 	const { style: styles, editStyle } = useEditStyle()
+	const color = useParseBgColor(
+		styles.boxShadow
+			? (styles.boxShadow as string).match(
+					/rgba\(\d*\.?\d*, \d*\.?\d*, \d*\.?\d*, \d*\.?\d*\)/g
+			  )?.[0] || ''
+			: ''
+	)
+	const palette = useAtomValue(selectedPaletteAtom)
 
 	return (
 		<div className="flex flex-col">
@@ -56,13 +67,7 @@ export function SimpleModeShadowsEditor() {
 				}}
 			/>
 			<ColorInput
-				value={
-					styles.boxShadow
-						? (styles.boxShadow as string).match(
-								/rgba\(\d*\.?\d*, \d*\.?\d*, \d*\.?\d*, \d*\.?\d*\)/g
-						  )?.[0] || ''
-						: ''
-				}
+				value={color}
 				onChange={(value) =>
 					editStyle('boxShadow', replaceShadowColor(value, styles.boxShadow as string))
 				}
@@ -70,6 +75,7 @@ export function SimpleModeShadowsEditor() {
 				size="xs"
 				format="rgba"
 				disabled={!styles.boxShadow}
+				swatches={palette.colors}
 			/>
 		</div>
 	)

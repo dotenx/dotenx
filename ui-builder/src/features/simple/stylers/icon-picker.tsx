@@ -1,13 +1,15 @@
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ColorInput, Tabs, TextInput, Tooltip } from '@mantine/core'
-import _ from 'lodash'
+import { useAtomValue } from 'jotai'
 import { memo, useState } from 'react'
+import { areEqual, FixedSizeGrid as Grid } from 'react-window'
 import { useSetWithElement } from '../../elements/elements-store'
 import { IconElement } from '../../elements/extensions/icon'
 import { brandIconNames, regularIconNames, solidIconNames } from '../../elements/fa-import'
+import { useParseBgColor } from '../../style/background-editor'
 import { useEditStyle } from '../../style/use-edit-style'
-import { areEqual, FixedSizeGrid as Grid } from 'react-window'
+import { selectedPaletteAtom } from '../palette'
 
 // TODO: This allows us to pick an icon. It's better to merge this with icon styler and also add options for size, color, etc.
 export function IconPicker({ element }: { element: IconElement }) {
@@ -46,6 +48,9 @@ export function IconPicker({ element }: { element: IconElement }) {
 
 	const { style: styles, editStyle } = useEditStyle(element)
 
+	const color = useParseBgColor(styles.color ?? '')
+	const palette = useAtomValue(selectedPaletteAtom)
+
 	return (
 		<Tabs
 			onTabChange={(name) => setIconType(name as string)}
@@ -64,11 +69,12 @@ export function IconPicker({ element }: { element: IconElement }) {
 			/>
 			<p className="mt-2 mb-1">Color</p>
 			<ColorInput
-				value={styles.color ?? ''}
+				value={color}
 				onChange={(value) => editStyle('color', value)}
 				className="col-span-9"
 				size="xs"
 				format="hsla"
+				swatches={palette.colors}
 			/>
 			<Tabs.List className="mt-5">
 				<Tabs.Tab className="active:animate-ping " value="far">
