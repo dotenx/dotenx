@@ -23,7 +23,8 @@
 
 		const response = await fetch(url, { method, headers, body })
 
-		alert('Form submitted successfully!')
+		if (response.ok) alert('Form submitted successfully!')
+		else alert('Form submission failed!')
 	}
 
 	submit.addEventListener('click', submitForm)
