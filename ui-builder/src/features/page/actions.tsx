@@ -7,7 +7,7 @@ import {
 	Modal,
 	Text,
 	TextInput,
-	Tooltip
+	Tooltip,
 } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { useClickOutside, useClipboard } from '@mantine/hooks'
@@ -26,7 +26,7 @@ import {
 	TbPlus,
 	TbSettings,
 	TbTrash,
-	TbWorldUpload
+	TbWorldUpload,
 } from 'react-icons/tb'
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
@@ -38,17 +38,11 @@ import {
 	GlobalStates,
 	previewPage,
 	publishPage,
-	QueryKey
+	QueryKey,
 } from '../../api'
 import { useElementsStore } from '../elements/elements-store'
 import { CustomCode } from './custom-code'
-import {
-	pageModeAtom,
-	pageParamsAtom,
-	projectTagAtom,
-	projectTypeAtom,
-	useHasUnsavedChanges
-} from './top-bar'
+import { pageModeAtom, pageParamsAtom, projectTagAtom, projectTypeAtom } from './top-bar'
 import { usePageData, useResetPage, useUpdatePage } from './use-update'
 
 export const globalStatesAtom = atom<string[]>([])
@@ -405,7 +399,6 @@ function DeletePageModal({
 }
 
 export function SaveButton() {
-	const unsaved = useHasUnsavedChanges()
 	const pageData = usePageData()
 	const updatePage = useUpdatePage()
 
@@ -413,7 +406,6 @@ export function SaveButton() {
 		<Tooltip withinPortal withArrow label={<Text size="xs">Save Page</Text>}>
 			<Button
 				onClick={() => updatePage.mutate(pageData)}
-				disabled={!unsaved}
 				loading={updatePage.isLoading}
 				size="xs"
 				variant="default"

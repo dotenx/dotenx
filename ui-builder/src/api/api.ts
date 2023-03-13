@@ -131,6 +131,7 @@ export const addPage = ({
 	customCodes,
 	statesDefaultValues,
 	animations,
+	colorPaletteId,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -162,6 +163,7 @@ export const addPage = ({
 			},
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
+			colorPaletteId,
 		},
 	})
 }

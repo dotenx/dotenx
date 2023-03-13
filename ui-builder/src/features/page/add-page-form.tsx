@@ -46,6 +46,7 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				customCodes: { head: '', footer: '', scripts: '', styles: '' },
 				statesDefaultValues: {},
 				animations: [],
+				colorPaletteId: null,
 			},
 			{
 				onSuccess: () =>

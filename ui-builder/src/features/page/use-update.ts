@@ -6,6 +6,7 @@ import { joinAnimations, joinScripts } from '../../utils/join-scripts'
 import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
+import { selectedPaletteAtom } from '../simple/palette'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from '../style/classes-store'
 import { useGeneratePalette } from '../style/generate-styles'
@@ -40,7 +41,8 @@ export const usePageData = (): AddPageRequest => {
 	const customCodes = useAtomValue(customCodesAtom)
 	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
 	const animations = usePageAnimations()
-	const palette = useGeneratePalette()
+	const palette = useAtomValue(selectedPaletteAtom)
+	const paletteCss = useGeneratePalette()
 
 	return {
 		projectTag,
@@ -55,10 +57,11 @@ export const usePageData = (): AddPageRequest => {
 		customCodes: {
 			...customCodes,
 			scripts: `<script>${joinScripts(elements)}</script>`,
-			styles: `<style>${palette}</style>`,
+			styles: `<style>${paletteCss}</style>`,
 		},
 		statesDefaultValues,
 		animations,
+		colorPaletteId: palette.id,
 	}
 }
 
@@ -90,6 +93,7 @@ export const useResetPage = () => {
 				customCodes: { head: '', footer: '', scripts: '', styles: '' },
 				statesDefaultValues: {},
 				animations: [],
+				colorPaletteId: null,
 			}),
 		{
 			onSuccess: () => {
