@@ -49,10 +49,6 @@ function AboutRightOptions() {
 			<TextStyler label="Subtitle" element={subtitle} />
 			<TextStyler label="CTA" element={ctaText} />
 			<LinkStyler label="CTA Link" element={cta} />
-			<DividerCollapsible closed title="color">
-				<BoxStylerSimple label="Background color" element={component} />
-				<BoxStylerSimple label="Button background color" element={cta} />
-			</DividerCollapsible>
 			<DndTabs
 				containerElement={featureLinesWrapper}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
@@ -94,7 +90,6 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			height: '110%',
 			alignItems: 'center',
 			justifyContent: 'flex-start',
-			fontFamily: 'Rubik sans-serif',
 			paddingLeft: '10%',
 			paddingRight: '10%',
 			paddingTop: '40px',

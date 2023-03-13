@@ -41,6 +41,7 @@ export abstract class Element {
 		event: 'onVisible' | 'onHover'
 	}
 	unlocked?: boolean
+	internal?: Record<string, unknown> // This property should be only for internal use, such as some options in simple mode. It should not be rendered.
 
 	unlock() {
 		this.unlocked = true
@@ -78,6 +79,7 @@ export abstract class Element {
 			script: this.script,
 			animation: this.animation,
 			unlocked: this.unlocked,
+			internal: this.internal,
 		}
 	}
 
