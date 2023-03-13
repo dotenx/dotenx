@@ -12,7 +12,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut
+	TbZoomOut,
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey } from '../../api'
@@ -25,6 +25,7 @@ import { evaluateExpression } from '../data-source/data-source-form'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
+import { palettes, selectedPaletteAtom } from '../simple/palette'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { usePageStateStore } from '../states/page-states-store'
 import { useClassesStore } from '../style/classes-store'
@@ -172,6 +173,7 @@ export const useFetchPage = () => {
 	const setCustomCodes = useSetAtom(customCodesAtom)
 	const setStatesDefaultValues = useSetAtom(statesDefaultValuesAtom)
 	const setAnimations = useSetAtom(animationsAtom)
+	const setPalette = useSetAtom(selectedPaletteAtom)
 	const isEcommerce = useMatch('/ecommerce/:projectName/:pageName')
 
 	const query = useQuery(
@@ -189,6 +191,8 @@ export const useFetchPage = () => {
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 				setStatesDefaultValues(content.statesDefaultValues ?? {})
 				setAnimations(content.animations ?? [])
+				const selectedPalette = palettes.find((p) => p.id === content.colorPaletteId)
+				if (content.colorPaletteId && selectedPalette) setPalette(selectedPalette)
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
@@ -284,14 +288,14 @@ export function AdvancedModeButton() {
 	const isSimple = mode === 'simple'
 	const pageData = usePageData()
 	const updatePage = useUpdatePage()
-	
+
 	const saveAdvanced = () => {
 		updatePage.mutate({
 			...pageData,
 			mode: 'advanced',
 		})
 	}
-	
+
 	const handleClick = () => {
 		openConfirmModal({
 			title: 'Please confirm your action',

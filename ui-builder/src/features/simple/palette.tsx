@@ -2,7 +2,7 @@ import { Button, ColorSwatch, Divider } from '@mantine/core'
 import { atom, useAtom } from 'jotai'
 import { z } from 'zod'
 
-const palettes: ColorPalette[] = [
+export const palettes: ColorPalette[] = [
 	{
 		id: 'aec7ff86-cd5c-4cdd-9745-25988cea8318',
 		colors: ['#264653', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51'],

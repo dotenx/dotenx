@@ -46,6 +46,7 @@ export type AddPageRequest = {
 	}
 	statesDefaultValues: Record<string, string>
 	animations: Animation[]
+	colorPaletteId: string | null
 }
 
 export type PublishPageRequest = {
@@ -68,9 +69,15 @@ interface PageDetails {
 		mode: LayoutMode
 		pageParams: string[]
 		fonts: Record<string, string>
-		customCodes: { head: string; footer: string }
+		customCodes: {
+			head: string
+			footer: string
+			scripts: string
+			styles: string
+		}
 		statesDefaultValues: Record<string, string>
 		animations?: SerializedAnimation[]
+		colorPaletteId: string | null
 	}
 }
 
