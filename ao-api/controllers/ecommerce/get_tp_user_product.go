@@ -103,8 +103,8 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		// create pre-sign url for all product files
 		files := make([]map[string]interface{}, 0)
 		for _, fileName := range productFileNames {
-			// all links will expires in 48h or 48*60*60 seconds
-			expiresIn := fmt.Sprintf("%d", 48*60*60)
+			// all links will expires in 24h or 24*60*60 seconds
+			expiresIn := fmt.Sprintf("%d", 24*60*60)
 			linkInfo, err := ec.ObjectstoreService.GetPresignUrl(accountId, projectTag, fileName, expiresIn)
 			if err != nil {
 				logrus.Error(err.Error())
@@ -113,6 +113,15 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 				})
 				return
 			}
+			fileInfo, err := ec.ObjectstoreService.GetObject(accountId, projectTag, fileName)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
+			linkInfo["display_name"] = fileInfo.DisplayName
 			linkInfo["file_name"] = fileName
 			files = append(files, linkInfo)
 		}
