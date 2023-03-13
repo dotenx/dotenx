@@ -15,6 +15,7 @@ import { insertingAtom } from './simple-canvas'
 export function SimpleLeftSidebar({ components }: { components: Components }) {
 	const [selectedTag, setSelectedTag] = useState<null | string>(null)
 	const [searched, setSearched] = useInputState('')
+	const { pageName = '' } = useParams()
 
 	const tags = useMemo(
 		() =>
@@ -88,7 +89,9 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 							closeAllModals()
 							openModal({
 								title: section.title,
-								children: <SimpleComponentList section={section} />,
+								children: (
+									<SimpleComponentList section={section} pageName={pageName} />
+								),
 								size: 'xl',
 							})
 						}}
@@ -99,10 +102,15 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 	)
 }
 
-function SimpleComponentList({ section: { items } }: { section: ComponentSection }) {
+function SimpleComponentList({
+	section: { items },
+	pageName,
+}: {
+	section: ComponentSection
+	pageName: string
+}) {
 	const insertComponent = useInsertComponent()
 	const projectTag = useAtomValue(projectTagAtom)
-	const { pageName = '' } = useParams()
 
 	return (
 		<div className="grid grid-cols-2 gap-4">
