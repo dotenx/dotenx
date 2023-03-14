@@ -14,6 +14,7 @@ func NewUIFormService(store uiFormStore.UIFormStore) UIFormService {
 type UIFormService interface {
 	AddNewResponse(form models.UIForm) error
 	GetUiPageResponseList(projectTag, pageName string) ([]models.UIForm, error)
+	GetNumberOfFormSubmission(projectTag, pageName string) (int64, error)
 }
 
 type uiFormService struct {
