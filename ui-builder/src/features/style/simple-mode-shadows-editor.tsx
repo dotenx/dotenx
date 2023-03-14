@@ -1,5 +1,6 @@
 import { ColorInput, Select } from '@mantine/core'
 import { useAtomValue } from 'jotai'
+import { Element } from '../elements/element'
 import { selectedPaletteAtom } from '../simple/palette'
 import { useParseBgColor } from './background-editor'
 import { useEditStyle } from './use-edit-style'
@@ -31,8 +32,8 @@ const shadows = [
 	},
 ]
 
-export function SimpleModeShadowsEditor() {
-	const { style: styles, editStyle } = useEditStyle()
+export function SimpleModeShadowsEditor({ element }: { element?: Element | Element[] }) {
+	const { style: styles, editStyle } = useEditStyle(element)
 	const color = useParseBgColor(
 		styles.boxShadow
 			? (styles.boxShadow as string).match(

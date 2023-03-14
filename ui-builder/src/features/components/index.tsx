@@ -42,6 +42,7 @@ import { DividerStats } from './divider-stats'
 import { DividerTextSections } from './divider-text-sections'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
+import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
 import { FeatureDetailsLeft } from './feature-details-left'
@@ -85,7 +86,14 @@ export const COMPONENTS: Components = [
 	{
 		title: 'About us',
 		icon: <TbArticle />,
-		items: [AboutLeft, AboutRight, AboutLeft2, AboutRight2, AboutLongDetailsLeft, AboutLongDetailsRight],
+		items: [
+			AboutLeft,
+			AboutRight,
+			AboutLeft2,
+			AboutRight2,
+			AboutLongDetailsLeft,
+			AboutLongDetailsRight,
+		],
 	},
 	{
 		title: 'Customers',
@@ -116,6 +124,7 @@ export const COMPONENTS: Components = [
 			FeatureGridImages,
 			FeatureDetailsLeft,
 			FeatureDetailsRight,
+			FeatureCardsImage,
 		],
 	},
 	{
