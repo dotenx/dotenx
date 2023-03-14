@@ -128,7 +128,7 @@ function SimpleComponentList({
 						className="rounded-lg border text-center cursor-pointer hover:bg-gray-50 overflow-clip flex flex-col group"
 					>
 						<div className="relative">
-							<Image src={newComponent.image} height={200} />
+							<Image src={newComponent.image} height={200} fit="contain" />
 							<Overlay
 								blur={2}
 								center
