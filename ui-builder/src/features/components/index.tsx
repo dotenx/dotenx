@@ -18,7 +18,9 @@ import {
 	TbUsers,
 } from 'react-icons/tb'
 import { AboutLeft } from './about-left'
+import { AboutLeft2 } from './about-left-2'
 import { AboutRight } from './about-right'
+import { AboutRight2 } from './about-right-2'
 import { BasicBox } from './basic-box'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
@@ -81,7 +83,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'About',
 		icon: <TbArticle />,
-		items: [AboutLeft, AboutRight],
+		items: [AboutLeft, AboutRight, AboutLeft2, AboutRight2],
 	},
 	{
 		title: 'Customers',

@@ -12,7 +12,7 @@ import { useEditStyle } from '../../style/use-edit-style'
 import { selectedPaletteAtom } from '../palette'
 
 // TODO: This allows us to pick an icon. It's better to merge this with icon styler and also add options for size, color, etc.
-export function IconPicker({ element }: { element: IconElement }) {
+export function IconPicker({ element, label }: { element: IconElement; label?: string }) {
 	const [iconType, setIconType] = useState('far')
 	const [searchValue, setSearchValue] = useState('')
 	const set = useSetWithElement(element)
@@ -57,9 +57,7 @@ export function IconPicker({ element }: { element: IconElement }) {
 			variant="pills"
 			defaultValue="far"
 		>
-			<p className="flex items-center mt-3 mb-2">
-				Icon <hr className="w-full pl-2" />
-			</p>
+			<p className="flex items-center mt-3 mb-2">{label?? 'Icon'}</p>
 			<TextInput
 				placeholder="Search"
 				name="search"

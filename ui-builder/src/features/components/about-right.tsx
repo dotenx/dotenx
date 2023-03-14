@@ -9,14 +9,13 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
+import { color } from '../simple/palette'
 import { IconStyler } from '../simple/stylers/icon-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
-import { Component, ElementOptions } from './component'
-import { DividerCollapsible } from './helpers'
+import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -26,7 +25,7 @@ export class AboutRight extends Component {
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
-	renderOptions(options: ElementOptions): ReactNode {
+	renderOptions(): ReactNode {
 		return <AboutRightOptions />
 	}
 }
@@ -43,7 +42,7 @@ function AboutRightOptions() {
 	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
-		<ComponentWrapper name="About us with details on the right">
+		<ComponentWrapper name="About us with details on the left">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
@@ -81,17 +80,16 @@ const tagIds = {
 
 // =============  defaultData =============
 
-const wrapper = produce(new BoxElement(), (draft) => {
+const component = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr ',
 			width: '100%',
-			height: '110%',
 			alignItems: 'center',
-			justifyContent: 'flex-start',
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			justifyContent: 'center',
+			paddingLeft: '15%',
+			paddingRight: '15%',
 			paddingTop: '40px',
 			paddingBottom: '40px',
 		},
@@ -99,12 +97,16 @@ const wrapper = produce(new BoxElement(), (draft) => {
 	draft.style.tablet = {
 		default: {
 			gridTemplateColumns: ' 1fr ',
+			paddingLeft: '10%',
+			paddingRight: '10%',
+			rowGap: '30px',
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			paddingLeft: '10%',
-			paddingRight: '10%',
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			rowGap: '20px',
 		},
 	}
 }).serialize()
@@ -113,12 +115,11 @@ const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '100%',
+			maxWidth: '600px',
 			height: 'auto',
 		},
 	}
-	draft.data.src = Expression.fromString(
-		'https://files.dotenx.com/68c53d72-a5b6-4be5-b0b4-498bd6b43bfd.png'
-	)
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
 	draft.tagId = tagIds.heroImage
 }).serialize()
 
@@ -127,7 +128,8 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'center',
+			justifyContent: 'space-between',
+			alignItems: 'flex-start',
 		},
 	}
 	draft.style.tablet = {
@@ -150,18 +152,14 @@ const title = produce(new TextElement(), (draft) => {
 		default: {
 			fontSize: '50px',
 			fontWeight: 'bold',
-			marginBottom: '30px',
-			color: '#333333',
+			color: color('primary'),
 		},
 	}
 	draft.style.mobile = {
 		default: {
 			fontSize: '30px',
-			marginBottom: '20px',
-			color: '#333333',
 		},
 	}
-
 	draft.data.text = Expression.fromString('Simplify your business')
 	draft.tagId = tagIds.title
 }).serialize()
@@ -169,20 +167,17 @@ const title = produce(new TextElement(), (draft) => {
 const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '18px',
-			color: '#696969',
+			fontSize: '16px',
+			color: color('primary', 0.9),
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			fontSize: '14px',
+			fontSize: '12px',
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = Expression.fromString(
-		'Branding starts from the inside out. We help you build a strong brand from the inside out.'
-	)
-
+	draft.data.text = Expression.fromString('Branding starts from the inside out')
 	draft.tagId = tagIds.subtitle
 }).serialize()
 
@@ -201,7 +196,6 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 			fontSize: '12px',
 		},
 	}
-
 	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
@@ -217,7 +211,6 @@ const createFeatureLine = () =>
 				marginRight: '0px',
 			},
 		}
-
 		const icon = produce(new IconElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
@@ -225,7 +218,7 @@ const createFeatureLine = () =>
 					width: '16px',
 					height: '16px',
 					marginRight: '10px',
-					color: '#6aa512',
+					color: color('accent'),
 				},
 			}
 			draft.style.tablet = {
@@ -250,10 +243,9 @@ const createFeatureLine = () =>
 			draft.style.desktop = {
 				default: {
 					marginLeft: '8px',
-					color: '#717171',
+					color: color('text'),
 				},
 			}
-
 			draft.data.text = Expression.fromString(
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 			)
@@ -278,16 +270,16 @@ const featureLines = [
 const cta = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			alignSelf: 'center',
-			backgroundColor: '#7670f1',
-			borderRadius: '15px',
-			marginTop: '10px',
-			color: '#ffffff',
-			fontSize: '26px',
-			fontWeight: 'bold',
+			backgroundColor: color('primary'),
+			border: 'none',
+			borderRadius: '10px',
 			textAlign: 'center',
 			textDecoration: 'none',
 			cursor: 'pointer',
+			paddingTop: '5px',
+			paddingBottom: '5px',
+			paddingLeft: '15px',
+			paddingRight: '15px',
 		},
 	}
 	draft.style.tablet = {
@@ -295,23 +287,25 @@ const cta = produce(new LinkElement(), (draft) => {
 			justifySelf: 'center',
 		},
 	}
-	draft.style.mobile = {
-		default: {
-			marginTop: '8px',
-			fontSize: '14px',
-			fontWeight: 'bold',
-		},
-	}
 
 	const element = new TextElement()
-	element.data.text = Expression.fromString('Get Started')
+	element.data.text = Expression.fromString('Learn more')
 	element.tagId = tagIds.ctaText
 	element.style.desktop = {
 		default: {
-			paddingLeft: '15px',
-			paddingRight: '15px',
-			paddingTop: '15px',
-			paddingBottom: '15px',
+			color: 'hsla(0, 0%, 100%, 1)',
+			fontSize: '20px',
+			fontWeight: '400',
+		},
+	}
+	element.style.tablet = {
+		default: {
+			fontSize: '18px',
+		},
+	}
+	element.style.mobile = {
+		default: {
+			fontSize: '14px',
 		},
 	}
 
@@ -323,7 +317,7 @@ const cta = produce(new LinkElement(), (draft) => {
 }).serialize()
 
 const defaultData = {
-	...wrapper,
+	...component,
 	components: [
 		heroImage,
 		{
