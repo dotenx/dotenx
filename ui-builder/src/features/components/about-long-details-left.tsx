@@ -1,58 +1,45 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/about-left-2.png'
+import imageUrl from '../../assets/components/about-long-details-left.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
-import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { color } from '../simple/palette'
-import { IconPicker } from '../simple/stylers/icon-picker'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
-import { DndTabs } from './helpers/dnd-tabs'
 
-export class AboutLeft2 extends Component {
-	name = 'About us with details on the left - 2'
+export class AboutLongDetailsLeft extends Component {
+	name = 'About us with long details on the left'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(): ReactNode {
-		return <AboutLeft2Options />
+		return <AboutLongDetailsLeftOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function AboutLeft2Options() {
+function AboutLongDetailsLeftOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
 	const title = component.find<TextElement>(tagIds.title)!
-	const subtitleText = component.find<TextElement>(tagIds.subtitleText)!
-	const subtitleIcon = component.find<IconElement>(tagIds.subtitleIcon)!
-	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
+	const details = component.find<TextElement>(tagIds.details)!
 	const cta = component.find<LinkElement>(tagIds.cta)!
 	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
-		<ComponentWrapper name="About us with details on the left">
+		<ComponentWrapper name="About us with long details on the left">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
-			<TextStyler label="Subtitle" element={subtitleText} />
-			<IconPicker element={subtitleIcon} />
-			<p className="font-medium cursor-default">Lines</p>
-			<DndTabs
-				containerElement={featureLinesWrapper}
-				renderItemOptions={(item) => <TextStyler label='Text' element={item as TextElement} />}
-				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
-			/>
-			<div className='mt-2'></div>
+			<TextStyler label="Details" element={details} />
 			<TextStyler label="CTA" element={ctaText} />
 			<LinkStyler label="CTA Link" element={cta} />
 		</ComponentWrapper>
@@ -62,12 +49,10 @@ function AboutLeft2Options() {
 const tagIds = {
 	heroImage: 'heroImage',
 	title: 'title',
-	subtitle: 'subtitle',
+	details: 'details',
 	featureLinesWrapper: 'featureLinesWrapper',
 	cta: 'cta',
 	ctaText: 'ctaText',
-	subtitleIcon: 'subtitleIcon',
-	subtitleText: 'subtitleText',
 }
 
 // =============  defaultData =============
@@ -122,6 +107,7 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			flexDirection: 'column',
 			justifyContent: 'space-between',
 			alignItems: 'flex-start',
+			rowGap: '30px',
 		},
 	}
 }).serialize()
@@ -148,107 +134,38 @@ const title = produce(new TextElement(), (draft) => {
 	draft.tagId = tagIds.title
 }).serialize()
 
-const subtitle = produce(new BoxElement(), (draft) => {
+const details = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			display: 'flex',
-			alignItems: 'center',
-			marginBottom: '10px',
-		},
-	}
-	const icon = produce(new IconElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				flex: '0 0 auto',
-				width: '16px',
-				height: '16px',
-				fontSize: '16px',
-				marginRight: '12px',
-				color: color('secondary'),
-			},
-		}
-		draft.style.tablet = {
-			default: {
-				width: '12px',
-				height: '12px',
-				fontSize: '12px',
-				marginRight: '8px',
-			},
-		}
-		draft.data.name = 'code'
-		draft.data.type = 'fas'
-		draft.tagId = tagIds.subtitleIcon
-	})
-
-	const text = produce(new TextElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				color: color('secondary'),
-				fontSize: '16px'
-			},
-		}
-		draft.style.tablet = {
-			default: {
-				fontSize: '12px'
-			},
-		}
-		draft.data.text = Expression.fromString(
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-		)
-		draft.tagId = tagIds.subtitleText
-	})
-
-	draft.children = [icon, text]
-}).serialize()
-
-const featureLinesWrapper = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'space-between',
-			alignItems: 'flex-start',
-			marginTop: '20px',
-			marginBottom: '20px',
+			maxWidth: '70%',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			marginTop: '15px',
-			marginBottom: '15px',
+			maxWidth: '100%',
 		},
 	}
-	draft.style.mobile = {
-		default: {
-			marginTop: '10px',
-			marginBottom: '10px',
-		},
-	}
-	draft.tagId = tagIds.featureLinesWrapper
-}).serialize()
 
-
-const createLine = (text: string) =>
-	produce(new TextElement(), (draft) => {
+	const text = produce(new TextElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
 				color: color('text'),
-				fontSize: '15px'
+				fontSize: '15px',
 			},
 		}
 		draft.style.tablet = {
 			default: {
-				fontSize: '12px'
+				fontSize: '12px',
 			},
 		}
-		draft.data.text = Expression.fromString(text)
+		draft.data.text =
+			Expression.fromString(`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl nec ultrices ultrices, nunc nisl aliquam lorem, nec ultrices lorem ipsum nec lorem.
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl nec ultrices ultrices, nunc nisl aliquam lorem, nec ultrices lorem ipsum nec lorem.`)
+		draft.tagId = tagIds.details
 	})
 
-const featureLines = [
-	createLine('Your brand is your promise to your customers').serialize(),
-	createLine('Having a simple UI is a great way to improve your brand').serialize(),
-	createLine('Creativity is just connecting things').serialize(),
-]
+	draft.children = [text]
+}).serialize()
 
 const cta = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
@@ -301,15 +218,7 @@ const defaultData = {
 	components: [
 		{
 			...detailsWrapper,
-			components: [
-				subtitle,
-				title,
-				{
-					...featureLinesWrapper,
-					components: featureLines,
-				},
-				cta,
-			],
+			components: [title, details, cta],
 		},
 		heroImage,
 	],

@@ -19,6 +19,8 @@ import {
 } from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutLeft2 } from './about-left-2'
+import { AboutLongDetailsLeft } from './about-long-details-left'
+import { AboutLongDetailsRight } from './about-long-details-right'
 import { AboutRight } from './about-right'
 import { AboutRight2 } from './about-right-2'
 import { BasicBox } from './basic-box'
@@ -81,9 +83,9 @@ export const COMPONENTS: Components = [
 		],
 	},
 	{
-		title: 'About',
+		title: 'About us',
 		icon: <TbArticle />,
-		items: [AboutLeft, AboutRight, AboutLeft2, AboutRight2],
+		items: [AboutLeft, AboutRight, AboutLeft2, AboutRight2, AboutLongDetailsLeft, AboutLongDetailsRight],
 	},
 	{
 		title: 'Customers',
