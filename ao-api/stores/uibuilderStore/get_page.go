@@ -3,11 +3,11 @@ package uibuilderStore
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/dotenx/dotenx/ao-api/db"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -28,7 +28,7 @@ func (store *uibuilderStore) GetPage(ctx context.Context, accountId, projectTag,
 	if err != nil {
 		logrus.Error(err)
 		if err == sql.ErrNoRows {
-			err = errors.New("page not found")
+			err = utils.ErrPageNotFound
 		}
 	}
 	return page, err
