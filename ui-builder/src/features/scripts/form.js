@@ -4,6 +4,7 @@
 	const id = '{{id}}'
 	const projectTag = '{{projectTag}}'
 	const pageName = '{{pageName}}'
+	const formName = '{{formName}}'
 
 	const root = document.getElementById(id)
 	const inputs = root.querySelectorAll('input')
@@ -18,7 +19,7 @@
 		const formId = id
 		const method = 'POST'
 		const headers = { 'Content-Type': 'application/json' }
-		const body = JSON.stringify({ response: payload })
+		const body = JSON.stringify({ response: payload, form_name: formName })
 		const url = `https://api.dotenx.com/public/uibuilder/project/${projectTag}/page/${pageName}/form/${formId}`
 
 		const response = await fetch(url, { method, headers, body })
@@ -29,19 +30,3 @@
 
 	submit.addEventListener('click', submitForm)
 })()
-
-// POST https://api.dotenx.com/public/uibuilder/project/{project_tag}/page/{page_name}/form/{from_id}
-// Body:
-// {
-//     "response": {
-//         "q1": "yes",
-//         "q2": [
-//             "aaa",
-//             "bbb"
-//         ],
-//         "q3": {
-//             "name": "Jack",
-//             "age": 39
-//         }
-//     }
-// }
