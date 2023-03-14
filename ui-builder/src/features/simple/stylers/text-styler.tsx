@@ -66,6 +66,7 @@ function TextStylerWithText({
 				<TextEditor
 					onSave={(html) => {
 						setText(html)
+						set((draft) => (draft.data.raw = true))
 						onChange?.(html)
 					}}
 					content={value}
