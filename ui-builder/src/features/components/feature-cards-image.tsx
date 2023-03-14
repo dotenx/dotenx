@@ -1,12 +1,11 @@
 import produce from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/feature-center-cards.jpg'
+import imageUrl from '../../assets/components/feature-cards-image.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
-import { IconElement } from '../elements/extensions/icon'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
@@ -17,32 +16,31 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 import { Element } from '../elements/element'
-import { IconPicker } from '../simple/stylers/icon-picker'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { color } from '../simple/palette'
+import { ImageElement } from '../elements/extensions/image'
+import { ImageStyler } from '../simple/stylers/image-styler'
 
-export class FeatureCenterCards extends Component {
-	name = 'Feature cards'
+export class FeatureCardsImage extends Component {
+	name = 'Feature cards with images'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FeatureCenterOptions />
+		return <FeatureCardsImageOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-// TODO: The options are rendered too slowly. We need to optimize it.
-
-function FeatureCenterOptions() {
+function FeatureCardsImageOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const title = component.find<TextElement>(tagIds.title)!
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<ComponentWrapper name="Feature cards">
+		<ComponentWrapper name="Feature cards with images">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
 			<ColumnsStyler element={grid} />
@@ -56,16 +54,16 @@ function FeatureCenterOptions() {
 }
 
 function CellOptions({ item }: { item: Element }) {
-	const icon = item.children?.[0] as IconElement
+	const icon = item.children?.[0] as ImageElement
 	const title = item.children?.[1] as TextElement
 	const description = item.children?.[2] as TextElement
 
 	return (
 		<OptionsWrapper>
+			<ImageStyler element={icon} />
 			<TextStyler label="Feature title" element={title} />
 			<TextStyler label="Feature description" element={description} />
 			<BoxStyler label="Block" element={item} />
-			<IconPicker element={icon} />
 		</OptionsWrapper>
 	)
 }
@@ -182,17 +180,15 @@ const tileDetails = produce(new TextElement(), (draft) => {
 	draft.data.text = Expression.fromString('Feature description goes here')
 })
 
-const tileIcon = produce(new IconElement(), (draft) => {
+const tileIcon = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			width: '20px',
 			height: '20px',
-			color: '#ff0000',
 			marginBottom: '10px',
 		},
 	}
-	draft.data.name = 'bell'
-	draft.data.type = 'fas'
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/icons-cloud-39.png')
 })
 
 const tile = produce(new BoxElement(), (draft) => {
@@ -218,19 +214,17 @@ const tile = produce(new BoxElement(), (draft) => {
 })
 
 function createTile({
-	icon,
+	imageUrl,
 	title,
 	description,
 }: {
-	icon: { color: string; name: string; type: string }
+	imageUrl: string
 	title: string
 	description: string
 }) {
 	return produce(tile, (draft) => {
-		const iconElement = draft.children?.[0] as IconElement
-		iconElement.data.name = icon.name
-		iconElement.data.type = icon.type
-		iconElement.style.desktop!.default!.color = icon.color
+		const iconElement = draft.children?.[0] as ImageElement
+		iconElement.data.src = Expression.fromString(imageUrl)
 		const titleElement = draft.children?.[1] as TextElement
 		titleElement.data.text = Expression.fromString(title)
 		const descriptionElement = draft.children?.[2] as TextElement
@@ -240,32 +234,32 @@ function createTile({
 
 const tiles = [
 	createTile({
-		icon: { name: 'code', type: 'fas', color: '#ff0000' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-cloud-39.png',
 		title: 'Customizable',
 		description: 'Change the content and style and make it your own.Change the content and style and make it your own.',
 	}),
 	createTile({
-		icon: { name: 'rocket', type: 'fas', color: '#a8a8a8' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-combo-chart-vii.png',
 		title: 'Fast',
 		description: 'Fast load times and lag free interaction, my highest priority.Fast load times and lag free interaction, my highest priority.',
 	}),
 	createTile({
-		icon: { name: 'heart', type: 'fas', color: '#ff0000' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-credit-card-hwer.png',
 		title: 'Made with Love',
 		description: 'Increase sales by showing true dedication to your customers.Increase sales by showing true dedication to your customers.',
 	}),
 	createTile({
-		icon: { name: 'cog', type: 'fas', color: '#e6e6e6' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-luggage-bh.png',
 		title: 'Easy to Use',
 		description: 'Ready to use with your own content, or customize the source files!Ready to use with your own content, or customize the source files!',
 	}),
 	createTile({
-		icon: { name: 'bolt', type: 'fas', color: '#01a9b4' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-speaker-qer.png',
 		title: 'Instant Setup',
 		description: 'Get your projects up and running in no time using the theme documentation.Get your projects up and running in no time using the theme documentation.',
 	}),
 	createTile({
-		icon: { name: 'cloud', type: 'fas', color: '#1c7430' },
+		imageUrl: 'https://files.dotenx.com/assets/icons-stellar-bb.png',
 		title: 'Cloud Storage',
 		description: 'Access your documents anywhere and share them with others.Access your documents anywhere and share them with others.',
 	}),
