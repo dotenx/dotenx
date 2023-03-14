@@ -54,7 +54,7 @@ function TopBar() {
 				<>
 					<Logo />
 					<DashboardLink />
-					<PageSelection />
+					{projectType !== 'landing_page' && <PageSelection />}
 					<ViewportSelection />
 					<FullscreenButton />
 					{projectType === 'web_application' && <AdvancedModeButton />}

@@ -15,7 +15,13 @@ import {
 	TbZoomOut,
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
-import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey } from '../../api'
+import {
+	getGlobalStates,
+	getPageDetails,
+	getProjectDetails,
+	ProjectType,
+	QueryKey,
+} from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
@@ -40,7 +46,7 @@ import { usePageData, useUpdatePage } from './use-update'
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
-export const projectTypeAtom = atom<'none' | 'web_application' | 'website' | 'ecommerce'>('none')
+export const projectTypeAtom = atom<'none' | ProjectType>('none')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
@@ -139,7 +145,7 @@ export function PageScaling() {
 	)
 }
 
-export const useFetchProjectTag = () => {
+export const useFetchProject = () => {
 	const setTag = useProjectStore((store) => store.setTag)
 	const { projectName = '' } = useParams()
 	const setProjectTag = useSetAtom(projectTagAtom)
@@ -156,7 +162,7 @@ export const useFetchProjectTag = () => {
 			enabled: !!projectName,
 		}
 	)
-	return query.data?.data.tag
+	return query
 }
 
 export const useFetchPage = () => {
@@ -242,7 +248,9 @@ export function DashboardLink() {
 			? `https://ecommerce.dotenx.com/projects/${projectName}/products`
 			: projectType === 'website'
 			? `https://website.dotenx.com/${projectName}`
-			: ''
+			: null
+
+	if (!link) return null
 
 	return (
 		<Tooltip withArrow label={<Text size="xs">Project Dashboard</Text>}>
