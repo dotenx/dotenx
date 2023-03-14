@@ -28,7 +28,7 @@ function BasicTextOptions() {
 
 	return (
 		<ComponentWrapper name="Text">
-			<TextStyler label="Text" element={text} />
+			<TextStyler rich label="Text" element={text} />
 		</ComponentWrapper>
 	)
 }
