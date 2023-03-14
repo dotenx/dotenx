@@ -351,6 +351,10 @@ var migrations = []struct {
 		name: "add-theme-field-to-marketplace-items-table",
 		stmt: addThemeFieldToMarketplaceItemsTable,
 	},
+	{
+		name: "add-name-field-to-ui-forms-table",
+		stmt: addNameFieldToUIFormsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -979,4 +983,9 @@ ADD COLUMN IF NOT EXISTS project_type VARCHAR DEFAULT '';
 var addThemeFieldToMarketplaceItemsTable = `
 ALTER TABLE marketplace_items
 ADD COLUMN IF NOT EXISTS theme VARCHAR DEFAULT '';
+`
+
+var addNameFieldToUIFormsTable = `
+ALTER TABLE ui_forms
+ADD COLUMN IF NOT EXISTS name VARCHAR(128) DEFAULT '';
 `
