@@ -65,8 +65,10 @@ function TextStylerWithText({
 			children: (
 				<TextEditor
 					onSave={(html) => {
-						setText(html)
-						set((draft) => (draft.data.raw = true))
+						set((draft) => {
+							draft.data.text = Expression.fromString(html)
+							draft.data.raw = true
+						})
 						onChange?.(html)
 					}}
 					content={value}
