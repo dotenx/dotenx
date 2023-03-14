@@ -13,7 +13,8 @@ func New(db *db.DB) UIFormStore {
 
 type UIFormStore interface {
 	AddNewResponse(ctx context.Context, form models.UIForm) error
-	GetUiPageResponseList(ctx context.Context, projectTag, pageName string) ([]models.UIForm, error)
+	GetFormsList(ctx context.Context, projectTag, pageName string) ([]models.UIForm, error)
+	GetFormResponseListById(ctx context.Context, projectTag, pageName, formId string) ([]models.UIForm, error)
 	GetNumberOfFormSubmission(ctx context.Context, projectTag, pageName string) (int64, error)
 }
 

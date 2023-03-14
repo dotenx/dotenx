@@ -9,9 +9,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (store *uiFormStore) GetUiPageResponseList(ctx context.Context, projectTag, pageName string) ([]models.UIForm, error) {
+func (store *uiFormStore) GetFormsList(ctx context.Context, projectTag, pageName string) ([]models.UIForm, error) {
 	listForms := `
-	SELECT form_id, response FROM ui_forms WHERE project_tag = $1 AND page_name = $2;
+	SELECT DISTINCT form_id, name FROM ui_forms WHERE project_tag = $1 AND page_name = $2;
 	`
 	var stmt string
 	switch store.db.Driver {
