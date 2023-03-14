@@ -261,8 +261,6 @@ const cta = produce(new LinkElement(), (draft) => {
 			cursor: 'pointer',
 			paddingTop: '5px',
 			paddingBottom: '5px',
-			paddingLeft: '15px',
-			paddingRight: '15px',
 		},
 	}
 	draft.style.tablet = {
