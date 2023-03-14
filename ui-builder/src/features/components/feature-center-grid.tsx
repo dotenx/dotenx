@@ -21,7 +21,7 @@ import { IconPicker } from '../simple/stylers/icon-picker'
 import { BoxStyler } from '../simple/stylers/box-styler'
 
 export class FeatureCenterGrid extends Component {
-	name = 'Feature Center Grid'
+	name = 'Feature grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -41,7 +41,7 @@ function FeatureCenterGridOptions() {
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<ComponentWrapper name="Basic FAQ" stylers={['backgrounds', 'spacing', 'background-image']}>
+		<ComponentWrapper name="Feature grid" stylers={['backgrounds', 'spacing', 'background-image']}>
 			<TextStyler label="Main title" element={title} />
 			<TextStyler label="Second title" element={subtitle} />
 			<ColumnsStyler element={grid} />
