@@ -12,8 +12,10 @@ export type GetProjectDetailsResponse = {
 	name: string
 	description: string
 	tag: string
-	type: 'web_application' | 'website' | 'ecommerce'
+	type: ProjectType
 }
+
+export type ProjectType = 'web_application' | 'website' | 'ecommerce' | 'landing_page'
 
 export type GetPagesRequest = {
 	projectTag: string
