@@ -7,11 +7,12 @@ import (
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
+	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func (controller *UIFormController) AddNewResponse(pService projectService.ProjectService) gin.HandlerFunc {
+func (controller *UIFormController) AddNewResponse(pService projectService.ProjectService, ubService uibuilderService.UIbuilderService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		projectTag := c.Param("project_tag")
@@ -20,6 +21,7 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 
 		type FormDto struct {
 			Response json.RawMessage `json:"response" required:"true"`
+			FormName string          `json:"form_name" required:"true"`
 		}
 
 		var formDto FormDto
@@ -45,7 +47,16 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 			return
 		}
 
-		_, pErr := pService.GetProjectByTag(projectTag)
+		project, pErr := pService.GetProjectByTag(projectTag)
+		if pErr != nil {
+			logrus.Error(pErr)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": pErr.Error(),
+			})
+			return
+		}
+
+		_, pErr = ubService.GetPage(project.AccountId, projectTag, pageName)
 		if pErr != nil {
 			logrus.Error(pErr)
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -55,6 +66,7 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 		}
 
 		form := models.UIForm{
+			Name:       formDto.FormName,
 			ProjectTag: projectTag,
 			PageName:   pageName,
 			FormId:     formId,
