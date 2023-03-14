@@ -1,8 +1,10 @@
-import { ActionIcon, Menu, Select } from '@mantine/core'
+import { ActionIcon, Menu, Select, TextInput } from '@mantine/core'
 import produce from 'immer'
+import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbPlus } from 'react-icons/tb'
+import { useParams } from 'react-router-dom'
 import imageUrl from '../../assets/components/form.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { txt } from '../elements/constructor'
@@ -14,6 +16,7 @@ import { InputElement } from '../elements/extensions/input'
 import { SelectElement, SelectOptions } from '../elements/extensions/select'
 import { SubmitElement } from '../elements/extensions/submit'
 import { TextElement } from '../elements/extensions/text'
+import { projectTagAtom } from '../page/top-bar'
 import formScript from '../scripts/form.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStyler } from '../simple/stylers/box-styler'
@@ -22,6 +25,8 @@ import { Component, OnCreateOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
+
+let formCounter = 1
 
 export class Form extends Component {
 	name = 'Form'
@@ -33,23 +38,29 @@ export class Form extends Component {
 	}
 
 	onCreate(root: Element, options: OnCreateOptions) {
+		const form = root.find<FormElement>(tagIds.form)!
+		const formName = `Form ${formCounter++}`
 		const compiled = _.template(formScript)
 		const script = compiled({
 			id: root.id,
 			projectTag: options.projectTag,
 			pageName: options.pageName,
+			formName: formName,
 		})
 		setElement(root, (draft) => (draft.script = script))
+		setElement(form, (draft) => (draft.internal.formName = formName))
 	}
 }
 
 // =============  renderOptions =============
 
 function FormOptions() {
-	const component = useSelectedElement<BoxElement>()!
-	const form = component.find<FormElement>(tagIds.form)!
-	const inputsWrapper = component.find<BoxElement>(tagIds.inputs)!
+	const root = useSelectedElement<BoxElement>()!
+	const form = root.find<FormElement>(tagIds.form)!
+	const inputsWrapper = root.find<BoxElement>(tagIds.inputs)!
 	const set = useSetElement()
+	const projectTag = useAtomValue(projectTagAtom)
+	const { pageName } = useParams()
 
 	return (
 		<ComponentWrapper name="Form" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
@@ -57,6 +68,23 @@ function FormOptions() {
 				label="Form"
 				element={form}
 				stylers={['backgrounds', 'borders', 'spacing']}
+			/>
+			<TextInput
+				size="xs"
+				label="Form name"
+				value={(form.internal.formName ?? 'Form') as string}
+				onChange={(event) => {
+					const value = event.target.value
+					const compiled = _.template(formScript)
+					const script = compiled({
+						id: root.id,
+						projectTag: projectTag,
+						pageName: pageName,
+						formName: value,
+					})
+					setElement(root, (draft) => (draft.script = script))
+					set(form, (draft) => (draft.internal.formName = value))
+				}}
 			/>
 			<DndTabs
 				containerElement={inputsWrapper}
