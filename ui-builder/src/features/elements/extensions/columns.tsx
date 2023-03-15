@@ -32,7 +32,7 @@ export class ColumnsElement extends Element {
 	data = { as: 'div' }
 
 	render(renderFn: RenderFn, options: RenderFnOptions): ReactNode {
-		if (!options.isSimple) return renderFn(this)
+		if (!options.isSimple || !this.unlocked) return renderFn(this)
 
 		const diffCols =
 			getGridCols(this.style.desktop?.default?.gridTemplateColumns?.toString() ?? '') -

@@ -32,6 +32,10 @@
 			image.removeAttribute('x-bind:src')
 			image.setAttribute('src', product.image_url)
 
+			const link = clone.querySelector('.link')
+			link.removeAttribute('x-bind:href')
+			link.href = `/bought-product.html?id=${product.id}`
+
 			const name = clone.querySelector('.name')
 			name.removeAttribute('x-html')
 			name.textContent = product.name
