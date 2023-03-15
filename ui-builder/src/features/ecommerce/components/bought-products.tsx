@@ -3,7 +3,7 @@ import imageUrl from '../../../assets/themes/ecommerce/bought-products.png'
 import { gridCols } from '../../../utils/style-utils'
 import { Component, OnCreateOptions } from '../../components/component'
 import { ComponentWrapper } from '../../components/helpers/component-wrapper'
-import { box, img, template, txt } from '../../elements/constructor'
+import { box, img, link, template, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -81,10 +81,20 @@ const component = () =>
 									borderRadius: '5px',
 								})
 								.class('image'),
-							txt('Name').class('name').css({ fontWeight: '500' }).tag(tags.name),
+							link()
+								.populate([
+									txt('Name')
+										.class('name')
+										.css({ fontWeight: '500' })
+										.tag(tags.name),
+								])
+								.class('link')
+								.css({
+									textDecoration: 'none',
+									color: 'inherit',
+								}),
 						])
 							.tag(tags.column)
-
 							.css({
 								paddingTop: '10px',
 								paddingRight: '10px',
