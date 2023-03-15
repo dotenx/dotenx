@@ -27,7 +27,10 @@ function BasicTextOptions() {
 	const text = component.children[0] as TextElement
 
 	return (
-		<ComponentWrapper name="Text">
+		<ComponentWrapper
+			name="Text"
+			stylers={['alignment', 'backgrounds', 'borders', 'spacing', 'typography']}
+		>
 			<TextStyler rich label="Text" element={text} />
 		</ComponentWrapper>
 	)
