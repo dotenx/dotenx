@@ -38,7 +38,7 @@ type Text struct {
 			Value []TextSource `json:"value"`
 		} `json:"text"`
 		As  string `json:"as"`
-		Raw bool   `json:"bool"`
+		Raw bool   `json:"raw"`
 	} `json:"data"`
 }
 
