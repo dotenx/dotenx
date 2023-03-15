@@ -1,6 +1,6 @@
 import { Slider } from '@mantine/core'
 import produce from 'immer'
-import imageUrl from '../../assets/components/hero-with-rating.png'
+import imageUrl from '../../assets/components/hero-with-rating-two-cta.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { useSetElement } from '../elements/elements-store'
@@ -21,34 +21,38 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class HeroWithRating extends Component {
-	name = 'Hero with rating'
+export class HeroWithRatingTwoCTAs extends Component {
+	name = 'Hero with rating and two CTAs'
 	image = imageUrl
 	defaultData = defaultData
-	renderOptions = () => <HeroWithRatingOptions />
+	renderOptions = () => <HeroWithRatingTwoCTAsOptions />
 }
 
 // =============  renderOptions =============
 
-function HeroWithRatingOptions() {
+function HeroWithRatingTwoCTAsOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
 	const title = component.find<TextElement>(tagIds.title)!
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = component.find<LinkElement>(tagIds.cta)!
-	const ctaText = component.find<TextElement>(tagIds.ctaText)!
+	const cta1 = component.find<LinkElement>(tagIds.cta1)!
+	const cta1Text = component.find<TextElement>(tagIds.cta1Text)!
+	const cta2 = component.find<LinkElement>(tagIds.cta2)!
+	const cta2Text = component.find<TextElement>(tagIds.cta2Text)!
 	const ratingWrapper = component.find<BoxElement>(tagIds.ratingWrapper)!
 	const ratingText = component.find<TextElement>(tagIds.ratingText)!
 	const set = useSetElement()
 
 	return (
-		<ComponentWrapper name="Hero with rating">
+		<ComponentWrapper name="Hero with rating and two CTAs">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
-			<TextStyler label="CTA" element={ctaText} />
-			<LinkStyler label="CTA Link" element={cta} />
+			<TextStyler label="CTA1" element={cta1Text} />
+			<LinkStyler label="CTA1 Link" element={cta1} />
+			<TextStyler label="CTA2" element={cta2Text} />
+			<LinkStyler label="CTA2 Link" element={cta2} />
 			<p className="mb-2 font-medium cursor-default">Rating</p>
 			<Slider
 				step={0.1}
@@ -95,8 +99,10 @@ const tagIds = {
 	title: 'title',
 	subtitle: 'subtitle',
 	featureLinesWrapper: 'featureLinesWrapper',
-	cta: 'cta',
-	ctaText: 'ctaText',
+	cta1: 'cta1',
+	cta1Text: 'cta1Text',
+	cta2: 'cta2',
+	cta2Text: 'cta2Text',
 	ratingWrapper: 'ratingWrapper',
 	ratingText: 'ratingText',
 }
@@ -291,7 +297,26 @@ const featureLines = [
 	createLine('Creativity is just connecting things').serialize(),
 ]
 
-const cta = produce(new LinkElement(), (draft) => {
+const ctaWrapper = produce(new BoxElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			display: 'flex',
+			columnGap: '20px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			columnGap: '10px',
+		},
+	}
+	draft.style.mobile = {
+		default: {
+			columnGap: '5px',
+		},
+	}
+}).serialize()
+
+const cta1 = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			backgroundColor: color('primary'),
@@ -315,8 +340,8 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = Expression.fromString('Get Started Now →')
-	element.tagId = tagIds.ctaText
+	element.data.text = Expression.fromString('Get Started Now')
+	element.tagId = tagIds.cta1Text
 	element.style.desktop = {
 		default: {
 			color: 'hsla(0, 0%, 100%, 1)',
@@ -339,7 +364,59 @@ const cta = produce(new LinkElement(), (draft) => {
 	draft.data.openInNewTab = false
 
 	draft.children = [element]
-	draft.tagId = tagIds.cta
+	draft.tagId = tagIds.cta1
+}).serialize()
+
+const cta2 = produce(new LinkElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			borderWidth: '1px',
+			borderStyle: 'solid',
+			borderColor: color('primary'),
+			borderRadius: '10px',
+			textAlign: 'center',
+			textDecoration: 'none',
+			cursor: 'pointer',
+			paddingTop: '8px',
+			paddingBottom: '8px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			justifySelf: 'center',
+			paddingLeft: '15px',
+			paddingRight: '15px',
+		},
+	}
+
+	const element = new TextElement()
+	element.data.text = Expression.fromString('Request a Demo')
+	element.tagId = tagIds.cta2Text
+	element.style.desktop = {
+		default: {
+			color: color('primary'),
+			fontSize: '22px',
+			fontWeight: 'bold',
+		},
+	}
+	element.style.tablet = {
+		default: {
+			fontSize: '18px',
+		},
+	}
+	element.style.mobile = {
+		default: {
+			fontSize: '14px',
+		},
+	}
+
+	draft.data.href = Expression.fromString('#')
+	draft.data.openInNewTab = false
+
+	draft.children = [element]
+	draft.tagId = tagIds.cta2
 }).serialize()
 
 const ratingWrapper = produce(new BoxElement(), (draft) => {
@@ -441,14 +518,14 @@ const defaultData = deserializeElement({
 		{
 			...detailsWrapper,
 			components: [
+				ratingWrapper,
 				title,
 				subtitle,
 				{
 					...featureLinesWrapper,
 					components: featureLines,
 				},
-				cta,
-				ratingWrapper,
+				{ ...ctaWrapper, components: [cta1, cta2] },
 			],
 		},
 		heroImage,
