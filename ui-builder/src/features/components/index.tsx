@@ -37,6 +37,7 @@ import { ComparisonTableSimple } from './comparison-table-simple'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
+import { CustomersStatLogo } from './customers-stat-logo'
 import { CustomersUserProfiles } from './customers-users'
 import { DividerSimpleLine } from './divider-simple-line'
 import { DividerSimpleTitle } from './divider-simple-title'
@@ -104,7 +105,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Customers',
 		icon: <TbUser />,
-		items: [CustomersLogoGrid, CustomersGrid, CustomersUserProfiles],
+		items: [CustomersLogoGrid, CustomersGrid, CustomersUserProfiles, CustomersStatLogo],
 	},
 	{
 		title: 'Comparison Table',
