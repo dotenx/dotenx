@@ -64,6 +64,8 @@ import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
 import { HeroWithRating } from './hero-with-rating'
+import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
+import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
@@ -153,7 +155,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Hero',
 		icon: <TbSection />,
-		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroWithRating],
+		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroWithRating, HeroWithRatingTwoCTAs, HeroWithRatingTwoCTAs2],
 	},
 	{
 		title: 'Navbar',

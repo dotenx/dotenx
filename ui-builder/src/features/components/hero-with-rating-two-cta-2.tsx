@@ -1,6 +1,6 @@
 import { Slider } from '@mantine/core'
 import produce from 'immer'
-import imageUrl from '../../assets/components/hero-with-rating.png'
+import imageUrl from '../../assets/components/hero-with-rating-two-cta-2.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { useSetElement } from '../elements/elements-store'
@@ -10,6 +10,7 @@ import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
 import { IconStyler } from '../simple/stylers/icon-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
@@ -21,34 +22,31 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class HeroWithRating extends Component {
-	name = 'Hero with rating'
+export class HeroWithRatingTwoCTAs2 extends Component {
+	name = 'Hero with rating and two CTAs - 2'
 	image = imageUrl
 	defaultData = defaultData
-	renderOptions = () => <HeroWithRatingOptions />
+	renderOptions = () => <HeroWithRatingTwoCTAs2Options />
 }
 
 // =============  renderOptions =============
 
-function HeroWithRatingOptions() {
+function HeroWithRatingTwoCTAs2Options() {
 	const component = useSelectedElement<BoxElement>()!
 	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
 	const title = component.find<TextElement>(tagIds.title)!
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
-	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = component.find<LinkElement>(tagIds.cta)!
-	const ctaText = component.find<TextElement>(tagIds.ctaText)!
+	const cta1 = component.find<LinkElement>(tagIds.cta1)!
+	const cta1Text = component.find<TextElement>(tagIds.cta1Text)!
+	const cta2 = component.find<LinkElement>(tagIds.cta2)!
+	const cta2Text = component.find<TextElement>(tagIds.cta2Text)!
 	const ratingWrapper = component.find<BoxElement>(tagIds.ratingWrapper)!
 	const ratingText = component.find<TextElement>(tagIds.ratingText)!
 	const set = useSetElement()
 
 	return (
-		<ComponentWrapper name="Hero with rating">
+		<ComponentWrapper name="Hero with rating and two CTAs - 2">
 			<ImageStyler element={heroImage} />
-			<TextStyler label="Title" element={title} />
-			<TextStyler label="Subtitle" element={subtitle} />
-			<TextStyler label="CTA" element={ctaText} />
-			<LinkStyler label="CTA Link" element={cta} />
 			<p className="mb-2 font-medium cursor-default">Rating</p>
 			<Slider
 				step={0.1}
@@ -68,25 +66,13 @@ function HeroWithRatingOptions() {
 				}}
 			/>
 			<TextStyler label="Rating text" element={ratingText} />
-			<p className="font-medium cursor-default">Features</p>
-			<DndTabs
-				containerElement={featureLinesWrapper}
-				renderItemOptions={(item) => <ItemOptions item={item} />}
-				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
-			/>
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Subtitle" element={subtitle} />
+			<TextStyler label="CTA1" element={cta1Text} />
+			<LinkStyler label="CTA1 Link" element={cta1} />
+			<TextStyler label="CTA2" element={cta2Text} />
+			<LinkStyler label="CTA2 Link" element={cta2} />
 		</ComponentWrapper>
-	)
-}
-
-function ItemOptions({ item }: { item: Element }) {
-	const icon = item.children?.[0] as IconElement
-	const text = item.children?.[1] as TextElement
-
-	return (
-		<OptionsWrapper>
-			<TextStyler label="Title" element={text} />
-			<IconStyler label="Icon color" element={icon} />
-		</OptionsWrapper>
 	)
 }
 
@@ -94,9 +80,10 @@ const tagIds = {
 	heroImage: 'heroImage',
 	title: 'title',
 	subtitle: 'subtitle',
-	featureLinesWrapper: 'featureLinesWrapper',
-	cta: 'cta',
-	ctaText: 'ctaText',
+	cta1: 'cta1',
+	cta1Text: 'cta1Text',
+	cta2: 'cta2',
+	cta2Text: 'cta2Text',
 	ratingWrapper: 'ratingWrapper',
 	ratingText: 'ratingText',
 }
@@ -161,12 +148,6 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			textAlign: 'center',
 			justifyContent: 'center',
 			alignItems: 'center',
-			lineHeight: '1.3',
-		},
-	}
-	draft.style.mobile = {
-		default: {
-			lineHeight: '1.2',
 		},
 	}
 }).serialize()
@@ -174,14 +155,23 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '50px',
+			fontSize: fontSizes.h1.desktop,
 			fontWeight: 'bold',
 			color: color('primary'),
+			marginBottom: '20px',
+			marginTop: '5px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			marginBottom: '15px',
+			fontSize: fontSizes.h1.tablet,
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			fontSize: '30px',
+			marginBottom: '10px',
+			fontSize: fontSizes.h1.mobile,
 		},
 	}
 	draft.data.text = Expression.fromString('Simplify your business')
@@ -191,8 +181,15 @@ const title = produce(new TextElement(), (draft) => {
 const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '16px',
+			fontSize: '18px',
 			color: color('primary', 0.9),
+			marginBottom: '30px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			fontSize: '15px',
+			marginBottom: '20px',
 		},
 	}
 	draft.style.mobile = {
@@ -201,97 +198,33 @@ const subtitle = produce(new TextElement(), (draft) => {
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = Expression.fromString('Branding starts from the inside out')
+	draft.data.text =
+		Expression.fromString(`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod nunc non risus ultrices, nec ultrices nisl aliquam. 
+		Aliquam erat volutpat. Donec auctor, nisl eget ultricies ultricies, nisl nisl aliquam nisl, nec ultrices nisl nisl nec nisl.
+	`)
 	draft.tagId = tagIds.subtitle
 }).serialize()
 
-const featureLinesWrapper = produce(new BoxElement(), (draft) => {
+const ctaWrapper = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			marginTop: '20px',
-			marginBottom: '20px',
-			fontSize: '15px',
+			display: 'flex',
+			columnGap: '20px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			columnGap: '10px',
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			marginTop: '0px',
-			marginBottom: '12px',
-			fontSize: '12px',
+			columnGap: '5px',
 		},
 	}
-	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
-const createFeatureLine = () =>
-	produce(new BoxElement(), (draft) => {
-		draft.style.desktop = {
-			default: {
-				display: 'flex',
-				alignItems: 'center',
-				marginTop: '10px',
-				marginBottom: '10px',
-				marginLeft: '0px',
-				marginRight: '0px',
-			},
-		}
-		const icon = produce(new IconElement(), (draft) => {
-			draft.style.desktop = {
-				default: {
-					flex: '0 0 auto',
-					width: '16px',
-					height: '16px',
-					marginRight: '10px',
-					color: color('accent'),
-				},
-			}
-			draft.style.tablet = {
-				default: {
-					width: '12px',
-					height: '12px',
-					marginRight: '8px',
-				},
-			}
-			draft.style.mobile = {
-				default: {
-					width: '8px',
-					height: '8px',
-					marginRight: '4px',
-				},
-			}
-			draft.data.name = 'check'
-			draft.data.type = 'fas'
-		})
-
-		const text = produce(new TextElement(), (draft) => {
-			draft.style.desktop = {
-				default: {
-					marginLeft: '8px',
-					color: color('text'),
-				},
-			}
-			draft.data.text = Expression.fromString(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-			)
-		})
-
-		draft.children = [icon, text]
-	})
-
-const createLine = (text: string) => {
-	return produce(createFeatureLine(), (draft) => {
-		const textElement = draft.children[1]! as TextElement
-		textElement.data.text = Expression.fromString(text)
-	})
-}
-
-const featureLines = [
-	createLine('Your brand is your promise to your customers').serialize(),
-	createLine('Having a simple UI is a great way to improve your brand').serialize(),
-	createLine('Creativity is just connecting things').serialize(),
-]
-
-const cta = produce(new LinkElement(), (draft) => {
+const cta1 = produce(new LinkElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			backgroundColor: color('primary'),
@@ -315,8 +248,8 @@ const cta = produce(new LinkElement(), (draft) => {
 	}
 
 	const element = new TextElement()
-	element.data.text = Expression.fromString('Get Started Now →')
-	element.tagId = tagIds.ctaText
+	element.data.text = Expression.fromString('Get Started Now')
+	element.tagId = tagIds.cta1Text
 	element.style.desktop = {
 		default: {
 			color: 'hsla(0, 0%, 100%, 1)',
@@ -339,7 +272,59 @@ const cta = produce(new LinkElement(), (draft) => {
 	draft.data.openInNewTab = false
 
 	draft.children = [element]
-	draft.tagId = tagIds.cta
+	draft.tagId = tagIds.cta1
+}).serialize()
+
+const cta2 = produce(new LinkElement(), (draft) => {
+	draft.style.desktop = {
+		default: {
+			borderWidth: '1px',
+			borderStyle: 'solid',
+			borderColor: color('primary'),
+			borderRadius: '10px',
+			textAlign: 'center',
+			textDecoration: 'none',
+			cursor: 'pointer',
+			paddingTop: '8px',
+			paddingBottom: '8px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			justifySelf: 'center',
+			paddingLeft: '15px',
+			paddingRight: '15px',
+		},
+	}
+
+	const element = new TextElement()
+	element.data.text = Expression.fromString('Request a Demo')
+	element.tagId = tagIds.cta2Text
+	element.style.desktop = {
+		default: {
+			color: color('primary'),
+			fontSize: '22px',
+			fontWeight: 'bold',
+		},
+	}
+	element.style.tablet = {
+		default: {
+			fontSize: '18px',
+		},
+	}
+	element.style.mobile = {
+		default: {
+			fontSize: '14px',
+		},
+	}
+
+	draft.data.href = Expression.fromString('#')
+	draft.data.openInNewTab = false
+
+	draft.children = [element]
+	draft.tagId = tagIds.cta2
 }).serialize()
 
 const ratingWrapper = produce(new BoxElement(), (draft) => {
@@ -441,14 +426,10 @@ const defaultData = deserializeElement({
 		{
 			...detailsWrapper,
 			components: [
+				ratingWrapper,
 				title,
 				subtitle,
-				{
-					...featureLinesWrapper,
-					components: featureLines,
-				},
-				cta,
-				ratingWrapper,
+				{ ...ctaWrapper, components: [cta1, cta2] },
 			],
 		},
 		heroImage,

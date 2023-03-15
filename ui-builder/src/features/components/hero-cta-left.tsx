@@ -68,6 +68,7 @@ const wrapper = produce(new BoxElement(), (draft) => {
 			paddingRight: '15%',
 			paddingTop: '5%',
 			paddingBottom: '5%',
+			columnGap: '10px',
 		},
 	}
 
