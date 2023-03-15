@@ -1,8 +1,6 @@
-import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/team-square-grid.png'
 import { deserializeElement } from '../../utils/deserialize'
-import { regenElement } from '../clipboard/copy-paste'
 import { box, img, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
@@ -11,13 +9,10 @@ import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
-import { BoxStyler, BoxStylerSimple } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
-import { Expression } from '../states/expression'
-import ColorOptions from './basic-components/color-options'
 import { Component, ElementOptions } from './component'
-import { ComponentName, DividerCollapsible, SimpleComponentOptionsProps } from './helpers'
+import { SimpleComponentOptionsProps } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
@@ -45,7 +40,7 @@ function TeamSquareGridOptions({ options }: SimpleComponentOptionsProps) {
 	const tilesWrapper = component.find<BoxElement>(tagIds.tilesWrapper)!
 
 	return (
-		<ComponentWrapper name="Team grid" stylers={['backgrounds', 'spacing', 'background-image']}>
+		<ComponentWrapper name="Team square grid" stylers={['backgrounds', 'spacing', 'background-image']}>
 			<TextStyler label="Title" element={title} />
 			<DndTabs
 				containerElement={tilesWrapper}
