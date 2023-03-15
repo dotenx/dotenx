@@ -93,7 +93,7 @@ export function useNewIntegration({ integrationKind, onSuccess, integrationName 
 		const fieldValues = getValues()
 		const payload = {
 			project_name: projectName,
-			integration_secrets: fieldValues.secrets as { SECRET_KEY: string },
+			secrets: fieldValues.secrets as { SECRET_KEY: string },
 			integration_type: fieldValues.type
 		}
 		update ? updateMutation.mutate({ name: integrationName, ...payload }, {

@@ -166,7 +166,7 @@ export type CreateIntegrationRequest = {
 export type SetupIntegrationRequest = {
 	project_name: string,
 	name?: string,
-	integration_secrets: {
+	secrets: {
 		SECRET_KEY: string
 	},
 	integration_type: string
