@@ -41,7 +41,7 @@ function AboutLeft2Options() {
 	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
-		<ComponentWrapper name="About us with details on the left">
+		<ComponentWrapper name="About us with details on the left - 2">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitleText} />
@@ -84,6 +84,7 @@ const component = produce(new BoxElement(), (draft) => {
 			paddingRight: '15%',
 			paddingTop: '40px',
 			paddingBottom: '40px',
+			gap: '40px',
 		},
 	}
 	draft.style.tablet = {
@@ -91,14 +92,14 @@ const component = produce(new BoxElement(), (draft) => {
 			gridTemplateColumns: ' 1fr ',
 			paddingLeft: '10%',
 			paddingRight: '10%',
-			rowGap: '30px',
+			gap: '30px',
 		},
 	}
 	draft.style.mobile = {
 		default: {
 			paddingLeft: '5%',
 			paddingRight: '5%',
-			rowGap: '20px',
+			gap: '20px',
 		},
 	}
 }).serialize()

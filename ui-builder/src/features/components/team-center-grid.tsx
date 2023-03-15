@@ -19,7 +19,7 @@ import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class TeamCenterGrid extends Component {
-	name = 'Team Center Grid'
+	name = 'Team grid'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -36,7 +36,7 @@ function GalleryBasicOptions({ options }: SimpleComponentOptionsProps) {
 	const containerDiv = options.element.children?.[1].children?.[0] as BoxElement
 
 	return (
-		<ComponentWrapper name="Team Center Grid">
+		<ComponentWrapper name="Team grid">
 			<TextStyler label="Title" element={titleText} />
 			<TextStyler label="Subtitle" element={subtitleText} />
 			<DndTabs

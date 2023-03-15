@@ -19,10 +19,12 @@ import {
 } from 'react-icons/tb'
 import { AboutLeft } from './about-left'
 import { AboutLeft2 } from './about-left-2'
+import { AboutLeft3 } from './about-left-3'
 import { AboutLongDetailsLeft } from './about-long-details-left'
 import { AboutLongDetailsRight } from './about-long-details-right'
 import { AboutRight } from './about-right'
 import { AboutRight2 } from './about-right-2'
+import { AboutRight3 } from './about-right-3'
 import { BasicBox } from './basic-box'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
@@ -65,8 +67,10 @@ import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { TeamCenterGrid } from './team-center-grid'
+import { TeamIndividualMember } from './team-individual-member'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
+import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 
 export const COMPONENTS: Components = [
@@ -93,6 +97,8 @@ export const COMPONENTS: Components = [
 			AboutRight2,
 			AboutLongDetailsLeft,
 			AboutLongDetailsRight,
+			AboutLeft3,
+			AboutRight3
 		],
 	},
 	{
@@ -161,7 +167,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Team',
 		icon: <TbUsers />,
-		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft],
+		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft, TeamSquareGrid, TeamIndividualMember],
 	},
 	{
 		title: 'Testimonial',
