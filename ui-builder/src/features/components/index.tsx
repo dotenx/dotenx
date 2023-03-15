@@ -65,6 +65,7 @@ import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { TeamCenterGrid } from './team-center-grid'
+import { TeamIndividualMember } from './team-individual-member'
 import { TeamRoundCenter } from './team-round-center'
 import { TeamRoundLeft } from './team-round-left'
 import { TeamSquareGrid } from './team-square-grid'
@@ -162,7 +163,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Team',
 		icon: <TbUsers />,
-		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft, TeamSquareGrid],
+		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft, TeamSquareGrid, TeamIndividualMember],
 	},
 	{
 		title: 'Testimonial',
