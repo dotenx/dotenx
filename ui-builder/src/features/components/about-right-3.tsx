@@ -1,72 +1,63 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/about-left.png'
+import imageUrl from '../../assets/components/about-right-3.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { Element } from '../elements/element'
 import { BoxElement } from '../elements/extensions/box'
-import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
-import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
-import { BoxStylerSimple } from '../simple/stylers/box-styler'
-import { IconStyler } from '../simple/stylers/icon-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
-import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component } from './component'
-import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class AboutLeft extends Component {
-	name = 'About us with details on the left'
+export class AboutRight3 extends Component {
+	name = 'About us with details on the right - 3'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
-	
+
 	renderOptions(): ReactNode {
-		return <AboutLeftOptions />
+		return <AboutRight3Options />
 	}
 }
 
 // =============  renderOptions =============
 
-function AboutLeftOptions() {
+function AboutRight3Options() {
 	const component = useSelectedElement<BoxElement>()!
 	const heroImage = component.find<ImageElement>(tagIds.heroImage)!
 	const title = component.find<TextElement>(tagIds.title)!
 	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const featureLinesWrapper = component.find<BoxElement>(tagIds.featureLinesWrapper)!
-	const cta = component.find<LinkElement>(tagIds.cta)!
-	const ctaText = component.find<TextElement>(tagIds.ctaText)!
 
 	return (
-		<ComponentWrapper name="About us with details on the left">
+		<ComponentWrapper name="About us with details on the right - 3">
 			<ImageStyler element={heroImage} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
-			<TextStyler label="CTA" element={ctaText} />
-			<LinkStyler label="CTA Link" element={cta} />
 			<DndTabs
 				containerElement={featureLinesWrapper}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
-				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
+				insertElement={() => createFeatureLine('Lorem ipsum dolor sit amet', 'https://files.dotenx.com/assets/icons-cloud-39.png')}
 			/>
 		</ComponentWrapper>
 	)
 }
 
 function ItemOptions({ item }: { item: Element }) {
-	const icon = item.children?.[0] as IconElement
+	const icon = item.children?.[0] as ImageElement
 	const text = item.children?.[1] as TextElement
 
 	return (
 		<OptionsWrapper>
 			<TextStyler label="Title" element={text} />
-			<IconStyler label="Icon color" element={icon} />
+			<ImageStyler element={icon} />
 		</OptionsWrapper>
 	)
 }
@@ -94,7 +85,7 @@ const component = produce(new BoxElement(), (draft) => {
 			paddingRight: '15%',
 			paddingTop: '40px',
 			paddingBottom: '40px',
-			gap: '40px',
+			gap: '30px',
 		},
 	}
 	draft.style.tablet = {
@@ -133,13 +124,11 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 			flexDirection: 'column',
 			justifyContent: 'space-between',
 			alignItems: 'flex-start',
+			textAlign: 'justify',
 		},
 	}
 	draft.style.tablet = {
 		default: {
-			textAlign: 'center',
-			justifyContent: 'center',
-			alignItems: 'center',
 			lineHeight: '1.3',
 		},
 	}
@@ -153,34 +142,44 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '50px',
+			fontSize: fontSizes.h1.desktop,
 			fontWeight: 'bold',
 			color: color('primary'),
 		},
 	}
-	draft.style.mobile = {
+	draft.style.tablet = {
 		default: {
-			fontSize: '30px',
+			fontSize: fontSizes.h1.tablet,
 		},
 	}
-	draft.data.text = Expression.fromString('Simplify your business')
+	draft.style.mobile = {
+		default: {
+			fontSize: fontSizes.h1.mobile,
+		},
+	}
+	draft.data.text = Expression.fromString('Simplify your business with access to the best talent')
 	draft.tagId = tagIds.title
 }).serialize()
 
 const subtitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '16px',
+			fontSize: fontSizes.h4.desktop,
 			color: color('primary', 0.9),
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			fontSize: fontSizes.h4.tablet,
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			fontSize: '12px',
+			fontSize: fontSizes.h4.mobile,
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = Expression.fromString('Branding starts from the inside out')
+	draft.data.text = Expression.fromString('Branding starts from the inside out and we are here to help your awesome build a brand')
 	draft.tagId = tagIds.subtitle
 }).serialize()
 
@@ -202,7 +201,7 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
-const createFeatureLine = () =>
+const createFeatureLine = (txt: string, imageUrl: string) =>
 	produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
@@ -214,13 +213,12 @@ const createFeatureLine = () =>
 				marginRight: '0px',
 			},
 		}
-		const icon = produce(new IconElement(), (draft) => {
+		const icon = produce(new ImageElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
 					flex: '0 0 auto',
 					width: '16px',
 					height: '16px',
-					fontSize: '16px',
 					marginRight: '10px',
 					color: color('accent'),
 				},
@@ -229,7 +227,6 @@ const createFeatureLine = () =>
 				default: {
 					width: '12px',
 					height: '12px',
-					fontSize: '12px',
 					marginRight: '8px',
 				},
 			}
@@ -237,14 +234,11 @@ const createFeatureLine = () =>
 				default: {
 					width: '8px',
 					height: '8px',
-					fontSize: '8px',
 					marginRight: '4px',
 				},
 			}
-			draft.data.name = 'check'
-			draft.data.type = 'fas'
+			draft.data.src = Expression.fromString(imageUrl)
 		})
-
 		const text = produce(new TextElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
@@ -252,79 +246,26 @@ const createFeatureLine = () =>
 					color: color('text'),
 				},
 			}
-			draft.data.text = Expression.fromString(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-			)
+			draft.data.text = Expression.fromString(txt)
 		})
 
 		draft.children = [icon, text]
 	})
 
-const createLine = (text: string) => {
-	return produce(createFeatureLine(), (draft) => {
-		const textElement = draft.children[1]! as TextElement
-		textElement.data.text = Expression.fromString(text)
-	})
-}
 
 const featureLines = [
-	createLine('Your brand is your promise to your customers').serialize(),
-	createLine('Having a simple UI is a great way to improve your brand').serialize(),
-	createLine('Creativity is just connecting things').serialize(),
+	createFeatureLine('Your brand is your promise to your customers', 'https://files.dotenx.com/assets/icons-cloud-39.png').serialize(),
+	createFeatureLine('Your brand is your promise to your customers', 'https://files.dotenx.com/assets/icons-combo-chart-vii.png').serialize(),
+	createFeatureLine('Having a simple UI is a great way to improve your brand', 'https://files.dotenx.com/assets/icons-credit-card-hwer.png').serialize(),
+	createFeatureLine('Creativity is just connecting things', 'https://files.dotenx.com/assets/icons-luggage-bh.png').serialize(),
+	createFeatureLine('Design is not just what it looks like and feels like', 'https://files.dotenx.com/assets/icons-speaker-qer.png').serialize(),
+	createFeatureLine('You deserve a brand that makes you proud', 'https://files.dotenx.com/assets/icons-stellar-bb.png').serialize(),
 ]
-
-const cta = produce(new LinkElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			backgroundColor: color('primary'),
-			border: 'none',
-			borderRadius: '10px',
-			textAlign: 'center',
-			textDecoration: 'none',
-			cursor: 'pointer',
-			paddingTop: '5px',
-			paddingBottom: '5px',
-			paddingLeft: '15px',
-			paddingRight: '15px',
-		},
-	}
-	draft.style.tablet = {
-		default: {
-			justifySelf: 'center',
-		},
-	}
-
-	const element = new TextElement()
-	element.data.text = Expression.fromString('Learn more')
-	element.tagId = tagIds.ctaText
-	element.style.desktop = {
-		default: {
-			color: 'hsla(0, 0%, 100%, 1)',
-			fontSize: '20px',
-			fontWeight: '400',
-		},
-	}
-	element.style.tablet = {
-		default: {
-			fontSize: '18px',
-		},
-	}
-	element.style.mobile = {
-		default: {
-			fontSize: '14px',
-		},
-	}
-
-	draft.data.href = Expression.fromString('#')
-	draft.data.openInNewTab = false
-
-	draft.children = [element]
-	draft.tagId = tagIds.cta
-}).serialize()
 
 const defaultData = {
 	...component,
 	components: [
+		heroImage,
 		{
 			...detailsWrapper,
 			components: [
@@ -334,9 +275,7 @@ const defaultData = {
 					...featureLinesWrapper,
 					components: featureLines,
 				},
-				cta,
 			],
 		},
-		heroImage,
 	],
 }
