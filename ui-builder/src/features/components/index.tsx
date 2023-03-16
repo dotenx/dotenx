@@ -49,7 +49,9 @@ import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
 import { FeatureDetailsGridImageTagLeft } from './feature-details-grid-image-tag-left'
+import { FeatureDetailsGridImageTagLeft2 } from './feature-details-grid-image-tag-left-2'
 import { FeatureDetailsGridImageTagRight } from './feature-details-grid-image-tag-right'
+import { FeatureDetailsGridImageTagRight2 } from './feature-details-grid-image-tag-right-2'
 import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImageTag } from './feature-grid-image-tag'
@@ -139,7 +141,9 @@ export const COMPONENTS: Components = [
 			FeatureCardsImage,
 			FeatureGridImageTag,
 			FeatureDetailsGridImageTagLeft,
-			FeatureDetailsGridImageTagRight
+			FeatureDetailsGridImageTagRight,
+			FeatureDetailsGridImageTagLeft2,
+			FeatureDetailsGridImageTagRight2
 		],
 	},
 	{
