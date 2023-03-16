@@ -50,6 +50,7 @@ import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
 import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
+import { FeatureGridImageTag } from './feature-grid-image-tag'
 import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
@@ -134,6 +135,7 @@ export const COMPONENTS: Components = [
 			FeatureDetailsLeft,
 			FeatureDetailsRight,
 			FeatureCardsImage,
+			FeatureGridImageTag
 		],
 	},
 	{
