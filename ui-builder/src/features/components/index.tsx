@@ -48,6 +48,8 @@ import { FaqBasicStyled } from './faq-basic-styled'
 import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
+import { FeatureDetailsGridImageTagLeft } from './feature-details-grid-image-tag-left'
+import { FeatureDetailsGridImageTagRight } from './feature-details-grid-image-tag-right'
 import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImageTag } from './feature-grid-image-tag'
@@ -135,7 +137,9 @@ export const COMPONENTS: Components = [
 			FeatureDetailsLeft,
 			FeatureDetailsRight,
 			FeatureCardsImage,
-			FeatureGridImageTag
+			FeatureGridImageTag,
+			FeatureDetailsGridImageTagLeft,
+			FeatureDetailsGridImageTagRight
 		],
 	},
 	{
