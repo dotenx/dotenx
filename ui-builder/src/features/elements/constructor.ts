@@ -11,6 +11,7 @@ import { SubmitElement } from './extensions/submit'
 import { TemplateElement } from './extensions/template'
 import { TextElement } from './extensions/text'
 import { TextareaElement } from './extensions/textarea'
+import { VideoElement } from './extensions/video'
 
 export const box = (children?: Element[]) => new BoxElement().populate(children ?? [])
 export const btn = (txt: string) => new ButtonElement().unstyled().txt(txt)
@@ -25,3 +26,4 @@ export const flex = (children: Element[]) => box(children).css({ display: 'flex'
 export const textarea = () => new TextareaElement()
 export const input = () => new InputElement()
 export const form = (children?: Element[]) => new FormElement().populate(children ?? [])
+export const video = (src?: string) => new VideoElement().src(src ?? '')

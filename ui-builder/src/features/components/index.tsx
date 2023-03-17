@@ -28,6 +28,8 @@ import { AboutRight } from './about-right'
 import { AboutRight2 } from './about-right-2'
 import { AboutRight3 } from './about-right-3'
 import { AboutRight4 } from './about-right-4'
+import { AboutVideoStatsLeft } from './about-video-stats-left'
+import { AboutVideoStatsRight } from './about-video-stats-right'
 import { BasicBox } from './basic-box'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
@@ -113,6 +115,8 @@ export const COMPONENTS: Components = [
 			AboutFramedImage,
 			AboutLeft4,
 			AboutRight4,
+			AboutVideoStatsLeft,
+			AboutVideoStatsRight,
 		],
 	},
 	{
