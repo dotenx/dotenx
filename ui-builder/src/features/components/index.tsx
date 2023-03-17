@@ -21,11 +21,13 @@ import { AboutFramedImage } from './about-framed-image'
 import { AboutLeft } from './about-left'
 import { AboutLeft2 } from './about-left-2'
 import { AboutLeft3 } from './about-left-3'
+import { AboutLeft4 } from './about-left-4'
 import { AboutLongDetailsLeft } from './about-long-details-left'
 import { AboutLongDetailsRight } from './about-long-details-right'
 import { AboutRight } from './about-right'
 import { AboutRight2 } from './about-right-2'
 import { AboutRight3 } from './about-right-3'
+import { AboutRight4 } from './about-right-4'
 import { BasicBox } from './basic-box'
 import { BasicButton } from './basic-button'
 import { BasicColumns } from './basic-columns'
@@ -108,7 +110,9 @@ export const COMPONENTS: Components = [
 			AboutLongDetailsRight,
 			AboutLeft3,
 			AboutRight3,
-			AboutFramedImage
+			AboutFramedImage,
+			AboutLeft4,
+			AboutRight4,
 		],
 	},
 	{
@@ -145,7 +149,7 @@ export const COMPONENTS: Components = [
 			FeatureDetailsGridImageTagLeft,
 			FeatureDetailsGridImageTagRight,
 			FeatureDetailsGridImageTagLeft2,
-			FeatureDetailsGridImageTagRight2
+			FeatureDetailsGridImageTagRight2,
 		],
 	},
 	{
@@ -167,7 +171,14 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Hero',
 		icon: <TbSection />,
-		items: [HeroFullWidth, HeroCtaLeft, HeroCtaRight, HeroWithRating, HeroWithRatingTwoCTAs, HeroWithRatingTwoCTAs2],
+		items: [
+			HeroFullWidth,
+			HeroCtaLeft,
+			HeroCtaRight,
+			HeroWithRating,
+			HeroWithRatingTwoCTAs,
+			HeroWithRatingTwoCTAs2,
+		],
 	},
 	{
 		title: 'Navbar',
@@ -182,7 +193,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Team',
 		icon: <TbUsers />,
-		items: [TeamCenterGrid, TeamRoundCenter, TeamRoundLeft, TeamSquareGrid, TeamIndividualMember],
+		items: [
+			TeamCenterGrid,
+			TeamRoundCenter,
+			TeamRoundLeft,
+			TeamSquareGrid,
+			TeamIndividualMember,
+		],
 	},
 	{
 		title: 'Testimonial',
