@@ -297,16 +297,19 @@ function DuplicatePageForm({ onSuccess }: { onSuccess: (pageName: string) => voi
 	const updatePageMutation = useUpdatePage()
 	const pageData = usePageData()
 
-	const onSubmit = form.onSubmit((value) => {
-		updatePageMutation.mutate(pageData, {
-			onSuccess: () => {
-				queryClient.invalidateQueries([QueryKey.Pages])
-				setPageMode(isSimple ? 'simple' : 'advanced')
-				setSaved()
-				closeAllModals()
-				onSuccess(value.name)
-			},
-		})
+	const onSubmit = form.onSubmit((values) => {
+		updatePageMutation.mutate(
+			{ ...pageData, pageName: values.name },
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries([QueryKey.Pages])
+					setPageMode(isSimple ? 'simple' : 'advanced')
+					setSaved()
+					closeAllModals()
+					onSuccess(values.name)
+				},
+			}
+		)
 	})
 
 	return (
