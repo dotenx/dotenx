@@ -17,6 +17,7 @@ import {
 	TbUser,
 	TbUsers,
 } from 'react-icons/tb'
+import { AboutFramedImage } from './about-framed-image'
 import { AboutLeft } from './about-left'
 import { AboutLeft2 } from './about-left-2'
 import { AboutLeft3 } from './about-left-3'
@@ -106,7 +107,8 @@ export const COMPONENTS: Components = [
 			AboutLongDetailsLeft,
 			AboutLongDetailsRight,
 			AboutLeft3,
-			AboutRight3
+			AboutRight3,
+			AboutFramedImage
 		],
 	},
 	{
