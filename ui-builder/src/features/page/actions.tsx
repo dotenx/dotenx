@@ -64,12 +64,13 @@ export function PageActions({
 		() => getPageUrls({ projectTag, pageName }),
 		{ enabled: !!projectTag && !!pageName }
 	)
+	const projectType = useAtomValue(projectTypeAtom)
 
 	return (
 		<Button.Group>
 			{!isSimple && showSettings && !settings && <PageSettingsButton />}
 			{settings}
-			<DuplicatePageButton />
+			{projectType !== 'landing_page' && <DuplicatePageButton />}
 			<DeletePageButton />
 			<SaveButton />
 			<PreviewButton url={pageUrls?.data.preview_url.url || ''} isLoading={isLoading} />
