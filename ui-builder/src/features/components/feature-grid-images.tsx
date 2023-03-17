@@ -19,7 +19,7 @@ import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class FeatureGridImages extends Component {
-	name = 'Feature Grid with images'
+	name = 'Feature grid with images'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -37,7 +37,7 @@ function FeatureGridImagesOptions() {
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<ComponentWrapper name="Feature Grid with images">
+		<ComponentWrapper name="Feature grid with images">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
 			<DndTabs
