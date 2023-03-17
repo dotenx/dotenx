@@ -95,6 +95,7 @@ export function ElementOverlay({
 				ref={handleRef}
 				onMouseOver={handleMouseOver}
 				onClick={handleClick}
+				type={element instanceof InputElement ? element.data.type : undefined}
 			>
 				{!hasNoChild ? children : undefined}
 			</Rendered>
