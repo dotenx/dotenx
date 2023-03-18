@@ -30,6 +30,7 @@ export class FormEmailInput1 extends Component {
 			id: root.id,
 			projectTag: options.projectTag,
 			pageName: options.pageName,
+			formName: 'Email form',
 		})
 		setElement(root, (draft) => (draft.script = script))
 	}
@@ -44,7 +45,10 @@ function FormOptions() {
 	const submit = component.find<SubmitElement>(tagIds.submit)!
 
 	return (
-		<ComponentWrapper name="Email input form 1" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
+		<ComponentWrapper
+			name="Email input form 1"
+			stylers={['alignment', 'backgrounds', 'borders', 'spacing']}
+		>
 			<TextStyler label="Title" element={h1} />
 			<TextStyler label="Subtitle" element={h2} />
 			<ButtonStyler label="Submit button" element={submit} />

@@ -10,6 +10,9 @@
 	const item = list.querySelector('.item')
 	const showMore = root.querySelector('.show-more')
 
+	const loader = document.createElement('span')
+	loader.classList.add('loader')
+
 	const size = 9
 	let page = 1
 	let productCount = 0
@@ -22,6 +25,7 @@
 	})
 
 	async function getProducts() {
+		list.appendChild(loader)
 		const filterSet = productTag
 			? [
 					{
@@ -63,6 +67,7 @@
 		)
 		const data = await response.json()
 		const products = data.rows ?? []
+		list.removeChild(loader)
 		return { products, totalRows: data.totalRows }
 	}
 

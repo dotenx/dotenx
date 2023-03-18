@@ -13,6 +13,8 @@
 	const submitButton = root.querySelector('.submit')
 
 	submitButton.addEventListener('click', async () => {
+		const prevHTML = submitButton.innerHTML
+		submitButton.innerHTML = `<span class="loader"></span>`
 		const email = emailInput.value
 		const password = passwordInput.value
 
@@ -36,5 +38,6 @@
 		} else {
 			alert(data.message)
 		}
+		submitButton.innerHTML = prevHTML
 	})
 })()

@@ -172,6 +172,7 @@ function InputOptions({ element }: { element: InputElement }) {
 					}
 				})
 			}}
+			withinPortal
 		/>
 	)
 }
@@ -250,6 +251,7 @@ const submit = produce(new SubmitElement(), (draft) => {
 			paddingBottom: '8px',
 			alignSelf: 'self-end',
 			border: 'none',
+			cursor: 'pointer',
 		},
 		hover: {
 			backgroundColor: 'hsla(100, 0%, 39%, 1)',

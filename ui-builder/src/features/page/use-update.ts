@@ -57,7 +57,10 @@ export const usePageData = (): AddPageRequest => {
 		customCodes: {
 			...customCodes,
 			scripts: `<script>${joinScripts(elements)}</script>`,
-			styles: `<style>${paletteCss}</style>`,
+			styles: `<style>
+			${paletteCss}
+			${additionalStyles}
+			</style>`,
 		},
 		statesDefaultValues,
 		animations,
@@ -105,3 +108,24 @@ export const useResetPage = () => {
 
 	return savePageMutation
 }
+
+const additionalStyles = `
+.loader {
+    width: 16px;
+    height: 16px;
+    border: 3px solid currentColor;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+`
