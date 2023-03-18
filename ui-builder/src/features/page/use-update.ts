@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue, useSetAtom } from 'jotai'
+import _ from 'lodash'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { AddPageRequest, QueryKey, updatePage } from '../../api'
 import { joinAnimations, joinScripts } from '../../utils/join-scripts'
 import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
-import { useElementsStore } from '../elements/elements-store'
+import { useElementsStore, useFlattenedElements } from '../elements/elements-store'
 import { selectedPaletteAtom } from '../simple/palette'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { useClassesStore } from '../style/classes-store'
@@ -43,6 +45,7 @@ export const usePageData = (): AddPageRequest => {
 	const animations = usePageAnimations()
 	const palette = useAtomValue(selectedPaletteAtom)
 	const paletteCss = useGeneratePalette()
+	const imports = useImports()
 
 	return {
 		projectTag,
@@ -56,7 +59,9 @@ export const usePageData = (): AddPageRequest => {
 		fonts,
 		customCodes: {
 			...customCodes,
-			scripts: `<script>${joinScripts(elements)}</script>`,
+			scripts: `
+			${imports}
+			<script>${joinScripts(elements)}</script>`,
 			styles: `<style>
 			${paletteCss}
 			${additionalStyles}
@@ -66,6 +71,21 @@ export const usePageData = (): AddPageRequest => {
 		animations,
 		colorPaletteId: palette.id,
 	}
+}
+
+const useImports = () => {
+	const flattenedElements = useFlattenedElements()
+	const imports = useMemo(
+		() =>
+			_.uniq(
+				flattenedElements
+					.filter((element) => element.imports.length > 0)
+					.map((element) => `<script src="${element.imports}"></script>`)
+					.flat()
+			).join(' '),
+		[flattenedElements]
+	)
+	return imports
 }
 
 const usePageAnimations = () => {

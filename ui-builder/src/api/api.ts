@@ -8,7 +8,6 @@ import {
 	deserializeElement,
 	deserializeExpression,
 } from '../utils/deserialize'
-import { joinScripts } from '../utils/join-scripts'
 import { serializeAnimation } from '../utils/serialize'
 import { mapSelectorStyleToCamelCase, mapSelectorStyleToKebabCase } from './mapper'
 import {
@@ -157,10 +156,7 @@ export const addPage = ({
 			pageParams,
 			globals,
 			fonts,
-			customCodes: {
-				...customCodes,
-				scripts: `<script>${joinScripts(elements)}</script>`,
-			},
+			customCodes,
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
 			colorPaletteId,
