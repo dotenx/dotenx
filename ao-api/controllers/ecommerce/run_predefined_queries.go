@@ -119,6 +119,46 @@ func (ec *EcommerceController) RunPredefinedQueries() gin.HandlerFunc {
 			select distinct email from orders;
 			`
 
+		case "get_most_popular_product":
+			query = `
+			select products.name, products.id, sum(quantity) as units_sold 
+			from orders join products on orders.__products = products.id 
+			where payment_status='succeeded' 
+			group by products.id 
+			order by units_sold desc 
+			limit 1;
+			`
+
+		case "get_best_seller_product":
+			query = `
+			select products.name, products.id, sum(paid_amount) as total_revenue 
+			from orders join products on orders.__products = products.id 
+			where payment_status='succeeded' 
+			group by products.id 
+			order by total_revenue desc 
+			limit 1;
+			`
+
+		case "get_best_day_of_the_week":
+			query = `
+			select sum(paid_amount) as total_revenue, extract(dow from date(updated_at))::integer as day_of_week 
+			from orders 
+			where payment_status='succeeded' 
+			group by day_of_week 
+			order by total_revenue desc 
+			limit 1;
+			`
+
+		case "get_highest_rated_product":
+			query = `
+			select products.name, products.id, avg(rate) as rate_average 
+			from reviews join products on reviews.__products = products.id 
+			where confirmed=true
+			group by products.id 
+			order by rate_average desc 
+			limit 1;
+			`
+
 		default:
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "goal field isn't valid",
