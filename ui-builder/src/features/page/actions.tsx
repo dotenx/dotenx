@@ -80,7 +80,7 @@ export function PageActions({
 }
 
 function PageSettingsButton() {
-	const { projectName = '', pageName = '' } = useParams()
+	const { projectName = '' } = useParams()
 
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
@@ -88,7 +88,7 @@ function PageSettingsButton() {
 				onClick={() =>
 					openModal({
 						title: 'Page Settings',
-						children: <PageSettings projectName={projectName} pageName={pageName} />,
+						children: <PageSettings projectName={projectName} />,
 					})
 				}
 				size="xs"
@@ -100,58 +100,64 @@ function PageSettingsButton() {
 	)
 }
 
-function PageSettings({ projectName, pageName }: { projectName: string; pageName: string }) {
+export function CustomCodes() {
 	const [customCodes, setCustomCodes] = useAtom(customCodesAtom)
 
 	return (
+		<div className="flex gap-2">
+			<Button
+				fullWidth
+				leftIcon={<TbCode />}
+				onClick={() =>
+					openModal({
+						title: 'Head Code',
+						children: (
+							<CustomCode
+								defaultValue={customCodes.head}
+								onSave={(value) => {
+									setCustomCodes((codes) => ({ ...codes, head: value }))
+									closeAllModals()
+								}}
+								defaultLanguage="html"
+							/>
+						),
+						size: 'xl',
+					})
+				}
+			>
+				Head Code
+			</Button>
+			<Button
+				fullWidth
+				leftIcon={<TbCode />}
+				onClick={() =>
+					openModal({
+						title: 'Head Code',
+						children: (
+							<CustomCode
+								defaultValue={customCodes.footer}
+								onSave={(value) => {
+									setCustomCodes((codes) => ({ ...codes, footer: value }))
+									closeAllModals()
+								}}
+								defaultLanguage="javascript"
+							/>
+						),
+						size: 'xl',
+					})
+				}
+			>
+				Footer Code
+			</Button>
+		</div>
+	)
+}
+
+function PageSettings({ projectName }: { projectName: string }) {
+	return (
 		<div>
 			<Divider label="Custom code" mb="xl" />
-			<div className="flex gap-2">
-				<Button
-					fullWidth
-					leftIcon={<TbCode />}
-					onClick={() =>
-						openModal({
-							title: 'Head Code',
-							children: (
-								<CustomCode
-									defaultValue={customCodes.head}
-									onSave={(value) => {
-										setCustomCodes((codes) => ({ ...codes, head: value }))
-										closeAllModals()
-									}}
-									defaultLanguage="html"
-								/>
-							),
-							size: 'xl',
-						})
-					}
-				>
-					Head Code
-				</Button>
-				<Button
-					fullWidth
-					leftIcon={<TbCode />}
-					onClick={() =>
-						openModal({
-							title: 'Head Code',
-							children: (
-								<CustomCode
-									defaultValue={customCodes.footer}
-									onSave={(value) => {
-										setCustomCodes((codes) => ({ ...codes, footer: value }))
-										closeAllModals()
-									}}
-									defaultLanguage="javascript"
-								/>
-							),
-							size: 'xl',
-						})
-					}
-				>
-					Footer Code
-				</Button>
-			</div>
+			<CustomCodes />
 			<Divider label="URL params" my="xl" />
 			<QueryParamsForm />
 			<Divider label="Persisted states" my="xl" />

@@ -1,9 +1,9 @@
-import { AppShell, Button, Drawer, Text, Tooltip } from '@mantine/core'
+import { AppShell, Button, Divider, Drawer, Text, Tooltip } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { useAtom, useAtomValue } from 'jotai'
 import { TbSettings } from 'react-icons/tb'
 import { COMPONENTS } from '../components'
-import { PageActions } from '../page/actions'
+import { CustomCodes, PageActions } from '../page/actions'
 import { PageSelection } from '../page/page-selection'
 import {
 	AdvancedModeButton,
@@ -65,27 +65,35 @@ function TopBar() {
 				<>
 					<PageScaling />
 					<UndoRedo />
-					<PageActions
-						settings={
-							<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
-								<Button
-									onClick={() =>
-										openModal({
-											title: 'Page Settings',
-											children: <Palette />,
-										})
-									}
-									size="xs"
-									variant="default"
-								>
-									<TbSettings className="w-5 h-5" />
-								</Button>
-							</Tooltip>
-						}
-					/>
+					<PageActions settings={<PageSettings />} />
 				</>
 			}
 		/>
+	)
+}
+
+function PageSettings() {
+	return (
+		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
+			<Button
+				onClick={() =>
+					openModal({
+						title: 'Page Settings',
+						children: (
+							<div>
+								<Palette />
+								<Divider label="Custom code" my="xl" />
+								<CustomCodes />
+							</div>
+						),
+					})
+				}
+				size="xs"
+				variant="default"
+			>
+				<TbSettings className="w-5 h-5" />
+			</Button>
+		</Tooltip>
 	)
 }
 
