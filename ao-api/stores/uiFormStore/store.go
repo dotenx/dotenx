@@ -16,6 +16,7 @@ type UIFormStore interface {
 	GetFormsList(ctx context.Context, projectTag, pageName string) ([]models.UIForm, error)
 	GetFormResponseListById(ctx context.Context, projectTag, pageName, formId string) ([]models.UIForm, error)
 	GetNumberOfFormSubmission(ctx context.Context, projectTag, pageName string) (int64, error)
+	GetNumberOfResponsesForUser(ctx context.Context, accountId, projectType, from, to string) (int64, error)
 }
 
 type uiFormStore struct {

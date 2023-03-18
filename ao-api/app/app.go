@@ -173,7 +173,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	uiFormService := uiFormService.NewUIFormService(formStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
 
@@ -264,6 +264,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/db_project/list", middlewares.InternalMiddleware(), InternalController.ListDBProjects)
 	internal.POST("/tp_user/list", middlewares.InternalMiddleware(), InternalController.ListTpUsers)
 	internal.POST("/ui_page/list", middlewares.InternalMiddleware(), InternalController.ListUiPages)
+	internal.POST("/ui_form/list", middlewares.InternalMiddleware(), InternalController.ListUiForms)
 	internal.POST("/domain/list", middlewares.InternalMiddleware(), InternalController.ListDomains)
 	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
 
