@@ -12,7 +12,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut,
+	TbZoomOut
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import {
@@ -20,7 +20,7 @@ import {
 	getPageDetails,
 	getProjectDetails,
 	ProjectType,
-	QueryKey,
+	QueryKey
 } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
@@ -246,7 +246,7 @@ export function DashboardLink() {
 			? `https://app.dotenx.com/builder/projects/${projectName}/tables`
 			: projectType === 'ecommerce'
 			? `https://ecommerce.dotenx.com/projects/${projectName}/products`
-			: projectType === 'website'
+			: projectType === 'website' || projectType === 'landing_page'
 			? `https://website.dotenx.com/${projectName}`
 			: null
 
