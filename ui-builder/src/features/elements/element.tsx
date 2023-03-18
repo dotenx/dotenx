@@ -42,6 +42,7 @@ export abstract class Element {
 	}
 	unlocked?: boolean
 	internal: Record<string, unknown> = {} // This property should be only for internal use, such as some options in simple mode. It should not be rendered.
+	imports: string[] = []
 
 	unlock() {
 		this.unlocked = true
@@ -80,6 +81,7 @@ export abstract class Element {
 			animation: this.animation,
 			unlocked: this.unlocked,
 			internal: this.internal,
+			imports: this.imports,
 		}
 	}
 

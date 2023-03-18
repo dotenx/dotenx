@@ -1,12 +1,13 @@
 import { Button, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { showNotification } from '@mantine/notifications'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { addPage, QueryKey } from '../../api'
+import { QueryKey } from '../../api'
 import { projectTagAtom } from './top-bar'
+import { useUpdatePage } from './use-update'
 
 const schema = z.object({
 	pageName: z
@@ -25,12 +26,8 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 	const queryClient = useQueryClient()
 	const form = useForm({ initialValues: { pageName: '' }, validate: zodResolver(schema) })
 	const projectTag = useAtomValue(projectTagAtom)
-	const addPageMutation = useMutation(addPage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.Pages])
-			onSuccess()
-		},
-	})
+	const addPageMutation = useUpdatePage()
+
 	const onSubmit = form.onSubmit((values) => {
 		addPageMutation.mutate(
 			{
@@ -49,12 +46,15 @@ export function AddPageForm({ onSuccess }: { onSuccess: () => void }) {
 				colorPaletteId: null,
 			},
 			{
-				onSuccess: () =>
+				onSuccess: () => {
+					queryClient.invalidateQueries([QueryKey.Pages])
+					onSuccess()
 					navigate(
 						`/${isEcommerce ? 'ecommerce' : 'projects'}/${projectName}/${
 							values.pageName
 						}`
-					),
+					)
+				},
 				onError: (e: any) => {
 					if (e.response.status === 400) {
 						showNotification({

@@ -92,8 +92,5 @@ function replaceShadowColor(color: string, shadow: string) {
 function replaceShadowSize(size: string, shadow: string) {
 	if (!shadow || !size) return shadow
 	const newShadow = size + ` rgba${shadow.split('rgba')?.[1]}`
-	console.log(`shadow: ${shadow}`)
-	console.log(`size: ${size}`)
-	console.log(`newShadow: ${newShadow}`)
 	return newShadow
 }

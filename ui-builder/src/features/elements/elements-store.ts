@@ -1,5 +1,6 @@
 import produce, { Draft } from 'immer'
 import _ from 'lodash'
+import { useMemo } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { Element } from './element'
@@ -229,4 +230,22 @@ export function useSetWithElement<E extends Element = Element>(targetElement: E)
 		)
 	}
 	return setter
+}
+
+export function useFlattenedElements() {
+	const elements = useElementsStore((store) => store.elements)
+
+	const flattenedElements = useMemo(() => {
+		const flattenedElements: Element[] = []
+		const flatten = (elements: Element[]) => {
+			for (const element of elements) {
+				flattenedElements.push(element)
+				if (element.children) flatten(element.children)
+			}
+		}
+		flatten(elements)
+		return flattenedElements
+	}, [elements])
+
+	return flattenedElements
 }
