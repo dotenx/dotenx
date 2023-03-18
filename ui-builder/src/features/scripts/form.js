@@ -11,6 +11,8 @@
 	const submit = root.querySelector('button[type="submit"]')
 
 	const submitForm = async () => {
+		const prevHTML = submit.innerHTML
+		submit.innerHTML = `<span class="loader"></span>`
 		const payload = {}
 		inputs.forEach((input) => {
 			payload[input.name] = input.value
@@ -26,6 +28,8 @@
 
 		if (response.ok) alert('Form submitted successfully!')
 		else alert('Form submission failed!')
+
+		submit.innerHTML = prevHTML
 	}
 
 	submit.addEventListener('click', submitForm)

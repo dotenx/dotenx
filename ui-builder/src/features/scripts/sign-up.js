@@ -15,6 +15,8 @@
 	const method = 'POST'
 
 	submitButton.addEventListener('click', async () => {
+		const prevHTML = submitButton.innerHTML
+		submitButton.innerHTML = `<span class="loader"></span>`
 		const name = nameInput.value
 		const email = emailInput.value
 		const password = passwordInput.value
@@ -35,5 +37,6 @@
 		const data = await response.json()
 		if (response.ok) window.location.href = `${redirect}.html`
 		alert(data.message)
+		submitButton.innerHTML = prevHTML
 	})
 })()

@@ -14,9 +14,19 @@
 	const description = root.querySelector('.description')
 	const addToCart = root.querySelector('.add-to-cart')
 
+	const loader = document.createElement('div')
+	loader.innerHTML = '<span class="loader"></span>'
+	loader.style.display = 'flex'
+	loader.style.justifyContent = 'center'
+	loader.style.alignItems = 'center'
+	loader.style.padding = '1rem'
+
 	getProduct().then(renderProduct)
 
 	async function getProduct() {
+		root.style.display = 'none'
+		root.parentElement.appendChild(loader)
+
 		const response = await fetch(
 			`https://api.dotenx.com/public/database/query/select/project/${projectTag}/table/products`,
 			{
@@ -42,6 +52,8 @@
 			}
 		)
 		const products = await response.json()
+		root.style.display = 'block'
+		root.parentElement.removeChild(loader)
 		return products.rows?.[0]
 	}
 

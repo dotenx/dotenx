@@ -10,6 +10,13 @@
 	const checkoutBtn = root.querySelector('.checkout')
 	const emailInput = root.querySelector('.email > input')
 
+	const loader = document.createElement('div')
+	loader.innerHTML = '<span class="loader"></span>'
+	loader.style.display = 'flex'
+	loader.style.justifyContent = 'center'
+	loader.style.alignItems = 'center'
+	loader.style.padding = '1rem'
+
 	const cart = JSON.parse(localStorage.getItem('cart')) ?? {}
 	const items = Object.entries(cart)
 
@@ -38,7 +45,11 @@
 	})
 
 	items.forEach(async ([id, { count }]) => {
+		root.style.display = 'none'
+		root.parentNode.appendChild(loader)
 		const product = await getProduct(id)
+		root.style.display = 'block'
+		root.parentNode.removeChild(loader)
 
 		const clone = cartItem.content.cloneNode(true)
 		const name = clone.querySelector('.name')
