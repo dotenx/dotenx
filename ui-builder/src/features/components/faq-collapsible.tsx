@@ -5,10 +5,12 @@ import { box, flex, icn, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { setElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { IconElement } from '../elements/extensions/icon'
 import { TextElement } from '../elements/extensions/text'
 import rawScript from '../scripts/faq-collapsible.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStyler } from '../simple/stylers/box-styler'
+import { IconStyler } from '../simple/stylers/icon-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
@@ -51,12 +53,14 @@ function Options() {
 function ItemOptions({ wrapper }: { wrapper: BoxElement }) {
 	const title = wrapper.find<TextElement>(tags.title)!
 	const description = wrapper.find<TextElement>(tags.description)!
+	const icon = wrapper.find<IconElement>(tags.icon)!
 
 	return (
 		<OptionsWrapper>
-			<BoxStyler element={wrapper} label="Item" />
-			<TextStyler element={title} label="Title" />
-			<TextStyler element={description} label="Description" />
+			<BoxStyler element={wrapper} label="Frame" />
+			<TextStyler element={title} label="Question" />
+			<TextStyler element={description} label="Answer" />
+			<IconStyler element={icon} label="Icon" />
 		</OptionsWrapper>
 	)
 }
@@ -65,6 +69,7 @@ const tags = {
 	items: 'items',
 	title: 'title',
 	description: 'description',
+	icon: 'icon',
 }
 
 const component = () =>
@@ -98,10 +103,10 @@ const item = ({ title, description }: { title: string; description: string }) =>
 	box([
 		flex([
 			txt(title).tag(tags.title).css({
-				fontSize: '24px',
+				fontSize: '20px',
 				fontWeight: '700',
 			}),
-			icn('plus').size('20px'),
+			icn('plus').size('20px').tag(tags.icon),
 		]).css({
 			justifyContent: 'space-between',
 			alignItems: 'center',
@@ -109,15 +114,15 @@ const item = ({ title, description }: { title: string; description: string }) =>
 		txt(description)
 			.tag(tags.description)
 			.css({
-				marginTop: '64px',
+				marginTop: '20px',
 				display: 'none',
 			})
 			.class('description'),
 	])
 		.css({
 			backgroundColor: '#FFFFFF',
-			borderRadius: '30px',
-			padding: '70px',
+			borderRadius: '10px',
+			padding: '20px',
 			cursor: 'pointer',
 		})
 		.class('item')
