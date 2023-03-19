@@ -347,6 +347,10 @@ var migrations = []struct {
 		name: "add-name-field-to-ui-forms-table",
 		stmt: addNameFieldToUIFormsTable,
 	},
+	{
+		name: "add-submitted-at-field-to-ui-forms-table",
+		stmt: addSubmittedAtFieldToUIFormsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -965,4 +969,9 @@ ADD COLUMN IF NOT EXISTS theme VARCHAR DEFAULT '';
 var addNameFieldToUIFormsTable = `
 ALTER TABLE ui_forms
 ADD COLUMN IF NOT EXISTS name VARCHAR(128) DEFAULT '';
+`
+
+var addSubmittedAtFieldToUIFormsTable = `
+ALTER TABLE ui_forms
+ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
 `

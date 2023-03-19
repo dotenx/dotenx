@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
@@ -66,11 +67,12 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 		}
 
 		form := models.UIForm{
-			Name:       formDto.FormName,
-			ProjectTag: projectTag,
-			PageName:   pageName,
-			FormId:     formId,
-			Response:   formDto.Response,
+			Name:        formDto.FormName,
+			ProjectTag:  projectTag,
+			PageName:    pageName,
+			FormId:      formId,
+			Response:    formDto.Response,
+			SubmittedAt: time.Now().UTC().Format(time.RFC3339),
 		}
 
 		if err := controller.Service.AddNewResponse(form); err != nil {

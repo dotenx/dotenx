@@ -221,3 +221,33 @@ func (c *InternalController) ListDomains(ctx *gin.Context) {
 		"total":   len(domains),
 	})
 }
+
+func (c *InternalController) ListUiForms(ctx *gin.Context) {
+	type body struct {
+		AccountId   string `json:"accountId"`
+		ProjectType string `json:"projectType"`
+		From        string `json:"from"`
+		To          string `json:"to"`
+	}
+	var dto body
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	numberOfForms, err := c.Service.GetNumberOfUiFormResponse(dto.AccountId, dto.ProjectType, dto.From, dto.To)
+	if err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"total": numberOfForms,
+	})
+}
