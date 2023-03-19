@@ -16,6 +16,7 @@ type UIFormService interface {
 	GetFormsList(projectTag, pageName string) ([]models.UIForm, error)
 	GetFormResponseListById(projectTag, pageName, formId string) ([]models.UIForm, error)
 	GetNumberOfFormSubmission(projectTag, pageName string) (int64, error)
+	GetNumberOfResponsesForUser(accountId, projectType, from, to string) (int64, error)
 }
 
 type uiFormService struct {
