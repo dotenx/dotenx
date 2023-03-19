@@ -11,8 +11,8 @@ import (
 
 func (store *uiFormStore) AddNewResponse(ctx context.Context, form models.UIForm) error {
 	addResponse := `
-	INSERT INTO ui_forms (project_tag, page_name, form_id, response, name)
-	VALUES ($1, $2, $3, $4, $5);
+	INSERT INTO ui_forms (project_tag, page_name, form_id, response, name, submitted_at)
+	VALUES ($1, $2, $3, $4, $5, $6);
 	`
 	var stmt string
 	switch store.db.Driver {
@@ -21,7 +21,7 @@ func (store *uiFormStore) AddNewResponse(ctx context.Context, form models.UIForm
 	default:
 		return fmt.Errorf("driver not supported")
 	}
-	_, err := store.db.Connection.Exec(stmt, form.ProjectTag, form.PageName, form.FormId, form.Response, form.Name)
+	_, err := store.db.Connection.Exec(stmt, form.ProjectTag, form.PageName, form.FormId, form.Response, form.Name, form.SubmittedAt)
 	if err != nil {
 		logrus.Error(err.Error())
 		return err
