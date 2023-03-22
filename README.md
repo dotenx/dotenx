@@ -1,9 +1,5 @@
-<br />
 <p align="center">
-<img alt="BUILDER" src="https://app.dotenx.com/static/media/logo.678522740bc0af21222e.png" width="100" />
-</p>
-<p align="center">
-  DoTenX is an all-in-one, low-code platform for building scalable and powerful websites, web applications, landing pages, APIs, automations, forms, landing pages and more.
+  DoTenX web-application (naming is not ideal!), is a full stack low-code solution for building scalable and powerful applications, automations, APIs, internal tools and much more.
 </p>
 
 ---
