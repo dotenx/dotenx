@@ -12,11 +12,6 @@ Try DoTenX on cloud (no credit cards needed - unlimited access):
 
 https://dotenx.com
 
-
-Discord:
-
-https://discord.gg/kpCmHtKYHd
-
 Docs:
 
 https://docs.dotenx.com (https://github.com/dotenx/dotenx-docs)
