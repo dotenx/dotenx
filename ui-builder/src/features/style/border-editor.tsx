@@ -19,9 +19,11 @@ const borderStyles = [
 export function BordersEditor({
 	simple,
 	element,
+	onChange,
 }: {
 	simple?: boolean
 	element?: Element | Element[]
+	onChange?: (value: string) => void
 }) {
 	const { style: styles, editStyle } = useEditStyle(element)
 	const color = useParseBgColor(styles.borderColor ?? '')
@@ -67,7 +69,10 @@ export function BordersEditor({
 				<div className="col-span-9">
 					<InputWithUnit
 						value={styles.borderRadius?.toString()}
-						onChange={(value) => editStyle('borderRadius', value)}
+						onChange={(value) => {
+							editStyle('borderRadius', value)
+							onChange?.(value)
+						}}
 					/>
 				</div>
 

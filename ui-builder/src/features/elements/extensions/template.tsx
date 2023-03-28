@@ -8,7 +8,7 @@ export class TemplateElement extends Element {
 	children: Element[] = []
 
 	render(renderFn: RenderFn): ReactNode {
-		return renderFn(this)
+		return <></>
 	}
 
 	renderOptions(): ReactNode {

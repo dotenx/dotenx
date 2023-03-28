@@ -24,7 +24,7 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 export class HeroWithRating extends Component {
 	name = 'Hero with rating'
 	image = imageUrl
-	defaultData = defaultData
+	defaultData = deserializeElement(defaultData)
 	renderOptions = () => <HeroWithRatingOptions />
 }
 
@@ -435,7 +435,7 @@ function generateRating(count: number, rating: number) {
 	return stars
 }
 
-const defaultData = deserializeElement({
+const defaultData = {
 	...component,
 	components: [
 		{
@@ -453,4 +453,4 @@ const defaultData = deserializeElement({
 		},
 		heroImage,
 	],
-})
+}

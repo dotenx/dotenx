@@ -12,6 +12,7 @@ import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions } from './component'
 import { ComponentName, Divider, SimpleComponentOptionsProps } from './helpers'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
@@ -34,8 +35,7 @@ function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 	const gridContainer = containerDiv.children?.[2] as BoxElement
 
 	return (
-		<OptionsWrapper>
-			<ComponentName name="Simple testimonial" />
+		<ComponentWrapper name="Simple testimonial">
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />
 			<Divider title="Testimonials" />
@@ -52,7 +52,7 @@ function TestimonialSimpleOptions({ options }: SimpleComponentOptionsProps) {
 				}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
 			/>
-		</OptionsWrapper>
+		</ComponentWrapper>
 	)
 }
 

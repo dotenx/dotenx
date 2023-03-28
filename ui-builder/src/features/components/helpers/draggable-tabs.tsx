@@ -20,6 +20,7 @@ export type DraggableTabsProps = {
 	maxLength?: number
 	minLength?: number
 	rightSection?: ReactNode
+	onTabChanged?: (index: string) => void
 }
 
 export type DraggableTab = {
@@ -40,13 +41,14 @@ export function DraggableTabs({
 	maxLength,
 	minLength = 1,
 	rightSection,
+	onTabChanged,
 }: DraggableTabsProps) {
 	const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 10 } }))
 
 	const [activeTab, setActiveTab] = useState<string | null>(tabs[0].id as string)
 
 	return (
-		<Tabs keepMounted={false} value={activeTab} onTabChange={setActiveTab}>
+		<Tabs keepMounted={false} value={activeTab} onTabChange={(value) => {setActiveTab(value); onTabChanged?.(value as string)}}>
 			<div className="flex w-full">
 				<Tabs.List className="basis-full">
 					<DndContext

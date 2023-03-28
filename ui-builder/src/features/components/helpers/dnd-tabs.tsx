@@ -14,12 +14,14 @@ export function DndTabs({
 	insertElement,
 	autoAdjustGridTemplateColumns = true,
 	rightSection,
+	onTabChanged,
 }: {
 	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 	autoAdjustGridTemplateColumns?: boolean
-	rightSection?: ReactNode
+	rightSection?: ReactNode,
+	onTabChanged?: (index: string) => void
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -73,6 +75,7 @@ export function DndTabs({
 			onDragEnd={onDragEnd}
 			onAddNewTab={onAddNewTab}
 			rightSection={rightSection}
+			onTabChanged={onTabChanged}
 		/>
 	)
 }
