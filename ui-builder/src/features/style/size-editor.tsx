@@ -13,7 +13,15 @@ export const overflows = [
 	{ label: <p className="text-xs leading-none">Auto</p>, title: 'Auto', value: 'auto' },
 ].map(toCenter)
 
-export function SizeEditor({ simple, element }: { simple?: boolean; element?: Element }) {
+export function SizeEditor({
+	simple,
+	element,
+	onChange,
+}: {
+	simple?: boolean
+	element?: Element
+	onChange?: (value: string) => void
+}) {
 	const { style: styles, editStyle } = useEditStyle(element)
 
 	const widthInput = (
@@ -22,7 +30,10 @@ export function SizeEditor({ simple, element }: { simple?: boolean; element?: El
 			<div className="col-span-3">
 				<InputWithUnit
 					value={styles.width?.toString()}
-					onChange={(value) => editStyle('width', value)}
+					onChange={(value) => {
+						editStyle('width', value)
+						onChange?.(value)
+					}}
 				/>
 			</div>
 		</>

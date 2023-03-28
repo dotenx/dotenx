@@ -197,6 +197,11 @@ export abstract class Element {
 		this.classes = [classes].flat()
 		return this
 	}
+
+	as(type: string) {
+		this.data = { ...this.data, as: type }
+		return this
+	}
 }
 
 export interface RenderOptions {
