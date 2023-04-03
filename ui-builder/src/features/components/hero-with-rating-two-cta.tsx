@@ -24,7 +24,7 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 export class HeroWithRatingTwoCTAs extends Component {
 	name = 'Hero with rating and two CTAs'
 	image = imageUrl
-	defaultData =  deserializeElement(defaultData)
+	defaultData = deserializeElement(defaultData)
 	renderOptions = () => <HeroWithRatingTwoCTAsOptions />
 }
 

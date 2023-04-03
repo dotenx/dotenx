@@ -40,7 +40,10 @@ function TeamSquareGridOptions({ options }: SimpleComponentOptionsProps) {
 	const tilesWrapper = component.find<BoxElement>(tagIds.tilesWrapper)!
 
 	return (
-		<ComponentWrapper name="Team square grid" stylers={['backgrounds', 'spacing', 'background-image']}>
+		<ComponentWrapper
+			name="Team square grid"
+			stylers={['backgrounds', 'spacing', 'background-image']}
+		>
 			<TextStyler label="Title" element={title} />
 			<DndTabs
 				containerElement={tilesWrapper}

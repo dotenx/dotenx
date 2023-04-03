@@ -49,10 +49,12 @@ function AboutLeft2Options() {
 			<p className="font-medium cursor-default">Lines</p>
 			<DndTabs
 				containerElement={featureLinesWrapper}
-				renderItemOptions={(item) => <TextStyler label='Text' element={item as TextElement} />}
+				renderItemOptions={(item) => (
+					<TextStyler label="Text" element={item as TextElement} />
+				)}
 				insertElement={() => createLine('Lorem ipsum dolor sit amet')}
 			/>
-			<div className='mt-2'></div>
+			<div className="mt-2"></div>
 			<TextStyler label="CTA" element={ctaText} />
 			<LinkStyler label="CTA Link" element={cta} />
 		</ComponentWrapper>
@@ -185,12 +187,12 @@ const subtitle = produce(new BoxElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
 				color: color('secondary'),
-				fontSize: '16px'
+				fontSize: '16px',
 			},
 		}
 		draft.style.tablet = {
 			default: {
-				fontSize: '12px'
+				fontSize: '12px',
 			},
 		}
 		draft.data.text = Expression.fromString(
@@ -228,18 +230,17 @@ const featureLinesWrapper = produce(new BoxElement(), (draft) => {
 	draft.tagId = tagIds.featureLinesWrapper
 }).serialize()
 
-
 const createLine = (text: string) =>
 	produce(new TextElement(), (draft) => {
 		draft.style.desktop = {
 			default: {
 				color: color('text'),
-				fontSize: '15px'
+				fontSize: '15px',
 			},
 		}
 		draft.style.tablet = {
 			default: {
-				fontSize: '12px'
+				fontSize: '12px',
 			},
 		}
 		draft.data.text = Expression.fromString(text)

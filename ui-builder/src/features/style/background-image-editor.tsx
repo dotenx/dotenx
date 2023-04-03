@@ -12,7 +12,6 @@ import { CollapseLine } from '../ui/collapse-line'
 import { ImageDrop } from '../ui/image-drop'
 import { useEditStyle } from './use-edit-style'
 
-
 export function BackgroundImageEditor({ element }: { element?: Element | Element[] }) {
 	const { style: styles, editStyle } = useEditStyle(element)
 

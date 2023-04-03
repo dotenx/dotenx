@@ -95,7 +95,6 @@ const frame = box([])
 	})
 	.serialize()
 
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -188,7 +187,7 @@ const tiles = [
 	createTile({
 		src: 'https://files.dotenx.com/assets/icons-cloud-39.png',
 		title: 'Customizable',
-		
+
 		description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc ut fermentum lacinia, nunc est aliquam nunc, eu aliquet nisl nisl sit amet 
 		erat. Nullam auctor, nunc eget lacinia fermentum, lacus odio aliquam`,
 	}),

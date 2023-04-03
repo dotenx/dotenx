@@ -91,7 +91,9 @@ function StyleEditor({
 			{stylers?.includes('background-image') && (
 				<BackgroundImageEditor element={element as Element} />
 			)}
-			{stylers?.includes('shadow') && <SimpleModeShadowsEditor element={element as Element} />}
+			{stylers?.includes('shadow') && (
+				<SimpleModeShadowsEditor element={element as Element} />
+			)}
 		</Styler>
 	)
 }

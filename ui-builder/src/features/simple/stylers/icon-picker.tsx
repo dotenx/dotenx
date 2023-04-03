@@ -57,7 +57,7 @@ export function IconPicker({ element, label }: { element: IconElement; label?: s
 			variant="pills"
 			defaultValue="far"
 		>
-			<p className="flex items-center mt-3 mb-2">{label?? 'Icon'}</p>
+			<p className="flex items-center mt-3 mb-2">{label ?? 'Icon'}</p>
 			<TextInput
 				placeholder="Search"
 				name="search"

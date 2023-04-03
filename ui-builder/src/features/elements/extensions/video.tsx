@@ -23,7 +23,7 @@ export class VideoElement extends Element {
 	renderOptions(): ReactNode {
 		return <VideoOptions />
 	}
-	
+
 	src(src: string) {
 		this.data.src = src
 		return this
@@ -53,7 +53,6 @@ export class VideoElement extends Element {
 		this.data.muted = muted
 		return this
 	}
-
 }
 
 function VideoOptions() {

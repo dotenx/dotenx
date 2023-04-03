@@ -282,16 +282,18 @@ const createSplideItem = (image: string, name: string, testimonial: string) => {
 					fontSize: fontSizes.normal.mobile,
 				})
 				.tag(tagIds.name),
-		]).css({
-			display: 'flex',
-			flexDirection: 'column',
-			alignItems: 'start',
-			justifyContent: 'center',
-			rowGap: '15px',
-		}).cssMobile({
-			paddingLeft: '12%',
-			paddingRight: '12%'
-		}),
+		])
+			.css({
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'start',
+				justifyContent: 'center',
+				rowGap: '15px',
+			})
+			.cssMobile({
+				paddingLeft: '12%',
+				paddingRight: '12%',
+			}),
 	]).class(['splide__slide'])
 }
 
@@ -361,15 +363,17 @@ const arrows = box([
 			alignItems: 'center',
 			justifyContent: 'center',
 		}),
-]).css({
-	display: 'flex',
-	columnGap: '15px',
-	marginTop: '20px',
-}).cssTablet({
-	width: '100%',
-	justifyContent: 'center',
-	alignItems: 'center',
-})
+])
+	.css({
+		display: 'flex',
+		columnGap: '15px',
+		marginTop: '20px',
+	})
+	.cssTablet({
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center',
+	})
 
 const splideListWrapper = box(splideList).tag(tagIds.splideList).class(['splide__list'])
 

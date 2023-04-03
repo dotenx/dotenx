@@ -160,7 +160,8 @@ const stat = box([
 		paddingRight: '5px',
 		paddingTop: '2px',
 		paddingBottom: '2px',
-	}).serialize()
+	})
+	.serialize()
 
 const wrapper = box([])
 	.css({
@@ -169,17 +170,19 @@ const wrapper = box([])
 		paddingLeft: '15%',
 		paddingRight: '15%',
 		paddingTop: '40px',
-		paddingBottom: '40px'
-	}).cssTablet({
+		paddingBottom: '40px',
+	})
+	.cssTablet({
 		paddingLeft: '10%',
 		paddingRight: '10%',
 		paddingTop: '30px',
-		paddingBottom: '30px'
-	}).cssMobile({
+		paddingBottom: '30px',
+	})
+	.cssMobile({
 		paddingLeft: '5%',
 		paddingRight: '5%',
 		paddingTop: '20px',
-		paddingBottom: '20px'
+		paddingBottom: '20px',
 	})
 	.serialize()
 
