@@ -132,7 +132,7 @@ export function CustomCodes() {
 				leftIcon={<TbCode />}
 				onClick={() =>
 					openModal({
-						title: 'Head Code',
+						title: 'Footer Code',
 						children: (
 							<CustomCode
 								defaultValue={customCodes.footer}

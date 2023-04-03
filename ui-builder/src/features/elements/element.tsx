@@ -151,19 +151,20 @@ export abstract class Element {
 	}
 	customCss(selector: string, css: CSSProperties) {
 		const merged = _.assign({}, this.customStyle.desktop?.[selector], css)
-		_.set(this.customStyle, 'desktop.default', merged)
+		_.set(this.customStyle, `desktop.[${selector}]`, merged)
+		console.log(`customCss`, this.customStyle)
 		return this
 	}
 
 	customCssTablet(selector: string, css: CSSProperties) {
 		const merged = _.assign({}, this.customStyle.tablet?.[selector], css)
-		_.set(this.customStyle, 'tablet.default', merged)
+		_.set(this.customStyle, `tablet.[${selector}]`, merged)
 		return this
 	}
 
 	customCssMobile(selector: string, css: CSSProperties) {
 		const merged = _.assign({}, this.customStyle.mobile?.[selector], css)
-		_.set(this.customStyle, 'mobile.default', merged)
+		_.set(this.customStyle, `mobile.[${selector}]`, merged)
 		return this
 	}
 

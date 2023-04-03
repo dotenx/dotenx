@@ -39,7 +39,7 @@ import { BasicSlideshow } from './basic-slideshow'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
 import { BasicYouTube } from './basic-youtube'
-import { ComparisonTableSimple } from './comparison-table-simple'
+import { ComparisonTable1 } from './comparison-table-1'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
@@ -132,7 +132,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Comparison Table',
 		icon: <TbTableAlias />,
-		items: [ComparisonTableSimple],
+		items: [ComparisonTable1],
 	},
 	{
 		title: 'FAQ',
