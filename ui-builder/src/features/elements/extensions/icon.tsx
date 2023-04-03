@@ -29,7 +29,7 @@ export class IconElement extends Element {
 	}
 
 	render(renderFn: RenderFn): ReactNode {
-		return <FontAwesomeIcon icon={[this.data.type as IconPrefix, this.data.name as IconName]}  />
+		return <FontAwesomeIcon icon={[this.data.type as IconPrefix, this.data.name as IconName]} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

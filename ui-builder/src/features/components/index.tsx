@@ -16,7 +16,7 @@ import {
 	TbTableAlias,
 	TbUser,
 	TbUsers,
-	TbBrandMixpanel
+	TbBrandMixpanel,
 } from 'react-icons/tb'
 import { AboutFramedImage } from './about-framed-image'
 import { AboutLeft } from './about-left'

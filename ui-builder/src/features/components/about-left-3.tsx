@@ -44,7 +44,12 @@ function AboutLeft3Options() {
 			<DndTabs
 				containerElement={featureLinesWrapper}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
-				insertElement={() => createFeatureLine('Lorem ipsum dolor sit amet', 'https://files.dotenx.com/assets/icons-cloud-39.png')}
+				insertElement={() =>
+					createFeatureLine(
+						'Lorem ipsum dolor sit amet',
+						'https://files.dotenx.com/assets/icons-cloud-39.png'
+					)
+				}
 			/>
 		</ComponentWrapper>
 	)
@@ -179,7 +184,9 @@ const subtitle = produce(new TextElement(), (draft) => {
 			marginBottom: '10px',
 		},
 	}
-	draft.data.text = Expression.fromString('Branding starts from the inside out and we are here to help your awesome build a brand')
+	draft.data.text = Expression.fromString(
+		'Branding starts from the inside out and we are here to help your awesome build a brand'
+	)
 	draft.tagId = tagIds.subtitle
 }).serialize()
 
@@ -252,14 +259,31 @@ const createFeatureLine = (txt: string, imageUrl: string) =>
 		draft.children = [icon, text]
 	})
 
-
 const featureLines = [
-	createFeatureLine('Your brand is your promise to your customers', 'https://files.dotenx.com/assets/icons-cloud-39.png').serialize(),
-	createFeatureLine('Your brand is your promise to your customers', 'https://files.dotenx.com/assets/icons-combo-chart-vii.png').serialize(),
-	createFeatureLine('Having a simple UI is a great way to improve your brand', 'https://files.dotenx.com/assets/icons-credit-card-hwer.png').serialize(),
-	createFeatureLine('Creativity is just connecting things', 'https://files.dotenx.com/assets/icons-luggage-bh.png').serialize(),
-	createFeatureLine('Design is not just what it looks like and feels like', 'https://files.dotenx.com/assets/icons-speaker-qer.png').serialize(),
-	createFeatureLine('You deserve a brand that makes you proud', 'https://files.dotenx.com/assets/icons-stellar-bb.png').serialize(),
+	createFeatureLine(
+		'Your brand is your promise to your customers',
+		'https://files.dotenx.com/assets/icons-cloud-39.png'
+	).serialize(),
+	createFeatureLine(
+		'Your brand is your promise to your customers',
+		'https://files.dotenx.com/assets/icons-combo-chart-vii.png'
+	).serialize(),
+	createFeatureLine(
+		'Having a simple UI is a great way to improve your brand',
+		'https://files.dotenx.com/assets/icons-credit-card-hwer.png'
+	).serialize(),
+	createFeatureLine(
+		'Creativity is just connecting things',
+		'https://files.dotenx.com/assets/icons-luggage-bh.png'
+	).serialize(),
+	createFeatureLine(
+		'Design is not just what it looks like and feels like',
+		'https://files.dotenx.com/assets/icons-speaker-qer.png'
+	).serialize(),
+	createFeatureLine(
+		'You deserve a brand that makes you proud',
+		'https://files.dotenx.com/assets/icons-stellar-bb.png'
+	).serialize(),
 ]
 
 const defaultData = {

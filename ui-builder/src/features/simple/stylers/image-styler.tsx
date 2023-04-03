@@ -7,7 +7,13 @@ import { SpacingEditor } from '../../style/spacing-editor'
 import { ImageDrop } from '../../ui/image-drop'
 import { Styler } from './styler'
 
-export function ImageStyler({ element, onChange }: { element: ImageElement, onChange?: (src: string) => void }) {
+export function ImageStyler({
+	element,
+	onChange,
+}: {
+	element: ImageElement
+	onChange?: (src: string) => void
+}) {
 	const set = useSetWithElement(element)
 
 	return (

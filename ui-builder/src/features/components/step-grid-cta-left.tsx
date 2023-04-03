@@ -223,84 +223,129 @@ const cta = produce(new LinkElement(), (draft) => {
 	draft.tagId = tagIds.cta
 }).serialize()
 
-const newStep = (stepNumber: string, title: string, text: string) => box([
+const newStep = (stepNumber: string, title: string, text: string) =>
 	box([
-		txt(stepNumber).css({
-			color: color('primary'),
-			fontWeight: 'bold',
-			fontSize: fontSizes.h3.desktop,
-		}).cssTablet({
-			fontSize: fontSizes.h3.tablet,
-		}).cssMobile({
-			fontSize: fontSizes.h3.mobile,
-		}).tag(tagIds.stepNumber)
-	]).tag(tagIds.stepNumberBackground).css({
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		backgroundColor: color('background', 0.8),
-		alignSelf: "start",
-		paddingLeft: "8px",
-		paddingRight: "8px",
-		paddingTop: "5px",
-		paddingBottom: "5px",
-		borderRadius: "5px",
-		minWidth: "30px",
-		minHeight: "30px",
+		box([
+			txt(stepNumber)
+				.css({
+					color: color('primary'),
+					fontWeight: 'bold',
+					fontSize: fontSizes.h3.desktop,
+				})
+				.cssTablet({
+					fontSize: fontSizes.h3.tablet,
+				})
+				.cssMobile({
+					fontSize: fontSizes.h3.mobile,
+				})
+				.tag(tagIds.stepNumber),
+		])
+			.tag(tagIds.stepNumberBackground)
+			.css({
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				backgroundColor: color('background', 0.8),
+				alignSelf: 'start',
+				paddingLeft: '8px',
+				paddingRight: '8px',
+				paddingTop: '5px',
+				paddingBottom: '5px',
+				borderRadius: '5px',
+				minWidth: '30px',
+				minHeight: '30px',
+				boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.16)',
+				marginTop: '-35px',
+			})
+			.cssTablet({
+				minWidth: '25px',
+				minHeight: '25px',
+				marginTop: '-30px',
+			})
+			.cssMobile({
+				minWidth: '20px',
+				minHeight: '20px',
+				marginTop: '-25px',
+			}),
+		txt(title)
+			.css({
+				fontSize: fontSizes.h3.desktop,
+				color: color('secondary'),
+			})
+			.cssTablet({
+				fontSize: fontSizes.h3.tablet,
+			})
+			.cssMobile({
+				fontSize: fontSizes.h3.mobile,
+			})
+			.tag(tagIds.stepTitle),
+		txt(text)
+			.css({
+				fontSize: fontSizes.normal.desktop,
+				color: color('text'),
+			})
+			.cssTablet({
+				fontSize: fontSizes.normal.tablet,
+			})
+			.cssMobile({
+				fontSize: fontSizes.normal.mobile,
+			})
+			.tag(tagIds.stepText),
+	]).css({
+		display: 'flex',
+		flexDirection: 'column',
+		position: 'relative',
 		boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.16)',
-		marginTop: "-35px",
-	}).cssTablet({
-		minWidth: "25px",
-		minHeight: "25px",
-		marginTop: "-30px",
-	}).cssMobile({
-		minWidth: "20px",
-		minHeight: "20px",
-		marginTop: "-25px",
+		padding: '15px',
+		borderRadius: '5px',
+		margin: '10px',
 	})
-	, txt(title).css({
-		fontSize: fontSizes.h3.desktop,
-		color: color('secondary'),
-	}).cssTablet({
-		fontSize: fontSizes.h3.tablet,
-	}).cssMobile({
-		fontSize: fontSizes.h3.mobile,
-	}).tag(tagIds.stepTitle),
-	txt(text).css({
-		fontSize: fontSizes.normal.desktop,
-		color: color('text'),
-	}).cssTablet({
-		fontSize: fontSizes.normal.tablet,
-	}).cssMobile({
-		fontSize: fontSizes.normal.mobile,
-	}).tag(tagIds.stepText)
-]).css({
-	display: "flex",
-	flexDirection: "column",
-	position: "relative",
-	boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.16)',
-	padding: "15px",
-	borderRadius: "5px",
-	margin: "10px",
-})
 
 const steps = box([
-	newStep('1', 'Initial Assessment', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-	newStep('2', 'Planning', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-	newStep('3', 'Execution', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-	newStep('4', 'Delivery', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-	newStep('5', 'Maintenance', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-	newStep('6', 'Support', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'),
-]).css({
-	display: 'grid',
-	gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-	rowGap: '25px',
-}).cssTablet({
-	rowGap: '20px',
-}).cssMobile({
-	rowGap: '15px',
-}).tag(tagIds.stepsWrapper)
-.serialize()
+	newStep(
+		'1',
+		'Initial Assessment',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+	newStep(
+		'2',
+		'Planning',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+	newStep(
+		'3',
+		'Execution',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+	newStep(
+		'4',
+		'Delivery',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+	newStep(
+		'5',
+		'Maintenance',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+	newStep(
+		'6',
+		'Support',
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquet lacinia, nisl nisl aliquet nisl, nec aliquet nunc nisl sit amet nisl.'
+	),
+])
+	.css({
+		display: 'grid',
+		gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+		rowGap: '25px',
+	})
+	.cssTablet({
+		rowGap: '20px',
+	})
+	.cssMobile({
+		rowGap: '15px',
+	})
+	.tag(tagIds.stepsWrapper)
+	.serialize()
 
 const defaultData = {
 	...component,

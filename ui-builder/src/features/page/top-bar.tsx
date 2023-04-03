@@ -12,7 +12,7 @@ import {
 	TbCornerUpLeft,
 	TbCornerUpRight,
 	TbZoomIn,
-	TbZoomOut
+	TbZoomOut,
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import {
@@ -20,7 +20,7 @@ import {
 	getPageDetails,
 	getProjectDetails,
 	ProjectType,
-	QueryKey
+	QueryKey,
 } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'

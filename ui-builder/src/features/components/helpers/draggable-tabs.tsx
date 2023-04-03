@@ -48,7 +48,14 @@ export function DraggableTabs({
 	const [activeTab, setActiveTab] = useState<string | null>(tabs[0].id as string)
 
 	return (
-		<Tabs keepMounted={false} value={activeTab} onTabChange={(value) => {setActiveTab(value); onTabChanged?.(value as string)}}>
+		<Tabs
+			keepMounted={false}
+			value={activeTab}
+			onTabChange={(value) => {
+				setActiveTab(value)
+				onTabChanged?.(value as string)
+			}}
+		>
 			<div className="flex w-full">
 				<Tabs.List className="basis-full">
 					<DndContext

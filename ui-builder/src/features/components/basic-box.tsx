@@ -24,5 +24,10 @@ export class BasicBox extends Component {
 }
 
 function BasicBoxOptions() {
-	return <ComponentWrapper name="Box"  stylers={['backgrounds', 'spacing', 'background-image', 'shadow']}></ComponentWrapper>
+	return (
+		<ComponentWrapper
+			name="Box"
+			stylers={['backgrounds', 'spacing', 'background-image', 'shadow']}
+		></ComponentWrapper>
+	)
 }

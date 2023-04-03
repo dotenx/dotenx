@@ -97,7 +97,6 @@ const frame = box([])
 	})
 	.serialize()
 
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
@@ -117,7 +116,8 @@ const tileDetails = produce(new TextElement(), (draft) => {
 			textAlign: 'justify',
 		},
 	}
-	draft.data.text = Expression.fromString(`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc ut fermentum lacinia, nunc est aliquam nunc, eu aliquet nisl nisl sit amet 
+	draft.data.text =
+		Expression.fromString(`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc ut fermentum lacinia, nunc est aliquam nunc, eu aliquet nisl nisl sit amet 
 	erat. Nullam auctor, nunc eget lacinia fermentum, lacus odio aliquam`)
 })
 
@@ -137,26 +137,28 @@ const tileImageFrame = produce(new BoxElement(), (draft) => {
 			backgroundColor: color('background'),
 			alignSelf: 'stretch',
 			marginBottom: '10px',
-		}
+		},
 	}
 	draft.style.tablet = {
 		default: {
 			marginBottom: '5px',
-		}
-	}
-	const tileImage = produce(new ImageElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			width: '100%',
-			aspectRatio: '1',
-			objectFit: 'cover',
-			objectPosition: 'center center',
-			marginBottom: '5px',
 		},
 	}
+	const tileImage = produce(new ImageElement(), (draft) => {
+		draft.style.desktop = {
+			default: {
+				width: '100%',
+				aspectRatio: '1',
+				objectFit: 'cover',
+				objectPosition: 'center center',
+				marginBottom: '5px',
+			},
+		}
 
-	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/construction-blue-x99.jpeg')
-})
+		draft.data.src = Expression.fromString(
+			'https://files.dotenx.com/assets/construction-blue-x99.jpeg'
+		)
+	})
 
 	draft.children = [tileImage]
 })

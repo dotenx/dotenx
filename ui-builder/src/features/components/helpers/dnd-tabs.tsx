@@ -20,7 +20,7 @@ export function DndTabs({
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 	autoAdjustGridTemplateColumns?: boolean
-	rightSection?: ReactNode,
+	rightSection?: ReactNode
 	onTabChanged?: (index: string) => void
 }) {
 	const set = useSetWithElement(containerElement)

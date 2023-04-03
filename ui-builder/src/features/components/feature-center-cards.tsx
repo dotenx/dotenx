@@ -242,32 +242,38 @@ const tiles = [
 	createTile({
 		icon: { name: 'code', type: 'fas', color: '#ff0000' },
 		title: 'Customizable',
-		description: 'Change the content and style and make it your own.Change the content and style and make it your own.',
+		description:
+			'Change the content and style and make it your own.Change the content and style and make it your own.',
 	}),
 	createTile({
 		icon: { name: 'rocket', type: 'fas', color: '#a8a8a8' },
 		title: 'Fast',
-		description: 'Fast load times and lag free interaction, my highest priority.Fast load times and lag free interaction, my highest priority.',
+		description:
+			'Fast load times and lag free interaction, my highest priority.Fast load times and lag free interaction, my highest priority.',
 	}),
 	createTile({
 		icon: { name: 'heart', type: 'fas', color: '#ff0000' },
 		title: 'Made with Love',
-		description: 'Increase sales by showing true dedication to your customers.Increase sales by showing true dedication to your customers.',
+		description:
+			'Increase sales by showing true dedication to your customers.Increase sales by showing true dedication to your customers.',
 	}),
 	createTile({
 		icon: { name: 'cog', type: 'fas', color: '#e6e6e6' },
 		title: 'Easy to Use',
-		description: 'Ready to use with your own content, or customize the source files!Ready to use with your own content, or customize the source files!',
+		description:
+			'Ready to use with your own content, or customize the source files!Ready to use with your own content, or customize the source files!',
 	}),
 	createTile({
 		icon: { name: 'bolt', type: 'fas', color: '#01a9b4' },
 		title: 'Instant Setup',
-		description: 'Get your projects up and running in no time using the theme documentation.Get your projects up and running in no time using the theme documentation.',
+		description:
+			'Get your projects up and running in no time using the theme documentation.Get your projects up and running in no time using the theme documentation.',
 	}),
 	createTile({
 		icon: { name: 'cloud', type: 'fas', color: '#1c7430' },
 		title: 'Cloud Storage',
-		description: 'Access your documents anywhere and share them with others.Access your documents anywhere and share them with others.',
+		description:
+			'Access your documents anywhere and share them with others.Access your documents anywhere and share them with others.',
 	}),
 ]
 

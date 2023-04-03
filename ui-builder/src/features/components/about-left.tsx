@@ -26,7 +26,7 @@ export class AboutLeft extends Component {
 	name = 'About us with details on the left'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
-	
+
 	renderOptions(): ReactNode {
 		return <AboutLeftOptions />
 	}

@@ -236,32 +236,38 @@ const tiles = [
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-cloud-39.png',
 		title: 'Customizable',
-		description: 'Change the content and style and make it your own.Change the content and style and make it your own.',
+		description:
+			'Change the content and style and make it your own.Change the content and style and make it your own.',
 	}),
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-combo-chart-vii.png',
 		title: 'Fast',
-		description: 'Fast load times and lag free interaction, my highest priority.Fast load times and lag free interaction, my highest priority.',
+		description:
+			'Fast load times and lag free interaction, my highest priority.Fast load times and lag free interaction, my highest priority.',
 	}),
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-credit-card-hwer.png',
 		title: 'Made with Love',
-		description: 'Increase sales by showing true dedication to your customers.Increase sales by showing true dedication to your customers.',
+		description:
+			'Increase sales by showing true dedication to your customers.Increase sales by showing true dedication to your customers.',
 	}),
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-luggage-bh.png',
 		title: 'Easy to Use',
-		description: 'Ready to use with your own content, or customize the source files!Ready to use with your own content, or customize the source files!',
+		description:
+			'Ready to use with your own content, or customize the source files!Ready to use with your own content, or customize the source files!',
 	}),
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-speaker-qer.png',
 		title: 'Instant Setup',
-		description: 'Get your projects up and running in no time using the theme documentation.Get your projects up and running in no time using the theme documentation.',
+		description:
+			'Get your projects up and running in no time using the theme documentation.Get your projects up and running in no time using the theme documentation.',
 	}),
 	createTile({
 		imageUrl: 'https://files.dotenx.com/assets/icons-stellar-bb.png',
 		title: 'Cloud Storage',
-		description: 'Access your documents anywhere and share them with others.Access your documents anywhere and share them with others.',
+		description:
+			'Access your documents anywhere and share them with others.Access your documents anywhere and share them with others.',
 	}),
 ]
 
