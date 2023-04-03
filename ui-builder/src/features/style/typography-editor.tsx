@@ -2,6 +2,7 @@ import { Chip, ColorInput, SegmentedControl, Select } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { atom, useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { forwardRef } from 'react'
 import {
 	TbAlignCenter,
 	TbAlignJustified,
@@ -163,16 +164,18 @@ export function TypographyEditor({
 			</div>
 		</>
 	)
+	const fontsData = [..._.keys(fonts), ...defaultFonts]
 
 	return (
 		<CollapseLine label="Typography" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Font</p>
 				<Select
+					itemComponent={SelectItem}
 					value={style.fontFamily ?? ''}
 					onChange={(value) => editStyle('fontFamily', value ?? defaultFonts[0])}
 					className="col-span-9"
-					data={[..._.keys(fonts), ...defaultFonts]}
+					data={fontsData}
 					size="xs"
 					onCreate={(fontName) => {
 						openModal({
@@ -248,3 +251,18 @@ export function TypographyEditor({
 		</CollapseLine>
 	)
 }
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+	label: string
+	value: string
+}
+
+const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+	({ label, value, ...others }: ItemProps, ref) => (
+		<div ref={ref} {...others} style={{ fontFamily: value }}>
+			{label}
+		</div>
+	)
+)
+
+SelectItem.displayName = 'SelectItem'
