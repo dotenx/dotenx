@@ -12,7 +12,7 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
 export class GalleryMasonryTwo extends Component {
-	name = 'Masonry Gallery 2'
+	name = 'Masonry gallery - 2'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -32,7 +32,7 @@ function GalleryMasonryTwoOptions() {
 	const grid = component.find(tagIds.grid) as ColumnsElement
 
 	return (
-		<ComponentWrapper name="Basic Gallery">
+		<ComponentWrapper name="Masonry gallery - 2">
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => (
