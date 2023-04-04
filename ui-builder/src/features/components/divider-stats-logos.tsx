@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/divider-stats.png'
+import imageUrl from '../../assets/components/divider-stats-logos.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, txt,img } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'

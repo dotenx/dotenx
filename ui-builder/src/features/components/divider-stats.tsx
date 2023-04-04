@@ -78,7 +78,7 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
-			gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+			gridTemplateColumns: '1fr 1fr 1fr ',
 			justifyContent: 'space-between',
 			alignItems: 'center',
 			width: '100%',
@@ -163,11 +163,7 @@ const createSection = () =>
 const sections = [
 	createSection(),
 	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
+	createSection()
 ]
 
 const defaultData = {
