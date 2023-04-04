@@ -11,11 +11,11 @@ import {
 	FullscreenButton,
 	Logo,
 	PageScaling,
-	previewAtom,
-	projectTypeAtom,
 	TopBarWrapper,
 	UndoRedo,
 	UnsavedMessage,
+	previewAtom,
+	projectTypeAtom,
 } from '../page/top-bar'
 import { useSelectionStore } from '../selection/selection-store'
 import { useSelectedElement } from '../selection/use-selected-component'
@@ -24,7 +24,7 @@ import { ViewportSelection } from '../viewport/viewport-selection'
 import { SimpleLeftSidebar } from './left-sidebar'
 import { Palette } from './palette'
 import { SimpleRightSidebar } from './right-sidebar'
-import { insertingAtom, SimpleCanvas } from './simple-canvas'
+import { SimpleCanvas, insertingAtom } from './simple-canvas'
 
 export function Simple() {
 	const { isFullscreen } = useAtomValue(previewAtom)
@@ -109,6 +109,7 @@ const Navbar = () => {
 			padding="md"
 			className="overflow-y-scroll"
 			withCloseButton={false}
+			keepMounted
 		>
 			<SimpleLeftSidebar components={COMPONENTS} />
 		</Drawer>
@@ -129,6 +130,7 @@ const Aside = () => {
 			className="overflow-y-scroll"
 			position="right"
 			withCloseButton={false}
+			keepMounted
 		>
 			<SimpleRightSidebar />
 		</Drawer>

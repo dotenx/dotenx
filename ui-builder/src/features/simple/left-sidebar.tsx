@@ -6,7 +6,7 @@ import _ from 'lodash'
 import { ReactNode, useMemo, useState } from 'react'
 import { TbBox, TbPlus } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
-import { Components, ComponentSection } from '../components'
+import { ComponentSection, Components } from '../components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { projectTagAtom } from '../page/top-bar'
@@ -93,6 +93,7 @@ export function SimpleLeftSidebar({ components }: { components: Components }) {
 									<SimpleComponentList section={section} pageName={pageName} />
 								),
 								size: 'xl',
+								keepMounted: true,
 							})
 						}}
 					/>
