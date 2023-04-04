@@ -39,7 +39,7 @@ import { BasicSlideshow } from './basic-slideshow'
 import { BasicText } from './basic-text'
 import { BasicVideo } from './basic-video'
 import { BasicYouTube } from './basic-youtube'
-import { ComparisonTableSimple } from './comparison-table-simple'
+import { ComparisonTable1 } from './comparison-table-1'
 import { Component } from './component'
 import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
@@ -55,6 +55,7 @@ import { FaqCollapsible } from './faq-collapsible'
 import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
+import { FeatureCtaImageTag } from './feature-cta-image-tag'
 import { FeatureDetailsGridImageTagLeft } from './feature-details-grid-image-tag-left'
 import { FeatureDetailsGridImageTagLeft2 } from './feature-details-grid-image-tag-left-2'
 import { FeatureDetailsGridImageTagRight } from './feature-details-grid-image-tag-right'
@@ -132,7 +133,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Comparison Table',
 		icon: <TbTableAlias />,
-		items: [ComparisonTableSimple],
+		items: [ComparisonTable1],
 	},
 	{
 		title: 'FAQ',
@@ -159,6 +160,7 @@ export const COMPONENTS: Components = [
 			FeatureDetailsGridImageTagRight,
 			FeatureDetailsGridImageTagLeft2,
 			FeatureDetailsGridImageTagRight2,
+			FeatureCtaImageTag
 		],
 	},
 	{

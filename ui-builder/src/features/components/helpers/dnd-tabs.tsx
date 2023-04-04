@@ -15,13 +15,19 @@ export function DndTabs({
 	autoAdjustGridTemplateColumns = true,
 	rightSection,
 	onTabChanged,
+	onSwap,
+	onInsert,
+	onDelete
 }: {
 	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
 	insertElement: () => Element
 	autoAdjustGridTemplateColumns?: boolean
-	rightSection?: ReactNode
-	onTabChanged?: (index: string) => void
+	rightSection?: ReactNode,
+	onTabChanged?: (index: string) => void,
+	onSwap?: (oldIndex: number, newIndex: number) => void,
+	onInsert?: () => void,
+	onDelete?: (index: number) => void,
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -32,11 +38,13 @@ export function DndTabs({
 			const oldIndex = tabs.findIndex((tab) => tab.id === active?.id)
 			const newIndex = tabs.findIndex((tab) => tab.id === over?.id)
 			set((draft) => (draft.children = swap(draft.children, oldIndex, newIndex)))
+			onSwap?.(oldIndex, newIndex)
 		}
 	}
 
 	const onAddNewTab = () => {
 		set((draft) => draft.children.push(insertElement()))
+		onInsert?.()
 	}
 
 	const tabs = useMemo(
@@ -45,26 +53,29 @@ export function DndTabs({
 				id: item.id,
 				content: renderItemOptions(item, index),
 				onTabDelete: () =>
-					set((draft) => {
-						draft.children.splice(index, 1)
-						if (!autoAdjustGridTemplateColumns) return
-						// remove one 1fr from the grid template columns in all the modes if the number of columns is more than the number of 1frs
-						const modes: Array<'desktop' | 'tablet' | 'mobile'> = [
-							'desktop',
-							'tablet',
-							'mobile',
-						]
-						modes.forEach((mode) => {
-							if (draft.style[mode]?.default?.gridTemplateColumns) {
-								const columns = (
-									draft.style[mode]!.default!.gridTemplateColumns as string
-								).split(' ')
-								if (columns.length <= draft.children.length) return
-								columns.pop()
-								draft.style[mode]!.default!.gridTemplateColumns = columns.join(' ')
-							}
-						})
-					}),
+					{
+						set((draft) => {
+							draft.children.splice(index, 1)
+							if (!autoAdjustGridTemplateColumns) return
+							// remove one 1fr from the grid template columns in all the modes if the number of columns is more than the number of 1frs
+							const modes: Array<'desktop' | 'tablet' | 'mobile'> = [
+								'desktop',
+								'tablet',
+								'mobile',
+							]
+							modes.forEach((mode) => {
+								if (draft.style[mode]?.default?.gridTemplateColumns) {
+									const columns = (
+										draft.style[mode]!.default!.gridTemplateColumns as string
+									).split(' ')
+									if (columns.length <= draft.children.length) return
+									columns.pop()
+									draft.style[mode]!.default!.gridTemplateColumns = columns.join(' ')
+								}
+							})
+						}),
+						onDelete?.(index)
+					}
 			})),
 		[listElements, renderItemOptions, set]
 	)
@@ -80,7 +91,7 @@ export function DndTabs({
 	)
 }
 
-function swap<T>(arr: T[], aIndex: number, bIndex: number) {
+export function swap<T>(arr: T[], aIndex: number, bIndex: number) {
 	const arrCloned = _.cloneDeep(arr)
 	const temp = arrCloned[aIndex]
 	arrCloned[aIndex] = arrCloned[bIndex]

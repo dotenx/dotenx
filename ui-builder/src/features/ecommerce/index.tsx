@@ -19,7 +19,7 @@ import {
 } from 'react-icons/tb'
 import { Components } from '../components'
 import { AboutRight } from '../components/about-right'
-import { ComparisonTableSimple } from '../components/comparison-table-simple'
+import { ComparisonTable1 } from '../components/comparison-table-1'
 import { CustomersGrid } from '../components/customers-grid'
 import { CustomersLogoGrid } from '../components/customers-logo-grid'
 import { DividerSimpleTitle } from '../components/divider-simple-title'
@@ -91,7 +91,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	{
 		title: 'Comparison Table',
 		icon: <TbTableAlias />,
-		items: [ComparisonTableSimple],
+		items: [ComparisonTable1],
 	},
 	{
 		title: 'FAQ',
