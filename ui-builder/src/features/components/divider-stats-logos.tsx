@@ -2,19 +2,21 @@ import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/divider-stats.png'
 import { deserializeElement } from '../../utils/deserialize'
-import { box, txt } from '../elements/constructor'
+import { box, txt,img } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
+import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
-export class DividerStats extends Component {
-	name = 'Stats divider'
+export class DividerStatsWithLogos extends Component {
+	name = 'Stats divider with logos'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -30,19 +32,19 @@ function DividerStatsOptions() {
 	const sectionsDiv = component.find(tagIds.sectionsDiv) as ColumnsElement
 
 	return (
-		<ComponentWrapper name="Simple stats divider">
+		<ComponentWrapper name="Simple stats divider with logos">
 			<ColumnsStyler element={sectionsDiv} maxColumns={8} />
 			<DndTabs
 				containerElement={sectionsDiv}
 				renderItemOptions={(element) => (
 					<div className='space-y-4'>
 
-
 					<TextStyler label="Text" element={element.children![0] as TextElement} />
 					<TextStyler label="Stat" element={element.children![1] as TextElement} />
+					<ImageStyler element={element.children![2] as ImageElement} />
 					</div>
 				)}
-				insertElement={() => createSection()}
+				insertElement={() => createSection('https://files.dotenx.com/assets/Logo10-nmi1.png')}
 			/>
 		</ComponentWrapper>
 	)
@@ -78,7 +80,7 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
 			display: 'grid',
-			gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+			gridTemplateColumns: '1fr 1fr 1fr ',
 			justifyContent: 'space-between',
 			alignItems: 'center',
 			width: '100%',
@@ -125,7 +127,7 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 	draft.tagId = tagIds.sectionsDiv
 }).serialize()
 
-const createSection = () =>
+const createSection = (src: string) =>
 	box([
 		txt('Stat')
 			.css({
@@ -151,6 +153,15 @@ const createSection = () =>
 			.cssMobile({
 				fontSize: '12px',
 			}),
+			img(src)
+		.css({
+			marginLeft: 'auto',
+				marginRight: 'auto',
+				width: 'min(120px, 60%)',
+		})
+		.cssTablet({
+			width: 'min(80px, 60%)',
+		})
 	])
 		.css({
 			display: 'flex',
@@ -159,15 +170,11 @@ const createSection = () =>
 			width: '100%',
 		})
 		.class(['section']) // This is not necessary in the rendered code but I've added it as we add extra divs in the ui-builder
-
-const sections = [
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
-	createSection(),
+		
+		const sections = [
+		createSection('https://files.dotenx.com/assets/Logo10-nmi1.png'),
+		createSection('https://files.dotenx.com/assets/Logo7-32bn9.png'),
+		createSection('https://files.dotenx.com/assets/Logo11-mn91.png'),
 ]
 
 const defaultData = {

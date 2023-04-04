@@ -19,7 +19,7 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
 export class CustomersStatLogo extends Component {
-	name = 'Customers logs with stat'
+	name = 'Customers logos with stat'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -46,7 +46,7 @@ function CustomersStatLogoOptions() {
 	const addGridItem = () => createTile('https://files.dotenx.com/assets/logo1-fwe14we.png')
 
 	return (
-		<ComponentWrapper name="Customers logs with stat">
+		<ComponentWrapper name="Customers logos with stat">
 			<TextStyler label="Stat header" element={statHeader} />
 			<TextStyler label="Stat text" element={statText} />
 			<ColumnsStyler element={grid} maxColumns={6} />
