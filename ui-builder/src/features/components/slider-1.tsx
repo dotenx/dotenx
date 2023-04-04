@@ -1,6 +1,7 @@
 import { Divider } from '@mantine/core'
 import _ from 'lodash'
-import { box, container, flex, icn, txt } from '../elements/constructor'
+import imageUrl from '../../assets/components/slider-1.png'
+import { box, container, flex, icn, paper, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { setElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
@@ -17,7 +18,7 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class Slider1 extends Component {
 	name = 'Slider 1'
-	image = ''
+	image = imageUrl
 	defaultData = component()
 	renderOptions = () => <ComponentOptions />
 	onCreate(root: Element) {
@@ -118,8 +119,7 @@ const card = () =>
 			borderRadius: '10px',
 			width: '350px',
 			height: '500px',
-			backgroundImage:
-				'url(https://img.freepik.com/free-photo/beautiful-shot-sea-rocky-mountain-distance-with-clouds-sky_181624-2401.jpg?w=1060&t=st=1680522214~exp=1680522814~hmac=6d23262f07274406469be0561545981625d76ce4256967930dab6855046b5c38)',
+			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundPosition: 'center',
 			backgroundRepeat: 'no-repeat',
 			backgroundSize: 'cover',
@@ -144,7 +144,7 @@ const cards = () =>
 		.tag(tags.cardList)
 
 const component = () =>
-	box([
+	paper([
 		container([
 			flex([title(), buttons()]).css({
 				paddingBottom: '20px',
@@ -153,6 +153,4 @@ const component = () =>
 			}),
 			cards(),
 		]),
-	]).css({
-		color: color('text'),
-	})
+	])

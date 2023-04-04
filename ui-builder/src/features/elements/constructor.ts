@@ -1,3 +1,4 @@
+import { color } from '../simple/palette'
 import { Element } from './element'
 import { BoxElement } from './extensions/box'
 import { ButtonElement } from './extensions/button'
@@ -30,3 +31,5 @@ export const form = (children?: Element[]) => new FormElement().populate(childre
 export const video = (src?: string) => new VideoElement().src(src ?? '')
 export const container = (children?: Element[]) =>
 	box(children).css({ maxWidth: '1200px', margin: '0 auto' })
+export const paper = (children?: Element[]) =>
+	box(children).css({ padding: '1rem', color: color('text') })
