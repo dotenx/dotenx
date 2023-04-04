@@ -73,7 +73,6 @@ const title = () =>
 	txt('Lorem ipsum')
 		.css({
 			fontSize: '3rem',
-			fontFamily: 'Cambria',
 		})
 		.tag(tags.title)
 
@@ -111,13 +110,11 @@ const card = () =>
 		txt('Lorem ipsum')
 			.css({
 				fontSize: '2rem',
-				fontFamily: 'Cambria',
 			})
 			.tag(tags.cardTitle),
 	])
 		.css({
 			borderRadius: '10px',
-			width: '350px',
 			height: '500px',
 			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundPosition: 'center',
@@ -127,9 +124,16 @@ const card = () =>
 			justifyContent: 'flex-end',
 			alignItems: 'center',
 			padding: '40px 20px',
-			gap: '14px',
 			color: 'white',
 			flexShrink: '0',
+			// take a third
+			flexBasis: 'calc(100% / 3 - 20px * 2 / 3)',
+		})
+		.cssTablet({
+			flexBasis: 'calc(100% / 2 - 20px * 1 / 2)',
+		})
+		.cssMobile({
+			flexBasis: '100%',
 		})
 		.tag(tags.card)
 

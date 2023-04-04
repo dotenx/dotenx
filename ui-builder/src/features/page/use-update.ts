@@ -147,5 +147,12 @@ const additionalStyles = `
     100% {
         transform: rotate(360deg);
     }
-} 
+}
+.hidden-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+.hidden-scrollbar {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
 `
