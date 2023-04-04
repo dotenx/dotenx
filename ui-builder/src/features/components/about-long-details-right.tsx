@@ -63,6 +63,7 @@ const component = produce(new BoxElement(), (draft) => {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr ',
 			width: '100%',
+			gap: '50px',
 			alignItems: 'center',
 			justifyContent: 'center',
 			paddingLeft: '15%',

@@ -68,7 +68,9 @@ const component = produce(new BoxElement(), (draft) => {
 			paddingLeft: '15%',
 			paddingRight: '15%',
 			paddingTop: '40px',
-			paddingBottom: '40px',
+			paddingBottom: '40px',		
+			gap: '50px',
+
 		},
 	}
 	draft.style.tablet = {
