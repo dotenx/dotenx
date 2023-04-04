@@ -85,6 +85,7 @@ export function TextEditor({
 			</RichTextEditor>
 
 			<Button
+			className="float-right mb-5"
 				mt="xl"
 				onClick={() => {
 					onSave(editor?.getHTML() ?? '')
