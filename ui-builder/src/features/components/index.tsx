@@ -72,6 +72,7 @@ import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryMasonryOne } from './gallery-masonry-1'
 import { GalleryMasonryTwo } from './gallery-masonry-2'
+import { GalleryMasonryCustomLayout } from './gallery-masonry-custom-layout'
 import { GalleryWithCaptions } from './gallery-with-caption'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
@@ -176,6 +177,7 @@ export const COMPONENTS: Components = [
 			GalleryWithCaptions,
 			GalleryMasonryOne,
 			GalleryMasonryTwo,
+			GalleryMasonryCustomLayout
 		],
 	},
 	{
