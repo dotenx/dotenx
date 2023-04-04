@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import {
 	TbArticle,
 	TbBorderHorizontal,
+	TbBrandMixpanel,
 	TbClick,
 	TbForms,
 	TbLayoutBottombar,
@@ -16,7 +17,6 @@ import {
 	TbTableAlias,
 	TbUser,
 	TbUsers,
-	TbBrandMixpanel,
 } from 'react-icons/tb'
 import { AboutFramedImage } from './about-framed-image'
 import { AboutLeft } from './about-left'
@@ -81,6 +81,7 @@ import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
+import { Slider1 } from './slider-1'
 import { StepGridCtaLeft } from './step-grid-cta-left'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamIndividualMember } from './team-individual-member'
@@ -222,7 +223,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Slideshow',
 		icon: <TbSlideshow />,
-		items: [BasicSlideshow],
+		items: [BasicSlideshow, Slider1],
 	},
 	{
 		title: 'Steps',
