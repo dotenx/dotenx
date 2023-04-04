@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import {
 	TbArticle,
 	TbBorderHorizontal,
+	TbBrandMixpanel,
 	TbClick,
 	TbForms,
 	TbLayoutBottombar,
@@ -16,7 +17,6 @@ import {
 	TbTableAlias,
 	TbUser,
 	TbUsers,
-	TbBrandMixpanel,
 } from 'react-icons/tb'
 import { AboutFramedImage } from './about-framed-image'
 import { AboutLeft } from './about-left'
@@ -73,6 +73,7 @@ import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
 import { GalleryMasonryOne } from './gallery-masonry-1'
 import { GalleryMasonryTwo } from './gallery-masonry-2'
+import { GalleryMasonryCustomLayout } from './gallery-masonry-custom-layout'
 import { GalleryWithCaptions } from './gallery-with-caption'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
@@ -83,6 +84,7 @@ import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
+import { Slider1 } from './slider-1'
 import { StepGridCtaLeft } from './step-grid-cta-left'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamIndividualMember } from './team-individual-member'
@@ -177,6 +179,7 @@ export const COMPONENTS: Components = [
 			GalleryWithCaptions,
 			GalleryMasonryOne,
 			GalleryMasonryTwo,
+			GalleryMasonryCustomLayout
 		],
 	},
 	{
@@ -225,7 +228,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Slideshow',
 		icon: <TbSlideshow />,
-		items: [BasicSlideshow],
+		items: [BasicSlideshow, Slider1],
 	},
 	{
 		title: 'Steps',

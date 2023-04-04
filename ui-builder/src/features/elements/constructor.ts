@@ -1,3 +1,4 @@
+import { color } from '../simple/palette'
 import { Element } from './element'
 import { BoxElement } from './extensions/box'
 import { ButtonElement } from './extensions/button'
@@ -20,10 +21,15 @@ export const txt = (txt: string) => new TextElement().unstyled().txt(txt)
 export const link = () => new LinkElement().unstyled()
 export const grid = (columns: number) => new ColumnsElement().cols(columns)
 export const img = (src?: string) => new ImageElement().src(src ?? '')
-export const icn = (name: string) => new IconElement().type('fas').setName(name)
+export const icn = (name: string) =>
+	new IconElement().type('fas').setName(name).css({ display: 'flex', justifyContent: 'center' })
 export const template = (children: Element) => new TemplateElement().populate([children])
 export const flex = (children: Element[]) => box(children).css({ display: 'flex' })
 export const textarea = () => new TextareaElement()
 export const input = () => new InputElement()
 export const form = (children?: Element[]) => new FormElement().populate(children ?? [])
 export const video = (src?: string) => new VideoElement().src(src ?? '')
+export const container = (children?: Element[]) =>
+	box(children).css({ maxWidth: '1200px', margin: '0 auto' })
+export const paper = (children?: Element[]) =>
+	box(children).css({ padding: '1rem', color: color('text') })
