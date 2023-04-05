@@ -86,6 +86,7 @@ import { Navbar } from './navbar'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
+import { Slider2 } from './slider-2'
 import { StepGridCtaLeft } from './step-grid-cta-left'
 import { TeamCenterGrid } from './team-center-grid'
 import { TeamIndividualMember } from './team-individual-member'
@@ -147,7 +148,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Divider',
 		icon: <TbBorderHorizontal />,
-		items: [DividerSimpleTitle, DividerSimpleLine, DividerTextSections, DividerStats,DividerStatsWithLogos],
+		items: [
+			DividerSimpleTitle,
+			DividerSimpleLine,
+			DividerTextSections,
+			DividerStats,
+			DividerStatsWithLogos,
+		],
 	},
 	{
 		title: 'Features',
@@ -181,7 +188,7 @@ export const COMPONENTS: Components = [
 			GalleryWithCaptions,
 			GalleryMasonryOne,
 			GalleryMasonryTwo,
-			GalleryMasonryCustomLayout
+			GalleryMasonryCustomLayout,
 		],
 	},
 	{
@@ -230,7 +237,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Slideshow',
 		icon: <TbSlideshow />,
-		items: [BasicSlideshow, Slider1],
+		items: [BasicSlideshow, Slider1, Slider2],
 	},
 	{
 		title: 'Steps',

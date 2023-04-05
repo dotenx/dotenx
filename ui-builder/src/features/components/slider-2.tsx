@@ -6,9 +6,8 @@ import { Element } from '../elements/element'
 import { setElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
-import componentScript from '../scripts/slider-1.js?raw'
+import componentScript from '../scripts/slider-2.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
@@ -18,8 +17,8 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class Slider1 extends Component {
-	name = 'Slider - 1'
+export class Slider2 extends Component {
+	name = 'Slider - 2'
 	image = imageUrl
 	defaultData = component()
 	renderOptions = () => <ComponentOptions />
@@ -32,13 +31,11 @@ export class Slider1 extends Component {
 
 function ComponentOptions() {
 	const root = useSelectedElement<BoxElement>()!
-	const title = root.find<TextElement>(tags.title)!
 	const buttons = root.findAll<BoxElement>(tags.buttons)!
 	const cardList = root.find<BoxElement>(tags.cardList)!
 
 	return (
-		<ComponentWrapper name="Slider - 1">
-			<TextStyler element={title} label="Title" />
+		<ComponentWrapper name="Slider - 2">
 			<BoxStyler element={buttons} label="Arrows" />
 			<div>
 				<Divider label="Cards" />
@@ -64,32 +61,18 @@ function ItemOptions({ item }: { item: BoxElement }) {
 }
 
 const tags = {
-	title: 'title',
 	buttons: 'buttons',
 	cardList: 'cardList',
 	card: 'card',
 	cardTitle: 'cardTitle',
 }
 
-const title = () =>
-	txt('Lorem ipsum')
-		.css({
-			fontSize: fontSizes.h1.desktop,
-		})
-		.cssTablet({
-			fontSize: fontSizes.h1.tablet,
-		})
-		.cssMobile({
-			fontSize: fontSizes.h1.mobile,
-		})
-		.tag(tags.title)
-
 const iconButton = (icon: string) =>
 	box([icn(icon).size('12px')])
 		.css({
-			color: color('primary'),
+			color: color('background'),
 			border: '1px solid',
-			borderColor: color('primary'),
+			borderColor: color('background'),
 			borderRadius: '9999px',
 			width: '32px',
 			height: '32px',
@@ -100,15 +83,44 @@ const iconButton = (icon: string) =>
 			cursor: 'pointer',
 		})
 		.cssHover({
-			color: color('background'),
-			backgroundColor: color('primary'),
+			color: color('primary'),
+			backgroundColor: color('background'),
+			borderColor: color('primary'),
 		})
 		.tag(tags.buttons)
 
 const buttons = () =>
 	flex([
-		iconButton('chevron-left').class('leftButton'),
-		iconButton('chevron-right').class('rightButton'),
+		iconButton('chevron-left')
+			.class('leftButton')
+			.css({
+				position: 'absolute',
+				left: '60px',
+				bottom: '90px',
+			})
+			.cssTablet({
+				left: '40px',
+				bottom: '70px',
+			})
+			.cssMobile({
+				left: '20px',
+				bottom: '50px',
+			}),
+		iconButton('chevron-right')
+			.class('rightButton')
+			.css({
+				position: 'absolute',
+				right: '60px',
+				bottom: '90px',
+			})
+			.cssTablet({
+				right: '40px',
+				bottom: '70px',
+			})
+			.cssMobile({
+				right: '20px',
+				bottom: '50px',
+			}),
 	]).css({
 		gap: '20px',
 	})
@@ -123,7 +135,7 @@ const card = () =>
 	])
 		.css({
 			borderRadius: '10px',
-			height: '450px',
+			height: '600px',
 			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundPosition: 'center',
 			backgroundRepeat: 'no-repeat',
@@ -134,16 +146,13 @@ const card = () =>
 			padding: '40px 20px',
 			color: 'white',
 			flexShrink: '0',
-			// take a third
-			flexBasis: 'calc(100% / 3 - 20px * 2 / 3)',
+			flexBasis: '100%',
 		})
 		.cssTablet({
-			flexBasis: 'calc(100% / 2 - 20px * 1 / 2)',
-			height: '400px',
+			height: '500px',
 		})
 		.cssMobile({
-			flexBasis: '100%',
-			height: '350px',
+			height: '400px',
 		})
 		.tag(tags.card)
 
@@ -153,7 +162,6 @@ const cards = () =>
 			gap: '20px',
 			overflowX: 'auto',
 			scrollBehavior: 'smooth',
-			borderRadius: '10px',
 		})
 		.class('cards')
 		.tag(tags.cardList)
@@ -161,11 +169,9 @@ const cards = () =>
 const component = () =>
 	paper([
 		container([
-			flex([title(), buttons()]).css({
-				paddingBottom: '20px',
-				alignItems: 'center',
-				justifyContent: 'space-between',
+			box([cards(), buttons()]).css({
+				position: 'relative',
+				borderRadius: '10px',
 			}),
-			cards(),
 		]),
 	])
