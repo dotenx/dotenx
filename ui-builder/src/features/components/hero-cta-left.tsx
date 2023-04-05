@@ -36,7 +36,9 @@ function HeroCtaLeftOptions() {
 	const ctaText = cta.children?.[0] as TextElement
 
 	return (
-		<ComponentWrapper name="Hero with CTA on the left">
+		<ComponentWrapper 
+	stylers={['background-image']} 
+		name="Hero with CTA on the left">
 			<ImageStyler element={image} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Subtitle" element={subtitle} />

@@ -5,13 +5,14 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbPlus } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
-import imageUrl from '../../assets/components/form.png'
+import imageUrl from '../../assets/components/form2.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { setElement, useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
 import { FormElement } from '../elements/extensions/form'
+import { ImageElement } from '../elements/extensions/image'
 import { InputElement } from '../elements/extensions/input'
 import { SelectElement, SelectOptions } from '../elements/extensions/select'
 import { SubmitElement } from '../elements/extensions/submit'
@@ -20,7 +21,9 @@ import { projectTagAtom } from '../page/top-bar'
 import formScript from '../scripts/form.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { BoxStyler } from '../simple/stylers/box-styler'
+import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
+import { Expression } from '../states/expression'
 import { Component, OnCreateOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -28,8 +31,8 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 
 let formCounter = 1
 
-export class Form extends Component {
-	name = 'Form - 1'
+export class Form2 extends Component {
+	name = 'Form - 2 '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -57,13 +60,14 @@ export class Form extends Component {
 function FormOptions() {
 	const root = useSelectedElement<BoxElement>()!
 	const form = root.find<FormElement>(tagIds.form)!
+	const logo = root.find<ImageElement>(tagIds.logo)!
 	const inputsWrapper = root.find<BoxElement>(tagIds.inputs)!
 	const set = useSetElement()
 	const projectTag = useAtomValue(projectTagAtom)
 	const { pageName } = useParams()
 
 	return (
-		<ComponentWrapper name="Form - 1" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
+		<ComponentWrapper name="Form - 2" stylers={['alignment', 'backgrounds', 'borders', 'spacing']}>
 			<BoxStyler
 				label="Form"
 				element={form}
@@ -86,6 +90,8 @@ function FormOptions() {
 					set(form, (draft) => (draft.internal.formName = value))
 				}}
 			/>
+						<ImageStyler element={logo} />
+
 			<DndTabs
 				containerElement={inputsWrapper}
 				renderItemOptions={(item) => <ItemOptions item={item} />}
@@ -184,6 +190,7 @@ const insertInput = () => createInput('New Field', 'text')
 const tagIds = {
 	form: 'form',
 	inputs: 'inputs',
+	logo: 'logo',
 }
 
 const divFlex = produce(new BoxElement(), (draft) => {
@@ -301,15 +308,13 @@ const createInput = (
 ) => {
 	const container = new BoxElement().css({
 		display: 'grid',
-		gridTemplateColumns: '1fr 2fr',
+		gridTemplateColumns: '1fr',
 		justifyItems: 'self-start',
 		paddingTop: '10px',
 		paddingBottom: '10px',
 	})
 
-	container.cssTablet({
-		gridTemplateColumns: '1fr',
-	})
+	
 
 	const labelElement = txt(label).css({
 		fontSize: '16px',
@@ -341,15 +346,12 @@ const createInput = (
 const createSelect = (label: string) => {
 	const container = new BoxElement().css({
 		display: 'grid',
-		gridTemplateColumns: '1fr 2fr',
+		gridTemplateColumns: '1fr',
 		justifyItems: 'self-start',
 		paddingTop: '10px',
 		paddingBottom: '10px',
 	})
 
-	container.cssTablet({
-		gridTemplateColumns: '1fr',
-	})
 
 	const labelElement = txt(label).css({
 		fontSize: '16px',
@@ -375,7 +377,22 @@ const createSelect = (label: string) => {
 
 	return container
 }
-
+const logoContainer = produce(new ImageElement(), (draft) => {
+	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/Logo10-nmi1.png')
+	draft.style.desktop = {
+		default: {
+			marginLeft: 'auto',
+			marginRight: 'auto',
+			width: 'min(120px, 60%)',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			width: 'min(80px, 60%)',
+		},
+	}
+	draft.tagId = tagIds.logo
+}).serialize()
 const inputs = [
 	createInput('First Name', 'text'),
 	createInput('Last Name', 'text'),
@@ -388,6 +405,9 @@ const defaultData = {
 		{
 			...form,
 			components: [
+				{
+					...logoContainer,
+				},
 				{
 					...inputsWrapper,
 					components: [...inputs.map((input) => input.serialize())],
