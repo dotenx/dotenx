@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { AddPageRequest, QueryKey, updatePage } from '../../api'
-import { joinAnimations, joinScripts } from '../../utils/join-scripts'
+import { joinAnimations, joinScripts, joinStyles } from '../../utils/join-scripts'
 import { animationsAtom } from '../atoms'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore, useFlattenedElements } from '../elements/elements-store'
@@ -65,6 +65,7 @@ export const usePageData = (): AddPageRequest => {
 			styles: `<style>
 			${paletteCss}
 			${additionalStyles}
+			${joinStyles(elements)}
 			</style>`,
 		},
 		statesDefaultValues,
