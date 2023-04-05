@@ -1,4 +1,4 @@
-import imageUrl from '../../assets/components/slider-1.png'
+import imageUrl from '../../assets/components/about-video-1.png'
 import { gridCols } from '../../utils/style-utils'
 import { box, btn, container, grid, paper, txt, video } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'

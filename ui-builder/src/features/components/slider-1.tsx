@@ -8,9 +8,11 @@ import { BoxElement } from '../elements/extensions/box'
 import { TextElement } from '../elements/extensions/text'
 import componentScript from '../scripts/slider-1.js?raw'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
+import { BackgroundImageEditor } from '../style/background-image-editor'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -37,7 +39,7 @@ function ComponentOptions() {
 	return (
 		<ComponentWrapper name="Slider 1">
 			<TextStyler element={title} label="Title" />
-			<BoxStyler element={buttons} label="Buttons" />
+			<BoxStyler element={buttons} label="Arrows" />
 			<div>
 				<Divider label="Cards" />
 				<DndTabs
@@ -55,8 +57,8 @@ function ItemOptions({ item }: { item: BoxElement }) {
 
 	return (
 		<OptionsWrapper>
-			<BoxStyler element={item} label="Frame" stylers={['background-image']} />
 			<TextStyler element={title} label="Title" />
+			<BackgroundImageEditor element={item} />
 		</OptionsWrapper>
 	)
 }
@@ -72,7 +74,13 @@ const tags = {
 const title = () =>
 	txt('Lorem ipsum')
 		.css({
-			fontSize: '3rem',
+			fontSize: fontSizes.h1.desktop,
+		})
+		.cssTablet({
+			fontSize: fontSizes.h1.tablet,
+		})
+		.cssMobile({
+			fontSize: fontSizes.h1.mobile,
 		})
 		.tag(tags.title)
 
@@ -115,7 +123,7 @@ const card = () =>
 	])
 		.css({
 			borderRadius: '10px',
-			height: '500px',
+			height: '450px',
 			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 			backgroundPosition: 'center',
 			backgroundRepeat: 'no-repeat',
@@ -131,9 +139,11 @@ const card = () =>
 		})
 		.cssTablet({
 			flexBasis: 'calc(100% / 2 - 20px * 1 / 2)',
+			height: '400px',
 		})
 		.cssMobile({
 			flexBasis: '100%',
+			height: '350px',
 		})
 		.tag(tags.card)
 

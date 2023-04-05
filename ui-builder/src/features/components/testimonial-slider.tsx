@@ -4,24 +4,24 @@ import imageUrl from '../../assets/components/testimonial-slider.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, icn, img, template, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
+import { setElement, useSetElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
+import { IconElement } from '../elements/extensions/icon'
 import { ImageElement } from '../elements/extensions/image'
+import { TemplateElement } from '../elements/extensions/template'
 import { TextElement } from '../elements/extensions/text'
+import testimonialSliderScript from '../scripts/testimonial-slider.js?raw'
+import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { color } from '../simple/palette'
+import { ColorStyler } from '../simple/stylers/color-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Expression } from '../states/expression'
 import { Component, ElementOptions, OnCreateOptions } from './component'
+import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
-import testimonialSliderScript from '../scripts/testimonial-slider.js?raw'
-import { setElement, useSetElement } from '../elements/elements-store'
-import { useSelectedElement } from '../selection/use-selected-component'
-import { ComponentWrapper } from './helpers/component-wrapper'
-import { IconElement } from '../elements/extensions/icon'
-import { ColorStyler } from '../simple/stylers/color-styler'
-import { TemplateElement } from '../elements/extensions/template'
-import { fontSizes } from '../simple/font-sizes'
 
 export class TestimonialSlider extends Component {
 	name = 'Testimonials with slider'
@@ -348,6 +348,8 @@ const arrows = box([
 			fontSize: '16px',
 			width: '16px',
 			height: '16px',
+			display: 'flex',
+			justifyContent: 'center',
 		}),
 	])
 		.as('button')
