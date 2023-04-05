@@ -65,6 +65,7 @@ export function deserializeElement(serialized: any): Element {
 	element.animation = serialized.animation
 	element.unlocked = serialized.unlocked
 	element.imports = serialized.imports ?? []
+	element.rawStyle = serialized.rawStyle ?? ''
 	return element
 }
 
