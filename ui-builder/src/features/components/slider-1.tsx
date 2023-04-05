@@ -11,6 +11,7 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { color } from '../simple/palette'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
+import { BackgroundImageEditor } from '../style/background-image-editor'
 import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
@@ -55,8 +56,8 @@ function ItemOptions({ item }: { item: BoxElement }) {
 
 	return (
 		<OptionsWrapper>
-			<BoxStyler element={item} label="Frame" stylers={['background-image']} />
 			<TextStyler element={title} label="Title" />
+			<BackgroundImageEditor element={item} />
 		</OptionsWrapper>
 	)
 }
