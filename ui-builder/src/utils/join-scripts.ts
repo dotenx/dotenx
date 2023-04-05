@@ -35,6 +35,6 @@ export function joinStyles(elements: Element[]): string {
 	}
 
 	return elements
-		.map((element) => joinStyles(element.children ?? []) + '\n' + (element.style ?? ''))
+		.map((element) => joinStyles(element.children ?? []) + '\n' + (element.rawStyle ?? ''))
 		.join('\n')
 }
