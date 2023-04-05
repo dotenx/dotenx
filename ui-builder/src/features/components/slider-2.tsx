@@ -1,6 +1,6 @@
 import { Divider } from '@mantine/core'
 import _ from 'lodash'
-import imageUrl from '../../assets/components/slider-1.png'
+import imageUrl from '../../assets/components/slider-2.png'
 import { box, container, flex, icn, paper, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { setElement } from '../elements/elements-store'

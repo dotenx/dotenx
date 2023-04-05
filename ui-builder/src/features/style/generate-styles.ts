@@ -9,6 +9,7 @@ import { colorNames, selectedPaletteAtom } from '../simple/palette'
 import { ViewportDevice } from '../viewport/viewport-store'
 import { useClassesStore } from './classes-store'
 import { fontsAtom } from './typography-editor'
+import { joinStyles } from '../../utils/join-scripts'
 
 const globalPageStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
@@ -70,6 +71,8 @@ export const useGenerateStyles = (elements: Element[]) => {
 	const tabletClasses = useMemo(() => generateCssClasses(classNames, 'tablet'), [classNames])
 	const mobileClasses = useMemo(() => generateCssClasses(classNames, 'mobile'), [classNames])
 
+	const rawStyles = useMemo(() => joinStyles(flattenedElements), [flattenedElements])
+
 	const customDesktopIds = useMemo(
 		() => generateCustomCssIds(flattenedElements, 'desktop'),
 		[flattenedElements]
@@ -99,6 +102,7 @@ export const useGenerateStyles = (elements: Element[]) => {
 			${customDesktopIds}
 			@media (max-width: 767px) { ${customTabletIds} }
 			@media (max-width: 478px) { ${customMobileIds} }
+			${rawStyles}
 		`,
 		[
 			palette,
@@ -112,6 +116,7 @@ export const useGenerateStyles = (elements: Element[]) => {
 			customDesktopIds,
 			customTabletIds,
 			customMobileIds,
+			rawStyles,
 		]
 	)
 
