@@ -69,6 +69,7 @@ import { FeatureGridImages } from './feature-grid-images'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { Form } from './form'
+import { Form2 } from './form-2'
 import { FormEmailInput1 } from './form-email-input-1'
 import { GalleryBasic } from './gallery-basic'
 import { GalleryBasicRounded } from './gallery-basic-rounded'
@@ -225,7 +226,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Form',
 		icon: <TbForms />,
-		items: [Form, FormEmailInput1],
+		items: [Form, Form2,FormEmailInput1],
 	},
 	{
 		title: 'Slideshow',
