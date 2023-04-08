@@ -1,12 +1,14 @@
-import { Button, Loader, TextInput } from "@mantine/core"
+import { Button, TextInput } from "@mantine/core"
 import { useForm, zodResolver } from "@mantine/form"
 import { useState } from "react"
+import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { Navigate } from "react-router-dom"
 import { toast } from "react-toastify"
+import { useClipboard } from "react-use-clipboard"
 import { z } from "zod"
 import { QueryKey } from "../api"
-import { ContentWrapper, Header } from "../features/ui"
+import { ContentWrapper, Header, Loader } from "../features/ui"
 import { useGetProjectTag } from "../features/ui/hooks/use-get-project-tag"
 import { addDomain, GetDomainResponse, getDomains, verifyDomain } from "../internal/internal-api"
 
@@ -18,7 +20,7 @@ export default function DomainsPage() {
 		() => getDomains(projectTag),
 		{
 			enabled: !!projectTag,
-			onSuccess: (data) => {
+			onSuccess: (data: any) => {
 				if (data.data.tls_arn) setIsDomainAdded(true)
 				else setIsDomainAdded(false)
 			},
@@ -41,11 +43,11 @@ export default function DomainsPage() {
 	return (
 		<div>
 			<Header title={"Domains"} />
-			<ContentWrapper className="lg:pr-0 lg:pl-44 ">
+			<ContentWrapper>
 				{getDomainsQuery.isLoading ||
 				projectTagisLoading ||
 				getDomainsQuery.isRefetching ? (
-					<Loader className="mx-auto" />
+					<Loader className="mx-auto mt-16" />
 				) : (
 					<div className="mx-auto py-10  px-20 max-w-4xl ">
 						{isDomainAdded ? (
@@ -71,11 +73,12 @@ const Domain = ({
 	domainData: GetDomainResponse | undefined
 }) => {
 	const client = useQueryClient()
-
+	const clipboard = useClipboard({ timeout: 3000 })
+	const [clicked, setClicked] = useState("")
 	const { mutate, isLoading } = useMutation(verifyDomain, {
 		onSuccess: () => {
 			toast("Domain verified successfuly", { type: "success", autoClose: 2000 }),
-				client.invalidateQueries(QueryKey.GetDomains)
+				client.invalidateQueries([QueryKey.GetDomains])
 		},
 		onError: () => {
 			toast("External domain is not verified", { type: "error", autoClose: 2000 })
@@ -83,27 +86,141 @@ const Domain = ({
 	})
 	return (
 		<div className="grid grid-cols-1 gap-3 ">
-			<div className="p-3 text-left border-2 rounded-md bg-white ">
-				<h1 className="font-semibold">Domain</h1>
-				<a
-					target={"_blank"}
-					rel="noreferrer"
-					href={"//" + domainData?.external_domain}
-					className="text-lg transition-colors text-cyan-600 hover:text-cyan-500"
-				>
-					{domainData?.external_domain}
-				</a>
+			<div className="p-3 text-left border-2 rounded-md bg-white space-y-2 ">
+				<div className="font-semibold">Domain</div>
+				<div>
+					<a
+						target={"_blank"}
+						rel="noreferrer"
+						href={"//" + domainData?.external_domain}
+						className="text-lg transition-colors text-cyan-600 hover:text-cyan-500"
+					>
+						{domainData?.external_domain}
+					</a>
+				</div>
 				{domainData && !!domainData.cdn_arn ? (
 					<span className="float-right font-medium text-green-500">verified</span>
 				) : (
-					<Button
-						type="button"
-						loading={isLoading}
-						onClick={() => mutate({ projectTag })}
-						className="float-right"
-					>
-						Verify
-					</Button>
+					<div>
+						<div className=" border p-2 rounded-md bg-gray-50 mb-2">
+							<span className="font-semibold">
+								Please add these two CNAME records to your domain’s DNS.
+							</span>
+							<div className="text-sm">If you need help contact support.</div>
+							<div className="grid grid-cols-2  text-sm gap-4 my-4">
+								<div className="truncate">
+									name
+									<div className="bg-white p-1 ">
+										<div
+											className="text-xs flex items-center justify-between cursor-pointer hover:text-cyan-800"
+											onClick={() => {
+												clipboard.copy(
+													domainData?.tls_validation_record_name
+												),
+													setClicked(
+														domainData?.tls_validation_record_name || ""
+													)
+											}}
+										>
+											<span className="mr-2 truncate  ">
+												{domainData?.tls_validation_record_name}
+											</span>
+											{clipboard.copied &&
+											clicked === domainData?.tls_validation_record_name ? (
+												<IoCheckmark className="w-3 h-3" />
+											) : (
+												<IoCopy className="w-3 h-3" />
+											)}
+										</div>
+									</div>
+								</div>
+								<div className="truncate">
+									value
+									<div className="bg-white p-1 ">
+										<div
+											className="text-xs flex items-center justify-between cursor-pointer hover:text-cyan-800"
+											onClick={() => {
+												clipboard.copy(
+													domainData?.tls_validation_record_value
+												),
+													setClicked(
+														domainData?.tls_validation_record_value ||
+															""
+													)
+											}}
+										>
+											<span className="mr-2 truncate  ">
+												{domainData?.tls_validation_record_value}
+											</span>
+											{clipboard.copied &&
+											clicked === domainData?.tls_validation_record_value ? (
+												<IoCheckmark className="w-3 h-3" />
+											) : (
+												<IoCopy className="w-3 h-3" />
+											)}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className="grid grid-cols-2  text-sm gap-4 mb-4 ">
+								<div className="truncate">
+									name
+									<div className="bg-white p-1 ">
+										<div
+											className="text-xs flex items-center justify-between cursor-pointer hover:text-cyan-800"
+											onClick={() => {
+												clipboard.copy("external_domain"),
+													setClicked("external_domain")
+											}}
+										>
+											<span className="mr-2 truncate  ">external_domain</span>
+											{clipboard.copied && clicked === "external_domain" ? (
+												<IoCheckmark className="w-3 h-3" />
+											) : (
+												<IoCopy className="w-3 h-3" />
+											)}
+										</div>
+									</div>
+								</div>
+								<div className="truncate">
+									value
+									<div className="bg-white p-1 ">
+										<div
+											className="text-xs flex items-center justify-between cursor-pointer hover:text-cyan-800"
+											onClick={() => {
+												clipboard.copy(
+													`${domainData?.internal_domain}.web.dotenx.com`
+												),
+													setClicked(
+														`${domainData?.internal_domain}.web.dotenx.com` ||
+															""
+													)
+											}}
+										>
+											<span className="mr-2 truncate  ">
+												{domainData?.internal_domain}.web.dotenx.com
+											</span>
+											{clipboard.copied &&
+											clicked ===
+												`${domainData?.internal_domain}.web.dotenx.com` ? (
+												<IoCheckmark className="w-3 h-3" />
+											) : (
+												<IoCopy className="w-3 h-3" />
+											)}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<Button
+							type="button"
+							loading={isLoading}
+							onClick={() => mutate({ projectTag })}
+							className="float-right"
+						>
+							Verify
+						</Button>
+					</div>
 				)}
 			</div>
 		</div>
@@ -123,7 +240,7 @@ const AddDomain = ({ projectTag }: { projectTag: string }) => {
 		validate: zodResolver(schema),
 	})
 	const { mutate, isLoading } = useMutation(addDomain, {
-		onSuccess: () => client.invalidateQueries(QueryKey.GetDomains),
+		onSuccess: () => client.invalidateQueries([QueryKey.GetDomains]),
 		onError: (e: any) => {
 			toast(e.response.data.message || "Something went wrong!", {
 				type: "error",
