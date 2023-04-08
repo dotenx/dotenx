@@ -1,5 +1,6 @@
 import { useHover } from "@mantine/hooks"
 import clsx from "clsx"
+import { BsGlobe } from "react-icons/bs"
 import { AnimatePresence, motion } from "framer-motion"
 import { ReactNode } from "react"
 import { TbChevronLeft, TbExternalLink, TbFiles } from "react-icons/tb"
@@ -99,9 +100,14 @@ const useSidebar = () => {
 	const sidebar: SidebarData = {
 		navLinks: [
 			{
-				label: "Pages",
+				label: "Forms",
 				icon: <TbFiles />,
-				to: `/${projectName}`,
+				to: `/${projectName}/forms`,
+			},
+			{
+				label: "Domains",
+				icon: <BsGlobe />,
+				to: `/${projectName}/domains`,
 			},
 		],
 		subLinks: [],

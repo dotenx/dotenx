@@ -1,5 +1,5 @@
 import axios from "axios"
-import { GetPagesListResponse } from "./types"
+import { GetDomainResponse, GetPagesListResponse } from "./types"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -14,6 +14,16 @@ const getProject = ({ name }: { name: string }) =>
 		description: string
 		tag: string
 	}>(`/project/${name}`)
+
+export function getDomains(projectTag: string) {
+	return request.get<GetDomainResponse>(`/project/tag/${projectTag}/domain`)
+}
+export function addDomain({ projectTag, domainName }: { projectTag: string; domainName: any }) {
+	return request.post<void>(`/project/${projectTag}/domain`, domainName)
+}
+export function verifyDomain({ projectTag }: { projectTag: string }) {
+	return request.post(`/project/${projectTag}/domain/verify`)
+}
 
 const getSubmittedForms = ({ projectTag, pageName }: { projectTag: string; pageName: string }) =>
 	request.get<
