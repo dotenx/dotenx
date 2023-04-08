@@ -4,6 +4,7 @@ specifiers:
   '@babel/core': ^7.21.3
   '@emotion/react': ^11.10.6
   '@mantine/core': ^6.0.2
+  '@mantine/form': ^6.0.6
   '@mantine/hooks': ^6.0.2
   '@mantine/prism': ^6.0.2
   '@tanstack/react-query': ^4.26.1
@@ -27,14 +28,17 @@ specifiers:
   react-dom: ^18.2.0
   react-icons: ^4.8.0
   react-router-dom: ^6.9.0
+  react-toastify: ^9.1.2
   tailwindcss: ^3.2.7
   typescript: ^4.9.5
   vite: ^4.1.4
+  zod: ^3.21.4
 
 dependencies:
   '@babel/core': 7.21.3
   '@emotion/react': 11.10.6_pmekkgnqduwlme35zpnqhenc34
   '@mantine/core': 6.0.2_md2nfwiomeeos7ogkicwnxcafa
+  '@mantine/form': 6.0.6_react@18.2.0
   '@mantine/hooks': 6.0.2_react@18.2.0
   '@mantine/prism': 6.0.2_reujnkpez4ozmj6vonlofpozxe
   '@tanstack/react-query': 4.26.1_biqbaboplfbrettd7655fr4n2y
@@ -46,6 +50,8 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-icons: 4.8.0_react@18.2.0
   react-router-dom: 6.9.0_biqbaboplfbrettd7655fr4n2y
+  react-toastify: 9.1.2_biqbaboplfbrettd7655fr4n2y
+  zod: 3.21.4
 
 devDependencies:
   '@types/react': 18.0.28
@@ -60,7 +66,7 @@ devDependencies:
   eslint-plugin-react-hooks: 4.6.0_eslint@8.36.0
   postcss: 8.4.21
   prettier: 2.8.4
-  tailwindcss: 3.2.7_postcss@8.4.21
+  tailwindcss: 3.2.7
   typescript: 4.9.5
   vite: 4.1.4
 
@@ -731,6 +737,16 @@ packages:
     transitivePeerDependencies:
       - '@emotion/react'
       - '@types/react'
+    dev: false
+
+  /@mantine/form/6.0.6_react@18.2.0:
+    resolution: {integrity: sha512-ZTudX5bW5i0dlNWqngd6B0HcV2hWNFf+IpRO4Pz+MYYUrp90lLftgIdr6cISEOsjM7v3tCKFNCjGhl7rck9p0w==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      fast-deep-equal: 3.1.3
+      klona: 2.0.6
+      react: 18.2.0
     dev: false
 
   /@mantine/hooks/6.0.2_react@18.2.0:
@@ -1812,7 +1828,6 @@ packages:
 
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
-    dev: true
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
@@ -2311,6 +2326,11 @@ packages:
       object.assign: 4.1.4
     dev: true
 
+  /klona/2.0.6:
+    resolution: {integrity: sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==}
+    engines: {node: '>= 8'}
+    dev: false
+
   /levn/0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -2805,6 +2825,17 @@ packages:
       - '@types/react'
     dev: false
 
+  /react-toastify/9.1.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-PBfzXO5jMGEtdYR5jxrORlNZZe/EuOkwvwKijMatsZZm8IZwLj01YvobeJYNjFcA6uy6CVrx2fzL9GWbhWPTDA==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -3012,12 +3043,10 @@ packages:
     resolution: {integrity: sha512-SYJSIgeyXW7EuX1ytdneO5e8jip42oHWg9xl/o3oTYhmXusZVgiA+VlPvjIN+kHii9v90AmzTZEBcsEvuAY+TA==}
     dev: false
 
-  /tailwindcss/3.2.7_postcss@8.4.21:
+  /tailwindcss/3.2.7:
     resolution: {integrity: sha512-B6DLqJzc21x7wntlH/GsZwEXTBttVSl1FtCzC8WP4oBc/NKef7kaax5jeihkkCEWc831/5NDJ9gRNDK6NEioQQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
-    peerDependencies:
-      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3
@@ -3311,3 +3340,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod/3.21.4:
+    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+    dev: false

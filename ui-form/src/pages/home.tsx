@@ -9,7 +9,7 @@ import { Loader } from "../features/ui/loader"
 export function HomePage() {
 	return (
 		<>
-			<Header title="Pages" />
+			<Header title="Forms" />
 			<ContentWrapper>
 				<PageList />
 			</ContentWrapper>
@@ -26,8 +26,8 @@ function PageList() {
 	return (
 		<div>
 			<div className="flex text-gray-600 justify-between w-full mb-3 mt-5 px-5">
-				<div>Name</div>
-				<div>Submitted forms</div>
+				<div>Page name</div>
+				<div>Submissions </div>
 			</div>
 			<div className="space-y-3">
 				{pagesQuery?.data?.data?.map((page) => (
