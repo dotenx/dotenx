@@ -12,7 +12,7 @@ func NewUIFormService(store uiFormStore.UIFormStore) UIFormService {
 }
 
 type UIFormService interface {
-	AddNewResponse(form models.UIForm) error
+	AddNewResponse(form models.UIForm, accountId, projectType string) error
 	GetFormsList(projectTag, pageName string) ([]models.UIForm, error)
 	GetFormResponseListById(projectTag, pageName, formId string) ([]models.UIForm, error)
 	GetNumberOfFormSubmission(projectTag, pageName string) (int64, error)
