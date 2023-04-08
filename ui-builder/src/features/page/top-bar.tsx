@@ -247,7 +247,7 @@ export function DashboardLink() {
 			: projectType === 'ecommerce'
 			? `https://ecommerce.dotenx.com/projects/${projectName}/products`
 			: projectType === 'website' || projectType === 'landing_page'
-			? `https://website.dotenx.com/${projectName}`
+			? `https://website.dotenx.com/${projectName}/forms`
 			: null
 
 	if (!link) return null
