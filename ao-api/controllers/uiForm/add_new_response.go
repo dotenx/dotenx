@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/gin-gonic/gin"
@@ -75,9 +76,18 @@ func (controller *UIFormController) AddNewResponse(pService projectService.Proje
 			SubmittedAt: time.Now().UTC().Format(time.RFC3339),
 		}
 
-		if err := controller.Service.AddNewResponse(form); err != nil {
+		err := controller.Service.AddNewResponse(form, project.AccountId, project.Type)
+		if err != nil {
 			logrus.Error(err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
+			if err == utils.ErrReachLimitationOfPlan {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 		c.Status(http.StatusOK)
