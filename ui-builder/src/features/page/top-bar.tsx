@@ -16,16 +16,15 @@ import {
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import {
+	ProjectType,
+	QueryKey,
 	getGlobalStates,
 	getPageDetails,
 	getProjectDetails,
-	ProjectType,
-	QueryKey,
 } from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
 import { ADMIN_PANEL_URL } from '../../utils/constants'
-import { toggleFullScreen } from '../../utils/toggle-fullscreen'
 import { animationsAtom } from '../atoms'
 import { evaluateExpression } from '../data-source/data-source-form'
 import { useDataSourceStore } from '../data-source/data-source-store'
@@ -38,7 +37,7 @@ import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
+import { PageActions, customCodesAtom, globalStatesAtom } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
 import { usePageData, useUpdatePage } from './use-update'
@@ -267,7 +266,6 @@ export function FullscreenButton() {
 	const setPreview = useSetAtom(previewAtom)
 	const deselect = useSelectionStore((store) => store.deselect)
 	const handleClick = () => {
-		toggleFullScreen()
 		setPreview((prev) => ({ isFullscreen: !prev.isFullscreen }))
 		deselect()
 	}
