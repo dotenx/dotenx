@@ -93,7 +93,7 @@ export function ElementOverlay({
 				}}
 				className={element.generateClasses()}
 				ref={handleRef}
-				onMouseOver={handleMouseOver}
+				onMouseEnter={handleMouseOver}
 				onClick={handleClick}
 				type={element instanceof InputElement ? element.data.type : undefined}
 			>
