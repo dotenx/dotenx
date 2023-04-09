@@ -173,7 +173,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	uiFormService := uiFormService.NewUIFormService(formStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService, objectstoreService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
 

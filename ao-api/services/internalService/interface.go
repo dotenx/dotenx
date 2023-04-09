@@ -13,14 +13,15 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 )
 
-func NewInternalService(projStore projectStore.ProjectStore, databaseStore databaseStore.DatabaseStore, redisStore redisStore.RedisStore, pipelineService crudService.CrudService, ubService uibuilderService.UIbuilderService, ufService uiFormService.UIFormService) InternalService {
+func NewInternalService(projStore projectStore.ProjectStore, databaseStore databaseStore.DatabaseStore, redisStore redisStore.RedisStore, pipelineService crudService.CrudService, ubService uibuilderService.UIbuilderService, ufService uiFormService.UIFormService, objService objectstoreService.ObjectstoreService) InternalService {
 	return &internalService{
-		ProjectStore:     projStore,
-		DatabaseStore:    databaseStore,
-		RedisStore:       redisStore,
-		PipelineService:  pipelineService,
-		UIbuilderService: ubService,
-		UIFormService:    ufService,
+		ProjectStore:       projStore,
+		DatabaseStore:      databaseStore,
+		RedisStore:         redisStore,
+		PipelineService:    pipelineService,
+		UIbuilderService:   ubService,
+		UIFormService:      ufService,
+		ObjectstoreService: objService,
 	}
 }
 
