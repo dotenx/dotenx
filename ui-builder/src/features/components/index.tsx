@@ -96,6 +96,7 @@ import { TeamRoundLeft } from './team-round-left'
 import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
+import { TestimonialSlider2 } from './testimonial-slider-2'
 
 export const COMPONENTS: Components = [
 	{
@@ -228,7 +229,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Testimonial',
 		icon: <TbMessageChatbot />,
-		items: [TestimonialSimple, TestimonialSlider],
+		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
 	},
 	{
 		title: 'Form',
