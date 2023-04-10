@@ -5,7 +5,7 @@ import { z } from 'zod'
 export const palettes: ColorPalette[] = [
 	{
 		id: 'a0b5b5e1-0f1f-4b0f-8c1c-1f2c2c3c4c5c',
-		colors: ['#072613', '#2A996B', '#365481', '#FCCE41', '#717171'],
+		colors: ['#072613', '#2A996B', '#365481', '#FFFFFF', '#333333'],
 	},
 	{
 		id: 'b0b5b5e1-0f1f-4b0f-8c1c-1f2c2c3c4c5c',
