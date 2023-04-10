@@ -2,12 +2,15 @@ package objectstore
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -15,6 +18,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -31,9 +36,9 @@ Also, when is_public is true, we return the public url of the file served throug
 */
 
 // Todo: Get this from config
-const MaxFileSize = 1 * 1024 * 1024
+const MaxFileSize = 10 * 1024 * 1024 // 10MB
 
-func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
+func (controller *ObjectstoreController) Upload(pService projectService.ProjectService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -50,6 +55,15 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 			tpAccountId = a.(string)
 		}
 		projectTag := c.Param("project_tag")
+
+		project, pErr := pService.GetProjectByTag(projectTag)
+		if pErr != nil {
+			logrus.Error(pErr)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": pErr.Error(),
+			})
+			return
+		}
 
 		ac := c.PostForm("is_public")
 		ug := c.PostForm("user_groups")
@@ -69,14 +83,6 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 		extension := filepath.Ext(file.Filename)
 		fileName := strings.Replace(strings.TrimSuffix(file.Filename, extension), " ", "_", -1) + "_" + uuid.New().String() + extension
 
-		// Get the existing usage
-		used, err := controller.Service.GetTotalUsage(accountId)
-		if err != nil {
-			logrus.Error(err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get total usage"})
-			return
-		}
-
 		// We always know the file size is less than the limit of int32
 		size := int(file.Size)
 		if size > MaxFileSize {
@@ -85,16 +91,20 @@ func (controller *ObjectstoreController) Upload() gin.HandlerFunc {
 		}
 
 		// Check if the user has enough space
-		// TODO: Check this based on user's plan
-		totalAllowedSize, err := strconv.Atoi(config.Configs.Upload.QuotaKB)
+		hasAccess, err := CheckUploadFileAccess(accountId, project.Type)
 		if err != nil {
 			logrus.Error(err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get total allowed size"})
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
-
-		if size > (totalAllowedSize - used) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Not enough space"})
+		if !hasAccess {
+			err = utils.ErrReachLimitationOfPlan
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 
@@ -188,4 +198,57 @@ func UploadFileToS3(file multipart.File, fileName string, size int64, isPublic b
 	}
 
 	return nil
+}
+
+type checkAccessDto struct {
+	AccountId   string `json:"account_id" binding:"required"`
+	ProjectType string `json:"project_type" binding:"required"`
+}
+
+func CheckUploadFileAccess(accountId, projectType string) (bool, error) {
+	dto := checkAccessDto{
+		AccountId:   accountId,
+		ProjectType: projectType,
+	}
+	json_data, err := json.Marshal(dto)
+	if err != nil {
+		return false, errors.New("bad input body")
+	}
+	requestBody := bytes.NewBuffer(json_data)
+	token, err := utils.GeneratToken()
+	if err != nil {
+		return false, err
+	}
+	Requestheaders := []utils.Header{
+		{
+			Key:   "Authorization",
+			Value: token,
+		},
+		{
+			Key:   "Content-Type",
+			Value: "application/json",
+		},
+	}
+	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+	url := config.Configs.Endpoints.Admin + "/internal/user/access/fileStorage"
+	out, err, status, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, Requestheaders, time.Minute, true)
+	if err != nil {
+		return false, err
+	}
+	// if admin-api retrun 403 as status code, this shows there isn't any error so we return nil as error
+	if status == http.StatusForbidden {
+		return false, nil
+	}
+	if status != http.StatusOK && status != http.StatusAccepted {
+		logrus.Println(string(out))
+		return false, errors.New("not ok with status: " + strconv.Itoa(status))
+	}
+	var res struct {
+		Access bool `json:"access"`
+	}
+	if err := json.Unmarshal(out, &res); err != nil {
+		return false, err
+	}
+
+	return res.Access, nil
 }

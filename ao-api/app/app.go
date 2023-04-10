@@ -175,7 +175,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	uiFormService := uiFormService.NewUIFormService(formStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService, objectstoreService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
 
@@ -272,6 +272,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/ui_page/list", middlewares.InternalMiddleware(), InternalController.ListUiPages)
 	internal.POST("/ui_form/list", middlewares.InternalMiddleware(), InternalController.ListUiForms)
 	internal.POST("/domain/list", middlewares.InternalMiddleware(), InternalController.ListDomains)
+	internal.POST("/file_storage/usage", middlewares.InternalMiddleware(), InternalController.GetFileStorageUsage)
 	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
 
 	// tasks router
@@ -413,7 +414,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	userGroupManagement.POST("/project/:tag/userGroup/default", middlewares.TokenTypeMiddleware([]string{"user"}), userManagementController.SetDefaultUserGroup())
 
 	// objectstore router
-	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.Upload())
+	objectstore.POST("/project/:project_tag/upload", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.Upload(ProjectService))
 	objectstore.GET("/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.ListFiles())
 	objectstore.GET("/project/:project_tag/file/:file_name", middlewares.TokenTypeMiddleware([]string{"user", "tp"}), objectstoreController.GetFile())
 	objectstore.POST("/project/:project_tag/file/:file_name/presign/url", middlewares.TokenTypeMiddleware([]string{"user"}), objectstoreController.GetPresignUrl())
