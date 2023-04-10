@@ -1,10 +1,10 @@
 <p align="center">
-  DoTenX web-application (naming is not ideal!), is a full stack low-code solution for building scalable and powerful applications, automations, APIs, internal tools and much more.
+  DoTenX core, is a full stack low-code solution for building scalable and powerful applications, automations, APIs, internal tools and much more.
 </p>
 
 ---
 
-Wanna support? Each ⭐ you add to the project, makes us very happy 😻. Let's make innovation more accessible together.
+Our mission is to make technology more accessible to small and medium size businesses.
 
 ![Twitter Follow](https://img.shields.io/twitter/follow/Do10X?style=social) ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/dotenx/dotenx?include_prereleases) ![GitHub release (release name instead of tag name)](https://img.shields.io/github/v/release/dotenx/dotenx?include_prereleases) ![GitHub contributors](https://img.shields.io/github/contributors/dotenx/dotenx)
 
@@ -22,21 +22,10 @@ https://user-images.githubusercontent.com/15846333/212295446-4657130b-6416-4cbb-
 
 
 
-Blog:
-
-https://blog.dotenx.com
-
 YouTube:
 
 https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
 
-Previous stages:
-- pre-alpha
-- alpha
-- beta
-
-
-Current stage: beta
 
 ---
 
