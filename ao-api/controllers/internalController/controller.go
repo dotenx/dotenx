@@ -251,3 +251,32 @@ func (c *InternalController) ListUiForms(ctx *gin.Context) {
 		"total": numberOfForms,
 	})
 }
+
+// GetFileStorageUsage returns total file size of object store for a specific user by given project type
+func (c *InternalController) GetFileStorageUsage(ctx *gin.Context) {
+	type body struct {
+		AccountId   string `json:"accountId"`
+		ProjectType string `json:"projectType"`
+	}
+	var dto body
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	usage, err := c.Service.GetFileStorageUsage(dto.AccountId, dto.ProjectType)
+	if err != nil {
+		logrus.Error(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"usage": usage,
+	})
+}
