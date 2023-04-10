@@ -169,12 +169,15 @@ const Domain = ({
 										<div
 											className="text-xs flex items-center justify-between cursor-pointer hover:text-cyan-800"
 											onClick={() => {
-												clipboard.copy("external_domain"),
-													setClicked("external_domain")
+												clipboard.copy(domainData?.external_domain),
+													setClicked(domainData?.external_domain || "")
 											}}
 										>
-											<span className="mr-2 truncate  ">external_domain</span>
-											{clipboard.copied && clicked === "external_domain" ? (
+											<span className="mr-2 truncate  ">
+												{domainData?.external_domain}
+											</span>
+											{clipboard.copied &&
+											clicked === domainData?.external_domain ? (
 												<IoCheckmark className="w-3 h-3" />
 											) : (
 												<IoCopy className="w-3 h-3" />

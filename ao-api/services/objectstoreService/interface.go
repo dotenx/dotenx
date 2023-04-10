@@ -16,6 +16,9 @@ type ObjectstoreService interface {
 	// Get total usage of the object store across all projects in the account
 	GetTotalUsage(accountId string) (int, error)
 
+	// Get total usage of the object store across all projects with given type in the account
+	GetUsageByProjectType(accountId, projectType string) (int64, error)
+
 	// Add an object to the object_store table
 	AddObject(objectstore models.Objectstore) error
 
