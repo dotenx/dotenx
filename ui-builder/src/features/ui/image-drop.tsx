@@ -32,7 +32,7 @@ export function ImageDrop({
 				ml="auto"
 				title="Clear image"
 			/>
-			<Image height={172} radius="xs" src={src} />
+			<Image height={172} radius="xs" src={src} fit="contain" />
 		</div>
 	) : (
 		<Dropzone
