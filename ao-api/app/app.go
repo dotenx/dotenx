@@ -17,6 +17,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/controllers/marketplace"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	"github.com/dotenx/dotenx/ao-api/controllers/objectstore"
+	openai "github.com/dotenx/dotenx/ao-api/controllers/openAI"
 	"github.com/dotenx/dotenx/ao-api/controllers/predefinedMiniTask"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
@@ -200,6 +201,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiFormController := uiForm.UIFormController{Service: uiFormService}
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
 	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService, PipelineService: crudServices}
+	OpenAIController := openai.OpenAIController{}
 
 	// Routes
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
@@ -259,6 +261,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	marketplace := r.Group("/marketplace")
 	gitIntegration := r.Group("/git/integration")
 	ecommerce := r.Group("/ecommerce")
+	openai := r.Group("/openai")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
@@ -499,6 +502,11 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
+
+	// open AI router
+	openai.POST("/chat/completions", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.CreateChatCompletion())
+	openai.POST("/ui_component/generations", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.GenerateUiComponent())
+	openai.POST("/images/generations", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.CreateImage())
 
 	// go TriggerService.StartChecking(IntegrationStore)
 	// go TriggerService.StartScheduller()
