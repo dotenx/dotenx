@@ -139,6 +139,10 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 				"name": "thumbnails",
 				"type": "text_array",
 			},
+			{
+				"name": "verisons",
+				"type": "dtx_json",
+			},
 		},
 		"orders": []map[string]string{
 			{
@@ -168,6 +172,10 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 			{
 				"name": "paid_amount",
 				"type": "float_num",
+			},
+			{
+				"name": "version",
+				"type": "num",
 			},
 		},
 		"reviews": []map[string]string{
@@ -204,6 +212,10 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 			{
 				"name": "valid_until",
 				"type": "date_time",
+			},
+			{
+				"name": "version",
+				"type": "num",
 			},
 		},
 	}
