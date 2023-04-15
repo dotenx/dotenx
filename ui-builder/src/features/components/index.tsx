@@ -97,6 +97,7 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
+import { FormEmailInput2 } from './form-email-input-2'
 
 export const COMPONENTS: Components = [
 	{
@@ -234,7 +235,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Form',
 		icon: <TbForms />,
-		items: [Form, Form2,FormEmailInput1],
+		items: [Form, Form2,FormEmailInput1, FormEmailInput2],
 	},
 	{
 		title: 'Slideshow',
