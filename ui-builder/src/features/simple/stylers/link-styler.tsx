@@ -11,10 +11,12 @@ export function LinkStyler({
 	label,
 	element,
 	placeholder,
+	linkOnly
 }: {
 	label?: string
 	element: LinkElement
 	placeholder?: string
+	linkOnly?: boolean
 }) {
 	const set = useSetWithElement(element)
 	const setText = (text: string) => {
@@ -29,7 +31,7 @@ export function LinkStyler({
 			value={element.data.href.toString()}
 			onChange={(event) => setText(event.target.value)}
 			placeholder={placeholder}
-			rightSection={<StyleEditor element={element} />}
+			rightSection={linkOnly ? null : <StyleEditor element={element} />}
 		/>
 	)
 }
