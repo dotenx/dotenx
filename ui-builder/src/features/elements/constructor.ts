@@ -61,17 +61,20 @@ export const frameGrid = (children?: Element[]) =>
 	box(children)
 		.css({
 			display: 'grid',
-			gridTemplateColumns: Array.from({ length: 2 }, () => '1fr').join(' '),
+			gridTemplateColumns: '1fr 1fr',
 			paddingTop: '40px',
 			paddingBottom: '40px',
 			paddingLeft: '15%',
 			paddingRight: '15%',
+			columnGap: '4rem',
 		})
 		.cssTablet({
+			gridTemplateColumns: '1fr',
 			paddingLeft: '10%',
 			paddingRight: '10%',
 			paddingTop: '30px',
 			paddingBottom: '30px',
+			rowGap: '2rem',
 		})
 		.cssMobile({
 			paddingLeft: '5%',
