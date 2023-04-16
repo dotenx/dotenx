@@ -98,6 +98,8 @@ import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
 import { FormEmailInput2 } from './form-email-input-2'
+import { AboutLeft5 } from './about-left-5'
+import { AboutRight5 } from './about-right-5'
 
 export const COMPONENTS: Components = [
 	{
@@ -128,6 +130,8 @@ export const COMPONENTS: Components = [
 			AboutFramedImage,
 			AboutLeft4,
 			AboutRight4,
+			AboutLeft5,
+			AboutRight5,
 			AboutVideoStatsLeft,
 			AboutVideoStatsRight,
 			AboutVideo1,
