@@ -40,7 +40,7 @@ func (ec *EcommerceController) ListTpUserProducts() gin.HandlerFunc {
 			return
 		}
 		listProductsQuery := fmt.Sprintf(`
-		select distinct products.name, products.type, products.summary, products.description, products.price, products.image_url, products.tags, products.currency, products.details, products.thumbnails, user_products.version from user_products 
+		select distinct products.id, products.name, products.type, products.summary, products.description, products.price, products.image_url, products.tags, products.currency, products.details, products.thumbnails, user_products.version from user_products 
 		join products on user_products.__products=products.id
 		where email='%s' and valid_until > '%s';`, user.Email, time.Now().Format(time.RFC3339))
 
