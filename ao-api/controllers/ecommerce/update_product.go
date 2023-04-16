@@ -191,7 +191,7 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 			}
 			var maxId, cnt int
 			cnt = 1
-			for _, v := range dto.Versions.Versions {
+			for _, v := range oldProduct.Versions.Versions {
 				maxId = int(math.Max(float64(v.Id), float64(maxId)))
 			}
 			for i, v := range versions.Versions {
@@ -225,7 +225,7 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 			if len(dto.Versions.Versions) != 0 {
 				var maxId, cnt int
 				cnt = 1
-				for _, v := range dto.Versions.Versions {
+				for _, v := range oldProduct.Versions.Versions {
 					maxId = int(math.Max(float64(v.Id), float64(maxId)))
 				}
 				for i, v := range dto.Versions.Versions {
