@@ -235,6 +235,8 @@ func checkProductsAvailability(sc *client.API, dbService databaseService.Databas
 				logrus.Error(err.Error())
 				return false, err
 			}
+		} else {
+			productLimitation = tableProduct.Limitation
 		}
 		if productLimitation == -1 {
 			continue
