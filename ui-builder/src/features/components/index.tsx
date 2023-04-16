@@ -100,6 +100,8 @@ import { TestimonialSlider2 } from './testimonial-slider-2'
 import { FormEmailInput2 } from './form-email-input-2'
 import { AboutLeft5 } from './about-left-5'
 import { AboutRight5 } from './about-right-5'
+import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
+import { FooterSimpleCentered } from './footer-simple-center'
 
 export const COMPONENTS: Components = [
 	{
@@ -184,7 +186,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Footers',
 		icon: <TbLayoutBottombar />,
-		items: [FooterGrid, FooterSimple],
+		items: [FooterGrid, FooterSimple, FooterSimpleCentered, FooterSimpleWithoutIcon],
 	},
 	{
 		title: 'Gallery',
