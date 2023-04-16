@@ -75,7 +75,9 @@ const tagIds = {
 
 // =============  defaultData =============
 
-const component = frameGrid().serialize()
+const component = frameGrid().css({
+	alignItems: 'center'
+}).serialize()
 
 const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
@@ -85,27 +87,6 @@ const heroImage = produce(new ImageElement(), (draft) => {
 	}
 	draft.data.src = Expression.fromString('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
 	draft.tagId = tagIds.heroImage
-}).serialize()
-
-const detailsWrapper = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'space-between',
-			alignItems: 'flex-start',
-		},
-	}
-	draft.style.tablet = {
-		default: {
-			lineHeight: '1.3',
-		},
-	}
-	draft.style.mobile = {
-		default: {
-			lineHeight: '1.2',
-		},
-	}
 }).serialize()
 
 
@@ -158,17 +139,17 @@ const createFeatureLine = (txt: string) =>
 		const image = produce(new ImageElement(), (draft) => {
 			draft.style.desktop = {
 				default: {
-					minWidth: '48px',
-					minHeight: '48px',
-					objectFit: 'cover',
+					width: '3rem',
+					height: '3rem',
+					objectFit: 'contain',
 					objectPosition: 'center center',
 					marginRight: '24px'
 				},
 			}
 			draft.style.tablet = {
 				default: {
-					minWidth: '32px',
-					minHeight: '32px',
+					width: '2rem',
+					height: '2rem',
 				},
 			}
 			draft.tagId = tagIds.image
