@@ -1,6 +1,7 @@
 package ecommerce
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,6 +17,7 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		projectTag := c.Param("project_tag")
 		productId := c.Param("product_id")
+		productVersion := c.Param("product_version")
 
 		project, err := ec.ProjectService.GetProjectByTag(projectTag)
 		if err != nil {
@@ -42,7 +44,7 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 			return
 		}
 		listProductsQuery := fmt.Sprintf(`
-		select __products as id from user_products 
+		select __products as id, version from user_products 
 		where email='%s' and valid_until > '%s';`, user.Email, time.Now().Format(time.RFC3339))
 
 		listProductsRes, err := ec.DatabaseService.RunDatabaseQuery(projectTag, listProductsQuery)
@@ -62,13 +64,13 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		}
 		boughtThis := false
 		for _, pid := range listProductIds {
-			if fmt.Sprint(pid["id"]) == productId {
+			if fmt.Sprint(pid["id"]) == productId && fmt.Sprint(pid["version"]) == productVersion {
 				boughtThis = true
 			}
 		}
 		if !boughtThis {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "you haven't buy this product",
+				"message": "you haven't buy this product or selected version",
 			})
 			return
 		}
@@ -91,13 +93,33 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 			})
 			return
 		}
-		product := productRows[0]
-		productFileNames, ok := product["file_names"].([]string)
-		if !ok {
+		productMap := productRows[0]
+		tableProductBytes, err := json.Marshal(productMap)
+		if err != nil {
+			logrus.Error(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "products table isn't in correct state",
+				"error": err.Error(),
 			})
-			return
+		}
+		var tableProduct productDTO
+		err = json.Unmarshal(tableProductBytes, &tableProduct)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+		}
+
+		var productFileNames []string
+		if productVersion == "-1" {
+			productFileNames = tableProduct.FileNames
+		} else {
+			for _, v := range tableProduct.Versions.Versions {
+				if fmt.Sprint(v.Id) == productVersion {
+					productFileNames = v.FileNames
+					break
+				}
+			}
 		}
 
 		// create pre-sign url for all product files
@@ -125,8 +147,8 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 			linkInfo["file_name"] = fileName
 			files = append(files, linkInfo)
 		}
-		product["files"] = files
+		productMap["files"] = files
 
-		c.JSON(http.StatusOK, product)
+		c.JSON(http.StatusOK, productMap)
 	}
 }

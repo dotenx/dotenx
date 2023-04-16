@@ -175,6 +175,54 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 				return
 			}
 			tableProductId := pidRows[0]["id"].(int64)
+			tableProductMap := pidRows[0]
+			tableProductBytes, err := json.Marshal(tableProductMap)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid product",
+				})
+				return
+			}
+			var tableProduct productDTO
+			err = json.Unmarshal(tableProductBytes, &tableProduct)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "invalid product",
+				})
+				return
+			}
+			boughtVersion := -1
+			// finding product version
+			if len(tableProduct.Versions.Versions) != 0 {
+				for _, v := range tableProduct.Versions.Versions {
+					if tableProduct.Type == "one-time" {
+						if v.StripePriceId == priceId {
+							boughtVersion = v.Id
+						}
+					}
+					if tableProduct.Type == "membership" {
+						for _, p := range v.RecurringPayment.Prices {
+							if p.StripePriceId == priceId {
+								boughtVersion = v.Id
+								break
+							}
+						}
+					}
+					if boughtVersion != -1 {
+						break
+					}
+				}
+				if boughtVersion == -1 {
+					err := errors.New("invalid price id")
+					logrus.Error(err.Error())
+					c.JSON(http.StatusBadRequest, gin.H{
+						"message": err.Error(),
+					})
+					return
+				}
+			}
 
 			stripePrice, err := sc.Prices.Get(priceId, nil)
 			if err != nil {
@@ -196,13 +244,15 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 			{
 				"__products": 0,
 				"email": "",
-				"valid_until": ""
+				"valid_until": "",
+				"version": 0
 			}
 			*/
 			err = ec.DatabaseService.InsertRow("", projectTag, "user_products", map[string]interface{}{
 				"__products":  tableProductId,
 				"email":       stripeCustomer.Email,
 				"valid_until": validUntil,
+				"version":     boughtVersion,
 			})
 			if err != nil {
 				logrus.Error(err.Error())
@@ -221,7 +271,8 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 				"email": "",
 				"payment_status": "",
 				"updated_at": "",
-				"paid_amount": 0.0
+				"paid_amount": 0.0,
+				"version": 0
 			}
 			*/
 			err = ec.DatabaseService.InsertRow("", projectTag, "orders", map[string]interface{}{
@@ -232,6 +283,7 @@ func (ec *EcommerceController) CreateOrder() gin.HandlerFunc {
 				"payment_status": stripePayment.Status,
 				"updated_at":     time.Unix(stripePayment.Created, 0).UTC().Format(time.RFC3339),
 				"paid_amount":    float64(unitAmount*quantity) / 100.0,
+				"version":        boughtVersion,
 			})
 			if err != nil {
 				logrus.Error(err.Error())

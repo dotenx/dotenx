@@ -34,6 +34,7 @@ type productDTO struct {
 	Tags             []string               `json:"tags"`
 	Currency         string                 `json:"currency" binding:"required"`
 	RecurringPayment recurringPayments      `json:"recurring_payment" binding:"validpricing"`
+	Versions         productVersions        `json:"versions" binding:"validpricing"`
 	Details          map[string]interface{} `json:"details"`
 	Summary          string                 `json:"summary"`
 	Thumbnails       []string               `json:"thumbnails"`
@@ -52,31 +53,81 @@ type recurringPayment struct {
 	StripePriceId          string  `json:"stripe_price_id"`
 }
 
+type productVersions struct {
+	Versions []productVersion `json:"versions"`
+}
+
+type productVersion struct {
+	Name             string                 `json:"name" binding:"required"`
+	Id               int                    `json:"id"`
+	Description      string                 `json:"description"`
+	Price            float64                `json:"price"`
+	Limitation       int64                  `json:"limitation" binding:"gte=-1"`
+	Metadata         map[string]interface{} `json:"metadata"`
+	StripePriceId    string                 `json:"stripe_price_id"`
+	Content          string                 `json:"content"`
+	HtmlContent      string                 `json:"html_content" binding:"html"`
+	JsonContent      map[string]interface{} `json:"json_content"`
+	RecurringPayment recurringPayments      `json:"recurring_payment"`
+	FileNames        []string               `json:"file_names"`
+}
+
 var validPricing validator.Func = func(fl validator.FieldLevel) bool {
 	product, ok := fl.Top().Interface().(productDTO)
 	if ok {
-		if product.Type == "membership" && fl.FieldName() == "RecurringPayment" {
-			recurringPaymentBytes, ok := fl.Field().Interface().([]byte)
-			var recurringPayment recurringPayments
-			json.Unmarshal(recurringPaymentBytes, &recurringPayment)
-			if !ok {
-				return false
-			}
-			if len(recurringPayment.Prices) == 0 {
-				return false
-			}
-			for _, price := range recurringPayment.Prices {
-				if price.Price < 0 {
+		if product.Type == "membership" {
+			if len(product.Versions.Versions) != 0 && fl.FieldName() == "Versions" {
+				productVersionBytes, ok := fl.Field().Interface().([]byte)
+				var productVersion productVersions
+				json.Unmarshal(productVersionBytes, &productVersion)
+				if !ok {
 					return false
 				}
-				possibleValues := []string{"day", "week", "month", "year"}
-				if !utils.ContainsString(possibleValues, price.RecurringInterval) {
+				if len(productVersion.Versions) == 0 {
 					return false
 				}
+				for _, v := range product.Versions.Versions {
+					for _, price := range v.RecurringPayment.Prices {
+						if price.Price < 0 {
+							return false
+						}
+						possibleValues := []string{"day", "week", "month", "year"}
+						if !utils.ContainsString(possibleValues, price.RecurringInterval) {
+							return false
+						}
+					}
+				}
+			} else if len(product.Versions.Versions) == 0 && fl.FieldName() == "RecurringPayment" {
+				recurringPaymentBytes, ok := fl.Field().Interface().([]byte)
+				var recurringPayment recurringPayments
+				json.Unmarshal(recurringPaymentBytes, &recurringPayment)
+				if !ok {
+					return false
+				}
+				if len(recurringPayment.Prices) == 0 {
+					return false
+				}
+				for _, price := range recurringPayment.Prices {
+					if price.Price < 0 {
+						return false
+					}
+					possibleValues := []string{"day", "week", "month", "year"}
+					if !utils.ContainsString(possibleValues, price.RecurringInterval) {
+						return false
+					}
+				}
 			}
-		} else if product.Type == "one-time" && fl.FieldName() == "Price" {
-			if price, ok := fl.Field().Interface().(float64); !ok || price < 0 {
-				return false
+		} else if product.Type == "one-time" {
+			if len(product.Versions.Versions) != 0 && fl.FieldName() == "Versions" {
+				for _, v := range product.Versions.Versions {
+					if v.Price < 0 {
+						return false
+					}
+				}
+			} else if len(product.Versions.Versions) == 0 && fl.FieldName() == "Price" {
+				if price, ok := fl.Field().Interface().(float64); !ok || price < 0 {
+					return false
+				}
 			}
 		}
 	}
@@ -173,16 +224,30 @@ func (ec *EcommerceController) CreateProduct() gin.HandlerFunc {
 		defaultPriceUnitAmount := int64(dto.Price * 100)
 		defaultPriceRecurringInterval := ""
 		defaultPriceRecurringIntervalCount := int64(0)
-		defaultPriceIndex := 0
+		// defaultPriceIndex := 0
+		// finding default price for 'membership' products
 		if dto.Type == "membership" {
-			for i, p := range dto.RecurringPayment.Prices {
-				if p.IsDefault {
-					defaultPriceUnitAmount = int64(p.Price * 100)
-					defaultPriceRecurringInterval = p.RecurringInterval
-					defaultPriceRecurringIntervalCount = p.RecurringIntervalCount
-					defaultPriceIndex = i
-					dto.Price = p.Price
-					break
+			var versions productVersions
+			versions = productVersions{
+				Versions: []productVersion{
+					{
+						RecurringPayment: dto.RecurringPayment,
+					},
+				},
+			}
+			if len(dto.Versions.Versions) != 0 {
+				versions = dto.Versions
+			}
+			for _, v := range versions.Versions {
+				for _, p := range v.RecurringPayment.Prices {
+					if p.IsDefault {
+						defaultPriceUnitAmount = int64(p.Price * 100)
+						defaultPriceRecurringInterval = p.RecurringInterval
+						defaultPriceRecurringIntervalCount = p.RecurringIntervalCount
+						// defaultPriceIndex = i
+						dto.Price = p.Price
+						break
+					}
 				}
 			}
 			if defaultPriceRecurringInterval == "" {
@@ -192,6 +257,14 @@ func (ec *EcommerceController) CreateProduct() gin.HandlerFunc {
 				return
 			}
 		}
+		// finding default price for 'one-time' products
+		if dto.Type == "one-time" {
+			if len(dto.Versions.Versions) != 0 {
+				defaultPriceUnitAmount = int64(dto.Versions.Versions[0].Price * 100)
+				dto.Price = dto.Versions.Versions[0].Price
+			}
+		}
+
 		stripeProduct, err := createProduct(sc, dto.Name, dto.Currency, defaultPriceUnitAmount, defaultPriceRecurringInterval, defaultPriceRecurringIntervalCount)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -203,12 +276,25 @@ func (ec *EcommerceController) CreateProduct() gin.HandlerFunc {
 		dto.StripePriceId = stripeProduct.DefaultPrice.ID
 		dto.StripeProductId = stripeProduct.ID
 
+		// creating prices for 'membership' products
 		if dto.Type == "membership" {
-			priceList := make([]recurringPayment, 0)
-			for i, p := range dto.RecurringPayment.Prices {
-				if i == defaultPriceIndex {
-					p.StripePriceId = stripeProduct.DefaultPrice.ID
-				} else {
+			var versions productVersions
+			versions = productVersions{
+				Versions: []productVersion{
+					{
+						RecurringPayment: dto.RecurringPayment,
+					},
+				},
+			}
+			if len(dto.Versions.Versions) != 0 {
+				versions = dto.Versions
+			}
+			for i, v := range versions.Versions {
+				priceList := make([]recurringPayment, 0)
+				for _, p := range v.RecurringPayment.Prices {
+					// if i == defaultPriceIndex {
+					// 	p.StripePriceId = stripeProduct.DefaultPrice.ID
+					// } else {
 					price, err := createPrice(sc, stripeProduct.ID, dto.Currency, int64(p.Price*100), p.RecurringInterval, p.RecurringIntervalCount)
 					if err != nil {
 						logrus.Error(err.Error())
@@ -218,10 +304,35 @@ func (ec *EcommerceController) CreateProduct() gin.HandlerFunc {
 						return
 					}
 					p.StripePriceId = price.ID
+					// }
+					priceList = append(priceList, p)
 				}
-				priceList = append(priceList, p)
+				if len(dto.Versions.Versions) == 0 {
+					dto.RecurringPayment.Prices = priceList
+				} else {
+					v.RecurringPayment.Prices = priceList
+					v.Id = i + 1
+					dto.Versions.Versions[i] = v
+				}
 			}
-			dto.RecurringPayment.Prices = priceList
+		}
+		// creating prices for 'one-time' products
+		if dto.Type == "one-time" {
+			if len(dto.Versions.Versions) != 0 {
+				for i, v := range dto.Versions.Versions {
+					price, err := createPrice(sc, stripeProduct.ID, dto.Currency, int64(v.Price*100), "", 0)
+					if err != nil {
+						logrus.Error(err.Error())
+						c.JSON(http.StatusBadRequest, gin.H{
+							"message": err.Error(),
+						})
+						return
+					}
+					v.StripePriceId = price.ID
+					v.Id = i + 1
+					dto.Versions.Versions[i] = v
+				}
+			}
 		}
 
 		dtoBytes, _ := json.Marshal(dto)
