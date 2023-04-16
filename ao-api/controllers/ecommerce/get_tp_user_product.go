@@ -17,7 +17,7 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		projectTag := c.Param("project_tag")
 		productId := c.Param("product_id")
-		productVersion := c.Param("product_version")
+		productVersionId := c.Param("product_version")
 
 		project, err := ec.ProjectService.GetProjectByTag(projectTag)
 		if err != nil {
@@ -64,7 +64,7 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		}
 		boughtThis := false
 		for _, pid := range listProductIds {
-			if fmt.Sprint(pid["id"]) == productId && fmt.Sprint(pid["version"]) == productVersion {
+			if fmt.Sprint(pid["id"]) == productId && fmt.Sprint(pid["version"]) == productVersionId {
 				boughtThis = true
 			}
 		}
@@ -111,12 +111,17 @@ func (ec *EcommerceController) GetTpUserProduct() gin.HandlerFunc {
 		}
 
 		var productFileNames []string
-		if productVersion == "-1" {
+		if productVersionId == "-1" {
 			productFileNames = tableProduct.FileNames
 		} else {
 			for _, v := range tableProduct.Versions.Versions {
-				if fmt.Sprint(v.Id) == productVersion {
+				if fmt.Sprint(v.Id) == productVersionId {
 					productFileNames = v.FileNames
+					productMap["versions"] = productVersions{
+						Versions: []productVersion{
+							v,
+						},
+					}
 					break
 				}
 			}
