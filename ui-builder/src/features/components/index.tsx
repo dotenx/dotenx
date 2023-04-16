@@ -102,6 +102,7 @@ import { AboutLeft5 } from './about-left-5'
 import { AboutRight5 } from './about-right-5'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { FooterSimpleCentered } from './footer-simple-center'
+import { TeamIndividualMember2 } from './team-individual-member-2'
 
 export const COMPONENTS: Components = [
 	{
@@ -231,6 +232,7 @@ export const COMPONENTS: Components = [
 			TeamRoundLeft,
 			TeamSquareGrid,
 			TeamIndividualMember,
+			TeamIndividualMember2,
 		],
 	},
 	{
@@ -241,7 +243,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Form',
 		icon: <TbForms />,
-		items: [Form, Form2,FormEmailInput1, FormEmailInput2],
+		items: [Form, Form2, FormEmailInput1, FormEmailInput2],
 	},
 	{
 		title: 'Slideshow',

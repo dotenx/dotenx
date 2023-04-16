@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/Individual-team-member.png'
+import imageUrl from '../../assets/components/Individual-team-member-2.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, img, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
@@ -14,8 +14,8 @@ import { Component, ElementOptions } from './component'
 import { SimpleComponentOptionsProps } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 
-export class TeamIndividualMember extends Component {
-	name = 'Individual team member - 1 '
+export class TeamIndividualMember2 extends Component {
+	name = 'Individual team member - 2'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
@@ -42,7 +42,7 @@ function TeamIndividualMemberOptions({ options }: SimpleComponentOptionsProps) {
 
 	return (
 		<ComponentWrapper
-			name="Individual team member"
+			name="Individual team member -2 "
 			stylers={['backgrounds', 'spacing', 'background-image']}
 		>
 			<ImageStyler element={image} />
@@ -83,7 +83,7 @@ const frame = box([])
 const wrapper = box([])
 	.css({
 		display: 'grid',
-		gridTemplateColumns: '1fr 4fr',
+		gridTemplateColumns: '4fr 1fr',
 		columnGap: '30px',
 	})
 	.cssMobile({
@@ -133,7 +133,7 @@ const details = box([
 			marginBottom: '5px',
 		}),
 	txt(
-		`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor.Lorem ipsum dolor sit amet.`
+		`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc vel ultricies ultricies, nunc nisl aliquam lorem, nec ultricies nisl lorem vel dolor.Lorem ipsum dolor sit amet.`
 	)
 		.tag(tagIds.description)
 		.css({
@@ -161,7 +161,7 @@ const defaultData = {
 	components: [
 		{
 			...wrapper,
-			components: [image, details],
+			components: [details, image],
 		},
 	],
 }
