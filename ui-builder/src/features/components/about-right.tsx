@@ -19,6 +19,7 @@ import { Component } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
+import { frameGrid } from '../elements/constructor'
 
 export class AboutRight extends Component {
 	name = 'About us with details on the right'
@@ -80,36 +81,7 @@ const tagIds = {
 
 // =============  defaultData =============
 
-const component = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'grid',
-			gridTemplateColumns: '1fr 1fr ',
-			width: '100%',
-			alignItems: 'center',
-			justifyContent: 'center',
-			paddingLeft: '15%',
-			paddingRight: '15%',
-			paddingTop: '40px',
-			paddingBottom: '40px',
-		},
-	}
-	draft.style.tablet = {
-		default: {
-			gridTemplateColumns: ' 1fr ',
-			paddingLeft: '10%',
-			paddingRight: '10%',
-			rowGap: '30px',
-		},
-	}
-	draft.style.mobile = {
-		default: {
-			paddingLeft: '5%',
-			paddingRight: '5%',
-			rowGap: '20px',
-		},
-	}
-}).serialize()
+const component = frameGrid().serialize()
 
 const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
@@ -128,7 +100,7 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'space-between',
+			justifyContent: 'center',
 			alignItems: 'flex-start',
 		},
 	}
@@ -153,6 +125,7 @@ const title = produce(new TextElement(), (draft) => {
 			fontSize: '50px',
 			fontWeight: 'bold',
 			color: color('primary'),
+			marginBottom: '10px',
 		},
 	}
 	draft.style.mobile = {

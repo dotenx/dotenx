@@ -21,6 +21,8 @@ import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
+import { frameGrid } from '../elements/constructor'
+import { fontSizes } from '../simple/font-sizes'
 
 export class AboutLeft extends Component {
 	name = 'About us with details on the left'
@@ -82,37 +84,7 @@ const tagIds = {
 
 // =============  defaultData =============
 
-const component = produce(new BoxElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			display: 'grid',
-			gridTemplateColumns: '1fr 1fr ',
-			width: '100%',
-			alignItems: 'center',
-			justifyContent: 'center',
-			paddingLeft: '15%',
-			paddingRight: '15%',
-			paddingTop: '40px',
-			paddingBottom: '40px',
-			gap: '40px',
-		},
-	}
-	draft.style.tablet = {
-		default: {
-			gridTemplateColumns: ' 1fr ',
-			paddingLeft: '10%',
-			paddingRight: '10%',
-			gap: '30px',
-		},
-	}
-	draft.style.mobile = {
-		default: {
-			paddingLeft: '5%',
-			paddingRight: '5%',
-			gap: '20px',
-		},
-	}
-}).serialize()
+const component = frameGrid().serialize()
 
 const heroImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
@@ -131,7 +103,7 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 		default: {
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'space-between',
+			justifyContent: 'center',
 			alignItems: 'flex-start',
 		},
 	}
@@ -153,16 +125,23 @@ const detailsWrapper = produce(new BoxElement(), (draft) => {
 const title = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '50px',
+			fontSize: fontSizes.h2.desktop,
 			fontWeight: 'bold',
 			color: color('primary'),
+			marginBottom: '10px',
+		},
+	}
+	draft.style.tablet = {
+		default: {
+			fontSize: fontSizes.h2.tablet,
 		},
 	}
 	draft.style.mobile = {
 		default: {
-			fontSize: '30px',
+			fontSize: fontSizes.h2.mobile,
 		},
 	}
+	
 	draft.data.text = Expression.fromString('Simplify your business')
 	draft.tagId = tagIds.title
 }).serialize()
