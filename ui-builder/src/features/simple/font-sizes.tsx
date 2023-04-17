@@ -1,27 +1,27 @@
 export const fontSizes = {
 	h1: {
-		desktop: '36px',
-		tablet: '32px',
-		mobile: '28px',
+		desktop: '3.5rem',
+		tablet: '3rem',
+		mobile: '2.5rem',
 	},
 	h2: {
-		desktop: '28px',
-		tablet: '24px',
-		mobile: '20px',
+		desktop: '2.5rem',
+		tablet: '2rem',
+		mobile: '1.5rem',
 	},
 	h3: {
-		desktop: '22px',
-		tablet: '20px',
-		mobile: '18px',
+		desktop: '2rem',
+		tablet: '1.5rem',
+		mobile: '1rem',
 	},
 	h4: {
-		desktop: '18px',
-		tablet: '16px',
-		mobile: '14px',
+		desktop: '1.5rem',
+		tablet: '1.25rem',
+		mobile: '1rem',
 	},
 	normal: {
-		desktop: '16px',
-		tablet: '14px',
-		mobile: '12px',
+		desktop: '1rem',
+		tablet: '0.875rem',
+		mobile: '0.75rem',
 	},
 }

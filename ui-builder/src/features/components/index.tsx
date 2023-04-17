@@ -97,6 +97,14 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
+import { FormEmailInput2 } from './form-email-input-2'
+import { AboutLeft5 } from './about-left-5'
+import { AboutRight5 } from './about-right-5'
+import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
+import { FooterSimpleCentered } from './footer-simple-center'
+import { TeamIndividualMember2 } from './team-individual-member-2'
+import { HeroWithBgTwoCta } from './hero-with-bg-two-cta'
+import { HeroWithBgOneCta } from './hero-with-bg-one-cta'
 
 export const COMPONENTS: Components = [
 	{
@@ -127,6 +135,8 @@ export const COMPONENTS: Components = [
 			AboutFramedImage,
 			AboutLeft4,
 			AboutRight4,
+			AboutLeft5,
+			AboutRight5,
 			AboutVideoStatsLeft,
 			AboutVideoStatsRight,
 			AboutVideo1,
@@ -179,7 +189,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Footers',
 		icon: <TbLayoutBottombar />,
-		items: [FooterGrid, FooterSimple],
+		items: [FooterGrid, FooterSimple, FooterSimpleCentered, FooterSimpleWithoutIcon],
 	},
 	{
 		title: 'Gallery',
@@ -203,6 +213,8 @@ export const COMPONENTS: Components = [
 			HeroWithRating,
 			HeroWithRatingTwoCTAs,
 			HeroWithRatingTwoCTAs2,
+			HeroWithBgOneCta,
+			HeroWithBgTwoCta,
 		],
 	},
 	{
@@ -224,6 +236,7 @@ export const COMPONENTS: Components = [
 			TeamRoundLeft,
 			TeamSquareGrid,
 			TeamIndividualMember,
+			TeamIndividualMember2,
 		],
 	},
 	{
@@ -234,7 +247,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Form',
 		icon: <TbForms />,
-		items: [Form, Form2,FormEmailInput1],
+		items: [Form, Form2, FormEmailInput1, FormEmailInput2],
 	},
 	{
 		title: 'Slideshow',

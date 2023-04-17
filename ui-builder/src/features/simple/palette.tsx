@@ -4,7 +4,11 @@ import { z } from 'zod'
 
 export const palettes: ColorPalette[] = [
 	{
-		id: 'a0b5b5e1-0f1f-4b0f-8c1c-1f2c2c3c4c5c',
+		id: 'b04c135b-90d1-4418-a312-5d6e521e51a5',
+		colors: ['hsla(0, 1%, 6%, 1)', 'hsla(0, 0%, 16%, 1)', 'hsla(0, 1%, 26%, 1)', '#eeeeee', 'hsla(0, 0%, 32%, 1)'],
+	},
+	{
+		id: 'f6aa0d03-8915-4f5a-8f0a-9a189d5a5a2f',
 		colors: ['#072613', '#2A996B', '#365481', '#FFFFFF', '#333333'],
 	},
 	{

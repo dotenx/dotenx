@@ -38,7 +38,7 @@ function NavbarOptions() {
 
 	return (
 		<ComponentWrapper name="Navbar">
-			<LinkStyler element={logoLink} label="Logo" />
+			<LinkStyler linkOnly element={logoLink} label="Logo's link" />
 			<ImageStyler element={logoImage} />
 			<DndTabs
 				containerElement={links}
@@ -67,7 +67,7 @@ const tags = {
 	linkText: 'linkText',
 }
 
-const lnk = (text = 'Link', href = '/') =>
+const lnk = (text = 'Link', href = '/index.html') =>
 	link()
 		.populate([txt(text).tag(tags.linkText)])
 		.href(href)
@@ -134,7 +134,5 @@ const component = () =>
 				paddingRight: '24px',
 			}),
 	]).css({
-		borderBottom: '1px solid',
-		borderColor: color('text'),
 		position: 'relative',
 	})

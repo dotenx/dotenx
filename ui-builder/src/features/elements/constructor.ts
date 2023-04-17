@@ -33,3 +33,53 @@ export const container = (children?: Element[]) =>
 	box(children).css({ maxWidth: '1200px', margin: '0 auto' })
 export const paper = (children?: Element[]) =>
 	box(children).css({ padding: '1rem', color: color('text') })
+export const frame = (children?: Element[]) =>
+	box(children)
+		.css({
+			display: 'flex',
+			justifyContent: 'center',
+			alignItems: 'center',
+			paddingTop: '40px',
+			paddingBottom: '40px',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+		})
+		.cssTablet({
+			paddingLeft: '10%',
+			paddingRight: '10%',
+			paddingTop: '30px',
+			paddingBottom: '30px',
+		})
+		.cssMobile({
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			paddingTop: '20px',
+			paddingBottom: '20px',
+		})
+		
+export const frameGrid = (children?: Element[]) =>
+	box(children)
+		.css({
+			display: 'grid',
+			gridTemplateColumns: '1fr 1fr',
+			paddingTop: '40px',
+			paddingBottom: '40px',
+			paddingLeft: '15%',
+			paddingRight: '15%',
+			columnGap: '4rem',
+		})
+		.cssTablet({
+			gridTemplateColumns: '1fr',
+			paddingLeft: '10%',
+			paddingRight: '10%',
+			paddingTop: '30px',
+			paddingBottom: '30px',
+			rowGap: '2rem',
+		})
+		.cssMobile({
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			paddingTop: '20px',
+			paddingBottom: '20px',
+		})
+		

@@ -19,6 +19,7 @@ import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
+import { ColumnsStyler } from '../simple/stylers/columns-styler'
 
 export class FeatureGridImageTag extends Component {
 	name = 'Feature grid with image tag'
@@ -38,11 +39,11 @@ function FeatureGridImageTagOptions() {
 
 	return (
 		<ComponentWrapper name="Feature grid with image tag">
+			<ColumnsStyler element={grid} maxColumns={4} />
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <TileOptions item={item} />}
 				insertElement={() => regenElement(tile)}
-				autoAdjustGridTemplateColumns={false}
 			/>
 		</ComponentWrapper>
 	)
