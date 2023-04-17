@@ -3,6 +3,7 @@ package ecommerce
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -122,16 +123,30 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 		defaultPriceUnitAmount := int64(dto.Price * 100)
 		defaultPriceRecurringInterval := ""
 		defaultPriceRecurringIntervalCount := int64(0)
-		defaultPriceIndex := 0
+		// defaultPriceIndex := 0
+		// finding default price for 'membership' products
 		if dto.Type == "membership" {
-			for i, p := range dto.RecurringPayment.Prices {
-				if p.IsDefault {
-					defaultPriceUnitAmount = int64(p.Price * 100)
-					defaultPriceRecurringInterval = p.RecurringInterval
-					defaultPriceRecurringIntervalCount = p.RecurringIntervalCount
-					defaultPriceIndex = i
-					dto.Price = p.Price
-					break
+			var versions productVersions
+			versions = productVersions{
+				Versions: []productVersion{
+					{
+						RecurringPayment: dto.RecurringPayment,
+					},
+				},
+			}
+			if len(dto.Versions.Versions) != 0 {
+				versions = dto.Versions
+			}
+			for _, v := range versions.Versions {
+				for _, p := range v.RecurringPayment.Prices {
+					if p.IsDefault {
+						defaultPriceUnitAmount = int64(p.Price * 100)
+						defaultPriceRecurringInterval = p.RecurringInterval
+						defaultPriceRecurringIntervalCount = p.RecurringIntervalCount
+						// defaultPriceIndex = i
+						dto.Price = p.Price
+						break
+					}
 				}
 			}
 			if defaultPriceRecurringInterval == "" {
@@ -139,6 +154,13 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 					"message": "you should select a price as default price",
 				})
 				return
+			}
+		}
+		// finding default price for 'one-time' products
+		if dto.Type == "one-time" {
+			if len(dto.Versions.Versions) != 0 {
+				defaultPriceUnitAmount = int64(dto.Versions.Versions[0].Price * 100)
+				dto.Price = dto.Versions.Versions[0].Price
 			}
 		}
 
@@ -154,12 +176,27 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 		dto.StripeProductId = stripeProduct.ID
 
 		// create all new prices
+		// creating prices for 'membership' products
 		if dto.Type == "membership" {
-			priceList := make([]recurringPayment, 0)
-			for i, p := range dto.RecurringPayment.Prices {
-				if i == defaultPriceIndex {
-					p.StripePriceId = stripeProduct.DefaultPrice.ID
-				} else {
+			var versions productVersions
+			versions = productVersions{
+				Versions: []productVersion{
+					{
+						RecurringPayment: dto.RecurringPayment,
+					},
+				},
+			}
+			if len(dto.Versions.Versions) != 0 {
+				versions = dto.Versions
+			}
+			var maxId, cnt int
+			cnt = 1
+			for _, v := range oldProduct.Versions.Versions {
+				maxId = int(math.Max(float64(v.Id), float64(maxId)))
+			}
+			for i, v := range versions.Versions {
+				priceList := make([]recurringPayment, 0)
+				for _, p := range v.RecurringPayment.Prices {
 					price, err := createPrice(sc, stripeProduct.ID, dto.Currency, int64(p.Price*100), p.RecurringInterval, p.RecurringIntervalCount)
 					if err != nil {
 						logrus.Error(err.Error())
@@ -169,10 +206,45 @@ func (ec *EcommerceController) UpdateProduct() gin.HandlerFunc {
 						return
 					}
 					p.StripePriceId = price.ID
+					priceList = append(priceList, p)
 				}
-				priceList = append(priceList, p)
+				if len(dto.Versions.Versions) == 0 {
+					dto.RecurringPayment.Prices = priceList
+				} else {
+					v.RecurringPayment.Prices = priceList
+					if v.Id == 0 {
+						v.Id = maxId + cnt
+						cnt++
+					}
+					dto.Versions.Versions[i] = v
+				}
 			}
-			dto.RecurringPayment.Prices = priceList
+		}
+		// creating prices for 'one-time' products
+		if dto.Type == "one-time" {
+			if len(dto.Versions.Versions) != 0 {
+				var maxId, cnt int
+				cnt = 1
+				for _, v := range oldProduct.Versions.Versions {
+					maxId = int(math.Max(float64(v.Id), float64(maxId)))
+				}
+				for i, v := range dto.Versions.Versions {
+					price, err := createPrice(sc, stripeProduct.ID, dto.Currency, int64(v.Price*100), "", 0)
+					if err != nil {
+						logrus.Error(err.Error())
+						c.JSON(http.StatusBadRequest, gin.H{
+							"message": err.Error(),
+						})
+						return
+					}
+					v.StripePriceId = price.ID
+					if v.Id == 0 {
+						v.Id = maxId + cnt
+						cnt++
+					}
+					dto.Versions.Versions[i] = v
+				}
+			}
 		}
 
 		// we should deactivate all old prices

@@ -1,6 +1,7 @@
 package ecommerce
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -191,14 +192,59 @@ func checkProductsAvailability(sc *client.API, dbService databaseService.Databas
 			logrus.Error(err.Error())
 			return false, err
 		}
-		tableProduct := pRows[0]
-		if tableProduct["limitation"].(int64) == -1 {
+		tableProductMap := pRows[0]
+		tableProductBytes, err := json.Marshal(tableProductMap)
+		if err != nil {
+			logrus.Error(err.Error())
+			return false, err
+		}
+		var tableProduct productDTO
+		err = json.Unmarshal(tableProductBytes, &tableProduct)
+		if err != nil {
+			logrus.Error(err.Error())
+			return false, err
+		}
+		if len(tableProduct.Versions.Versions) == 0 && tableProduct.Limitation == -1 {
+			continue
+		}
+		productLimitation, productVersion := int64(-1), -1
+		// finding product version and its limitation
+		if len(tableProduct.Versions.Versions) != 0 {
+			for _, v := range tableProduct.Versions.Versions {
+				if tableProduct.Type == "one-time" {
+					if v.StripePriceId == priceId {
+						productLimitation = v.Limitation
+						productVersion = v.Id
+					}
+				}
+				if tableProduct.Type == "membership" {
+					for _, p := range v.RecurringPayment.Prices {
+						if p.StripePriceId == priceId {
+							productLimitation = v.Limitation
+							productVersion = v.Id
+							break
+						}
+					}
+				}
+				if productVersion != -1 {
+					break
+				}
+			}
+			if productVersion == -1 {
+				err := errors.New("invalid price id")
+				logrus.Error(err.Error())
+				return false, err
+			}
+		} else {
+			productLimitation = tableProduct.Limitation
+		}
+		if productLimitation == -1 {
 			continue
 		}
 		numberOfSoldQuery := fmt.Sprintf(`
 		select COALESCE(sum(quantity), 0) as number_of_sold
 		from orders join products on orders.__products = products.id
-		where products.stripe_product_id = '%s' and orders.payment_status = 'succeeded';`, price.Product.ID)
+		where products.stripe_product_id = '%s' and orders.version = %d and orders.payment_status = 'succeeded';`, price.Product.ID, productVersion)
 		numberOfSoldRes, err := dbService.RunDatabaseQuery(projectTag, numberOfSoldQuery)
 		if err != nil {
 			logrus.Error(err.Error())
@@ -211,7 +257,7 @@ func checkProductsAvailability(sc *client.API, dbService databaseService.Databas
 			return false, err
 		}
 		numberOfSold := nosRows[0]["number_of_sold"].(int64)
-		if numberOfSold+int64(reqQuantity) > tableProduct["limitation"].(int64) {
+		if numberOfSold+int64(reqQuantity) > productLimitation {
 			return false, nil
 		}
 	}

@@ -490,7 +490,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ecommerce.PUT("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateEmailPipeline())
 	ecommerce.GET("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipelines())
 	ecommerce.GET("/project/:project_tag/pipeline/email/:pipeline_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipeline())
-	ecommerce.GET("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
+	ecommerce.GET("/project/:project_tag/product/:product_id/version/:product_version", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
 	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
 	ecommerce.POST("/project/:project_tag/product/:product_id/review", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.SetTpUserReview())
 	ecommerce.GET("/project/:project_tag/product/:product_id/review", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserReview())
