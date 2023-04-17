@@ -103,6 +103,8 @@ import { AboutRight5 } from './about-right-5'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { FooterSimpleCentered } from './footer-simple-center'
 import { TeamIndividualMember2 } from './team-individual-member-2'
+import { HeroWithBgTwoCta } from './hero-with-bg-two-cta'
+import { HeroWithBgOneCta } from './hero-with-bg-one-cta'
 
 export const COMPONENTS: Components = [
 	{
@@ -211,6 +213,8 @@ export const COMPONENTS: Components = [
 			HeroWithRating,
 			HeroWithRatingTwoCTAs,
 			HeroWithRatingTwoCTAs2,
+			HeroWithBgOneCta,
+			HeroWithBgTwoCta,
 		],
 	},
 	{
