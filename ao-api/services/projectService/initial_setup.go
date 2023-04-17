@@ -140,7 +140,7 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 				"type": "text_array",
 			},
 			{
-				"name": "verisons",
+				"name": "versions",
 				"type": "dtx_json",
 			},
 		},
