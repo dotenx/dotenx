@@ -119,6 +119,14 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			return
 		}
 		stripeCouponId := stripePromotionCode.Coupon.ID
+		_, err = sc.Coupons.Del(stripeCouponId, nil)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "invalid discount code",
+			})
+			return
+		}
 
 		stripeProductIds := make([]string, 0)
 		if len(dto.Products) != 0 {
@@ -160,7 +168,7 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			params.AmountOff = stripe.Int64(int64(dto.Amount * 100))
 			params.Currency = stripe.String(dto.Currency)
 		}
-		_, err = sc.Coupons.Update(stripeCouponId, &params)
+		newCoupon, err := sc.Coupons.New(&params)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -169,8 +177,21 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			return
 		}
 
-		dto.Code = stripePromotionCode.Code
-		dto.StripePromotionCodeId = stripePromotionCodeId
+		promotionCodeParams := stripe.PromotionCodeParams{
+			Code:   stripe.String(stripePromotionCode.Code),
+			Coupon: stripe.String(newCoupon.ID),
+		}
+		newpCode, err := sc.PromotionCodes.New(&promotionCodeParams)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		dto.Code = newpCode.Code
+		dto.StripePromotionCodeId = newpCode.ID
 		dtoBytes, _ := json.Marshal(dto)
 		dtoMap := make(map[string]interface{})
 		json.Unmarshal(dtoBytes, &dtoMap)
