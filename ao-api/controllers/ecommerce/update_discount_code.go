@@ -147,7 +147,9 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 
 		params := stripe.CouponParams{}
 		if len(dto.Products) != 0 {
-			params.AppliesTo.Products = stripe.StringSlice(stripeProductIds)
+			params.AppliesTo = &stripe.CouponAppliesToParams{
+				Products: stripe.StringSlice(stripeProductIds),
+			}
 		}
 		if dto.Quantity != 0 {
 			params.MaxRedemptions = stripe.Int64(dto.Quantity)
