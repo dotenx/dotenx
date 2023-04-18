@@ -102,7 +102,7 @@ func (ec *EcommerceController) CreateDiscountCode() gin.HandlerFunc {
 		if len(dto.Products) != 0 {
 			findProductIdQuery := fmt.Sprintf(`
 			select stripe_product_id from products 
-			where id=ANY('{%s}'::text[]);`, strings.Join(dto.Products, ","))
+			where id=ANY('{%s}'::int[]);`, strings.Join(dto.Products, ","))
 			findProductIdRes, err := ec.DatabaseService.RunDatabaseQuery(projectTag, findProductIdQuery)
 			if err != nil {
 				logrus.Error(err.Error())
@@ -118,7 +118,6 @@ func (ec *EcommerceController) CreateDiscountCode() gin.HandlerFunc {
 				})
 				return
 			}
-
 			for _, row := range pidRows {
 				stripeProductIds = append(stripeProductIds, row["stripe_product_id"].(string))
 			}
