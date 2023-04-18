@@ -497,6 +497,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	ecommerce.POST("/project/:project_tag/discount/code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.CreateDiscountCode())
 	ecommerce.GET("/project/:project_tag/discount/code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.ListDiscountCodes())
 	ecommerce.DELETE("/project/:project_tag/discount/code/:discount_code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.DeleteDiscountCode())
+	ecommerce.PUT("/project/:project_tag/discount/code/:discount_code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.UpdateDiscountCode())
 	public.GET("/ecommerce/project/:project_tag/product/:product_id/review", EcommerceController.GetProductReviews())
 	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())
 	public.GET("/ecommerce/project/:project_tag/payment/link/stripe", EcommerceController.GetStripePaymentLinkEndpoint())
