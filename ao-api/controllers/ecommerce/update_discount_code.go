@@ -91,7 +91,7 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 		var discountCodeId int
 		findDiscountCodeIdQuery := fmt.Sprintf(`
 			select id, stripe_promotion_code_id from discount_codes 
-			where code=%s;`, discountCode)
+			where code='%s';`, discountCode)
 		findDiscountCodeIdRes, err := ec.DatabaseService.RunDatabaseQuery(projectTag, findDiscountCodeIdQuery)
 		if err != nil {
 			logrus.Error(err.Error())
