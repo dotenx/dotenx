@@ -97,7 +97,7 @@ func (ec *EcommerceController) DeleteDiscountCode() gin.HandlerFunc {
 			})
 			return
 		}
-		discountCodeId = didRows[0]["id"].(int)
+		discountCodeId = int(didRows[0]["id"].(int64))
 		stripePromotionCodeId := didRows[0]["stripe_promotion_code_id"].(string)
 
 		stripePromotionCode, err := sc.PromotionCodes.Get(stripePromotionCodeId, nil)
