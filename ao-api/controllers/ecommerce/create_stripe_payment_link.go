@@ -334,16 +334,18 @@ func createPaymentLink(sc *client.API, successUrl, cancelUrl, customerId string,
 	if isRecurring {
 		sessionMode = string(stripe.CheckoutSessionModeSubscription)
 		params = &stripe.CheckoutSessionParams{
-			SuccessURL:        stripe.String(successUrl),
-			CancelURL:         stripe.String(cancelUrl),
-			LineItems:         bag,
-			Mode:              stripe.String(sessionMode),
-			ClientReferenceID: stripe.String(customerId),
-			Customer:          stripe.String(customerId),
+			AllowPromotionCodes: stripe.Bool(true),
+			SuccessURL:          stripe.String(successUrl),
+			CancelURL:           stripe.String(cancelUrl),
+			LineItems:           bag,
+			Mode:                stripe.String(sessionMode),
+			ClientReferenceID:   stripe.String(customerId),
+			Customer:            stripe.String(customerId),
 		}
 	} else {
 		sessionMode = string(stripe.CheckoutSessionModePayment)
 		params = &stripe.CheckoutSessionParams{
+			AllowPromotionCodes: stripe.Bool(true),
 			InvoiceCreation: &stripe.CheckoutSessionInvoiceCreationParams{
 				Enabled: stripe.Bool(true),
 			},
