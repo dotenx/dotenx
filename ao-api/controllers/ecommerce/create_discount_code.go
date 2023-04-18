@@ -123,7 +123,7 @@ func (ec *EcommerceController) CreateDiscountCode() gin.HandlerFunc {
 			}
 		}
 
-		params := &stripe.CouponParams{}
+		params := stripe.CouponParams{}
 		if len(dto.Products) != 0 {
 			params.AppliesTo.Products = stripe.StringSlice(stripeProductIds)
 		}
@@ -136,7 +136,7 @@ func (ec *EcommerceController) CreateDiscountCode() gin.HandlerFunc {
 			params.AmountOff = stripe.Int64(int64(dto.Amount * 100))
 			params.Currency = stripe.String(dto.Currency)
 		}
-		coupon, err := sc.Coupons.New(params)
+		coupon, err := sc.Coupons.New(&params)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{

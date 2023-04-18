@@ -106,6 +106,7 @@ func (ec *EcommerceController) DeleteDiscountCode() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "invalid discount code",
 			})
+			return
 		}
 		stripeCouponId := stripePromotionCode.Coupon.ID
 		_, err = sc.Coupons.Del(stripeCouponId, nil)
@@ -114,6 +115,7 @@ func (ec *EcommerceController) DeleteDiscountCode() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "invalid discount code",
 			})
+			return
 		}
 
 		err = ec.DatabaseService.DeleteRow("", projectTag, "discount_codes", discountCodeId, databaseStore.ConditionGroup{})
@@ -122,6 +124,7 @@ func (ec *EcommerceController) DeleteDiscountCode() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
+			return
 		}
 
 		c.Status(http.StatusOK)

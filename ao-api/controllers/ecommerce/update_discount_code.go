@@ -116,15 +116,9 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "invalid discount code",
 			})
+			return
 		}
 		stripeCouponId := stripePromotionCode.Coupon.ID
-		_, err = sc.Coupons.Del(stripeCouponId, nil)
-		if err != nil {
-			logrus.Error(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "invalid discount code",
-			})
-		}
 
 		stripeProductIds := make([]string, 0)
 		if len(dto.Products) != 0 {
@@ -151,7 +145,7 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			}
 		}
 
-		params := &stripe.CouponParams{}
+		params := stripe.CouponParams{}
 		if len(dto.Products) != 0 {
 			params.AppliesTo.Products = stripe.StringSlice(stripeProductIds)
 		}
@@ -164,7 +158,7 @@ func (ec *EcommerceController) UpdateDiscountCode() gin.HandlerFunc {
 			params.AmountOff = stripe.Int64(int64(dto.Amount * 100))
 			params.Currency = stripe.String(dto.Currency)
 		}
-		_, err = sc.Coupons.Update(stripeCouponId, params)
+		_, err = sc.Coupons.Update(stripeCouponId, &params)
 		if err != nil {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
