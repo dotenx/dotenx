@@ -31,8 +31,8 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 		return err
 	}
 
-	initialTablesList := []string{"integrations", "products", "orders", "reviews", "user_products"}
-	isPublicList := []bool{false, true, false, false, false}
+	initialTablesList := []string{"integrations", "products", "orders", "reviews", "user_products", "discount_codes"}
+	isPublicList := []bool{false, true, false, false, false, false}
 	for i, tableName := range initialTablesList {
 		err = dbStore.AddTable(noContext, db, project.AccountId, project.Name, tableName, isPublicList[i], false)
 		if err != nil {
@@ -216,6 +216,40 @@ func EcommerceInitialSetup(project models.Project, dbStore databaseStore.Databas
 			{
 				"name": "version",
 				"type": "num",
+			},
+		},
+		"discount_codes": []map[string]string{
+			{
+				"name": "name",
+				"type": "short_text",
+			},
+			{
+				"name": "code",
+				"type": "short_text",
+			},
+			{
+				"name": "percentage",
+				"type": "float_num",
+			},
+			{
+				"name": "amount",
+				"type": "float_num",
+			},
+			{
+				"name": "currency",
+				"type": "short_text",
+			},
+			{
+				"name": "products",
+				"type": "text_array",
+			},
+			{
+				"name": "quantity",
+				"type": "num",
+			},
+			{
+				"name": "stripe_promotion_code_id",
+				"type": "short_text",
 			},
 		},
 	}
