@@ -34,6 +34,10 @@ func (store *uibuilderStore) GetPageHistory(ctx context.Context, accountId, proj
 		}
 		return nil, err
 	}
+	if len(pages) == 0 {
+		err = utils.ErrPageNotFound
+		return nil, err
+	}
 
 	return pages, nil
 }
