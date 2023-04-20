@@ -61,7 +61,7 @@ func (store *uibuilderStore) AddPageHistory(ctx context.Context, pageHistory mod
 
 	pageHistoryLimitation := config.Configs.App.UiPageHistoryLimitation
 	for i := 0; i < int(math.Max(float64(0), float64(numberOfPages-pageHistoryLimitation+1))); i++ {
-		_, err = store.db.Connection.Exec(stmt3, pageHistory.AccountId, pageHistory.ProjectTag, pageHistory.Name, pages[i].SavedAt.String())
+		_, err = store.db.Connection.Exec(stmt3, pageHistory.AccountId, pageHistory.ProjectTag, pageHistory.Name, pages[i].SavedAt.Format("2006-01-02 15:04:05.000000"))
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
