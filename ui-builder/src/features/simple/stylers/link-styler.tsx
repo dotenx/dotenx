@@ -39,7 +39,7 @@ export function LinkStyler({
 
 function StyleEditor({ element }: { element: LinkElement }) {
 	return (
-		<Styler>
+		<Styler withHoverSelector>
 			<BackgroundsEditor element={element} simple />
 			<BordersEditor element={element} simple />
 			<SpacingEditor element={element} />
