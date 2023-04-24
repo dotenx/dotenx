@@ -1,4 +1,4 @@
-// relume feature 19
+// relume feature 22
 import componentImage from '../../../assets/components/features/feature-3.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
