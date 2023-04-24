@@ -28,7 +28,7 @@ export function ButtonStyler({ label, element }: { label: string; element: Butto
 
 function StyleEditor({ element }: { element: ButtonElement | ButtonElement[] }) {
 	return (
-		<Styler>
+		<Styler withHoverSelector>
 			<TypographyEditor element={element} simple />
 			<BackgroundsEditor simple element={element} />
 			<BordersEditor element={element} />
