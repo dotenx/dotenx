@@ -12,6 +12,7 @@ import { useElementsStore } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'
 import { InputElement } from '../elements/extensions/input'
 import { SelectElement } from '../elements/extensions/select'
+import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -77,6 +78,10 @@ export function ElementOverlay({
 			: element instanceof SelectElement
 			? 'select'
 			: 'div'
+	const renderedText =
+		element instanceof TextElement
+			? element.data.text.value.map((part) => part.value).join('')
+			: null
 
 	return (
 		<>
@@ -96,8 +101,9 @@ export function ElementOverlay({
 				onMouseEnter={handleMouseOver}
 				onClick={handleClick}
 				type={element instanceof InputElement ? element.data.type : undefined}
+				dangerouslySetInnerHTML={renderedText ? { __html: renderedText } : undefined}
 			>
-				{!hasNoChild ? children : undefined}
+				{!hasNoChild && !renderedText ? children : undefined}
 			</Rendered>
 			{(isDirectRootChildren || isGridChild) && isHovered && (
 				<>
