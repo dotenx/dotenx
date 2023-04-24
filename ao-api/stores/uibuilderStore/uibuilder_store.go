@@ -26,6 +26,9 @@ type UIbuilderStore interface {
 
 	UpsertGlobalStates(ctx context.Context, globalState models.GlobalState) error
 	GetGlobalStates(ctx context.Context, accountId, projectName string) (globalState models.GlobalState, err error)
+
+	AddPageHistory(ctx context.Context, pageHistory models.UIPageHistory) error
+	GetPageHistory(ctx context.Context, accountId, projectTag, pageName string) ([]models.UIPageHistory, error)
 }
 
 type uibuilderStore struct {
