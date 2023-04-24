@@ -5,6 +5,7 @@ import { TbEdit } from 'react-icons/tb'
 import { useSetWithElement } from '../../elements/elements-store'
 import { TextElement } from '../../elements/extensions/text'
 import { Expression } from '../../states/expression'
+import { DisplayEditor } from '../../style/display-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
 import { TextEditor } from '../../ui/text-editor'
@@ -127,6 +128,7 @@ function StyleEditor({ element }: { element: TextElement | TextElement[] }) {
 		<Styler>
 			<TypographyEditor element={element} />
 			<SpacingEditor element={element} />
+			<DisplayEditor element={element} />
 		</Styler>
 	)
 }

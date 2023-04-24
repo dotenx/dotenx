@@ -17,5 +17,16 @@ func (ps *uibuilderService) UpsertPage(page models.UIPage) error {
 	if !hasAccess {
 		return utils.ErrReachLimitationOfPlan
 	}
+
+	err = ps.Store.AddPageHistory(noContext, models.UIPageHistory{
+		Name:       page.Name,
+		AccountId:  page.AccountId,
+		ProjectTag: page.ProjectTag,
+		Content:    page.Content,
+	})
+	if err != nil {
+		return err
+	}
+
 	return ps.Store.UpsertPage(context.Background(), page)
 }

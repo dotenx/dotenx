@@ -32,3 +32,11 @@ type UIExtension struct {
 	Status     string          `db:"status"      json:"status"`
 	Category   string          `db:"category"    json:"category"`
 }
+
+type UIPageHistory struct {
+	Name       string          `db:"name"        json:"name"`
+	AccountId  string          `db:"account_id"  json:"-"`
+	ProjectTag string          `db:"project_tag" json:"project_tag"`
+	Content    json.RawMessage `db:"content"     json:"content"`
+	SavedAt    time.Time       `db:"saved_at"    json:"saved_at"`
+}

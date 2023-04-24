@@ -359,6 +359,10 @@ var migrations = []struct {
 		name: "add-submitted-at-field-to-ui-forms-table",
 		stmt: addSubmittedAtFieldToUIFormsTable,
 	},
+	{
+		name: "create-ui-pages-history-table",
+		stmt: createUIPagesHistoryTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -997,4 +1001,14 @@ ADD COLUMN IF NOT EXISTS name VARCHAR(128) DEFAULT '';
 var addSubmittedAtFieldToUIFormsTable = `
 ALTER TABLE ui_forms
 ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMP DEFAULT '1970-01-01T00:00:00Z';
+`
+
+var createUIPagesHistoryTable = `
+CREATE TABLE IF NOT EXISTS ui_pages_history (
+name                          VARCHAR(64) NOT NULL,
+account_id                    VARCHAR(64) NOT NULL,
+project_tag                   VARCHAR(32) NOT NULL,
+content                       JSONB NOT NULL,
+saved_at                      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
 `
