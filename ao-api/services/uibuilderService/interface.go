@@ -25,6 +25,8 @@ type UIbuilderService interface {
 
 	UpsertGlobalStates(globalState models.GlobalState) error
 	GetGlobalStates(accountId, projectName string) (models.GlobalState, error)
+
+	GetPageHistory(accountId, projectTag, pageName string) ([]models.UIPageHistory, error)
 }
 
 type uibuilderService struct {

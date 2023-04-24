@@ -432,6 +432,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/page", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPages())
 	uibuilder.GET("/project/:project_tag/page/form/list", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.ListPagesWithMoreDetails(uiFormService))
 	uibuilder.GET("/project/:project_tag/page/:page_name", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPage())
+	uibuilder.GET("/project/:project_tag/page/:page_name/history", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPageHistory())
 	uibuilder.POST("/project/:project_tag/page/:page_name/publish", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PublishPage())
 	uibuilder.POST("/project/:project_tag/page/:page_name/preview", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.PreviewPage())
 	uibuilder.GET("/project/:project_tag/page/:page_name/url", middlewares.TokenTypeMiddleware([]string{"user"}), uibuilderController.GetPageUrls())
