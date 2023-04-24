@@ -1,14 +1,12 @@
-// relume feature 7
-import componentImage from '../../../assets/components/features/feature-1.png'
+// relume feature 13
+import componentImage from '../../../assets/components/features/feature-2.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
-import { IconElement } from '../../elements/extensions/icon'
 import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { IconStyler } from '../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../simple/stylers/image-styler'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
@@ -17,8 +15,8 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-export class Feature1 extends Component {
-	name = 'Feature 1'
+export class Feature2 extends Component {
+	name = 'Feature 2'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -30,21 +28,21 @@ function Options() {
 	const tagline = component.find<TextElement>(tags.tagline)!
 	const heading = component.find<TextElement>(tags.heading)!
 	const description = component.find<TextElement>(tags.description)!
-	const subheadingList = component.find<BoxElement>(tags.subheading.list)!
+	const brandList = component.find<BoxElement>(tags.brands.list)!
 	const link1 = component.find<LinkElement>(tags.link1)!
 	const link1Text = link1.find<TextElement>(tags.link1Text)!
 	const link2 = component.find<LinkElement>(tags.link2)!
 	const link2Text = link2.find<TextElement>(tags.link2Text)!
 
 	return (
-		<ComponentWrapper name="Feature 1">
+		<ComponentWrapper name="Feature 2">
 			<ImageStyler element={image} />
 			<TextStyler label="Tagline" element={tagline} />
 			<TextStyler label="Heading" element={heading} />
 			<TextStyler label="Description" element={description} />
 			<DndTabs
-				containerElement={subheadingList}
-				insertElement={() => subheading('Subheading')}
+				containerElement={brandList}
+				insertElement={brand}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 			/>
 			<LinkStyler label="Link 1" element={link1} />
@@ -56,15 +54,11 @@ function Options() {
 }
 
 function ItemOptions({ item }: { item: BoxElement }) {
-	const title = item.find<TextElement>(tags.subheading.title)!
-	const description = item.find<TextElement>(tags.subheading.description)!
-	const icon = item.find<IconElement>(tags.subheading.icon)!
+	const image = item.find<ImageElement>(tags.image)!
 
 	return (
 		<OptionsWrapper>
-			<TextStyler label="Title" element={title} />
-			<TextStyler label="Description" element={description} />
-			<IconStyler label="Icon" element={icon} />
+			<ImageStyler element={image} />
 		</OptionsWrapper>
 	)
 }
@@ -73,11 +67,9 @@ const tags = {
 	tagline: 'tagline',
 	heading: 'heading',
 	description: 'description',
-	subheading: {
+	brands: {
 		list: 'list',
-		title: 'title',
-		description: 'description',
-		icon: 'icon',
+		image: 'image',
 	},
 	link1: 'link1',
 	link1Text: 'link1Text',
@@ -123,17 +115,15 @@ const component = () =>
 								fontSize: '1rem',
 							})
 							.tag(tags.description),
-						grid(2)
-							.populate([subheading('Subheading one'), subheading('Subheading one')])
+						flex([brand(), brand(), brand(), brand()])
 							.css({
 								paddingTop: '0.5rem',
 								paddingBottom: '0.5rem',
-								gap: '1.5rem',
+								columnGap: '2rem',
+								rowGap: '1.5rem',
+								flexWrap: 'wrap',
 							})
-							.cssTablet({
-								gridTemplateColumns: gridCols(1),
-							})
-							.tag(tags.subheading.list),
+							.tag(tags.brands.list),
 						flex([
 							link()
 								.populate([txt('Button').tag(tags.link1Text)])
@@ -181,27 +171,5 @@ const component = () =>
 			paddingBottom: '4rem',
 		})
 
-const subheading = (title: string) =>
-	flex([
-		icn('square').size('32px').tag(tags.subheading.icon),
-		box([
-			txt(title)
-				.css({
-					fontWeight: '700',
-					fontSize: '1.25rem',
-					lineHeight: '1.4',
-					marginBottom: '1rem',
-				})
-				.tag(tags.subheading.title),
-			txt(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.'
-			)
-				.css({
-					fontSize: '1rem',
-					lineHeight: '1.5',
-				})
-				.tag(tags.subheading.description),
-		]),
-	]).css({
-		gap: '1rem',
-	})
+const brand = () =>
+	box([img('https://files.dotenx.com/assets/Logo10-nmi1.png').tag(tags.brands.image)])
