@@ -106,6 +106,7 @@ import { TeamIndividualMember2 } from './team-individual-member-2'
 import { HeroWithBgTwoCta } from './hero-with-bg-two-cta'
 import { HeroWithBgOneCta } from './hero-with-bg-one-cta'
 import { HeroWithImageTwoCta } from './hero-with-image-two-cta'
+import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 
 export const COMPONENTS: Components = [
 	{
@@ -190,7 +191,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Footers',
 		icon: <TbLayoutBottombar />,
-		items: [FooterGrid, FooterSimple, FooterSimpleCentered, FooterSimpleWithoutIcon],
+		items: [
+			FooterGrid,
+			FooterSimple,
+			FooterSimpleCentered,
+			FooterSimpleWithoutIcon,
+			FooterSimpleWithInput,
+		],
 	},
 	{
 		title: 'Gallery',
@@ -216,7 +223,7 @@ export const COMPONENTS: Components = [
 			HeroWithRatingTwoCTAs2,
 			HeroWithBgOneCta,
 			HeroWithBgTwoCta,
-			HeroWithImageTwoCta
+			HeroWithImageTwoCta,
 		],
 	},
 	{

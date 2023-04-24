@@ -126,7 +126,7 @@ const topFooter = box([
 })
 
 const bottomFooter = box([
-	txt('© 2022 Company name. All rights reserved.').tag(tagIds.bottomText).css({
+	txt('© 2023 Company name. All rights reserved.').tag(tagIds.bottomText).css({
 		fontSize: '14px',
 	}),
 	produce(Socials.getComponent(), (draft) => {

@@ -114,48 +114,55 @@ const topFooter = box([
 		justifyContent: 'space-between',
 		gap: '10px',
 	}),
-]).css({
-	display: 'flex',
-	flexWrap: 'wrap',
-	flexDirection: 'column',
-	alignItems: 'center',
-	justifyContent: 'space-between',
-	borderBottomWidth: '1px',
-	borderBottomStyle: 'solid',
-	borderBottomColor: '#eaeaea',
-	rowGap: '2rem',
-	paddingBottom: '5rem',
-}).cssTablet({
-	paddingBottom: '3rem',
-})
-.cssMobile({
-	paddingBottom: '2rem',
-})
-
+])
+	.css({
+		display: 'flex',
+		flexWrap: 'wrap',
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		borderBottomWidth: '1px',
+		borderBottomStyle: 'solid',
+		borderBottomColor: '#eaeaea',
+		rowGap: '2rem',
+		paddingBottom: '5rem',
+	})
+	.cssTablet({
+		paddingBottom: '3rem',
+	})
+	.cssMobile({
+		paddingBottom: '2rem',
+	})
 
 const bottomFooter = box([
-	txt('© 2022 Company name. All rights reserved.').tag(tagIds.bottomText).css({
-		fontSize: '14px',
-	}).cssTablet({
-		marginBottom: '10px',
-	}),
+	txt('© 2023 Company name. All rights reserved.')
+		.tag(tagIds.bottomText)
+		.css({
+			fontSize: '14px',
+		})
+		.cssTablet({
+			marginBottom: '10px',
+		}),
 	produce(Socials.getComponent(), (draft) => {
 		draft.style.desktop!.default!.width = 'auto'
 		draft.style.desktop!.default!.gap = '20px'
 		draft.tagId = tagIds.bottomLinks
 	}),
-]).css({
-	display: 'flex',
-	alignItems: 'center',
-	justifyContent: 'space-between',
-	paddingTop: '5rem',
-	flexWrap: 'wrap',
-}).cssTablet({
-	paddingTop: '3rem',
-}).cssMobile({
-	alignItems: 'center',
-	paddingTop: '2rem',
-})
+])
+	.css({
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingTop: '5rem',
+		flexWrap: 'wrap',
+	})
+	.cssTablet({
+		paddingTop: '3rem',
+	})
+	.cssMobile({
+		alignItems: 'center',
+		paddingTop: '2rem',
+	})
 
 const wrapperDiv = frame([topFooter, bottomFooter]).css({
 	flexDirection: 'column',
