@@ -69,6 +69,7 @@ import { FeatureDetailsRight } from './feature-details-right'
 import { FeatureGridImageTag } from './feature-grid-image-tag'
 import { FeatureGridImages } from './feature-grid-images'
 import { Feature1 } from './features/feature-1'
+import { Feature2 } from './features/feature-2'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
@@ -175,6 +176,7 @@ export const COMPONENTS: Components = [
 		icon: <TbList />,
 		items: [
 			Feature1,
+			Feature2,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,
