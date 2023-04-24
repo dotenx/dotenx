@@ -3,6 +3,7 @@ import { useSetWithElement } from '../../elements/elements-store'
 import { ButtonElement } from '../../elements/extensions/button'
 import { BackgroundsEditor } from '../../style/background-editor'
 import { BordersEditor } from '../../style/border-editor'
+import { DisplayEditor } from '../../style/display-editor'
 import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
 import { Styler } from './styler'
@@ -32,6 +33,7 @@ function StyleEditor({ element }: { element: ButtonElement | ButtonElement[] }) 
 			<BackgroundsEditor simple element={element} />
 			<BordersEditor element={element} />
 			<SpacingEditor element={element} />
+			<DisplayEditor element={element} />
 		</Styler>
 	)
 }
