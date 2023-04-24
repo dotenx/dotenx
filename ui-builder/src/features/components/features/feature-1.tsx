@@ -42,15 +42,15 @@ function Options() {
 			<TextStyler label="Tagline" element={tagline} />
 			<TextStyler label="Heading" element={heading} />
 			<TextStyler label="Description" element={description} />
+			<LinkStyler label="Link 1" element={link1} />
+			<TextStyler label="Link 1 text" element={link1Text} />
+			<LinkStyler label="Link 2" element={link2} />
+			<TextStyler label="Link 2 text" element={link2Text} />
 			<DndTabs
 				containerElement={subheadingList}
 				insertElement={() => subheading('Subheading')}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 			/>
-			<LinkStyler label="Link 1" element={link1} />
-			<TextStyler label="Link 1 text" element={link1Text} />
-			<LinkStyler label="Link 2" element={link2} />
-			<TextStyler label="Link 2 text" element={link2Text} />
 		</ComponentWrapper>
 	)
 }
