@@ -1,14 +1,12 @@
-// relume feature 16
+// relume feature 19
 import componentImage from '../../../assets/components/features/feature-3.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
-import { IconElement } from '../../elements/extensions/icon'
 import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { IconStyler } from '../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../simple/stylers/image-styler'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
@@ -17,8 +15,8 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-export class Feature3 extends Component {
-	name = 'Feature 3'
+export class Feature4 extends Component {
+	name = 'Feature 4'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -37,7 +35,7 @@ function Options() {
 	const link2Text = link2.find<TextElement>(tags.link2Text)!
 
 	return (
-		<ComponentWrapper name="Feature 3">
+		<ComponentWrapper name="Feature 4">
 			<ImageStyler element={image} />
 			<TextStyler label="Tagline" element={tagline} />
 			<TextStyler label="Heading" element={heading} />
@@ -57,12 +55,10 @@ function Options() {
 
 function ItemOptions({ item }: { item: BoxElement }) {
 	const description = item.find<TextElement>(tags.subheading.description)!
-	const icon = item.find<IconElement>(tags.subheading.icon)!
 
 	return (
 		<OptionsWrapper>
 			<TextStyler label="Description" element={description} />
-			<IconStyler label="Icon" element={icon} />
 		</OptionsWrapper>
 	)
 }
@@ -74,7 +70,6 @@ const tags = {
 	subheading: {
 		list: 'list',
 		description: 'description',
-		icon: 'icon',
 	},
 	link1: 'link1',
 	link1Text: 'link1Text',
@@ -120,12 +115,11 @@ const component = () =>
 								fontSize: '1rem',
 							})
 							.tag(tags.description),
-						flex([subheading(), subheading(), subheading()])
+						box([subheading(), subheading(), subheading()])
 							.css({
 								paddingTop: '0.5rem',
 								paddingBottom: '0.5rem',
-								gap: '1rem',
-								flexDirection: 'column',
+								listStyle: 'inside',
 							})
 							.tag(tags.subheading.list),
 						flex([
@@ -176,15 +170,12 @@ const component = () =>
 		})
 
 const subheading = () =>
-	flex([
-		icn('square').size('24px').tag(tags.subheading.icon),
-		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
-			.css({
-				fontSize: '1rem',
-				lineHeight: '1.5',
-			})
-			.tag(tags.subheading.description),
-	]).css({
-		gap: '1rem',
-		alignItems: 'center',
-	})
+	txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+		.css({
+			fontSize: '1rem',
+			lineHeight: '1.5',
+			display: 'list-item',
+			marginTop: '0.5rem',
+			marginBottom: '0.5rem',
+		})
+		.tag(tags.subheading.description)

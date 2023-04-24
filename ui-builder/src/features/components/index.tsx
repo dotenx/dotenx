@@ -71,6 +71,7 @@ import { FeatureGridImages } from './feature-grid-images'
 import { Feature1 } from './features/feature-1'
 import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
+import { Feature4 } from './features/feature-4'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
@@ -179,6 +180,7 @@ export const COMPONENTS: Components = [
 			Feature1,
 			Feature2,
 			Feature3,
+			Feature4,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,
