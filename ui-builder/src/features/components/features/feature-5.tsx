@@ -1,5 +1,5 @@
 // relume feature 22
-import componentImage from '../../../assets/components/features/feature-3.png'
+import componentImage from '../../../assets/components/features/feature-5.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
