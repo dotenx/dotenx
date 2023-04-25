@@ -72,10 +72,12 @@ import { Feature1 } from './features/feature-1'
 import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
+import { Feature5 } from './features/feature-5'
 import { Feature6 } from './features/feature-6'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
+import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -182,6 +184,7 @@ export const COMPONENTS: Components = [
 			Feature2,
 			Feature3,
 			Feature4,
+			Feature5,
 			Feature6,
 			FeatureCenterGrid,
 			FeatureCenterCards,
@@ -200,7 +203,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Footers',
 		icon: <TbLayoutBottombar />,
-		items: [FooterGrid, FooterSimple, FooterSimpleCentered, FooterSimpleWithoutIcon],
+		items: [
+			FooterGrid,
+			FooterSimple,
+			FooterSimpleCentered,
+			FooterSimpleWithoutIcon,
+			FooterSimpleWithInput,
+		],
 	},
 	{
 		title: 'Gallery',
