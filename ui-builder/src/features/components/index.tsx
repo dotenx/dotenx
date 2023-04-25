@@ -73,9 +73,11 @@ import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
 import { Feature5 } from './features/feature-5'
+import { Feature6 } from './features/feature-6'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
+import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -111,7 +113,6 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 
 export const COMPONENTS: Components = [
 	{
@@ -184,6 +185,7 @@ export const COMPONENTS: Components = [
 			Feature3,
 			Feature4,
 			Feature5,
+			Feature6,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,
