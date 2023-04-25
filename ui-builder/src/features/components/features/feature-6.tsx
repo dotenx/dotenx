@@ -1,5 +1,5 @@
-// relume feature 19
-import componentImage from '../../../assets/components/features/feature-4.png'
+// relume feature 25
+import componentImage from '../../../assets/components/features/feature-5.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
@@ -15,8 +15,8 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-export class Feature4 extends Component {
-	name = 'Feature 4'
+export class Feature6 extends Component {
+	name = 'Feature 6'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -35,9 +35,10 @@ function Options() {
 	const link2Text = link2.find<TextElement>(tags.link2Text)!
 
 	return (
-		<ComponentWrapper name="Feature 4">
+		<ComponentWrapper name="Feature 6">
 			<ImageStyler element={image} />
 			<TextStyler label="Tagline" element={tagline} />
+
 			<TextStyler label="Heading" element={heading} />
 			<TextStyler label="Description" element={description} />
 			<LinkStyler label="Link 1" element={link1} />
@@ -46,7 +47,7 @@ function Options() {
 			<TextStyler label="Link 2 text" element={link2Text} />
 			<DndTabs
 				containerElement={subheadingList}
-				insertElement={subheading}
+				insertElement={() => subheading('Subheading')}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 			/>
 		</ComponentWrapper>
@@ -54,10 +55,12 @@ function Options() {
 }
 
 function ItemOptions({ item }: { item: BoxElement }) {
+	const title = item.find<TextElement>(tags.subheading.title)!
 	const description = item.find<TextElement>(tags.subheading.description)!
 
 	return (
 		<OptionsWrapper>
+			<TextStyler label="Title" element={title} />
 			<TextStyler label="Description" element={description} />
 		</OptionsWrapper>
 	)
@@ -69,6 +72,7 @@ const tags = {
 	description: 'description',
 	subheading: {
 		list: 'list',
+		title: 'title',
 		description: 'description',
 	},
 	link1: 'link1',
@@ -115,11 +119,15 @@ const component = () =>
 								fontSize: '1rem',
 							})
 							.tag(tags.description),
-						box([subheading(), subheading(), subheading()])
+						grid(2)
+							.populate([subheading('50%'), subheading('50%')])
 							.css({
 								paddingTop: '0.5rem',
 								paddingBottom: '0.5rem',
-								listStyle: 'inside',
+								gap: '1.5rem',
+							})
+							.cssTablet({
+								gridTemplateColumns: gridCols(1),
 							})
 							.tag(tags.subheading.list),
 						flex([
@@ -169,13 +177,26 @@ const component = () =>
 			paddingBottom: '4rem',
 		})
 
-const subheading = () =>
-	txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
-		.css({
-			fontSize: '1rem',
-			lineHeight: '1.5',
-			display: 'list-item',
-			marginTop: '0.5rem',
-			marginBottom: '0.5rem',
-		})
-		.tag(tags.subheading.description)
+const subheading = (title: string) =>
+	flex([
+		box([
+			txt(title)
+				.css({
+					fontSize: '3rem',
+					lineHeight: '1.2',
+					fontWeight: '700',
+					marginBottom: '0.5rem',
+				})
+				.tag(tags.subheading.title),
+			txt(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.'
+			)
+				.css({
+					fontSize: '1rem',
+					lineHeight: '1.5',
+				})
+				.tag(tags.subheading.description),
+		]),
+	]).css({
+		gap: '1rem',
+	})
