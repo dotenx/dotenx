@@ -18,7 +18,9 @@ export const box = (children?: Element[]) => new BoxElement().populate(children 
 export const btn = (txt: string) => new ButtonElement().unstyled().txt(txt)
 export const submit = (txt: string) => new SubmitElement().unstyled().txt(txt)
 export const txt = (txt: string) => new TextElement().unstyled().txt(txt)
-export const link = () => new LinkElement().unstyled()
+export const link = () => new LinkElement().cssHover({
+	cursor: 'pointer',
+})
 export const grid = (columns: number) => new ColumnsElement().cols(columns)
 export const img = (src?: string) => new ImageElement().src(src ?? '')
 export const icn = (name: string) =>
@@ -56,7 +58,7 @@ export const frame = (children?: Element[]) =>
 			paddingTop: '20px',
 			paddingBottom: '20px',
 		})
-		
+
 export const frameGrid = (children?: Element[]) =>
 	box(children)
 		.css({
@@ -82,4 +84,4 @@ export const frameGrid = (children?: Element[]) =>
 			paddingTop: '20px',
 			paddingBottom: '20px',
 		})
-		
+

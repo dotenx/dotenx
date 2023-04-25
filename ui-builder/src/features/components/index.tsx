@@ -110,6 +110,7 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
+import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 
 export const COMPONENTS: Components = [
 	{
@@ -198,7 +199,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Footers',
 		icon: <TbLayoutBottombar />,
-		items: [FooterGrid, FooterSimple, FooterSimpleCentered, FooterSimpleWithoutIcon],
+		items: [
+			FooterGrid,
+			FooterSimple,
+			FooterSimpleCentered,
+			FooterSimpleWithoutIcon,
+			FooterSimpleWithInput,
+		],
 	},
 	{
 		title: 'Gallery',
