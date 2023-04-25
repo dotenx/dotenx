@@ -125,6 +125,9 @@ const subheading = () =>
 					lineHeight: '1.4',
 					marginBottom: '1rem',
 				})
+				.cssTablet({
+					fontSize: '1.25rem',
+				})
 				.tag(tags.subheading.title),
 			txt(
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.'
