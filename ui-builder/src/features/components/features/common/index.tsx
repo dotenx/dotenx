@@ -37,6 +37,7 @@ const tag = {
 		icn: 'icn',
 		txt: 'txt',
 	},
+	icnHeading: 'icnHeading',
 }
 // ---------------------------------------------------------------
 
@@ -170,9 +171,10 @@ function HeadingOptions() {
 }
 
 // =============================================================== Description
-const desc = () =>
+const desc = (text?: string) =>
 	txt(
-		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.'
+		text ??
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.'
 	)
 		.css({
 			fontSize: '1.125rem',
@@ -282,6 +284,21 @@ function BtnLinksOptions() {
 	)
 }
 
+// =============================================================== Button Links
+const icnHeading = () =>
+	icn('square')
+		.size('48px')
+		.css({
+			marginBottom: '1.5rem',
+		})
+		.tag(tag.icnHeading)
+
+function IcnHeadingOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const icon = component.find<IconElement>(tag.icnHeading)!
+	return <IconStyler label="Icon" element={icon} />
+}
+
 // ---------------------------------------------------------------
 export const cmn = {
 	icnSubheading: {
@@ -313,5 +330,9 @@ export const cmn = {
 	btnLinks: {
 		el: btnLinks,
 		Options: BtnLinksOptions,
+	},
+	icnHeading: {
+		el: icnHeading,
+		Options: IcnHeadingOptions,
 	},
 }
