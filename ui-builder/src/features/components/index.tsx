@@ -82,6 +82,7 @@ import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
 import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
+import { FooterSimpleWithLinksOnRight2 } from './footer-simple-links-on-right-2'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
@@ -219,6 +220,7 @@ export const COMPONENTS: Components = [
 			FooterSimpleWithoutIcon,
 			FooterSimpleWithInput,
 			FooterSimpleWithLinksOnRight,
+			FooterSimpleWithLinksOnRight2,
 		],
 	},
 	{
