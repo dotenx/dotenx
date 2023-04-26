@@ -80,6 +80,7 @@ import { Feature9 } from './features/feature-9'
 import { FooterGrid } from './footer-grid'
 import { FooterSimple } from './footer-simple'
 import { FooterSimpleCentered } from './footer-simple-center'
+import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
@@ -215,6 +216,7 @@ export const COMPONENTS: Components = [
 			FooterSimpleCentered,
 			FooterSimpleWithoutIcon,
 			FooterSimpleWithInput,
+			FooterSimpleWithLinksOnRight,
 		],
 	},
 	{
