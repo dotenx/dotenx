@@ -1,8 +1,6 @@
 // relume feature 67
 import componentImage from '../../../assets/components/features/feature-11.png'
 import { box } from '../../elements/constructor'
-import { BoxElement } from '../../elements/extensions/box'
-import { useSelectedElement } from '../../selection/use-selected-component'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
@@ -15,9 +13,15 @@ export class Feature12 extends Component {
 }
 
 function Options() {
-	const component = useSelectedElement<BoxElement>()!
-
-	return <ComponentWrapper name="Feature 12"></ComponentWrapper>
+	return (
+		<ComponentWrapper name="Feature 12">
+			<cmn.tagline.Options />
+			<cmn.heading.Options />
+			<cmn.desc.Options />
+			<cmn.icnLst.Options />
+			<cmn.btnLinks.Options />
+		</ComponentWrapper>
+	)
 }
 
 const component = () =>
