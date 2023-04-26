@@ -70,6 +70,7 @@ import { FeatureGridImageTag } from './feature-grid-image-tag'
 import { FeatureGridImages } from './feature-grid-images'
 import { Feature1 } from './features/feature-1'
 import { Feature10 } from './features/feature-10'
+import { Feature11 } from './features/feature-11'
 import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
@@ -194,6 +195,7 @@ export const COMPONENTS: Components = [
 			Feature8,
 			Feature9,
 			Feature10,
+			Feature11,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,
