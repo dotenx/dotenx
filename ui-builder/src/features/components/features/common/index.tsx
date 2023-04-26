@@ -38,6 +38,11 @@ const tag = {
 		txt: 'txt',
 	},
 	icnHeading: 'icnHeading',
+	subheading: {
+		lst: 'lst',
+		title: 'title',
+		desc: 'desc',
+	},
 }
 // ---------------------------------------------------------------
 
@@ -80,6 +85,18 @@ const icnSubheading = (title: string) =>
 		gap: '1rem',
 	})
 
+function IcnSubheadingsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const subheadingList = component.find<BoxElement>(tag.icnSubheading.lst)!
+	return (
+		<DndTabs
+			containerElement={subheadingList}
+			insertElement={() => icnSubheading('Subheading')}
+			renderItemOptions={(item) => <IcnSubheadingOptions item={item as BoxElement} />}
+		/>
+	)
+}
+
 function IcnSubheadingOptions({ item }: { item: BoxElement }) {
 	const title = item.find<TextElement>(tag.icnSubheading.title)!
 	const description = item.find<TextElement>(tag.icnSubheading.desc)!
@@ -90,18 +107,6 @@ function IcnSubheadingOptions({ item }: { item: BoxElement }) {
 			<TextStyler label="Description" element={description} />
 			<IconStyler label="Icon" element={icon} />
 		</OptionsWrapper>
-	)
-}
-
-function IcnSubheadingsOptions() {
-	const component = useSelectedElement<BoxElement>()!
-	const subheadingList = component.find<BoxElement>(tag.icnSubheading.lst)!
-	return (
-		<DndTabs
-			containerElement={subheadingList}
-			insertElement={() => icnSubheading('Subheading')}
-			renderItemOptions={(item) => <IcnSubheadingOptions item={item as BoxElement} />}
-		/>
 	)
 }
 
@@ -284,7 +289,7 @@ function BtnLinksOptions() {
 	)
 }
 
-// =============================================================== Button Links
+// =============================================================== Icon Heading
 const icnHeading = () =>
 	icn('square')
 		.size('48px')
@@ -297,6 +302,67 @@ function IcnHeadingOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const icon = component.find<IconElement>(tag.icnHeading)!
 	return <IconStyler label="Icon" element={icon} />
+}
+
+// =============================================================== Subheadings
+const subheadings = () =>
+	grid(2)
+		.populate(duplicate(subheading, 2))
+		.css({
+			paddingTop: '0.5rem',
+			paddingBottom: '0.5rem',
+			gap: '1.5rem',
+		})
+		.cssTablet({
+			gridTemplateColumns: gridCols(1),
+		})
+		.tag(tag.subheading.lst)
+
+const subheading = () =>
+	flex([
+		box([
+			txt('50%')
+				.css({
+					fontSize: '3rem',
+					lineHeight: '1.2',
+					fontWeight: '700',
+					marginBottom: '0.5rem',
+				})
+				.tag(tag.subheading.title),
+			txt(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.'
+			)
+				.css({
+					fontSize: '1rem',
+					lineHeight: '1.5',
+				})
+				.tag(tag.subheading.desc),
+		]),
+	]).css({
+		gap: '1rem',
+	})
+
+function SubheadingsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const subheadingList = component.find<BoxElement>(tag.subheading.lst)!
+	return (
+		<DndTabs
+			containerElement={subheadingList}
+			insertElement={subheading}
+			renderItemOptions={(item) => <SubheadingOptions item={item as BoxElement} />}
+		/>
+	)
+}
+
+function SubheadingOptions({ item }: { item: BoxElement }) {
+	const title = item.find<TextElement>(tag.subheading.title)!
+	const description = item.find<TextElement>(tag.subheading.desc)!
+	return (
+		<OptionsWrapper>
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Description" element={description} />
+		</OptionsWrapper>
+	)
 }
 
 // ---------------------------------------------------------------
@@ -334,5 +400,9 @@ export const cmn = {
 	icnHeading: {
 		el: icnHeading,
 		Options: IcnHeadingOptions,
+	},
+	subheadings: {
+		el: subheadings,
+		Options: SubheadingsOptions,
 	},
 }
