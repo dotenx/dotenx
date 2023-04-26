@@ -1,5 +1,5 @@
 // relume feature 67
-import componentImage from '../../../assets/components/features/feature-11.png'
+import componentImage from '../../../assets/components/features/feature-12.png'
 import { box } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
