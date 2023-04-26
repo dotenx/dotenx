@@ -1,7 +1,7 @@
 // relume feature 28
 import produce from 'immer'
 import _ from 'lodash'
-import componentImage from '../../../assets/components/features/feature-1.png'
+import componentImage from '../../../assets/components/features/feature-10.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
