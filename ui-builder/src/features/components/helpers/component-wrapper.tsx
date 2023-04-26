@@ -11,7 +11,7 @@ export function ComponentWrapper({
 	stylerOptions,
 }: {
 	children?: ReactNode
-	name: string
+	name?: string
 	stylers?: Array<
 		| 'alignment'
 		| 'backgrounds'
@@ -28,14 +28,15 @@ export function ComponentWrapper({
 		}
 	}
 }) {
-	const wrapper = useSelectedElement()!
+	const component = useSelectedElement()!
+	const componentName = name ? name : component.controller?.name ?? 'Component'
 
 	return (
 		<OptionsWrapper>
-			<ComponentName name={name} />
+			<ComponentName name={componentName} />
 			<BoxStyler
 				label="Frame"
-				element={wrapper}
+				element={component}
 				stylers={stylers}
 				stylerOptions={stylerOptions}
 			/>
