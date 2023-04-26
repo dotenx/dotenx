@@ -1,21 +1,19 @@
-// relume feature 7
-import componentImage from '../../../assets/components/features/feature-1.png'
+// relume feature 55
+import componentImage from '../../../assets/components/features/feature-11.png'
 import { gridCols } from '../../../utils/style-utils'
-import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
+import { box, container, flex, grid, icn, link, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
-import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
-import { ImageStyler } from '../../simple/stylers/image-styler'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Feature1 extends Component {
-	name = 'Feature 1'
+export class Feature11 extends Component {
+	name = 'Feature 11'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -23,7 +21,6 @@ export class Feature1 extends Component {
 
 function Options() {
 	const component = useSelectedElement<BoxElement>()!
-	const image = component.find<ImageElement>(tags.image)!
 	const tagline = component.find<TextElement>(tags.tagline)!
 	const heading = component.find<TextElement>(tags.heading)!
 	const description = component.find<TextElement>(tags.description)!
@@ -33,8 +30,7 @@ function Options() {
 	const link2Text = link2.find<TextElement>(tags.link2Text)!
 
 	return (
-		<ComponentWrapper name="Feature 1">
-			<ImageStyler element={image} />
+		<ComponentWrapper name="Feature 11">
 			<TextStyler label="Tagline" element={tagline} />
 			<TextStyler label="Heading" element={heading} />
 			<TextStyler label="Description" element={description} />
@@ -55,7 +51,6 @@ const tags = {
 	link1Text: 'link1Text',
 	link2: 'link2',
 	link2Text: 'link2Text',
-	image: 'image',
 }
 
 const component = () =>
@@ -83,6 +78,8 @@ const component = () =>
 								fontSize: '2.25rem',
 							})
 							.tag(tags.heading),
+					]),
+					box([
 						txt(
 							'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.'
 						)
@@ -100,7 +97,7 @@ const component = () =>
 							link()
 								.populate([txt('Button').tag(tags.link1Text)])
 								.css({
-									border: '1px solid #000',
+									border: '1px solid #fff',
 									padding: '0.75rem 1.5rem',
 								})
 								.tag(tags.link1),
@@ -121,7 +118,6 @@ const component = () =>
 							gap: '1rem',
 						}),
 					]),
-					img('https://files.dotenx.com/assets/hero-bg-wva.jpeg').tag(tags.image),
 				])
 				.css({
 					columnGap: '80px',
@@ -137,6 +133,8 @@ const component = () =>
 			paddingBottom: '7rem',
 			paddingRight: '5%',
 			paddingLeft: '5%',
+			color: '#fff',
+			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 		})
 		.cssTablet({
 			paddingTop: '4rem',
