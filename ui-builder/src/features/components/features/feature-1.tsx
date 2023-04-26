@@ -95,7 +95,7 @@ const component = () =>
 								fontSize: '1rem',
 							})
 							.tag(tags.description),
-						cmn.icnSubheading.list(),
+						cmn.icnSubheading.el(),
 						flex([
 							link()
 								.populate([txt('Button').tag(tags.link1Text)])
