@@ -80,6 +80,7 @@ import { Feature17 } from './features/feature-17'
 import { Feature18 } from './features/feature-18'
 import { Feature19 } from './features/feature-19'
 import { Feature2 } from './features/feature-2'
+import { Feature20 } from './features/feature-20'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
 import { Feature5 } from './features/feature-5'
@@ -114,6 +115,7 @@ import { HeroWithRating } from './hero-with-rating'
 import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
 import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
+import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -128,7 +130,6 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 
 export const COMPONENTS: Components = [
 	{
@@ -235,6 +236,7 @@ export const COMPONENTS: Components = [
 			Feature17,
 			Feature18,
 			Feature19,
+			Feature20,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,
