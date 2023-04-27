@@ -50,6 +50,10 @@ const tag = {
 		title: 'title',
 		desc: 'desc',
 	},
+	brands: {
+		lst: 'lst',
+		img: 'img',
+	},
 }
 // ---------------------------------------------------------------
 
@@ -422,6 +426,38 @@ const smlSubheading = (title: string) =>
 		gap: '1rem',
 	})
 
+// =============================================================== Brands
+const brands = () =>
+	flex([brand(), brand(), brand(), brand()])
+		.css({
+			paddingTop: '0.5rem',
+			paddingBottom: '0.5rem',
+			columnGap: '2rem',
+			rowGap: '1.5rem',
+			flexWrap: 'wrap',
+		})
+		.tag(tag.brands.lst)
+
+const brand = () =>
+	box([img('https://files.dotenx.com/assets/Logo10-nmi1.png').tag(tag.brands.img)])
+
+function BrandsOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const brandList = component.find<BoxElement>(tag.brands.lst)!
+	return (
+		<DndTabs
+			containerElement={brandList}
+			insertElement={brand}
+			renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
+		/>
+	)
+}
+
+function ItemOptions({ item }: { item: BoxElement }) {
+	const image = item.find<ImageElement>(tag.brands.img)!
+	return <ImageStyler element={image} />
+}
+
 // ---------------------------------------------------------------
 export const cmn = {
 	icnSubheadings: {
@@ -475,5 +511,9 @@ export const cmn = {
 	},
 	smlSubheading: {
 		el: smlSubheading,
+	},
+	brands: {
+		el: brands,
+		Options: BrandsOptions,
 	},
 }
