@@ -64,7 +64,7 @@ const component = () =>
 			grid(2)
 				.populate([
 					box([
-						icn('square')
+						icn('cube')
 							.size('80px')
 							.css({
 								marginBottom: '1.5rem',

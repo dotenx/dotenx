@@ -177,7 +177,7 @@ const component = () =>
 
 const subheading = () =>
 	flex([
-		icn('square').size('24px').tag(tags.subheading.icon),
+		icn('cube').size('24px').tag(tags.subheading.icon),
 		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 			.css({
 				fontSize: '1rem',
