@@ -389,7 +389,7 @@ function FullImgOptions() {
 
 // ---------------------------------------------------------------
 export const cmn = {
-	icnSubheading: {
+	icnSubheadings: {
 		el: icnSubheadings,
 		Options: IcnSubheadingsOptions,
 	},

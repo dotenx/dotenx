@@ -38,7 +38,7 @@ function Options() {
 			<TextStyler label="Link 1 text" element={link1Text} />
 			<LinkStyler label="Link 2" element={link2} />
 			<TextStyler label="Link 2 text" element={link2Text} />
-			<cmn.icnSubheading.Options />
+			<cmn.icnSubheadings.Options />
 		</ComponentWrapper>
 	)
 }
@@ -92,7 +92,7 @@ const component = () =>
 								fontSize: '1rem',
 							})
 							.tag(tags.description),
-						cmn.icnSubheading.el(),
+						cmn.icnSubheadings.el(),
 						flex([
 							link()
 								.populate([txt('Button').tag(tags.link1Text)])

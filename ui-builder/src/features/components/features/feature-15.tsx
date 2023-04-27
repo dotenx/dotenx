@@ -19,7 +19,7 @@ function Options() {
 			<cmn.heading.Options />
 			<cmn.desc.Options />
 			<cmn.btnLinks.Options />
-			<cmn.icnSubheading.Options />
+			<cmn.icnSubheadings.Options />
 			<cmn.fullImg.Options />
 		</ComponentWrapper>
 	)
@@ -29,7 +29,7 @@ const component = () =>
 	cmn.ppr.el([
 		cmn.halfGrid.el([
 			box([cmn.tagline.el(), cmn.heading.el()]),
-			box([cmn.desc.el(), cmn.icnSubheading.el(), cmn.btnLinks.el()]),
+			box([cmn.desc.el(), cmn.icnSubheadings.el(), cmn.btnLinks.el()]),
 		]),
 		cmn.fullImg.el(),
 	])
