@@ -5,8 +5,8 @@ import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Feature20 extends Component {
-	name = 'Feature 20'
+export class Feature23 extends Component {
+	name = 'Feature 23'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -15,11 +15,11 @@ export class Feature20 extends Component {
 function Options() {
 	return (
 		<ComponentWrapper>
-			<cmn.icnHeading.Options />
 			<cmn.tagline.Options />
 			<cmn.heading.Options />
 			<cmn.desc.Options />
 			<cmn.btnLinks.Options />
+			<cmn.brands.Options />
 		</ComponentWrapper>
 	)
 }
@@ -27,10 +27,10 @@ function Options() {
 const component = () =>
 	cmn.ppr.el([
 		column([
-			cmn.icnHeading.el(),
 			cmn.tagline.el(),
 			cmn.heading.el(),
 			cmn.desc.el(),
+			cmn.brands.el(),
 			cmn.btnLinks.el(),
 		]).css({
 			alignItems: 'center',
