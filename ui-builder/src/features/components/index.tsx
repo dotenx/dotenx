@@ -78,6 +78,7 @@ import { Feature15 } from './features/feature-15'
 import { Feature16 } from './features/feature-16'
 import { Feature17 } from './features/feature-17'
 import { Feature18 } from './features/feature-18'
+import { Feature19 } from './features/feature-19'
 import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
@@ -233,6 +234,7 @@ export const COMPONENTS: Components = [
 			Feature16,
 			Feature17,
 			Feature18,
+			Feature19,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,

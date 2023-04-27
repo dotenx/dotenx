@@ -15,7 +15,7 @@ import { TextStyler } from '../../../simple/stylers/text-styler'
 import { DndTabs } from '../../helpers/dnd-tabs'
 import { OptionsWrapper } from '../../helpers/options-wrapper'
 
-const duplicate = (elConstructor: () => Element, number: number) =>
+export const duplicate = (elConstructor: () => Element, number: number) =>
 	_.range(number).map(elConstructor)
 
 const tag = {
@@ -161,9 +161,10 @@ const tagline = () =>
 		})
 		.tag(tag.tagline)
 
-function TaglineOptions() {
+function TaglineOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const tagline = component.find<TextElement>(tag.tagline)!
+	const parent = root ?? component
+	const tagline = parent.find<TextElement>(tag.tagline)!
 	return <TextStyler label="Tagline" element={tagline} />
 }
 
@@ -181,9 +182,10 @@ const heading = () =>
 		})
 		.tag(tag.heading)
 
-function HeadingOptions() {
+function HeadingOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const heading = component.find<TextElement>(tag.heading)!
+	const parent = root ?? component
+	const heading = parent.find<TextElement>(tag.heading)!
 	return <TextStyler label="Heading" element={heading} />
 }
 
@@ -203,9 +205,10 @@ const desc = (text?: string) =>
 		})
 		.tag(tag.desc)
 
-function DescOptions() {
+function DescOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const description = component.find<TextElement>(tag.desc)!
+	const parent = root ?? component
+	const description = parent.find<TextElement>(tag.desc)!
 	return <TextStyler label="Description" element={description} />
 }
 
@@ -285,11 +288,12 @@ const btnLinks = () =>
 		gap: '1rem',
 	})
 
-function BtnLinksOptions() {
+function BtnLinksOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const link1 = component.find<LinkElement>(tag.btnLink.link1)!
+	const parent = root ?? component
+	const link1 = parent.find<LinkElement>(tag.btnLink.link1)!
 	const link1Text = link1.find<TextElement>(tag.btnLink.link1Txt)!
-	const link2 = component.find<LinkElement>(tag.btnLink.link2)!
+	const link2 = parent.find<LinkElement>(tag.btnLink.link2)!
 	const link2Text = link2.find<TextElement>(tag.btnLink.link2Txt)!
 	return (
 		<>
