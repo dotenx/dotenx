@@ -389,9 +389,10 @@ const fullImg = () =>
 		})
 		.tag(tag.fullImg)
 
-function FullImgOptions() {
+function FullImgOptions({ root }: { root: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const image = component.find<ImageElement>(tag.fullImg)!
+	const parent = root ?? component
+	const image = parent.find<ImageElement>(tag.fullImg)!
 	return <ImageStyler element={image} />
 }
 
