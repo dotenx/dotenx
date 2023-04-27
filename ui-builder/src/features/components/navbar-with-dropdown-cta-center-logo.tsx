@@ -21,11 +21,11 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 import { repeatObject } from './helpers'
 import { TbPlus } from 'react-icons/tb'
 
-export class NavbarWithDropDownCta extends Component {
-	name = 'Navbar with dropdown and CTA'
+export class NavbarWithDropDownCtaCenterLogo extends Component {
+	name = 'Navbar with dropdown and CTA - logo centered'
 	image = imageUrl
 	defaultData = defaultData
-	renderOptions = () => <NavbarWithDropDownCtaOptions />
+	renderOptions = () => <NavbarWithDropDownCtaCenterLogoOptions />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
 		const script = compiled({ id: root.id })
@@ -33,7 +33,7 @@ export class NavbarWithDropDownCta extends Component {
 	}
 }
 
-function NavbarWithDropDownCtaOptions() {
+function NavbarWithDropDownCtaCenterLogoOptions() {
 	const set = useSetElement()
 	const root = useSelectedElement<BoxElement>()!
 	const logoLink = root.find<LinkElement>(tags.logoLink)!
@@ -45,7 +45,7 @@ function NavbarWithDropDownCtaOptions() {
 	const links = root.find<BoxElement>(tags.links)!
 
 	return (
-		<ComponentWrapper name="Navbar with dropdown and CTA">
+		<ComponentWrapper name="Navbar with dropdown and CTA - logo centered">
 			<LinkStyler linkOnly element={logoLink} label="Logo's link" />
 			<ImageStyler element={logoImage} />
 			<TextStyler textOnly label="CTA-1" element={cta1Text} />
@@ -149,7 +149,7 @@ const logo = box([
 		padding: '7.5px 0px',
 		textDecoration: 'none',
 		whiteSpace: 'nowrap',
-		order: '0',
+		order: '1',
 	})
 
 const submenuLink = () =>
@@ -289,14 +289,11 @@ const toggle = box([
 ])
 	.css({
 		display: 'none',
+		order: '0',
 	})
 	.cssTablet({
 		display: 'block',
 		textAlign: 'right',
-		order: '3',
-	})
-	.cssMobile({
-		order: '1',
 	})
 const navbarItems = box([
 	item('Link One'),
@@ -310,16 +307,15 @@ const navbarItems = box([
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		width: '100%',
 		height: '100%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
-		order: '1',
+		order: '0',
 	})
 	.cssTablet({
-		order: '4',
 		width: '100%',
-		display: 'none',
+		order: '4',
+		display: 'block',
+		visibility: 'hidden',
+		transform: 'translateX(-200px)',
 	})
 	.tag(tags.links)
 
@@ -331,11 +327,6 @@ const buttons = box([cta1, cta2])
 		columnGap: '10px',
 		alignItems: 'center',
 	})
-	.cssTablet({
-		order: '1',
-		marginLeft: 'auto',
-		marginRight: 'auto',
-	})
 	.cssMobile({
 		order: '2',
 		display: 'none',
@@ -345,7 +336,7 @@ const buttons = box([cta1, cta2])
 	.class('buttons')
 
 const defaultData = paper([
-	box([logo, navbarItems, buttons, toggle])
+	box([toggle, logo, navbarItems, buttons])
 		.as('ul')
 		.class('menu')
 		.css({
@@ -359,12 +350,8 @@ const defaultData = paper([
 		.cssTablet({
 			flexWrap: 'wrap',
 			alignItems: 'center',
-			justifyContent: 'center',
-		})
-		.cssMobile({
 			justifyContent: 'space-between',
-			alignItems: 'center',
-		}),
+		})
 ])
 	.as('nav')
 	.css({
@@ -412,7 +399,10 @@ const defaultData = paper([
 		display: 'block',
 	})
 	.customCssTablet('.active .navbar_items', {
-		display: 'block',
+		visibility: 'visible',
+		width: '100%',
+		transform: 'translateX(0px)',
+		transition: 'transform 0.2s cubic-bezier(0.35, -0.9, 0.13, 1.59)',
 	})
 	.customCssMobile('.active .buttons', {
 		width: '100%',
