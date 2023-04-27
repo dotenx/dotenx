@@ -18,6 +18,7 @@ export function TextStyler({
 	noText,
 	onChange,
 	rich,
+	textOnly,
 }: {
 	label: string
 	element: TextElement | TextElement[]
@@ -25,6 +26,7 @@ export function TextStyler({
 	noText?: boolean
 	onChange?: (text: string) => void
 	rich?: boolean
+	textOnly?: boolean
 }) {
 	if (noText) return <TextStylerNoText label={label} element={element} />
 
@@ -35,6 +37,7 @@ export function TextStyler({
 			placeholder={placeholder}
 			onChange={onChange}
 			rich={rich}
+			textOnly={textOnly}
 		/>
 	)
 }
@@ -45,12 +48,14 @@ function TextStylerWithText({
 	placeholder,
 	onChange,
 	rich,
+	textOnly,
 }: {
 	label: string
 	element: TextElement
 	placeholder?: string
 	onChange?: (text: string) => void
 	rich?: boolean
+	textOnly?: boolean
 }) {
 	const set = useSetWithElement(element)
 	const setText = (text: string) => {
@@ -93,7 +98,7 @@ function TextStylerWithText({
 				onChange?.(event.target.value)
 			}}
 			rightSection={
-				rich ? (
+				textOnly ? null : rich ? (
 					<div className="flex gap-1 bg-white">
 						<ActionIcon size="xs" onClick={openEditor}>
 							<TbEdit size={12} />

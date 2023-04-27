@@ -240,12 +240,6 @@ const newCell = (text: string) => {
 			display: 'flex',
 			justifyContent: 'space-between',
 		})
-	// TODO: Check why this doesn't work
-	// .customCss('.cell-label',
-	// 	{
-	// 		display: 'none'
-	// 	}
-	// )
 	cell = produce(cell, (draft) => {
 		draft.customStyle.desktop = {
 			'.cell-label': {
