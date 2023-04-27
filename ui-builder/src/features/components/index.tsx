@@ -74,6 +74,7 @@ import { Feature11 } from './features/feature-11'
 import { Feature12 } from './features/feature-12'
 import { Feature13 } from './features/feature-13'
 import { Feature14 } from './features/feature-14'
+import { Feature15 } from './features/feature-15'
 import { Feature2 } from './features/feature-2'
 import { Feature3 } from './features/feature-3'
 import { Feature4 } from './features/feature-4'
@@ -88,7 +89,6 @@ import { FooterSimpleCentered } from './footer-simple-center'
 import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
 import { FooterSimpleWithLinksOnRight2 } from './footer-simple-links-on-right-2'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
-import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -205,6 +205,7 @@ export const COMPONENTS: Components = [
 			Feature12,
 			Feature13,
 			Feature14,
+			Feature15,
 			FeatureCenterGrid,
 			FeatureCenterCards,
 			FeatureGridImages,

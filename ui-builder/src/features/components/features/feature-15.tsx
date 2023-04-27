@@ -1,0 +1,35 @@
+// relume feature 97
+import componentImage from '../../../assets/components/features/feature-15.png'
+import { box } from '../../elements/constructor'
+import { Component } from '../component'
+import { ComponentWrapper } from '../helpers/component-wrapper'
+import { cmn } from './common'
+
+export class Feature15 extends Component {
+	name = 'Feature 15'
+	image = componentImage
+	defaultData = component()
+	renderOptions = () => <Options />
+}
+
+function Options() {
+	return (
+		<ComponentWrapper>
+			<cmn.tagline.Options />
+			<cmn.heading.Options />
+			<cmn.desc.Options />
+			<cmn.btnLinks.Options />
+			<cmn.subheadings.Options />
+			<cmn.fullImg.Options />
+		</ComponentWrapper>
+	)
+}
+
+const component = () =>
+	cmn.ppr.el([
+		cmn.halfGrid.el([
+			box([cmn.tagline.el(), cmn.heading.el()]),
+			box([cmn.desc.el(), cmn.icnSubheading.el(), cmn.btnLinks.el()]),
+		]),
+		cmn.fullImg.el(),
+	])
