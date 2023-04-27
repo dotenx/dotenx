@@ -127,6 +127,7 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
+import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 
 export const COMPONENTS: Components = [
 	{
@@ -140,6 +141,26 @@ export const COMPONENTS: Components = [
 			BasicYouTube,
 			BasicColumns,
 			BasicBox,
+		],
+	},
+	{
+		title: 'Navbar',
+		icon: <TbLayoutNavbar />,
+		items: [Navbar, NavbarWithDropDownCta],
+	},
+	{
+		title: 'Hero',
+		icon: <TbSection />,
+		items: [
+			HeroFullWidth,
+			HeroCtaLeft,
+			HeroCtaRight,
+			HeroWithRating,
+			HeroWithRatingTwoCTAs,
+			HeroWithRatingTwoCTAs2,
+			HeroWithBgOneCta,
+			HeroWithBgTwoCta,
+			HeroWithImageTwoCta,
 		],
 	},
 	{
@@ -227,20 +248,6 @@ export const COMPONENTS: Components = [
 		],
 	},
 	{
-		title: 'Footers',
-		icon: <TbLayoutBottombar />,
-		items: [
-			FooterGrid,
-			FooterSimple,
-			FooterSimpleCentered,
-			FooterSimpleWithoutIcon,
-			FooterSimpleWithInput,
-			// FooterSimpleWithInput2,
-			FooterSimpleWithLinksOnRight,
-			FooterSimpleWithLinksOnRight2,
-		],
-	},
-	{
 		title: 'Gallery',
 		icon: <TbPhoto />,
 		items: [
@@ -253,31 +260,6 @@ export const COMPONENTS: Components = [
 		],
 	},
 	{
-		title: 'Hero',
-		icon: <TbSection />,
-		items: [
-			HeroFullWidth,
-			HeroCtaLeft,
-			HeroCtaRight,
-			HeroWithRating,
-			HeroWithRatingTwoCTAs,
-			HeroWithRatingTwoCTAs2,
-			HeroWithBgOneCta,
-			HeroWithBgTwoCta,
-			HeroWithImageTwoCta,
-		],
-	},
-	{
-		title: 'Navbar',
-		icon: <TbLayoutNavbar />,
-		items: [Navbar],
-	},
-	{
-		title: 'Pricing',
-		icon: <TbReportMoney />,
-		items: [PricingSimple, PricingSimple2],
-	},
-	{
 		title: 'Team',
 		icon: <TbUsers />,
 		items: [
@@ -288,11 +270,6 @@ export const COMPONENTS: Components = [
 			TeamIndividualMember,
 			TeamIndividualMember2,
 		],
-	},
-	{
-		title: 'Testimonial',
-		icon: <TbMessageChatbot />,
-		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
 	},
 	{
 		title: 'Form',
@@ -308,6 +285,30 @@ export const COMPONENTS: Components = [
 		title: 'Steps',
 		icon: <TbBrandMixpanel />,
 		items: [StepGridCtaLeft],
+	},
+	{
+		title: 'Pricing',
+		icon: <TbReportMoney />,
+		items: [PricingSimple, PricingSimple2],
+	},
+	{
+		title: 'Testimonial',
+		icon: <TbMessageChatbot />,
+		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
+	},
+	{
+		title: 'Footers',
+		icon: <TbLayoutBottombar />,
+		items: [
+			FooterGrid,
+			FooterSimple,
+			FooterSimpleCentered,
+			FooterSimpleWithoutIcon,
+			FooterSimpleWithInput,
+			// FooterSimpleWithInput2,
+			FooterSimpleWithLinksOnRight,
+			FooterSimpleWithLinksOnRight2,
+		],
 	},
 ]
 
