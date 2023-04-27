@@ -1,0 +1,52 @@
+// relume feature 123
+import componentImage from '../../../assets/components/features/feature-19.png'
+import { box } from '../../elements/constructor'
+import { BoxElement } from '../../elements/extensions/box'
+import { useSelectedElement } from '../../selection/use-selected-component'
+import { Component } from '../component'
+import { ComponentWrapper } from '../helpers/component-wrapper'
+import { DndTabs } from '../helpers/dnd-tabs'
+import { OptionsWrapper } from '../helpers/options-wrapper'
+import { cmn, duplicate } from './common'
+
+export class Feature22 extends Component {
+	name = 'Feature 22'
+	image = componentImage
+	defaultData = component()
+	renderOptions = () => <Options />
+}
+
+function Options() {
+	const component = useSelectedElement<BoxElement>()!
+	const grid = component.find<BoxElement>(tags.grid)!
+
+	return (
+		<ComponentWrapper>
+			<DndTabs
+				containerElement={grid}
+				insertElement={item}
+				autoAdjustGridTemplateColumns={false}
+				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
+			/>
+		</ComponentWrapper>
+	)
+}
+
+function ItemOptions({ item }: { item: BoxElement }) {
+	return (
+		<OptionsWrapper>
+			<cmn.icnHeading.Options root={item} />
+			<cmn.heading.Options root={item} />
+			<cmn.desc.Options root={item} />
+			<cmn.btnLinks.Options root={item} />
+		</OptionsWrapper>
+	)
+}
+
+const tags = {
+	grid: 'grid',
+}
+
+const component = () => cmn.fullBg.el([cmn.halfGrid.el(duplicate(item, 2)).tag(tags.grid)])
+
+const item = () => box([cmn.icnHeading.el(), cmn.heading.el(), cmn.desc.el(), cmn.btnLinks.el()])

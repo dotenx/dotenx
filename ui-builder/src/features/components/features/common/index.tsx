@@ -314,9 +314,10 @@ const icnHeading = () =>
 		})
 		.tag(tag.icnHeading)
 
-function IcnHeadingOptions() {
+function IcnHeadingOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
-	const icon = component.find<IconElement>(tag.icnHeading)!
+	const parent = root ?? component
+	const icon = parent.find<IconElement>(tag.icnHeading)!
 	return <IconStyler label="Icon" element={icon} />
 }
 
@@ -389,7 +390,7 @@ const fullImg = () =>
 		})
 		.tag(tag.fullImg)
 
-function FullImgOptions({ root }: { root: BoxElement }) {
+function FullImgOptions({ root }: { root?: BoxElement }) {
 	const component = useSelectedElement<BoxElement>()!
 	const parent = root ?? component
 	const image = parent.find<ImageElement>(tag.fullImg)!
