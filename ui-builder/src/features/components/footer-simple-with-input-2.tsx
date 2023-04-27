@@ -1,3 +1,4 @@
+import produce from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/footer-simple-with-input-1.png'
 import { deserializeElement } from '../../utils/deserialize'
@@ -12,25 +13,26 @@ import { ButtonStyler } from '../simple/stylers/button-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
+import { Socials } from './basic-components/professional-socials'
 import { Component, ElementOptions } from './component'
 import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FooterSimpleWithInput extends Component {
-	name = 'Simple footer with input'
+export class FooterSimpleWithInput2 extends Component {
+	name = 'Simple footer with input - 2 '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FooterSimpleWithInputOptions options={options} />
+		return <FooterSimpleWithInput2Options options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function FooterSimpleWithInputOptions({ options }: { options: ElementOptions }) {
+function FooterSimpleWithInput2Options({ options }: { options: ElementOptions }) {
 	const component = useSelectedElement<BoxElement>()!
 	const logo = component.find<ImageElement>(tagIds.logo)!
 	const topLinks = component.find(tagIds.topLinks) as BoxElement
@@ -40,7 +42,7 @@ function FooterSimpleWithInputOptions({ options }: { options: ElementOptions }) 
 	const inputLabel = component.find(tagIds.inputLabel) as TextElement
 	const button = component.find(tagIds.button) as ButtonElement
 	return (
-		<ComponentWrapper name="Simple footer with input">
+		<ComponentWrapper name="Simple footer with input - 2">
 			<ImageStyler element={logo} />
 			<DividerCollapsible closed title="Input">
 				<TextStyler label="Input Label " element={inputLabel} />
@@ -84,6 +86,9 @@ function TopLinksOptions({ item }: { item: LinkElement }) {
 
 const tagIds = {
 	logo: 'logo',
+	socials: 'socials',
+	columnOne: 'columnOne',
+	columnTwo: 'columnTwo',
 	button: 'button',
 	inputDesc: 'inputDesc',
 	inputLabel: 'inputLabel',
@@ -115,7 +120,6 @@ const createLink = (text: string, underline?: boolean) => {
 				  }
 				: {
 						textDecoration: 'none',
-						fontWeight: '600',
 				  }),
 		})
 		.cssHover({
@@ -130,11 +134,17 @@ const createLink = (text: string, underline?: boolean) => {
 	return l
 }
 
-const topLinks = [
-	createLink('About us'),
-	createLink('Contact us'),
-	createLink('Terms of use'),
-	createLink('FAQ'),
+const columnOne = [
+	createLink('Link One'),
+	createLink('Link Two'),
+	createLink('Link Three'),
+	createLink('Link Four'),
+]
+const columnTwo = [
+	createLink('Link Five'),
+	createLink('Link Six'),
+	createLink('Link Seven'),
+	createLink('Link Eight'),
 ]
 
 const bottomLinks = [
@@ -145,36 +155,11 @@ const bottomLinks = [
 ]
 const topFooterLeft = box([
 	logo,
-	box(topLinks)
-		.tag(tagIds.topLinks)
-		.css({
-			display: 'flex',
-			flexWrap: 'wrap',
-			justifyContent: 'space-between',
-			gap: '1rem',
-		})
-		.cssMobile({
-			flexDirection: 'column',
-			alignItems: 'start',
-		}),
-])
-	.css({
-		display: 'flex',
-		flexWrap: 'wrap',
-		flexDirection: 'column',
-		alignItems: 'start',
-		justifyContent: 'center',
-		rowGap: '2rem',
-	})
-	.cssTablet({})
-	.cssMobile({})
-const topFooterRight = box([
 	form([
-		txt('Subscribe')
+		txt('Join our newsletter to stay up to date on features and releases.')
 			.tag(tagIds.inputLabel)
 			.css({
 				fontSize: '16px',
-				fontWeight: '600',
 				gridColumn: 'span 3 / span 3',
 				textAlign: 'left',
 			})
@@ -207,7 +192,9 @@ const topFooterRight = box([
 			})
 			.class('submit')
 			.tag(tagIds.button),
-		txt('By subscribing you agree to with our Privacy Policy')
+		txt(
+			'By subscribing you agree to with our Privacy Policy and provide consent to receive updates from our company.'
+		)
 			.tag(tagIds.inputDesc)
 			.css({
 				gridColumn: 'span 3 / span 3',
@@ -236,18 +223,78 @@ const topFooterRight = box([
 		display: 'flex',
 		flexWrap: 'wrap',
 		flexDirection: 'column',
+		alignItems: 'start',
+		justifyContent: 'center',
+		rowGap: '2rem',
+	})
+	.cssTablet({})
+	.cssMobile({})
+const topFooterRight = box([
+	txt('Column One').tag(tagIds.inputLabel).css({
+		fontWeight: '600',
+		fontSize: '16px',
+		textAlign: 'left',
+	}),
+	txt('Column Two').tag(tagIds.inputLabel).css({
+		fontWeight: '600',
+		fontSize: '16px',
+		textAlign: 'left',
+	}),
+	txt('Follow us').tag(tagIds.inputLabel).css({
+		fontWeight: '600',
+		fontSize: '16px',
+		textAlign: 'center',
+	}),
+
+	box(columnOne)
+		.tag(tagIds.columnOne)
+		.css({
+			display: 'flex',
+			flexWrap: 'wrap',
+			flexDirection: 'column',
+			alignItems: 'start',
+			justifyContent: 'center',
+			rowGap: '2rem',
+		})
+		.cssTablet({ marginTop: '3rem' })
+		.cssMobile({}),
+	box(columnTwo)
+		.tag(tagIds.columnTwo)
+		.css({
+			display: 'flex',
+			flexWrap: 'wrap',
+			flexDirection: 'column',
+			alignItems: 'start',
+			justifyContent: 'center',
+			rowGap: '2rem',
+		})
+		.cssTablet({ marginTop: '3rem' })
+		.cssMobile({}),
+	produce(Socials.getComponent(), (draft) => {
+		draft.style.desktop!.default!.display = 'flex'
+		draft.style.desktop!.default!.flexWrap = 'wrap'
+		draft.style.desktop!.default!.flexDirection = 'column'
+		draft.style.desktop!.default!.alignItems = 'center'
+		draft.style.desktop!.default!.justifyContent = 'center'
+		draft.style.desktop!.default!.rowGap = '2rem'
+		draft.tagId = tagIds.socials
+	}),
+])
+	.css({
+		display: 'grid',
+		gridTemplateColumns: ' 1fr 1fr 1fr',
 		alignItems: 'end',
 		justifyContent: 'center',
-		rowGap: '1rem',
 	})
 	.cssTablet({ alignItems: 'start', rowGap: '5px', marginTop: '2rem' })
-	.cssMobile({})
+	.cssMobile({ gridTemplateColumns: ' 1fr' })
 
 const topFooter = box([topFooterLeft, topFooterRight])
 	.css({
 		display: 'grid',
 		paddingBottom: '4rem',
 		gridTemplateColumns: ' 1fr 1fr',
+		gap: '3rem',
 		borderBottomWidth: '1px',
 		borderBottomStyle: 'solid',
 		borderColor: 'black',

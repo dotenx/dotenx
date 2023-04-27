@@ -1,59 +1,69 @@
+import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/footer-simple-with-input-1.png'
+import imageUrl from '../../assets/components/footer-simple-links-on-right-2.png'
 import { deserializeElement } from '../../utils/deserialize'
-import { box, form, frame, img, input, link, submit, txt } from '../elements/constructor'
+import { box, frame, img, link, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
-import { ButtonElement } from '../elements/extensions/button'
 import { ImageElement } from '../elements/extensions/image'
 import { LinkElement } from '../elements/extensions/link'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
-import { ButtonStyler } from '../simple/stylers/button-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
+import { Socials } from './basic-components/professional-socials'
 import { Component, ElementOptions } from './component'
 import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FooterSimpleWithInput extends Component {
-	name = 'Simple footer with input'
+export class FooterSimpleWithLinksOnRight2 extends Component {
+	name = 'Simple footer with links on right - 2 '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FooterSimpleWithInputOptions options={options} />
+		return <FooterSimpleWithLinksOnRight2Options options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function FooterSimpleWithInputOptions({ options }: { options: ElementOptions }) {
+function FooterSimpleWithLinksOnRight2Options({ options }: { options: ElementOptions }) {
 	const component = useSelectedElement<BoxElement>()!
 	const logo = component.find<ImageElement>(tagIds.logo)!
 	const topLinks = component.find(tagIds.topLinks) as BoxElement
+	const topLeftLinks = component.find(tagIds.topLeftLinks) as BoxElement
 	const bottomLinks = component.find(tagIds.bottomLinks) as BoxElement
 	const bottomText = component.find(tagIds.bottomText) as TextElement
-	const inputDesc = component.find(tagIds.inputDesc) as TextElement
-	const inputLabel = component.find(tagIds.inputLabel) as TextElement
-	const button = component.find(tagIds.button) as ButtonElement
+	const addressLabel = component.find(tagIds.addressLabel) as TextElement
+	const addressText = component.find(tagIds.addressText) as TextElement
+	const contactLabel = component.find(tagIds.contactLabel) as TextElement
+	const socials = component.find(tagIds.socials) as BoxElement
+
 	return (
-		<ComponentWrapper name="Simple footer with input">
+		<ComponentWrapper name="Simple footer with links on right - 2">
 			<ImageStyler element={logo} />
-			<DividerCollapsible closed title="Input">
-				<TextStyler label="Input Label " element={inputLabel} />
-				<ButtonStyler label="Submit button" element={button} />
-				<TextStyler label="Input description text" element={inputDesc} />
+			<TextStyler label="Address label" element={addressLabel} />
+			<TextStyler label="Address text" element={addressText} />
+			<TextStyler label="Contact text" element={contactLabel} />
+			<DividerCollapsible title="Contact links">
+				<DndTabs
+					containerElement={topLeftLinks}
+					renderItemOptions={(item) => <TopLinksOptions item={item as LinkElement} />}
+					insertElement={() => createLink('New Contact', true)}
+				/>
 			</DividerCollapsible>
-			<DividerCollapsible closed title="Top links">
+
+			<DividerCollapsible title="top right links">
 				<DndTabs
 					containerElement={topLinks}
 					renderItemOptions={(item) => <TopLinksOptions item={item as LinkElement} />}
 					insertElement={() => createLink('New link')}
 				/>
 			</DividerCollapsible>
+			{Socials.getOptions({ set: options.set, root: socials, rootIsContainer: true })}
 
 			<DividerCollapsible closed title="Bottom links">
 				<TextStyler label="Bottom text" element={bottomText} />
@@ -84,13 +94,17 @@ function TopLinksOptions({ item }: { item: LinkElement }) {
 
 const tagIds = {
 	logo: 'logo',
+	addressLabel: 'addressLabel',
+	addressText: 'addressText',
+	contactLabel: 'contactLabel',
 	button: 'button',
 	inputDesc: 'inputDesc',
 	inputLabel: 'inputLabel',
-	form: 'form',
 	submit: 'submit',
 	topLinks: 'topLinks',
+	topLeftLinks: 'topLeftLinks',
 	bottomLinks: 'bottomLinks',
+	socials: 'socials',
 	bottomText: 'bottomText',
 }
 
@@ -131,11 +145,16 @@ const createLink = (text: string, underline?: boolean) => {
 }
 
 const topLinks = [
-	createLink('About us'),
-	createLink('Contact us'),
-	createLink('Terms of use'),
-	createLink('FAQ'),
+	createLink('Link one'),
+	createLink('Link two'),
+	createLink('Link three'),
+	createLink('Link four'),
+	createLink('Link five').cssMobile({ marginTop: '2rem' }),
+	createLink('Link six'),
+	createLink('Link seven'),
+	createLink('Link eight'),
 ]
+const topLeftLinks = [createLink('1600 201 7234', true), createLink('info@contact.com', true)]
 
 const bottomLinks = [
 	createLink('Terms and conditions', true),
@@ -145,91 +164,71 @@ const bottomLinks = [
 ]
 const topFooterLeft = box([
 	logo,
-	box(topLinks)
-		.tag(tagIds.topLinks)
+	txt('Address:')
+		.tag(tagIds.addressLabel)
+		.css({
+			fontSize: '16px',
+			fontWeight: '600',
+			gridColumn: 'span 3 / span 3',
+			textAlign: 'left',
+			marginTop: '2rem',
+		})
+		.cssTablet({}),
+	txt('Level 1, 12 Sample St, Sydney NSW 2000')
+		.tag(tagIds.addressText)
+		.css({
+			fontSize: '16px',
+		})
+		.cssTablet({}),
+	txt('Contact:')
+		.tag(tagIds.contactLabel)
+		.css({
+			fontSize: '16px',
+			fontWeight: '600',
+			gridColumn: 'span 3 / span 3',
+			textAlign: 'left',
+			marginTop: '2rem',
+		})
+		.cssTablet({}),
+	box(topLeftLinks)
+		.tag(tagIds.topLeftLinks)
 		.css({
 			display: 'flex',
 			flexWrap: 'wrap',
 			justifyContent: 'space-between',
-			gap: '1rem',
-		})
-		.cssMobile({
 			flexDirection: 'column',
 			alignItems: 'start',
-		}),
+		})
+		.cssMobile({}),
+	produce(Socials.getComponent(), (draft) => {
+		draft.style.desktop!.default!.width = 'auto'
+		draft.style.desktop!.default!.marginTop = '2rem'
+		draft.style.desktop!.default!.gap = '20px'
+		draft.tagId = tagIds.socials
+	}),
 ])
 	.css({
 		display: 'flex',
 		flexWrap: 'wrap',
 		flexDirection: 'column',
 		alignItems: 'start',
-		justifyContent: 'center',
-		rowGap: '2rem',
+		justifyContent: 'start',
 	})
 	.cssTablet({})
 	.cssMobile({})
 const topFooterRight = box([
-	form([
-		txt('Subscribe')
-			.tag(tagIds.inputLabel)
-			.css({
-				fontSize: '16px',
-				fontWeight: '600',
-				gridColumn: 'span 3 / span 3',
-				textAlign: 'left',
-			})
-			.cssTablet({}),
-		input().type('text').placeholder('Enter your email address').setName('email').css({
-			borderWidth: '1px',
-			borderColor: '#000',
-			borderStyle: 'solid',
-			borderRadius: '5px',
-			padding: '10px',
-			width: '100%',
-			fontSize: '16px',
-			fontWeight: '500',
-			color: '#6B7280',
-			outline: 'none',
-			gridColumn: 'span 2 / span 3',
-		}),
-		submit('Subscribe')
-			.tag(tagIds.submit)
-			.css({
-				backgroundColor: '#000',
-				color: '#fff',
-				border: 'none',
-				padding: '10px',
-				borderRadius: '5px',
-				fontSize: '16px',
-				fontWeight: '500',
-				outline: 'none',
-				textAlign: 'center',
-			})
-			.class('submit')
-			.tag(tagIds.button),
-		txt('By subscribing you agree to with our Privacy Policy')
-			.tag(tagIds.inputDesc)
-			.css({
-				gridColumn: 'span 3 / span 3',
-
-				fontSize: '14px',
-			})
-			.cssTablet({
-				marginBottom: '10px',
-			}),
-	])
-		.tag(tagIds.form)
+	box(topLinks)
+		.tag(tagIds.topLinks)
 		.css({
 			display: 'grid',
-			gridTemplateColumns: '1fr 1fr 1fr',
-			minWidth: '400px',
-			gap: '10px',
+			gap: '1rem',
+			columnGap: '3rem',
+			flexWrap: 'wrap',
+			gridTemplateColumns: ' 1fr 1fr',
 		})
-		.cssTablet({
-			minWidth: '300px',
-		})
+		.cssTablet({ marginTop: '3rem' })
 		.cssMobile({
-			minWidth: '200px',
+			gridTemplateColumns: ' 1fr ',
 		}),
 ])
 	.css({
@@ -240,16 +239,16 @@ const topFooterRight = box([
 		justifyContent: 'center',
 		rowGap: '1rem',
 	})
-	.cssTablet({ alignItems: 'start', rowGap: '5px', marginTop: '2rem' })
+	.cssTablet({ alignItems: 'start', rowGap: '5px' })
 	.cssMobile({})
 
 const topFooter = box([topFooterLeft, topFooterRight])
 	.css({
 		display: 'grid',
-		paddingBottom: '4rem',
+		padding: '3rem',
 		gridTemplateColumns: ' 1fr 1fr',
-		borderBottomWidth: '1px',
-		borderBottomStyle: 'solid',
+		borderWidth: '1px',
+		borderStyle: 'solid',
 		borderColor: 'black',
 	})
 	.cssTablet({
@@ -304,6 +303,8 @@ const bottomFooter = box([
 const wrapperDiv = frame([topFooter, bottomFooter]).css({
 	flexDirection: 'column',
 	alignItems: 'stretch',
+	paddingTop: '4rem',
+	paddingBottom: '3rem',
 })
 
 const defaultData = wrapperDiv.serialize()
