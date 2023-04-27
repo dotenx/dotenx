@@ -1,5 +1,5 @@
 // relume feature 123
-import componentImage from '../../../assets/components/features/feature-19.png'
+import componentImage from '../../../assets/components/features/feature-22.png'
 import { box } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
 import { useSelectedElement } from '../../selection/use-selected-component'
