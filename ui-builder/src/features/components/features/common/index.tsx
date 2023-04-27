@@ -1,13 +1,15 @@
 import _ from 'lodash'
 import { gridCols } from '../../../../utils/style-utils'
-import { box, container, flex, grid, icn, link, txt } from '../../../elements/constructor'
+import { box, container, flex, grid, icn, img, link, txt } from '../../../elements/constructor'
 import { Element } from '../../../elements/element'
 import { BoxElement } from '../../../elements/extensions/box'
 import { IconElement } from '../../../elements/extensions/icon'
+import { ImageElement } from '../../../elements/extensions/image'
 import { LinkElement } from '../../../elements/extensions/link'
 import { TextElement } from '../../../elements/extensions/text'
 import { useSelectedElement } from '../../../selection/use-selected-component'
 import { IconStyler } from '../../../simple/stylers/icon-styler'
+import { ImageStyler } from '../../../simple/stylers/image-styler'
 import { LinkStyler } from '../../../simple/stylers/link-styler'
 import { TextStyler } from '../../../simple/stylers/text-styler'
 import { DndTabs } from '../../helpers/dnd-tabs'
@@ -43,6 +45,7 @@ const tag = {
 		title: 'title',
 		desc: 'desc',
 	},
+	fullImg: 'fullImg',
 }
 // ---------------------------------------------------------------
 
@@ -110,21 +113,26 @@ function IcnSubheadingOptions({ item }: { item: BoxElement }) {
 	)
 }
 
-// =============================================================== Full Background
-const fullBg = (children: Element[]) =>
+// =============================================================== Paper
+const ppr = (children: Element[]) =>
 	box([container(children)])
 		.css({
 			paddingTop: '7rem',
 			paddingBottom: '7rem',
 			paddingRight: '5%',
 			paddingLeft: '5%',
-			color: '#fff',
-			backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
 		})
 		.cssTablet({
 			paddingTop: '4rem',
 			paddingBottom: '4rem',
 		})
+
+// =============================================================== Full Background
+const fullBg = (children: Element[]) =>
+	ppr(children).css({
+		color: '#fff',
+		backgroundImage: 'url(https://files.dotenx.com/assets/hero-bg-wva.jpeg)',
+	})
 
 // =============================================================== Half Grid
 const halfGrid = (children: Element[]) =>
@@ -252,7 +260,7 @@ const btnLinks = () =>
 		link()
 			.populate([txt('Button').tag(tag.btnLink.link1Txt)])
 			.css({
-				border: '1px solid #fff',
+				border: '1px solid currentcolor',
 				padding: '0.75rem 1.5rem',
 			})
 			.tag(tag.btnLink.link1),
@@ -365,11 +373,28 @@ function SubheadingOptions({ item }: { item: BoxElement }) {
 	)
 }
 
+// =============================================================== Full image
+const fullImg = () =>
+	img('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
+		.css({
+			marginTop: '5rem',
+		})
+		.tag(tag.fullImg)
+
+function FullImgOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const image = component.find<ImageElement>(tag.fullImg)!
+	return <ImageStyler element={image} />
+}
+
 // ---------------------------------------------------------------
 export const cmn = {
 	icnSubheading: {
 		el: icnSubheadings,
 		Options: IcnSubheadingsOptions,
+	},
+	ppr: {
+		el: ppr,
 	},
 	fullBg: {
 		el: fullBg,
@@ -404,5 +429,9 @@ export const cmn = {
 	subheadings: {
 		el: subheadings,
 		Options: SubheadingsOptions,
+	},
+	fullImg: {
+		el: fullImg,
+		Options: FullImgOptions,
 	},
 }
