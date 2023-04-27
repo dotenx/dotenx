@@ -114,7 +114,7 @@ const component = () =>
 
 const subheading = () =>
 	box([
-		icn('square').size('3rem').tag(tags.subheading.icon).css({
+		icn('cube').size('3rem').tag(tags.subheading.icon).css({
 			marginBottom: '1rem',
 		}),
 		box([

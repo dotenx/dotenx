@@ -46,6 +46,10 @@ const tag = {
 		desc: 'desc',
 	},
 	fullImg: 'fullImg',
+	smlSubheading: {
+		title: 'title',
+		desc: 'desc',
+	},
 }
 // ---------------------------------------------------------------
 
@@ -65,7 +69,7 @@ const icnSubheadings = () =>
 
 const icnSubheading = (title: string) =>
 	flex([
-		icn('square').size('32px').tag(tag.icnSubheading.icn),
+		icn('cube').size('32px').tag(tag.icnSubheading.icn),
 		box([
 			txt(title)
 				.css({
@@ -218,7 +222,7 @@ const icnLst = () =>
 
 const icnLstItm = () =>
 	flex([
-		icn('square').size('24px').tag(tag.icnLst.icn),
+		icn('cube').size('24px').tag(tag.icnLst.icn),
 		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 			.css({
 				fontSize: '1rem',
@@ -299,7 +303,7 @@ function BtnLinksOptions() {
 
 // =============================================================== Icon Heading
 const icnHeading = () =>
-	icn('square')
+	icn('cube')
 		.size('48px')
 		.css({
 			marginBottom: '1.5rem',
@@ -373,7 +377,7 @@ function SubheadingOptions({ item }: { item: BoxElement }) {
 	)
 }
 
-// =============================================================== Full image
+// =============================================================== Full Image
 const fullImg = () =>
 	img('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
 		.css({
@@ -386,6 +390,31 @@ function FullImgOptions() {
 	const image = component.find<ImageElement>(tag.fullImg)!
 	return <ImageStyler element={image} />
 }
+
+// =============================================================== Small Subheading
+const smlSubheading = (title: string) =>
+	flex([
+		box([
+			txt(title)
+				.css({
+					fontWeight: '700',
+					fontSize: '1.25rem',
+					lineHeight: '1.4',
+					marginBottom: '1rem',
+				})
+				.tag(tag.smlSubheading.title),
+			txt(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
+			)
+				.css({
+					fontSize: '1rem',
+					lineHeight: '1.5',
+				})
+				.tag(tag.smlSubheading.desc),
+		]),
+	]).css({
+		gap: '1rem',
+	})
 
 // ---------------------------------------------------------------
 export const cmn = {
@@ -430,8 +459,15 @@ export const cmn = {
 		el: subheadings,
 		Options: SubheadingsOptions,
 	},
+	subheading: {
+		el: subheading,
+		Options: SubheadingOptions,
+	},
 	fullImg: {
 		el: fullImg,
 		Options: FullImgOptions,
+	},
+	smlSubheading: {
+		el: smlSubheading,
 	},
 }

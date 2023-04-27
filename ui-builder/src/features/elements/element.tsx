@@ -153,8 +153,7 @@ export abstract class Element {
 	}
 	customCss(selector: string, css: CSSProperties) {
 		const merged = _.assign({}, this.customStyle.desktop?.[selector], css)
-		_.set(this.customStyle, `desktop.[${selector}]`, merged)
-		console.log(`customCss`, this.customStyle)
+		_.set(this.customStyle, `desktop.${selector}`, merged)
 		return this
 	}
 
