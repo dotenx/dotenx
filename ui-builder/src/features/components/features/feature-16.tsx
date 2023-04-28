@@ -1,9 +1,9 @@
 // relume feature 105
 import componentImage from '../../../assets/components/features/feature-16.png'
 import { box } from '../../elements/constructor'
+import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
-import { cmn } from './common'
 
 export class Feature16 extends Component {
 	name = 'Feature 16'
