@@ -135,6 +135,8 @@ import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
+import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
+import { FooterSimpleWithInput3 } from './footer-simple-with-input-3'
 
 export const COMPONENTS: Components = [
 	{
@@ -318,7 +320,8 @@ export const COMPONENTS: Components = [
 			FooterSimpleCentered,
 			FooterSimpleWithoutIcon,
 			FooterSimpleWithInput,
-			// FooterSimpleWithInput2,
+			FooterSimpleWithInput2,
+			FooterSimpleWithInput3,
 			FooterSimpleWithLinksOnRight,
 			FooterSimpleWithLinksOnRight2,
 		],
