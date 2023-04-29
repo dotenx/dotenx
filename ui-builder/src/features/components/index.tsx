@@ -120,6 +120,7 @@ import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
 import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
+import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -134,7 +135,7 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
+import { Testimonials1 } from './testimonials/testimonial-1'
 
 export const COMPONENTS: Components = [
 	{
@@ -307,7 +308,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Testimonial',
 		icon: <TbMessageChatbot />,
-		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
+		items: [Testimonials1, TestimonialSimple, TestimonialSlider, TestimonialSlider2],
 	},
 	{
 		title: 'Footers',

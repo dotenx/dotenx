@@ -134,7 +134,6 @@ const card = () =>
 			padding: '40px 20px',
 			color: 'white',
 			flexShrink: '0',
-			// take a third
 			flexBasis: 'calc(100% / 3 - 20px * 2 / 3)',
 		})
 		.cssTablet({

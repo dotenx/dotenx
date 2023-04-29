@@ -173,8 +173,8 @@ function TaglineOptions({ root }: { root?: BoxElement }) {
 }
 
 // =============================================================== Heading
-const heading = () =>
-	txt('Medium length section heading goes here')
+const heading = (text?: string) =>
+	txt(text ?? 'Medium length section heading goes here')
 		.css({
 			fontWeight: '700',
 			fontSize: '3rem',
@@ -448,12 +448,12 @@ function BrandsOptions() {
 		<DndTabs
 			containerElement={brandList}
 			insertElement={brand}
-			renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
+			renderItemOptions={(item) => <BrandOptions item={item as BoxElement} />}
 		/>
 	)
 }
 
-function ItemOptions({ item }: { item: BoxElement }) {
+function BrandOptions({ item }: { item: BoxElement }) {
 	const image = item.find<ImageElement>(tag.brands.img)!
 	return <ImageStyler element={image} />
 }
