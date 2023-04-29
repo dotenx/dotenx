@@ -136,6 +136,7 @@ import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
 import { NavbarWithMultiColumnDropDownCta1 } from './navbars/navbar-with-multicolumn-dropdown-cta'
+import { NavbarWithDropDownCta1 } from './navbars/navbar-with-dropdown-cta'
 
 export const COMPONENTS: Components = [
 	{
@@ -156,7 +157,8 @@ export const COMPONENTS: Components = [
 		icon: <TbLayoutNavbar />,
 		items: [
 			Navbar,
-			NavbarWithDropDownCta,
+			// NavbarWithDropDownCta,
+			NavbarWithDropDownCta1,
 			NavbarWithDropDownCtaCenterLogo,
 			NavbarWithMultiColumnDropDownCta1,
 		],

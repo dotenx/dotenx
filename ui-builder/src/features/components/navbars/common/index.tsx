@@ -142,7 +142,35 @@ const submenuLink = () =>
 		})
 		.populate([txt('Submenu').tag(tags.linkText)])
 
-const item = (text: string, hasSubmenu = false) => {
+const defaultSubmenu = box(repeatObject(submenuLink(), 4))
+	.as('ul')
+	.tag(tags.submenu)
+	.class('submenu')
+	.css({
+		height: '0',
+		width: '0',
+		visibility: 'hidden',
+		overflow: 'hidden',
+		transform: 'translateY(20px)',
+		display: 'block', // If we set this to none the transition effect won't work. Stupid HTML!
+		padding: '0px 10px',
+		margin: '0px',
+	})
+
+const defaultSubmenuOptions = ({ submenu }: { submenu: BoxElement }) => {
+	return (
+		<>
+			<div className="w-full mt-4">Submenu</div>
+			<DndTabs
+				containerElement={submenu}
+				insertElement={submenuLink}
+				renderItemOptions={(item) => <SubmenuItemOptions item={item as LinkElement} />}
+			/>
+		</>
+	)
+}
+
+const item = (text: string, submenu: BoxElement, hasSubmenu = false) => {
 	const children: Element[] = [
 		link()
 			.href('#')
@@ -159,21 +187,6 @@ const item = (text: string, hasSubmenu = false) => {
 			]),
 	]
 	if (hasSubmenu) {
-		const submenu = box(repeatObject(submenuLink(), 4))
-			.as('ul')
-			.tag(tags.submenu)
-			.class('submenu')
-			.css({
-				height: '0',
-				width: '0',
-				visibility: 'hidden',
-				overflow: 'hidden',
-				transform: 'translateY(20px)',
-				display: 'block', // If we set this to none the transition effect won't work. Stupid HTML!
-				padding: '0px 10px',
-				margin: '0px',
-			})
-
 		children.push(submenu)
 	}
 
@@ -197,32 +210,39 @@ const item = (text: string, hasSubmenu = false) => {
 		})
 }
 
-const navbarItems = box([
-	item('Link One'),
-	item('Link Two'),
-	item('Link Three'),
-	item('Link Four', true),
-])
-	.class('navbar_items')
-	.css({
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		width: '100%',
-		height: '100%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
-		order: '1',
-	})
-	.cssTablet({
-		order: '4',
-		width: '100%',
-		display: 'none',
-	})
-	.tag(tags.links)
+const navbarItems = (submenu: BoxElement) =>
+	box([
+		item('Link', submenu),
+		item('Link', submenu),
+		item('Link', submenu),
+		item('Link', submenu, true),
+	])
+		.class('navbar_items')
+		.css({
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'center',
+			alignItems: 'center',
+			width: '100%',
+			height: '100%',
+			marginLeft: 'auto',
+			marginRight: 'auto',
+			order: '1',
+		})
+		.cssTablet({
+			order: '4',
+			width: '100%',
+			display: 'none',
+		})
+		.tag(tags.links)
 
-function LinksOptions() {
+function LinksOptions({
+	submenu,
+	submenuOptions,
+}: {
+	submenu: BoxElement
+	submenuOptions: ({ submenu }: { submenu: BoxElement }) => JSX.Element
+}) {
 	const component = useSelectedElement<BoxElement>()!
 	const set = useSetElement()
 	const links = component.find<BoxElement>(tags.links)!
@@ -230,7 +250,7 @@ function LinksOptions() {
 	return (
 		<DndTabs
 			containerElement={links}
-			insertElement={() => item('Link')}
+			insertElement={() => item('Link', submenu)}
 			rightSection={
 				<Menu position="left">
 					<Menu.Target>
@@ -243,13 +263,17 @@ function LinksOptions() {
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item
-							onClick={() => set(links, (draft) => draft.children.push(item('Link')))}
+							onClick={() =>
+								set(links, (draft) => draft.children.push(item('Link', submenu)))
+							}
 						>
 							Link
 						</Menu.Item>
 						<Menu.Item
 							onClick={() =>
-								set(links, (draft) => draft.children.push(item('Link', true)))
+								set(links, (draft) =>
+									draft.children.push(item('Link', submenu, true))
+								)
 							}
 						>
 							Link & Submenu
@@ -257,12 +281,20 @@ function LinksOptions() {
 					</Menu.Dropdown>
 				</Menu>
 			}
-			renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
+			renderItemOptions={(item) => (
+				<ItemOptions item={item as BoxElement} SubmenuOptions={submenuOptions} />
+			)}
 		/>
 	)
 }
 
-function ItemOptions({ item }: { item: BoxElement }) {
+function ItemOptions({
+	item,
+	SubmenuOptions,
+}: {
+	item: BoxElement
+	SubmenuOptions: ({ submenu }: { submenu: BoxElement }) => JSX.Element
+}) {
 	const link = item.find<LinkElement>(tags.link)!
 	const text = link.find<TextElement>(tags.linkText)!
 	const submenu = item.find<BoxElement>(tags.submenu)
@@ -271,18 +303,7 @@ function ItemOptions({ item }: { item: BoxElement }) {
 		<OptionsWrapper>
 			<LinkStyler linkOnly element={link} label="Link address" />
 			<TextStyler textOnly element={text} label="Link text" />
-			{submenu && (
-				<>
-					<div className="w-full mt-4">Submenu</div>
-					<DndTabs
-						containerElement={submenu}
-						insertElement={submenuLink}
-						renderItemOptions={(item) => (
-							<SubmenuItemOptions item={item as LinkElement} />
-						)}
-					/>
-				</>
-			)}
+			{submenu && <SubmenuOptions submenu={submenu} />}
 		</OptionsWrapper>
 	)
 }
@@ -330,92 +351,89 @@ function LogoOptions() {
 
 // #region nav
 
-const nav = (elements: Element[]) => paper([
-	box(elements)
-		.as('ul')
-		.class('menu')
+const nav = (elements: Element[]) =>
+	paper([
+		box(elements)
+			.as('ul')
+			.class('menu')
+			.css({
+				padding: '0px',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'space-between',
+				flexWrap: 'nowrap',
+				listStyleType: 'none',
+			})
+			.cssTablet({
+				flexWrap: 'wrap',
+				alignItems: 'center',
+				justifyContent: 'center',
+			})
+			.cssMobile({
+				justifyContent: 'space-between',
+				alignItems: 'center',
+			}),
+	])
+		.as('nav')
 		.css({
-			padding: '0px',
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'space-between',
-			flexWrap: 'nowrap',
-			listStyleType: 'none',
+			paddingTop: '10px',
+			paddingBottom: '10px',
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			width: '100%',
+			fontSize: '1rem',
+			color: color('text'),
 		})
 		.cssTablet({
-			flexWrap: 'wrap',
-			alignItems: 'center',
-			justifyContent: 'center',
+			fontSize: '1.125rem',
 		})
-		.cssMobile({
-			justifyContent: 'space-between',
-			alignItems: 'center',
-		}),
-])
-	.as('nav')
-	.css({
-		paddingTop: '10px',
-		paddingBottom: '10px',
-		paddingLeft: '5%',
-		paddingRight: '5%',
-		width: '100%',
-		fontSize: '1rem',
-		color: color('text'),
-	})
-	.cssTablet({
-		fontSize: '1.125rem',
-	})
-	.customCss('.submenu-active .submenu', {
-		height: 'auto',
-		width: 'auto',
-		visibility: 'visible',
-		transform: 'translateY(0px)',
-		transition: 'transform 0.2s cubic-bezier(0.35, -0.9, 0.13, 1.59)',
-		display: 'block',
-		position: 'absolute',
-		left: '0',
-		top: '68px',
-	})
-	.customCss('.has-submenu > a::after', {
-		fontFamily: "'Font Awesome 5 Free'",
-		fontSize: '12px',
-		lineHeight: '16px',
-		fontWeight: '900',
-		content: "'\\f078'",
-		display: 'inline-block',
-		color: 'black',
-		paddingLeft: '2px',
-		paddingRight: '2px',
-	})
-	.customCss('.has-submenu.submenu-active > a::after', {
-		transform: 'rotate(-180deg) !important',
-		transition: 'transform 0.2s ease-in-out',
-	})
-	.customCssTablet('.submenu-active .submenu', {
-		position: 'static',
-	})
-	.customCssTablet('.active .item', {
-		display: 'block',
-	})
-	.customCssTablet('.active .navbar_items', {
-		display: 'block',
-	})
-	.customCssMobile('.active .buttons', {
-		width: '100%',
-		textAlign: 'center',
-		display: 'flex',
-		flexDirection: 'column',
-		rowGap: '10px',
-		paddingTop: '20px',
-	})
-
-
+		.customCss('.submenu-active .submenu', {
+			height: 'auto',
+			width: 'auto',
+			visibility: 'visible',
+			transform: 'translateY(0px)',
+			transition: 'transform 0.2s cubic-bezier(0.35, -0.9, 0.13, 1.59)',
+			display: 'block',
+			position: 'absolute',
+			left: '0',
+			top: '68px',
+		})
+		.customCss('.has-submenu > a::after', {
+			fontFamily: "'Font Awesome 5 Free'",
+			fontSize: '12px',
+			lineHeight: '16px',
+			fontWeight: '900',
+			content: "'\\f078'",
+			display: 'inline-block',
+			color: 'black',
+			paddingLeft: '2px',
+			paddingRight: '2px',
+		})
+		.customCss('.has-submenu.submenu-active > a::after', {
+			transform: 'rotate(-180deg) !important',
+			transition: 'transform 0.2s ease-in-out',
+		})
+		.customCssTablet('.submenu-active .submenu', {
+			position: 'static',
+		})
+		.customCssTablet('.active .item', {
+			display: 'block',
+		})
+		.customCssTablet('.active .navbar_items', {
+			display: 'block',
+		})
+		.customCssMobile('.active .buttons', {
+			width: '100%',
+			textAlign: 'center',
+			display: 'flex',
+			flexDirection: 'column',
+			rowGap: '10px',
+			paddingTop: '20px',
+		})
 
 // #endregion
 
-
 // #region toggle
-
 
 const toggle = box([
 	link()
@@ -440,9 +458,6 @@ const toggle = box([
 
 // #endregion
 
-
-
-
 export const cmn = {
 	buttons: {
 		el: buttons,
@@ -461,5 +476,11 @@ export const cmn = {
 	},
 	toggle: {
 		el: toggle,
+	},
+	submenus: {
+		default: {
+			el: defaultSubmenu,
+			Options: defaultSubmenuOptions,
+		},
 	},
 }

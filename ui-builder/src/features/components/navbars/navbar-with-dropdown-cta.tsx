@@ -22,11 +22,11 @@ import { repeatObject } from '../helpers'
 import { TbPlus } from 'react-icons/tb'
 import { cmn } from './common'
 
-export class NavbarWithMultiColumnDropDownCta1 extends Component {
-	name = 'Navbar with multi-column dropdown and CTA 1'
+export class NavbarWithDropDownCta1 extends Component {
+	name = 'Navbar with dropdown and CTA-1'
 	image = imageUrl
 	defaultData = defaultData
-	renderOptions = () => <NavbarWithMultiColumnDropDownCta1Options />
+	renderOptions = () => <NavbarWithDropDownCta1Options />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
 		const script = compiled({ id: root.id })
@@ -34,9 +34,9 @@ export class NavbarWithMultiColumnDropDownCta1 extends Component {
 	}
 }
 
-function NavbarWithMultiColumnDropDownCta1Options() {
+function NavbarWithDropDownCta1Options() {
 	return (
-		<ComponentWrapper name="Navbar with multi-column dropdown and CTA 1">
+		<ComponentWrapper name="Navbar with dropdown and CTA-1">
 			<cmn.logo.Options />
 			<cmn.buttons.Options />
 			<cmn.links.Options submenu={submenu} submenuOptions={submenuOptions} />
