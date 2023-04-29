@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/footer-simple-with-input-2.png'
+import imageUrl from '../../assets/components/footer-simple-with-input-3.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, form, frame, img, input, link, submit, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
@@ -20,19 +20,19 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FooterSimpleWithInput2 extends Component {
-	name = 'Simple footer with input - 2 '
+export class FooterSimpleWithInput3 extends Component {
+	name = 'Simple footer with input - 3 '
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FooterSimpleWithInput2Options options={options} />
+		return <FooterSimpleWithInput3Options options={options} />
 	}
 }
 
 // =============  renderOptions =============
 
-function FooterSimpleWithInput2Options({ options }: { options: ElementOptions }) {
+function FooterSimpleWithInput3Options({ options }: { options: ElementOptions }) {
 	const component = useSelectedElement<BoxElement>()!
 	const logo = component.find<ImageElement>(tagIds.logo)!
 	const columnOne = component.find(tagIds.columnOne) as BoxElement
@@ -47,7 +47,7 @@ function FooterSimpleWithInput2Options({ options }: { options: ElementOptions })
 	const button = component.find(tagIds.button) as ButtonElement
 	const socials = component.find(tagIds.socials) as BoxElement
 	return (
-		<ComponentWrapper name="Simple footer with input - 2">
+		<ComponentWrapper name="Simple footer with input - 3">
 			<ImageStyler element={logo} />
 			<DividerCollapsible closed title="Input">
 				<TextStyler label="Input Label " element={inputLabel} />
@@ -337,11 +337,11 @@ const topFooterRight = box([
 const topFooter = box([topFooterLeft, topFooterRight])
 	.css({
 		display: 'grid',
-		paddingBottom: '4rem',
+		padding: '3rem',
 		gridTemplateColumns: ' 1fr 1fr',
 		columnGap: '4rem',
-		borderBottomWidth: '1px',
-		borderBottomStyle: 'solid',
+		borderWidth: '1px',
+		borderStyle: 'solid',
 		borderColor: 'black',
 	})
 	.cssTablet({

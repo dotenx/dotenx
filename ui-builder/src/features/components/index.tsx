@@ -98,6 +98,12 @@ import { FooterSimpleCentered } from './footer-simple-center'
 import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
 import { FooterSimpleWithLinksOnRight2 } from './footer-simple-links-on-right-2'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
+import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
+import { FooterSimpleWithInput3 } from './footer-simple-with-input-3'
+import { FooterSimpleWithInput4 } from './footer-simple-with-input-4'
+import { FooterSimpleWithInput5 } from './footer-simple-with-input-5'
+import { FooterSimpleWithInput6 } from './footer-simple-with-input-6'
+import { FooterSimpleWithInput7 } from './footer-simple-with-input-7'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -319,7 +325,12 @@ export const COMPONENTS: Components = [
 			FooterSimpleCentered,
 			FooterSimpleWithoutIcon,
 			FooterSimpleWithInput,
-			// FooterSimpleWithInput2,
+			FooterSimpleWithInput2,
+			FooterSimpleWithInput3,
+			FooterSimpleWithInput4,
+			FooterSimpleWithInput5,
+			FooterSimpleWithInput6,
+			FooterSimpleWithInput7,
 			FooterSimpleWithLinksOnRight,
 			FooterSimpleWithLinksOnRight2,
 		],
