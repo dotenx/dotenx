@@ -8,9 +8,9 @@ import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
+import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
-import { cmn } from './common'
 
 export class Feature11 extends Component {
 	name = 'Feature 11'

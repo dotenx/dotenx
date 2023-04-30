@@ -98,6 +98,12 @@ import { FooterSimpleCentered } from './footer-simple-center'
 import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
 import { FooterSimpleWithLinksOnRight2 } from './footer-simple-links-on-right-2'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
+import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
+import { FooterSimpleWithInput3 } from './footer-simple-with-input-3'
+import { FooterSimpleWithInput4 } from './footer-simple-with-input-4'
+import { FooterSimpleWithInput5 } from './footer-simple-with-input-5'
+import { FooterSimpleWithInput6 } from './footer-simple-with-input-6'
+import { FooterSimpleWithInput7 } from './footer-simple-with-input-7'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -120,6 +126,7 @@ import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
 import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
+import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -134,13 +141,7 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
-import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
-import { FooterSimpleWithInput3 } from './footer-simple-with-input-3'
-import { FooterSimpleWithInput4 } from './footer-simple-with-input-4'
-import { FooterSimpleWithInput5 } from './footer-simple-with-input-5'
-import { FooterSimpleWithInput6 } from './footer-simple-with-input-6'
-import { FooterSimpleWithInput7 } from './footer-simple-with-input-7'
+import { Testimonials1 } from './testimonials/testimonial-1'
 
 export const COMPONENTS: Components = [
 	{
@@ -313,7 +314,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Testimonial',
 		icon: <TbMessageChatbot />,
-		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
+		items: [Testimonials1, TestimonialSimple, TestimonialSlider, TestimonialSlider2],
 	},
 	{
 		title: 'Footers',
