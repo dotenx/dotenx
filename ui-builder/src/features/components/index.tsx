@@ -141,6 +141,10 @@ import { FooterSimpleWithInput4 } from './footer-simple-with-input-4'
 import { FooterSimpleWithInput5 } from './footer-simple-with-input-5'
 import { FooterSimpleWithInput6 } from './footer-simple-with-input-6'
 import { FooterSimpleWithInput7 } from './footer-simple-with-input-7'
+import { Hero2 } from './hero new/hero-2'
+import { Hero3 } from './hero new/hero-3'
+import { Hero4 } from './hero new/hero-4'
+import { Hero5 } from './hero new/hero-5'
 
 export const COMPONENTS: Components = [
 	{
@@ -174,6 +178,10 @@ export const COMPONENTS: Components = [
 			HeroWithBgOneCta,
 			HeroWithBgTwoCta,
 			HeroWithImageTwoCta,
+			Hero2,
+			Hero3,
+			Hero4,
+			Hero5,
 		],
 	},
 	{
