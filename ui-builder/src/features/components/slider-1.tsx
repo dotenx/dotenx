@@ -154,7 +154,7 @@ const cards = () =>
 			scrollBehavior: 'smooth',
 			borderRadius: '10px',
 		})
-		.class('cards')
+		.class('list')
 		.tag(tags.cardList)
 
 const component = () =>

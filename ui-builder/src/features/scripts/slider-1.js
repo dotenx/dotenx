@@ -5,39 +5,39 @@
 
 	const root = document.getElementById(id)
 
-	const cardList = root.querySelector('.cards')
+	const list = root.querySelector('.list')
 	const leftButton = root.querySelector('.leftButton')
 	const rightButton = root.querySelector('.rightButton')
-	cardList.classList.add('hidden-scrollbar')
+	list.classList.add('hidden-scrollbar')
 
-	const cards = [...cardList.children]
+	const items = [...list.children]
 	let page = 0
 
 	leftButton.addEventListener('click', () => {
 		if (page === 0) return
 		page -= 1
-		scrollToCard()
+		scrollToItem()
 	})
 
 	rightButton.addEventListener('click', () => {
-		if ((page + 1) * cardsPerPage() >= cards.length) return
+		if ((page + 1) * itemPerPage() >= items.length) return
 		page += 1
-		scrollToCard()
+		scrollToItem()
 	})
 
-	function scrollToCard() {
-		const card =
-			page * cardsPerPage() >= cards.length
-				? cards[cards.length - 1]
-				: cards[page * cardsPerPage()]
-		card.scrollIntoView({
+	function scrollToItem() {
+		const item =
+			page * itemPerPage() >= items.length
+				? items[items.length - 1]
+				: items[page * itemPerPage()]
+		item.scrollIntoView({
 			behavior: 'smooth',
 			block: 'start',
 			inline: 'start',
 		})
 	}
 
-	function cardsPerPage() {
+	function itemPerPage() {
 		// max width breakpoints: 767px 478px
 		const width = window.innerWidth
 		if (width > 767) return 3
