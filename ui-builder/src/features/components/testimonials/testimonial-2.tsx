@@ -100,8 +100,6 @@ const list = () =>
 	flex(_.times(6, item))
 		.css({
 			overflowX: 'auto',
-		})
-		.css({
 			marginBottom: '2.5rem',
 		})
 		.tag(tags.list)

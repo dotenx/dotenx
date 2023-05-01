@@ -116,6 +116,7 @@ import { GalleryMasonryTwo } from './gallery-masonry-2'
 import { GalleryMasonryCustomLayout } from './gallery-masonry-custom-layout'
 import { GalleryWithCaptions } from './gallery-with-caption'
 import { Gallery1 } from './gallery/gallery-1'
+import { Gallery2 } from './gallery/gallery-2'
 import { Hero10 } from './hero new/hero-10'
 import { Hero11 } from './hero new/hero-11'
 import { Hero2 } from './hero new/hero-2'
@@ -294,6 +295,7 @@ export const COMPONENTS: Components = [
 		icon: <TbPhoto />,
 		items: [
 			Gallery1,
+			Gallery2,
 			GalleryBasic,
 			GalleryBasicRounded,
 			GalleryWithCaptions,
