@@ -567,7 +567,7 @@ const icnButton = (icon: string) =>
 		cursor: 'pointer',
 		flexShrink: '0',
 		backgroundColor: '#fff',
-		zIndex: '1'
+		zIndex: '1',
 	})
 
 // =============================================================== Slider Item
@@ -585,6 +585,28 @@ const sliderItm = (children: Element[]) =>
 			flexBasis: '100%',
 		})
 
+// =============================================================== Outline Button
+const outlineBtn = () =>
+	link()
+		.populate([txt('Button').tag(tag.btnLink.link1Txt)])
+		.css({
+			border: '1px solid currentcolor',
+			padding: '0.75rem 1.5rem',
+			display: 'inline-flex',
+		})
+		.tag(tag.btnLink.link1)
+
+function OutlineBtnOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const link1 = component.find<LinkElement>(tag.btnLink.link1)!
+	const link1Text = link1.find<TextElement>(tag.btnLink.link1Txt)!
+	return (
+		<>
+			<LinkStyler label="Link 1" element={link1} />
+			<TextStyler label="Link 1 text" element={link1Text} />
+		</>
+	)
+}
 // ---------------------------------------------------------------
 export const cmn = {
 	icnSubheadings: {
@@ -667,5 +689,9 @@ export const cmn = {
 	},
 	sliderItm: {
 		el: sliderItm,
+	},
+	outlineBtn: {
+		el: outlineBtn,
+		Options: OutlineBtnOptions,
 	},
 }
