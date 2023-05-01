@@ -145,6 +145,12 @@ import { Hero2 } from './hero new/hero-2'
 import { Hero3 } from './hero new/hero-3'
 import { Hero4 } from './hero new/hero-4'
 import { Hero5 } from './hero new/hero-5'
+import { Hero6 } from './hero new/hero-6'
+import { Hero7 } from './hero new/hero-7'
+import { Hero8 } from './hero new/hero-8'
+import { Hero9 } from './hero new/hero-9'
+import { Hero10 } from './hero new/hero-10'
+import { Hero11 } from './hero new/hero-11'
 
 export const COMPONENTS: Components = [
 	{
@@ -182,6 +188,12 @@ export const COMPONENTS: Components = [
 			Hero3,
 			Hero4,
 			Hero5,
+			Hero6,
+			Hero7,
+			Hero8,
+			Hero9,
+			Hero10,
+			Hero11,
 		],
 	},
 	{
