@@ -566,13 +566,14 @@ const icnButton = (icon: string) =>
 		alignItems: 'center',
 		cursor: 'pointer',
 		flexShrink: '0',
+		backgroundColor: '#fff',
+		zIndex: '1'
 	})
 
 // =============================================================== Slider Item
 const sliderItm = (children: Element[]) =>
 	box(children)
 		.css({
-			paddingRight: '3rem',
 			flexShrink: '0',
 			flexBasis: 'calc(100% / 3)',
 			transition: 'transform 500ms ease',

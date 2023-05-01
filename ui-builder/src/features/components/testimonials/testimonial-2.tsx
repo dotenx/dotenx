@@ -24,7 +24,10 @@ export class Testimonials2 extends Component {
 	renderOptions = () => <Options />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
-		const script = compiled({ id: root.id })
+		const script = compiled({
+			id: root.id,
+			overflow: 'hidden',
+		})
 		setElement(root, (draft) => (draft.script = script))
 	}
 }
@@ -97,30 +100,32 @@ const list = () =>
 	flex(_.times(6, item))
 		.css({
 			overflowX: 'auto',
-		})
-		.css({
 			marginBottom: '2.5rem',
 		})
 		.tag(tags.list)
 		.class('list')
 
 const item = () =>
-	cmn.sliderItm.el([
-		cmn.stars.el(),
-		cmn.quote.el().tag(tags.items.quote),
-		cmn.profile.el().tag(tags.items.image),
-		txt('Name Surname')
-			.css({
-				fontWeight: '600',
-			})
-			.tag(tags.items.title),
-		txt('Position, Company name')
-			.css({
-				marginBottom: '1rem',
-			})
-			.tag(tags.items.desc),
-		cmn.brand.el().tag(tags.items.brand),
-	])
+	cmn.sliderItm
+		.el([
+			cmn.stars.el(),
+			cmn.quote.el().tag(tags.items.quote),
+			cmn.profile.el().tag(tags.items.image),
+			txt('Name Surname')
+				.css({
+					fontWeight: '600',
+				})
+				.tag(tags.items.title),
+			txt('Position, Company name')
+				.css({
+					marginBottom: '1rem',
+				})
+				.tag(tags.items.desc),
+			cmn.brand.el().tag(tags.items.brand),
+		])
+		.css({
+			paddingRight: '3rem',
+		})
 
 const buttons = () =>
 	flex([

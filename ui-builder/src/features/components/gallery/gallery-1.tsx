@@ -1,24 +1,22 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/testimonials/testimonials-1.png'
-import { column, flex, txt } from '../../elements/constructor'
+import componentImage from '../../../assets/components/gallery/gallery-1.png'
+import { column, flex, img } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement, useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
 import { ImageElement } from '../../elements/extensions/image'
-import { TextElement } from '../../elements/extensions/text'
 import componentScript from '../../scripts/testimonials-1.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { ImageStyler } from '../../simple/stylers/image-styler'
-import { TextStyler } from '../../simple/stylers/text-styler'
 import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r9
-export class Testimonials1 extends Component {
-	name = 'Testimonials 1'
+// r19
+export class Gallery1 extends Component {
+	name = 'Gallery 1'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -26,7 +24,7 @@ export class Testimonials1 extends Component {
 		const compiled = _.template(componentScript)
 		const script = compiled({
 			id: root.id,
-			overflow: 'hidden',
+			overflow: 'visible',
 		})
 		setElement(root, (draft) => (draft.script = script))
 	}
@@ -54,19 +52,11 @@ function Options() {
 }
 
 function ItemOptions({ item }: { item: BoxElement }) {
-	const logo = item.find(tags.items.logo) as ImageElement
-	const quote = item.find(tags.items.quote) as TextElement
 	const image = item.find(tags.items.image) as ImageElement
-	const title = item.find(tags.items.title) as TextElement
-	const desc = item.find(tags.items.desc) as TextElement
 
 	return (
 		<OptionsWrapper>
-			<ImageStyler element={logo} />
-			<TextStyler label="Quote" element={quote} />
 			<ImageStyler element={image} />
-			<TextStyler label="Title" element={title} />
-			<TextStyler label="Description" element={desc} />
 		</OptionsWrapper>
 	)
 }
@@ -74,11 +64,7 @@ function ItemOptions({ item }: { item: BoxElement }) {
 const tags = {
 	list: 'list',
 	items: {
-		logo: 'logo',
-		quote: 'quote',
 		image: 'image',
-		title: 'title',
-		desc: 'desc',
 	},
 	dots: 'dots',
 }
@@ -86,7 +72,7 @@ const tags = {
 const component = () =>
 	cmn.ppr
 		.el([
-			cmn.heading.el('Customer testimonials'),
+			cmn.heading.el('Image Gallery'),
 			cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
 				marginBottom: '3rem',
 			}),
@@ -94,6 +80,7 @@ const component = () =>
 		])
 		.css({
 			textAlign: 'center',
+			overflowX: 'hidden',
 		})
 
 const list = () =>
@@ -117,6 +104,7 @@ const list = () =>
 		cmn.dots
 			.el()
 			.css({
+				marginTop: '2rem',
 				alignSelf: 'center',
 			})
 			.class('dots')
@@ -126,19 +114,13 @@ const list = () =>
 const item = () =>
 	cmn.sliderItm
 		.el([
-			cmn.brand.el().tag(tags.items.logo),
-			cmn.quote.el().tag(tags.items.quote),
-			cmn.profile.el().tag(tags.items.image),
-			txt('Name Surname')
+			img('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
 				.css({
-					fontWeight: '600',
+					aspectRatio: '1/1',
+					userSelect: 'none',
 				})
-				.tag(tags.items.title),
-			txt('Position, Company name').tag(tags.items.desc),
+				.tag(tags.items.image),
 		])
 		.css({
-			display: 'flex',
-			alignItems: 'center',
-			padding: '0 2rem',
-			marginBottom: '2.5rem',
+			padding: '0 1rem',
 		})

@@ -1,7 +1,7 @@
 import { Divider } from '@mantine/core'
 import _ from 'lodash'
 import imageUrl from '../../assets/components/testimonial-slider-2.png'
-import { box, btn, container, flex, img, link, paper, txt } from '../elements/constructor'
+import { box, btn, container, flex, img, paper, txt } from '../elements/constructor'
 import { Element } from '../elements/element'
 import { setElement } from '../elements/elements-store'
 import { BoxElement } from '../elements/extensions/box'
@@ -22,7 +22,7 @@ import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
 export class TestimonialSlider2 extends Component {
-	name = 'Testimonials with slider'
+	name = 'Testimonials with slider 2'
 	image = imageUrl
 	defaultData = component()
 	renderOptions = () => <ComponentOptions />
