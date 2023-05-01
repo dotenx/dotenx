@@ -1,4 +1,4 @@
-// relume feature 123
+// r feature 123
 import componentImage from '../../../assets/components/features/feature-19.png'
 import { box } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
