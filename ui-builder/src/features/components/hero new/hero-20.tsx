@@ -1,11 +1,11 @@
-import componentImage from '../../../assets/components/hero-6.png'
+import componentImage from '../../../assets/components/hero-20.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Hero6 extends Component {
-	name = 'Hero 6'
+export class Hero20 extends Component {
+	name = 'Hero 20'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -14,7 +14,7 @@ export class Hero6 extends Component {
 function Options() {
 	return (
 		<ComponentWrapper>
-			<cmn.heroImage.Options />
+			<cmn.video.Options />
 			<cmn.heading.Options />
 			<cmn.desc.Options />
 			<cmn.twoBtns.Options />
@@ -25,19 +25,20 @@ function Options() {
 const component = () =>
 	column([
 		cmn.ppr.el([
-			grid(2)
-				.populate([
-					cmn.heading.el(),
-					column([cmn.desc.el(), cmn.twoBtns.el()]).css({
-						alignItems: 'start',
-						justifyItems: 'center',
-						textAlign: 'left',
-						maxWidth: '48rem',
-					}),
-				])
-				.css({ alignItems: 'start', gap: '1rem' })
-				.cssTablet({ gridTemplateColumns: '1fr' }),
-			cmn.heroImage.el().css({ marginTop: '3rem' }),
+			column([cmn.heading.el(), cmn.desc.el(), cmn.twoBtns.el()])
+				.css({
+					alignItems: 'center',
+					justifyItems: 'center',
+					textAlign: 'center',
+					paddingLeft: '20%',
+					paddingRight: '20%',
+				})
+				.cssTablet({
+					paddingLeft: '10%',
+					paddingRight: '10%',
+				})
+				.cssMobile({ padding: '0px' }),
+			cmn.video.el().css({ marginTop: '3rem' }),
 		]),
 	]).css({
 		alignItems: 'start',

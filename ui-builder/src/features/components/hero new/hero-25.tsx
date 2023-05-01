@@ -1,11 +1,11 @@
-import componentImage from '../../../assets/components/hero-11.png'
+import componentImage from '../../../assets/components/hero-25.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Hero11 extends Component {
-	name = 'Hero 11'
+export class Hero25 extends Component {
+	name = 'Hero 25'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -14,7 +14,7 @@ export class Hero11 extends Component {
 function Options() {
 	return (
 		<ComponentWrapper>
-			<cmn.heroImage.Options />
+			<cmn.backgroundImage.Options />
 			<cmn.heading.Options />
 			<cmn.desc.Options />
 			<cmn.inputWithbtn.Options />
@@ -25,7 +25,11 @@ function Options() {
 const component = () =>
 	column([
 		cmn.ppr.el([
-			column([cmn.heading.el(), cmn.desc.el(), cmn.inputWithbtn.el()])
+			column([
+				cmn.heading.el().css({ color: 'white' }),
+				cmn.desc.el().css({ color: 'white' }),
+				cmn.inputWithbtn.el().css({ color: 'white' }),
+			])
 				.css({
 					alignItems: 'center',
 					justifyItems: 'center',
@@ -38,9 +42,9 @@ const component = () =>
 					paddingRight: '10%',
 				})
 				.cssMobile({ padding: '0px' }),
-			cmn.heroImage.el().css({ marginTop: '3rem' }),
+			cmn.backgroundImage.el(),
 		]),
 	]).css({
-		alignItems: 'start',
+		alignItems: 'center',
 		justifyItems: 'center',
 	})

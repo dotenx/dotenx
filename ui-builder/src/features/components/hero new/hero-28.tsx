@@ -1,11 +1,11 @@
-import componentImage from '../../../assets/components/hero-7.png'
+import componentImage from '../../../assets/components/hero-28.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Hero7 extends Component {
-	name = 'Hero 7'
+export class Hero28 extends Component {
+	name = 'Hero 28'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -25,18 +25,17 @@ function Options() {
 const component = () =>
 	column([
 		cmn.ppr.el([
-			grid(2)
-				.populate([
-					cmn.heading.el(),
-					column([cmn.desc.el(), cmn.inputWithbtn.el()]).css({
-						alignItems: 'start',
-						justifyItems: 'center',
-						textAlign: 'left',
-						maxWidth: '48rem',
-					}),
-				])
-				.css({ alignItems: 'start', gap: '1rem' })
-				.cssTablet({ gridTemplateColumns: '1fr' }),
+			column([cmn.heading.el(), cmn.desc.el(), cmn.inputWithbtn.el()])
+				.css({
+					alignItems: 'start',
+					justifyItems: 'center',
+					textAlign: 'left',
+					width: '50%',
+				})
+				.cssTablet({
+					width: '80%',
+				})
+				.cssMobile({ width: '100%' }),
 			cmn.heroImage.el().css({ marginTop: '3rem' }),
 		]),
 	]).css({
