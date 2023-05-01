@@ -1,11 +1,11 @@
-import componentImage from '../../../assets/components/hero-7.png'
+import componentImage from '../../../assets/components/hero-14.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Hero7 extends Component {
-	name = 'Hero 7'
+export class Hero14 extends Component {
+	name = 'Hero 14'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -14,21 +14,21 @@ export class Hero7 extends Component {
 function Options() {
 	return (
 		<ComponentWrapper>
-			<cmn.heroImage.Options />
+			<cmn.video.Options />
 			<cmn.heading.Options />
 			<cmn.desc.Options />
-			<cmn.inputWithbtn.Options />
+			<cmn.twoBtns.Options />
 		</ComponentWrapper>
 	)
 }
-
 const component = () =>
 	column([
+		cmn.video.el().css({ maxHeight: '50vh', objectFit: 'cover' }),
 		cmn.ppr.el([
 			grid(2)
 				.populate([
 					cmn.heading.el(),
-					column([cmn.desc.el(), cmn.inputWithbtn.el()]).css({
+					column([cmn.desc.el(), cmn.twoBtns.el()]).css({
 						alignItems: 'start',
 						justifyItems: 'center',
 						textAlign: 'left',
@@ -37,7 +37,6 @@ const component = () =>
 				])
 				.css({ alignItems: 'start', gap: '1rem' })
 				.cssTablet({ gridTemplateColumns: '1fr' }),
-			cmn.heroImage.el().css({ marginTop: '3rem' }),
 		]),
 	]).css({
 		alignItems: 'start',

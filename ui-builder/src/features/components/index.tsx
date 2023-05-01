@@ -155,6 +155,28 @@ import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
 import { Testimonials1 } from './testimonials/testimonial-1'
 import { Testimonials2 } from './testimonials/testimonial-2'
+import { Hero12 } from './hero new/hero-12'
+import { Hero13 } from './hero new/hero-13'
+import { Hero14 } from './hero new/hero-14'
+import { Hero15 } from './hero new/hero-15'
+import { Hero16 } from './hero new/hero-16'
+import { Hero17 } from './hero new/hero-17'
+import { Hero18 } from './hero new/hero-18'
+import { Hero19 } from './hero new/hero-19'
+import { Hero21 } from './hero new/hero-21'
+import { Hero20 } from './hero new/hero-20'
+import { Hero22 } from './hero new/hero-22'
+import { Hero23 } from './hero new/hero-23'
+import { Hero24 } from './hero new/hero-24'
+import { Hero25 } from './hero new/hero-25'
+import { Hero26 } from './hero new/hero-26'
+import { Hero27 } from './hero new/hero-27'
+import { Hero28 } from './hero new/hero-28'
+import { Hero29 } from './hero new/hero-29'
+import { Hero30 } from './hero new/hero-30'
+import { Hero31 } from './hero new/hero-31'
+import { Hero32 } from './hero new/hero-32'
+import { Hero33 } from './hero new/hero-33'
 
 export const COMPONENTS: Components = [
 	{
@@ -198,6 +220,28 @@ export const COMPONENTS: Components = [
 			Hero9,
 			Hero10,
 			Hero11,
+			Hero12,
+			Hero13,
+			Hero14,
+			Hero15,
+			Hero16,
+			Hero17,
+			Hero18,
+			Hero19,
+			Hero20,
+			Hero21,
+			Hero22,
+			Hero23,
+			Hero24,
+			Hero25,
+			Hero26,
+			Hero27,
+			Hero28,
+			Hero29,
+			Hero30,
+			Hero31,
+			Hero32,
+			Hero33,
 		],
 	},
 	{

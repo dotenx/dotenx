@@ -1,11 +1,12 @@
-import componentImage from '../../../assets/components/hero-8.png'
+// relume feature 136
+import componentImage from '../../../assets/components/hero-18.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common'
 
-export class Hero8 extends Component {
-	name = 'Hero 8'
+export class Hero18 extends Component {
+	name = 'Hero 18'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -14,7 +15,7 @@ export class Hero8 extends Component {
 function Options() {
 	return (
 		<ComponentWrapper>
-			<cmn.heroImage.Options />
+			<cmn.video.Options />
 			<cmn.heading.Options />
 			<cmn.desc.Options />
 			<cmn.twoBtns.Options />
@@ -26,7 +27,7 @@ const component = () =>
 	cmn.ppr.el([
 		grid(2)
 			.populate([
-				cmn.heroImage.el(),
+				cmn.video.el(),
 				column([cmn.heading.el(), cmn.desc.el(), cmn.twoBtns.el()]).css({
 					alignItems: 'start',
 					justifyItems: 'center',

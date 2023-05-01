@@ -1,3 +1,5 @@
+import { Switch } from '@mantine/core'
+import produce from 'immer'
 import _ from 'lodash'
 import { gridCols } from '../../../../utils/style-utils'
 import {
@@ -13,20 +15,26 @@ import {
 	link,
 	submit,
 	txt,
+	video,
 } from '../../../elements/constructor'
 import { Element } from '../../../elements/element'
+import { useSetElement } from '../../../elements/elements-store'
 import { BoxElement } from '../../../elements/extensions/box'
 import { ButtonElement } from '../../../elements/extensions/button'
 import { IconElement } from '../../../elements/extensions/icon'
 import { ImageElement } from '../../../elements/extensions/image'
 import { LinkElement } from '../../../elements/extensions/link'
 import { TextElement } from '../../../elements/extensions/text'
+import { VideoElement } from '../../../elements/extensions/video'
 import { useSelectedElement } from '../../../selection/use-selected-component'
 import { ButtonStyler } from '../../../simple/stylers/button-styler'
 import { IconStyler } from '../../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../../simple/stylers/image-styler'
 import { LinkStyler } from '../../../simple/stylers/link-styler'
 import { TextStyler } from '../../../simple/stylers/text-styler'
+import { VideoStyler } from '../../../simple/stylers/video-styler'
+import { Expression } from '../../../states/expression'
+import { DividerCollapsible } from '../../helpers'
 import { DndTabs } from '../../helpers/dnd-tabs'
 import { OptionsWrapper } from '../../helpers/options-wrapper'
 
@@ -47,6 +55,8 @@ const tag = {
 		form: 'form',
 	},
 	tagline: 'tagline',
+	backgroundImage: 'backgroundImage',
+	video: 'video',
 	heroImage: 'heroImage',
 	heading: 'heading',
 	desc: 'desc',
@@ -162,6 +172,29 @@ const ppr = (children: Element[]) =>
 			paddingTop: '4rem',
 			paddingBottom: '4rem',
 		})
+
+// =============================================================== Background Image
+const backgroundImage = () =>
+	img('https://files.dotenx.com/bg-light-138489_7f92bfb9-ae49-4809-9265-27f2497e3a8b.jpg')
+		.css({
+			position: 'absolute',
+			left: '0',
+			top: '0',
+			right: '0',
+			bottom: '0',
+			width: '100%',
+			maxHeight: '100vh',
+			objectFit: 'cover',
+			zIndex: '-2',
+		})
+		.tag(tag.backgroundImage)
+
+function backgroundImageOptions({ root }: { root?: BoxElement }) {
+	const component = useSelectedElement<BoxElement>()!
+	const parent = root ?? component
+	const backgroundImage = parent.find<ImageElement>(tag.backgroundImage)!
+	return <ImageStyler element={backgroundImage} />
+}
 
 // =============================================================== Full Background
 const fullBg = (children: Element[]) =>
@@ -301,7 +334,7 @@ const twoBtns = () =>
 			.css({
 				background: 'black',
 				color: 'white',
-				border: '1px solid currentcolor',
+				border: '1px solid black',
 				padding: '0.75rem 1.5rem',
 			})
 			.tag(tag.twoBtns.link1),
@@ -354,7 +387,7 @@ const inputWithbtn = () =>
 				background: 'black',
 				textAlign: 'center',
 				color: 'white',
-				border: '1px solid currentcolor',
+				border: '1px solid black',
 				padding: '0.75rem 1.5rem',
 			})
 			.class('submit')
@@ -600,6 +633,60 @@ function BrandsOptions() {
 	)
 }
 
+// =============================================================== Video
+const videoComponent = () =>
+	video('https://files.dotenx.com/assets/team-wer19v.mp4')
+		.autoplay(false)
+		.controls(true)
+		.css({
+			width: '100%',
+		})
+		.tag(tag.video)
+
+function videoOptions() {
+	const component = useSelectedElement<BoxElement>()!
+	const element = component.find<VideoElement>(tag.video)!
+
+	const set = useSetElement()
+	return (
+		<DividerCollapsible title="video">
+			<VideoStyler element={element} />
+			<Switch
+				size="xs"
+				label="Controls"
+				checked={element.data.controls}
+				onChange={(event) =>
+					set(element, (draft) => (draft.data.controls = event.target.checked))
+				}
+			/>
+			<Switch
+				size="xs"
+				label="Auto play"
+				checked={element.data.autoplay}
+				onChange={(event) =>
+					set(element, (draft) => (draft.data.autoplay = event.target.checked))
+				}
+			/>
+			<Switch
+				size="xs"
+				label="Loop"
+				checked={element.data.loop}
+				onChange={(event) =>
+					set(element, (draft) => (draft.data.loop = event.target.checked))
+				}
+			/>
+			<Switch
+				size="xs"
+				label="Muted"
+				checked={element.data.muted}
+				onChange={(event) =>
+					set(element, (draft) => (draft.data.muted = event.target.checked))
+				}
+			/>
+		</DividerCollapsible>
+	)
+}
+//===========================================================================================
 function ItemOptions({ item }: { item: BoxElement }) {
 	const image = item.find<ImageElement>(tag.brands.img)!
 	return <ImageStyler element={image} />
@@ -674,5 +761,13 @@ export const cmn = {
 	brands: {
 		el: brands,
 		Options: BrandsOptions,
+	},
+	video: {
+		el: videoComponent,
+		Options: videoOptions,
+	},
+	backgroundImage: {
+		el: backgroundImage,
+		Options: backgroundImageOptions,
 	},
 }

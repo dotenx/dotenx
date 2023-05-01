@@ -1,4 +1,3 @@
-// relume feature 136
 import componentImage from '../../../assets/components/hero-2.png'
 import { column, grid } from '../../elements/constructor'
 import { Component } from '../component'
