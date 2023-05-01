@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/gallery/gallery-1.png'
-import { column, flex, img } from '../../elements/constructor'
+import componentImage from '../../../assets/components/gallery/gallery-2.png'
+import { flex, img } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement, useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -14,9 +14,9 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r19
-export class Gallery1 extends Component {
-	name = 'Gallery 1'
+// r21
+export class Gallery2 extends Component {
+	name = 'Gallery 2'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -74,42 +74,26 @@ const component = () =>
 		.el([
 			cmn.heading.el('Image Gallery'),
 			cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
-				marginBottom: '3rem',
+				marginBottom: '5rem',
 			}),
 			list(),
+			flex([cmn.dots.el().tag(tags.dots).class('dots'), buttons()]).css({
+				justifyContent: 'space-between',
+				alignItems: 'center',
+			}),
 		])
 		.css({
-			textAlign: 'center',
 			overflowX: 'hidden',
 		})
 
 const list = () =>
-	column([
-		flex([
-			cmn.icnButton.el('chevron-left').class('prev').cssTablet({
-				display: 'none',
-			}),
-			flex(_.times(6, item))
-				.css({
-					overflowX: 'auto',
-				})
-				.tag(tags.list)
-				.class('list'),
-			cmn.icnButton.el('chevron-right').class('next').cssTablet({
-				display: 'none',
-			}),
-		]).css({
-			alignItems: 'center',
-		}),
-		cmn.dots
-			.el()
-			.css({
-				marginTop: '2rem',
-				alignSelf: 'center',
-			})
-			.class('dots')
-			.tag(tags.dots),
-	])
+	flex(_.times(6, item))
+		.css({
+			overflowX: 'auto',
+			marginBottom: '2.5rem',
+		})
+		.tag(tags.list)
+		.class('list')
 
 const item = () =>
 	cmn.sliderItm
@@ -122,5 +106,13 @@ const item = () =>
 				.tag(tags.items.image),
 		])
 		.css({
-			padding: '0 1rem',
+			paddingRight: '2rem',
 		})
+
+const buttons = () =>
+	flex([
+		cmn.icnButton.el('chevron-left').class('prev'),
+		cmn.icnButton.el('chevron-right').class('next'),
+	]).css({
+		gap: '1rem',
+	})
