@@ -24,8 +24,8 @@ export const link = () =>
 	})
 export const grid = (columns: number) => new ColumnsElement().cols(columns)
 export const img = (src?: string) => new ImageElement().src(src ?? '')
-export const icn = (name: string) =>
-	new IconElement().type('fas').setName(name).css({ display: 'flex', justifyContent: 'center' })
+export const icn = (name: string, type = 'fas') =>
+	new IconElement().type(type).setName(name).css({ display: 'flex', justifyContent: 'center' })
 export const template = (children: Element) => new TemplateElement().populate([children])
 export const flex = (children: Element[]) => box(children).css({ display: 'flex' })
 export const column = (children: Element[]) => flex(children).css({ flexDirection: 'column' })

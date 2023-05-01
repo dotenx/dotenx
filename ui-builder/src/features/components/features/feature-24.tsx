@@ -1,4 +1,4 @@
-// relume feature 141
+// r feature 141
 import componentImage from '../../../assets/components/features/feature-24.png'
 import { column } from '../../elements/constructor'
 import { cmn } from '../common'

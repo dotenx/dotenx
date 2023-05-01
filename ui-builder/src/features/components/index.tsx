@@ -142,6 +142,7 @@ import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
 import { Testimonials1 } from './testimonials/testimonial-1'
+import { Testimonials2 } from './testimonials/testimonial-2'
 
 export const COMPONENTS: Components = [
 	{
@@ -314,7 +315,13 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Testimonial',
 		icon: <TbMessageChatbot />,
-		items: [Testimonials1, TestimonialSimple, TestimonialSlider, TestimonialSlider2],
+		items: [
+			Testimonials1,
+			Testimonials2,
+			TestimonialSimple,
+			TestimonialSlider,
+			TestimonialSlider2,
+		],
 	},
 	{
 		title: 'Footers',

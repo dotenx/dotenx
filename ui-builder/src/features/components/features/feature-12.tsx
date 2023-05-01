@@ -1,4 +1,4 @@
-// relume feature 67
+// r feature 67
 import componentImage from '../../../assets/components/features/feature-12.png'
 import { box } from '../../elements/constructor'
 import { cmn } from '../common'

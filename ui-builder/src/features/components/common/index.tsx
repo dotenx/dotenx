@@ -1,13 +1,15 @@
-import _ from 'lodash'
+import _, { times } from 'lodash'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
+import { useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
 import { IconElement } from '../../elements/extensions/icon'
 import { ImageElement } from '../../elements/extensions/image'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
+import { SliderNoMemo } from '../../simple/stylers/columns-styler'
 import { IconStyler } from '../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../simple/stylers/image-styler'
 import { LinkStyler } from '../../simple/stylers/link-styler'
@@ -54,6 +56,7 @@ const tag = {
 		lst: 'lst',
 		img: 'img',
 	},
+	stars: 'stars',
 }
 // ---------------------------------------------------------------
 
@@ -439,7 +442,12 @@ const brands = () =>
 		.tag(tag.brands.lst)
 
 const brand = () =>
-	box([img('https://files.dotenx.com/assets/Logo10-nmi1.png').tag(tag.brands.img)])
+	img('https://files.dotenx.com/assets/Logo10-nmi1.png')
+		.css({
+			width: '120px',
+			height: '48px',
+		})
+		.tag(tag.brands.img)
 
 function BrandsOptions() {
 	const component = useSelectedElement<BoxElement>()!
@@ -457,6 +465,124 @@ function BrandOptions({ item }: { item: BoxElement }) {
 	const image = item.find<ImageElement>(tag.brands.img)!
 	return <ImageStyler element={image} />
 }
+
+// =============================================================== Quote
+const quote = () =>
+	txt(
+		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
+	).css({
+		fontSize: '1.25rem',
+		lineHeight: '1.4',
+		fontWeight: '700',
+		margin: '2rem 0',
+	})
+
+// =============================================================== Profile
+const profile = () =>
+	img().css({
+		marginBottom: '1rem',
+		width: '3.5rem',
+		height: '3.5rem',
+		backgroundColor: '#eee',
+		borderRadius: '999px',
+	})
+
+// =============================================================== Stars
+const stars = () =>
+	flex(times(5, star))
+		.css({
+			gap: '4px',
+		})
+		.tag(tag.stars)
+
+const star = () => icn('star').size('20px')
+const halfStar = () => icn('star-half-alt').size('20px')
+const emptyStar = () => icn('star', 'far').size('20px')
+
+function StarsOptions({ root }: { root?: BoxElement }) {
+	const set = useSetElement()
+	const component = useSelectedElement() as BoxElement
+	const parent = root ?? component
+	const stars = parent.find(tag.stars) as BoxElement
+	const rating = (stars.internal.rating as number) ?? 3.5
+	return (
+		<OptionsWrapper>
+			<SliderNoMemo
+				step={0.5}
+				max={5}
+				min={0}
+				value={rating}
+				onChange={(value) =>
+					set(stars, (draft) => {
+						draft.internal.rating = value
+						draft.children = genStars(value, 5)
+					})
+				}
+			/>
+		</OptionsWrapper>
+	)
+}
+
+const genStars = (rating: number, maxRating: number) => [
+	...times(Math.floor(rating), star),
+	...(_.isInteger(rating) ? [] : [halfStar()]),
+	...times(Math.floor(maxRating - rating), emptyStar),
+]
+
+// =============================================================== Dots
+const dots = () =>
+	flex([
+		dot().css({
+			backgroundColor: '#222222',
+		}),
+		dot(),
+		dot(),
+		dot(),
+		dot(),
+		dot(),
+	]).css({
+		gap: '6px',
+		cursor: 'pointer',
+	})
+
+const dot = () =>
+	box([txt('')]).css({
+		width: '8px',
+		height: '8px',
+		backgroundColor: '#22222266',
+		borderRadius: '999px',
+		transition: 'background-color 150ms ease-in-out',
+	})
+
+// =============================================================== Icon Button
+const icnButton = (icon: string) =>
+	box([icn(icon).size('18px')]).css({
+		border: '1px solid currentcolor',
+		borderRadius: '999px',
+		width: '3rem',
+		height: '3rem',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		cursor: 'pointer',
+		flexShrink: '0',
+	})
+
+// =============================================================== Slider Item
+const sliderItm = (children: Element[]) =>
+	box(children)
+		.css({
+			paddingRight: '3rem',
+			flexShrink: '0',
+			flexBasis: 'calc(100% / 3)',
+			transition: 'transform 500ms ease',
+		})
+		.cssTablet({
+			flexBasis: '50%',
+		})
+		.cssMobile({
+			flexBasis: '100%',
+		})
 
 // ---------------------------------------------------------------
 export const cmn = {
@@ -515,5 +641,30 @@ export const cmn = {
 	brands: {
 		el: brands,
 		Options: BrandsOptions,
+	},
+	brand: {
+		el: brand,
+	},
+	quote: {
+		el: quote,
+	},
+	profile: {
+		el: profile,
+	},
+	stars: {
+		el: stars,
+		Options: StarsOptions,
+	},
+	dots: {
+		el: dots,
+	},
+	dot: {
+		el: dot,
+	},
+	icnButton: {
+		el: icnButton,
+	},
+	sliderItm: {
+		el: sliderItm,
 	},
 }

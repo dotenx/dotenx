@@ -1,4 +1,4 @@
-// relume feature 121
+// r feature 121
 import componentImage from '../../../assets/components/features/feature-18.png'
 import { box, column, flex, grid, icn, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'

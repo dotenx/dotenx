@@ -124,7 +124,7 @@ const item = () =>
 			})
 			.tag(tags.items.logo),
 		txt(
-			'"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."'
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
 		)
 			.css({
 				fontSize: '1.25rem',
