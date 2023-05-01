@@ -1,19 +1,19 @@
 import _ from 'lodash'
-import { gridCols } from '../../../../utils/style-utils'
-import { box, container, flex, grid, icn, img, link, txt } from '../../../elements/constructor'
-import { Element } from '../../../elements/element'
-import { BoxElement } from '../../../elements/extensions/box'
-import { IconElement } from '../../../elements/extensions/icon'
-import { ImageElement } from '../../../elements/extensions/image'
-import { LinkElement } from '../../../elements/extensions/link'
-import { TextElement } from '../../../elements/extensions/text'
-import { useSelectedElement } from '../../../selection/use-selected-component'
-import { IconStyler } from '../../../simple/stylers/icon-styler'
-import { ImageStyler } from '../../../simple/stylers/image-styler'
-import { LinkStyler } from '../../../simple/stylers/link-styler'
-import { TextStyler } from '../../../simple/stylers/text-styler'
-import { DndTabs } from '../../helpers/dnd-tabs'
-import { OptionsWrapper } from '../../helpers/options-wrapper'
+import { gridCols } from '../../../utils/style-utils'
+import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
+import { Element } from '../../elements/element'
+import { BoxElement } from '../../elements/extensions/box'
+import { IconElement } from '../../elements/extensions/icon'
+import { ImageElement } from '../../elements/extensions/image'
+import { LinkElement } from '../../elements/extensions/link'
+import { TextElement } from '../../elements/extensions/text'
+import { useSelectedElement } from '../../selection/use-selected-component'
+import { IconStyler } from '../../simple/stylers/icon-styler'
+import { ImageStyler } from '../../simple/stylers/image-styler'
+import { LinkStyler } from '../../simple/stylers/link-styler'
+import { TextStyler } from '../../simple/stylers/text-styler'
+import { DndTabs } from '../helpers/dnd-tabs'
+import { OptionsWrapper } from '../helpers/options-wrapper'
 
 export const duplicate = (elConstructor: () => Element, number: number) =>
 	_.range(number).map(elConstructor)
@@ -173,8 +173,8 @@ function TaglineOptions({ root }: { root?: BoxElement }) {
 }
 
 // =============================================================== Heading
-const heading = () =>
-	txt('Medium length section heading goes here')
+const heading = (text?: string) =>
+	txt(text ?? 'Medium length section heading goes here')
 		.css({
 			fontWeight: '700',
 			fontSize: '3rem',
@@ -448,12 +448,12 @@ function BrandsOptions() {
 		<DndTabs
 			containerElement={brandList}
 			insertElement={brand}
-			renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
+			renderItemOptions={(item) => <BrandOptions item={item as BoxElement} />}
 		/>
 	)
 }
 
-function ItemOptions({ item }: { item: BoxElement }) {
+function BrandOptions({ item }: { item: BoxElement }) {
 	const image = item.find<ImageElement>(tag.brands.img)!
 	return <ImageStyler element={image} />
 }
