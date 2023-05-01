@@ -2,6 +2,7 @@
 
 ;(async () => {
 	const id = '{{id}}'
+	const overflow = '{{overflow}}'
 
 	const root = document.getElementById(id)
 	const list = root.querySelector('.list')
@@ -9,7 +10,7 @@
 	const prevBtn = root.querySelector('.prev')
 	const nextBtn = root.querySelector('.next')
 
-	list.style.overflowX = 'hidden'
+	list.style.overflowX = overflow
 
 	const listLength = list.children.length
 	let scrolledIndex = 0

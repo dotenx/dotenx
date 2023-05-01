@@ -115,6 +115,17 @@ import { GalleryMasonryOne } from './gallery-masonry-1'
 import { GalleryMasonryTwo } from './gallery-masonry-2'
 import { GalleryMasonryCustomLayout } from './gallery-masonry-custom-layout'
 import { GalleryWithCaptions } from './gallery-with-caption'
+import { Gallery1 } from './gallery/gallery-1'
+import { Hero10 } from './hero new/hero-10'
+import { Hero11 } from './hero new/hero-11'
+import { Hero2 } from './hero new/hero-2'
+import { Hero3 } from './hero new/hero-3'
+import { Hero4 } from './hero new/hero-4'
+import { Hero5 } from './hero new/hero-5'
+import { Hero6 } from './hero new/hero-6'
+import { Hero7 } from './hero new/hero-7'
+import { Hero8 } from './hero new/hero-8'
+import { Hero9 } from './hero new/hero-9'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
@@ -141,16 +152,6 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { Hero2 } from './hero new/hero-2'
-import { Hero3 } from './hero new/hero-3'
-import { Hero4 } from './hero new/hero-4'
-import { Hero5 } from './hero new/hero-5'
-import { Hero6 } from './hero new/hero-6'
-import { Hero7 } from './hero new/hero-7'
-import { Hero8 } from './hero new/hero-8'
-import { Hero9 } from './hero new/hero-9'
-import { Hero10 } from './hero new/hero-10'
-import { Hero11 } from './hero new/hero-11'
 import { Testimonials1 } from './testimonials/testimonial-1'
 import { Testimonials2 } from './testimonials/testimonial-2'
 
@@ -292,6 +293,7 @@ export const COMPONENTS: Components = [
 		title: 'Gallery',
 		icon: <TbPhoto />,
 		items: [
+			Gallery1,
 			GalleryBasic,
 			GalleryBasicRounded,
 			GalleryWithCaptions,
