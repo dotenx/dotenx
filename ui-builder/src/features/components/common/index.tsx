@@ -468,10 +468,10 @@ function BrandOptions({ item }: { item: BoxElement }) {
 }
 
 // =============================================================== Quote
-const quote = () =>
-	txt(
-		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
-	).css({
+const quote = (
+	text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
+) =>
+	txt(text).css({
 		fontSize: '1.25rem',
 		lineHeight: '1.4',
 		fontWeight: '700',
@@ -613,6 +613,25 @@ function OutlineBtnOptions() {
 		</>
 	)
 }
+
+// =============================================================== Third Grid
+const thirdGrid = (children: Element[]) =>
+	grid(3)
+		.populate(children)
+		.css({
+			marginBottom: '2.5rem',
+			columnGap: '3rem',
+			rowGap: '4rem',
+		})
+		.cssTablet({
+			gridTemplateColumns: gridCols(2),
+			columnGap: '2rem',
+			rowGap: '3rem',
+		})
+		.cssMobile({
+			gridTemplateColumns: gridCols(1),
+		})
+
 // ---------------------------------------------------------------
 export const cmn = {
 	icnSubheadings: {
@@ -699,5 +718,8 @@ export const cmn = {
 	outlineBtn: {
 		el: outlineBtn,
 		Options: OutlineBtnOptions,
+	},
+	thirdGrid: {
+		el: thirdGrid,
 	},
 }
