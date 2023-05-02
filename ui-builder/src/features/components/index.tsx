@@ -179,6 +179,7 @@ import { TestimonialSlider2 } from './testimonial-slider-2'
 import { Testimonials1 } from './testimonials/testimonial-1'
 import { Testimonials2 } from './testimonials/testimonial-2'
 import { Testimonials3 } from './testimonials/testimonial-3'
+import { Testimonials4 } from './testimonials/testimonial-4'
 
 export const COMPONENTS: Components = [
 	{
@@ -389,6 +390,7 @@ export const COMPONENTS: Components = [
 			Testimonials1,
 			Testimonials2,
 			Testimonials3,
+			Testimonials4,
 			TestimonialSimple,
 			TestimonialSlider,
 			TestimonialSlider2,
