@@ -1,4 +1,5 @@
 import _, { times } from 'lodash'
+import { useCallback, useEffect } from 'react'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
@@ -489,7 +490,7 @@ const profile = () =>
 
 // =============================================================== Stars
 const stars = () =>
-	flex(times(5, star))
+	flex(genStars(3.5, 5))
 		.css({
 			gap: '4px',
 		})
@@ -505,20 +506,25 @@ function StarsOptions({ root }: { root?: BoxElement }) {
 	const parent = root ?? component
 	const stars = parent.find(tag.stars) as BoxElement
 	const rating = (stars.internal.rating as number) ?? 3.5
+
+	const setStars = useCallback(
+		(count: number) =>
+			set(stars, (draft) => {
+				draft.internal.rating = count
+				draft.children = genStars(count, 5)
+			}),
+		[set, stars]
+	)
+
+	useEffect(() => {
+		if (!stars.internal.rating) {
+			setStars(3.5)
+		}
+	}, [setStars, stars.internal.rating])
+
 	return (
 		<OptionsWrapper>
-			<SliderNoMemo
-				step={0.5}
-				max={5}
-				min={0}
-				value={rating}
-				onChange={(value) =>
-					set(stars, (draft) => {
-						draft.internal.rating = value
-						draft.children = genStars(value, 5)
-					})
-				}
-			/>
+			<SliderNoMemo step={0.5} max={5} min={0} value={rating} onChange={setStars} />
 		</OptionsWrapper>
 	)
 }
