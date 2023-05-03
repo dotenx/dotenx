@@ -176,11 +176,12 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { Testimonials1 } from './testimonials/testimonial-1'
-import { Testimonials2 } from './testimonials/testimonial-2'
-import { Testimonials3 } from './testimonials/testimonial-3'
-import { Testimonials4 } from './testimonials/testimonial-4'
-import { Testimonials5 } from './testimonials/testimonial-5'
+import { Testimonials1 } from './testimonials/testimonials-1'
+import { Testimonials2 } from './testimonials/testimonials-2'
+import { Testimonials3 } from './testimonials/testimonials-3'
+import { Testimonials4 } from './testimonials/testimonials-4'
+import { Testimonials5 } from './testimonials/testimonials-5'
+import { Testimonials6 } from './testimonials/testimonials-6'
 
 export const COMPONENTS: Components = [
 	{
@@ -393,6 +394,7 @@ export const COMPONENTS: Components = [
 			Testimonials3,
 			Testimonials4,
 			Testimonials5,
+			Testimonials6,
 			TestimonialSimple,
 			TestimonialSlider,
 			TestimonialSlider2,
