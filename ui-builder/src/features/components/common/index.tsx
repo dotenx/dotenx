@@ -588,9 +588,9 @@ const sliderItm = (children: Element[]) =>
 		})
 
 // =============================================================== Outline Button
-const outlineBtn = () =>
+const outlineBtn = (text = 'Button') =>
 	link()
-		.populate([txt('Button').tag(tag.btnLink.link1Txt)])
+		.populate([txt(text).tag(tag.btnLink.link1Txt)])
 		.css({
 			border: '1px solid currentcolor',
 			padding: '0.75rem 1.5rem',

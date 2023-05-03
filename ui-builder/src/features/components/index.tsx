@@ -57,6 +57,7 @@ import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FaqCollapsible } from './faq-collapsible'
 import { Faq1 } from './faq/faq-1'
+import { Faq2 } from './faq/faq-2'
 import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
@@ -284,7 +285,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'FAQ',
 		icon: <TbQuestionCircle />,
-		items: [Faq1, FaqBasic, FaqBasicStyled, FaqCollapsible],
+		items: [Faq1, Faq2, FaqBasic, FaqBasicStyled, FaqCollapsible],
 	},
 	{
 		title: 'Divider',
