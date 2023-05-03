@@ -25,7 +25,8 @@ export class ColumnsElement extends Element {
 			default: {
 				display: 'grid',
 				gridTemplateColumns: '1fr 1fr',
-				gap: '10px',
+				columnGap: '10px',
+				rowGap: '10px',
 			},
 		},
 	}
