@@ -180,6 +180,7 @@ import { Testimonials1 } from './testimonials/testimonial-1'
 import { Testimonials2 } from './testimonials/testimonial-2'
 import { Testimonials3 } from './testimonials/testimonial-3'
 import { Testimonials4 } from './testimonials/testimonial-4'
+import { Testimonials5 } from './testimonials/testimonial-5'
 
 export const COMPONENTS: Components = [
 	{
@@ -391,6 +392,7 @@ export const COMPONENTS: Components = [
 			Testimonials2,
 			Testimonials3,
 			Testimonials4,
+			Testimonials5,
 			TestimonialSimple,
 			TestimonialSlider,
 			TestimonialSlider2,

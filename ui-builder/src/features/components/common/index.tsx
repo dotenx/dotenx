@@ -1,4 +1,4 @@
-import _, { times } from 'lodash'
+import _ from 'lodash'
 import { useCallback, useEffect } from 'react'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
@@ -530,22 +530,18 @@ function StarsOptions({ root }: { root?: BoxElement }) {
 }
 
 const genStars = (rating: number, maxRating: number) => [
-	...times(Math.floor(rating), star),
+	..._.times(Math.floor(rating), star),
 	...(_.isInteger(rating) ? [] : [halfStar()]),
-	...times(Math.floor(maxRating - rating), emptyStar),
+	..._.times(Math.floor(maxRating - rating), emptyStar),
 ]
 
 // =============================================================== Dots
-const dots = () =>
+const dots = (count = 6) =>
 	flex([
 		dot().css({
 			backgroundColor: '#222222',
 		}),
-		dot(),
-		dot(),
-		dot(),
-		dot(),
-		dot(),
+		..._.times(count - 1, dot),
 	]).css({
 		gap: '6px',
 		cursor: 'pointer',
@@ -631,6 +627,14 @@ const thirdGrid = (children: Element[]) =>
 		.cssMobile({
 			gridTemplateColumns: gridCols(1),
 		})
+
+// =============================================================== Vertical Line
+const vr = () =>
+	box([txt('')]).css({
+		width: '1px',
+		margin: '0 1.25rem',
+		backgroundColor: 'currentcolor',
+	})
 
 // ---------------------------------------------------------------
 export const cmn = {
@@ -721,5 +725,8 @@ export const cmn = {
 	},
 	thirdGrid: {
 		el: thirdGrid,
+	},
+	vr: {
+		el: vr,
 	},
 }
