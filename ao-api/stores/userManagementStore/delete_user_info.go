@@ -1,10 +1,10 @@
 package userManagementStore
 
 import (
-	"errors"
 	"fmt"
 
 	dbPkg "github.com/dotenx/dotenx/ao-api/db"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 )
 
 func (store *userManagementStore) DeleteUserInfo(db *dbPkg.DB, tpAccountId string) (err error) {
@@ -22,7 +22,7 @@ func (store *userManagementStore) DeleteUserInfo(db *dbPkg.DB, tpAccountId strin
 		return fmt.Errorf("driver not supported")
 	}
 	if cnt == 0 {
-		return errors.New("user not found")
+		return utils.ErrUserNotFound
 	}
 
 	_, err = db.Connection.Exec(stmt, tpAccountId)

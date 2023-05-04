@@ -10,7 +10,7 @@ import (
 
 /*
 	DeleteUser handler handles deleting a third party user from user_info table of database
-	in this handler we check that if user is 'tp' then account id of he/she should be equal to
+	in this handler we check that if token type is 'tp' then account id of he/she should be equal to
 	account id that we get from token otherwise he/she receive 403 as response
 */
 
@@ -40,6 +40,12 @@ func (umc *UserManagementController) DeleteUser() gin.HandlerFunc {
 		err := umc.Service.DeleteUserInfo(body.TpAccountId, projectTag)
 		if err != nil {
 			logrus.Error(err.Error())
+			if err == utils.ErrUserNotFound {
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": err.Error(),
 			})
