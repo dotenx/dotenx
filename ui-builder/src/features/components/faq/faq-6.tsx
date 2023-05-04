@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/faq/faq-7.png'
+import componentImage from '../../../assets/components/faq/faq-6.png'
 import { box, column, flex, icn, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
@@ -14,9 +14,9 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r5
-export class Faq7 extends Component {
-	name = 'FAQ 7'
+// r4
+export class Faq6 extends Component {
+	name = 'FAQ 6'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -73,26 +73,37 @@ const tags = {
 
 const component = () =>
 	cmn.ppr.el([
-		cmn.heading.el('FAQs'),
-		cmn.desc
-			.el(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
-			)
-			.css({
-				marginBottom: '5rem',
-				maxWidth: '48rem',
+		column([
+			cmn.heading.el('FAQs'),
+			cmn.desc
+				.el(
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
+				)
+				.css({
+					marginBottom: '5rem',
+					maxWidth: '48rem',
+				}),
+			questions().css({ textAlign: 'start' }).css({
+				alignSelf: 'stretch',
 			}),
-		questions(),
-		txt('Still have questions?')
-			.css({
-				fontSize: '2rem',
-				lineHeight: '1.3',
-				fontWeight: '700',
-				marginBottom: '1rem',
-			})
-			.tag(tags.subheading),
-		cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').tag(tags.subDesc),
-		cmn.outlineBtn.el('Contact'),
+			txt('Still have questions?')
+				.css({
+					fontSize: '2rem',
+					lineHeight: '1.3',
+					fontWeight: '700',
+					marginBottom: '1rem',
+				})
+				.tag(tags.subheading),
+			cmn.desc
+				.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+				.tag(tags.subDesc),
+			cmn.outlineBtn.el('Contact'),
+		]).css({
+			alignItems: 'center',
+			maxWidth: '48rem',
+			margin: '0 auto',
+			textAlign: 'center',
+		}),
 	])
 
 const questions = () =>
