@@ -12,13 +12,14 @@ import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
+import { FlexBasisEditor } from '../helpers/flex-basis-editor'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
 // r21
 export class Gallery2 extends Component {
 	name = 'Gallery 2'
 	image = componentImage
-	defaultData = component()
+	defaultData = componentWithData()
 	renderOptions = () => <Options />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
@@ -40,9 +41,10 @@ function Options() {
 		<ComponentWrapper>
 			<cmn.heading.Options />
 			<cmn.desc.Options />
+			<FlexBasisEditor listTag={tags.list} />
 			<DndTabs
 				containerElement={list}
-				insertElement={item}
+				insertElement={() => item(component.internal.columns as number)}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 				onDelete={() => set(dots, (draft) => draft.children.pop())}
 				onInsert={() => set(dots, (draft) => draft.children.push(cmn.dot.el()))}
@@ -69,6 +71,14 @@ const tags = {
 	dots: 'dots',
 }
 
+const componentWithData = () => {
+	const c = component()
+	c.internal = {
+		columns: 3,
+	}
+	return c
+}
+
 const component = () =>
 	cmn.ppr
 		.el([
@@ -87,7 +97,7 @@ const component = () =>
 		})
 
 const list = () =>
-	flex(_.times(6, item))
+	flex(_.times(6, () => item(3)))
 		.css({
 			overflowX: 'auto',
 			marginBottom: '2.5rem',
@@ -95,16 +105,19 @@ const list = () =>
 		.tag(tags.list)
 		.class('list')
 
-const item = () =>
+const item = (columns: number) =>
 	cmn.sliderItm
-		.el([
-			img('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
-				.css({
-					aspectRatio: '1/1',
-					userSelect: 'none',
-				})
-				.tag(tags.items.image),
-		])
+		.el(
+			[
+				img('https://files.dotenx.com/assets/hero-bg-wva.jpeg')
+					.css({
+						aspectRatio: '1/1',
+						userSelect: 'none',
+					})
+					.tag(tags.items.image),
+			],
+			columns
+		)
 		.css({
 			paddingRight: '2rem',
 		})

@@ -14,13 +14,14 @@ import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
+import { FlexBasisEditor } from '../helpers/flex-basis-editor'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
 // r12
 export class Testimonials2 extends Component {
 	name = 'Testimonials 2'
 	image = componentImage
-	defaultData = component()
+	defaultData = componentWithData()
 	renderOptions = () => <Options />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
@@ -42,9 +43,10 @@ function Options() {
 		<ComponentWrapper>
 			<cmn.heading.Options />
 			<cmn.desc.Options />
+			<FlexBasisEditor listTag={tags.list} />
 			<DndTabs
 				containerElement={list}
-				insertElement={item}
+				insertElement={() => item(component.internal.columns as number)}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 				onDelete={() => set(dots, (draft) => draft.children.pop())}
 				onInsert={() => set(dots, (draft) => draft.children.push(cmn.dot.el()))}
@@ -83,6 +85,15 @@ const tags = {
 		brand: 'brand',
 	},
 }
+
+const componentWithData = () => {
+	const c = component()
+	c.internal = {
+		columns: 3,
+	}
+	return c
+}
+
 const component = () =>
 	cmn.ppr.el([
 		cmn.heading.el('Customer testimonials'),
@@ -97,7 +108,7 @@ const component = () =>
 	])
 
 const list = () =>
-	flex(_.times(6, item))
+	flex(_.times(6, () => item(3)))
 		.css({
 			overflowX: 'auto',
 			marginBottom: '2.5rem',
@@ -105,24 +116,27 @@ const list = () =>
 		.tag(tags.list)
 		.class('list')
 
-const item = () =>
+const item = (columns: number) =>
 	cmn.sliderItm
-		.el([
-			cmn.stars.el(),
-			cmn.quote.el().tag(tags.items.quote),
-			cmn.profile.el().tag(tags.items.image),
-			txt('Name Surname')
-				.css({
-					fontWeight: '600',
-				})
-				.tag(tags.items.title),
-			txt('Position, Company name')
-				.css({
-					marginBottom: '1rem',
-				})
-				.tag(tags.items.desc),
-			cmn.brand.el().tag(tags.items.brand),
-		])
+		.el(
+			[
+				cmn.stars.el(),
+				cmn.quote.el().tag(tags.items.quote),
+				cmn.profile.el().tag(tags.items.image),
+				txt('Name Surname')
+					.css({
+						fontWeight: '600',
+					})
+					.tag(tags.items.title),
+				txt('Position, Company name')
+					.css({
+						marginBottom: '1rem',
+					})
+					.tag(tags.items.desc),
+				cmn.brand.el().tag(tags.items.brand),
+			],
+			columns
+		)
 		.css({
 			paddingRight: '3rem',
 		})

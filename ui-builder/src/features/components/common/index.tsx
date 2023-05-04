@@ -573,19 +573,12 @@ const icnButton = (icon: string) =>
 	})
 
 // =============================================================== Slider Item
-const sliderItm = (children: Element[]) =>
-	box(children)
-		.css({
-			flexShrink: '0',
-			flexBasis: 'calc(100% / 3)',
-			transition: 'transform 500ms ease',
-		})
-		.cssTablet({
-			flexBasis: '50%',
-		})
-		.cssMobile({
-			flexBasis: '100%',
-		})
+const sliderItm = (children: Element[], columns = 3) =>
+	box(children).css({
+		flexShrink: '0',
+		flexBasis: `calc(100% / ${columns})`,
+		transition: 'transform 500ms ease',
+	})
 
 // =============================================================== Outline Button
 const outlineBtn = (text = 'Button') =>
