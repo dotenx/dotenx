@@ -44,7 +44,18 @@ function NavbarWithMultiColumnDropDownCta1Options() {
 	)
 }
 
-const submenu = cmn.submenus.default.el
-const submenuOptions = cmn.submenus.default.Options
+const submenu = cmn.submenus.multiColumnSubmenu1.el
+const submenuOptions = cmn.submenus.multiColumnSubmenu1.Options
 
 const defaultData = cmn.nav.el([cmn.logo.el, cmn.links.el(submenu), cmn.buttons.el, cmn.toggle.el])
+.customCss('.submenu-active .submenu', {
+	height: 'auto',
+	width: 'auto',
+	visibility: 'visible',
+	transform: 'translateY(0px)',
+	transition: 'transform 0.2s cubic-bezier(0.35, -0.9, 0.13, 1.59)',
+	display: 'grid',
+	position: 'absolute',
+	margin: 'auto',
+	top: '68px',
+})

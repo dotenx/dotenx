@@ -157,6 +157,60 @@ const defaultSubmenu = box(repeatObject(submenuLink(), 4))
 		margin: '0px',
 	})
 
+const tagHeadingDetails = () =>
+	link()
+		.css({
+			display: 'flex',
+			gap: '0.75rem',
+		})
+		.populate([
+			icn('cube').size('16px'),
+			box([
+				txt('Link')
+					.tag(tags.linkText)
+					.css({ fontSize: '1rem', fontWeight: 'bold', lineHeight: '1.5' }),
+				txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
+					fontSize: '1rem',
+					lineHeight: '1.5',
+				}),
+			]).css({
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'stretch',
+				width: '100%',
+				flex: '1',
+			}),
+		])
+
+const tagHeadingDetailsColumn = () =>
+	box([
+		txt('Heading').css({
+			fontSize: '1rem',
+		}),
+		...repeatObject(tagHeadingDetails(), 4),
+	]).css({
+		minWidth: '20rem',
+		rowGap: '0.5rem',
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'stretch',
+	}).cssMobile({
+		minWidth: 'auto',
+	})
+
+const multiColumnSubmenu1 = box(repeatObject(tagHeadingDetailsColumn(), 2)).as('ul').tag(tags.submenu).class('submenu').css({
+	height: '0',
+	width: '0',
+	visibility: 'hidden',
+	overflow: 'hidden',
+	transform: 'translateY(20px)',
+	display: 'grid', // If we set this to none the transition effect won't work. Stupid HTML!
+	gridTemplateColumns: '1fr 1fr',
+	gap: '1rem',
+	padding: '0px 10px',
+	margin: '0px',
+})
+
 const defaultSubmenuOptions = ({ submenu }: { submenu: BoxElement }) => {
 	return (
 		<>
@@ -480,6 +534,10 @@ export const cmn = {
 	submenus: {
 		default: {
 			el: defaultSubmenu,
+			Options: defaultSubmenuOptions,
+		},
+		multiColumnSubmenu1: {
+			el: multiColumnSubmenu1,
 			Options: defaultSubmenuOptions,
 		},
 	},
