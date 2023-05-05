@@ -1,13 +1,13 @@
-// relume feature 123
+// r feature 123
 import componentImage from '../../../assets/components/features/feature-19.png'
 import { box } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
 import { useSelectedElement } from '../../selection/use-selected-component'
+import { cmn, duplicate } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
-import { cmn, duplicate } from './common'
 
 export class Feature19 extends Component {
 	name = 'Feature 19'

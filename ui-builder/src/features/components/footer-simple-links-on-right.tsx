@@ -11,7 +11,7 @@ import { useSelectedElement } from '../selection/use-selected-component'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
-import { Socials } from './basic-components/professional-socials'
+import ProfessionalSocials from './basic-components/professional-socials'
 import { Component, ElementOptions } from './component'
 import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
@@ -63,7 +63,11 @@ function FooterSimpleWithLinksOnRightOptions({ options }: { options: ElementOpti
 					insertElement={() => createLink('New link')}
 				/>
 			</DividerCollapsible>
-			{Socials.getOptions({ set: options.set, root: socials, rootIsContainer: true })}
+			{ProfessionalSocials.getOptions({
+				set: options.set,
+				root: socials,
+				rootIsContainer: true,
+			})}
 
 			<DividerCollapsible closed title="Bottom links">
 				<TextStyler label="Bottom text" element={bottomText} />
@@ -200,7 +204,7 @@ const topFooterLeft = box([
 			alignItems: 'start',
 		})
 		.cssMobile({}),
-	produce(Socials.getComponent(), (draft) => {
+	produce(ProfessionalSocials.getComponent(), (draft) => {
 		draft.style.desktop!.default!.width = 'auto'
 		draft.style.desktop!.default!.marginTop = '2rem'
 		draft.style.desktop!.default!.gap = '20px'

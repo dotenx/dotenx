@@ -1,4 +1,4 @@
-// relume feature 55
+// r feature 55
 import componentImage from '../../../assets/components/features/feature-11.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, link, txt } from '../../elements/constructor'
@@ -8,9 +8,9 @@ import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
+import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
-import { cmn } from './common'
 
 export class Feature11 extends Component {
 	name = 'Feature 11'

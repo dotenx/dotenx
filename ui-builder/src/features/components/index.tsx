@@ -56,6 +56,13 @@ import { DividerTextSections } from './divider-text-sections'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FaqCollapsible } from './faq-collapsible'
+import { Faq1 } from './faq/faq-1'
+import { Faq2 } from './faq/faq-2'
+import { Faq3 } from './faq/faq-3'
+import { Faq4 } from './faq/faq-4'
+import { Faq5 } from './faq/faq-5'
+import { Faq6 } from './faq/faq-6'
+import { Faq7 } from './faq/faq-7'
 import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
@@ -98,6 +105,12 @@ import { FooterSimpleCentered } from './footer-simple-center'
 import { FooterSimpleWithLinksOnRight } from './footer-simple-links-on-right'
 import { FooterSimpleWithLinksOnRight2 } from './footer-simple-links-on-right-2'
 import { FooterSimpleWithInput } from './footer-simple-with-input-1'
+import { FooterSimpleWithInput2 } from './footer-simple-with-input-2'
+import { FooterSimpleWithInput3 } from './footer-simple-with-input-3'
+import { FooterSimpleWithInput4 } from './footer-simple-with-input-4'
+import { FooterSimpleWithInput5 } from './footer-simple-with-input-5'
+import { FooterSimpleWithInput6 } from './footer-simple-with-input-6'
+import { FooterSimpleWithInput7 } from './footer-simple-with-input-7'
 import { FooterSimpleWithoutIcon } from './footer-simple-without-icon'
 import { Form } from './form'
 import { Form2 } from './form-2'
@@ -109,6 +122,40 @@ import { GalleryMasonryOne } from './gallery-masonry-1'
 import { GalleryMasonryTwo } from './gallery-masonry-2'
 import { GalleryMasonryCustomLayout } from './gallery-masonry-custom-layout'
 import { GalleryWithCaptions } from './gallery-with-caption'
+import { Gallery1 } from './gallery/gallery-1'
+import { Gallery2 } from './gallery/gallery-2'
+import { Hero10 } from './hero new/hero-10'
+import { Hero11 } from './hero new/hero-11'
+import { Hero12 } from './hero new/hero-12'
+import { Hero13 } from './hero new/hero-13'
+import { Hero14 } from './hero new/hero-14'
+import { Hero15 } from './hero new/hero-15'
+import { Hero16 } from './hero new/hero-16'
+import { Hero17 } from './hero new/hero-17'
+import { Hero18 } from './hero new/hero-18'
+import { Hero19 } from './hero new/hero-19'
+import { Hero2 } from './hero new/hero-2'
+import { Hero20 } from './hero new/hero-20'
+import { Hero21 } from './hero new/hero-21'
+import { Hero22 } from './hero new/hero-22'
+import { Hero23 } from './hero new/hero-23'
+import { Hero24 } from './hero new/hero-24'
+import { Hero25 } from './hero new/hero-25'
+import { Hero26 } from './hero new/hero-26'
+import { Hero27 } from './hero new/hero-27'
+import { Hero28 } from './hero new/hero-28'
+import { Hero29 } from './hero new/hero-29'
+import { Hero3 } from './hero new/hero-3'
+import { Hero30 } from './hero new/hero-30'
+import { Hero31 } from './hero new/hero-31'
+import { Hero32 } from './hero new/hero-32'
+import { Hero33 } from './hero new/hero-33'
+import { Hero4 } from './hero new/hero-4'
+import { Hero5 } from './hero new/hero-5'
+import { Hero6 } from './hero new/hero-6'
+import { Hero7 } from './hero new/hero-7'
+import { Hero8 } from './hero new/hero-8'
+import { Hero9 } from './hero new/hero-9'
 import { HeroCtaLeft } from './hero-cta-left'
 import { HeroCtaRight } from './hero-cta-right'
 import { HeroFullWidth } from './hero-full-width'
@@ -119,7 +166,9 @@ import { HeroWithRating } from './hero-with-rating'
 import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
 import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
-import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
+import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
+import { NavbarWithDropDownCta1 } from './navbars/navbar-with-dropdown-cta'
+import { NavbarWithMultiColumnDropDownCta1 } from './navbars/navbar-with-multicolumn-dropdown-cta'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -134,9 +183,12 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
-import { NavbarWithMultiColumnDropDownCta1 } from './navbars/navbar-with-multicolumn-dropdown-cta'
-import { NavbarWithDropDownCta1 } from './navbars/navbar-with-dropdown-cta'
+import { Testimonials1 } from './testimonials/testimonials-1'
+import { Testimonials2 } from './testimonials/testimonials-2'
+import { Testimonials3 } from './testimonials/testimonials-3'
+import { Testimonials4 } from './testimonials/testimonials-4'
+import { Testimonials5 } from './testimonials/testimonials-5'
+import { Testimonials6 } from './testimonials/testimonials-6'
 
 export const COMPONENTS: Components = [
 	{
@@ -176,6 +228,38 @@ export const COMPONENTS: Components = [
 			HeroWithBgOneCta,
 			HeroWithBgTwoCta,
 			HeroWithImageTwoCta,
+			Hero2,
+			Hero3,
+			Hero4,
+			Hero5,
+			Hero6,
+			Hero7,
+			Hero8,
+			Hero9,
+			Hero10,
+			Hero11,
+			Hero12,
+			Hero13,
+			Hero14,
+			Hero15,
+			Hero16,
+			Hero17,
+			Hero18,
+			Hero19,
+			Hero20,
+			Hero21,
+			Hero22,
+			Hero23,
+			Hero24,
+			Hero25,
+			Hero26,
+			Hero27,
+			Hero28,
+			Hero29,
+			Hero30,
+			Hero31,
+			Hero32,
+			Hero33,
 		],
 	},
 	{
@@ -213,7 +297,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'FAQ',
 		icon: <TbQuestionCircle />,
-		items: [FaqBasic, FaqBasicStyled, FaqCollapsible],
+		items: [Faq1, Faq2, Faq3, Faq4, Faq5, Faq6, Faq7, FaqBasic, FaqBasicStyled, FaqCollapsible],
 	},
 	{
 		title: 'Divider',
@@ -272,6 +356,8 @@ export const COMPONENTS: Components = [
 		title: 'Gallery',
 		icon: <TbPhoto />,
 		items: [
+			Gallery1,
+			Gallery2,
 			GalleryBasic,
 			GalleryBasicRounded,
 			GalleryWithCaptions,
@@ -315,7 +401,17 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Testimonial',
 		icon: <TbMessageChatbot />,
-		items: [TestimonialSimple, TestimonialSlider, TestimonialSlider2],
+		items: [
+			Testimonials1,
+			Testimonials2,
+			Testimonials3,
+			Testimonials4,
+			Testimonials5,
+			Testimonials6,
+			TestimonialSimple,
+			TestimonialSlider,
+			TestimonialSlider2,
+		],
 	},
 	{
 		title: 'Footers',
@@ -326,7 +422,12 @@ export const COMPONENTS: Components = [
 			FooterSimpleCentered,
 			FooterSimpleWithoutIcon,
 			FooterSimpleWithInput,
-			// FooterSimpleWithInput2,
+			FooterSimpleWithInput2,
+			FooterSimpleWithInput3,
+			FooterSimpleWithInput4,
+			FooterSimpleWithInput5,
+			FooterSimpleWithInput6,
+			FooterSimpleWithInput7,
 			FooterSimpleWithLinksOnRight,
 			FooterSimpleWithLinksOnRight2,
 		],

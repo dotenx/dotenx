@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/footer-simple-with-input-1.png'
+import imageUrl from '../../assets/components/footer-simple-with-input-2.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, form, frame, img, input, link, submit, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
@@ -13,7 +13,7 @@ import { ButtonStyler } from '../simple/stylers/button-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { LinkStyler } from '../simple/stylers/link-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
-import { Socials } from './basic-components/professional-socials'
+import ProfessionalSocials from './basic-components/professional-socials'
 import { Component, ElementOptions } from './component'
 import { DividerCollapsible } from './helpers'
 import { ComponentWrapper } from './helpers/component-wrapper'
@@ -35,12 +35,17 @@ export class FooterSimpleWithInput2 extends Component {
 function FooterSimpleWithInput2Options({ options }: { options: ElementOptions }) {
 	const component = useSelectedElement<BoxElement>()!
 	const logo = component.find<ImageElement>(tagIds.logo)!
-	const topLinks = component.find(tagIds.topLinks) as BoxElement
+	const columnOne = component.find(tagIds.columnOne) as BoxElement
+	const columnTwo = component.find(tagIds.columnTwo) as BoxElement
 	const bottomLinks = component.find(tagIds.bottomLinks) as BoxElement
 	const bottomText = component.find(tagIds.bottomText) as TextElement
+	const colOneHeader = component.find(tagIds.colOneHeader) as TextElement
+	const colTwoHeader = component.find(tagIds.colTwoHeader) as TextElement
+	const colThreeHeader = component.find(tagIds.colThreeHeader) as TextElement
 	const inputDesc = component.find(tagIds.inputDesc) as TextElement
 	const inputLabel = component.find(tagIds.inputLabel) as TextElement
 	const button = component.find(tagIds.button) as ButtonElement
+	const socials = component.find(tagIds.socials) as BoxElement
 	return (
 		<ComponentWrapper name="Simple footer with input - 2">
 			<ImageStyler element={logo} />
@@ -50,11 +55,25 @@ function FooterSimpleWithInput2Options({ options }: { options: ElementOptions })
 				<TextStyler label="Input description text" element={inputDesc} />
 			</DividerCollapsible>
 			<DividerCollapsible closed title="Top links">
+				<TextStyler label="Column one header" element={colOneHeader} />
+
 				<DndTabs
-					containerElement={topLinks}
+					containerElement={columnOne}
 					renderItemOptions={(item) => <TopLinksOptions item={item as LinkElement} />}
 					insertElement={() => createLink('New link')}
 				/>
+				<TextStyler label="Column two header" element={colTwoHeader} />
+				<DndTabs
+					containerElement={columnTwo}
+					renderItemOptions={(item) => <TopLinksOptions item={item as LinkElement} />}
+					insertElement={() => createLink('New link')}
+				/>
+				<TextStyler label="Column three header" element={colThreeHeader} />
+				{ProfessionalSocials.getOptions({
+					set: options.set,
+					root: socials,
+					rootIsContainer: true,
+				})}
 			</DividerCollapsible>
 
 			<DividerCollapsible closed title="Bottom links">
@@ -87,14 +106,16 @@ function TopLinksOptions({ item }: { item: LinkElement }) {
 const tagIds = {
 	logo: 'logo',
 	socials: 'socials',
+	colOneHeader: 'colOneHeader',
 	columnOne: 'columnOne',
+	colTwoHeader: 'colTwoHeader',
 	columnTwo: 'columnTwo',
+	colThreeHeader: 'colThreeHeader',
 	button: 'button',
 	inputDesc: 'inputDesc',
 	inputLabel: 'inputLabel',
 	form: 'form',
 	submit: 'submit',
-	topLinks: 'topLinks',
 	bottomLinks: 'bottomLinks',
 	bottomText: 'bottomText',
 }
@@ -230,71 +251,95 @@ const topFooterLeft = box([
 	.cssTablet({})
 	.cssMobile({})
 const topFooterRight = box([
-	txt('Column One').tag(tagIds.inputLabel).css({
-		fontWeight: '600',
-		fontSize: '16px',
-		textAlign: 'left',
-	}),
-	txt('Column Two').tag(tagIds.inputLabel).css({
-		fontWeight: '600',
-		fontSize: '16px',
-		textAlign: 'left',
-	}),
-	txt('Follow us').tag(tagIds.inputLabel).css({
-		fontWeight: '600',
-		fontSize: '16px',
-		textAlign: 'center',
-	}),
-
-	box(columnOne)
-		.tag(tagIds.columnOne)
+	box([
+		txt('Column One')
+			.css({
+				fontWeight: '600',
+				fontSize: '16px',
+				textAlign: 'left',
+			})
+			.tag(tagIds.colOneHeader),
+		box(columnOne).tag(tagIds.columnOne).css({
+			display: 'flex',
+			flexWrap: 'wrap',
+			flexDirection: 'column',
+			alignItems: 'start',
+			justifyContent: 'start	',
+			rowGap: '1rem',
+		}),
+	])
 		.css({
 			display: 'flex',
 			flexWrap: 'wrap',
 			flexDirection: 'column',
 			alignItems: 'start',
-			justifyContent: 'center',
-			rowGap: '2rem',
+			justifyContent: 'start	',
+			rowGap: '1rem',
 		})
-		.cssTablet({ marginTop: '3rem' })
+		.cssTablet({ marginTop: '1rem' })
 		.cssMobile({}),
-	box(columnTwo)
-		.tag(tagIds.columnTwo)
+	box([
+		txt('Column Two').tag(tagIds.colTwoHeader).css({
+			fontWeight: '600',
+			fontSize: '16px',
+			textAlign: 'left',
+		}),
+		box(columnTwo).tag(tagIds.columnTwo).css({
+			display: 'flex',
+			flexWrap: 'wrap',
+			flexDirection: 'column',
+			alignItems: 'start',
+			justifyContent: 'start',
+			rowGap: '1rem',
+		}),
+	])
 		.css({
 			display: 'flex',
 			flexWrap: 'wrap',
 			flexDirection: 'column',
 			alignItems: 'start',
-			justifyContent: 'center',
-			rowGap: '2rem',
+			justifyContent: 'start	',
+			rowGap: '1rem',
 		})
-		.cssTablet({ marginTop: '3rem' })
+		.cssTablet({ marginTop: '1rem' })
 		.cssMobile({}),
-	produce(Socials.getComponent(), (draft) => {
-		draft.style.desktop!.default!.display = 'flex'
-		draft.style.desktop!.default!.flexWrap = 'wrap'
-		draft.style.desktop!.default!.flexDirection = 'column'
-		draft.style.desktop!.default!.alignItems = 'center'
-		draft.style.desktop!.default!.justifyContent = 'center'
-		draft.style.desktop!.default!.rowGap = '2rem'
-		draft.tagId = tagIds.socials
-	}),
+	box([
+		txt('Follow us')
+			.tag(tagIds.colThreeHeader)
+			.css({
+				fontWeight: '600',
+				fontSize: '16px',
+				textAlign: 'center',
+				marginBottom: '1rem',
+			})
+			.cssMobile({ textAlign: 'left' }),
+		produce(ProfessionalSocials.getComponent(), (draft) => {
+			draft.style.desktop!.default!.display = 'flex'
+			draft.style.desktop!.default!.flexWrap = 'wrap'
+			draft.style.desktop!.default!.flexDirection = 'column'
+			draft.style.desktop!.default!.alignItems = 'center'
+			draft.cssMobile({ alignItems: 'start' })
+			draft.style.desktop!.default!.justifyContent = 'start'
+			draft.style.desktop!.default!.rowGap = '1rem'
+			draft.tagId = tagIds.socials
+		}),
+	]).cssTablet({ marginTop: '1rem' }),
 ])
 	.css({
 		display: 'grid',
 		gridTemplateColumns: ' 1fr 1fr 1fr',
-		alignItems: 'end',
+		alignItems: 'start',
 		justifyContent: 'center',
 	})
-	.cssTablet({ alignItems: 'start', rowGap: '5px', marginTop: '2rem' })
-	.cssMobile({ gridTemplateColumns: ' 1fr' })
+	.cssTablet({ alignItems: 'start', marginTop: '2rem' })
+	.cssMobile({ gridTemplateColumns: ' 1fr', rowGap: '1rem' })
 
 const topFooter = box([topFooterLeft, topFooterRight])
 	.css({
 		display: 'grid',
 		paddingBottom: '4rem',
 		gridTemplateColumns: ' 1fr 1fr',
-		gap: '3rem',
+		columnGap: '4rem',
 		borderBottomWidth: '1px',
 		borderBottomStyle: 'solid',
 		borderColor: 'black',

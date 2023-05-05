@@ -1,4 +1,4 @@
-// relume feature 121
+// r feature 121
 import componentImage from '../../../assets/components/features/feature-18.png'
 import { box, column, flex, grid, icn, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
@@ -7,11 +7,11 @@ import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { IconStyler } from '../../simple/stylers/icon-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
+import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
-import { cmn } from './common'
 
 export class Feature18 extends Component {
 	name = 'Feature 18'
