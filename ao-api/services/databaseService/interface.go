@@ -27,7 +27,7 @@ type DatabaseService interface {
 	InsertRow(tpAccountId string, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(tpAccountId string, projectTag string, tableName string, id int, row map[string]interface{}) error
 	DeleteRow(tpAccountId string, projectTag string, tableName string, id int, filters databaseStore.ConditionGroup) error
-	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, page int, size int) (map[string]interface{}, error)
+	SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, orderBy string, descending bool, page int, size int) (map[string]interface{}, error)
 	SelectRowById(tpAccountId string, projectTag string, tableName string, id int) (map[string]interface{}, error)
 
 	UpsertView(accountId string, projectName string, viewName string, tableName string, columns []string, filters databaseStore.ConditionGroup, jsonQuery map[string]interface{}, isPublic bool) error
