@@ -162,6 +162,7 @@ import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
+import { Pricing1 } from './plans-new/pricing-1'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -381,7 +382,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Pricing',
 		icon: <TbReportMoney />,
-		items: [PricingSimple, PricingSimple2],
+		items: [PricingSimple, PricingSimple2, Pricing1],
 	},
 	{
 		title: 'Testimonial',
