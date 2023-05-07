@@ -1,11 +1,9 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/faq/faq-1.png'
-import { box, flex, icn, txt } from '../../elements/constructor'
-import { Element } from '../../elements/element'
-import { setElement } from '../../elements/elements-store'
+import componentImage from '../../../assets/components/faq/faq-4.png'
+import { gridCols } from '../../../utils/style-utils'
+import { box, grid, txt } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
-import componentScript from '../../scripts/faq-1.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { cmn } from '../common'
@@ -14,17 +12,12 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r2
-export class Faq1 extends Component {
-	name = 'FAQ 1'
+// r9
+export class Faq4 extends Component {
+	name = 'FAQ 4'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
-	onCreate(root: Element) {
-		const compiled = _.template(componentScript)
-		const script = compiled({ id: root.id })
-		setElement(root, (draft) => (draft.script = script))
-	}
 }
 
 function Options() {
@@ -73,14 +66,17 @@ const tags = {
 
 const component = () =>
 	cmn.ppr.el([
-		cmn.heading.el('FAQs'),
-		cmn.desc
-			.el(
+		box([
+			cmn.heading.el('FAQs'),
+			cmn.desc.el(
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
-			)
+			),
+		])
 			.css({
-				marginBottom: '5rem',
-				maxWidth: '48rem',
+				marginBottom: '4rem',
+			})
+			.cssTablet({
+				marginBottom: '2rem',
 			}),
 		questions(),
 		txt('Still have questions?')
@@ -89,6 +85,10 @@ const component = () =>
 				lineHeight: '1.3',
 				fontWeight: '700',
 				marginBottom: '1rem',
+				marginTop: '2rem',
+			})
+			.cssTablet({
+				marginTop: '0',
 			})
 			.tag(tags.subheading),
 		cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').tag(tags.subDesc),
@@ -96,46 +96,36 @@ const component = () =>
 	])
 
 const questions = () =>
-	box(_.times(5, question))
-		.css({
-			borderBottom: '1px solid #000',
-		})
-		.css({
-			marginBottom: '5rem',
-		})
-		.tag(tags.list)
+	box(_.times(5, question)).tag(tags.list).css({
+		textAlign: 'start',
+	})
 
 const question = () =>
-	box([
-		flex([
+	grid(2)
+		.populate([
 			txt('Question text goes here')
 				.css({
 					fontSize: '1.125rem',
 					fontWeight: '700',
+					lineHeight: '1.5',
+					marginBottom: '1rem',
 				})
 				.tag(tags.items.question),
-			icn('chevron-down').size('18px').class('chevron'),
+			txt(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.'
+			)
+				.css({
+					fontSize: '1rem',
+					lineHeight: '1.5',
+				})
+				.tag(tags.items.answer),
 		])
-			.css({
-				padding: '1.25rem 0',
-				alignItems: 'center',
-				justifyContent: 'space-between',
-				cursor: 'pointer',
-			})
-			.class('question'),
-		txt(
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.'
-		)
-			.css({
-				display: 'none',
-				maxWidth: '48rem',
-				marginBottom: '1.5rem',
-				lineHeight: '1.5',
-			})
-			.tag(tags.items.answer)
-			.class('answer'),
-	])
 		.css({
+			paddingTop: '1.5rem',
+			paddingBottom: '3rem',
 			borderTop: '1px solid #000',
+			gridTemplateColumns: '0.75fr 1fr',
 		})
-		.class('item')
+		.cssTablet({
+			gridTemplateColumns: gridCols(1),
+		})

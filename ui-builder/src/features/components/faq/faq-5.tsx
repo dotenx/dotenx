@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/faq/faq-1.png'
-import { box, flex, icn, txt } from '../../elements/constructor'
+import componentImage from '../../../assets/components/faq/faq-5.png'
+import { box, column, flex, icn, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -14,9 +14,9 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r2
-export class Faq1 extends Component {
-	name = 'FAQ 1'
+// r1
+export class Faq5 extends Component {
+	name = 'FAQ 5'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -73,35 +73,46 @@ const tags = {
 
 const component = () =>
 	cmn.ppr.el([
-		cmn.heading.el('FAQs'),
-		cmn.desc
-			.el(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
-			)
-			.css({
-				marginBottom: '5rem',
-				maxWidth: '48rem',
+		column([
+			cmn.heading.el('FAQs'),
+			cmn.desc
+				.el(
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.'
+				)
+				.css({
+					marginBottom: '5rem',
+					maxWidth: '48rem',
+				}),
+			questions(),
+			txt('Still have questions?')
+				.css({
+					fontSize: '2rem',
+					lineHeight: '1.3',
+					fontWeight: '700',
+					marginBottom: '1rem',
+				})
+				.tag(tags.subheading),
+			cmn.desc
+				.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
+				.tag(tags.subDesc),
+			cmn.outlineBtn.el('Contact').css({
+				alignSelf: 'center',
 			}),
-		questions(),
-		txt('Still have questions?')
-			.css({
-				fontSize: '2rem',
-				lineHeight: '1.3',
-				fontWeight: '700',
-				marginBottom: '1rem',
-			})
-			.tag(tags.subheading),
-		cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').tag(tags.subDesc),
-		cmn.outlineBtn.el('Contact'),
+		]).css({
+			textAlign: 'center',
+			maxWidth: '48rem',
+			marginRight: 'auto',
+			marginLeft: 'auto',
+		}),
 	])
 
 const questions = () =>
 	box(_.times(5, question))
 		.css({
 			borderBottom: '1px solid #000',
-		})
-		.css({
 			marginBottom: '5rem',
+			textAlign: 'start',
+			alignSelf: 'stretch',
 		})
 		.tag(tags.list)
 

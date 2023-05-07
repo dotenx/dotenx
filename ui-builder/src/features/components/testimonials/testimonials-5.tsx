@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/testimonials/testimonials-1.png'
-import { column, flex, txt } from '../../elements/constructor'
+import componentImage from '../../../assets/components/testimonials/testimonials-5.png'
+import { box, flex, img, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement, useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -16,9 +16,9 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r9
-export class Testimonials1 extends Component {
-	name = 'Testimonials 1'
+// r15
+export class Testimonials5 extends Component {
+	name = 'Testimonials 5'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -40,8 +40,6 @@ function Options() {
 
 	return (
 		<ComponentWrapper>
-			<cmn.heading.Options />
-			<cmn.desc.Options />
 			<DndTabs
 				containerElement={list}
 				insertElement={item}
@@ -54,91 +52,89 @@ function Options() {
 }
 
 function ItemOptions({ item }: { item: BoxElement }) {
-	const logo = item.find(tags.items.logo) as ImageElement
+	const brand = item.find(tags.items.brand) as ImageElement
 	const quote = item.find(tags.items.quote) as TextElement
-	const image = item.find(tags.items.image) as ImageElement
 	const title = item.find(tags.items.title) as TextElement
 	const desc = item.find(tags.items.desc) as TextElement
 
 	return (
 		<OptionsWrapper>
-			<ImageStyler element={logo} />
+			<cmn.stars.Options root={item} />
 			<TextStyler label="Quote" element={quote} />
-			<ImageStyler element={image} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Description" element={desc} />
+			<ImageStyler element={brand} />
 		</OptionsWrapper>
 	)
 }
 
 const tags = {
 	list: 'list',
+	dots: 'dots',
 	items: {
-		logo: 'logo',
 		quote: 'quote',
-		image: 'image',
 		title: 'title',
 		desc: 'desc',
+		brand: 'brand',
 	},
-	dots: 'dots',
 }
-
 const component = () =>
-	cmn.ppr
-		.el([
-			cmn.heading.el('Customer testimonials'),
-			cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
-				marginBottom: '3rem',
-			}),
-			list(),
-		])
-		.css({
-			textAlign: 'center',
-		})
-
-const list = () =>
-	column([
-		flex([
-			cmn.icnButton.el('chevron-left').class('prev').cssTablet({
-				display: 'none',
-			}),
-			flex(_.times(6, item))
-				.css({
-					overflowX: 'auto',
-				})
-				.tag(tags.list)
-				.class('list'),
-			cmn.icnButton.el('chevron-right').class('next').cssTablet({
-				display: 'none',
-			}),
-		]).css({
+	cmn.ppr.el([
+		list(),
+		flex([cmn.dots.el(2).tag(tags.dots).class('dots'), buttons()]).css({
+			justifyContent: 'space-between',
 			alignItems: 'center',
 		}),
-		cmn.dots
-			.el()
-			.css({
-				alignSelf: 'center',
-			})
-			.class('dots')
-			.tag(tags.dots),
 	])
 
-const item = () =>
-	cmn.sliderItm
-		.el([
-			cmn.brand.el().tag(tags.items.logo),
-			cmn.quote.el().tag(tags.items.quote),
-			cmn.profile.el().tag(tags.items.image),
-			txt('Name Surname')
-				.css({
-					fontWeight: '600',
-				})
-				.tag(tags.items.title),
-			txt('Position, Company name').tag(tags.items.desc),
-		])
+const list = () =>
+	flex(_.times(2, item))
 		.css({
-			display: 'flex',
-			alignItems: 'center',
-			padding: '0 2rem',
+			overflowX: 'auto',
 			marginBottom: '2.5rem',
 		})
+		.tag(tags.list)
+		.class('list')
+
+const item = () =>
+	cmn.halfGrid
+		.el([
+			img('https://files.dotenx.com/assets/hero-bg-wva.jpeg').css({
+				aspectRatio: '1/1',
+			}),
+			box([
+				cmn.stars.el(),
+				cmn.quote
+					.el(
+						'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.'
+					)
+					.tag(tags.items.quote),
+				flex([
+					box([
+						txt('Name Surname')
+							.css({
+								fontWeight: '600',
+							})
+							.tag(tags.items.title),
+						txt('Position, Company name').tag(tags.items.desc),
+					]),
+					cmn.vr.el(),
+					cmn.brand.el().tag(tags.items.brand),
+				]),
+			]),
+		])
+		.css({
+			paddingRight: '3rem',
+			flexShrink: '0',
+			flexBasis: '100%',
+			transition: 'transform 500ms ease',
+			alignItems: 'center',
+		})
+
+const buttons = () =>
+	flex([
+		cmn.icnButton.el('chevron-left').class('prev'),
+		cmn.icnButton.el('chevron-right').class('next'),
+	]).css({
+		gap: '1rem',
+	})

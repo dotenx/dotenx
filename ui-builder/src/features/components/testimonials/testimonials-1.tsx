@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/testimonials/testimonials-2.png'
-import { flex, txt } from '../../elements/constructor'
+import componentImage from '../../../assets/components/testimonials/testimonials-1.png'
+import { column, flex, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement, useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
@@ -14,13 +14,14 @@ import { cmn } from '../common'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
+import { FlexBasisEditor } from '../helpers/flex-basis-editor'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r12
-export class Testimonials2 extends Component {
-	name = 'Testimonials 2'
+// r9
+export class Testimonials1 extends Component {
+	name = 'Testimonials 1'
 	image = componentImage
-	defaultData = component()
+	defaultData = componentWithData()
 	renderOptions = () => <Options />
 	onCreate(root: Element) {
 		const compiled = _.template(componentScript)
@@ -42,9 +43,10 @@ function Options() {
 		<ComponentWrapper>
 			<cmn.heading.Options />
 			<cmn.desc.Options />
+			<FlexBasisEditor listTag={tags.list} />
 			<DndTabs
 				containerElement={list}
-				insertElement={item}
+				insertElement={() => item(component.internal.columns as number)}
 				renderItemOptions={(item) => <ItemOptions item={item as BoxElement} />}
 				onDelete={() => set(dots, (draft) => draft.children.pop())}
 				onInsert={() => set(dots, (draft) => draft.children.push(cmn.dot.el()))}
@@ -54,7 +56,7 @@ function Options() {
 }
 
 function ItemOptions({ item }: { item: BoxElement }) {
-	const brand = item.find(tags.items.brand) as ImageElement
+	const logo = item.find(tags.items.logo) as ImageElement
 	const quote = item.find(tags.items.quote) as TextElement
 	const image = item.find(tags.items.image) as ImageElement
 	const title = item.find(tags.items.title) as TextElement
@@ -62,75 +64,95 @@ function ItemOptions({ item }: { item: BoxElement }) {
 
 	return (
 		<OptionsWrapper>
-			<cmn.stars.Options root={item} />
+			<ImageStyler element={logo} />
 			<TextStyler label="Quote" element={quote} />
 			<ImageStyler element={image} />
 			<TextStyler label="Title" element={title} />
 			<TextStyler label="Description" element={desc} />
-			<ImageStyler element={brand} />
 		</OptionsWrapper>
 	)
 }
 
 const tags = {
 	list: 'list',
-	dots: 'dots',
 	items: {
+		logo: 'logo',
 		quote: 'quote',
 		image: 'image',
 		title: 'title',
 		desc: 'desc',
-		brand: 'brand',
 	},
+	dots: 'dots',
 }
+
+const componentWithData = () => {
+	const c = component()
+	c.internal = {
+		columns: 3,
+	}
+	return c
+}
+
 const component = () =>
-	cmn.ppr.el([
-		cmn.heading.el('Customer testimonials'),
-		cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
-			marginBottom: '5rem',
-		}),
-		list(),
-		flex([cmn.dots.el().tag(tags.dots).class('dots'), buttons()]).css({
-			justifyContent: 'space-between',
-			alignItems: 'center',
-		}),
-	])
-
-const list = () =>
-	flex(_.times(6, item))
-		.css({
-			overflowX: 'auto',
-			marginBottom: '2.5rem',
-		})
-		.tag(tags.list)
-		.class('list')
-
-const item = () =>
-	cmn.sliderItm
+	cmn.ppr
 		.el([
-			cmn.stars.el(),
-			cmn.quote.el().tag(tags.items.quote),
-			cmn.profile.el().tag(tags.items.image),
-			txt('Name Surname')
-				.css({
-					fontWeight: '600',
-				})
-				.tag(tags.items.title),
-			txt('Position, Company name')
-				.css({
-					marginBottom: '1rem',
-				})
-				.tag(tags.items.desc),
-			cmn.brand.el().tag(tags.items.brand),
+			cmn.heading.el('Customer testimonials'),
+			cmn.desc.el('Lorem ipsum dolor sit amet, consectetur adipiscing elit.').css({
+				marginBottom: '3rem',
+			}),
+			list(),
 		])
 		.css({
-			paddingRight: '3rem',
+			textAlign: 'center',
 		})
 
-const buttons = () =>
-	flex([
-		cmn.icnButton.el('chevron-left').class('prev'),
-		cmn.icnButton.el('chevron-right').class('next'),
-	]).css({
-		gap: '1rem',
-	})
+const list = () =>
+	column([
+		flex([
+			cmn.icnButton.el('chevron-left').class('prev').cssTablet({
+				display: 'none',
+			}),
+			flex(_.times(6, () => item(3)))
+				.css({
+					overflowX: 'auto',
+				})
+				.tag(tags.list)
+				.class('list'),
+			cmn.icnButton.el('chevron-right').class('next').cssTablet({
+				display: 'none',
+			}),
+		]).css({
+			alignItems: 'center',
+		}),
+		cmn.dots
+			.el()
+			.css({
+				alignSelf: 'center',
+			})
+			.class('dots')
+			.tag(tags.dots),
+	])
+
+const item = (columns: number) =>
+	cmn.sliderItm
+		.el(
+			[
+				cmn.brand.el().tag(tags.items.logo),
+				cmn.quote.el().tag(tags.items.quote),
+				cmn.profile.el().tag(tags.items.image),
+				txt('Name Surname')
+					.css({
+						fontWeight: '600',
+					})
+					.tag(tags.items.title),
+				txt('Position, Company name').tag(tags.items.desc),
+			],
+			columns
+		)
+		.css({
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			padding: '0 2rem',
+			marginBottom: '2.5rem',
+		})

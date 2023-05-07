@@ -1,4 +1,4 @@
-import _, { times } from 'lodash'
+import _ from 'lodash'
 import { useCallback, useEffect } from 'react'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
@@ -530,22 +530,18 @@ function StarsOptions({ root }: { root?: BoxElement }) {
 }
 
 const genStars = (rating: number, maxRating: number) => [
-	...times(Math.floor(rating), star),
+	..._.times(Math.floor(rating), star),
 	...(_.isInteger(rating) ? [] : [halfStar()]),
-	...times(Math.floor(maxRating - rating), emptyStar),
+	..._.times(Math.floor(maxRating - rating), emptyStar),
 ]
 
 // =============================================================== Dots
-const dots = () =>
+const dots = (count = 6) =>
 	flex([
 		dot().css({
 			backgroundColor: '#222222',
 		}),
-		dot(),
-		dot(),
-		dot(),
-		dot(),
-		dot(),
+		..._.times(count - 1, dot),
 	]).css({
 		gap: '6px',
 		cursor: 'pointer',
@@ -577,24 +573,17 @@ const icnButton = (icon: string) =>
 	})
 
 // =============================================================== Slider Item
-const sliderItm = (children: Element[]) =>
-	box(children)
-		.css({
-			flexShrink: '0',
-			flexBasis: 'calc(100% / 3)',
-			transition: 'transform 500ms ease',
-		})
-		.cssTablet({
-			flexBasis: '50%',
-		})
-		.cssMobile({
-			flexBasis: '100%',
-		})
+const sliderItm = (children: Element[], columns = 3) =>
+	box(children).css({
+		flexShrink: '0',
+		flexBasis: `calc(100% / ${columns})`,
+		transition: 'transform 500ms ease',
+	})
 
 // =============================================================== Outline Button
-const outlineBtn = () =>
+const outlineBtn = (text = 'Button') =>
 	link()
-		.populate([txt('Button').tag(tag.btnLink.link1Txt)])
+		.populate([txt(text).tag(tag.btnLink.link1Txt)])
 		.css({
 			border: '1px solid currentcolor',
 			padding: '0.75rem 1.5rem',
@@ -631,6 +620,14 @@ const thirdGrid = (children: Element[]) =>
 		.cssMobile({
 			gridTemplateColumns: gridCols(1),
 		})
+
+// =============================================================== Vertical Line
+const vr = () =>
+	box([txt('')]).css({
+		width: '1px',
+		margin: '0 1.25rem',
+		backgroundColor: 'currentcolor',
+	})
 
 // ---------------------------------------------------------------
 export const cmn = {
@@ -721,5 +718,8 @@ export const cmn = {
 	},
 	thirdGrid: {
 		el: thirdGrid,
+	},
+	vr: {
+		el: vr,
 	},
 }

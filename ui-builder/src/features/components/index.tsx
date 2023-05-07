@@ -57,6 +57,12 @@ import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FaqCollapsible } from './faq-collapsible'
 import { Faq1 } from './faq/faq-1'
+import { Faq2 } from './faq/faq-2'
+import { Faq3 } from './faq/faq-3'
+import { Faq4 } from './faq/faq-4'
+import { Faq5 } from './faq/faq-5'
+import { Faq6 } from './faq/faq-6'
+import { Faq7 } from './faq/faq-7'
 import { FeatureCardsImage } from './feature-cards-image'
 import { FeatureCenterCards } from './feature-center-cards'
 import { FeatureCenterGrid } from './feature-center-grid'
@@ -177,10 +183,12 @@ import { TeamSquareGrid } from './team-square-grid'
 import { TestimonialSimple } from './testimonial-simple'
 import { TestimonialSlider } from './testimonial-slider'
 import { TestimonialSlider2 } from './testimonial-slider-2'
-import { Testimonials1 } from './testimonials/testimonial-1'
-import { Testimonials2 } from './testimonials/testimonial-2'
-import { Testimonials3 } from './testimonials/testimonial-3'
-import { Testimonials4 } from './testimonials/testimonial-4'
+import { Testimonials1 } from './testimonials/testimonials-1'
+import { Testimonials2 } from './testimonials/testimonials-2'
+import { Testimonials3 } from './testimonials/testimonials-3'
+import { Testimonials4 } from './testimonials/testimonials-4'
+import { Testimonials5 } from './testimonials/testimonials-5'
+import { Testimonials6 } from './testimonials/testimonials-6'
 
 export const COMPONENTS: Components = [
 	{
@@ -283,7 +291,7 @@ export const COMPONENTS: Components = [
 	{
 		title: 'FAQ',
 		icon: <TbQuestionCircle />,
-		items: [Faq1, FaqBasic, FaqBasicStyled, FaqCollapsible],
+		items: [Faq1, Faq2, Faq3, Faq4, Faq5, Faq6, Faq7, FaqBasic, FaqBasicStyled, FaqCollapsible],
 	},
 	{
 		title: 'Divider',
@@ -392,6 +400,8 @@ export const COMPONENTS: Components = [
 			Testimonials2,
 			Testimonials3,
 			Testimonials4,
+			Testimonials5,
+			Testimonials6,
 			TestimonialSimple,
 			TestimonialSlider,
 			TestimonialSlider2,

@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/faq/faq-1.png'
-import { box, flex, icn, txt } from '../../elements/constructor'
+import componentImage from '../../../assets/components/faq/faq-7.png'
+import { box, column, flex, icn, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { setElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
 import { TextElement } from '../../elements/extensions/text'
-import componentScript from '../../scripts/faq-1.js?raw'
+import componentScript from '../../scripts/faq-7.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { TextStyler } from '../../simple/stylers/text-styler'
 import { cmn } from '../common'
@@ -14,9 +14,9 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r2
-export class Faq1 extends Component {
-	name = 'FAQ 1'
+// r5
+export class Faq7 extends Component {
+	name = 'FAQ 7'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -96,12 +96,10 @@ const component = () =>
 	])
 
 const questions = () =>
-	box(_.times(5, question))
-		.css({
-			borderBottom: '1px solid #000',
-		})
+	column(_.times(5, question))
 		.css({
 			marginBottom: '5rem',
+			gap: '1rem',
 		})
 		.tag(tags.list)
 
@@ -114,10 +112,10 @@ const question = () =>
 					fontWeight: '700',
 				})
 				.tag(tags.items.question),
-			icn('chevron-down').size('18px').class('chevron'),
+			icn('plus').size('18px').class('disclosure'),
 		])
 			.css({
-				padding: '1.25rem 0',
+				padding: '1.25rem 1.5rem',
 				alignItems: 'center',
 				justifyContent: 'space-between',
 				cursor: 'pointer',
@@ -129,13 +127,13 @@ const question = () =>
 			.css({
 				display: 'none',
 				maxWidth: '48rem',
-				marginBottom: '1.5rem',
 				lineHeight: '1.5',
+				padding: '0 1.5rem 1.5rem 1.5rem',
 			})
 			.tag(tags.items.answer)
 			.class('answer'),
 	])
 		.css({
-			borderTop: '1px solid #000',
+			border: '1px solid #000',
 		})
 		.class('item')
