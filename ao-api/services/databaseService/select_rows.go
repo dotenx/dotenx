@@ -7,7 +7,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 )
 
-func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, page int, size int) (map[string]interface{}, error) {
+func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tableName string, columns []string, functions []databaseStore.Function, filters databaseStore.ConditionGroup, orderBy string, descending bool, page int, size int) (map[string]interface{}, error) {
 	noContext := context.Background()
 
 	offset := (page - 1) * size
@@ -22,5 +22,5 @@ func (ds *databaseService) SelectRows(tpAccountId string, projectTag string, tab
 		useRowLevelSecurity = !utils.CheckPermission("select", tableName, userGroup)
 	}
 
-	return ds.Store.SelectRows(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, cols, functions, filters, offset, size)
+	return ds.Store.SelectRows(noContext, useRowLevelSecurity, tpAccountId, projectTag, tableName, cols, functions, filters, orderBy, descending, offset, size)
 }

@@ -53,6 +53,7 @@ var selectRows = `
 SELECT %s 
 FROM   %s 
 %s
+%s
 LIMIT $1 OFFSET $2;
 `
 
@@ -66,6 +67,7 @@ var conditionalSelectRows = `
 SELECT %s 
 FROM   %s 
 WHERE  (%s) %s
+%s
 LIMIT %s OFFSET %s;
 `
 
@@ -87,7 +89,7 @@ FROM   %s
 WHERE  (%s) %s
 `
 
-func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, functions []Function, filters ConditionGroup, offset int, limit int) (map[string]interface{}, error) {
+func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, columns []string, functions []Function, filters ConditionGroup, orderBy string, descending bool, offset int, limit int) (map[string]interface{}, error) {
 
 	// Find the account_id and project_name for the project with the given tag to find the database name
 	var res struct {
@@ -221,14 +223,22 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 	fcl := strings.TrimSuffix(strings.Join(functionSelectItems, ","), ",")
 
 	checkSecurityStmt := ""
+	orderByStmt := ""
 	var result, functionResults *sql.Rows
 	var totalRows = 0
+	if orderBy != "" {
+		if descending {
+			orderByStmt = fmt.Sprintf("ORDER BY %s DESC", orderBy)
+		} else {
+			orderByStmt = fmt.Sprintf("ORDER BY %s", orderBy)
+		}
+	}
 	if len(filters.FilterSet) == 0 {
 		if cl != "" {
 			if useRowLevelSecurity && tpAccountId != "" {
 				checkSecurityStmt = fmt.Sprintf("WHERE creator_id = '%s'", tpAccountId)
 			}
-			stmt := fmt.Sprintf(selectRows, cl, tableNameStmt, checkSecurityStmt)
+			stmt := fmt.Sprintf(selectRows, cl, tableNameStmt, checkSecurityStmt, orderByStmt)
 			countStmt := fmt.Sprintf(countSelectRows, tableNameStmt, checkSecurityStmt)
 			log.Println("stmt:", stmt)
 			result, err = db.Connection.Query(stmt, limit, offset)
@@ -257,7 +267,7 @@ func (ds *databaseStore) SelectRows(ctx context.Context, useRowLevelSecurity boo
 				// Todo: add all joined table to checkSecurityStmt
 				checkSecurityStmt = fmt.Sprintf(" AND %s.creator_id = '%s'", tableName, tpAccountId)
 			}
-			stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, checkSecurityStmt, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
+			stmt := fmt.Sprintf(conditionalSelectRows, cl, tableNameStmt, whereCondition, checkSecurityStmt, orderByStmt, "$"+fmt.Sprint(signCnt), "$"+fmt.Sprint(signCnt+1))
 			log.Println("stmt:", stmt)
 			countStmt := fmt.Sprintf(countConditionalSelectRows, tableNameStmt, whereCondition, checkSecurityStmt)
 			err = db.Connection.QueryRow(countStmt, values...).Scan(&totalRows)
