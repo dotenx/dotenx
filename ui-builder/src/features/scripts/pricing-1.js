@@ -9,13 +9,18 @@
 
 	const monthly = root.querySelector('.monthly')
 	const yearly = root.querySelector('.yearly')
+	
+	const activeId = root.querySelector('.monthly').id
+	const inactiveId = root.querySelector('.yearly').id
 
 	monthly.addEventListener('click', () => {
-		const activeStyle = getComputedStyle(yearly)
-		const inactiveStyle = getComputedStyle(monthly)
+		if (monthly.classList.contains('active')) return
+		monthly.classList.add('active')
+		yearly.classList.remove('active')
 
-		monthly.style.backgroundColor = activeStyle.backgroundColor
-		yearly.style.backgroundColor = inactiveStyle.backgroundColor
+		monthly.id = activeId
+		yearly.id = inactiveId
+
 		console.log(activeStyle.backgroundColor, 'monthly')
 		yearlyWrappers.map(wrapper => {
 			wrapper.style.display = 'none'
@@ -26,11 +31,13 @@
 		})
 	})
 	yearly.addEventListener('click', () => {
-		const activeStyle = getComputedStyle(monthly)
-		const inactiveStyle = getComputedStyle(yearly)
-		console.log(activeStyle.backgroundColor, 'yearly')
-		yearly.style.backgroundColor = activeStyle.backgroundColor
-		monthly.style.backgroundColor = inactiveStyle.backgroundColor
+		if (yearly.classList.contains('active')) return
+		yearly.classList.add('active')
+		monthly.classList.remove('active')
+
+		yearly.id = activeId
+		monthly.id = inactiveId
+
 		monthlyWrappers.map(wrapper => {
 			wrapper.style.display = 'none'
 		})

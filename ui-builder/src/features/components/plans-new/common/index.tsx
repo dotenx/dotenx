@@ -299,7 +299,7 @@ const twoBtns = () =>
 				border: '1px solid black',
 				padding: '0.75rem 1.5rem',
 			})
-			.class('monthly')
+			.class(['monthly', 'active'])
 			.tag(tag.twoBtns.link1Txt),
 		btn('Yearly')
 			.tag(tag.twoBtns.link2Txt)
@@ -313,16 +313,18 @@ const twoBtns = () =>
 			.class('yearly'),
 	])
 
-function twoBtnsOptions({ root }: { root?: BoxElement }) {
+function TwoBtnsOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const parent = root ?? component
-	const link1Text = parent.find<ButtonElement>(tag.twoBtns.link1Txt)!
-	const link2Text = parent.find<ButtonElement>(tag.twoBtns.link2Txt)!
+
+	// TODO: use a better name
+	const link1Text = component.find<ButtonElement>(tag.twoBtns.link1Txt)!
+	const link2Text = component.find<ButtonElement>(tag.twoBtns.link2Txt)!
 
 	return (
 		<>
-			<ButtonStyler label="Button 1 " element={link1Text} />
-			<ButtonStyler label="Button 2 " element={link2Text} />
+			<ButtonStyler label="Pricing mode 1 (& Active style)" element={link1Text} />
+			<ButtonStyler label="Pricing mode 2 (& Inactive style)" element={link2Text} />
+			
 		</>
 	)
 }
@@ -582,7 +584,7 @@ export const cmn = {
 	},
 	twoBtns: {
 		el: twoBtns,
-		Options: twoBtnsOptions,
+		Options: TwoBtnsOptions,
 	},
 	icnHeading: {
 		el: icnHeading,

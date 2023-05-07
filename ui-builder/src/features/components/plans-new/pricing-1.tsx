@@ -10,6 +10,7 @@ import { Component, ElementOptions } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { cmn } from './common'
+import { Element } from '../../elements/element'
 
 export class Pricing1 extends Component {
 	name = 'Pricing 1'
