@@ -11,7 +11,7 @@ func (ps *internalService) ListTpUsers(projects []models.Project, accountId stri
 	tpUsers := make([]models.ThirdUser, 0)
 	for _, project := range projects {
 		projectTag := project.Tag
-		tpUsersInterface, err := ps.DatabaseStore.SelectRows(noContext, false, "", projectTag, "user_info", []string{"*"}, []databaseStore.Function{}, databaseStore.ConditionGroup{}, 0, math.MaxInt)
+		tpUsersInterface, err := ps.DatabaseStore.SelectRows(noContext, false, "", projectTag, "user_info", []string{"*"}, []databaseStore.Function{}, databaseStore.ConditionGroup{}, "", false, 0, math.MaxInt)
 		if err != nil {
 			return []models.ThirdUser{}, err
 		}
