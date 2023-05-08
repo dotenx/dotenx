@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import componentImage from '../../../assets/components/pricing-1.png'
+import componentImage from '../../../assets/components/pricing-3.png'
 import { regenElement } from '../../clipboard/copy-paste'
 import { column, grid } from '../../elements/constructor'
 import { setElement } from '../../elements/elements-store'
@@ -13,8 +13,8 @@ import { cmn } from './common'
 import { Element } from '../../elements/element'
 import { Divider } from '../helpers'
 
-export class Pricing1 extends Component {
-	name = 'Pricing 1'
+export class Pricing3 extends Component {
+	name = 'Pricing 3'
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
@@ -39,9 +39,8 @@ function Options() {
 				containerElement={gridDiv}
 				insertElement={() =>
 					regenElement(
-						cmn.plan.el({
+						cmn.planThree.el({
 							plan: 'Basic plan',
-							planDesc: 'or $199 yearly',
 							price: '19',
 							features: 3,
 
@@ -49,7 +48,7 @@ function Options() {
 						})
 					)
 				}
-				renderItemOptions={(item) => <cmn.plan.Options tileDiv={item as BoxElement} />}
+				renderItemOptions={(item) => <cmn.planThree.Options tileDiv={item as BoxElement} />}
 			/>
 		</ComponentWrapper>
 	)
@@ -65,24 +64,21 @@ const component = () =>
 		}),
 		grid(3)
 			.populate([
-				cmn.plan.el({
+				cmn.planThree.el({
 					plan: 'Basic plan',
-					planDesc: 'or $199 yearly',
 					price: '19',
 					features: 3,
 
 					yearlyPrice: '180',
 				}),
-				cmn.plan.el({
+				cmn.planThree.el({
 					plan: 'Business plan',
-					planDesc: 'or $299 yearly',
 					price: '29',
 					features: 4,
 					yearlyPrice: '280',
 				}),
-				cmn.plan.el({
+				cmn.planThree.el({
 					plan: 'Enterprise plan',
-					planDesc: 'or $499 yearly',
 					price: '49',
 					features: 5,
 					yearlyPrice: '480',

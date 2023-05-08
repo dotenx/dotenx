@@ -169,6 +169,11 @@ import { Navbar } from './navbar'
 import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
 import { Pricing1 } from './plans-new/pricing-1'
+import { Pricing2 } from './plans-new/pricing-2'
+import { Pricing3 } from './plans-new/pricing-3'
+import { Pricing4 } from './plans-new/pricing-4'
+import { Pricing5 } from './plans-new/pricing-5'
+import { Pricing6 } from './plans-new/pricing-6'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -390,7 +395,16 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Pricing',
 		icon: <TbReportMoney />,
-		items: [PricingSimple, PricingSimple2, Pricing1],
+		items: [
+			PricingSimple,
+			PricingSimple2,
+			Pricing1,
+			Pricing2,
+			Pricing3,
+			Pricing4,
+			Pricing5,
+			Pricing6,
+		],
 	},
 	{
 		title: 'Testimonial',

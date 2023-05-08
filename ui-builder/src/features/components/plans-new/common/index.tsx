@@ -21,13 +21,17 @@ import { ImageElement } from '../../../elements/extensions/image'
 import { LinkElement } from '../../../elements/extensions/link'
 import { TextElement } from '../../../elements/extensions/text'
 import { useSelectedElement } from '../../../selection/use-selected-component'
+import { BorderColorStyler } from '../../../simple/stylers/border-color-styler'
+import { BoxStyler } from '../../../simple/stylers/box-styler'
 import { ButtonStyler } from '../../../simple/stylers/button-styler'
+import { ColorStyler } from '../../../simple/stylers/color-styler'
 import { IconStyler } from '../../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../../simple/stylers/image-styler'
 import { LinkStyler } from '../../../simple/stylers/link-styler'
 import { TextStyler } from '../../../simple/stylers/text-styler'
 import { Expression } from '../../../states/expression'
-import { DividerCollapsible, repeatObject } from '../../helpers'
+import { BordersEditor } from '../../../style/border-editor'
+import { Divider, DividerCollapsible, repeatObject } from '../../helpers'
 import { DndTabs } from '../../helpers/dnd-tabs'
 import { OptionsWrapper } from '../../helpers/options-wrapper'
 
@@ -43,9 +47,11 @@ const tag = {
 	},
 	plan: {
 		title: 'title',
+		pricingBox: 'pricingBox',
 		featureText: 'featureText',
 		featureIcon: 'featureIcon',
-		container: 'container',
+		featuresContainer: 'featuresContainer',
+		planContainer: 'planContainer',
 		monthlyPlanDesc: 'monthlyPlanDesc',
 		monthlyPrice: 'monthlyPrice',
 		monthlyPlanUnit: 'monthlyPlanUnit',
@@ -94,6 +100,7 @@ const tag = {
 		title: 'title',
 		desc: 'desc',
 	},
+	logo: 'logo',
 	brands: {
 		lst: 'lst',
 		img: 'img',
@@ -238,54 +245,6 @@ function DescOptions({ root }: { root?: BoxElement }) {
 	return <TextStyler label="Description" element={description} />
 }
 
-// =============================================================== Icon List
-const icnLst = () =>
-	flex(duplicate(icnLstItm, 3))
-		.css({
-			paddingTop: '0.5rem',
-			paddingBottom: '0.5rem',
-			gap: '1rem',
-			flexDirection: 'column',
-		})
-		.tag(tag.icnLst.lst)
-
-const icnLstItm = () =>
-	flex([
-		icn('cube').size('24px').tag(tag.icnLst.icn),
-		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
-			.css({
-				fontSize: '1rem',
-				lineHeight: '1.5',
-			})
-			.tag(tag.icnLst.txt),
-	]).css({
-		gap: '1rem',
-		alignItems: 'center',
-	})
-
-function IcnLstOptions() {
-	const component = useSelectedElement<BoxElement>()!
-	const iconList = component.find<BoxElement>(tag.icnLst.lst)!
-	return (
-		<DndTabs
-			containerElement={iconList}
-			insertElement={icnLstItm}
-			renderItemOptions={(item) => <IcnLstItmOptions item={item as BoxElement} />}
-		/>
-	)
-}
-
-function IcnLstItmOptions({ item }: { item: BoxElement }) {
-	const text = item.find<TextElement>(tag.icnLst.txt)!
-	const icon = item.find<IconElement>(tag.icnLst.icn)!
-
-	return (
-		<OptionsWrapper>
-			<TextStyler label="Description" element={text} />
-			<IconStyler label="Icon" element={icon} />
-		</OptionsWrapper>
-	)
-}
 // =============================================================== two Btns
 const twoBtns = () =>
 	flex([
@@ -324,7 +283,6 @@ function TwoBtnsOptions() {
 		<>
 			<ButtonStyler label="Pricing mode 1 (& Active style)" element={link1Text} />
 			<ButtonStyler label="Pricing mode 2 (& Inactive style)" element={link2Text} />
-			
 		</>
 	)
 }
@@ -395,65 +353,75 @@ const plan = ({
 	planDesc: string
 	features: number
 }) => {
-	return column([
-		box([
-			txt(plan).css({ fontSize: '1.25rem', fontWeight: '600' }).tag(tag.plan.title),
-			txt('Lorem ipsum dolor sit amet').css({ fontSize: '1rem' }).tag(tag.plan.desc),
-		]),
+	return box([
 		box([
 			box([
-				box([
-					txt(`$${price}`).css({ fontSize: '3rem' }).tag(tag.plan.monthlyPrice),
-					txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
-				]).css({
-					fontWeight: '600',
-					display: 'flex',
-					alignItems: 'center',
-				}),
-				txt(planDesc).css({ fontSize: '1rem' }).tag(tag.plan.monthlyPlanDesc),
-			]).class('monthly_wrapper'),
+				txt(plan).css({ fontSize: '1.25rem', fontWeight: '600' }).tag(tag.plan.title),
+				txt('Lorem ipsum dolor sit amet').css({ fontSize: '1rem' }).tag(tag.plan.desc),
+			]).css({ marginBottom: '1rem' }),
 			box([
 				box([
-					txt(`$${yearlyPrice}`).css({ fontSize: '3rem' }).tag(tag.plan.yearlyPrice),
-					txt('/yr').css({ fontSize: '2rem' }).tag(tag.plan.yearlyPlanUnit),
-				]).css({
-					fontWeight: '600',
-					display: 'flex',
-					alignItems: 'center',
-				}),
-				txt('Save 20%').css({ fontSize: '1rem' }).tag(tag.plan.yearlyPlanDesc),
+					box([
+						txt(`$${price}`).css({ fontSize: '3rem' }).tag(tag.plan.monthlyPrice),
+						txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+					]).css({
+						fontWeight: '600',
+						display: 'flex',
+						alignItems: 'center',
+					}),
+					txt(planDesc).css({ fontSize: '1rem' }).tag(tag.plan.monthlyPlanDesc),
+				]).class('monthly_wrapper'),
+				box([
+					box([
+						txt(`$${yearlyPrice}`).css({ fontSize: '3rem' }).tag(tag.plan.yearlyPrice),
+						txt('/yr').css({ fontSize: '2rem' }).tag(tag.plan.yearlyPlanUnit),
+					]).css({
+						fontWeight: '600',
+						display: 'flex',
+						alignItems: 'center',
+					}),
+					txt('Save 20%').css({ fontSize: '1rem' }).tag(tag.plan.yearlyPlanDesc),
+				])
+					.class('yearly_wrapper')
+					.css({
+						display: 'none',
+					}),
+				link()
+					.populate([txt('Get started').tag(tag.plan.btnTxt)])
+					.css({
+						display: 'inline-block',
+						marginTop: '1rem',
+						marginBottom: '1rem',
+						textAlign: 'center',
+						background: 'black',
+						width: '100%',
+						color: 'white',
+						border: '1px solid black',
+						padding: '0.75rem 1.5rem',
+					})
+					.tag(tag.plan.btnLink),
 			])
-				.class('yearly_wrapper')
 				.css({
-					display: 'none',
-				}),
-			link()
-				.populate([txt('Get started').tag(tag.plan.btnTxt)])
-				.css({
-					display: 'inline-block',
-					marginTop: '1rem',
-					marginBottom: '1rem',
-					textAlign: 'center',
-					background: 'black',
-					width: '100%',
-					color: 'white',
-					border: '1px solid black',
-					padding: '0.75rem 1.5rem',
+					paddingTop: '1rem',
+					paddingBottom: '1rem',
+					borderTop: '1px solid black',
+					borderBottom: '1px solid black',
 				})
-				.tag(tag.plan.btnLink),
-		]).css({
-			paddingTop: '1rem',
-			paddingBottom: '1rem',
-			borderTop: '1px solid black',
-			borderBottom: '1px solid black',
-		}),
+				.tag(tag.plan.pricingBox),
 
-		box([...repeatObject(createFeatureLine(), features)]).tag(tag.plan.container),
+			box([...repeatObject(createFeatureLine(), features)]).tag(tag.plan.featuresContainer),
+		])
+			.css({
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
 	]).css({
 		height: '100%',
-		rowGap: '1rem',
-		border: '1px solid black',
-		padding: '2rem 1.5rem',
 	})
 }
 
@@ -468,12 +436,17 @@ function planOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement
 	const yearlyPlanPriceDesc = tileDiv.find(tag.plan.yearlyPlanDesc) as TextElement
 	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
 	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
-	const container = tileDiv.find(tag.plan.container) as BoxElement
-
+	const pricingBox = tileDiv.find(tag.plan.pricingBox) as BoxElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
 	return (
 		<div className="space-y-3">
 			<TextStyler label="Title" element={planTitle} />
 			<TextStyler label="Subtitle" element={planDesc} />
+			<DividerCollapsible title="Borders" closed>
+				<BorderColorStyler label="Plan border" element={planContainer} />
+				<BorderColorStyler label="Pricing border" element={pricingBox} />
+			</DividerCollapsible>
 			<DividerCollapsible title="monthly" closed>
 				<TextStyler label="" element={monthlyPlanPrice} />
 				<TextStyler label="" element={monthlyPlanUnit} />
@@ -484,10 +457,11 @@ function planOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement
 				<TextStyler label="" element={yearlyPlanUnit} />
 				<TextStyler label="" element={yearlyPlanPriceDesc} />
 			</DividerCollapsible>
-			<LinkStyler label="Button link" element={btnLink} />
-			<TextStyler label="Button text" element={btnTxt} />
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
 			<DndTabs
-				containerElement={container}
+				containerElement={featuresContainer}
 				insertElement={() => createFeatureLine()}
 				renderItemOptions={(item: any) => {
 					const featureText = item.find(tag.plan.featureText) as TextElement
@@ -504,6 +478,638 @@ function planOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement
 	)
 }
 
+// =============================================================== Plan two
+const planTwo = ({
+	plan,
+	price,
+	yearlyPrice,
+	planDesc,
+	features,
+}: {
+	plan: string
+	price: string
+	yearlyPrice: string
+	planDesc: string
+	features: number
+}) => {
+	const logo = img('https://files.dotenx.com/assets/logo1-fwe14we.png')
+		.tag(tag.logo)
+		.alt('Logo')
+		.css({
+			maxWidth: '100px',
+			marginLeft: 'auto',
+		})
+	return box([
+		box([
+			box([
+				logo,
+				box([
+					box([
+						txt(plan)
+							.css({ fontSize: '1.25rem', fontWeight: '600' })
+							.tag(tag.plan.title),
+						box([
+							box([
+								txt(`$${price}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.monthlyPrice),
+								txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+							}),
+							txt(planDesc).css({ fontSize: '1rem' }).tag(tag.plan.monthlyPlanDesc),
+						]).class('monthly_wrapper'),
+						box([
+							box([
+								txt(`$${yearlyPrice}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.yearlyPrice),
+								txt('/yr').css({ fontSize: '2rem' }).tag(tag.plan.yearlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+							}),
+							txt('Save 20%').css({ fontSize: '1rem' }).tag(tag.plan.yearlyPlanDesc),
+						])
+							.class('yearly_wrapper')
+							.css({
+								display: 'none',
+							}),
+					])
+						.css({
+							paddingTop: '1rem',
+							paddingBottom: '1rem',
+							borderBottom: '1px solid black',
+						})
+						.tag(tag.plan.pricingBox),
+
+					box([...repeatObject(createFeatureLine(), features)])
+						.tag(tag.plan.featuresContainer)
+						.css({ marginTop: '1rem' }),
+				]).css({ height: '100%' }),
+			]),
+			link()
+				.populate([txt('Get started').tag(tag.plan.btnTxt)])
+				.css({
+					display: 'inline-block',
+					marginTop: '1rem',
+					marginBottom: '1rem',
+					textAlign: 'center',
+					background: 'black',
+					width: '100%',
+					color: 'white',
+					border: '1px solid black',
+					padding: '0.75rem 1.5rem',
+				})
+				.tag(tag.plan.btnLink),
+		])
+			.css({
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'space-between',
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
+	]).css({
+		height: '100%',
+	})
+}
+function planTwoOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement }) {
+	const planTitle = tileDiv.find(tag.plan.title) as TextElement
+	const monthlyPlanPrice = tileDiv.find(tag.plan.monthlyPrice) as TextElement
+	const monthlyPlanUnit = tileDiv.find(tag.plan.monthlyPlanUnit) as TextElement
+	const monthlyPlanPriceDesc = tileDiv.find(tag.plan.monthlyPlanDesc) as TextElement
+	const yearlyPlanPrice = tileDiv.find(tag.plan.yearlyPrice) as TextElement
+	const yearlyPlanUnit = tileDiv.find(tag.plan.yearlyPlanUnit) as TextElement
+	const yearlyPlanPriceDesc = tileDiv.find(tag.plan.yearlyPlanDesc) as TextElement
+	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
+	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
+	const pricingBox = tileDiv.find(tag.plan.pricingBox) as BoxElement
+	const logo = tileDiv.find(tag.logo) as ImageElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
+	return (
+		<div className="space-y-3">
+			<ImageStyler element={logo} />
+			<TextStyler label="Title" element={planTitle} />
+			<DividerCollapsible title="Borders" closed>
+				<BorderColorStyler label="Plan border" element={planContainer} />
+				<BorderColorStyler label="Pricing border" element={pricingBox} />
+			</DividerCollapsible>
+			<DividerCollapsible title="monthly" closed>
+				<TextStyler label="" element={monthlyPlanPrice} />
+				<TextStyler label="" element={monthlyPlanUnit} />
+				<TextStyler label="" element={monthlyPlanPriceDesc} />
+			</DividerCollapsible>
+			<DividerCollapsible title="yearly" closed>
+				<TextStyler label="" element={yearlyPlanPrice} />
+				<TextStyler label="" element={yearlyPlanUnit} />
+				<TextStyler label="" element={yearlyPlanPriceDesc} />
+			</DividerCollapsible>
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
+			<DndTabs
+				containerElement={featuresContainer}
+				insertElement={() => createFeatureLine()}
+				renderItemOptions={(item: any) => {
+					const featureText = item.find(tag.plan.featureText) as TextElement
+					const featureIcon = item.find(tag.plan.featureIcon) as IconElement
+					return (
+						<div className="space-y-3">
+							<TextStyler label="Feature text" element={featureText} />
+							<IconStyler label="Feature icon" element={featureIcon} />
+						</div>
+					)
+				}}
+			/>
+		</div>
+	)
+}
+// =============================================================== Plan three
+const planThree = ({
+	plan,
+	price,
+	yearlyPrice,
+	features,
+}: {
+	plan: string
+	price: string
+	yearlyPrice: string
+	features: number
+}) => {
+	return box([
+		box([
+			box([
+				box([
+					box([
+						txt(plan)
+							.css({ fontSize: '1.25rem', fontWeight: '600' })
+							.tag(tag.plan.title),
+						box([
+							box([
+								txt(`$${price}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.monthlyPrice),
+								txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}),
+						]).class('monthly_wrapper'),
+						box([
+							box([
+								txt(`$${yearlyPrice}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.yearlyPrice),
+								txt('/yr').css({ fontSize: '2rem' }).tag(tag.plan.yearlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+							}),
+						])
+							.class('yearly_wrapper')
+							.css({
+								display: 'none',
+							}),
+					]).css({
+						textAlign: 'center',
+						paddingTop: '1rem',
+						paddingBottom: '1rem',
+					}),
+					box([...repeatObject(createFeatureLine(), features)])
+						.tag(tag.plan.featuresContainer)
+						.css({ marginTop: '1rem' }),
+				]).css({ height: '100%' }),
+			]),
+			link()
+				.populate([txt('Get started').tag(tag.plan.btnTxt)])
+				.css({
+					display: 'inline-block',
+					marginTop: '1rem',
+					marginBottom: '1rem',
+					textAlign: 'center',
+					background: 'black',
+					width: '100%',
+					color: 'white',
+					border: '1px solid black',
+					padding: '0.75rem 1.5rem',
+				})
+				.tag(tag.plan.btnLink),
+		])
+			.css({
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'space-between',
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
+	]).css({
+		height: '100%',
+	})
+}
+function planThreeOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement }) {
+	const planTitle = tileDiv.find(tag.plan.title) as TextElement
+	const monthlyPlanPrice = tileDiv.find(tag.plan.monthlyPrice) as TextElement
+	const monthlyPlanUnit = tileDiv.find(tag.plan.monthlyPlanUnit) as TextElement
+	const yearlyPlanPrice = tileDiv.find(tag.plan.yearlyPrice) as TextElement
+	const yearlyPlanUnit = tileDiv.find(tag.plan.yearlyPlanUnit) as TextElement
+	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
+	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
+	return (
+		<div className="space-y-3">
+			<TextStyler label="Title" element={planTitle} />
+			<BorderColorStyler label="Plan border" element={planContainer} />
+			<DividerCollapsible title="monthly" closed>
+				<TextStyler label="" element={monthlyPlanPrice} />
+				<TextStyler label="" element={monthlyPlanUnit} />
+			</DividerCollapsible>
+			<DividerCollapsible title="yearly" closed>
+				<TextStyler label="" element={yearlyPlanPrice} />
+				<TextStyler label="" element={yearlyPlanUnit} />
+			</DividerCollapsible>
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
+			<DndTabs
+				containerElement={featuresContainer}
+				insertElement={() => createFeatureLine()}
+				renderItemOptions={(item: any) => {
+					const featureText = item.find(tag.plan.featureText) as TextElement
+					const featureIcon = item.find(tag.plan.featureIcon) as IconElement
+					return (
+						<div className="space-y-3">
+							<TextStyler label="Feature text" element={featureText} />
+							<IconStyler label="Feature icon" element={featureIcon} />
+						</div>
+					)
+				}}
+			/>
+		</div>
+	)
+}
+// =============================================================== Plan Four
+const planFour = ({
+	plan,
+	price,
+	planDesc,
+	features,
+}: {
+	plan: string
+	price: string
+	planDesc: string
+	features: number
+}) => {
+	return box([
+		box([
+			box([
+				txt(plan).css({ fontSize: '1.25rem', fontWeight: '600' }).tag(tag.plan.title),
+				txt('Lorem ipsum dolor sit amet').css({ fontSize: '1rem' }).tag(tag.plan.desc),
+			]).css({ marginBottom: '1rem' }),
+			box([
+				box([
+					box([
+						txt(`$${price}`).css({ fontSize: '3rem' }).tag(tag.plan.monthlyPrice),
+						txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+					]).css({
+						fontWeight: '600',
+						display: 'flex',
+						alignItems: 'center',
+					}),
+					txt(planDesc).css({ fontSize: '1rem' }).tag(tag.plan.monthlyPlanDesc),
+				]),
+				link()
+					.populate([txt('Get started').tag(tag.plan.btnTxt)])
+					.css({
+						display: 'inline-block',
+						marginTop: '1rem',
+						marginBottom: '1rem',
+						textAlign: 'center',
+						background: 'black',
+						width: '100%',
+						color: 'white',
+						border: '1px solid black',
+						padding: '0.75rem 1.5rem',
+					})
+					.tag(tag.plan.btnLink),
+			])
+				.css({
+					paddingTop: '1rem',
+					paddingBottom: '1rem',
+					borderTop: '1px solid black',
+					borderBottom: '1px solid black',
+				})
+				.tag(tag.plan.pricingBox),
+
+			box([...repeatObject(createFeatureLine(), features)]).tag(tag.plan.featuresContainer),
+		])
+			.css({
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
+	]).css({
+		height: '100%',
+	})
+}
+
+function planFourOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement }) {
+	const planTitle = tileDiv.find(tag.plan.title) as TextElement
+	const planDesc = tileDiv.find(tag.plan.desc) as TextElement
+	const monthlyPlanPrice = tileDiv.find(tag.plan.monthlyPrice) as TextElement
+	const monthlyPlanUnit = tileDiv.find(tag.plan.monthlyPlanUnit) as TextElement
+	const monthlyPlanPriceDesc = tileDiv.find(tag.plan.monthlyPlanDesc) as TextElement
+	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
+	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
+	const pricingBox = tileDiv.find(tag.plan.pricingBox) as BoxElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
+	return (
+		<div className="space-y-3">
+			<TextStyler label="Title" element={planTitle} />
+			<TextStyler label="Subtitle" element={planDesc} />
+			<DividerCollapsible title="Borders" closed>
+				<BorderColorStyler label="Plan border" element={planContainer} />
+				<BorderColorStyler label="Pricing border" element={pricingBox} />
+			</DividerCollapsible>
+			<DividerCollapsible title="Pricing" closed>
+				<TextStyler label="" element={monthlyPlanPrice} />
+				<TextStyler label="" element={monthlyPlanUnit} />
+				<TextStyler label="" element={monthlyPlanPriceDesc} />
+			</DividerCollapsible>
+
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
+			<DndTabs
+				containerElement={featuresContainer}
+				insertElement={() => createFeatureLine()}
+				renderItemOptions={(item: any) => {
+					const featureText = item.find(tag.plan.featureText) as TextElement
+					const featureIcon = item.find(tag.plan.featureIcon) as IconElement
+					return (
+						<div className="space-y-3">
+							<TextStyler label="Feature text" element={featureText} />
+							<IconStyler label="Feature icon" element={featureIcon} />
+						</div>
+					)
+				}}
+			/>
+		</div>
+	)
+}
+// =============================================================== Plan five
+const planFive = ({
+	plan,
+	price,
+	planDesc,
+	features,
+}: {
+	plan: string
+	price: string
+	planDesc: string
+	features: number
+}) => {
+	const logo = img('https://files.dotenx.com/assets/logo1-fwe14we.png')
+		.tag(tag.logo)
+		.alt('Logo')
+		.css({
+			maxWidth: '100px',
+			marginLeft: 'auto',
+		})
+	return box([
+		box([
+			box([
+				logo,
+				box([
+					box([
+						txt(plan)
+							.css({ fontSize: '1.25rem', fontWeight: '600' })
+							.tag(tag.plan.title),
+						box([
+							box([
+								txt(`$${price}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.monthlyPrice),
+								txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+							}),
+							txt(planDesc).css({ fontSize: '1rem' }).tag(tag.plan.monthlyPlanDesc),
+						]),
+					])
+						.css({
+							paddingTop: '1rem',
+							paddingBottom: '1rem',
+							borderBottom: '1px solid black',
+						})
+						.tag(tag.plan.pricingBox),
+
+					box([...repeatObject(createFeatureLine(), features)])
+						.tag(tag.plan.featuresContainer)
+						.css({ marginTop: '1rem' }),
+				]).css({ height: '100%' }),
+			]),
+			link()
+				.populate([txt('Get started').tag(tag.plan.btnTxt)])
+				.css({
+					display: 'inline-block',
+					marginTop: '1rem',
+					marginBottom: '1rem',
+					textAlign: 'center',
+					background: 'black',
+					width: '100%',
+					color: 'white',
+					border: '1px solid black',
+					padding: '0.75rem 1.5rem',
+				})
+				.tag(tag.plan.btnLink),
+		])
+			.css({
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'space-between',
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
+	]).css({
+		height: '100%',
+	})
+}
+function planFiveOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement }) {
+	const planTitle = tileDiv.find(tag.plan.title) as TextElement
+	const monthlyPlanPrice = tileDiv.find(tag.plan.monthlyPrice) as TextElement
+	const monthlyPlanUnit = tileDiv.find(tag.plan.monthlyPlanUnit) as TextElement
+	const monthlyPlanPriceDesc = tileDiv.find(tag.plan.monthlyPlanDesc) as TextElement
+	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
+	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
+	const pricingBox = tileDiv.find(tag.plan.pricingBox) as BoxElement
+	const logo = tileDiv.find(tag.logo) as ImageElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
+	return (
+		<div className="space-y-3">
+			<ImageStyler element={logo} />
+			<TextStyler label="Title" element={planTitle} />
+			<DividerCollapsible title="Borders" closed>
+				<BorderColorStyler label="Plan border" element={planContainer} />
+				<BorderColorStyler label="Pricing border" element={pricingBox} />
+			</DividerCollapsible>
+			<DividerCollapsible title="Pricing" closed>
+				<TextStyler label="" element={monthlyPlanPrice} />
+				<TextStyler label="" element={monthlyPlanUnit} />
+				<TextStyler label="" element={monthlyPlanPriceDesc} />
+			</DividerCollapsible>
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
+			<DndTabs
+				containerElement={featuresContainer}
+				insertElement={() => createFeatureLine()}
+				renderItemOptions={(item: any) => {
+					const featureText = item.find(tag.plan.featureText) as TextElement
+					const featureIcon = item.find(tag.plan.featureIcon) as IconElement
+					return (
+						<div className="space-y-3">
+							<TextStyler label="Feature text" element={featureText} />
+							<IconStyler label="Feature icon" element={featureIcon} />
+						</div>
+					)
+				}}
+			/>
+		</div>
+	)
+}
+
+// =============================================================== Plan six
+const planSix = ({ plan, price, features }: { plan: string; price: string; features: number }) => {
+	return box([
+		box([
+			box([
+				box([
+					box([
+						txt(plan)
+							.css({ fontSize: '1.25rem', fontWeight: '600' })
+							.tag(tag.plan.title),
+						box([
+							box([
+								txt(`$${price}`)
+									.css({ fontSize: '3rem' })
+									.tag(tag.plan.monthlyPrice),
+								txt('/mo').css({ fontSize: '2rem' }).tag(tag.plan.monthlyPlanUnit),
+							]).css({
+								fontWeight: '600',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}),
+						]),
+					]).css({
+						textAlign: 'center',
+						paddingTop: '1rem',
+						paddingBottom: '1rem',
+					}),
+					box([...repeatObject(createFeatureLine(), features)])
+						.tag(tag.plan.featuresContainer)
+						.css({ marginTop: '1rem' }),
+				]).css({ height: '100%' }),
+			]),
+			link()
+				.populate([txt('Get started').tag(tag.plan.btnTxt)])
+				.css({
+					display: 'inline-block',
+					marginTop: '1rem',
+					marginBottom: '1rem',
+					textAlign: 'center',
+					background: 'black',
+					width: '100%',
+					color: 'white',
+					border: '1px solid black',
+					padding: '0.75rem 1.5rem',
+				})
+				.tag(tag.plan.btnLink),
+		])
+			.css({
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'space-between',
+				height: '100%',
+				rowGap: '1rem',
+				border: '1px solid black',
+				padding: '2rem 1.5rem',
+			})
+			.tag(tag.plan.planContainer)
+			.cssTablet({ width: '80%', margin: 'auto' })
+			.cssMobile({ width: '100%' }),
+	]).css({
+		height: '100%',
+	})
+}
+function planSixOptions({ root, tileDiv }: { root?: BoxElement; tileDiv: BoxElement }) {
+	const planTitle = tileDiv.find(tag.plan.title) as TextElement
+	const monthlyPlanPrice = tileDiv.find(tag.plan.monthlyPrice) as TextElement
+	const monthlyPlanUnit = tileDiv.find(tag.plan.monthlyPlanUnit) as TextElement
+	const btnLink = tileDiv.find(tag.plan.btnLink) as LinkElement
+	const btnTxt = tileDiv.find(tag.plan.btnTxt) as TextElement
+	const planContainer = tileDiv.find(tag.plan.planContainer) as BoxElement
+	const featuresContainer = tileDiv.find(tag.plan.featuresContainer) as BoxElement
+	return (
+		<div className="space-y-3">
+			<TextStyler label="Title" element={planTitle} />
+			<BorderColorStyler label="Plan border" element={planContainer} />
+			<DividerCollapsible title="Pricing" closed>
+				<TextStyler label="" element={monthlyPlanPrice} />
+				<TextStyler label="" element={monthlyPlanUnit} />
+			</DividerCollapsible>
+			<LinkStyler label="CTA link" element={btnLink} />
+			<TextStyler label="CTA text" element={btnTxt} />
+			<Divider title="Plan features" />
+			<DndTabs
+				containerElement={featuresContainer}
+				insertElement={() => createFeatureLine()}
+				renderItemOptions={(item: any) => {
+					const featureText = item.find(tag.plan.featureText) as TextElement
+					const featureIcon = item.find(tag.plan.featureIcon) as IconElement
+					return (
+						<div className="space-y-3">
+							<TextStyler label="Feature text" element={featureText} />
+							<IconStyler label="Feature icon" element={featureIcon} />
+						</div>
+					)
+				}}
+			/>
+		</div>
+	)
+}
 // =============================================================== Icon Heading
 const icnHeading = () =>
 	icn('cube')
@@ -566,6 +1172,26 @@ export const cmn = {
 		el: plan,
 		Options: planOptions,
 	},
+	planTwo: {
+		el: planTwo,
+		Options: planTwoOptions,
+	},
+	planThree: {
+		el: planThree,
+		Options: planThreeOptions,
+	},
+	planFour: {
+		el: planFour,
+		Options: planFourOptions,
+	},
+	planFive: {
+		el: planFive,
+		Options: planFiveOptions,
+	},
+	planSix: {
+		el: planSix,
+		Options: planSixOptions,
+	},
 	tagline: {
 		el: tagline,
 		Options: TaglineOptions,
@@ -577,10 +1203,6 @@ export const cmn = {
 	desc: {
 		el: desc,
 		Options: DescOptions,
-	},
-	icnLst: {
-		el: icnLst,
-		Options: IcnLstOptions,
 	},
 	twoBtns: {
 		el: twoBtns,
