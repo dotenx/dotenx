@@ -176,6 +176,7 @@ import { Navbar5 } from './navbars/navbar-5'
 import { Navbar6 } from './navbars/navbar-6'
 import { Navbar7 } from './navbars/navbar-7'
 import { Navbar8 } from './navbars/navbar-8'
+import { Navbar9 } from './navbars/navbar-9'
 import { NavbarWithDropDownCta1 } from './navbars/navbar-with-dropdown-cta'
 import { NavbarWithMultiColumnDropDownCta1 } from './navbars/navbar-with-multicolumn-dropdown-cta'
 import { PricingSimple } from './pricing-simple'
@@ -224,6 +225,7 @@ export const COMPONENTS: Components = [
 			Navbar6,
 			Navbar7,
 			Navbar8,
+			Navbar9,
 			Navbar11,
 			Navbar12,
 			Navbar,
