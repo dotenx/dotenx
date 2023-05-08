@@ -2,12 +2,27 @@ import { box, column, flex, icn, img, link, txt } from '../../../elements/constr
 import { Element } from '../../../elements/element'
 
 const container = (children: Element[]) =>
-	box(children).css({
-		paddingLeft: '5%',
-		paddingRight: '5%',
-		minHeight: '4.5rem',
-		borderBottom: '1px solid #000',
-	})
+	box([
+		box(children).css({
+			paddingLeft: '5%',
+			paddingRight: '5%',
+			minHeight: '4.5rem',
+			borderBottom: '1px solid #000',
+			display: 'flex',
+			alignItems: 'center',
+			position: 'relative',
+		}),
+	])
+		.customCssTablet('> div:hover .menu', {
+			visibility: 'visible',
+			maxHeight: '100vh',
+		})
+		.customCssTablet('> div:hover .menu-btn-bars', {
+			display: 'none',
+		})
+		.customCssTablet('> div:hover .menu-btn-times', {
+			display: 'block',
+		})
 
 const logo = () =>
 	link()
@@ -87,7 +102,7 @@ const linkMenu = (text: string, children: Element[], transitionTop = true) =>
 					txt(text),
 					icn('chevron-down').size('14px').class('chevron-down').css({
 						rotate: '0deg',
-						transition: 'all 150ms ease-out',
+						transition: 'all 150ms ease-in-out',
 					}),
 				])
 					.css({
@@ -130,7 +145,7 @@ const linkSubmenu = (children: Element[]) =>
 			backgroundColor: 'white',
 			width: 'max-content',
 			opacity: '0',
-			transition: 'all 150ms ease-out, max-height 300ms ease-out',
+			transition: 'all 150ms ease-in-out, max-height 300ms ease-in-out',
 		})
 		.cssTablet({
 			position: 'static',
@@ -182,6 +197,45 @@ const pageGroup = (title: string, items: string[]) =>
 		gap: '1rem',
 	})
 
+const menu = (children: Element[]) =>
+	flex(children)
+		.css({
+			gap: '1.5rem',
+			alignItems: 'center',
+		})
+		.cssTablet({
+			visibility: 'hidden',
+			position: 'absolute',
+			left: '0',
+			right: '0',
+			top: '100%',
+			height: 'calc(100vh - 5rem)',
+			maxHeight: '0',
+			backgroundColor: 'white',
+			flexDirection: 'column',
+			alignItems: 'stretch',
+			zIndex: '1',
+			transition: 'all 0.3s ease-in-out',
+			borderBottom: '1px solid #000',
+			overflow: 'hidden',
+		})
+		.class('menu')
+
+const menuBtn = () =>
+	box([
+		icn('bars').size('20px').class('menu-btn-bars'),
+		icn('times').size('20px').class('menu-btn-times').css({
+			display: 'none',
+		}),
+	])
+		.css({
+			display: 'none',
+			padding: '0.5rem',
+		})
+		.cssTablet({
+			display: 'block',
+		})
+
 export const cmn = {
 	container: {
 		el: container,
@@ -218,5 +272,11 @@ export const cmn = {
 	},
 	pageGroup: {
 		el: pageGroup,
+	},
+	menu: {
+		el: menu,
+	},
+	menuBtn: {
+		el: menuBtn,
 	},
 }

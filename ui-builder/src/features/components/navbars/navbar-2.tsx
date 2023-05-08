@@ -1,4 +1,5 @@
 import componentImage from '../../../assets/components/faq/faq-1.png'
+import { box, flex } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -15,18 +16,40 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
+	cmn.container.el([
+		box([
 			cmn.logo.el(),
-			cmn.linkList.el().css({
-				justifySelf: 'center',
-			}),
-			cmn.fillBtn.el().css({
-				justifySelf: 'end',
-			}),
+			menu(),
+			cmn.fillBtn
+				.el()
+				.css({
+					justifySelf: 'end',
+				})
+				.cssTablet({
+					display: 'none',
+				}),
+			flex([cmn.fillBtn.el(), cmn.menuBtn.el()])
+				.css({
+					gap: '1.5rem',
+					display: 'none',
+				})
+				.cssTablet({
+					display: 'flex',
+				}),
 		])
-		.css({
-			display: 'grid',
-			gridTemplateColumns: '1fr 3fr 1fr',
-			alignItems: 'center',
-		})
+			.css({
+				display: 'grid',
+				gridTemplateColumns: '1fr 3fr 1fr',
+				alignItems: 'center',
+				width: '100%',
+			})
+			.cssTablet({
+				display: 'flex',
+				justifyContent: 'space-between',
+			}),
+	])
+
+const menu = () =>
+	cmn.menu.el([cmn.linkList.el()]).css({
+		justifySelf: 'center',
+	})
