@@ -168,6 +168,7 @@ import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
 import { Navbar1 } from './navbars/navbar-1'
+import { Navbar10 } from './navbars/navbar-10'
 import { Navbar11 } from './navbars/navbar-11'
 import { Navbar12 } from './navbars/navbar-12'
 import { Navbar2 } from './navbars/navbar-2'
@@ -226,6 +227,7 @@ export const COMPONENTS: Components = [
 			Navbar7,
 			Navbar8,
 			Navbar9,
+			Navbar10,
 			Navbar11,
 			Navbar12,
 			Navbar,
