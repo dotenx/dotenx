@@ -58,7 +58,7 @@ func (dc *DatabaseController) SelectRows() gin.HandlerFunc {
 			dto.Columns = []string{"*"}
 		}
 		tpAccountId, _ := utils.GetThirdPartyAccountId(c)
-		rows, err := dc.Service.SelectRows(tpAccountId, projectTag, tableName, dto.Columns, dto.Functions, dto.Filters, page, size)
+		rows, err := dc.Service.SelectRows(tpAccountId, projectTag, tableName, dto.Columns, dto.Functions, dto.Filters, dto.SortBy.Column, dto.SortBy.Descending, page, size)
 		if err != nil {
 			log.Println("err:", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -75,4 +75,10 @@ type selectDto struct {
 	Columns   []string                     `json:"columns"`
 	Functions []databaseStore.Function     `json:"functions"`
 	Filters   databaseStore.ConditionGroup `json:"filters,omitempty"`
+	SortBy    sortDto                      `json:"sort_by,omitempty"`
+}
+
+type sortDto struct {
+	Column     string `json:"column"`
+	Descending bool   `json:"descending"`
 }
