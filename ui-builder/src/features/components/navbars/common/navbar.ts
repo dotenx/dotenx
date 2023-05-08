@@ -19,9 +19,16 @@ const logo = () =>
 		})
 
 const buttons = () =>
-	flex([outlineBtn(), fillBtn()]).css({
-		gap: '1rem',
-	})
+	flex([outlineBtn(), fillBtn()])
+		.css({
+			gap: '1rem',
+		})
+		.cssTablet({
+			flexDirection: 'column',
+		})
+		.cssTablet({
+			margin: '0 1rem',
+		})
 
 const outlineBtn = () =>
 	link()
@@ -30,6 +37,7 @@ const outlineBtn = () =>
 			border: '1px solid #000',
 			padding: '0.5rem 1.25rem',
 			display: 'inline-flex',
+			justifyContent: 'center',
 		})
 
 const fillBtn = () =>
@@ -44,6 +52,7 @@ const fillBtn = () =>
 			padding: '0.5rem 1.25rem',
 			display: 'inline-flex',
 			backgroundColor: '#000',
+			justifyContent: 'center',
 		})
 
 const linkList = () =>
@@ -54,7 +63,9 @@ const linkList = () =>
 		linkMenu('Link Four', [
 			linkSubmenu(['Link Five', 'Link Six', 'Link Seven'].map(submenuLink)),
 		]),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})
 
 const linkItem = (text: string) =>
 	link()
@@ -63,6 +74,9 @@ const linkItem = (text: string) =>
 		.css({
 			padding: '1.5rem 1rem',
 			color: '#222',
+		})
+		.cssTablet({
+			padding: '0.5rem 1rem',
 		})
 
 const linkMenu = (text: string, children: Element[], transitionTop = true) =>
@@ -75,11 +89,16 @@ const linkMenu = (text: string, children: Element[], transitionTop = true) =>
 						rotate: '0deg',
 						transition: 'all 150ms ease-out',
 					}),
-				]).css({
-					alignItems: 'center',
-					padding: '1.5rem 1rem',
-					gap: '0.5rem',
-				}),
+				])
+					.css({
+						alignItems: 'center',
+						padding: '1.5rem 1rem',
+						gap: '0.5rem',
+						justifyContent: 'space-between',
+					})
+					.cssTablet({
+						padding: '0.5rem 1rem',
+					}),
 				...children,
 			])
 			.class('submenu-link'),
@@ -95,6 +114,9 @@ const linkMenu = (text: string, children: Element[], transitionTop = true) =>
 			opacity: '1',
 			top: transitionTop ? 'calc(100% - 1rem)' : undefined,
 		})
+		.customCssTablet('> .submenu-link:hover .submenu', {
+			maxHeight: '100vh',
+		})
 
 const linkSubmenu = (children: Element[]) =>
 	box(children)
@@ -108,7 +130,13 @@ const linkSubmenu = (children: Element[]) =>
 			backgroundColor: 'white',
 			width: 'max-content',
 			opacity: '0',
-			transition: 'all 150ms ease-out',
+			transition: 'all 150ms ease-out, max-height 300ms ease-out',
+		})
+		.cssTablet({
+			position: 'static',
+			border: 'none',
+			padding: '0.5rem 1rem',
+			maxHeight: '0vh',
 		})
 		.class('submenu')
 

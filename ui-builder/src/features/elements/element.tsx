@@ -175,6 +175,12 @@ export abstract class Element {
 		return this
 	}
 
+	cssHoverTablet(css: CSSProperties) {
+		const merged = _.assign({}, this.style.tablet?.hover, css)
+		_.set(this.style, 'tablet.hover', merged)
+		return this
+	}
+
 	tag(tagId: string) {
 		this.tagId = tagId
 		return this
