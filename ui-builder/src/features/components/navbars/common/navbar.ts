@@ -130,7 +130,8 @@ const linkMenu = (text: string, children: Element[], transitionTop = true) =>
 			top: transitionTop ? 'calc(100% - 1rem)' : undefined,
 		})
 		.customCssTablet('> .submenu-link:hover .submenu', {
-			maxHeight: '100vh',
+			display: 'block',
+			opacity: '1',
 		})
 
 const linkSubmenu = (children: Element[]) =>
@@ -145,13 +146,14 @@ const linkSubmenu = (children: Element[]) =>
 			backgroundColor: 'white',
 			width: 'max-content',
 			opacity: '0',
-			transition: 'all 150ms ease-in-out, max-height 300ms ease-in-out',
+			transition: 'all 150ms ease-in-out',
 		})
 		.cssTablet({
+			display: 'none',
 			position: 'static',
 			border: 'none',
 			padding: '0.5rem 1rem',
-			maxHeight: '0vh',
+			opacity: '0',
 		})
 		.class('submenu')
 
@@ -217,7 +219,7 @@ const menu = (children: Element[]) =>
 			zIndex: '1',
 			transition: 'all 0.3s ease-in-out',
 			borderBottom: '1px solid #000',
-			overflow: 'hidden',
+			overflowY: 'auto',
 		})
 		.class('menu')
 
