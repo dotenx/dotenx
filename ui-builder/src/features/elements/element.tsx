@@ -204,6 +204,11 @@ export abstract class Element {
 		this.data = { ...this.data, as: type }
 		return this
 	}
+
+	setImports(imports: string[]) {
+		this.imports = imports
+		return this
+	}
 }
 
 export interface RenderOptions {
