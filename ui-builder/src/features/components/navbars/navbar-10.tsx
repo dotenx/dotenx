@@ -38,40 +38,44 @@ const linkList = () =>
 		cmn.linkItem.el('Link Two'),
 		cmn.linkItem.el('Link Three'),
 		cmn.linkMenu
-			.el('Link Four', [
-				cmn.linkSubmenu
-					.el([
-						flex([
-							column([
-								txt('Blog categories').css({
-									fontWeight: '600',
-									fontSize: '0.875rem',
+			.el(
+				'Link Four',
+				[
+					cmn.linkSubmenu
+						.el([
+							flex([
+								column([
+									txt('Blog categories').css({
+										fontWeight: '600',
+										fontSize: '0.875rem',
+									}),
+									txt('Category one'),
+									txt('Category two'),
+									txt('Category three'),
+									txt('Category four'),
+									txt('Category five'),
+								]).css({
+									maxWidth: '15rem',
+									flex: '1',
+									gap: '1rem',
+									paddingTop: '2rem',
 								}),
-								txt('Category one'),
-								txt('Category two'),
-								txt('Category three'),
-								txt('Category four'),
-								txt('Category five'),
-							]).css({
-								maxWidth: '15rem',
-								flex: '1',
-								gap: '1rem',
-								paddingTop: '2rem',
-							}),
-							featured(),
-						]),
-					])
-					.css({
-						top: '100%',
-						right: '0',
-						left: '0',
-						width: 'auto',
-						border: 'none',
-						borderBottom: '1px solid #000',
-						paddingLeft: '5%',
-						padding: '0',
-					}),
-			])
+								featured(),
+							]),
+						])
+						.css({
+							top: '100%',
+							right: '0',
+							left: '0',
+							width: 'auto',
+							border: 'none',
+							borderBottom: '1px solid #000',
+							paddingLeft: '5%',
+							padding: '0',
+						}),
+				],
+				false
+			)
 			.css({
 				position: 'unset',
 			}),

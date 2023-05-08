@@ -37,74 +37,78 @@ const linkList = () =>
 		cmn.linkItem.el('Link Two'),
 		cmn.linkItem.el('Link Three'),
 		cmn.linkMenu
-			.el('Link Four', [
-				cmn.linkSubmenu
-					.el([
-						flex([
-							grid(4)
-								.populate([
-									cmn.pageGroup
-										.el('Page group one', [
-											'Page One',
-											'Page Two',
-											'Page Three',
-											'Page Four',
-										])
-										.css({
-											padding: '2rem 0',
+			.el(
+				'Link Four',
+				[
+					cmn.linkSubmenu
+						.el([
+							flex([
+								grid(4)
+									.populate([
+										cmn.pageGroup
+											.el('Page group one', [
+												'Page One',
+												'Page Two',
+												'Page Three',
+												'Page Four',
+											])
+											.css({
+												padding: '2rem 0',
+											}),
+										cmn.pageGroup
+											.el('Page group two', [
+												'Page Five',
+												'Page Six',
+												'Page Seven',
+												'Page Eight',
+											])
+											.css({
+												padding: '2rem 0',
+											}),
+										cmn.pageGroup
+											.el('Page group two', [
+												'Page Nine',
+												'Page Ten',
+												'Page Eleven',
+												'Page Twelve',
+											])
+											.css({
+												padding: '2rem 0',
+											}),
+										column([
+											txt('Page group four').css({
+												fontWeight: '600',
+											}),
+											txt('Link one'),
+											txt('Link two'),
+											txt('Link three'),
+											txt('Link four'),
+											txt('Link five'),
+										]).css({
+											gap: '1rem',
+											fontSize: '0.875rem',
+											backgroundColor: '#f4f4f4',
+											padding: '2rem 5% 2rem 2rem',
 										}),
-									cmn.pageGroup
-										.el('Page group two', [
-											'Page Five',
-											'Page Six',
-											'Page Seven',
-											'Page Eight',
-										])
-										.css({
-											padding: '2rem 0',
-										}),
-									cmn.pageGroup
-										.el('Page group two', [
-											'Page Nine',
-											'Page Ten',
-											'Page Eleven',
-											'Page Twelve',
-										])
-										.css({
-											padding: '2rem 0',
-										}),
-									column([
-										txt('Page group four').css({
-											fontWeight: '600',
-										}),
-										txt('Link one'),
-										txt('Link two'),
-										txt('Link three'),
-										txt('Link four'),
-										txt('Link five'),
-									]).css({
-										gap: '1rem',
-										fontSize: '0.875rem',
-										backgroundColor: '#f4f4f4',
-										padding: '2rem 5% 2rem 2rem',
+									])
+									.css({
+										flex: '1',
+										padding: '0 0 0 5%',
 									}),
-								])
-								.css({
-									flex: '1',
-									padding: '0 0 0 5%',
-								}),
-						]),
-					])
-					.css({
-						top: '100%',
-						right: '0',
-						left: '0',
-						width: 'auto',
-						border: 'none',
-						borderBottom: '1px solid #000',
-						padding: '0',
-					}),
-			])
+							]),
+						])
+						.css({
+							top: '100%',
+							right: '0',
+							left: '0',
+							width: 'auto',
+							border: 'none',
+							borderBottom: '1px solid #000',
+							padding: '0',
+						}),
+				],
+				false
+			)
 			.css({
 				position: 'unset',
 			}),

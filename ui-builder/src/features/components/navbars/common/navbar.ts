@@ -65,11 +65,17 @@ const linkItem = (text: string) =>
 			color: '#222',
 		})
 
-const linkMenu = (text: string, children: Element[]) =>
+const linkMenu = (text: string, children: Element[], transitionTop = true) =>
 	box([
 		link()
 			.populate([
-				flex([txt(text), icn('chevron-down').size('14px').class('chevron-down')]).css({
+				flex([
+					txt(text),
+					icn('chevron-down').size('14px').class('chevron-down').css({
+						rotate: '0deg',
+						transition: 'all 150ms ease-out',
+					}),
+				]).css({
 					alignItems: 'center',
 					padding: '1.5rem 1rem',
 					gap: '0.5rem',
@@ -85,20 +91,24 @@ const linkMenu = (text: string, children: Element[]) =>
 			rotate: '180deg',
 		})
 		.customCss('> .submenu-link:hover .submenu', {
-			display: 'block',
+			visibility: 'visible',
+			opacity: '1',
+			top: transitionTop ? 'calc(100% - 1rem)' : undefined,
 		})
 
 const linkSubmenu = (children: Element[]) =>
 	box(children)
 		.css({
-			display: 'none',
+			visibility: 'hidden',
 			position: 'absolute',
 			border: '1px solid #000',
 			padding: '0.5rem',
 			zIndex: '1',
-			top: 'calc(100% - 1rem)',
+			top: 'calc(100% + 1rem)',
 			backgroundColor: 'white',
 			width: 'max-content',
+			opacity: '0',
+			transition: 'all 150ms ease-out',
 		})
 		.class('submenu')
 

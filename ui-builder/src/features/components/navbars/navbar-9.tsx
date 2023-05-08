@@ -37,45 +37,49 @@ const linkList = () =>
 		cmn.linkItem.el('Link Two'),
 		cmn.linkItem.el('Link Three'),
 		cmn.linkMenu
-			.el('Link Four', [
-				cmn.linkSubmenu
-					.el([
-						grid(4)
-							.populate([
-								cmn.menuItem.el('Page one'),
-								cmn.menuItem.el('Page two'),
-								cmn.menuItem.el('Page three'),
-								cmn.menuItem.el('Page four'),
-							])
-							.css({
-								padding: '2rem 5%',
-							}),
-						flex([
+			.el(
+				'Link Four',
+				[
+					cmn.linkSubmenu
+						.el([
+							grid(4)
+								.populate([
+									cmn.menuItem.el('Page one'),
+									cmn.menuItem.el('Page two'),
+									cmn.menuItem.el('Page three'),
+									cmn.menuItem.el('Page four'),
+								])
+								.css({
+									padding: '2rem 5%',
+								}),
 							flex([
-								txt('Ready to get started?'),
-								txt(' Sign up for free').css({
-									textDecoration: 'underline',
+								flex([
+									txt('Ready to get started?'),
+									txt(' Sign up for free').css({
+										textDecoration: 'underline',
+									}),
+								]).css({
+									gap: '1ch',
+									textAlign: 'center',
 								}),
 							]).css({
-								gap: '1ch',
-								textAlign: 'center',
+								backgroundColor: '#F4F4F4',
+								padding: '1rem 5%',
+								justifyContent: 'center',
 							}),
-						]).css({
-							backgroundColor: '#F4F4F4',
-							padding: '1rem 5%',
-							justifyContent: 'center',
+						])
+						.css({
+							top: '100%',
+							right: '0',
+							left: '0',
+							width: 'auto',
+							border: 'none',
+							borderBottom: '1px solid #000',
+							padding: '0',
 						}),
-					])
-					.css({
-						top: '100%',
-						right: '0',
-						left: '0',
-						width: 'auto',
-						border: 'none',
-						borderBottom: '1px solid #000',
-						padding: '0',
-					}),
-			])
+				],
+				false
+			)
 			.css({
 				position: 'unset',
 			}),

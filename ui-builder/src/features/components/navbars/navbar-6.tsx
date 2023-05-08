@@ -37,49 +37,53 @@ const linkList = () =>
 		cmn.linkItem.el('Link Two'),
 		cmn.linkItem.el('Link Three'),
 		cmn.linkMenu
-			.el('Link Four', [
-				cmn.linkSubmenu
-					.el([
-						flex([
-							grid(3)
-								.populate([
-									cmn.pageGroup.el('Page group one', [
-										'Page One',
-										'Page Two',
-										'Page Three',
-										'Page Four',
-									]),
-									cmn.pageGroup.el('Page group two', [
-										'Page Five',
-										'Page Six',
-										'Page Seven',
-										'Page Eight',
-									]),
-									cmn.pageGroup.el('Page group two', [
-										'Page Nine',
-										'Page Ten',
-										'Page Eleven',
-										'Page Twelve',
-									]),
-								])
-								.css({
-									padding: '2rem 2rem 2rem 0',
-									flex: '1',
-								}),
-							featured(),
-						]),
-					])
-					.css({
-						top: '100%',
-						right: '0',
-						left: '0',
-						width: 'auto',
-						border: 'none',
-						borderBottom: '1px solid #000',
-						paddingLeft: '5%',
-						padding: '0',
-					}),
-			])
+			.el(
+				'Link Four',
+				[
+					cmn.linkSubmenu
+						.el([
+							flex([
+								grid(3)
+									.populate([
+										cmn.pageGroup.el('Page group one', [
+											'Page One',
+											'Page Two',
+											'Page Three',
+											'Page Four',
+										]),
+										cmn.pageGroup.el('Page group two', [
+											'Page Five',
+											'Page Six',
+											'Page Seven',
+											'Page Eight',
+										]),
+										cmn.pageGroup.el('Page group two', [
+											'Page Nine',
+											'Page Ten',
+											'Page Eleven',
+											'Page Twelve',
+										]),
+									])
+									.css({
+										padding: '2rem 2rem 2rem 0',
+										flex: '1',
+									}),
+								featured(),
+							]),
+						])
+						.css({
+							top: '100%',
+							right: '0',
+							left: '0',
+							width: 'auto',
+							border: 'none',
+							borderBottom: '1px solid #000',
+							paddingLeft: '5%',
+							padding: '0',
+						}),
+				],
+				false
+			)
 			.css({
 				position: 'unset',
 			}),
