@@ -1,5 +1,6 @@
 import componentImage from '../../../assets/components/faq/faq-1.png'
-import { flex, grid, txt } from '../../elements/constructor'
+import { gridCols } from '../../../utils/style-utils'
+import { box, flex, grid, txt } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -16,20 +17,36 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
-			flex([cmn.logo.el(), linkList()]).css({
+	cmn.container.el([
+		box([
+			flex([cmn.logo.el(), menu()]).css({
 				gap: '1.5rem',
 				alignItems: 'center',
 			}),
-			cmn.buttons.el(),
-		])
-		.css({
+			cmn.buttons.el().cssTablet({
+				display: 'none',
+			}),
+			cmn.menuBtn.el(),
+		]).css({
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-			position: 'relative',
-		})
+			width: '100%',
+		}),
+	])
+
+const menu = () =>
+	cmn.menu.el([
+		linkList(),
+		cmn.buttons
+			.el()
+			.css({
+				display: 'none',
+			})
+			.cssTablet({
+				display: 'flex',
+			}),
+	])
 
 const linkList = () =>
 	flex([
@@ -51,6 +68,9 @@ const linkList = () =>
 								])
 								.css({
 									padding: '2rem 5%',
+								})
+								.cssTablet({
+									gridTemplateColumns: gridCols(1),
 								}),
 							flex([
 								flex([
@@ -62,11 +82,16 @@ const linkList = () =>
 									gap: '1ch',
 									textAlign: 'center',
 								}),
-							]).css({
-								backgroundColor: '#F4F4F4',
-								padding: '1rem 5%',
-								justifyContent: 'center',
-							}),
+							])
+								.css({
+									backgroundColor: '#F4F4F4',
+									padding: '1rem 5%',
+									justifyContent: 'center',
+								})
+								.cssTablet({
+									flexDirection: 'column',
+									gap: '1rem',
+								}),
 						])
 						.css({
 							top: '100%',
@@ -83,4 +108,6 @@ const linkList = () =>
 			.css({
 				position: 'unset',
 			}),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})
