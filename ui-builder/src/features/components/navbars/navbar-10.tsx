@@ -1,6 +1,7 @@
 import { times } from 'lodash'
 import componentImage from '../../../assets/components/faq/faq-1.png'
-import { box, column, flex, grid, icn, img, link, txt } from '../../elements/constructor'
+import { gridCols } from '../../../utils/style-utils'
+import { box, column, flex, grid, img, txt } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -17,20 +18,36 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
-			flex([cmn.logo.el(), linkList()]).css({
+	cmn.container.el([
+		box([
+			flex([cmn.logo.el(), menu()]).css({
 				gap: '1.5rem',
 				alignItems: 'center',
 			}),
-			cmn.buttons.el(),
-		])
-		.css({
+			cmn.buttons.el().cssTablet({
+				display: 'none',
+			}),
+			cmn.menuBtn.el(),
+		]).css({
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-			position: 'relative',
-		})
+			width: '100%',
+		}),
+	])
+
+const menu = () =>
+	cmn.menu.el([
+		linkList(),
+		cmn.buttons
+			.el()
+			.css({
+				display: 'none',
+			})
+			.cssTablet({
+				display: 'flex',
+			}),
+	])
 
 const linkList = () =>
 	flex([
@@ -61,7 +78,9 @@ const linkList = () =>
 									paddingTop: '2rem',
 								}),
 								featured(),
-							]),
+							]).cssTablet({
+								flexDirection: 'column',
+							}),
 						])
 						.css({
 							top: '100%',
@@ -79,7 +98,9 @@ const linkList = () =>
 			.css({
 				position: 'unset',
 			}),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})
 
 const featured = () =>
 	column([articles()]).css({
@@ -90,9 +111,14 @@ const featured = () =>
 	})
 
 const articles = () =>
-	grid(2).populate(times(6, article)).css({
-		gap: '1rem',
-	})
+	grid(2)
+		.populate(times(6, article))
+		.css({
+			gap: '1rem',
+		})
+		.cssTablet({
+			gridTemplateColumns: gridCols(1),
+		})
 
 const article = () =>
 	grid(2)
@@ -121,11 +147,6 @@ const article = () =>
 			gridTemplateColumns: '1fr 2fr',
 			gap: '1.5rem',
 		})
-
-const arrowLink = () =>
-	link().populate([
-		flex([txt('See all articles'), icn('chevron-right').size('14px')]).css({
-			alignItems: 'center',
-			gap: '8px',
-		}),
-	])
+		.cssTablet({
+			gridTemplateColumns: gridCols(1),
+		})
