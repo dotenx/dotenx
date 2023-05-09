@@ -1,5 +1,5 @@
 import componentImage from '../../../assets/components/navbar/navbar-3.png'
-import { box, flex } from '../../elements/constructor'
+import { box } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -12,7 +12,13 @@ export class Navbar3 extends Component {
 }
 
 function Options() {
-	return <ComponentWrapper></ComponentWrapper>
+	return (
+		<ComponentWrapper>
+			<cmn.logo.Options />
+			<cmn.fillBtn.Options />
+			<cmn.linkList.Options />
+		</ComponentWrapper>
+	)
 }
 
 const component = () =>
@@ -34,15 +40,4 @@ const component = () =>
 		}),
 	])
 
-const menu = () =>
-	cmn.menu.el([
-		flex([
-			cmn.linkItem.el('Link One'),
-			cmn.linkItem.el('Link Two'),
-			cmn.linkMenu.el('Link Three', [
-				cmn.linkSubmenu.el(['Link Four', 'Link Five', 'Link Six'].map(cmn.submenuLink.el)),
-			]),
-		]).cssTablet({
-			flexDirection: 'column',
-		}),
-	])
+const menu = () => cmn.menu.el([cmn.linkList.el()])
