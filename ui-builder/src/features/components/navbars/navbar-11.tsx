@@ -1,5 +1,5 @@
 import componentImage from '../../../assets/components/faq/faq-1.png'
-import { flex } from '../../elements/constructor'
+import { box, flex } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -16,19 +16,23 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
+	cmn.container.el([
+		box([
 			cmn.logo.el(),
-			flex([linkList(), cmn.buttons.el()]).css({
+			flex([menu()]).css({
 				gap: '1.5rem',
 				alignItems: 'center',
 			}),
-		])
-		.css({
+			cmn.menuBtn.el(),
+		]).css({
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-		})
+			width: '100%',
+		}),
+	])
+
+const menu = () => cmn.menu.el([linkList(), cmn.buttons.el()])
 
 const linkList = () =>
 	flex([
@@ -42,4 +46,6 @@ const linkList = () =>
 					width: '20rem',
 				}),
 		]),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})
