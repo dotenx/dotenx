@@ -173,6 +173,7 @@ import { Navbar11 } from './navbars/navbar-11'
 import { Navbar12 } from './navbars/navbar-12'
 import { Navbar2 } from './navbars/navbar-2'
 import { Navbar3 } from './navbars/navbar-3'
+import { Navbar4 } from './navbars/navbar-4'
 import { Navbar5 } from './navbars/navbar-5'
 import { Navbar6 } from './navbars/navbar-6'
 import { Navbar7 } from './navbars/navbar-7'
@@ -222,6 +223,7 @@ export const COMPONENTS: Components = [
 			Navbar1,
 			Navbar2,
 			Navbar3,
+			Navbar4,
 			Navbar5,
 			Navbar6,
 			Navbar7,
