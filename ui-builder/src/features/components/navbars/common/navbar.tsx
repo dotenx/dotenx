@@ -479,18 +479,18 @@ export const cmn = {
 	},
 	linkItem: {
 		el: linkItem,
-		options: LinkItemOptions,
+		Options: LinkItemOptions,
 	},
 	linkMenu: {
 		el: linkMenu,
-		options: LinkMenuOptions,
+		Options: LinkMenuOptions,
 	},
 	linkSubmenu: {
 		el: linkSubmenu,
 	},
 	submenuLink: {
 		el: submenuLink,
-		options: SubmenuLinkOptions,
+		Options: SubmenuLinkOptions,
 	},
 	menuItem: {
 		el: menuItem,
