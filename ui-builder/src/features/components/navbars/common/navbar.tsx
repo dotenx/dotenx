@@ -504,4 +504,5 @@ export const cmn = {
 	menuBtn: {
 		el: menuBtn,
 	},
+	tags,
 }

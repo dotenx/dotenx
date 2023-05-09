@@ -13,7 +13,13 @@ export class Navbar4 extends Component {
 }
 
 function Options() {
-	return <ComponentWrapper></ComponentWrapper>
+	return (
+		<ComponentWrapper>
+			<cmn.logo.Options />
+			<cmn.fillBtn.Options />
+			<cmn.linkList.Options />
+		</ComponentWrapper>
+	)
 }
 
 const component = () =>
@@ -97,14 +103,14 @@ const linkList = () =>
 			padding: '1rem 0',
 			fontSize: '24px',
 		}),
-	])
+	]).tag(cmn.tags.linkList.container)
 
 const linkMenu = (text: string, children: Element[]) =>
 	box([
 		link()
 			.populate([
 				flex([
-					txt(text),
+					txt(text).tag(cmn.tags.linkMenu.text),
 					icn('chevron-down').size('14px').class('chevron-down').css({
 						rotate: '0deg',
 						transition: 'all 150ms ease-in-out',
@@ -118,7 +124,7 @@ const linkMenu = (text: string, children: Element[]) =>
 					.cssTablet({
 						padding: '1rem 1rem',
 					}),
-				...children,
+				box(children).tag(cmn.tags.linkMenu.listContainer),
 			])
 			.class('submenu-link'),
 	])
