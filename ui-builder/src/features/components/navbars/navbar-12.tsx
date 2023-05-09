@@ -1,5 +1,6 @@
 import componentImage from '../../../assets/components/faq/faq-1.png'
-import { flex, grid } from '../../elements/constructor'
+import { gridCols } from '../../../utils/style-utils'
+import { box, flex, grid } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { cmn } from './common/navbar'
@@ -16,19 +17,23 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
+	cmn.container.el([
+		box([
 			cmn.logo.el(),
-			flex([linkList(), cmn.buttons.el()]).css({
+			flex([menu()]).css({
 				gap: '1.5rem',
 				alignItems: 'center',
 			}),
-		])
-		.css({
+			cmn.menuBtn.el(),
+		]).css({
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-		})
+			width: '100%',
+		}),
+	])
+
+const menu = () => cmn.menu.el([linkList(), cmn.buttons.el()])
 
 const linkList = () =>
 	flex([
@@ -38,24 +43,33 @@ const linkList = () =>
 		cmn.linkMenu.el('Link Four', [
 			cmn.linkSubmenu
 				.el([
-					grid(2).populate([
-						cmn.pageGroup.el('Page group one', [
-							'Page One',
-							'Page Two',
-							'Page Three',
-							'Page Four',
-						]),
-						cmn.pageGroup.el('Page group two', [
-							'Page Five',
-							'Page Six',
-							'Page Seven',
-							'Page Eight',
-						]),
-					]),
+					grid(2)
+						.populate([
+							cmn.pageGroup.el('Page group one', [
+								'Page One',
+								'Page Two',
+								'Page Three',
+								'Page Four',
+							]),
+							cmn.pageGroup.el('Page group two', [
+								'Page Five',
+								'Page Six',
+								'Page Seven',
+								'Page Eight',
+							]),
+						])
+						.cssTablet({
+							gridTemplateColumns: gridCols(1),
+						}),
 				])
 				.css({
 					width: '40rem',
 					right: '-100%',
+				})
+				.cssTablet({
+					width: 'auto',
 				}),
 		]),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})

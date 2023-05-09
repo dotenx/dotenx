@@ -44,6 +44,9 @@ const linkList = () =>
 				.el(['Page One', 'Page Two', 'Page Three', 'Page Four'].map(cmn.menuItem.el))
 				.css({
 					width: '20rem',
+				})
+				.cssTablet({
+					width: 'auto',
 				}),
 		]),
 	]).cssTablet({
