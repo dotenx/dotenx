@@ -17,17 +17,17 @@ export function DndTabs({
 	onTabChanged,
 	onSwap,
 	onInsert,
-	onDelete
+	onDelete,
 }: {
 	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
-	insertElement: () => Element
+	insertElement?: () => Element
 	autoAdjustGridTemplateColumns?: boolean
-	rightSection?: ReactNode,
-	onTabChanged?: (index: string) => void,
-	onSwap?: (oldIndex: number, newIndex: number) => void,
-	onInsert?: () => void,
-	onDelete?: (index: number) => void,
+	rightSection?: ReactNode
+	onTabChanged?: (index: string) => void
+	onSwap?: (oldIndex: number, newIndex: number) => void
+	onInsert?: () => void
+	onDelete?: (index: number) => void
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -43,7 +43,7 @@ export function DndTabs({
 	}
 
 	const onAddNewTab = () => {
-		set((draft) => draft.children.push(insertElement()))
+		if (insertElement) set((draft) => draft.children.push(insertElement()))
 		onInsert?.()
 	}
 
@@ -52,30 +52,29 @@ export function DndTabs({
 			listElements.map((item, index) => ({
 				id: item.id,
 				content: renderItemOptions(item, index),
-				onTabDelete: () =>
-					{
-						set((draft) => {
-							draft.children.splice(index, 1)
-							if (!autoAdjustGridTemplateColumns) return
-							// remove one 1fr from the grid template columns in all the modes if the number of columns is more than the number of 1frs
-							const modes: Array<'desktop' | 'tablet' | 'mobile'> = [
-								'desktop',
-								'tablet',
-								'mobile',
-							]
-							modes.forEach((mode) => {
-								if (draft.style[mode]?.default?.gridTemplateColumns) {
-									const columns = (
-										draft.style[mode]!.default!.gridTemplateColumns as string
-									).split(' ')
-									if (columns.length <= draft.children.length) return
-									columns.pop()
-									draft.style[mode]!.default!.gridTemplateColumns = columns.join(' ')
-								}
-							})
-						}),
+				onTabDelete: () => {
+					set((draft) => {
+						draft.children.splice(index, 1)
+						if (!autoAdjustGridTemplateColumns) return
+						// remove one 1fr from the grid template columns in all the modes if the number of columns is more than the number of 1frs
+						const modes: Array<'desktop' | 'tablet' | 'mobile'> = [
+							'desktop',
+							'tablet',
+							'mobile',
+						]
+						modes.forEach((mode) => {
+							if (draft.style[mode]?.default?.gridTemplateColumns) {
+								const columns = (
+									draft.style[mode]!.default!.gridTemplateColumns as string
+								).split(' ')
+								if (columns.length <= draft.children.length) return
+								columns.pop()
+								draft.style[mode]!.default!.gridTemplateColumns = columns.join(' ')
+							}
+						})
+					}),
 						onDelete?.(index)
-					}
+				},
 			})),
 		[listElements, renderItemOptions, set]
 	)

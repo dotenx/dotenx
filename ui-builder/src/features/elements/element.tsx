@@ -104,6 +104,7 @@ export abstract class Element {
 	}
 
 	find<T extends Element = Element>(tagId: string): T | undefined {
+		if (this.tagId === tagId) return this as Element as T
 		if (this.children) {
 			for (const child of this.children) {
 				const found = child._findByTagIdRecursive(tagId)

@@ -12,7 +12,13 @@ export class Navbar1 extends Component {
 }
 
 function Options() {
-	return <ComponentWrapper></ComponentWrapper>
+	return (
+		<ComponentWrapper>
+			<cmn.logo.Options />
+			<cmn.buttons.Options />
+			<cmn.linkList.Options />
+		</ComponentWrapper>
+	)
 }
 
 const component = () =>
