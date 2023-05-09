@@ -98,6 +98,7 @@ const linkList = () =>
 				display: 'none',
 			})
 			.cssTablet({
+				marginTop: '1.5rem',
 				display: 'flex',
 			}),
 	]).cssTablet({

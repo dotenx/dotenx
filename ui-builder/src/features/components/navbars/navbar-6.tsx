@@ -1,4 +1,5 @@
 import componentImage from '../../../assets/components/faq/faq-1.png'
+import { gridCols } from '../../../utils/style-utils'
 import { box, column, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
@@ -16,20 +17,36 @@ function Options() {
 }
 
 const component = () =>
-	cmn.container
-		.el([
-			flex([cmn.logo.el(), linkList()]).css({
+	cmn.container.el([
+		box([
+			flex([cmn.logo.el(), menu()]).css({
 				gap: '1.5rem',
 				alignItems: 'center',
 			}),
-			cmn.buttons.el(),
-		])
-		.css({
+			cmn.buttons.el().cssTablet({
+				display: 'none',
+			}),
+			cmn.menuBtn.el(),
+		]).css({
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-			position: 'relative',
-		})
+			width: '100%',
+		}),
+	])
+
+const menu = () =>
+	cmn.menu.el([
+		linkList(),
+		cmn.buttons
+			.el()
+			.css({
+				display: 'none',
+			})
+			.cssTablet({
+				display: 'flex',
+			}),
+	])
 
 const linkList = () =>
 	flex([
@@ -67,9 +84,14 @@ const linkList = () =>
 									.css({
 										padding: '2rem 2rem 2rem 0',
 										flex: '1',
+									})
+									.cssTablet({
+										gridTemplateColumns: gridCols(1),
 									}),
 								featured(),
-							]),
+							]).cssTablet({
+								flexDirection: 'column',
+							}),
 						])
 						.css({
 							top: '100%',
@@ -87,7 +109,9 @@ const linkList = () =>
 			.css({
 				position: 'unset',
 			}),
-	])
+	]).cssTablet({
+		flexDirection: 'column',
+	})
 
 const featured = () =>
 	column([
@@ -127,10 +151,14 @@ const article = () =>
 				paddingTop: '0.5rem',
 			}),
 		]),
-	]).css({
-		gridTemplateColumns: '1fr 2fr',
-		gap: '1.5rem',
-	})
+	])
+		.css({
+			gridTemplateColumns: '1fr 2fr',
+			gap: '1.5rem',
+		})
+		.cssTablet({
+			gridTemplateColumns: gridCols(1),
+		})
 
 const arrowLink = () =>
 	link().populate([
