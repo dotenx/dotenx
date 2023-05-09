@@ -1,4 +1,4 @@
-import componentImage from '../../../assets/components/faq/faq-1.png'
+import componentImage from '../../../assets/components/navbar/navbar-12.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, flex, grid } from '../../elements/constructor'
 import { Component } from '../component'

@@ -1,4 +1,4 @@
-import componentImage from '../../../assets/components/faq/faq-1.png'
+import componentImage from '../../../assets/components/navbar/navbar-3.png'
 import { box, flex } from '../../elements/constructor'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'

@@ -1,4 +1,4 @@
-import componentImage from '../../../assets/components/faq/faq-1.png'
+import componentImage from '../../../assets/components/navbar/navbar-4.png'
 import { box, column, flex, icn, link, txt } from '../../elements/constructor'
 import { Element } from '../../elements/element'
 import { Component } from '../component'
@@ -73,24 +73,29 @@ const menu = () =>
 			borderBottom: '1px solid #000',
 			overflowY: 'auto',
 			justifySelf: 'center',
+			padding: '0 5%',
 		})
 		.class('menu')
 
 const linkList = () =>
 	column([
 		cmn.linkItem.el('Link One').css({
-			padding: '0.5rem 1rem',
+			padding: '1rem 0',
+			fontSize: '24px',
 		}),
 		cmn.linkItem.el('Link Two').css({
-			padding: '0.5rem 1rem',
+			padding: '1rem 0',
+			fontSize: '24px',
 		}),
 		cmn.linkItem.el('Link Three').css({
-			padding: '0.5rem 1rem',
+			padding: '1rem 0',
+			fontSize: '24px',
 		}),
 		linkMenu('Link Four', [
 			linkSubmenu(['Link Five', 'Link Six', 'Link Seven'].map(cmn.submenuLink.el)),
 		]).css({
-			padding: '0.5rem 1rem',
+			padding: '1rem 0',
+			fontSize: '24px',
 		}),
 	])
 
@@ -107,11 +112,11 @@ const linkMenu = (text: string, children: Element[]) =>
 				])
 					.css({
 						alignItems: 'center',
-						gap: '0.5rem',
+						gap: '1rem',
 						justifyContent: 'space-between',
 					})
 					.cssTablet({
-						padding: '0.5rem 1rem',
+						padding: '1rem 1rem',
 					}),
 				...children,
 			])
@@ -139,7 +144,7 @@ const linkSubmenu = (children: Element[]) =>
 			display: 'none',
 			position: 'static',
 			border: 'none',
-			padding: '0.5rem 1rem',
+			padding: '1rem 1rem',
 			opacity: '0',
 		})
 		.class('submenu')

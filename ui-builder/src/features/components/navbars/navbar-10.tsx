@@ -1,5 +1,5 @@
 import { times } from 'lodash'
-import componentImage from '../../../assets/components/faq/faq-1.png'
+import componentImage from '../../../assets/components/navbar/navbar-10.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, column, flex, grid, img, txt } from '../../elements/constructor'
 import { Component } from '../component'
