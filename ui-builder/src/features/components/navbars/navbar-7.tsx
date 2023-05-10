@@ -14,11 +14,6 @@ import { cmn } from './common/navbar'
 
 const tags = {
 	pageGroups: 'pageGroups',
-	featured: {
-		title: 'featured.title',
-		arrowLink: 'featured.arrowLink',
-		arrowLinkText: 'featured.arrowLinkText',
-	},
 }
 
 export class Navbar7 extends Component {
