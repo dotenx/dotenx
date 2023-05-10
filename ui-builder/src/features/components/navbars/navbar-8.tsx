@@ -1,12 +1,15 @@
 import { ActionIcon, Menu } from '@mantine/core'
+import _ from 'lodash'
 import { TbPlus } from 'react-icons/tb'
 import componentImage from '../../../assets/components/navbar/navbar-8.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, column, flex, grid, link, txt } from '../../elements/constructor'
-import { useSetElement } from '../../elements/elements-store'
+import { Element } from '../../elements/element'
+import { setElement, useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'
+import componentScript from '../../scripts/navbars.js?raw'
 import { useSelectedElement } from '../../selection/use-selected-component'
 import { LinkStyler } from '../../simple/stylers/link-styler'
 import { TextStyler } from '../../simple/stylers/text-styler'
@@ -31,6 +34,11 @@ export class Navbar8 extends Component {
 	image = componentImage
 	defaultData = component()
 	renderOptions = () => <Options />
+	onCreate(root: Element) {
+		const compiled = _.template(componentScript)
+		const script = compiled({ id: root.id })
+		setElement(root, (draft) => (draft.script = script))
+	}
 }
 
 function Options() {
