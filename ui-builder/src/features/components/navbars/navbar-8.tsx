@@ -226,19 +226,23 @@ const createMenuItem = () =>
 												fontWeight: '600',
 											})
 											.tag(tags.textGroups.title),
-										textLink('Link one'),
-										textLink('Link two'),
-										textLink('Link three'),
-										textLink('Link four'),
-										textLink('Link five'),
-									])
-										.tag(tags.textGroups.list)
-										.css({
-											gap: '1rem',
-											fontSize: '0.875rem',
-											backgroundColor: '#f4f4f4',
-											padding: '2rem 5% 2rem 2rem',
-										}),
+										column([
+											textLink('Link one'),
+											textLink('Link two'),
+											textLink('Link three'),
+											textLink('Link four'),
+											textLink('Link five'),
+										])
+											.css({
+												gap: '1rem',
+											})
+											.tag(tags.textGroups.list),
+									]).css({
+										gap: '1rem',
+										fontSize: '0.875rem',
+										backgroundColor: '#f4f4f4',
+										padding: '2rem 5% 2rem 2rem',
+									}),
 								])
 								.css({
 									flex: '1',
