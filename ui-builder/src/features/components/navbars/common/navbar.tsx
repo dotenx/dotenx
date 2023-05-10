@@ -5,10 +5,12 @@ import { box, column, flex, icn, img, link, txt } from '../../../elements/constr
 import { Element } from '../../../elements/element'
 import { useSetElement } from '../../../elements/elements-store'
 import { BoxElement } from '../../../elements/extensions/box'
+import { IconElement } from '../../../elements/extensions/icon'
 import { ImageElement } from '../../../elements/extensions/image'
 import { LinkElement } from '../../../elements/extensions/link'
 import { TextElement } from '../../../elements/extensions/text'
 import { useSelectedElement } from '../../../selection/use-selected-component'
+import { IconStyler } from '../../../simple/stylers/icon-styler'
 import { ImageStyler } from '../../../simple/stylers/image-styler'
 import { LinkStyler } from '../../../simple/stylers/link-styler'
 import { TextStyler } from '../../../simple/stylers/text-styler'
@@ -42,6 +44,16 @@ const tags = {
 	submenuLink: {
 		text: 'submenuLink.text',
 		link: 'submenuLink.link',
+	},
+	pageGroup: {
+		title: 'pageGroup.title',
+		list: 'pageGroup.list',
+	},
+	menuItem: {
+		title: 'menuItem.title',
+		text: 'menuItem.text',
+		link: 'menuItem.link',
+		icon: 'menuItem.icon',
 	},
 }
 
@@ -385,14 +397,18 @@ const menuItem = (text: string) =>
 	link()
 		.populate([
 			flex([
-				icn('cube').size('20px'),
+				icn('cube').size('20px').tag(tags.menuItem.icon),
 				box([
-					txt(text).css({
-						fontWeight: '600',
-					}),
-					txt('Lorem ipsum dolor sit amet consectetur adipisicing elit').css({
-						fontSize: '0.875rem',
-					}),
+					txt(text)
+						.css({
+							fontWeight: '600',
+						})
+						.tag(tags.menuItem.title),
+					txt('Lorem ipsum dolor sit amet consectetur adipisicing elit')
+						.css({
+							fontSize: '0.875rem',
+						})
+						.tag(tags.menuItem.text),
 				]),
 			]).css({
 				gap: '0.75rem',
@@ -402,17 +418,54 @@ const menuItem = (text: string) =>
 		.css({
 			padding: '0.5rem',
 		})
+		.tag(tags.menuItem.link)
+
+function MenuItemOptions({ item }: { item: BoxElement }) {
+	const title = item.find(tags.menuItem.title) as TextElement
+	const text = item.find(tags.menuItem.text) as TextElement
+	const link = item.find(tags.menuItem.link) as LinkElement
+	const icon = item.find(tags.menuItem.icon) as IconElement
+	return (
+		<OptionsWrapper>
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Text" element={text} />
+			<LinkStyler label="Link" element={link} />
+			<IconStyler label="Icon" element={icon} />
+		</OptionsWrapper>
+	)
+}
 
 const pageGroup = (title: string, items: string[]) =>
 	column([
-		txt(title).css({
-			fontWeight: '600',
-			fontSize: '0.875rem',
-		}),
-		...items.map(menuItem),
+		txt(title)
+			.css({
+				fontWeight: '600',
+				fontSize: '0.875rem',
+			})
+			.tag(tags.pageGroup.title),
+		column(items.map(menuItem))
+			.css({
+				gap: '1rem',
+			})
+			.tag(tags.pageGroup.list),
 	]).css({
 		gap: '1rem',
 	})
+
+function PageGroupOptions({ item }: { item: BoxElement }) {
+	const title = item.find(tags.pageGroup.title) as TextElement
+	const list = item.find(tags.pageGroup.list) as BoxElement
+	return (
+		<OptionsWrapper>
+			<TextStyler element={title} label="Title" />
+			<DndTabs
+				containerElement={list}
+				renderItemOptions={(item) => <MenuItemOptions item={item as BoxElement} />}
+				insertElement={() => menuItem('Page')}
+			/>
+		</OptionsWrapper>
+	)
+}
 
 const menu = (children: Element[]) =>
 	flex(children)
@@ -494,9 +547,11 @@ export const cmn = {
 	},
 	menuItem: {
 		el: menuItem,
+		Options: MenuItemOptions,
 	},
 	pageGroup: {
 		el: pageGroup,
+		Options: PageGroupOptions,
 	},
 	menu: {
 		el: menu,

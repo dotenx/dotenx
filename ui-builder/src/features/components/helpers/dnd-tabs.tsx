@@ -18,6 +18,7 @@ export function DndTabs({
 	onSwap,
 	onInsert,
 	onDelete,
+	maxLength,
 }: {
 	containerElement: BoxElement | NavMenuElement | ColumnsElement
 	renderItemOptions: (item: Element, index: number) => ReactNode
@@ -28,6 +29,7 @@ export function DndTabs({
 	onSwap?: (oldIndex: number, newIndex: number) => void
 	onInsert?: () => void
 	onDelete?: (index: number) => void
+	maxLength?: number
 }) {
 	const set = useSetWithElement(containerElement)
 	const listElements = containerElement.children as BoxElement[]
@@ -86,6 +88,7 @@ export function DndTabs({
 			onAddNewTab={onAddNewTab}
 			rightSection={rightSection}
 			onTabChanged={onTabChanged}
+			maxLength={maxLength}
 		/>
 	)
 }

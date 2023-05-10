@@ -5,7 +5,13 @@ import { gridCols } from '../../../utils/style-utils'
 import { box, column, flex, grid, icn, img, link, txt } from '../../elements/constructor'
 import { useSetElement } from '../../elements/elements-store'
 import { BoxElement } from '../../elements/extensions/box'
+import { ImageElement } from '../../elements/extensions/image'
+import { LinkElement } from '../../elements/extensions/link'
+import { TextElement } from '../../elements/extensions/text'
 import { useSelectedElement } from '../../selection/use-selected-component'
+import { ImageStyler } from '../../simple/stylers/image-styler'
+import { LinkStyler } from '../../simple/stylers/link-styler'
+import { TextStyler } from '../../simple/stylers/text-styler'
 import { Component } from '../component'
 import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
@@ -19,11 +25,28 @@ export class Navbar5 extends Component {
 	renderOptions = () => <Options />
 }
 
+const tags = {
+	pageGroups: 'pageGroups',
+	featured: {
+		title: 'featured.title',
+		articles: 'featured.articles',
+		arrowLink: 'featured.arrowLink',
+		arrowLinkText: 'featured.arrowLinkText',
+		article: {
+			image: 'featured.article.image',
+			title: 'featured.article.title',
+			text: 'featured.article.text',
+			link: 'featured.article.link',
+		},
+	},
+}
+
 function Options() {
 	return (
 		<ComponentWrapper>
 			<cmn.logo.Options />
 			<cmn.buttons.Options />
+			<LinkListOptions />
 		</ComponentWrapper>
 	)
 }
@@ -76,6 +99,25 @@ function LinkListItemOptions({ item }: { item: BoxElement }) {
 	return (
 		<OptionsWrapper>
 			<cmn.linkItem.Options root={item} />
+			<LinkMenuOptions item={item} />
+		</OptionsWrapper>
+	)
+}
+
+function LinkMenuOptions({ item }: { item: BoxElement }) {
+	const pageGroups = item.find(tags.pageGroups) as BoxElement
+	if (!pageGroups) return null
+	return (
+		<OptionsWrapper>
+			<DndTabs
+				containerElement={pageGroups}
+				renderItemOptions={(item) => <cmn.pageGroup.Options item={item as BoxElement} />}
+				insertElement={() =>
+					cmn.pageGroup.el('Page group ', ['Page', 'Page', 'Page', 'Page'])
+				}
+				maxLength={2}
+			/>
+			<FeaturedOptions item={item} />
 		</OptionsWrapper>
 	)
 }
@@ -130,7 +172,8 @@ const createMenuItem = () =>
 								})
 								.cssTablet({
 									gridTemplateColumns: gridCols(1),
-								}),
+								})
+								.tag(tags.pageGroups),
 							featured(),
 						]).cssTablet({
 							flexDirection: 'column',
@@ -167,10 +210,12 @@ const linkList = () =>
 
 const featured = () =>
 	column([
-		txt('Featured from Blog').css({
-			fontSize: '0.875rem',
-			fontWeight: '600',
-		}),
+		txt('Featured from Blog')
+			.css({
+				fontSize: '0.875rem',
+				fontWeight: '600',
+			})
+			.tag(tags.featured.title),
 		articles(),
 		arrowLink(),
 	]).css({
@@ -182,32 +227,78 @@ const featured = () =>
 		alignSelf: 'stretch',
 	})
 
+function FeaturedOptions({ item }: { item: BoxElement }) {
+	const title = item.find(tags.featured.title) as TextElement
+	const link = item.find(tags.featured.arrowLink) as LinkElement
+	const text = item.find(tags.featured.arrowLinkText) as TextElement
+	const articles = item.find(tags.featured.articles) as BoxElement
+	return (
+		<OptionsWrapper>
+			<TextStyler label="Title" element={title} />
+			<LinkStyler label="Link URL" element={link} />
+			<TextStyler label="Link text" element={text} />
+			<DndTabs
+				containerElement={articles}
+				renderItemOptions={(item) => <ArticleOptions item={item as BoxElement} />}
+				insertElement={() => article()}
+			/>
+		</OptionsWrapper>
+	)
+}
+
+function ArticleOptions({ item }: { item: BoxElement }) {
+	const image = item.find(tags.featured.article.image) as ImageElement
+	const title = item.find(tags.featured.article.title) as TextElement
+	const text = item.find(tags.featured.article.text) as TextElement
+	const link = item.find(tags.featured.article.link) as LinkElement
+	return (
+		<OptionsWrapper>
+			<ImageStyler element={image} />
+			<TextStyler label="Title" element={title} />
+			<TextStyler label="Text" element={text} />
+			<LinkStyler label="Link URL" element={link} />
+		</OptionsWrapper>
+	)
+}
+
 const articles = () =>
-	column([article(), article()]).css({
-		gap: '1rem',
-	})
+	column([article(), article()])
+		.css({
+			gap: '1rem',
+		})
+		.tag(tags.featured.articles)
 
 const article = () =>
 	grid(2)
 		.populate([
-			img('https://files.dotenx.com/assets/hero-bg-wva.jpeg'),
+			img('https://files.dotenx.com/assets/hero-bg-wva.jpeg').tag(
+				tags.featured.article.image
+			),
 			box([
-				txt('Article Title').css({
-					fontWeight: '600',
-					lineHeight: '1.5',
-					paddingTop: '0.5rem',
-				}),
-				txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit').css({
-					fontSize: '0.875rem',
-					lineHeight: '1.5',
-					paddingTop: '0.5rem',
-				}),
-				txt('Read more').css({
-					fontSize: '0.875rem',
-					textDecoration: 'underline',
-					lineHeight: '1.5',
-					paddingTop: '0.5rem',
-				}),
+				txt('Article Title')
+					.css({
+						fontWeight: '600',
+						lineHeight: '1.5',
+						paddingTop: '0.5rem',
+					})
+					.tag(tags.featured.article.title),
+				txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit')
+					.css({
+						fontSize: '0.875rem',
+						lineHeight: '1.5',
+						paddingTop: '0.5rem',
+					})
+					.tag(tags.featured.article.text),
+				link()
+					.populate([
+						txt('Read more').css({
+							fontSize: '0.875rem',
+							textDecoration: 'underline',
+							lineHeight: '1.5',
+							paddingTop: '0.5rem',
+						}),
+					])
+					.tag(tags.featured.article.link),
 			]),
 		])
 		.css({
@@ -219,9 +310,14 @@ const article = () =>
 		})
 
 const arrowLink = () =>
-	link().populate([
-		flex([txt('See all articles'), icn('chevron-right').size('14px')]).css({
-			alignItems: 'center',
-			gap: '8px',
-		}),
-	])
+	link()
+		.populate([
+			flex([
+				txt('See all articles').tag(tags.featured.arrowLinkText),
+				icn('chevron-right').size('14px'),
+			]).css({
+				alignItems: 'center',
+				gap: '8px',
+			}),
+		])
+		.tag(tags.featured.arrowLink)
