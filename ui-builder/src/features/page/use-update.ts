@@ -81,8 +81,9 @@ const useImports = () => {
 			_.uniq(
 				flattenedElements
 					.filter((element) => element.imports.length > 0)
-					.map((element) => `<script src="${element.imports}"></script>`)
-					.flat()
+					.flatMap((element) =>
+						element.imports.flatMap((imp) => `<script src="${imp}"></script>`)
+					)
 			).join(' '),
 		[flattenedElements]
 	)

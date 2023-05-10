@@ -166,8 +166,21 @@ import { HeroWithRating } from './hero-with-rating'
 import { HeroWithRatingTwoCTAs } from './hero-with-rating-two-cta'
 import { HeroWithRatingTwoCTAs2 } from './hero-with-rating-two-cta-2'
 import { Navbar } from './navbar'
-import { NavbarWithDropDownCta } from './navbar-with-dropdown-cta'
 import { NavbarWithDropDownCtaCenterLogo } from './navbar-with-dropdown-cta-center-logo'
+import { Navbar1 } from './navbars/navbar-1'
+import { Navbar10 } from './navbars/navbar-10'
+import { Navbar11 } from './navbars/navbar-11'
+import { Navbar12 } from './navbars/navbar-12'
+import { Navbar2 } from './navbars/navbar-2'
+import { Navbar3 } from './navbars/navbar-3'
+import { Navbar4 } from './navbars/navbar-4'
+import { Navbar5 } from './navbars/navbar-5'
+import { Navbar6 } from './navbars/navbar-6'
+import { Navbar7 } from './navbars/navbar-7'
+import { Navbar8 } from './navbars/navbar-8'
+import { Navbar9 } from './navbars/navbar-9'
+import { NavbarWithDropDownCta1 } from './navbars/navbar-with-dropdown-cta'
+import { NavbarWithMultiColumnDropDownCta1 } from './navbars/navbar-with-multicolumn-dropdown-cta'
 import { PricingSimple } from './pricing-simple'
 import { PricingSimple2 } from './pricing-simple-2'
 import { Slider1 } from './slider-1'
@@ -206,7 +219,25 @@ export const COMPONENTS: Components = [
 	{
 		title: 'Navbar',
 		icon: <TbLayoutNavbar />,
-		items: [Navbar, NavbarWithDropDownCta, NavbarWithDropDownCtaCenterLogo],
+		items: [
+			Navbar1,
+			Navbar2,
+			Navbar3,
+			Navbar4,
+			Navbar5,
+			Navbar6,
+			Navbar7,
+			Navbar8,
+			Navbar9,
+			Navbar10,
+			Navbar11,
+			Navbar12,
+			Navbar,
+			// NavbarWithDropDownCta,
+			NavbarWithDropDownCta1,
+			NavbarWithDropDownCtaCenterLogo,
+			NavbarWithMultiColumnDropDownCta1,
+		],
 	},
 	{
 		title: 'Hero',
