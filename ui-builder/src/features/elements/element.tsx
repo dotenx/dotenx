@@ -104,6 +104,7 @@ export abstract class Element {
 	}
 
 	find<T extends Element = Element>(tagId: string): T | undefined {
+		if (this.tagId === tagId) return this as Element as T
 		if (this.children) {
 			for (const child of this.children) {
 				const found = child._findByTagIdRecursive(tagId)
@@ -175,6 +176,12 @@ export abstract class Element {
 		return this
 	}
 
+	cssHoverTablet(css: CSSProperties) {
+		const merged = _.assign({}, this.style.tablet?.hover, css)
+		_.set(this.style, 'tablet.hover', merged)
+		return this
+	}
+
 	tag(tagId: string) {
 		this.tagId = tagId
 		return this
@@ -202,6 +209,11 @@ export abstract class Element {
 
 	as(type: string) {
 		this.data = { ...this.data, as: type }
+		return this
+	}
+
+	setImports(imports: string[]) {
+		this.imports = imports
 		return this
 	}
 }
