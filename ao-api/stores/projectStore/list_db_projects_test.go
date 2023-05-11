@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetProjectByTag(t *testing.T) {
+func TestListDBProjects(t *testing.T) {
 
 	_, filename, _, _ := runtime.Caller(0)
 	t.Logf("Current test filename: %s", filename)
@@ -29,12 +29,12 @@ func TestGetProjectByTag(t *testing.T) {
 		Tag:         "1234567887654321",
 	}
 
-	selectQuery := "Select id, name, account_id, description, tag, has_database, type, theme from projects WHERE tag = $1"
-	rows := sqlmock.NewRows([]string{"id", "name", "account_id", "description", "tag", "has_database", "type", "theme"})
+	selectQuery := "Select id, name, description, tag, type, theme from projects WHERE account_id = $1 AND has_database = true"
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "tag", "type", "theme"})
 	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).
-		WithArgs(testProject.Tag).WillReturnRows(rows)
+		WithArgs(testProject.AccountId).WillReturnRows(rows)
 
-	_, err = ProjectStore.GetProjectByTag(context.Background(), testProject.Tag)
+	_, err = ProjectStore.ListDBProjects(context.Background(), testProject.AccountId)
 	t.Log(err)
 	assert.NoError(t, err)
 	// assert.NotEmpty(t, project)

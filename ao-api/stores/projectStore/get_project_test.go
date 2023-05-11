@@ -29,9 +29,10 @@ func TestGetProject(t *testing.T) {
 		Tag:         "1234567887654321",
 	}
 
-	selectQuery := "Select id, name, description, tag from projects WHERE account_id = $1 AND name = $2"
-	rows := sqlmock.NewRows([]string{"id", "name", "description", "tag"})
-	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).WithArgs(testProject.AccountId, testProject.Name).WillReturnRows(rows)
+	selectQuery := "Select id, name, description, tag, has_database, type, theme from projects WHERE account_id = $1 AND name = $2"
+	rows := sqlmock.NewRows([]string{"id", "name", "description", "tag", "has_database", "type", "theme"})
+	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).
+		WithArgs(testProject.AccountId, testProject.Name).WillReturnRows(rows)
 
 	_, err = ProjectStore.GetProject(context.Background(), testProject.AccountId, testProject.Name)
 	t.Log(err)
