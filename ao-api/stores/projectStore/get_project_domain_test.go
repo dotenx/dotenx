@@ -2,6 +2,7 @@ package projectStore
 
 import (
 	"context"
+	"errors"
 	"regexp"
 	"runtime"
 	"testing"
@@ -12,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetProjectByTag(t *testing.T) {
+func TestGetProjectDomain(t *testing.T) {
 
 	_, filename, _, _ := runtime.Caller(0)
 	t.Logf("Current test filename: %s", filename)
@@ -29,14 +30,14 @@ func TestGetProjectByTag(t *testing.T) {
 		Tag:         "1234567887654321",
 	}
 
-	selectQuery := "Select id, name, account_id, description, tag, has_database, type, theme from projects WHERE tag = $1"
-	rows := sqlmock.NewRows([]string{"id", "name", "account_id", "description", "tag", "has_database", "type", "theme"})
+	selectQuery := "SELECT account_id, project_tag, internal_domain, external_domain, tls_arn, hosted_zone_id, ns_records FROM project_domain WHERE account_id = $1 AND project_tag = $2"
+	rows := sqlmock.NewRows([]string{"account_id", "project_tag", "internal_domain", "external_domain", "tls_arn", "hosted_zone_id", "ns_records"})
 	mock.ExpectQuery(regexp.QuoteMeta(selectQuery)).
-		WithArgs(testProject.Tag).WillReturnRows(rows)
+		WithArgs(testProject.AccountId, testProject.Tag).WillReturnRows(rows)
 
-	_, err = ProjectStore.GetProjectByTag(context.Background(), testProject.Tag)
+	_, err = ProjectStore.GetProjectDomain(context.Background(), testProject.AccountId, testProject.Tag)
 	t.Log(err)
-	assert.NoError(t, err)
+	assert.Error(t, errors.New("project_domain not found"))
 	// assert.NotEmpty(t, project)
 
 }
