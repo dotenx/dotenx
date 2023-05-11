@@ -32,7 +32,7 @@ func init() {
 
 	// if os.Args[0] has ".test" as suffix meaning that we are in test mode
 	if strings.HasSuffix(os.Args[0], ".test") {
-		address = "../../../miniTasks/miniTasks.yaml"
+		address = "../../miniTasks/miniTasks.yaml"
 	}
 
 	var yamlFile []MiniTaskDefinition

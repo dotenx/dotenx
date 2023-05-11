@@ -2,7 +2,6 @@ package projectStore
 
 import (
 	"context"
-	"regexp"
 	"runtime"
 	"testing"
 
@@ -27,10 +26,15 @@ func TestAddProject(t *testing.T) {
 		Description: "just for unit testing",
 		AccountId:   "test-account-id",
 		Tag:         "1234567887654321",
+		Type:        "website",
+		Theme:       "blank",
+		HasDatabase: false,
 	}
 
-	insertQuery := "INSERT INTO projects (account_id, name, description, tag) VALUES ($1, $2, $3, $4)"
-	mock.ExpectExec(regexp.QuoteMeta(insertQuery)).WithArgs(testProject.AccountId, testProject.Name, testProject.Description, testProject.Tag).WillReturnResult(sqlmock.NewResult(0, 1))
+	insertQuery := `INSERT INTO projects \(account_id, name, description, tag, has_database, type, theme\)\.*`
+	mock.ExpectExec(insertQuery).
+		WithArgs(testProject.AccountId, testProject.Name, testProject.Description, testProject.Tag, testProject.HasDatabase, testProject.Type, testProject.Theme).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err = ProjectStore.AddProject(context.Background(), testProject.AccountId, testProject)
 	t.Log(err)
