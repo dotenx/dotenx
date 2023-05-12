@@ -1,4 +1,3 @@
-// r feature 131
 import componentImage from '../../../assets/components/features/feature-21.png'
 import { box } from '../../elements/constructor'
 import { BoxElement } from '../../elements/extensions/box'

@@ -15,7 +15,6 @@ import { DndTabs } from '../helpers/dnd-tabs'
 import { FlexBasisEditor } from '../helpers/flex-basis-editor'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r21
 export class Gallery2 extends Component {
 	name = 'Gallery 2'
 	image = componentImage

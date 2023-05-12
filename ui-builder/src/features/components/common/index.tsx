@@ -77,7 +77,7 @@ const icnSubheadings = () =>
 
 const icnSubheading = (title: string) =>
 	flex([
-		icn('cube').size('32px').tag(tag.icnSubheading.icn),
+		icn('circle').size('32px').tag(tag.icnSubheading.icn),
 		box([
 			txt(title)
 				.css({
@@ -178,7 +178,7 @@ function TaglineOptions({ root }: { root?: BoxElement }) {
 
 // =============================================================== Heading
 const heading = (text?: string) =>
-	txt(text ?? 'Medium length section heading goes here')
+	txt(text ?? 'Simplify your business')
 		.css({
 			fontWeight: '700',
 			fontSize: '3rem',
@@ -233,7 +233,7 @@ const icnLst = () =>
 
 const icnLstItm = () =>
 	flex([
-		icn('cube').size('24px').tag(tag.icnLst.icn),
+		icn('circle').size('24px').tag(tag.icnLst.icn),
 		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 			.css({
 				fontSize: '1rem',
@@ -315,7 +315,7 @@ function BtnLinksOptions({ root }: { root?: BoxElement }) {
 
 // =============================================================== Icon Heading
 const icnHeading = () =>
-	icn('cube')
+	icn('circle')
 		.size('48px')
 		.css({
 			marginBottom: '1.5rem',

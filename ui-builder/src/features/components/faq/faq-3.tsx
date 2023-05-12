@@ -11,7 +11,6 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r7
 export class Faq3 extends Component {
 	name = 'FAQ 3'
 	image = componentImage

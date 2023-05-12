@@ -17,7 +17,6 @@ import { DndTabs } from '../helpers/dnd-tabs'
 import { FlexBasisEditor } from '../helpers/flex-basis-editor'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r12
 export class Testimonials2 extends Component {
 	name = 'Testimonials 2'
 	image = componentImage

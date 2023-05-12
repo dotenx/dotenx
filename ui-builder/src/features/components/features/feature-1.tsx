@@ -1,4 +1,3 @@
-// r feature 7
 import componentImage from '../../../assets/components/features/feature-1.png'
 import { box } from '../../elements/constructor'
 import { cmn } from '../common'
