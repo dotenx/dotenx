@@ -1,13 +1,14 @@
+import { ActionIcon } from '@mantine/core'
+import { Splide, SplideSlide } from '@splidejs/react-splide'
+import '@splidejs/react-splide/css'
+import '@splidejs/react-splide/css/core'
 import produce from 'immer'
 import { FC, ReactNode } from 'react'
 import { TbArrowNarrowDown, TbArrowNarrowUp, TbSeparatorVertical, TbTrash } from 'react-icons/tb'
-import { Splide, SplideSlide } from '@splidejs/react-splide'
 import { Element, RenderFn, RenderOptions } from '../element'
+import { useSetElement } from '../elements-store'
 import { Style } from '../style'
 import { BoxElement } from './box'
-import '@splidejs/react-splide/css'
-import '@splidejs/react-splide/css/core'
-import { ActionIcon } from '@mantine/core'
 
 const colors: string[] = [
 	'#BD8B25',
@@ -78,65 +79,63 @@ export class SliderElement extends Element {
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {
-		return (
-			<div className="space-y-6">
-				<button
-					className="flex items-center justify-center w-full h-10 text-white bg-red-500 rounded-md"
-					onClick={() => {
-						set(
-							produce(this, (draft) => {
-								draft.children.push(new BoxElement())
-								draft.data.slides.push(colors[draft.children.length - 1])
-							})
-						)
-					}}
-					disabled={this.children.length == colors.length}
-				>
-					+ Add new slide
-				</button>
-				<Container
-					cards={this.data.slides}
-					selected={this.data.selected}
-					setSelected={(index: number) => {
-						set(
-							produce(this, (draft) => {
-								draft.data.selected = index
-							})
-						)
-					}}
-					moveCard={(index: number, isUp: boolean) => {
-						const newIndex = index + (isUp ? -1 : 1)
-						set(
-							produce(this, (draft) => {
-								const temp = draft.data.slides[index]
-								draft.data.slides[index] = draft.data.slides[newIndex]
-								draft.data.slides[newIndex] = temp
-
-								const child = draft.children[index]
-								draft.children[index] = draft.children[newIndex]
-								draft.children[newIndex] = child
-
-								draft.data.selected = newIndex
-							})
-						)
-					}}
-					removeCard={(index: number) => {
-						set(
-							produce(this, (draft) => {
-								if (draft.data.selected === index) {
-									draft.data.selected = 0
-								} else if (draft.data.selected === draft.children.length - 1) {
-									draft.data.selected = draft.children.length - 2
-								}
-								draft.data.slides.splice(index, 1)
-								draft.children.splice(index, 1)
-							})
-						)
-					}}
-				/>
-			</div>
-		)
+		return <SliderOptions element={this} />
 	}
+}
+
+function SliderOptions({ element }: { element: SliderElement }) {
+	const set = useSetElement()
+
+	return (
+		<div className="space-y-6">
+			<button
+				className="flex items-center justify-center w-full h-10 text-white bg-red-500 rounded-md"
+				onClick={() => {
+					set(element, (draft) => {
+						draft.children.push(new BoxElement())
+						draft.data.slides.push(colors[draft.children.length - 1])
+					})
+				}}
+				disabled={element.children.length == colors.length}
+			>
+				+ Add new slide
+			</button>
+			<Container
+				cards={element.data.slides}
+				selected={element.data.selected}
+				setSelected={(index: number) => {
+					set(element, (draft) => {
+						draft.data.selected = index
+					})
+				}}
+				moveCard={(index: number, isUp: boolean) => {
+					const newIndex = index + (isUp ? -1 : 1)
+					set(element, (draft) => {
+						const temp = draft.data.slides[index]
+						draft.data.slides[index] = draft.data.slides[newIndex]
+						draft.data.slides[newIndex] = temp
+
+						const child = draft.children[index]
+						draft.children[index] = draft.children[newIndex]
+						draft.children[newIndex] = child
+
+						draft.data.selected = newIndex
+					})
+				}}
+				removeCard={(index: number) => {
+					set(element, (draft) => {
+						if (draft.data.selected === index) {
+							draft.data.selected = 0
+						} else if (draft.data.selected === draft.children.length - 1) {
+							draft.data.selected = draft.children.length - 2
+						}
+						draft.data.slides.splice(index, 1)
+						draft.children.splice(index, 1)
+					})
+				}}
+			/>
+		</div>
+	)
 }
 
 //------- container
@@ -161,25 +160,23 @@ export const Container: FC<ContainerProps> = ({
 	selected,
 	setSelected,
 }) => {
-	{
-		return (
-			<div className="flex flex-col gap-2 w-full">
-				{cards.map((card, index) => (
-					<Card
-						key={index}
-						setSelected={setSelected}
-						moveCard={moveCard}
-						removeCard={removeCard}
-						index={index}
-						card={card}
-						canMoveDown={index < cards.length - 1}
-						canMoveUp={index > 0}
-						isSelected={selected === index}
-					/>
-				))}
-			</div>
-		)
-	}
+	return (
+		<div className="flex flex-col gap-2 w-full">
+			{cards.map((card, index) => (
+				<Card
+					key={index}
+					setSelected={setSelected}
+					moveCard={moveCard}
+					removeCard={removeCard}
+					index={index}
+					card={card}
+					canMoveDown={index < cards.length - 1}
+					canMoveUp={index > 0}
+					isSelected={selected === index}
+				/>
+			))}
+		</div>
+	)
 }
 
 interface CardProps {

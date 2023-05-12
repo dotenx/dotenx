@@ -62,6 +62,11 @@ export class ImageElement extends Element {
 		return this
 	}
 
+	alt(alt: string) {
+		this.data.alt = alt
+		return this
+	}
+
 	srcState(state: string) {
 		this.data.src = Expression.fromState(state)
 		return this

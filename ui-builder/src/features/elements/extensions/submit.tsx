@@ -67,4 +67,9 @@ export class SubmitElement extends Element {
 			</div>
 		)
 	}
+
+	txt(text: string) {
+		this.data.text = text
+		return this
+	}
 }

@@ -1,15 +1,19 @@
+import chroma from 'chroma-js'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { useMemo } from 'react'
 import { mapStyleToKebabCase } from '../../api/mapper'
 import { Element } from '../elements/element'
-import { CssSelector, SelectorStyle, Style } from '../elements/style'
+import { CssSelector, CustomStyle, SelectorStyle, Style } from '../elements/style'
+import { colorNames, selectedPaletteAtom } from '../simple/palette'
 import { ViewportDevice } from '../viewport/viewport-store'
 import { useClassesStore } from './classes-store'
 import { fontsAtom } from './typography-editor'
+import { joinStyles } from '../../utils/join-scripts'
 
 const globalPageStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
 *, *::before, *::after {
 	box-sizing: border-box;
   }
@@ -44,21 +48,49 @@ const globalPageStyles = `
 `
 
 export const useGenerateStyles = (elements: Element[]) => {
+	const palette = useGeneratePalette()
+	const flattenedElements = useMemo(() => flatElements(elements), [elements])
+
 	const fonts = useAtomValue(fontsAtom)
 	const classNames = useClassesStore((store) => store.classes)
 
-	const desktopIds = useMemo(() => generateCssIds(elements, 'desktop'), [elements])
-	const tabletIds = useMemo(() => generateCssIds(elements, 'tablet'), [elements])
-	const mobileIds = useMemo(() => generateCssIds(elements, 'mobile'), [elements])
+	const desktopIds = useMemo(
+		() => generateCssIds(flattenedElements, 'desktop'),
+		[flattenedElements]
+	)
+	const tabletIds = useMemo(
+		() => generateCssIds(flattenedElements, 'tablet'),
+		[flattenedElements]
+	)
+	const mobileIds = useMemo(
+		() => generateCssIds(flattenedElements, 'mobile'),
+		[flattenedElements]
+	)
 
 	const desktopClasses = useMemo(() => generateCssClasses(classNames, 'desktop'), [classNames])
 	const tabletClasses = useMemo(() => generateCssClasses(classNames, 'tablet'), [classNames])
 	const mobileClasses = useMemo(() => generateCssClasses(classNames, 'mobile'), [classNames])
 
+	const rawStyles = useMemo(() => joinStyles(flattenedElements), [flattenedElements])
+
+	const customDesktopIds = useMemo(
+		() => generateCustomCssIds(flattenedElements, 'desktop'),
+		[flattenedElements]
+	)
+	const customTabletIds = useMemo(
+		() => generateCustomCssIds(flattenedElements, 'tablet'),
+		[flattenedElements]
+	)
+	const customMobileIds = useMemo(
+		() => generateCustomCssIds(flattenedElements, 'mobile'),
+		[flattenedElements]
+	)
+
 	const fontsCss = useMemo(() => generateFontsCss(fonts), [fonts])
 
 	const generatedStyles = useMemo(
 		() => `
+			${palette}
 			${fontsCss}
 			${globalPageStyles}
 			${desktopClasses}
@@ -67,16 +99,50 @@ export const useGenerateStyles = (elements: Element[]) => {
 			@media (max-width: 478px) { ${mobileClasses} }
 			@media (max-width: 767px) { ${tabletIds} }
 			@media (max-width: 478px) { ${mobileIds} }
+			${customDesktopIds}
+			@media (max-width: 767px) { ${customTabletIds} }
+			@media (max-width: 478px) { ${customMobileIds} }
+			${rawStyles}
 		`,
-		[desktopClasses, desktopIds, fontsCss, mobileClasses, mobileIds, tabletClasses, tabletIds]
+		[
+			palette,
+			fontsCss,
+			desktopClasses,
+			desktopIds,
+			tabletClasses,
+			mobileClasses,
+			tabletIds,
+			mobileIds,
+			customDesktopIds,
+			customTabletIds,
+			customMobileIds,
+			rawStyles,
+		]
 	)
 
 	return generatedStyles
 }
 
-const generateCssIds = (elements: Element[], device: ViewportDevice) => {
-	return flatElements(elements)
+export const useGeneratePalette = () => {
+	const palette = useAtomValue(selectedPaletteAtom)
+	return `
+		:root {
+			${palette.colors
+				.map((color, index) => `--${colorNames[index]}: ${chroma(color).rgb().join(' ')};`)
+				.join('\n')}
+		}
+	`
+}
+
+const generateCssIds = (flattenedElements: Element[], device: ViewportDevice) => {
+	return flattenedElements
 		.map((element) => generateCssId(element.id, element.style[device] ?? {}))
+		.join('\n')
+}
+
+const generateCustomCssIds = (flattenedElements: Element[], device: ViewportDevice) => {
+	return flattenedElements
+		.map((element) => generateCustomCssId(element.id, element.customStyle[device] ?? {}))
 		.join('\n')
 }
 
@@ -88,6 +154,16 @@ const generateCssId = (id: string, styles: SelectorStyle) => {
 	return _.toPairs(styles)
 		.map(([selector, style]) => {
 			const cssSelector = selector === CssSelector.Default ? '' : `:${selector}`
+			const stringifiedStyles = stylesToString(mapStyleToKebabCase(style))
+			return `.${id}${cssSelector} { ${stringifiedStyles} }`
+		})
+		.join('\n')
+}
+
+const generateCustomCssId = (id: string, customStyle: CustomStyle) => {
+	return _.toPairs(customStyle)
+		.map(([selector, style]) => {
+			const cssSelector = ` ${selector}`
 			const stringifiedStyles = stylesToString(mapStyleToKebabCase(style))
 			return `.${id}${cssSelector} { ${stringifiedStyles} }`
 		})

@@ -1,18 +1,16 @@
-import { AppShell, Drawer } from '@mantine/core'
+import { AppShell, Drawer, Loader } from '@mantine/core'
 import { useAtom, useAtomValue } from 'jotai'
 import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { PageActions } from '../features/page/actions'
 import { PageSelection } from '../features/page/page-selection'
 import {
-	FullscreenButton,
 	Logo,
-	PageScaling,
 	previewAtom,
 	TopBarWrapper,
 	UndoRedo,
 	UnsavedMessage,
 	useFetchPage,
-	useFetchProjectTag,
+	useFetchProject,
 } from '../features/page/top-bar'
 import { useSelectionStore } from '../features/selection/selection-store'
 import { useSelectedElement } from '../features/selection/use-selected-component'
@@ -23,10 +21,12 @@ import { AppHeader } from '../features/ui/header'
 import { ViewportSelection } from '../features/viewport/viewport-selection'
 
 export function EcommerceBuilder() {
-	useFetchProjectTag()
+	const projectQuery = useFetchProject()
 	useFetchPage()
 	const { isFullscreen } = useAtomValue(previewAtom)
 	const sidebars = isFullscreen ? {} : { navbar: <SimpleNavbar />, aside: <Aside /> }
+
+	if (projectQuery.isLoading) return <Loader mx="auto" size="xs" mt="xl" />
 
 	return (
 		<AppShell
@@ -51,13 +51,11 @@ function TopBar() {
 					<Logo />
 					<PageSelection />
 					<ViewportSelection />
-					<FullscreenButton />
 					<UnsavedMessage />
 				</>
 			}
 			right={
 				<>
-					<PageScaling />
 					<UndoRedo />
 					<PageActions showSettings={false} />
 				</>
@@ -74,9 +72,10 @@ const SimpleNavbar = () => {
 			size={310}
 			opened={!!inserting}
 			onClose={() => setInserting(null)}
-			overlayOpacity={0.1}
+			overlayProps={{ opacity: 0.1 }}
 			padding="md"
 			className="overflow-y-scroll"
+			withCloseButton={false}
 		>
 			<SimpleLeftSidebar components={ECOMMERCE_COMPONENTS} />
 		</Drawer>
@@ -92,10 +91,11 @@ const Aside = () => {
 			size={310}
 			opened={!!selectedElement}
 			onClose={deselect}
-			overlayOpacity={0.1}
+			overlayProps={{ opacity: 0.1 }}
 			padding="md"
 			className="overflow-y-scroll"
 			position="right"
+			withCloseButton={false}
 		>
 			<SimpleRightSidebar />
 		</Drawer>

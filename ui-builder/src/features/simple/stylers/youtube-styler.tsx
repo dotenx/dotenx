@@ -10,11 +10,7 @@ import { SpacingEditor } from '../../style/spacing-editor'
 import { TypographyEditor } from '../../style/typography-editor'
 import { Styler } from './styler'
 
-export function YoutubeStyler({
-	element,
-}: {
-	element: YouTubeElement
-}) {
+export function YoutubeStyler({ element }: { element: YouTubeElement }) {
 	const set = useSetWithElement(element)
 
 	return (

@@ -1,21 +1,14 @@
-import { ActionIcon, ColorInput, Select } from '@mantine/core'
-import { Element } from '../elements/element'
-import { CollapseLine } from '../ui/collapse-line'
-import { useEditStyle } from './use-edit-style'
+import { ActionIcon } from '@mantine/core'
 import {
-	TbLayoutAlignTop,
 	TbLayoutAlignBottom,
 	TbLayoutAlignCenter,
 	TbLayoutAlignLeft,
 	TbLayoutAlignRight,
+	TbLayoutAlignTop,
 } from 'react-icons/tb'
-
-const backgroundClippings = [
-	{ label: 'None', value: 'border-box' },
-	{ label: 'Padding', value: 'padding-box' },
-	{ label: 'Content', value: 'content-box' },
-	{ label: 'Text', value: 'text' },
-]
+import { Element } from '../elements/element'
+import { CollapseLine } from '../ui/collapse-line'
+import { useEditStyle } from './use-edit-style'
 
 export function AlignmentEditor({
 	element,
@@ -57,7 +50,6 @@ export function AlignmentEditor({
 				>
 					{direction === 'row' ? <TbLayoutAlignRight /> : <TbLayoutAlignBottom />}
 				</ActionIcon>
-
 			</div>
 		</CollapseLine>
 	)

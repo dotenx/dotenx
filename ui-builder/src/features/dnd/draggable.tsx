@@ -56,3 +56,37 @@ export const Draggable = forwardRef<HTMLDivElement, DraggableProps>(({ data, ...
 })
 
 Draggable.displayName = 'Draggable'
+
+export const DraggableInput = forwardRef<HTMLInputElement, DraggableProps>(
+	({ data, ...rest }, ref) => {
+		const [{ isDragging }, drag] = useDrag(() => ({
+			type: DraggableKinds.Component,
+			item: data,
+			collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+		}))
+		const setDragging = useSetAtom(isDraggingAtom)
+
+		useEffect(() => {
+			setDragging({ isDragging })
+		}, [isDragging, setDragging])
+
+		const refHandler = useCallback(
+			(target: HTMLInputElement) => {
+				try {
+					drag(target)
+					if (ref) {
+						if (typeof ref === 'function') ref(target)
+						else ref.current = target
+					}
+				} catch (error) {
+					console.error(error)
+				}
+			},
+			[drag, ref]
+		)
+
+		return <input ref={refHandler} {...rest} readOnly />
+	}
+)
+
+DraggableInput.displayName = 'Draggable Input'

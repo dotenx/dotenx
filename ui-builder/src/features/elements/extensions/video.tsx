@@ -9,7 +9,7 @@ import { Style } from '../style'
 export class VideoElement extends Element {
 	name = 'Video'
 	icon = (<TbVideo />)
-	style: Style = { desktop: { default: {  width: '100%' } } }
+	style: Style = { desktop: { default: { width: '100%' } } }
 	data = { src: '', poster: '', controls: true, autoplay: false, loop: false, muted: false }
 
 	render(): ReactNode {
@@ -22,6 +22,36 @@ export class VideoElement extends Element {
 
 	renderOptions(): ReactNode {
 		return <VideoOptions />
+	}
+
+	src(src: string) {
+		this.data.src = src
+		return this
+	}
+
+	poster(poster: string) {
+		this.data.poster = poster
+		return this
+	}
+
+	controls(controls: boolean) {
+		this.data.controls = controls
+		return this
+	}
+
+	autoplay(autoplay: boolean) {
+		this.data.autoplay = autoplay
+		return this
+	}
+
+	loop(loop: boolean) {
+		this.data.loop = loop
+		return this
+	}
+
+	muted(muted: boolean) {
+		this.data.muted = muted
+		return this
 	}
 }
 

@@ -64,7 +64,7 @@ export function InputWithUnit({
 			)}
 			<NumberInput
 				size="xs"
-				value={unit === 'auto' ? undefined : number}
+				value={unit === 'auto' ? '' : number}
 				onChange={(newValue) => {
 					if (unit === 'auto') onChange(newValue + 'px')
 					else onChange((newValue ?? '0') + unit)
