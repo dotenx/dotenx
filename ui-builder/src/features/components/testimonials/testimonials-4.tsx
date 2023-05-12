@@ -13,7 +13,6 @@ import { ComponentWrapper } from '../helpers/component-wrapper'
 import { DndTabs } from '../helpers/dnd-tabs'
 import { OptionsWrapper } from '../helpers/options-wrapper'
 
-// r3
 export class Testimonials4 extends Component {
 	name = 'Testimonials 4'
 	image = componentImage

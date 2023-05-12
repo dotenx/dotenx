@@ -1,4 +1,3 @@
-// r feature 22
 import componentImage from '../../../assets/components/features/feature-5.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
@@ -64,13 +63,13 @@ const component = () =>
 			grid(2)
 				.populate([
 					box([
-						icn('cube')
+						icn('circle')
 							.size('80px')
 							.css({
 								marginBottom: '1.5rem',
 							})
 							.tag(tags.icon),
-						txt('Medium length section heading goes here')
+						txt('Simplify your business')
 							.css({
 								fontWeight: '700',
 								fontSize: '3rem',

@@ -212,7 +212,7 @@ const createMenuItem = () =>
 										'Page Seven',
 										'Page Eight',
 									]),
-									cmn.pageGroup.el('Page group two', [
+									cmn.pageGroup.el('Page group three', [
 										'Page Nine',
 										'Page Ten',
 										'Page Eleven',

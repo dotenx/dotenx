@@ -1,20 +1,20 @@
 import { ActionIcon, Menu } from '@mantine/core'
+import { TbPlus } from 'react-icons/tb'
 import { box, icn, img, link, paper, txt } from '../../../elements/constructor'
 import { Element } from '../../../elements/element'
+import { useSetElement } from '../../../elements/elements-store'
 import { BoxElement } from '../../../elements/extensions/box'
+import { ImageElement } from '../../../elements/extensions/image'
 import { LinkElement } from '../../../elements/extensions/link'
 import { TextElement } from '../../../elements/extensions/text'
 import { useSelectedElement } from '../../../selection/use-selected-component'
+import { color } from '../../../simple/palette'
+import { ImageStyler } from '../../../simple/stylers/image-styler'
 import { LinkStyler } from '../../../simple/stylers/link-styler'
 import { TextStyler } from '../../../simple/stylers/text-styler'
 import { repeatObject } from '../../helpers'
 import { DndTabs } from '../../helpers/dnd-tabs'
 import { OptionsWrapper } from '../../helpers/options-wrapper'
-import { useSetElement } from '../../../elements/elements-store'
-import { TbPlus } from 'react-icons/tb'
-import { ImageStyler } from '../../../simple/stylers/image-styler'
-import { ImageElement } from '../../../elements/extensions/image'
-import { color } from '../../../simple/palette'
 
 const tags = {
 	cta1: 'cta1',
@@ -164,7 +164,7 @@ const tagHeadingDetails = () =>
 			gap: '0.75rem',
 		})
 		.populate([
-			icn('cube').size('16px'),
+			icn('circle').size('16px'),
 			box([
 				txt('Link')
 					.tag(tags.linkText)
@@ -188,28 +188,34 @@ const tagHeadingDetailsColumn = () =>
 			fontSize: '1rem',
 		}),
 		...repeatObject(tagHeadingDetails(), 4),
-	]).css({
-		minWidth: '20rem',
-		rowGap: '0.5rem',
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'stretch',
-	}).cssMobile({
-		minWidth: 'auto',
-	})
+	])
+		.css({
+			minWidth: '20rem',
+			rowGap: '0.5rem',
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'stretch',
+		})
+		.cssMobile({
+			minWidth: 'auto',
+		})
 
-const multiColumnSubmenu1 = box(repeatObject(tagHeadingDetailsColumn(), 2)).as('ul').tag(tags.submenu).class('submenu').css({
-	height: '0',
-	width: '0',
-	visibility: 'hidden',
-	overflow: 'hidden',
-	transform: 'translateY(20px)',
-	display: 'grid', // If we set this to none the transition effect won't work. Stupid HTML!
-	gridTemplateColumns: '1fr 1fr',
-	gap: '1rem',
-	padding: '0px 10px',
-	margin: '0px',
-})
+const multiColumnSubmenu1 = box(repeatObject(tagHeadingDetailsColumn(), 2))
+	.as('ul')
+	.tag(tags.submenu)
+	.class('submenu')
+	.css({
+		height: '0',
+		width: '0',
+		visibility: 'hidden',
+		overflow: 'hidden',
+		transform: 'translateY(20px)',
+		display: 'grid', // If we set this to none the transition effect won't work. Stupid HTML!
+		gridTemplateColumns: '1fr 1fr',
+		gap: '1rem',
+		padding: '0px 10px',
+		margin: '0px',
+	})
 
 const defaultSubmenuOptions = ({ submenu }: { submenu: BoxElement }) => {
 	return (

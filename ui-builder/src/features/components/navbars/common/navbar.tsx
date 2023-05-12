@@ -397,7 +397,7 @@ const menuItem = (text: string) =>
 	link()
 		.populate([
 			flex([
-				icn('cube').size('20px').tag(tags.menuItem.icon),
+				icn('circle').size('20px').tag(tags.menuItem.icon),
 				box([
 					txt(text)
 						.css({

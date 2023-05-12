@@ -1,4 +1,3 @@
-// r feature 16
 import componentImage from '../../../assets/components/features/feature-3.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
@@ -97,7 +96,7 @@ const component = () =>
 								marginBottom: '1rem',
 							})
 							.tag(tags.tagline),
-						txt('Medium length section heading goes here')
+						txt('Simplify your business')
 							.css({
 								fontWeight: '700',
 								fontSize: '3rem',
@@ -177,7 +176,7 @@ const component = () =>
 
 const subheading = () =>
 	flex([
-		icn('cube').size('24px').tag(tags.subheading.icon),
+		icn('circle').size('24px').tag(tags.subheading.icon),
 		txt('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')
 			.css({
 				fontSize: '1rem',

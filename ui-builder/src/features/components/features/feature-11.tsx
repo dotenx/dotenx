@@ -1,4 +1,3 @@
-// r feature 55
 import componentImage from '../../../assets/components/features/feature-11.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, link, txt } from '../../elements/constructor'
@@ -67,7 +66,7 @@ const component = () =>
 								marginBottom: '1rem',
 							})
 							.tag(tags.tagline),
-						txt('Medium length section heading goes here')
+						txt('Simplify your business')
 							.css({
 								fontWeight: '700',
 								fontSize: '3rem',

@@ -1,4 +1,3 @@
-// r feature 31
 import componentImage from '../../../assets/components/features/feature-7.png'
 import { gridCols } from '../../../utils/style-utils'
 import { box, container, flex, grid, icn, img, link, txt } from '../../elements/constructor'
@@ -114,7 +113,7 @@ const component = () =>
 
 const subheading = () =>
 	box([
-		icn('cube').size('3rem').tag(tags.subheading.icon).css({
+		icn('circle').size('3rem').tag(tags.subheading.icon).css({
 			marginBottom: '1rem',
 		}),
 		box([

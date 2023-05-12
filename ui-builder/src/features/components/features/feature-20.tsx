@@ -1,4 +1,3 @@
-// r feature 136
 import componentImage from '../../../assets/components/features/feature-20.png'
 import { column } from '../../elements/constructor'
 import { cmn } from '../common'
