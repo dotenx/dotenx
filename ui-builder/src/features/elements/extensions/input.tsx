@@ -1,10 +1,11 @@
 import { Select, Switch, TextInput } from '@mantine/core'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { TbFileImport } from 'react-icons/tb'
 import { Expression } from '../../states/expression'
 import { SingleIntelinput } from '../../ui/intelinput'
-import { Element } from '../element'
+import { Element, RenderFn } from '../element'
 import { useSetElement } from '../elements-store'
+import { Style } from '../style'
 
 export class InputElement extends Element {
 	name = 'Input'
@@ -17,20 +18,46 @@ export class InputElement extends Element {
 		type: 'text',
 	}
 
+	style: Style = {
+		desktop: {
+			default: {
+				width: '100%',
+			},
+		},
+	}
+
 	render(): ReactNode {
+		return <></>
+	}
+
+	renderPreview(renderFn: RenderFn, style?: CSSProperties): JSX.Element {
 		return (
 			<input
-				defaultValue={this.data.defaultValue.toString()}
-				name={this.data.name}
-				placeholder={this.data.placeholder}
+				readOnly
 				type={this.data.type}
 				className={this.generateClasses()}
+				id={this.elementId}
 			/>
 		)
 	}
 
 	renderOptions(): ReactNode {
 		return <InputOptions element={this} />
+	}
+
+	type(type: string) {
+		this.data.type = type
+		return this
+	}
+
+	placeholder(placeholder: string) {
+		this.data.placeholder = placeholder
+		return this
+	}
+
+	setName(name: string) {
+		this.data.name = name
+		return this
 	}
 }
 

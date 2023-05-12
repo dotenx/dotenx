@@ -2,6 +2,7 @@ import { Chip, ColorInput, SegmentedControl, Select } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { atom, useAtomValue } from 'jotai'
 import _ from 'lodash'
+import { forwardRef } from 'react'
 import {
 	TbAlignCenter,
 	TbAlignJustified,
@@ -13,11 +14,12 @@ import {
 	TbUnderline,
 	TbX,
 } from 'react-icons/tb'
-import { useParams } from 'react-router-dom'
 import { toCenter } from '../../utils/center'
 import { Element } from '../elements/element'
+import { selectedPaletteAtom } from '../simple/palette'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
+import { useParseBgColor } from './background-editor'
 import { FontForm } from './font-form'
 import { useEditStyle } from './use-edit-style'
 
@@ -125,9 +127,10 @@ export function TypographyEditor({
 	simple?: boolean
 	element?: Element | Element[]
 }) {
-	const { pageName = '' } = useParams()
 	const fonts = useAtomValue(fontsAtom)
 	const { style, editStyle } = useEditStyle(element)
+	const color = useParseBgColor(style.color ?? '')
+	const palette = useAtomValue(selectedPaletteAtom)
 
 	const sizeAndHeight = (
 		<>
@@ -161,21 +164,23 @@ export function TypographyEditor({
 			</div>
 		</>
 	)
+	const fontsData = [..._.keys(fonts), ...defaultFonts]
 
 	return (
 		<CollapseLine label="Typography" defaultClosed>
 			<div className="grid items-center grid-cols-12 gap-y-2">
 				<p className="col-span-3">Font</p>
 				<Select
+					itemComponent={SelectItem}
 					value={style.fontFamily ?? ''}
 					onChange={(value) => editStyle('fontFamily', value ?? defaultFonts[0])}
 					className="col-span-9"
-					data={[..._.keys(fonts), ...defaultFonts]}
+					data={fontsData}
 					size="xs"
 					onCreate={(fontName) => {
 						openModal({
 							title: 'Add Font',
-							children: <FontForm fontName={fontName} pageName={pageName} />,
+							children: <FontForm fontName={fontName} />,
 						})
 						return fontName
 					}}
@@ -198,12 +203,13 @@ export function TypographyEditor({
 
 				<p className="col-span-3">Color</p>
 				<ColorInput
-					value={style.color ?? ''}
+					value={color}
 					onChange={(value) => editStyle('color', value)}
 					className="col-span-9"
 					size="xs"
 					format="hsla"
 					autoComplete="off"
+					swatches={palette.colors}
 				/>
 
 				<p className="col-span-3">Align</p>
@@ -245,3 +251,18 @@ export function TypographyEditor({
 		</CollapseLine>
 	)
 }
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+	label: string
+	value: string
+}
+
+const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+	({ label, value, ...others }: ItemProps, ref) => (
+		<div ref={ref} {...others} style={{ fontFamily: value }}>
+			{label}
+		</div>
+	)
+)
+
+SelectItem.displayName = 'SelectItem'

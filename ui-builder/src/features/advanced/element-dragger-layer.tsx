@@ -24,7 +24,7 @@ export function ElementDraggerAndLayers() {
 			value={sidebar.tab}
 			onTabChange={(value) => setSidebar({ tab: value })}
 		>
-			<Tabs.List className='sticky top-0 bg-white' grow>
+			<Tabs.List className="sticky top-0 bg-white" grow>
 				<Tabs.Tab value="elements" icon={<TbComponents size={16} />} title="Elements" />
 				<Tabs.Tab value="layers" icon={<TbLayersDifference size={16} />} title="Layers" />
 				<Tabs.Tab value="extensions" icon={<TbPlug size={16} />} title="Extensions" />

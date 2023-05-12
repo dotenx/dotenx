@@ -16,7 +16,7 @@ export function CanvasFrame({ children }: { children: ReactNode }) {
 
 	return (
 		<div className="h-full bg-gray-50">
-			<div className="h-full mx-auto" style={{ maxWidth }}>
+			<div className="h-full mx-auto select-none" style={{ maxWidth }}>
 				<Frame className="w-full min-h-full h-full" head={<FrameStyles />}>
 					<FrameHotkeys>
 						<FrameContextConsumer>

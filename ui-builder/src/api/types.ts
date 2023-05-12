@@ -12,7 +12,10 @@ export type GetProjectDetailsResponse = {
 	name: string
 	description: string
 	tag: string
+	type: ProjectType
 }
+
+export type ProjectType = 'web_application' | 'website' | 'ecommerce' | 'landing_page'
 
 export type GetPagesRequest = {
 	projectTag: string
@@ -37,9 +40,15 @@ export type AddPageRequest = {
 	pageParams: string[]
 	globals: string[]
 	fonts: Record<string, string>
-	customCodes: { head: string; footer: string }
+	customCodes: {
+		head: string
+		footer: string
+		scripts: string
+		styles: string
+	}
 	statesDefaultValues: Record<string, string>
 	animations: Animation[]
+	colorPaletteId: string | null
 }
 
 export type PublishPageRequest = {
@@ -62,13 +71,20 @@ interface PageDetails {
 		mode: LayoutMode
 		pageParams: string[]
 		fonts: Record<string, string>
-		customCodes: { head: string; footer: string }
+		customCodes: {
+			head: string
+			footer: string
+			scripts: string
+			styles: string
+		}
 		statesDefaultValues: Record<string, string>
 		animations?: SerializedAnimation[]
+		colorPaletteId: string | null
 	}
 }
 
 export type BackendSelectorStyle = Record<CssSelector, Record<string, string>>
+export type BackendCustomSelectorStyle = Record<string, Record<string, string>>
 
 export interface BackendStyle {
 	desktop: BackendSelectorStyle

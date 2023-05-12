@@ -1,7 +1,7 @@
 import axios from 'axios'
 import produce from 'immer'
 import _ from 'lodash'
-import { addControllers } from '../utils/controller-utils'
+import { addComponents } from '../utils/components-utils'
 import {
 	deserializeAction,
 	deserializeAnimation,
@@ -45,6 +45,15 @@ export const api = axios.create({
 	baseURL: API_URL,
 	withCredentials: true,
 })
+
+api.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response.status === 401 && import.meta.env.PROD)
+			window.location.href = 'https://admin.dotenx.com/login'
+		return Promise.reject(error)
+	}
+)
 
 export enum QueryKey {
 	ProjectDetails = 'project-details',
@@ -94,7 +103,7 @@ export const getPageDetails = async ({ projectTag, pageName }: GetPageDetailsReq
 			...response.data,
 			content: {
 				...response.data.content,
-				layout: addControllers(elements),
+				layout: addComponents(elements),
 				classNames: classNames,
 				dataSources: response.data.content.dataSources.map((source) => ({
 					...source,
@@ -121,6 +130,7 @@ export const addPage = ({
 	customCodes,
 	statesDefaultValues,
 	animations,
+	colorPaletteId,
 }: AddPageRequest) => {
 	const kebabClasses = _.fromPairs(
 		_.toPairs(classNames).map(([className, styles]) => [
@@ -132,6 +142,7 @@ export const addPage = ({
 			},
 		])
 	)
+
 	return api.post(`/uibuilder/project/${projectTag}/page`, {
 		name: pageName,
 		content: {
@@ -148,6 +159,7 @@ export const addPage = ({
 			customCodes,
 			statesDefaultValues,
 			animations: animations.map(serializeAnimation),
+			colorPaletteId,
 		},
 	})
 }
@@ -164,7 +176,9 @@ export const publishPage = ({ projectTag, pageName }: PublishPageRequest) => {
 	)
 }
 export const previewPage = ({ projectTag, pageName }: PublishPageRequest) => {
-	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`)
+	return api.post<{ url: string }>(`/uibuilder/project/${projectTag}/page/${pageName}/preview`, {
+		without_publish: import.meta.env.DEV,
+	})
 }
 
 // This method can be used to upload both images and videos

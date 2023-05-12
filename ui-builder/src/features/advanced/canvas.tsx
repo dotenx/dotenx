@@ -19,7 +19,7 @@ export function AdvancedCanvas() {
 					data={{ mode: DroppableMode.InsertIn, elementId: ROOT_ID }}
 					style={{ minHeight: 'calc(100vh - 6px)' }}
 				>
-					<RenderElements elements={elements} overlay={ElementOverlay} />
+					<RenderElements elements={elements} overlay={ElementOverlay} isSimple={false} />
 				</Droppable>
 			</FrameDnd>
 		</CanvasFrame>

@@ -1,5 +1,6 @@
 import produce, { Draft } from 'immer'
 import _ from 'lodash'
+import { useMemo } from 'react'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { Element } from './element'
@@ -17,11 +18,14 @@ interface ElementsState {
 	add: (elements: Element | Element[], where: ElementPlacement) => void
 	move: (id: string, where: ElementPlacement) => void
 	set: (element: Element) => void
+	silenceSet: (element: Element) => void
 	remove: (ids: string[]) => void
 	reset: (elements?: Element[]) => void
 	undo: () => void
 	redo: () => void
 	save: () => void
+	moveUp: (id: string) => void
+	moveDown: (id: string) => void
 }
 
 export const useElementsStore = create<ElementsState>()(
@@ -55,6 +59,12 @@ export const useElementsStore = create<ElementsState>()(
 				_.assign(foundElement, element)
 				state.history = [...state.history.slice(0, state.historyIndex + 1), state.elements]
 				state.historyIndex = state.historyIndex + 1
+			})
+		},
+		silenceSet: (element) => {
+			set((state) => {
+				const foundElement = findElement(element.id, state.elements)
+				_.assign(foundElement, element)
 			})
 		},
 		remove: (ids) => {
@@ -96,6 +106,32 @@ export const useElementsStore = create<ElementsState>()(
 		save: () => {
 			set((state) => {
 				state.saved = state.elements
+			})
+		},
+		moveUp: (id) => {
+			set((state) => {
+				const element = findElement(id, state.elements)
+				if (!element) return
+				const parent = findParent(id, state.elements)
+				const siblings = parent?.children ?? state.elements
+				const index = siblings.indexOf(element)
+				if (index > 0) {
+					siblings.splice(index, 1)
+					siblings.splice(index - 1, 0, element)
+				}
+			})
+		},
+		moveDown: (id) => {
+			set((state) => {
+				const element = findElement(id, state.elements)
+				if (!element) return
+				const parent = findParent(id, state.elements)
+				const siblings = parent?.children ?? state.elements
+				const index = siblings.indexOf(element)
+				if (index < siblings.length - 1) {
+					siblings.splice(index, 1)
+					siblings.splice(index + 1, 0, element)
+				}
 			})
 		},
 	}))
@@ -176,7 +212,7 @@ export function useSetElement() {
 }
 
 export function setElement<T extends Element = Element>(element: T, fn: (draft: Draft<T>) => void) {
-	const set = useElementsStore.getState().set
+	const set = useElementsStore.getState().silenceSet
 	set(
 		produce(element, (draft) => {
 			fn(draft)
@@ -194,4 +230,22 @@ export function useSetWithElement<E extends Element = Element>(targetElement: E)
 		)
 	}
 	return setter
+}
+
+export function useFlattenedElements() {
+	const elements = useElementsStore((store) => store.elements)
+
+	const flattenedElements = useMemo(() => {
+		const flattenedElements: Element[] = []
+		const flatten = (elements: Element[]) => {
+			for (const element of elements) {
+				flattenedElements.push(element)
+				if (element.children) flatten(element.children)
+			}
+		}
+		flatten(elements)
+		return flattenedElements
+	}, [elements])
+
+	return flattenedElements
 }

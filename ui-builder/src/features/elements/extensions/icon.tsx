@@ -16,11 +16,11 @@ import { InputWithUnit } from '../../ui/style-input'
 export class IconElement extends Element {
 	name = 'Icon'
 	icon = (<TbTarget />)
-	public children: Element[] = []
 	data = { name: 'bell', type: 'fas' }
 	style: Style = {
 		desktop: {
 			default: {
+				fontSize: '50px',
 				width: '50px',
 				height: '50px',
 				flexShrink: 0,

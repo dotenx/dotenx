@@ -13,7 +13,11 @@ import { Style } from '../style'
 export class TextElement extends Element {
 	name = 'Text'
 	icon = (<TbMessage2 />)
-	data: { text: Expression; as: string } = { text: Expression.fromString('Text'), as: 'p' }
+	data: { text: Expression; as: string; raw: boolean } = {
+		text: Expression.fromString('Text'),
+		as: 'p',
+		raw: false,
+	}
 	style: Style = {
 		desktop: {
 			default: {
@@ -25,7 +29,7 @@ export class TextElement extends Element {
 	render(renderFn: RenderFn): ReactNode {
 		const renderedText = this.data.text.value.map((part) => part.value).join('')
 
-		return <span dangerouslySetInnerHTML={{ __html: renderedText }} />
+		return <div dangerouslySetInnerHTML={{ __html: renderedText }} />
 	}
 
 	renderOptions({ set }: RenderOptions): ReactNode {

@@ -1,12 +1,12 @@
 import _ from 'lodash'
 import { uuid } from '.'
-import { mapStyleToCamelCaseStyle } from '../api/mapper'
+import { mapCustomStyleToCamelCaseStyle, mapStyleToCamelCaseStyle } from '../api/mapper'
 import { ACTIONS } from '../features/actions'
 import { Action, AnimationAction } from '../features/actions/action'
 import { Easing } from '../features/animations/options'
 import { Animation } from '../features/animations/schema'
-import { CONTROLLERS } from '../features/controllers'
-import { Controller } from '../features/controllers/controller'
+import { COMPONENTS } from '../features/components'
+import { Component } from '../features/components/component'
 import { ECOMMERCE_COMPONENTS } from '../features/ecommerce'
 import { ELEMENTS } from '../features/elements'
 import { Element } from '../features/elements/element'
@@ -25,6 +25,9 @@ export function deserializeElement(serialized: any): Element {
 	const element = new Constructor()
 	element.id = serialized.id ? serialized.id : element.id
 	element.style = serialized.data?.style ? mapStyleToCamelCaseStyle(serialized.data?.style) : {}
+	element.customStyle = serialized.data?.customStyle
+		? mapCustomStyleToCamelCaseStyle(serialized.data?.customStyle)
+		: {}
 	element.children =
 		serialized.components?.map((child: any) => deserializeElement(child)) ?? element.children
 	element.classes = serialized.classNames ?? []
@@ -35,8 +38,9 @@ export function deserializeElement(serialized: any): Element {
 			actions: event.actions.map(deserializeAction),
 		})) ?? []
 	element.bindings = serialized.bindings ?? {}
-	element.controller = serialized.controller ? deserializeController(serialized.controller) : null
+	element.controller = serialized.controller ? deserializeComponent(serialized.controller) : null
 	element.data = serialized.data ?? {}
+	element.internal = serialized.internal ?? {}
 	element.tagId = serialized.tagId
 	if (element instanceof ImageElement) {
 		const src = serialized.data?.src ?? ''
@@ -57,17 +61,22 @@ export function deserializeElement(serialized: any): Element {
 			: _.assign(new Expression(), href)
 	}
 	element.elementId = serialized.elementId
+	element.script = serialized.script
+	element.animation = serialized.animation
+	element.unlocked = serialized.unlocked
+	element.imports = serialized.imports ?? []
+	element.rawStyle = serialized.rawStyle ?? ''
 	return element
 }
 
-function deserializeController(data: any): Controller {
-	const Constructor = [...CONTROLLERS, ...ECOMMERCE_COMPONENTS]
-		.flatMap((controller) => controller.items)
-		.find((controller) => new (controller as any)().name === data.name)
+function deserializeComponent(data: any): Component {
+	const Constructor = [...COMPONENTS, ...ECOMMERCE_COMPONENTS]
+		.flatMap((component) => component.items)
+		.find((component) => new (component as any)().name === data.name)
 	if (!Constructor) throw new Error(`Controller ${data.name} not found`)
-	const controller = new (Constructor as any)()
-	controller.data = data.data
-	return controller
+	const component = new (Constructor as any)()
+	component.data = data.data
+	return component
 }
 
 export function deserializeAction(data: any) {

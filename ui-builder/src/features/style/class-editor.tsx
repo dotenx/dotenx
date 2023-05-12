@@ -9,8 +9,9 @@ import {
 } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import produce from 'immer'
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 import _ from 'lodash'
+import { useEffect } from 'react'
 import { Element } from '../elements/element'
 import { useElementsStore, useSetElement } from '../elements/elements-store'
 import { CssSelector, cssSelectors } from '../elements/style'
@@ -32,6 +33,15 @@ export function ClassEditor() {
 	const [selector, setSelector] = useAtom(selectedSelectorAtom)
 	const selectedElements = useSelectedElements()
 	const selectedElement = selectedElements.length === 1 ? selectedElements[0] : null
+	const setSelectedClass = useSetAtom(selectedClassAtom)
+
+	useEffect(() => {
+		if (selectedElement?.id) {
+			setSelector(CssSelector.Default)
+			setSelectedClass(null)
+		}
+	}, [selectedElement?.id, setSelectedClass, setSelector])
+
 	if (!selectedElement) return null
 	const elementClasses = selectedElement.classes
 

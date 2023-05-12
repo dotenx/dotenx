@@ -1,82 +1,169 @@
-import { Image, Portal } from '@mantine/core'
-import { useHover } from '@mantine/hooks'
-import { useAtom } from 'jotai'
-import { ReactElement } from 'react'
-import { Components, ControllerSection } from '../controllers'
-import { DividerCollapsible } from '../controllers/helpers'
+import { Image, Overlay } from '@mantine/core'
+import { useInputState } from '@mantine/hooks'
+import { closeAllModals, openModal } from '@mantine/modals'
+import { useAtom, useAtomValue } from 'jotai'
+import _ from 'lodash'
+import { ReactNode, useMemo, useState } from 'react'
+import { TbBox, TbPlus } from 'react-icons/tb'
+import { useParams } from 'react-router-dom'
+import { ComponentSection, Components } from '../components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
+import { projectTagAtom } from '../page/top-bar'
 import { insertingAtom } from './simple-canvas'
 
 export function SimpleLeftSidebar({ components }: { components: Components }) {
+	const [selectedTag, setSelectedTag] = useState<null | string>(null)
+	const [searched, setSearched] = useInputState('')
+	const { pageName = '' } = useParams()
+
+	const tags = useMemo(
+		() =>
+			_.uniq(
+				components.flatMap((component) =>
+					component.items.flatMap((Item) => {
+						const item = new (Item as any)()
+						const tags: string[] = item.tags
+						return tags
+					})
+				)
+			),
+		[components]
+	)
+
+	const filtered = useMemo(
+		() =>
+			components
+				.map((component) => ({
+					...component,
+					items: component.items.filter((Item) => {
+						const item = new (Item as any)()
+						const tags: string[] = item.tags
+						if (selectedTag) return tags.includes(selectedTag)
+						return true
+					}),
+				}))
+				.filter((component) => component.items.length !== 0),
+		[components, selectedTag]
+	)
+
+	const filteredBySearch = useMemo(
+		() =>
+			filtered
+				.map((section) => ({
+					...section,
+					items: section.items.filter((Item) => {
+						const item = new (Item as any)()
+						return item.name.toLowerCase().includes(searched.toLowerCase())
+					}),
+				}))
+				.filter((component) => component.items.length !== 0),
+
+		[filtered, searched]
+	)
+
 	return (
-		<div className="flex flex-col ">
-			{components.map((section) => (
-				<SimpleComponentList key={section.title} section={section} />
-			))}
+		<div>
+			{/* TODO: add this back when more tags are added */}
+			{/* <Select
+				data={tags}
+				value={selectedTag}
+				onChange={setSelectedTag}
+				clearable
+				placeholder="Filter"
+			/> */}
+			{/* <TextInput
+				size="xs"
+				icon={<TbSearch />}
+				value={searched}
+				onChange={setSearched}
+				placeholder="Search"
+			/> */}
+			<div className="grid grid-cols-2 gap-3">
+				{filteredBySearch.map((section) => (
+					<ComponentCard
+						key={section.title}
+						label={section.title}
+						icon={section?.icon ?? <TbBox />}
+						onClick={() => {
+							closeAllModals()
+							openModal({
+								title: section.title,
+								children: (
+									<SimpleComponentList section={section} pageName={pageName} />
+								),
+								size: 'xl',
+								keepMounted: true,
+							})
+						}}
+					/>
+				))}
+			</div>
 		</div>
 	)
 }
 
-function SimpleComponentList({ section: { title, items } }: { section: ControllerSection }) {
+function SimpleComponentList({
+	section: { items },
+	pageName,
+}: {
+	section: ComponentSection
+	pageName: string
+}) {
 	const insertComponent = useInsertComponent()
+	const projectTag = useAtomValue(projectTagAtom)
 
 	return (
-		<DividerCollapsible closed title={title}>
+		<div className="grid grid-cols-2 gap-4">
 			{items.map((Item) => {
-				const controller = new (Item as any)()
+				const newComponent = new (Item as any)()
 				return (
-					<SimpleComponentItem
-						src={controller.image}
-						key={controller.name}
-						image={<Image height={100} src={controller.image} alt={controller.name} />}
-						label={controller.name}
+					<div
+						key={newComponent.name}
 						onClick={() => {
-							const component = controller.transform()
+							const component = newComponent.transform()
 							insertComponent(component)
-							controller.onCreate(component)
+							newComponent.onCreate(component, { projectTag, pageName })
+							closeAllModals()
 						}}
-					/>
+						className="rounded-lg border text-center cursor-pointer hover:bg-gray-50 overflow-clip flex flex-col group"
+					>
+						<div className="relative">
+							<Image src={newComponent.image} height={200} fit="contain" />
+							<Overlay
+								blur={2}
+								center
+								opacity={0.5}
+								className="group-hover:visible invisible"
+							>
+								<TbPlus size={30} className="text-white" />
+							</Overlay>
+						</div>
+						<p>{newComponent.name}</p>
+					</div>
 				)
 			})}
-		</DividerCollapsible>
+		</div>
 	)
 }
 
-export function SimpleComponentItem({
+function ComponentCard({
 	label,
-	src,
-	image,
+	icon,
 	onClick,
 }: {
 	label: string
-	src: string
-	image: ReactElement
-	onClick: () => void
+	icon: ReactNode
+	onClick?: () => void
 }) {
-	const { hovered, ref } = useHover<HTMLButtonElement>()
-
 	return (
-		<button
-			ref={ref}
-			className="flex flex-col items-center w-full gap-1 overflow-hidden border rounded bg-gray-50 text-slate-600 hover:text-slate-900"
+		<div
 			onClick={onClick}
+			className="flex flex-col items-center gap-2 p-2 rounded bg-gray-50 cursor-pointer text-slate-600 hover:text-slate-900"
 		>
-			{image}
-			<p className="pb-1 text-xs text-center ">{label}</p>
-			{hovered && (
-				<Portal>
-					<Image
-						className="border border rounded-r absolute z-[999999] top-[35%] left-[310px] bg-white"
-						src={src}
-						alt="Preview"
-						width={700}
-						height={300}
-						fit="contain"
-					/>
-				</Portal>
-			)}
-		</button>
+			<div className="pt-1 text-2xl">{icon}</div>
+			<p className="text-xs text-center">{label}</p>
+		</div>
 	)
 }
 

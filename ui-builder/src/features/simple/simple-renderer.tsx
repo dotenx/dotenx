@@ -1,7 +1,7 @@
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useElementSize } from '@mantine/hooks'
 import { Placement } from '@popperjs/core'
 import { useAtomValue } from 'jotai'
-import { ReactNode, useContext, useState } from 'react'
+import { MouseEvent, ReactNode, useCallback, useContext, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FrameContext } from 'react-frame-component'
 import { TbArrowDown, TbArrowUp, TbTrash } from 'react-icons/tb'
@@ -10,6 +10,9 @@ import styled from 'styled-components'
 import { Element } from '../elements/element'
 import { useElementsStore } from '../elements/elements-store'
 import { ImageElement } from '../elements/extensions/image'
+import { InputElement } from '../elements/extensions/input'
+import { SelectElement } from '../elements/extensions/select'
+import { TextElement } from '../elements/extensions/text'
 import { ROOT_ID } from '../frame/canvas'
 import { previewAtom } from '../page/top-bar'
 import { useIsHighlighted, useSelectionStore } from '../selection/selection-store'
@@ -19,30 +22,25 @@ export function ElementOverlay({
 	children,
 	element,
 	isDirectRootChildren,
+	isGridChild,
 }: {
 	children: ReactNode
 	element: Element
 	isDirectRootChildren?: boolean
+	isGridChild?: boolean
 }) {
-	const { select, setHovered, unsetHovered } = useSelectionStore((store) => ({
+	const { select, setHovered } = useSelectionStore((store) => ({
 		select: store.select,
 		setHovered: store.setHovered,
 		unsetHovered: store.unsetHovered,
 	}))
 	const { isHighlighted, isHovered } = useIsHighlighted(element.id)
-	const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
-	const [showSettings, showSettingsHandlers] = useDisclosure(false)
+	const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 	const { isFullscreen } = useAtomValue(previewAtom)
-	const handleMouseOver = () => {
-		if (isFullscreen) return
-		setHovered(element.id)
-	}
-	const handleMouseEnter = () => {
-		if (isFullscreen) return
-		showSettingsHandlers.open()
-	}
-	const handleClick = () => {
-		if (!isDirectRootChildren || isFullscreen) return
+
+	const handleClick = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
 		select(element.id)
 	}
 
@@ -57,25 +55,57 @@ export function ElementOverlay({
 		  }
 		: {}
 
+	const { ref, height } = useElementSize()
+
+	const handleRef = useCallback(
+		(el: HTMLElement | null) => {
+			setReferenceElement(el)
+			ref.current = el
+		},
+		[ref]
+	)
+
+	const handleMouseOver = (event: MouseEvent) => {
+		if (!(isDirectRootChildren || isGridChild) || isFullscreen) return
+		event.stopPropagation()
+		setHovered(element.id)
+	}
+
+	const hasNoChild = element instanceof InputElement || element instanceof SelectElement
+	const Rendered =
+		element instanceof InputElement
+			? 'input'
+			: element instanceof SelectElement
+			? 'select'
+			: 'div'
+	const renderedText =
+		element instanceof TextElement
+			? element.data.text.value.map((part) => part.value).join('')
+			: null
+
 	return (
-		<div
-			style={{
-				outlineWidth: isHovered ? 2 : 1,
-				cursor: 'default',
-				outlineStyle: isHighlighted && isDirectRootChildren ? 'solid' : undefined,
-				outlineColor: '#fb7185',
-				...backgroundImage,
-			}}
-			className={element.generateClasses()}
-			ref={setReferenceElement}
-			onMouseOver={handleMouseOver}
-			onMouseOut={unsetHovered}
-			onMouseEnter={handleMouseEnter}
-			onMouseLeave={showSettingsHandlers.close}
-			onClick={handleClick}
-		>
-			{children}
-			{isDirectRootChildren && showSettings && (
+		<>
+			<Rendered
+				style={{
+					outlineWidth: isHovered ? 2 : 1,
+					cursor: 'default',
+					outlineStyle:
+						isHighlighted && (isDirectRootChildren || isGridChild)
+							? 'solid'
+							: undefined,
+					outlineColor: '#fb7185',
+					...backgroundImage,
+				}}
+				className={element.generateClasses()}
+				ref={handleRef}
+				onMouseEnter={handleMouseOver}
+				onClick={handleClick}
+				type={element instanceof InputElement ? element.data.type : undefined}
+				dangerouslySetInnerHTML={renderedText ? { __html: renderedText } : undefined}
+			>
+				{!hasNoChild && !renderedText ? children : undefined}
+			</Rendered>
+			{(isDirectRootChildren || isGridChild) && isHovered && (
 				<>
 					<ElementOverlayPiece
 						referenceElement={referenceElement}
@@ -97,40 +127,37 @@ export function ElementOverlay({
 						referenceElement={referenceElement}
 						updateDeps={[element]}
 						placement="left-start"
-						offset={[8, -30]}
+						offset={[8, height < 100 ? -80 : -30]}
 					>
-						<ElementActions element={element} />
+						<ElementActions element={element} horizontal={height < 100} />
 					</ElementOverlayPiece>
 				</>
 			)}
-		</div>
+		</>
 	)
 }
 
-function ElementActions({ element }: { element: Element }) {
+function ElementActions({ element, horizontal }: { element: Element; horizontal: boolean }) {
 	const elements = useElementsStore((store) => store.elements)
-	const { remove, move } = useElementsStore((store) => ({
+	const { remove, moveUp, moveDown } = useElementsStore((store) => ({
 		remove: store.remove,
-		move: store.move,
+		moveUp: store.moveUp,
+		moveDown: store.moveDown,
 	}))
 	const isFirst = elements.findIndex((c) => c.id === element.id) === 0
 	const isLast = elements.findIndex((c) => c.id === element.id) === elements.length - 1
-	const moveUp = () =>
-		move(element.id, {
-			mode: 'before',
-			id: elements[elements.findIndex((e) => e.id === element.id) - 1].id,
-		})
-	const moveDown = () =>
-		move(element.id, {
-			mode: 'after',
-			id: elements[elements.findIndex((e) => e.id === element.id) + 1].id,
-		})
 
 	return (
-		<div>
+		<div
+			onClick={(event) => event.stopPropagation()}
+			style={{
+				display: 'flex',
+				flexDirection: horizontal ? 'row' : 'column',
+			}}
+		>
 			<ActionButton
 				style={{ borderRadius: '4px 4px 0 0' }}
-				onClick={moveUp}
+				onClick={() => moveUp(element.id)}
 				disabled={isFirst}
 			>
 				<TbArrowUp />
@@ -140,7 +167,7 @@ function ElementActions({ element }: { element: Element }) {
 			</ActionButton>
 			<ActionButton
 				style={{ borderRadius: '0 0 4px 4px' }}
-				onClick={moveDown}
+				onClick={() => moveDown(element.id)}
 				disabled={isLast}
 			>
 				<TbArrowDown />
@@ -159,7 +186,7 @@ const ActionButton = styled.button`
 	padding: 0;
 	background-color: #eeeeee88;
 	:not([disabled]):hover {
-		background-color: #eeeeee44;
+		background-color: #eeeeee66;
 		cursor: pointer;
 	}
 `
@@ -171,17 +198,20 @@ function ElementOverlayPiece({
 	children,
 	offset = [0, 0],
 }: {
-	referenceElement: HTMLDivElement | null
+	referenceElement: HTMLElement | null
 	updateDeps: unknown[]
 	placement: Placement
 	children: ReactNode
 	offset?: [number, number]
 }) {
 	const { window } = useContext(FrameContext)
-	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
+	const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
 	const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
 		placement,
-		modifiers: [{ name: 'offset', options: { offset } }],
+		modifiers: [
+			{ name: 'offset', options: { offset } },
+			{ name: 'flip', options: { mainAxis: false } },
+		],
 	})
 	const targetElement = window?.document.querySelector(`#${ROOT_ID}`) ?? document.body
 	useDidUpdate(() => {

@@ -37,6 +37,7 @@ export function SimpleCanvas() {
 						elements={elements}
 						isDirectRootChildren
 						overlay={ElementOverlay}
+						isSimple={true}
 					/>
 				)}
 			</div>
@@ -79,7 +80,14 @@ export const AddSimpleComponentButton = styled.button`
 	:active {
 		background-color: #d41b43;
 	}
-	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+	// rotate the button 90 degrees on hover
+
+	:hover {
+		transform: rotate(90deg);
+	}
+
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+		transform;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 100ms;
 `

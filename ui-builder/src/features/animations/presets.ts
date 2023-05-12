@@ -533,49 +533,6 @@ export const PRESETS: Animation[] = [
 		stagger: false,
 	},
 	{
-		id: 'scale-up-tl',
-		name: 'Scale Up Top Left',
-		properties: [
-			{
-				id: uuid(),
-				name: 'scale',
-				keyframes: [
-					{
-						id: uuid(),
-						value: '0',
-						duration: 0,
-						delay: 0,
-					},
-					{
-						id: uuid(),
-						value: '1',
-						duration: 1000,
-						delay: 0,
-					},
-				],
-			},
-			{
-				id: uuid(),
-				name: 'transformOrigin',
-				keyframes: [
-					{
-						id: uuid(),
-						value: '50% 50%',
-						duration: 0,
-						delay: 0,
-					},
-				],
-			},
-		],
-		duration: 1000,
-		delay: 0,
-		easing: 'linear',
-		easingParams: [],
-		direction: 'normal',
-		loop: false,
-		stagger: false,
-	},
-	{
 		id: 'scale-up-ver-bottom',
 		name: 'Scale Up Vertical Bottom',
 		properties: [

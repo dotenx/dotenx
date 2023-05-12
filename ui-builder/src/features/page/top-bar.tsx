@@ -1,10 +1,9 @@
 import { ActionIcon, Anchor, Button, Group, Text, Tooltip } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import hash from 'object-hash'
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
 	TbAffiliate,
@@ -15,42 +14,53 @@ import {
 	TbZoomIn,
 	TbZoomOut,
 } from 'react-icons/tb'
-import { useNavigate, useParams } from 'react-router-dom'
-import { getGlobalStates, getPageDetails, getProjectDetails, QueryKey, updatePage } from '../../api'
+import { useMatch, useNavigate, useParams } from 'react-router-dom'
+import {
+	ProjectType,
+	QueryKey,
+	getGlobalStates,
+	getPageDetails,
+	getProjectDetails,
+} from '../../api'
 import logoUrl from '../../assets/logo.png'
 import { AnyJson } from '../../utils'
-import { toggleFullScreen } from '../../utils/toggle-fullscreen'
+import { ADMIN_PANEL_URL } from '../../utils/constants'
 import { animationsAtom } from '../atoms'
 import { evaluateExpression } from '../data-source/data-source-form'
 import { useDataSourceStore } from '../data-source/data-source-store'
 import { useElementsStore } from '../elements/elements-store'
 import { useSelectionStore } from '../selection/selection-store'
+import { palettes, selectedPaletteAtom } from '../simple/palette'
 import { statesDefaultValuesAtom } from '../states/default-values-form'
 import { usePageStateStore } from '../states/page-states-store'
 import { useClassesStore } from '../style/classes-store'
 import { fontsAtom } from '../style/typography-editor'
 import { inteliToString } from '../ui/intelinput'
 import { ViewportSelection } from '../viewport/viewport-selection'
-import { customCodesAtom, globalStatesAtom, PageActions } from './actions'
+import { PageActions, customCodesAtom, globalStatesAtom } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
+import { usePageData, useUpdatePage } from './use-update'
 
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
 export const projectTagAtom = atom('')
+export const projectTypeAtom = atom<'none' | ProjectType>('none')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
+	const projectType = useAtomValue(projectTypeAtom)
+
 	return (
 		<TopBarWrapper
 			left={
 				<>
 					<Logo />
-					<BackToBackEnd />
+					<DashboardLink />
 					<PageSelection />
 					<ViewportSelection />
 					<FullscreenButton />
-					<AdvancedModeButton />
+					{projectType === 'web_application' && <AdvancedModeButton />}
 					<UnsavedMessage />
 				</>
 			}
@@ -78,13 +88,14 @@ export function TopBarWrapper({ left, right }: { left: ReactNode; right: ReactNo
 	)
 }
 
-export function UnsavedMessage() {
+export const useHasUnsavedChanges = () => {
 	const elements = useElementsStore((store) => store.elements)
 	const saved = useElementsStore((store) => store.saved)
+	return saved !== elements
+}
 
-	const savedHash = useMemo(() => safeHash(saved), [saved])
-	const currentHash = useMemo(() => safeHash(elements), [elements])
-	const unsaved = savedHash !== currentHash
+export function UnsavedMessage() {
+	const unsaved = useHasUnsavedChanges()
 
 	useEffect(() => {
 		if (import.meta.env.MODE === 'development') return
@@ -104,14 +115,6 @@ export function UnsavedMessage() {
 			You have unsaved changes
 		</Text>
 	)
-}
-
-const safeHash = (object: hash.NotUndefined) => {
-	try {
-		return hash(object)
-	} catch (error) {
-		console.warn({ object }, error)
-	}
 }
 
 export const pageScaleAtom = atom(1)
@@ -141,22 +144,24 @@ export function PageScaling() {
 	)
 }
 
-export const useFetchProjectTag = () => {
+export const useFetchProject = () => {
 	const setTag = useProjectStore((store) => store.setTag)
 	const { projectName = '' } = useParams()
 	const setProjectTag = useSetAtom(projectTagAtom)
+	const setProjectType = useSetAtom(projectTypeAtom)
 	const query = useQuery(
 		[QueryKey.ProjectDetails, projectName],
 		() => getProjectDetails({ projectName }),
 		{
 			onSuccess: (data) => {
 				setProjectTag(data.data.tag)
+				setProjectType(data.data.type)
 				setTag(data.data.tag)
 			},
 			enabled: !!projectName,
 		}
 	)
-	return query.data?.data.tag
+	return query
 }
 
 export const useFetchPage = () => {
@@ -173,6 +178,8 @@ export const useFetchPage = () => {
 	const setCustomCodes = useSetAtom(customCodesAtom)
 	const setStatesDefaultValues = useSetAtom(statesDefaultValuesAtom)
 	const setAnimations = useSetAtom(animationsAtom)
+	const setPalette = useSetAtom(selectedPaletteAtom)
+	const isEcommerce = useMatch('/ecommerce/:projectName/:pageName')
 
 	const query = useQuery(
 		[QueryKey.PageDetails, projectTag, pageName],
@@ -189,6 +196,8 @@ export const useFetchPage = () => {
 				setCustomCodes(content?.customCodes ?? { head: '', footer: '' })
 				setStatesDefaultValues(content.statesDefaultValues ?? {})
 				setAnimations(content.animations ?? [])
+				const selectedPalette = palettes.find((p) => p.id === content.colorPaletteId)
+				if (content.colorPaletteId && selectedPalette) setPalette(selectedPalette)
 				content.dataSources.map((source) =>
 					axios
 						.request<AnyJson>({
@@ -199,7 +208,8 @@ export const useFetchPage = () => {
 						.then((data) => setPageState(source.stateName, data.data))
 				)
 			},
-			onError: () => navigate(`/projects/${projectName}/index`),
+			onError: () =>
+				navigate(`/${isEcommerce ? 'ecommerce' : 'projects'}/${projectName}/index`),
 			enabled: !!projectTag && !!pageName,
 		}
 	)
@@ -218,26 +228,32 @@ export const useFetchGlobalStates = () => {
 
 export function Logo() {
 	return (
-		<Tooltip withArrow label={<Text size="xs">Dashboard</Text>}>
-			<Anchor href={import.meta.env.VITE_BACKEND_BUILDER_URL}>
+		<Tooltip withArrow label={<Text size="xs">Admin Panel</Text>}>
+			<Anchor href={ADMIN_PANEL_URL}>
 				<img src={logoUrl} className="w-8" alt="dotenx logo" />
 			</Anchor>
 		</Tooltip>
 	)
 }
 
-function BackToBackEnd() {
+export function DashboardLink() {
 	const { projectName = '' } = useParams()
+	const projectType = useAtomValue(projectTypeAtom)
+
+	const link =
+		projectType === 'web_application'
+			? `https://app.dotenx.com/builder/projects/${projectName}/tables`
+			: projectType === 'ecommerce'
+			? `https://ecommerce.dotenx.com/projects/${projectName}/products`
+			: projectType === 'website' || projectType === 'landing_page'
+			? `https://website.dotenx.com/${projectName}/forms`
+			: null
+
+	if (!link) return null
 
 	return (
-		<Tooltip withArrow label={<Text size="xs">Backend builder</Text>}>
-			<a
-				href={`${
-					import.meta.env.VITE_BACKEND_BUILDER_URL
-				}/builder/projects/${projectName}/tables`}
-				rel="noopener noreferrer"
-				target={'_blank'}
-			>
+		<Tooltip withArrow label={<Text size="xs">Project Dashboard</Text>}>
+			<a href={link} rel="noopener noreferrer" target={'_blank'}>
 				<ActionIcon color="rose" variant="filled">
 					<IoArrowBack className="w-4 h-4" />
 				</ActionIcon>
@@ -250,7 +266,6 @@ export function FullscreenButton() {
 	const setPreview = useSetAtom(previewAtom)
 	const deselect = useSelectionStore((store) => store.deselect)
 	const handleClick = () => {
-		toggleFullScreen()
 		setPreview((prev) => ({ isFullscreen: !prev.isFullscreen }))
 		deselect()
 	}
@@ -274,39 +289,19 @@ export function FullscreenButton() {
 	)
 }
 
-function AdvancedModeButton() {
-	const queryClient = useQueryClient()
+export function AdvancedModeButton() {
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
-	const { pageName = '' } = useParams()
-	const projectTag = useAtomValue(projectTagAtom)
-	const elements = useElementsStore((state) => state.elements)
-	const dataSources = useDataSourceStore((state) => state.sources)
-	const classes = useClassesStore((state) => state.classes)
-	const statesDefaultValues = useAtomValue(statesDefaultValuesAtom)
-	const setSaved = useElementsStore((store) => store.save)
-	const savePageMutation = useMutation(updatePage, {
-		onSuccess: () => {
-			queryClient.invalidateQueries([QueryKey.PageDetails])
-			setSaved()
-		},
-	})
+	const pageData = usePageData()
+	const updatePage = useUpdatePage()
+
 	const saveAdvanced = () => {
-		savePageMutation.mutate({
-			projectTag,
-			pageName,
-			elements,
-			dataSources,
-			classNames: classes,
+		updatePage.mutate({
+			...pageData,
 			mode: 'advanced',
-			pageParams: [],
-			globals: [],
-			fonts: {},
-			customCodes: { head: '', footer: '' },
-			statesDefaultValues,
-			animations: [],
 		})
 	}
+
 	const handleClick = () => {
 		openConfirmModal({
 			title: 'Please confirm your action',
@@ -344,10 +339,10 @@ export function UndoRedo() {
 
 	return (
 		<Button.Group>
-			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default">
+			<Button onClick={undo} size="xs" disabled={disableUndo} variant="default" title="Undo">
 				<TbCornerUpLeft className="w-5 h-5" />
 			</Button>
-			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default">
+			<Button onClick={redo} size="xs" disabled={disableRedo} variant="default" title="Redo">
 				<TbCornerUpRight className="w-5 h-5" />
 			</Button>
 		</Button.Group>
