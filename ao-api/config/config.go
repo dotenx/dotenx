@@ -35,6 +35,7 @@ type (
 		CustomQueryTimeLimit    string `envconfig:"AOA_CUSTOM_QUERY_TIME_LIMIT_IN_MILLISECONDS"`
 		ExecutionTaskTimeLimit  int    `envconfig:"AOA_TASK_TIME_LIMIT_IN_SECONDS"`
 		ExecutionTriggerRate    string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_SCHEDULE_EXPRESSION"`
+		OpenAiChatModel         string `envconfig:"AOA_OPEN_AI_CHAT_MODEL"`
 		UiPageHistoryLimitation int    `envconfig:"AOA_UI_PAGE_HISTORY_LIMITATION"`
 	}
 
@@ -90,6 +91,7 @@ type (
 		EventSchedulerRoleArn      string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_ROLE_ARN"`
 		EventSchedulerTargetArn    string `envconfig:"AOA_EVENT_BRIDGE_SCHEDULER_TARGET_ARN"`
 		ScheduledTriggersTargetArn string `envconfig:"AOA_SCHEDULED_TRIGGERS_TARGET_ARN"`
+		OpenAiApiKey               string `envconfig:"AOA_OPEN_AI_API_KEY"`
 	}
 
 	Upload struct {

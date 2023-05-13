@@ -8,13 +8,16 @@ import (
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/crud"
 	"github.com/dotenx/dotenx/ao-api/controllers/database"
+	"github.com/dotenx/dotenx/ao-api/controllers/ecommerce"
 	"github.com/dotenx/dotenx/ao-api/controllers/execution"
 	"github.com/dotenx/dotenx/ao-api/controllers/gitIntegration"
 	"github.com/dotenx/dotenx/ao-api/controllers/health"
 	integrationController "github.com/dotenx/dotenx/ao-api/controllers/integration"
 	internalController "github.com/dotenx/dotenx/ao-api/controllers/internalController"
+	"github.com/dotenx/dotenx/ao-api/controllers/marketplace"
 	oauthController "github.com/dotenx/dotenx/ao-api/controllers/oauth"
 	"github.com/dotenx/dotenx/ao-api/controllers/objectstore"
+	openai "github.com/dotenx/dotenx/ao-api/controllers/openAI"
 	"github.com/dotenx/dotenx/ao-api/controllers/predefinedMiniTask"
 	predefinedtaskcontroller "github.com/dotenx/dotenx/ao-api/controllers/predefinedTask"
 	"github.com/dotenx/dotenx/ao-api/controllers/profile"
@@ -192,10 +195,13 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profileController := profile.ProfileController{Service: UserManagementService}
 	objectstoreController := objectstore.ObjectstoreController{Service: objectstoreService}
 	uibuilderController := uibuilder.UIbuilderController{Service: uibuilderService, ProjectService: ProjectService}
+	marketplaceController := marketplace.MarketplaceController{Service: marketplaceService}
 	uiComponentController := uicomponent.UIComponentController{Service: uiComponentServi}
 	uiExtensionController := uiExtension.UIExtensionController{Service: uiExtensionService}
 	uiFormController := uiForm.UIFormController{Service: uiFormService}
 	GitIntegrationController := gitIntegration.GitIntegrationController{Service: gitIntegrationService}
+	EcommerceController := ecommerce.EcommerceController{DatabaseService: DatabaseService, UserManagementService: UserManagementService, ProjectService: ProjectService, ObjectstoreService: objectstoreService, IntegrationService: IntegrationService, PipelineService: crudServices}
+	OpenAIController := openai.OpenAIController{}
 
 	// Routes
 	r.GET("/execution/id/:id/task/:taskId", executionController.GetTaskDetails())
@@ -250,9 +256,12 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	profile := r.Group("/profile")
 	userManagement := r.Group("/user/management")
 	userGroupManagement := r.Group("/user/group/management")
-	objectstore := r.Group("/objectstore")
 	uibuilder := r.Group("/uibuilder")
+	objectstore := r.Group("/objectstore")
+	marketplace := r.Group("/marketplace")
 	gitIntegration := r.Group("/git/integration")
+	ecommerce := r.Group("/ecommerce")
+	openai := r.Group("/openai")
 
 	internal.POST("/automation/activate", InternalController.ActivateAutomation)
 	internal.POST("/automation/deactivate", InternalController.DeActivateAutomation)
@@ -364,7 +373,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
 	project.GET("/tag/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
 	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
-	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyExternalDomain())
+	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyCertificate())
 	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices, IntegrationService))
 
 	// database router
@@ -381,12 +390,15 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	database.GET("/project/:project_name/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetTablesList(ProjectService))
 	database.GET("/project/:project_name/table/:table_name/column", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ListTableColumns())
 	database.POST("/query/insert/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.InsertRow())
+	database.POST("/import/insert/project/:project_tag/table/:table_name", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.ImportCsvFile(ProjectService))
 	database.POST("/query/arbitrary/project/:project_tag", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.RunDatabaseQuery())
 	database.PUT("/query/update/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.UpdateRow())
 	database.GET("/query/select/project/:project_tag/table/:table_name/row/:id", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRowById())
 	database.DELETE("/query/delete/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.DeleteRow())
 	database.POST("/query/select/project/:project_tag/table/:table_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.SelectRows())
 	database.POST("/query/select/project/:project_tag/view/:view_name", middlewares.ProjectOwnerMiddleware(ProjectService), databaseController.RunViewQuery())
+	database.POST("/job/project/:project_name/result", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.GetDatabaseJob(ProjectService))
+	database.POST("/job/project/:project_name/run", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.RunDatabaseJob(ProjectService))
 	public.POST("/database/query/insert/project/:project_tag/table/:table_name", databaseController.InsertRowPublicly())
 	public.POST("/database/query/select/project/:project_tag/table/:table_name", databaseController.SelectRowsPublicly())
 	public.POST("/database/query/select/project/:project_tag/view/:view_name", databaseController.RunViewQueryPublicly())
@@ -433,6 +445,18 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uibuilder.GET("/project/:project_tag/component", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.ListComponents())
 	uibuilder.GET("/project/:project_tag/component/:component_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiComponentController.GetComponent())
 
+	// marketplace router
+	marketplace.POST("/item", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.AddItem(DatabaseService, crudServices, uiComponentServi, ProjectService, uiExtensionService))
+	marketplace.POST("/upload", marketplaceController.Upload())
+	marketplace.PATCH("/item/:id/disable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.DisableItem())
+	marketplace.PATCH("/item/:id/enable", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.EnableItem())
+	marketplace.POST("/credential/temporary", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.GetTemporaryCredential())
+	marketplace.POST("/function", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.CreateFunction())
+	marketplace.PUT("/function", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.UpdateFunction())
+	marketplace.POST("/category/list", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.ListCategories())
+	marketplace.GET("/function/:function_name", middlewares.TokenTypeMiddleware([]string{"user"}), marketplaceController.GetFunction())
+	public.GET("/marketplace/item/:id", marketplaceController.GetItem())
+	public.GET("/marketplace", marketplaceController.ListItems())
 	// uiExtension router
 	uibuilder.POST("/project/:project_tag/extension", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.UpsertExtension(marketplaceService))
 	uibuilder.DELETE("/project/:project_tag/extension/:extension_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), uiExtensionController.DeleteExtension())
@@ -459,8 +483,35 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	gitIntegration.POST("/provider/:provider/export", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ExportProject(marketplaceService, ProjectService, DatabaseService, crudServices))
 	gitIntegration.POST("/provider/:provider/import", middlewares.TokenTypeMiddleware([]string{"user"}), GitIntegrationController.ImportProject(marketplaceService, ProjectService, DatabaseService, crudServices, uibuilderService))
 
+	// ecommerce router (just for projects with 'ecommerce' type)
+	ecommerce.POST("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateProduct())
+	ecommerce.PUT("/project/:project_tag/product/:product_id", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateProduct())
+	ecommerce.POST("/project/:project_tag/database/query/predefined", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.RunPredefinedQueries())
+	ecommerce.POST("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.CreateEmailPipeline())
+	ecommerce.PUT("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.UpdateEmailPipeline())
+	ecommerce.GET("/project/:project_tag/pipeline/email", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipelines())
+	ecommerce.GET("/project/:project_tag/pipeline/email/:pipeline_name", middlewares.TokenTypeMiddleware([]string{"user"}), middlewares.ProjectOwnerMiddleware(ProjectService), EcommerceController.GetEmailPipeline())
+	ecommerce.GET("/project/:project_tag/product/:product_id/version/:product_version", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserProduct())
+	ecommerce.GET("/project/:project_tag/product", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.ListTpUserProducts())
+	ecommerce.POST("/project/:project_tag/product/:product_id/review", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.SetTpUserReview())
+	ecommerce.GET("/project/:project_tag/product/:product_id/review", middlewares.TokenTypeMiddleware([]string{"tp"}), EcommerceController.GetTpUserReview())
+	ecommerce.POST("/project/:project_tag/discount/code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.CreateDiscountCode())
+	ecommerce.GET("/project/:project_tag/discount/code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.ListDiscountCodes())
+	ecommerce.DELETE("/project/:project_tag/discount/code/:discount_code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.DeleteDiscountCode())
+	ecommerce.PUT("/project/:project_tag/discount/code/:discount_code", middlewares.TokenTypeMiddleware([]string{"user"}), EcommerceController.UpdateDiscountCode())
+	public.GET("/ecommerce/project/:project_tag/product/:product_id/review", EcommerceController.GetProductReviews())
+	public.GET("/ecommerce/project/:project_tag/product/tags", EcommerceController.ListProductTags())
+	public.GET("/ecommerce/project/:project_tag/payment/link/stripe", EcommerceController.GetStripePaymentLinkEndpoint())
+	public.POST("/ecommerce/project/:project_tag/payment/link", EcommerceController.CreateStripePaymentLink())
+	public.POST("/ecommerce/project/:project_tag/order", EcommerceController.CreateOrder())
+
 	// tp users profile router
 	profile.GET("/project/:project_tag", middlewares.ProjectOwnerMiddleware(ProjectService), profileController.GetProfile())
+
+	// open AI router
+	openai.POST("/chat/completions", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.CreateChatCompletion())
+	openai.POST("/ui_component/generations", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.GenerateUiComponent())
+	openai.POST("/images/generations", middlewares.TokenTypeMiddleware([]string{"user"}), OpenAIController.CreateImage())
 
 	// go TriggerService.StartChecking(IntegrationStore)
 	// go TriggerService.StartScheduller()

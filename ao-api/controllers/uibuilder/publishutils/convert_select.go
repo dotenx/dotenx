@@ -24,6 +24,11 @@ type Select struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
 		Placeholder  string `json:"placeholder"`
@@ -73,6 +78,7 @@ func convertSelect(component map[string]interface{}, styleStore *StyleStore, fun
 		id = sel.ElementId
 	}
 	styleStore.AddStyle(id, sel.Data.Style.Desktop, sel.Data.Style.Tablet, sel.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, sel.Data.CustomStyle.Desktop, sel.Data.CustomStyle.Tablet, sel.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

@@ -1,15 +1,8 @@
 package project
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/route53"
-	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -39,49 +32,58 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 		}
 
 		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
-		if err != nil {
-			if err.Error() == "project_domain not found" { // The project domain is created in this controller too. If it doesn't exists, create it.
 
-				hasAccess, err := pc.Service.CheckCreateDomainAccess(accountId, project.Type)
-				if err != nil {
-					logrus.Error(err.Error())
-					c.JSON(http.StatusInternalServerError, gin.H{
-						"error": err.Error(),
-					})
-					return
-				}
-				if !hasAccess {
-					c.JSON(http.StatusBadRequest, gin.H{
-						"message": utils.ErrReachLimitationOfPlan.Error(),
-					})
-					return
-				}
-
-				projectDomain = models.ProjectDomain{
-					AccountId:      accountId,
-					ProjectTag:     projectTag,
-					HostedZoneId:   "",
-					TlsArn:         "",
-					NsRecords:      []string{},
-					ExternalDomain: dto.ExternalDomain,
-					InternalDomain: GetRandomName(10),
-				}
-				hostedZoneId, nsRecords, err := createHostedZone(dto.ExternalDomain)
-				fmt.Println("hostedZoneId: ", hostedZoneId, nsRecords, len(hostedZoneId))
-				if err != nil {
-					logrus.Error(err.Error())
-					c.AbortWithStatus(http.StatusInternalServerError)
-					return
-				}
-				projectDomain.HostedZoneId = hostedZoneId
-				projectDomain.NsRecords = nsRecords
-
-			} else { // This is an internal server error
-				logrus.Error(err.Error())
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
+		if err != nil && err.Error() != "project_domain not found" {
+			logrus.Error(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
 		}
+
+		if projectDomain.ExternalDomain == dto.ExternalDomain {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "The domain is already set",
+			})
+			return
+		}
+
+		// The project domain is created in this controller too. If it doesn't exists, create it.
+
+		hasAccess, err := pc.Service.CheckCreateDomainAccess(accountId, project.Type)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if !hasAccess {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": utils.ErrReachLimitationOfPlan.Error(),
+			})
+			return
+		}
+
+		internalDomain := projectDomain.InternalDomain
+		if internalDomain == "" {
+			//This happens when the project domain is being set before even publishing the UI for once.
+			internalDomain = GetRandomName(10)
+		}
+
+		projectDomain = models.ProjectDomain{
+			AccountId:      accountId,
+			ProjectTag:     projectTag,
+			TlsArn:         "",
+			ExternalDomain: dto.ExternalDomain,
+			InternalDomain: internalDomain,
+		}
+		certificateArn, validationRecordName, validationRecordValue, err := utils.RequestSubdomainCertificate(projectDomain.ExternalDomain)
+
+		if err != nil {
+			logrus.Error(err.Error())
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		projectDomain.TlsArn = certificateArn
+		projectDomain.TlsValidationRecordName = validationRecordName
+		projectDomain.TlsValidationRecordValue = validationRecordValue
 
 		err = pc.Service.UpsertProjectDomain(projectDomain)
 		if err != nil {
@@ -92,36 +94,4 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 
 		c.Status(http.StatusOK)
 	}
-}
-
-func createHostedZone(externalDomain string) (string, []string, error) {
-	cfg := &aws.Config{
-		Region: aws.String(config.Configs.Upload.S3Region),
-	}
-	if config.Configs.App.RunLocally {
-		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
-
-		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
-	}
-	svc := route53.New(session.New(), cfg)
-
-	input := &route53.CreateHostedZoneInput{
-		Name:            aws.String(externalDomain),
-		CallerReference: aws.String(externalDomain),
-		HostedZoneConfig: &route53.HostedZoneConfig{
-			Comment: aws.String("Created by dotenx"),
-		},
-	}
-	result, err := svc.CreateHostedZone(input)
-	if err != nil {
-		return "", nil, err
-	}
-	nsRecords := make([]string, 0)
-	for _, record := range result.DelegationSet.NameServers {
-		nsRecords = append(nsRecords, *record)
-	}
-
-	hostedZoneId := strings.TrimLeft(*result.HostedZone.Id, "/hostedzone/")
-
-	return hostedZoneId, nsRecords, nil
 }

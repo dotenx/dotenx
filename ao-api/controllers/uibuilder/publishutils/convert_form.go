@@ -26,6 +26,11 @@ type Form struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Text           string `json:"text"`
 		DataSourceName string `json:"dataSourceName"`
 	} `json:"data"`
@@ -103,6 +108,7 @@ func convertForm(component map[string]interface{}, styleStore *StyleStore, funct
 		id = form.ElementId
 	}
 	styleStore.AddStyle(id, form.Data.Style.Desktop, form.Data.Style.Tablet, form.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, form.Data.CustomStyle.Desktop, form.Data.CustomStyle.Tablet, form.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

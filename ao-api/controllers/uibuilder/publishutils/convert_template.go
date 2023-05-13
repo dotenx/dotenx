@@ -22,6 +22,11 @@ type Template struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Name string `json:"name"`
 	} `json:"data"`
 }
@@ -91,6 +96,7 @@ func convertTemplate(component map[string]interface{}, styleStore *StyleStore, f
 		id = templateElement.ElementId
 	}
 	styleStore.AddStyle(id, templateElement.Data.Style.Desktop, templateElement.Data.Style.Tablet, templateElement.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, templateElement.Data.CustomStyle.Desktop, templateElement.Data.CustomStyle.Tablet, templateElement.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

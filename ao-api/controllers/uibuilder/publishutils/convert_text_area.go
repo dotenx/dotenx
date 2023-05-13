@@ -24,6 +24,11 @@ type TextArea struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		DefaultValue string `json:"defaultValue"`
 		Name         string `json:"name"`
 		Placeholder  string `json:"placeholder"`
@@ -69,6 +74,7 @@ func convertTextArea(component map[string]interface{}, styleStore *StyleStore, f
 		id = textArea.ElementId
 	}
 	styleStore.AddStyle(id, textArea.Data.Style.Desktop, textArea.Data.Style.Tablet, textArea.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, textArea.Data.CustomStyle.Desktop, textArea.Data.CustomStyle.Tablet, textArea.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

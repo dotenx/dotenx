@@ -26,6 +26,11 @@ type CollapsibleContent struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 	} `json:"data"`
 }
 
@@ -100,6 +105,7 @@ func convertCollapsibleContent(component map[string]interface{}, styleStore *Sty
 		id = collapsibleContent.ElementId
 	}
 	styleStore.AddStyle(id, collapsibleContent.Data.Style.Desktop, collapsibleContent.Data.Style.Tablet, collapsibleContent.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, collapsibleContent.Data.CustomStyle.Desktop, collapsibleContent.Data.CustomStyle.Tablet, collapsibleContent.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }
