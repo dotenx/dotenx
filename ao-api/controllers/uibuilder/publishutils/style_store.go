@@ -10,10 +10,13 @@ import (
 
 func NewStyleStore() StyleStore {
 	return StyleStore{
-		DesktopStyles: make(map[string]StyleModes),
-		TabletStyles:  make(map[string]StyleModes),
-		MobileStyles:  make(map[string]StyleModes),
-		lock:          new(sync.RWMutex),
+		DesktopStyles:       make(map[string]StyleModes),
+		TabletStyles:        make(map[string]StyleModes),
+		MobileStyles:        make(map[string]StyleModes),
+		CustomDesktopStyles: make(map[string]map[string]map[string]string),
+		CustomTabletStyles:  make(map[string]map[string]map[string]string),
+		CustomMobileStyles:  make(map[string]map[string]map[string]string),
+		lock:                new(sync.RWMutex),
 	}
 }
 
@@ -26,9 +29,12 @@ type StyleModes struct {
 type StyleStore struct {
 	lock *sync.RWMutex
 
-	DesktopStyles map[string]StyleModes
-	TabletStyles  map[string]StyleModes
-	MobileStyles  map[string]StyleModes
+	DesktopStyles       map[string]StyleModes
+	TabletStyles        map[string]StyleModes
+	MobileStyles        map[string]StyleModes
+	CustomDesktopStyles map[string]map[string]map[string]string
+	CustomTabletStyles  map[string]map[string]map[string]string
+	CustomMobileStyles  map[string]map[string]map[string]string
 }
 
 // Add the functionality to add new imports to the import store
@@ -39,6 +45,16 @@ func (i *StyleStore) AddStyle(id string, desktopStyles, tabletStyles, mobileStyl
 	i.DesktopStyles[id] = desktopStyles
 	i.TabletStyles[id] = tabletStyles
 	i.MobileStyles[id] = mobileStyles
+
+}
+
+func (i *StyleStore) AddCustomStyle(id string, desktopStyles, tabletStyles, mobileStyles map[string]map[string]string) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	i.CustomDesktopStyles[id] = desktopStyles
+	i.CustomTabletStyles[id] = tabletStyles
+	i.CustomMobileStyles[id] = mobileStyles
 
 }
 
@@ -112,6 +128,31 @@ isolation: isolate;
 }{{end}}
 {{end}}{{end}}
 }
+
+{{range $id, $styles := .CustomDesktopStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$selector}} {
+{{range $attr, $value := $customStyles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+
+@media (max-width: 767px) {
+{{range $id, $styles := .CustomTabletStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$selector}} {
+{{range $attr, $value := $customStyles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+}
+
+@media (max-width: 478px) {
+{{range $id, $styles := .CustomMobileStyles}}{{if $styles}}
+{{range $selector, $customStyles := $styles}}
+#{{$id}} {{$selector}} {
+{{range $attr, $value := $customStyles}}{{if $value}}{{$attr}}: {{$value}}{{end}};{{end}}
+}{{end}}
+{{end}}{{end}}
+}
 `
 
 func (i *StyleStore) ConvertToHTML(classNames map[string]interface{}) (string, error) {
@@ -130,6 +171,7 @@ func (i *StyleStore) ConvertToHTML(classNames map[string]interface{}) (string, e
 		return "", err
 	}
 
+	fmt.Println("i", i)
 	var out bytes.Buffer
 	err = tmpl.Execute(&out, i)
 	if err != nil {

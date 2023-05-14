@@ -26,6 +26,11 @@ type CollapsibleHeaderOpened struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 	} `json:"data"`
 }
 
@@ -95,6 +100,7 @@ func convertCollapsibleHeaderOpened(component map[string]interface{}, styleStore
 		id = collapsibleHeaderOpened.ElementId
 	}
 	styleStore.AddStyle(id, collapsibleHeaderOpened.Data.Style.Desktop, collapsibleHeaderOpened.Data.Style.Tablet, collapsibleHeaderOpened.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, collapsibleHeaderOpened.Data.CustomStyle.Desktop, collapsibleHeaderOpened.Data.CustomStyle.Tablet, collapsibleHeaderOpened.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

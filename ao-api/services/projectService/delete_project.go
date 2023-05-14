@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
@@ -59,7 +60,7 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 		}
 	}
 
-	if hasDomain {
+	if !config.Configs.App.RunLocally && hasDomain {
 		// If the project is published with custom domain, delete CloudFront, Route53 Hosted Zone, S3 bucket and ACM certificate
 		if projectDomain.ExternalDomain != "" {
 			/*
@@ -88,18 +89,13 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 					logrus.Error(err.Error())
 					return err
 				}
-				err = deleteHostedZone(projectDomain.HostedZoneId)
-				if err != nil {
-					logrus.Error(err.Error())
-					return err
-				}
 			}
 
 		} else if projectDomain.InternalDomain != "" {
 			// If the project is published with dotenx domain, delete the S3 folder
-			bucket := "water-static-qrpwasd239472lde2se348uuii8923n2" // TODO: Get from config
+			bucket := config.Configs.UiBuilder.S3Bucket
 			prefix := projectDomain.InternalDomain + ".web" + "/"
-			err := deleteS3Folder(bucket, prefix)
+			err := utils.DeleteS3Folder(bucket, prefix)
 			if err != nil {
 				logrus.Error(err.Error())
 				return err
@@ -190,41 +186,6 @@ func deleteS3Bucket(bucket string) error {
 	if err != nil {
 		logrus.Error(err.Error())
 	}
-	return err
-}
-
-func deleteS3Folder(bucket, folder string) error {
-
-	cfg := &aws.Config{
-		Region: aws.String(config.Configs.Upload.S3Region),
-	}
-	if config.Configs.App.RunLocally {
-		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
-
-		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
-	}
-	svc := s3.New(session.New(), cfg)
-
-	toDelete, err := svc.ListObjects(&s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
-		Prefix: aws.String(folder),
-	})
-	if err != nil {
-		logrus.Error(err.Error())
-		return err
-	}
-
-	for _, obj := range toDelete.Contents {
-		_, err := svc.DeleteObject(&s3.DeleteObjectInput{
-			Bucket: aws.String(bucket),
-			Key:    obj.Key,
-		})
-		if err != nil {
-			logrus.Error(err.Error())
-			return err
-		}
-	}
-
 	return err
 }
 

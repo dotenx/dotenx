@@ -26,6 +26,7 @@ type DatabaseStore interface {
 
 	DeleteDatabase(ctx context.Context, accountId string, projectName string) error
 	DeleteDatabaseUser(ctx context.Context, accountId string, projectName string) error
+	GetDatabaseUser(ctx context.Context, accountId string, projectName string) (models.DatabaseUser, error)
 
 	InsertRow(ctx context.Context, projectTag string, tableName string, row map[string]interface{}) error
 	UpdateRow(ctx context.Context, useRowLevelSecurity bool, tpAccountId, projectTag string, tableName string, id int, row map[string]interface{}) error

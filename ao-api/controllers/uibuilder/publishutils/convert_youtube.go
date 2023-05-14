@@ -25,6 +25,11 @@ type YouTube struct {
 			Tablet  StyleModes `json:"tablet"`
 			Mobile  StyleModes `json:"mobile"`
 		} `json:"style"`
+		CustomStyle struct {
+			Desktop map[string]map[string]string `json:"desktop"`
+			Tablet  map[string]map[string]string `json:"tablet"`
+			Mobile  map[string]map[string]string `json:"mobile"`
+		} `json:"customStyle"`
 		Src string `json:"src"`
 	} `json:"data"`
 }
@@ -75,6 +80,7 @@ func convertYouTube(component map[string]interface{}, styleStore *StyleStore, fu
 		id = youtube.ElementId
 	}
 	styleStore.AddStyle(id, youtube.Data.Style.Desktop, youtube.Data.Style.Tablet, youtube.Data.Style.Mobile)
+	styleStore.AddCustomStyle(id, youtube.Data.CustomStyle.Desktop, youtube.Data.CustomStyle.Tablet, youtube.Data.CustomStyle.Mobile)
 
 	return out.String(), nil
 }

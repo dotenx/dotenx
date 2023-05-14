@@ -147,15 +147,15 @@ func (i *FunctionStore) ConvertToHTML(dataSources []interface{}, globals []strin
 	converted.WriteString("\n" + strings.Join(i.Extensions, "\n"))
 
 	// Todo: Do this only if there is a slider!
-	mountSplider := `
-document.addEventListener( 'DOMContentLoaded', function() {
-	try{
-    var splide = new Splide( '.splide' );
-	if(splide){splide.mount();}
-  } catch(e){}
-} );
-`
-	converted.WriteString("\n" + mountSplider) // TODO: mount splider only if there is a slider
+	// 	mountSplider := `
+	// document.addEventListener( 'DOMContentLoaded', function() {
+	// 	try{
+	//     var splide = new Splide( '.splide' );
+	// 	if(splide){splide.mount();}
+	//   } catch(e){}
+	// } );
+	// `
+	// 	converted.WriteString("\n" + mountSplider) // TODO: mount splider only if there is a slider
 
 	// We do this here because we want to make sure it's added after the functions that declare page and global stores
 	convertedDefaultValues, err := convertStateDefaultValues(statesDefaultValues)
