@@ -116,6 +116,7 @@ type (
 	UiBuilder struct {
 		S3Bucket      string `envconfig:"AOA_UI_BUILDER_S3_BUCKET"`
 		ParentAddress string `envconfig:"AOA_UI_BUILDER_PARENT_ADDRESS"`
+		HostedZoneId  string `envconfig:"AOA_UI_BUILDER_HOSTED_ZONE_ID"`
 	}
 )
 

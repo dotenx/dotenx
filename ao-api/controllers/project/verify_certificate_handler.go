@@ -79,7 +79,7 @@ func (pc *ProjectController) VerifyCertificate() gin.HandlerFunc {
 		}
 
 		// Update the CNAME record to now point to the CloudFront distribution we just created
-		err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, distributionDomainName, "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
+		err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, distributionDomainName, config.Configs.UiBuilder.HostedZoneId, "CNAME") // TODO: Get from config
 		if err != nil {
 			logrus.Error(err.Error())
 			c.Status(http.StatusInternalServerError)
