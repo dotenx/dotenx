@@ -79,7 +79,7 @@ func (pc *ProjectController) VerifyCertificate() gin.HandlerFunc {
 		}
 
 		// Update the CNAME record to now point to the CloudFront distribution we just created
-		err = utils.UpsertRoute53Record(projectDomain.InternalDomain+".web.dotenx.com", distributionDomainName, "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
+		err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, distributionDomainName, "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
 		if err != nil {
 			logrus.Error(err.Error())
 			c.Status(http.StatusInternalServerError)
@@ -88,7 +88,7 @@ func (pc *ProjectController) VerifyCertificate() gin.HandlerFunc {
 
 		// If the project is published with dotenx domain, delete the S3 folder
 		if projectDomain.InternalDomain != "" {
-			bucket := "water-static-qrpwasd239472lde2se348uuii8923n2" // TODO: Get from config
+			bucket := config.Configs.UiBuilder.S3Bucket
 			prefix := projectDomain.InternalDomain + ".web" + "/"
 			err = utils.DeleteS3Folder(bucket, prefix)
 			if err != nil {
