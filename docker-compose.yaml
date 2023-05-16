@@ -49,7 +49,7 @@ services:
             context: ./ui-ecommerce
             dockerfile: Dockerfile
         ports:
-            - "3010:80"
+            - "3011:80"
         networks:
             - default
         volumes:
@@ -64,7 +64,7 @@ services:
             context: ./ui-form
             dockerfile: Dockerfile
         ports:
-            - "3010:80"
+            - "3012:80"
         networks:
             - default
         volumes:
