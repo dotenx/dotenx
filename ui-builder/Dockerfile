@@ -3,16 +3,15 @@
 # 2) Nginx stage to serve frontend assets
 
 # Name the node stage "builder"
-FROM node:16 AS builder
+FROM node:18 AS builder
 # Install pnpm
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN npm install --global pnpm
 # Set working directory
 WORKDIR /app
 COPY pnpm-lock.yaml ./
-RUN pnpm fetch
 # Copy all files from current directory to working dir in image
 ADD . ./
-RUN pnpm install -r --offline
+RUN pnpm Install
 # Build assets
 RUN pnpm run build
 
