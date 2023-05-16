@@ -11,7 +11,7 @@ WORKDIR /app
 COPY pnpm-lock.yaml ./
 # Copy all files from current directory to working dir in image
 ADD . ./
-RUN pnpm Install
+RUN pnpm install
 # Build assets
 RUN pnpm run build
 
