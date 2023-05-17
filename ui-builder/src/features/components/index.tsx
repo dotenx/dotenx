@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import {
 	TbArticle,
+	TbAtom2,
 	TbBorderHorizontal,
 	TbBrandMixpanel,
 	TbClick,
@@ -53,6 +54,7 @@ import { DividerSimpleTitle } from './divider-simple-title'
 import { DividerStats } from './divider-stats'
 import { DividerStatsWithLogos } from './divider-stats-logos'
 import { DividerTextSections } from './divider-text-sections'
+import { DynamicTable } from './dynamics/table'
 import { FaqBasic } from './faq-basic'
 import { FaqBasicStyled } from './faq-basic-styled'
 import { FaqCollapsible } from './faq-collapsible'
@@ -455,6 +457,11 @@ export const COMPONENTS: Components = [
 			FooterSimpleWithLinksOnRight,
 			FooterSimpleWithLinksOnRight2,
 		],
+	},
+	{
+		title: 'Dynamics',
+		icon: <TbAtom2 />,
+		items: [DynamicTable],
 	},
 ]
 
