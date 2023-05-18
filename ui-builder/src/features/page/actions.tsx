@@ -31,18 +31,24 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import {
+	GlobalStates,
+	QueryKey,
 	changeGlobalStates,
 	deletePage,
 	getGlobalStates,
 	getPageUrls,
-	GlobalStates,
 	previewPage,
 	publishPage,
-	QueryKey,
 } from '../../api'
 import { useElementsStore } from '../elements/elements-store'
 import { CustomCode } from './custom-code'
-import { pageModeAtom, pageParamsAtom, projectTagAtom, projectTypeAtom } from './top-bar'
+import {
+	AdvancedModeButton,
+	pageModeAtom,
+	pageParamsAtom,
+	projectTagAtom,
+	projectTypeAtom,
+} from './top-bar'
 import { usePageData, useResetPage, useUpdatePage } from './use-update'
 
 export const globalStatesAtom = atom<string[]>([])
@@ -154,6 +160,8 @@ export function CustomCodes() {
 }
 
 function PageSettings({ projectName }: { projectName: string }) {
+	const pageData = usePageData()
+
 	return (
 		<div>
 			<Divider label="Custom code" mb="xl" />
@@ -162,6 +170,7 @@ function PageSettings({ projectName }: { projectName: string }) {
 			<QueryParamsForm />
 			<Divider label="Persisted states" my="xl" />
 			<PersistedStatesForm projectName={projectName} />
+			<AdvancedModeButton pageData={pageData} />
 		</div>
 	)
 }

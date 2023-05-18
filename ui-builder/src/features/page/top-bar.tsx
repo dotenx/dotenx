@@ -6,7 +6,6 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { ReactNode, useEffect } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import {
-	TbAffiliate,
 	TbArrowsMaximize,
 	TbArrowsMinimize,
 	TbCornerUpLeft,
@@ -16,6 +15,7 @@ import {
 } from 'react-icons/tb'
 import { useMatch, useNavigate, useParams } from 'react-router-dom'
 import {
+	AddPageRequest,
 	ProjectType,
 	QueryKey,
 	getGlobalStates,
@@ -40,7 +40,7 @@ import { ViewportSelection } from '../viewport/viewport-selection'
 import { PageActions, customCodesAtom, globalStatesAtom } from './actions'
 import { PageSelection } from './page-selection'
 import { useProjectStore } from './project-store'
-import { usePageData, useUpdatePage } from './use-update'
+import { useUpdatePage } from './use-update'
 
 export const pageModeAtom = atom<'none' | 'simple' | 'advanced'>('none')
 export const previewAtom = atom({ isFullscreen: false })
@@ -49,8 +49,6 @@ export const projectTypeAtom = atom<'none' | ProjectType>('none')
 export const pageParamsAtom = atom<string[]>([])
 
 export function TopBar() {
-	const projectType = useAtomValue(projectTypeAtom)
-
 	return (
 		<TopBarWrapper
 			left={
@@ -60,7 +58,6 @@ export function TopBar() {
 					<PageSelection />
 					<ViewportSelection />
 					<FullscreenButton />
-					{projectType === 'web_application' && <AdvancedModeButton />}
 					<UnsavedMessage />
 				</>
 			}
@@ -289,10 +286,9 @@ export function FullscreenButton() {
 	)
 }
 
-export function AdvancedModeButton() {
+export function AdvancedModeButton({ pageData }: { pageData: AddPageRequest }) {
 	const mode = useAtomValue(pageModeAtom)
 	const isSimple = mode === 'simple'
-	const pageData = usePageData()
 	const updatePage = useUpdatePage()
 
 	const saveAdvanced = () => {
@@ -320,9 +316,9 @@ export function AdvancedModeButton() {
 
 	return (
 		<Tooltip withArrow label={<Text size="xs">Switch to the advanced mode</Text>} offset={10}>
-			<ActionIcon onClick={handleClick}>
-				<TbAffiliate className="w-5 h-5" />
-			</ActionIcon>
+			<Button size="xs" onClick={handleClick} mt="xl">
+				Switch to advanced mode (beta)
+			</Button>
 		</Tooltip>
 	)
 }
