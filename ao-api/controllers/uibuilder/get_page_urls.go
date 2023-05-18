@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -51,7 +52,7 @@ func (controller *UIbuilderController) GetPageUrls() gin.HandlerFunc {
 		var domain string
 		if projectDomain.TlsArn == "" { // We use TLS arn as an indicator that the external domain is verified and ready to be used
 			// Ignore the external domain, try to publish with the internal domain
-			domain = projectDomain.InternalDomain + ".web.dotenx.com"
+			domain = projectDomain.InternalDomain + "." + config.Configs.UiBuilder.ParentAddress
 		} else {
 			// get the status of cdn infra and if it's not ready, first deploy the cdn
 			_, err := controller.Service.GetUiInfrastructure(accountId, projectTag)
