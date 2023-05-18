@@ -18,6 +18,7 @@ type (
 		Upload         Upload
 		Marketplace    Marketplace
 		TaskAndTrigger TaskAndTrigger
+		UiBuilder      UiBuilder
 	}
 
 	App struct {
@@ -110,6 +111,12 @@ type (
 	TaskAndTrigger struct {
 		S3Bucket      string `envconfig:"AOA_TASKS_AND_TRIGGERS_S3_BUCKET"`
 		FrequencyList string `envconfig:"AOA_TRIGGER_FREQUENCY_LIST"`
+	}
+
+	UiBuilder struct {
+		S3Bucket      string `envconfig:"AOA_UI_BUILDER_S3_BUCKET"`
+		ParentAddress string `envconfig:"AOA_UI_BUILDER_PARENT_ADDRESS"`
+		HostedZoneId  string `envconfig:"AOA_UI_BUILDER_HOSTED_ZONE_ID"`
 	}
 )
 

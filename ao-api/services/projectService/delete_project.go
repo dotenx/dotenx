@@ -60,7 +60,7 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 		}
 	}
 
-	if hasDomain {
+	if !config.Configs.App.RunLocally && hasDomain {
 		// If the project is published with custom domain, delete CloudFront, Route53 Hosted Zone, S3 bucket and ACM certificate
 		if projectDomain.ExternalDomain != "" {
 			/*
@@ -93,7 +93,7 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 
 		} else if projectDomain.InternalDomain != "" {
 			// If the project is published with dotenx domain, delete the S3 folder
-			bucket := "water-static-qrpwasd239472lde2se348uuii8923n2" // TODO: Get from config
+			bucket := config.Configs.UiBuilder.S3Bucket
 			prefix := projectDomain.InternalDomain + ".web" + "/"
 			err := utils.DeleteS3Folder(bucket, prefix)
 			if err != nil {

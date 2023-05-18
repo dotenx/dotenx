@@ -3,6 +3,7 @@ package uibuilder
 import (
 	"net/http"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/controllers/uibuilder/publishutils"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -67,10 +68,10 @@ func (controller *UIbuilderController) PublishPage() gin.HandlerFunc {
 			// Ignore the external domain, try to publish with the internal domain
 
 			// Copy the page and its dependencies to S3
-			bucket = "water-static-qrpwasd239472lde2se348uuii8923n2" // TODO: Get from config
+			bucket = config.Configs.UiBuilder.S3Bucket
 			prefix = projectDomain.InternalDomain + ".web" + "/"
-			domain = projectDomain.InternalDomain + ".web.dotenx.com"
-			err = utils.UpsertRoute53Record(projectDomain.InternalDomain+".web.dotenx.com", "d2hhdj7tyolioa.cloudfront.net", "Z10095473PHQIPQ1QOCMU", "CNAME") // TODO: Get from config
+			domain = projectDomain.InternalDomain + "." + config.Configs.UiBuilder.ParentAddress
+			err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, "d2hhdj7tyolioa.cloudfront.net", config.Configs.UiBuilder.HostedZoneId, "CNAME") // TODO: Get from config
 			if err != nil {
 				logrus.Error(err.Error())
 				c.Status(http.StatusInternalServerError)
