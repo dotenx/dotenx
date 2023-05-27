@@ -1,0 +1,33 @@
+service: hubspot
+type: Create new deal
+image: hojjat12/hubspot-create-deal:lambda
+integrations: [hubspot]
+fields:
+    - key: deal_name
+      type: text
+      display_name: '* Deal name'
+      description: A name for this deal
+    - key: deal_pipeline
+      type: text
+      display_name: '* Deal pipeline'
+      description: Pipeline of this deal (e.g default)
+    - key: deal_stage
+      type: text
+      display_name: '* Deal stage'
+      description: Stage of this deal (e.g contractsent, qualifiedtobuy, closedlost, ...)
+    - key: amount
+      type: text
+      display_name: Deal revenue amount
+      description: The total value of the deal in the deal's currency.
+    - key: currency
+      type: text
+      display_name: Deal revenue currency
+      description: Currency code for the deal (e.g usd, eur, aud, chf, ...)
+    - key: close_date
+      type: text
+      display_name: Deal information close date
+      description: Date the deal was closed. This property is set automatically by HubSpot.
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Creates a deal on your HubSpot account
