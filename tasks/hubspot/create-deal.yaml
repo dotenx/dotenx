@@ -22,7 +22,7 @@ fields:
     - key: currency
       type: text
       display_name: Deal revenue currency
-      description: Currency code for the deal (e.g usd, eur, aud, chf, ...)
+      description: Currency code for the deal (e.g USD, EUR, AUD, CHF, ...)
     - key: close_date
       type: text
       display_name: Deal information close date

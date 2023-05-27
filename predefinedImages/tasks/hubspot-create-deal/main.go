@@ -81,7 +81,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	out, statusCode, _, err := httpRequest(http.MethodPost, url, payload, headers, 0)
 	fmt.Println("HubSpot api status code:", statusCode)
 	fmt.Println("HubSpot api response (create new deal):", string(out))
-	if err != nil || statusCode != http.StatusOK {
+	if err != nil || (statusCode != http.StatusOK && statusCode != http.StatusCreated) {
 		fmt.Printf("can't get correct response from HubSpot api")
 		resp.Successfull = false
 	}
