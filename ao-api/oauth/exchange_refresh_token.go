@@ -85,7 +85,6 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 					accessToken, refreshToken, err = gumroadRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
 					expInInt = 24 * 60 * 60
 				case "hubspot":
-					// redirectUrl := config.Configs.Endpoints.AoApiLocal + "/oauth/integration/callbacks/hubspot"
 					accessToken, refreshToken, expInInt, err = hubspotRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
 				}
 				if err != nil {
@@ -237,7 +236,6 @@ func hubspotRefreshToken(clientId, clientSecret, refreshToken string) (accessTok
 	data += "&grant_type=refresh_token"
 	data += "&client_id=" + clientId
 	data += "&client_secret=" + clientSecret
-	// data += "&redirect_uri=" + redirectUrl
 	url := "https://api.hubapi.com/oauth/v1/token"
 	headers := []utils.Header{
 		{

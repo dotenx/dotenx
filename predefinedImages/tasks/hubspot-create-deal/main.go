@@ -54,7 +54,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		apiBody["properties"].(map[string]interface{})["amount"] = amount
 	}
 	if currency != "" {
-		apiBody["properties"].(map[string]interface{})["currency"] = currency
+		apiBody["properties"].(map[string]interface{})["deal_currency_code"] = currency
 	}
 	if closeDate != "" {
 		apiBody["properties"].(map[string]interface{})["closedate"] = closeDate
