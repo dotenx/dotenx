@@ -1,0 +1,7 @@
+type: hubspot
+secrets:
+  - name: HubSpot OAuth2 access token
+    key: ACCESS_TOKEN 
+  - name: HubSpot OAuth2 refresh token
+    key: REFRESH_TOKEN 
+oauth_provider: hubspot

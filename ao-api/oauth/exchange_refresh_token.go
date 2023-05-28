@@ -84,6 +84,8 @@ func ExchangeRefreshToken(gProvider goth.Provider, oauthProvider models.OauthPro
 				case "gumroad":
 					accessToken, refreshToken, err = gumroadRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
 					expInInt = 24 * 60 * 60
+				case "hubspot":
+					accessToken, refreshToken, expInInt, err = hubspotRefreshToken(oauthProvider.Key, oauthProvider.Secret, oldRefreshToken)
 				}
 				if err != nil {
 					return "", "", err
@@ -222,4 +224,35 @@ func gumroadRefreshToken(clientId, clientSecret, refreshToken string) (accessTok
 	}
 	err = json.Unmarshal(out, &dto)
 	return dto.AccessToken, dto.RefreshToken, err
+}
+
+func hubspotRefreshToken(clientId, clientSecret, refreshToken string) (accessToken, newRefreshToken string, expIn int64, err error) {
+	var dto struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		ExpiresIn    int64  `json:"expires_in"`
+	}
+	data := "refresh_token=" + refreshToken
+	data += "&grant_type=refresh_token"
+	data += "&client_id=" + clientId
+	data += "&client_secret=" + clientSecret
+	url := "https://api.hubapi.com/oauth/v1/token"
+	headers := []utils.Header{
+		{
+			Key:   "Content-Type",
+			Value: "application/x-www-form-urlencoded",
+		},
+	}
+	body := bytes.NewBuffer([]byte(data))
+	helper := utils.NewHttpHelper(utils.NewHttpClient())
+	out, err, status, _ := helper.HttpRequest(http.MethodPost, url, body, headers, time.Minute, true)
+	logrus.Info("hubspot response:", string(out))
+	if err != nil {
+		return "", "", 0, err
+	}
+	if status != http.StatusOK && status != http.StatusCreated {
+		return "", "", 0, errors.New("not ok with status " + fmt.Sprint(status))
+	}
+	err = json.Unmarshal(out, &dto)
+	return dto.AccessToken, dto.RefreshToken, dto.ExpiresIn, err
 }

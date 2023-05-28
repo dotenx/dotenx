@@ -17,6 +17,7 @@ import {
 	previewAtom,
 	projectTypeAtom,
 } from '../page/top-bar'
+import { usePageData } from '../page/use-update'
 import { useSelectionStore } from '../selection/selection-store'
 import { useSelectedElement } from '../selection/use-selected-component'
 import { AppHeader } from '../ui/header'
@@ -57,7 +58,6 @@ function TopBar() {
 					{projectType !== 'landing_page' && <PageSelection />}
 					<ViewportSelection />
 					<FullscreenButton />
-					{projectType === 'web_application' && <AdvancedModeButton />}
 					<UnsavedMessage />
 				</>
 			}
@@ -73,6 +73,8 @@ function TopBar() {
 }
 
 function PageSettings() {
+	const pageData = usePageData()
+
 	return (
 		<Tooltip withinPortal withArrow label={<Text size="xs">Settings</Text>}>
 			<Button
@@ -84,6 +86,7 @@ function PageSettings() {
 								<Palette />
 								<Divider label="Custom code" my="xl" />
 								<CustomCodes />
+								<AdvancedModeButton pageData={pageData} />
 							</div>
 						),
 					})
