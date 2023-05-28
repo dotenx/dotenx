@@ -58,6 +58,12 @@
         "direct_url": "https://gumroad.com/oauth/authorize?client_id=2mOzjijZO9WPcV3fX9pmSmogCNY669VqyjuHcadcz7w&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/gumroad&scope=view_profile+edit_products+view_sales+mark_sales_as_shipped"
     },
     {
+        "name": "hubspot",
+        "secret": "47c84ccc-0d5e-4c73-893d-f686689a3be1",
+        "key": "149034e2-aa71-49ce-b248-cdd7f5ba1052",
+        "direct_url": "https://app.hubspot.com/oauth/authorize?client_id=149034e2-aa71-49ce-b248-cdd7f5ba1052&redirect_uri=https://api.dotenx.com/oauth/integration/callbacks/hubspot&scope=forms%20tickets%20crm.lists.read%20crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.lists.write%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.deals.read%20crm.objects.owners.read"
+    },
+    {
         "name": "slack",
         "secret": "7ced68760661e15695f6d8d16aba44fe",
         "key": "1390586298022.3553550438982",
