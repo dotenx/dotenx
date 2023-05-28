@@ -1,0 +1,33 @@
+service: hubspot
+type: Create new ticket
+image: hojjat12/hubspot-create-ticket:lambda
+integrations: [hubspot]
+fields:
+    - key: ticket_name
+      type: text
+      display_name: '* Ticket name'
+      description: Short summary of ticket
+    - key: pipeline
+      type: text
+      display_name: '* Ticket Pipeline'
+      description: The pipeline enumeration id (start from 0) that will contains this ticket.
+    - key: pipeline_stage
+      type: text
+      display_name: '* Ticket Stage'
+      description: The pipeline stage enumeration id (start from 1) that will contains this ticket.
+    - key: priority
+      type: text
+      display_name: Priority
+      description: 'The level of attention needed on the ticket. (one of this: LOW, MEDIUM, HIGH)'
+    - key: ticket_owner
+      type: text
+      display_name: Ticket owner
+      description: HubSpot id of user who the ticket is assigned to.
+    - key: description
+      type: text
+      display_name: Ticket description
+      description: Description of the ticket
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Creates a ticket on your HubSpot account
