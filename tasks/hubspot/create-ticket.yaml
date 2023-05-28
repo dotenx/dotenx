@@ -14,7 +14,7 @@ fields:
     - key: pipeline_stage
       type: text
       display_name: '* Ticket Stage'
-      description: The pipeline stage enumeration id (start from 0) that will contains this ticket.
+      description: The pipeline stage enumeration id (start from 1) that will contains this ticket.
     - key: priority
       type: text
       display_name: Priority
