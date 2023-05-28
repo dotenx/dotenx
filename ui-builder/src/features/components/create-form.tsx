@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbTrash } from 'react-icons/tb'
 import { useParams } from 'react-router-dom'
-import { API_URL, getColumns, GetColumnsResponse, getTables, QueryKey } from '../../api'
+import { API_URL, GetColumnsResponse, QueryKey, getColumns, getTables } from '../../api'
 import imageUrl from '../../assets/components/hero.png'
 import { uuid } from '../../utils'
 import { HttpMethod, useDataSourceStore } from '../data-source/data-source-store'
@@ -126,7 +126,7 @@ export const useColumnsQuery = ({
 	onSuccess,
 }: {
 	tableName: string | null
-	onSuccess: (data: AxiosResponse<GetColumnsResponse>) => void
+	onSuccess?: (data: AxiosResponse<GetColumnsResponse>) => void
 }) => {
 	const { projectName = '' } = useParams()
 	return useQuery(
@@ -134,7 +134,7 @@ export const useColumnsQuery = ({
 		() => getColumns({ projectName, tableName: tableName ?? '' }),
 		{
 			enabled: !!tableName && !!projectName,
-			onSuccess: onSuccess,
+			onSuccess,
 		}
 	)
 }
@@ -146,7 +146,7 @@ export function TableSelect({
 }: {
 	value: string | null
 	onChange: (value: string | null) => void
-	description: string
+	description?: string
 }) {
 	const { projectName = '' } = useParams()
 	const tablesQuery = useQuery([QueryKey.Tables, projectName], () => getTables({ projectName }))

@@ -43,6 +43,36 @@ services:
             - ./ui-builder:/usr/src/app
             - ./ui-builder/nginx.conf:/etc/nginx/nginx.conf
             - /usr/src/app/node_modules
+    
+    ui_ecommerce:
+        build:
+            context: ./ui-ecommerce
+            dockerfile: Dockerfile
+        ports:
+            - "3011:80"
+        networks:
+            - default
+        volumes:
+            - ./ui-ecommerce:/usr/src/app
+            - ./ui-ecommerce/nginx.conf:/etc/nginx/nginx.conf
+            - /usr/src/app/node_modules
+        env_file:
+            - ./ui-ecommerce/.env.development
+    
+    ui_form:
+        build:
+            context: ./ui-form
+            dockerfile: Dockerfile
+        ports:
+            - "3012:80"
+        networks:
+            - default
+        volumes:
+            - ./ui-form:/usr/src/app
+            - ./ui-form/nginx.conf:/etc/nginx/nginx.conf
+            - /usr/src/app/node_modules
+        env_file:
+            - ./ui-form/.env.development
 
     redis:
         image: redis

@@ -40,6 +40,8 @@ func (controller *OauthController) OAuthIntegrationCallback(c *gin.Context) {
 			accessToken, refreshToken, err = controller.getAirtableTokens(providers["airtable"].Key, providers["airtable"].Secret, code, state, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/airtable")
 		case "gumroad":
 			accessToken, refreshToken, err = getGumroadTokens(providers["gumroad"].Key, providers["gumroad"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/gumroad")
+		case "hubspot":
+			accessToken, refreshToken, err = getHubspotTokens(providers["hubspot"].Key, providers["hubspot"].Secret, code, config.Configs.Endpoints.AoApiLocal+"/oauth/integration/callbacks/hubspot")
 		}
 		if utils.ShouldRedirectWithError(c, err, UI) {
 			return

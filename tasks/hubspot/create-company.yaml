@@ -1,0 +1,45 @@
+service: hubspot
+type: Create new company
+image: hojjat12/hubspot-create-company:lambda
+integrations: [hubspot]
+fields:
+    - key: company_name
+      type: text
+      display_name: Company name
+      description: The name of the company or organization.
+    - key: domain
+      type: text
+      display_name: Company Domain
+      description: The domain url of the company or organization
+    - key: state
+      type: text
+      display_name: State/Region
+      description: State or region in which the company or organization is located.
+    - key: city
+      type: text
+      display_name: City
+      description: City where the company is located.
+    - key: industry
+      type: text
+      display_name: Industry
+      description: The type of business the company performs. By default, this property has approximately 150 pre-defined options to select from. (e.g ACCOUNTING, DESIGN, COMPUTER_SOFTWARE, ...)
+    - key: phone
+      type: text
+      display_name: Phone Number
+      description: Company primary phone number.
+    - key: about_us
+      type: text
+      display_name: About Us
+      description: Short about-company
+    - key: address
+      type: text
+      display_name: Street Address
+      description: Street address of the company or organization, including unit number.
+    - key: address2
+      type: text
+      display_name: Street Address 2
+      description: Additional address of the company or organization.
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Creates a company on your HubSpot account
