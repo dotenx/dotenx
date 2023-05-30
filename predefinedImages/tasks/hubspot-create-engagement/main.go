@@ -87,10 +87,19 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	case "EMAIL":
 		apiBody["properties"].(map[string]interface{})["hs_timestamp"] = time.Now().Format(time.RFC3339)
 		apiBody["properties"].(map[string]interface{})["hs_email_direction"] = "EMAIL"
-		apiBody["properties"].(map[string]interface{})["hs_email_sender_email"] = emailSenderAddress
-		apiBody["properties"].(map[string]interface{})["hs_email_sender_firstname"] = emailSenderFirstname
-		apiBody["properties"].(map[string]interface{})["hs_email_sender_lastname"] = emailSenderLastname
-		apiBody["properties"].(map[string]interface{})["hs_email_to_email"] = emailRecipientAddress
+		emailHeaders := make(map[string]interface{})
+		emailHeaders["from"] = map[string]interface{}{
+			"email":     emailSenderAddress,
+			"firstName": emailSenderFirstname,
+			"lastName":  emailSenderLastname,
+		}
+		emailHeaders["to"] = []map[string]interface{}{
+			{
+				"email": emailRecipientAddress,
+			},
+		}
+		emailHeadersBytes, _ := json.Marshal(emailHeaders)
+		apiBody["properties"].(map[string]interface{})["hs_email_headers"] = string(emailHeadersBytes)
 		apiBody["properties"].(map[string]interface{})["hs_email_subject"] = emailSubject
 		if emailHtml != "" {
 			apiBody["properties"].(map[string]interface{})["hs_email_html"] = emailHtml
