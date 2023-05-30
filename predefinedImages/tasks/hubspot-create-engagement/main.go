@@ -259,7 +259,7 @@ func getAssociationTypeId(fromObjectType, toObjectType, accessToken string) (int
 	}
 	outMap := make(map[string]interface{})
 	json.Unmarshal(out, &outMap)
-	typeId := outMap["results"].([]map[string]interface{})[0]["id"]
+	typeId := outMap["results"].([]interface{})[0].(map[string]interface{})["id"]
 	typeIdInt, err := strconv.Atoi(fmt.Sprint(typeId))
 	if err != nil {
 		return 0, err
