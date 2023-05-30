@@ -118,37 +118,45 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		return resp, err
 	}
 
-	objs, err := getAssociationObjects(fromObjectType, "contacts", accessToken, strings.Split(contactIdList, ","))
-	if err != nil {
-		resp.Successfull = false
-		resp.Status = "failed"
-		return resp, err
+	if contactIdList != "" {
+		objs, err := getAssociationObjects(fromObjectType, "contacts", accessToken, strings.Split(contactIdList, ","))
+		if err != nil {
+			resp.Successfull = false
+			resp.Status = "failed"
+			return resp, err
+		}
+		associations = append(associations, objs...)
 	}
-	associations = append(associations, objs...)
 
-	objs, err = getAssociationObjects(fromObjectType, "companies", accessToken, strings.Split(companyIdList, ","))
-	if err != nil {
-		resp.Successfull = false
-		resp.Status = "failed"
-		return resp, err
+	if companyIdList != "" {
+		objs, err := getAssociationObjects(fromObjectType, "companies", accessToken, strings.Split(companyIdList, ","))
+		if err != nil {
+			resp.Successfull = false
+			resp.Status = "failed"
+			return resp, err
+		}
+		associations = append(associations, objs...)
 	}
-	associations = append(associations, objs...)
 
-	objs, err = getAssociationObjects(fromObjectType, "deals", accessToken, strings.Split(dealIdList, ","))
-	if err != nil {
-		resp.Successfull = false
-		resp.Status = "failed"
-		return resp, err
+	if dealIdList != "" {
+		objs, err := getAssociationObjects(fromObjectType, "deals", accessToken, strings.Split(dealIdList, ","))
+		if err != nil {
+			resp.Successfull = false
+			resp.Status = "failed"
+			return resp, err
+		}
+		associations = append(associations, objs...)
 	}
-	associations = append(associations, objs...)
 
-	objs, err = getAssociationObjects(fromObjectType, "tickets", accessToken, strings.Split(ticketIdList, ","))
-	if err != nil {
-		resp.Successfull = false
-		resp.Status = "failed"
-		return resp, err
+	if ticketIdList != "" {
+		objs, err := getAssociationObjects(fromObjectType, "tickets", accessToken, strings.Split(ticketIdList, ","))
+		if err != nil {
+			resp.Successfull = false
+			resp.Status = "failed"
+			return resp, err
+		}
+		associations = append(associations, objs...)
 	}
-	associations = append(associations, objs...)
 
 	apiBody["associations"] = associations
 	jsonData, err := json.Marshal(apiBody)
