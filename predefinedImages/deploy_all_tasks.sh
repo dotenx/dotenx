@@ -29,6 +29,7 @@
 # # hojjat12/hubspot-create-deal:lambda
 # # hojjat12/hubspot-create-company:lambda
 # # hojjat12/hubspot-create-ticket:lambda
+# # hojjat12/hubspot-create-engagement:lambda
 
 # export region="us-east-1"
 # export repository_name="hojjat12/database-add-record"
@@ -286,6 +287,15 @@
 # export repository_name="hojjat12/hubspot-create-ticket"
 # export tag="lambda"
 # export directory_address="hubspot-create-ticket"
+# export image_name="${repository_name}:${tag}"
+# export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+# echo $image_name
+# echo $function_name
+
+# export region="us-east-1"
+# export repository_name="hojjat12/hubspot-create-engagement"
+# export tag="lambda"
+# export directory_address="hubspot-create-engagement"
 # export image_name="${repository_name}:${tag}"
 # export function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
 # echo $image_name
