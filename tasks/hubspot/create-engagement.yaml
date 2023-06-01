@@ -1,0 +1,119 @@
+service: hubspot
+type: Create new engagement
+image: hojjat12/hubspot-create-engagement:lambda
+integrations: [hubspot]
+fields:
+    - key: engagement_type
+      type: text
+      display_name: "* Engagement Type"
+      description: "The type of engagement. (possible values: NOTE, MEETING, EMAIL or CALL)"
+
+    - key: assigned_to
+      type: text
+      display_name: "Assigned To"
+      description: "The ID of the owner associated with the meeting. This field determines the user listed as the meeting creator on the record timeline."
+
+    - key: note_body
+      type: text
+      display_name: "Note Body (* required if Engagement Type is 'NOTE')"
+      description: "The note's text content, limited to 65,536 characters."
+
+    - key: meeting_title
+      type: text
+      display_name: "Meeting Title (* required if Engagement Type is 'MEETING')"
+      description: "The title of the meeting."
+
+    - key: meeting_description
+      type: text
+      display_name: "Meeting Description (* required if Engagement Type is 'MEETING')"
+      description: "The meeting description."
+
+    - key: meeting_start_time
+      type: text
+      display_name: "Meeting Start Time (* required if Engagement Type is 'MEETING')"
+      description: "The date and time when the meeting starts."
+
+    - key: meeting_end_time
+      type: text
+      display_name: "Meeting End Time (* required if Engagement Type is 'MEETING')"
+      description: "The date and time when the meeting ends."
+
+    - key: email_sender_address
+      type: text
+      display_name: "Sender Email Address (* required if Engagement Type is 'EMAIL')"
+      description: "The email address of the email's sender."
+
+    - key: email_sender_firstname
+      type: text
+      display_name: "Sender First Name (* required if Engagement Type is 'EMAIL')"
+      description: "The email sender's first name."
+
+    - key: email_sender_lastname
+      type: text
+      display_name: "Sender Last Name (* required if Engagement Type is 'EMAIL')"
+      description: "The email sender's last name."
+
+    - key: email_recipient_address
+      type: text
+      display_name: "Recipient Email Address (* required if Engagement Type is 'EMAIL')"
+      description: "The email address of the email's recipient."
+
+    - key: email_subject
+      type: text
+      display_name: "Email Subject (* required if Engagement Type is 'EMAIL')"
+      description: "The subject line of the logged email."
+    
+    - key: email_text
+      type: text
+      display_name: "Email Text"
+      description: "The body of the email."
+
+    - key: email_html
+      type: text
+      display_name: "Email Html"
+      description: "The Email Text in html equivalent (this overrides the Email Text content if present)"
+
+    - key: call_from_number
+      type: text
+      display_name: "From Number (* required if Engagement Type is 'CALL')"
+      description: "The phone number that the call was made from."
+
+    - key: call_to_number
+      type: text
+      display_name: "To Number (* required if Engagement Type is 'CALL')"
+      description: "The phone number that received the call."
+
+    - key: call_status
+      type: text
+      display_name: "Call Status (* required if Engagement Type is 'CALL')"
+      description: "The status of the call. The statuses are BUSY, CALLING_CRM_USER, CANCELED, COMPLETED, CONNECTING, FAILED, IN_PROGRESS, NO_ANSWER, QUEUED, and RINGING."
+
+    - key: call_body
+      type: text
+      display_name: "Call Notes"
+      description: "The description of the call, including any notes that you want to add."
+
+    - key: contact_id_list
+      type: text
+      display_name: "List of contact id's"
+      description: "Id's of the contact objects that should be associated with engagement. Seprated by comma."
+
+    - key: company_id_list
+      type: text
+      display_name: "List of company id's"
+      description: "Id's of the company objects that should be associated with engagement. Seprated by comma."
+
+    - key: deal_id_list
+      type: text
+      display_name: "List of deal id's"
+      description: "Id's of the deal objects that should be associated with engagement. Seprated by comma."
+
+    - key: ticket_id_list
+      type: text
+      display_name: "List of ticket id's"
+      description: "Id's of the ticket objects that should be associated with engagement. Seprated by comma."
+
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Creates an engagement (note, call, meeting or email) on your HubSpot account
