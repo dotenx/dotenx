@@ -1,0 +1,17 @@
+service: hubspot
+type: HubSpot new deal
+integrations: [hubspot]
+image: hojjat12/hubspot-new-deal:lambda
+deduplication_method: compare_with_list
+credentials:
+    - key: passed_seconds
+      type: text
+      description: Number of passed seconds from creation time of deal
+      display_name: Passed seconds
+
+outputs:
+
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Checks if there is new deal in your HubSpot account (from [passed seconds] ago until now), tiggers a specefic pipeline
