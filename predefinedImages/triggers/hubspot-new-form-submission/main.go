@@ -109,7 +109,7 @@ func listFormSubmissions(accessToken, formId string, afterUnix int64) (submissio
 		for _, submission := range resp.Results {
 			createdTime := int64(submission["submittedAt"].(float64) / 1000)
 			if createdTime >= afterUnix {
-				submission["id"] = fmt.Sprint(submission["submittedAt"])
+				submission["id"] = fmt.Sprint(int64(submission["submittedAt"].(float64)))
 				submissions = append(submissions, submission)
 			}
 		}
