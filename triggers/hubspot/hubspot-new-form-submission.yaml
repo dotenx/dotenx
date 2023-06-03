@@ -1,0 +1,22 @@
+service: hubspot
+type: HubSpot new form submission
+integrations: [hubspot]
+image: hojjat12/hubspot-new-form-submission:lambda
+deduplication_method: compare_with_list
+credentials:
+    - key: form_id
+      type: text
+      description: Id of your form
+      display_name: "* Form id"
+
+    - key: passed_seconds
+      type: text
+      description: Number of passed seconds from submission time of form
+      display_name: Passed seconds
+
+outputs:
+
+author: Hojjat-1
+icon: https://seeklogo.com/images/H/hubspot-logo-A06A6E0DF5-seeklogo.com.png
+node_color: FF6442
+description: Checks if there is new response for your HubSpot form (from [passed seconds] ago until now), tiggers a specefic pipeline
