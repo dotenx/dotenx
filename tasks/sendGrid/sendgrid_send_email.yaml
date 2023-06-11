@@ -1,6 +1,6 @@
 service: sendGrid
 type: SendGrid send email
-image: hojjat12/sendgrid-send-email:lambda7
+image: dotenx/task-and-trigger:sendgrid-send-email-lambda7
 integrations: [sendGrid]
 fields:
     - key: sender

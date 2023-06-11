@@ -1,7 +1,7 @@
 service: dropbox
 type: Dropbox upload new file
 integrations: [dropbox]
-image: hojjat12/dropbox-upload-new-file:lambda4
+image: dotenx/task-and-trigger:dropbox-upload-new-file-lambda4
 credentials:
     - key: path
       type: text

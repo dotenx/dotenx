@@ -1,6 +1,6 @@
 service: google
 type: Google send email
-image: hojjat12/google-send-email:lambda4
+image: dotenx/task-and-trigger:google-send-email-lambda4
 integrations: [google]
 fields:
     - key: from

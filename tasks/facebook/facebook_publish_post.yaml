@@ -1,6 +1,6 @@
 service: facebook
 type: Publish post
-image: hojjat12/facebook-publish-post:lambda4
+image: dotenx/task-and-trigger:facebook-publish-post-lambda4
 integrations: [facebook]
 fields:
     - key: page_id

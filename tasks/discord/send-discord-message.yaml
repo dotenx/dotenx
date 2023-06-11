@@ -1,6 +1,6 @@
 service: discord
 type: Send discord message
-image: hawwwdi/send-discord-message:lambda4
+image: dotenx/task-and-trigger:send-discord-message-lambda4
 fields:
     - key: TEXT
       type: text

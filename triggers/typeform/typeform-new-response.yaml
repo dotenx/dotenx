@@ -1,7 +1,7 @@
 service: typeform
 type: Typeform new response
 integrations: [typeform]
-image: hojjat12/typeform-new-response:lambda5
+image: dotenx/task-and-trigger:typeform-new-response-lambda5
 deduplication_method: compare_with_list
 credentials:
     - key: form_id

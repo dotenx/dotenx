@@ -1,6 +1,6 @@
 service: slack
 type: Send slack message
-image: awrmin/slack-send-message:lambda6
+image: dotenx/task-and-trigger:slack-send-message-lambda6
 integrations: [slack-bot]
 fields:
     - key: target_id

@@ -1,6 +1,6 @@
 service: hubspot
 type: Create new contact
-image: hojjat12/hubspot-create-contact:lambda
+image: dotenx/task-and-trigger:hubspot-create-contact-lambda
 integrations: [hubspot]
 fields:
     - key: properties
