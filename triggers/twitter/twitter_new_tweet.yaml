@@ -1,7 +1,7 @@
 service: twitter
 type: Twitter new tweet
 integrations: [twitter]
-image: hojjat12/twitter-new-tweet:lambda5
+image: dotenx/task-and-trigger:twitter-new-tweet-lambda5
 deduplication_method: compare_with_list
 credentials:
     - key: username

@@ -1,9 +1,67 @@
 stages:
+  - lambda_functions
   - build
   - deploy
 
 variables:
   AWS_DEFAULT_REGION: us-east-1
+
+lambda_functions:
+  image: utopiops/devops:assume-role-17
+  stage: lambda_functions
+  services:
+    - docker:stable-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    AWS_ACCESS_KEY_ID: ${DEV_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${DEV_AWS_SECRET_ACCESS_KEY}
+  script:
+    - aws --version
+    - |
+      skip_lines=1
+      # Read the file line by line, skipping the specified number of lines
+      tail -n +$((skip_lines+1)) "functions.csv" | while IFS= read -r line; do
+        echo "$line"  # Print each row
+        # Extract columns from the row
+        directory_path=$(echo "$line" | cut -d ',' -f 1)
+        repository_name=$(echo "$line" | cut -d ',' -f 2)
+        repository_tag=$(echo "$line" | cut -d ',' -f 3)
+        type=$(echo "$line" | cut -d ',' -f 4)
+        image_name="${repository_name}:${repository_tag}"
+        function_name=$(echo $image_name | sed 's/\//-/g' | sed 's/:/-/g')
+
+        echo $image_name
+        echo $function_name
+
+        aws lambda get-function --function-name "$function_name" 2>/dev/null; exit_code=$?
+        echo $exit_code
+
+        # Set the variable based on the exit code of the previous command
+        if [ $exit_code -eq 0 ]; then
+            function_exists=true
+        else
+            function_exists=false
+            cd predefinedImages/"${type}s"/${directory_path}
+            pwd
+            docker build -t ${image_name} .
+            docker tag ${image_name} ${DEV_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${image_name} # this line can change based on the local image name
+            docker push ${DEV_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${image_name}
+            aws lambda create-function --function-name ${function_name} \
+              --package-type Image \
+              --code ImageUri=${DEV_ACCOUNT}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${image_name} \
+              --role arn:aws:iam::${DEV_ACCOUNT}:role/lambda-ex \
+              --region ${AWS_DEFAULT_REGION} \
+              --timeout 30
+            cd ../../..
+        fi
+
+        echo "Function exists: $function_exists"
+      done || true
+  rules:
+    - changes:
+      - "functions.csv"
 
 build api: &build
   image: utopiops/devops:assume-role-12

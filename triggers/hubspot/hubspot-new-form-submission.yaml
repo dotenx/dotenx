@@ -1,7 +1,7 @@
 service: hubspot
 type: HubSpot new form submission
 integrations: [hubspot]
-image: hojjat12/hubspot-new-form-submission:lambda
+image: dotenx/task-and-trigger:hubspot-new-form-submission-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: form_id

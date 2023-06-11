@@ -1,6 +1,6 @@
 service: database
 type: Get table records
-image: hojjat12/database-get-records:lambda9
+image: dotenx/task-and-trigger:database-get-records-lambda9
 fields:
     - key: dtx_access_token
       type: text

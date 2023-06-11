@@ -1,6 +1,6 @@
 service: youtube
 type: Upload file
-image: hojjat12/youtube-upload-file:lambda4
+image: dotenx/task-and-trigger:youtube-upload-file-lambda4
 integrations: [google]
 fields:
     - key: fileName

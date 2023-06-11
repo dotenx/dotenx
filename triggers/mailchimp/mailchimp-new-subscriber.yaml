@@ -1,7 +1,7 @@
 service: mailchimp
 type: Mailchimp new subscriber
 integrations: [mailchimp]
-image: hojjat12/mailchimp-new-subscriber:lambda
+image: dotenx/task-and-trigger:mailchimp-new-subscriber-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: list_id

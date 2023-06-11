@@ -1,7 +1,7 @@
 service: hubspot
 type: HubSpot new email event
 integrations: [hubspot]
-image: hojjat12/hubspot-new-email-event:lambda
+image: dotenx/task-and-trigger:hubspot-new-email-event-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: event_type

@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create customer
-image: stripe/stripe-create-customer:lambda5
+image: dotenx/task-and-trigger:stripe-create-customer-lambda5
 integrations: [stripe]
 fields:
     - key: CUS_NAME

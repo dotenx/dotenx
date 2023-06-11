@@ -1,6 +1,6 @@
 service: database
 type: Delete a table record
-image: hojjat12/database-delete-record:lambda4
+image: dotenx/task-and-trigger:database-delete-record-lambda4
 fields:
     - key: dtx_access_token
       type: text

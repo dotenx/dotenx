@@ -1,6 +1,6 @@
 service: starshipit
 type: Starshipit create order
-image: hojjat12/starshipit-create-order:lambda3
+image: dotenx/task-and-trigger:starshipit-create-order-lambda3
 integrations: [starshipit]
 fields:
     - key: order_date

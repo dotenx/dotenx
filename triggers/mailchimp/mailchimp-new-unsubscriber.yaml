@@ -1,7 +1,7 @@
 service: mailchimp
 type: Mailchimp new unsubscriber
 integrations: [mailchimp]
-image: hojjat12/mailchimp-new-unsubscriber:lambda
+image: dotenx/task-and-trigger:mailchimp-new-unsubscriber-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: list_id

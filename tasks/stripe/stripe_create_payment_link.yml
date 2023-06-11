@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create payment link
-image: stripe/stripe-create-payment-link:lambda4
+image: dotenx/task-and-trigger:stripe-create-payment-link-lambda4
 integrations: [stripe]
 fields:
     - key: CUS_ID

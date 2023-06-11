@@ -1,6 +1,6 @@
 service: mailchimp
 type: Delete (archive) a list member
-image: hojjat12/mailchimp-archive-subscriber:lambda
+image: dotenx/task-and-trigger:mailchimp-archive-subscriber-lambda
 integrations: [mailchimp]
 fields:
     - key: list_id
