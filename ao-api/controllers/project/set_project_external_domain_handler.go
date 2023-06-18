@@ -1,8 +1,15 @@
 package project
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -90,6 +97,39 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			logrus.Error(err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
+		}
+
+		// if external domain starts with www we should add nginx config to redirect from root to www.{root} address
+		if strings.HasPrefix(dto.ExternalDomain, "www") {
+			nginxDto := struct {
+				Domain string `json:"domain"`
+			}{
+				Domain: dto.ExternalDomain,
+			}
+			jsonData, err := json.Marshal(nginxDto)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			requestBody := bytes.NewBuffer(jsonData)
+			httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+			url := config.Configs.Endpoints.GoNginx + "/domain"
+			out, err, statusCode, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, nil, time.Minute, true)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			if statusCode != http.StatusOK && statusCode != http.StatusAccepted {
+				logrus.Println(string(out))
+				err = errors.New("not ok with status: " + strconv.Itoa(statusCode))
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "please first add given A record to your dns records",
+				})
+				return
+			}
 		}
 
 		c.Status(http.StatusOK)

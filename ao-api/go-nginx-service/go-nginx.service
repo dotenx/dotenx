@@ -1,0 +1,49 @@
+## grant access to all users for adding configs in nginx config directory
+# sudo chmod 777 /etc/nginx/conf.d -R
+
+## copy source codes and build binary from them
+# sudo mkdir /usr/local/golang-nginx-service
+# sudo chmod 777 /usr/local/golang-nginx-service -R
+# cd /usr/local/golang-nginx-service
+# sudo touch go-nginx.service go.mod go.sum main.go
+# go build -o go-nginx
+
+## make systemd unit file
+# sudo cp go-nginx.service /lib/systemd/system/.
+# sudo chmod 755 /lib/systemd/system/go-nginx.service
+# sudo systemctl daemon-reload
+
+## enable service and start
+# sudo systemctl enable go-nginx.service
+# sudo systemctl start go-nginx
+
+## tails logs
+# sudo journalctl -f -u go-nginx
+
+[Unit]
+Description=Go nginx service service
+ConditionPathExists=/usr/local/golang-nginx-service/go-nginx
+After=network.target
+ 
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=/usr/local/golang-nginx-service
+ExecStart=/usr/local/golang-nginx-service/go-nginx
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/go-nginx
+ExecStartPre=/bin/chown root /var/log/go-nginx
+ExecStartPre=/bin/chmod 755 /var/log/go-nginx
+SyslogIdentifier=go-nginx
+
+[Install]
+WantedBy=multi-user.target
