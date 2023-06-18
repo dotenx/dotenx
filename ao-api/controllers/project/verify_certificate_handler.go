@@ -1,8 +1,13 @@
 package project
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -94,6 +99,39 @@ func (pc *ProjectController) VerifyCertificate() gin.HandlerFunc {
 			if err != nil {
 				logrus.Error(err.Error())
 				c.Status(http.StatusInternalServerError)
+				return
+			}
+		}
+
+		// If external domain starts with 'www' we should add nginx config to redirect from root to www.{root} address
+		if strings.HasPrefix(projectDomain.ExternalDomain, "www") {
+			nginxDto := struct {
+				Domain string `json:"domain"`
+			}{
+				Domain: projectDomain.ExternalDomain,
+			}
+			jsonData, err := json.Marshal(nginxDto)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.Status(http.StatusInternalServerError)
+				return
+			}
+			requestBody := bytes.NewBuffer(jsonData)
+			httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+			url := config.Configs.Endpoints.GoNginx + "/domain"
+			out, err, statusCode, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, nil, time.Minute, true)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.Status(http.StatusInternalServerError)
+				return
+			}
+			if statusCode != http.StatusOK && statusCode != http.StatusAccepted {
+				logrus.Println(string(out))
+				err = errors.New("not ok with status: " + strconv.Itoa(statusCode))
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Please first add given A record to your DNS's records",
+				})
 				return
 			}
 		}
