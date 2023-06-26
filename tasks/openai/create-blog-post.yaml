@@ -1,0 +1,21 @@
+service: openai
+type: Create Blog Post
+image: dotenx/task-and-trigger:open-ai-create-blog-post-lambda
+integrations: [openai]
+fields:
+    - key: explanation
+      type: text
+      display_name: "Explanation"
+      description: ""
+    - key: keywords
+      type: text
+      display_name: "* Keywords"
+      description: ""
+    - key: output_format
+      type: text
+      display_name: "Output Format"
+      description: ""
+author: Hojjat-1
+icon: https://seeklogo.com/images/O/open-ai-logo-8B9BFEDC26-seeklogo.com.png
+node_color: A3A3A3
+description: "Creates a blog post with Open AI (using your api key) and retrieve it in desired format"
