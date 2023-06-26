@@ -1,4 +1,4 @@
-// image: dotenx/task-and-trigger:open-ai-create-blog-post-lambda
+// image: dotenx/task-and-trigger:open-ai-create-blog-post-lambda2
 package main
 
 import (
@@ -40,8 +40,8 @@ func HandleLambdaEvent(event Event) (Response, error) {
 		outputFormat = "txt"
 	}
 
-	// api reference: https://platform.openai.com/docs/api-reference/completions/create
-	chatCompletionUrl := "https://api.openai.com/v1/completions"
+	// api reference: https://platform.openai.com/docs/api-reference/chat/create
+	chatCompletionUrl := "https://api.openai.com/v1/chat/completions"
 	chatCompletionHeaders := []Header{
 		{
 			Key:   "Authorization",
@@ -55,8 +55,13 @@ func HandleLambdaEvent(event Event) (Response, error) {
 	prompt := fmt.Sprintf("Write a blog post about the following content:\n%s\nThis blog post should be written based on SEO techniques and should be about these keywords: %s.\nPlease return the blog post in this format: %s", explanation, keywords, outputFormat)
 	fmt.Println("Prompt:", prompt)
 	chatCompletionBody := map[string]interface{}{
-		"model":  "text-davinci-003",
-		"prompt": prompt,
+		"model": "gpt-3.5-turbo",
+		"messages": []map[string]interface{}{
+			{
+				"role":    "user",
+				"content": prompt,
+			},
+		},
 	}
 	chatCompletionBodyBytes, _ := json.Marshal(chatCompletionBody)
 	out, statusCode, _, err := httpRequest(http.MethodPost, chatCompletionUrl, bytes.NewBuffer(chatCompletionBodyBytes), chatCompletionHeaders, 0)

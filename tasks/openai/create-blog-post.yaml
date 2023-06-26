@@ -1,6 +1,6 @@
 service: openai
 type: Create Blog Post
-image: dotenx/task-and-trigger:open-ai-create-blog-post-lambda
+image: dotenx/task-and-trigger:open-ai-create-blog-post-lambda2
 integrations: [openai]
 fields:
     - key: explanation
