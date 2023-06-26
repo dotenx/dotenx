@@ -11,7 +11,7 @@ import {
 	TbList,
 	TbMessageChatbot,
 	TbPhoto,
-	TbQuestionCircle,
+	TbQuestionMark,
 	TbReportMoney,
 	TbSection,
 	TbSlideshow,
@@ -322,7 +322,7 @@ export const COMPONENTS: Components = [
 	},
 	{
 		title: 'FAQ',
-		icon: <TbQuestionCircle />,
+		icon: <TbQuestionMark />,
 		items: [Faq1, Faq2, Faq3, Faq4, Faq5, Faq6, Faq7, FaqBasic, FaqBasicStyled, FaqCollapsible],
 	},
 	{
