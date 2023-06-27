@@ -18,6 +18,11 @@ https://docs.dotenx.com (https://github.com/dotenx/dotenx-docs)
 
 
 
+https://github.com/dotenx/dotenx/assets/15846333/98432c14-4803-4e1d-b927-8039765ecc7d
+
+
+
+
 https://user-images.githubusercontent.com/15846333/212295446-4657130b-6416-4cbb-9353-14a096e3a762.mp4
 
 
