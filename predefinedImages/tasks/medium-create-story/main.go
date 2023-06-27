@@ -101,6 +101,7 @@ func createStory(accessToken, title, format, content, tags, canonicalUrl, publis
 	}
 	var profile map[string]interface{}
 	json.Unmarshal(out, &profile)
+	profile = profile["data"].(map[string]interface{})
 	userId := fmt.Sprint(profile["id"])
 
 	url = fmt.Sprintf("https://api.medium.com/v1/users/%s/posts", userId)
