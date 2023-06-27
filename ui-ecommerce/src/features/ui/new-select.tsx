@@ -72,7 +72,7 @@ function SelectController<TFieldValues extends FieldValues, TName extends FieldP
 			render={({ field: { onChange, value } }) => {
 				return (
 					<RawSelect
-						onChange={(newValue) => onChange((newValue as Option)?.value)}
+						onChange={(newValue) => onChange((newValue as Option)?.value as any)}
 						value={
 							options?.find((option) => option.value === value) ?? {
 								label: "",
