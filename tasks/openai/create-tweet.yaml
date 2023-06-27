@@ -1,0 +1,17 @@
+service: openai
+type: Create Tweet
+image: dotenx/task-and-trigger:open-ai-create-tweet-lambda
+integrations: [openai]
+fields:
+    - key: explanation
+      type: text
+      display_name: "Explanation"
+      description: "Explanations about subject of tweet or a summary of contents that should be written."
+    - key: keywords
+      type: text
+      display_name: "* Keywords"
+      description: "Some keywords that tweet is about them. Keywords can be separated by ',', '-' or something else."
+author: Hojjat-1
+icon: https://seeklogo.com/images/O/open-ai-logo-8B9BFEDC26-seeklogo.com.png
+node_color: A3A3A3
+description: "Creates a tweet with Open AI (using your api key)"
