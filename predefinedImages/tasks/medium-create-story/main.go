@@ -104,6 +104,9 @@ func createStory(accessToken, title, format, content, tags, canonicalUrl, publis
 	profile = profile["data"].(map[string]interface{})
 	userId := fmt.Sprint(profile["id"])
 
+	// sleep for hacking 429 error code (indicates the user has sent too many requests in a given amount of time) from Medium
+	time.Sleep(2 * time.Second)
+
 	url = fmt.Sprintf("https://api.medium.com/v1/users/%s/posts", userId)
 	body := map[string]interface{}{
 		"title":           title,
@@ -124,7 +127,7 @@ func createStory(accessToken, title, format, content, tags, canonicalUrl, publis
 	if err != nil {
 		return nil, err
 	}
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusCreated {
 		return nil, errors.New("not ok with status " + fmt.Sprint(status))
 	}
 	err = json.Unmarshal(out, &resp)
