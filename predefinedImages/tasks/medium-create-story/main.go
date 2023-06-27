@@ -1,4 +1,4 @@
-// image: dotenx/task-and-trigger:medium-create-story-lambda
+// image: dotenx/task-and-trigger:medium-create-story-lambda2
 package main
 
 import (
@@ -101,7 +101,7 @@ func createStory(accessToken, title, format, content, tags, canonicalUrl, publis
 	}
 	var profile map[string]interface{}
 	json.Unmarshal(out, &profile)
-	userId := profile["id"]
+	userId := fmt.Sprint(profile["id"])
 
 	url = fmt.Sprintf("https://api.medium.com/v1/users/%s/posts", userId)
 	body := map[string]interface{}{

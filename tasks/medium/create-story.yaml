@@ -1,6 +1,6 @@
 service: medium
 type: Create story on Medium
-image: dotenx/task-and-trigger:medium-create-story-lambda
+image: dotenx/task-and-trigger:medium-create-story-lambda2
 integrations: [medium]
 fields:
     - key: title
