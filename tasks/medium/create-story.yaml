@@ -33,5 +33,5 @@ fields:
       description: "Valid values: 'yse', 'no'"
 author: Hojjat-1
 icon: https://seeklogo.com/images/M/medium-logo-F0ACFCCD58-seeklogo.com.png
-node_color: 298F00
+node_color: 6D6D6D
 description: Creates a story on your Medium account
