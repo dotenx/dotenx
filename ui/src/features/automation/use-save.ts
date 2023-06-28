@@ -63,8 +63,8 @@ export function useSaveForm(kind: AutomationKind) {
 						kind === "automation"
 							? `/automations/${values.name}`
 							: kind === "template"
-							? `/builder/projects/${projectName}/templates/${values.name}`
-							: `/builder/projects/${projectName}/interactions/${values.name}`
+								? `/builder/projects/${projectName}/templates/${values.name}`
+								: `/builder/projects/${projectName}/interactions/${values.name}`
 					navigate(redirectLink)
 				},
 			}
@@ -86,7 +86,6 @@ export function mapElementsToPayload(nodes: FlowNode[], edges: FlowEdge[]): Mani
 		const connectedEdges = edges.filter((edge) => edge.target === node.id)
 		const taskFields = node.data.others
 		const body: TaskBody = {}
-
 		if (node.data.outputs) {
 			body.outputs = {
 				type: "customOutputs",
@@ -98,14 +97,15 @@ export function mapElementsToPayload(nodes: FlowNode[], edges: FlowEdge[]): Mani
 			const fieldValue = taskFields[fieldName]
 			body[fieldName] = toBackendData(fieldValue)
 		}
-		tasks[node.data.name] = {
-			type: node.data.type ?? "",
-			body,
-			integration: node.data.integration ?? "",
-			executeAfter: mapEdgesToExecuteAfter(nodes, connectedEdges),
+		if (node.type !== 'trigger') {
+			tasks[node.data.name] = {
+				type: node.data.type ?? "",
+				body,
+				integration: node.data.integration ?? "",
+				executeAfter: mapEdgesToExecuteAfter(nodes, connectedEdges),
+			}
 		}
 	})
-
 	const triggers = mapNodesToTriggers(nodes)
 
 	return { tasks, triggers }
@@ -174,13 +174,13 @@ function mapJsonEditorToJsonValue(
 					!_.isArray(property.value)
 						? toBackendData(property.value)
 						: typeof property.value[0] === "string"
-						? { type: "directValue", value: property.value }
-						: {
+							? { type: "directValue", value: property.value }
+							: {
 								type: "json",
 								value: mapJsonEditorToJsonValue(
 									property.value as EditorObjectValue[]
 								),
-						  },
+							},
 				] as [string, TaskFieldValue]
 		)
 	)

@@ -107,8 +107,9 @@ build ui: &build_ui
   script:
     - cd ${folder}
     - cp .env.${environment} .env.production
-    - npm install
-    - CI='' npm run build
+    - npm i -g pnpm
+    - pnpm install
+    - CI='' pnpm run build
     - tar -czvf ${environment}_build.tar.gz ./${build_dest}
     - mv ${environment}_build.tar.gz ../${environment}_${folder}_build.tar.gz
   artifacts:

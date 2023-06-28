@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@babel/core':
     specifier: ^7.20.12
@@ -67,6 +71,9 @@ dependencies:
   jotai:
     specifier: ^2.0.0
     version: 2.0.0(react@18.2.0)
+  js-cookie:
+    specifier: ^3.0.1
+    version: 3.0.1
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -92,8 +99,8 @@ dependencies:
     specifier: ^4.3.4
     version: 4.3.4(react-dom@18.2.0)(react@18.2.0)
   react-icons:
-    specifier: ^4.7.1
-    version: 4.7.1(react@18.2.0)
+    specifier: ^4.8.0
+    version: 4.8.0(react@18.2.0)
   react-modal:
     specifier: ^3.16.1
     version: 3.16.1(react-dom@18.2.0)(react@18.2.0)
@@ -135,6 +142,9 @@ devDependencies:
   '@types/dagre':
     specifier: ^0.7.48
     version: 0.7.48
+  '@types/js-cookie':
+    specifier: ^3.0.2
+    version: 3.0.2
   '@types/lodash':
     specifier: ^4.14.191
     version: 4.14.191
@@ -1460,6 +1470,10 @@ packages:
       '@types/react': 18.0.27
       hoist-non-react-statics: 3.3.2
     dev: false
+
+  /@types/js-cookie@3.0.2:
+    resolution: {integrity: sha512-6+0ekgfusHftJNYpihfkMu8BWdeHs9EOJuGcSofErjstGPfPGEu9yTu4t460lTzzAMl2cM5zngQJqPMHbbnvYA==}
+    dev: true
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -3151,6 +3165,11 @@ packages:
       react: 18.2.0
     dev: false
 
+  /js-cookie@3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
+    dev: false
+
   /js-sdsl@4.2.0:
     resolution: {integrity: sha512-dyBIzQBDkCqCu+0upx25Y2jGdbTGxE9fshMsCdK0ViOongpV+n5tXRcZY9v7CaVQ79AGS9KA1KHtojxiM7aXSQ==}
     dev: true
@@ -3698,8 +3717,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /react-icons@4.7.1(react@18.2.0):
-    resolution: {integrity: sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==}
+  /react-icons@4.8.0(react@18.2.0):
+    resolution: {integrity: sha512-N6+kOLcihDiAnj5Czu637waJqSnwlMNROzVZMhfX68V/9bu9qHaMIJC4UdozWoOk57gahFCNHwVvWzm0MTzRjg==}
     peerDependencies:
       react: '*'
     dependencies:
