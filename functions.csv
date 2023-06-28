@@ -48,3 +48,9 @@ stripe-new-invoice,dotenx/task-and-trigger,stripe-new-invoice-lambda4,trigger
 stripe-payment-completed,dotenx/task-and-trigger,stripe-payment-completed-lambda6,trigger
 twitter-new-tweet,dotenx/task-and-trigger,twitter-new-tweet-lambda5,trigger
 typeform-new-response,dotenx/task-and-trigger,typeform-new-response-lambda5,trigger
+open-ai-generate-image,dotenx/task-and-trigger,open-ai-generate-image-lambda,task
+open-ai-send-prompt,dotenx/task-and-trigger,open-ai-send-prompt-lambda,task
+dropbox-create-text-file,dotenx/task-and-trigger,dropbox-create-text-file-lambda,task
+open-ai-create-blog-post,dotenx/task-and-trigger,open-ai-create-blog-post-lambda2,task
+medium-create-story,dotenx/task-and-trigger,medium-create-story-lambda2,task
+open-ai-create-tweet,dotenx/task-and-trigger,open-ai-create-tweet-lambda,task

@@ -1,0 +1,4 @@
+type: openai
+secrets:
+  - name: Open AI API Key
+    key: API_KEY
