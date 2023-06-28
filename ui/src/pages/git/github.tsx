@@ -15,7 +15,7 @@ import { BsGithub } from "react-icons/bs"
 import { Loader as LinearLoader } from "../../features/ui"
 import { useParams } from "react-router-dom"
 import { BiGitRepoForked } from "react-icons/bi"
-import { TbFileImport, TbPackgeExport } from "react-icons/tb"
+import { TbFileImport, TbTableExport } from "react-icons/tb"
 import { toast } from "react-toastify"
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
 	icon?: ReactElement
@@ -172,7 +172,7 @@ const GithubIntegration = ({ resetProvider }: { resetProvider: () => void }) => 
 									<div className="text-white w-80 truncate">{repoName}</div>
 									<div className="flex items-center gap-x-5">
 										<Button
-											rightIcon={<TbPackgeExport className="w-5 h-5" />}
+											rightIcon={<TbTableExport className="w-5 h-5" />}
 											onClick={() => {
 												setSelectedRepo(repoName)
 												setOpenModal("export")

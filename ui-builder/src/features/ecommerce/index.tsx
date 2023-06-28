@@ -9,7 +9,7 @@ import {
 	TbLogin,
 	TbMessageChatbot,
 	TbPhoto,
-	TbQuestionCircle,
+	TbQuestionMark,
 	TbReportMoney,
 	TbSection,
 	TbShoppingBag,
@@ -95,7 +95,7 @@ export const ECOMMERCE_COMPONENTS: Components = [
 	},
 	{
 		title: 'FAQ',
-		icon: <TbQuestionCircle />,
+		icon: <TbQuestionMark />,
 		items: [FaqBasic, FaqBasicStyled],
 	},
 	{
