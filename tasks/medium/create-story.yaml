@@ -1,0 +1,37 @@
+service: medium
+type: Create story on Medium
+image: dotenx/task-and-trigger:medium-create-story-lambda2
+integrations: [medium]
+fields:
+    - key: title
+      type: text
+      display_name: "* Title"
+      description: "Title of story"
+    - key: format
+      type: text
+      display_name: "* Format"
+      description: "Format of content, valid values: 'markdown', 'html'"
+    - key: content
+      type: text
+      display_name: "* Content"
+      description: "The content of story"
+    - key: tags
+      type: text
+      display_name: "Tags"
+      description: "Add up to 5 tags. Each tag should be 25 characters or less. Seprate them with comma (',')."
+    - key: canonical_url
+      type: text
+      display_name: "Canonical URL"
+      description: "The original home of this content, if it was originally published elsewhere. Must start with https:// or http://."
+    - key: publish_status
+      type: text
+      display_name: "Publish Status"
+      description: "Defaults to 'public', valid values: 'public', 'draft', 'unlisted'"
+    - key: notify_followers
+      type: text
+      display_name: "Notify Followers?"
+      description: "Valid values: 'yse', 'no'"
+author: Hojjat-1
+icon: https://seeklogo.com/images/M/medium-logo-F0ACFCCD58-seeklogo.com.png
+node_color: 6D6D6D
+description: Creates a story on your Medium account

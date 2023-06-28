@@ -1,0 +1,4 @@
+type: medium
+secrets:
+  - name: "Medium Access Token (go to settings -> Security and apps -> Integration tokens)"
+    key: ACCESS_TOKEN

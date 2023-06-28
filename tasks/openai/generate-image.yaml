@@ -1,0 +1,21 @@
+service: openai
+type: Generate image
+image: dotenx/task-and-trigger:open-ai-generate-image-lambda
+integrations: [openai]
+fields:
+    - key: prompt
+      type: text
+      display_name: "* Prompt"
+      description: "Use a detailed description for DALL-E to generate into an image. EG: An impressionist oil painting of sunflowers in a purple vase"
+    - key: number_of_image
+      type: text
+      display_name: "* n"
+      description: "Number of image variations (1 - 10)."
+    - key: size
+      type: text
+      display_name: "* Size"
+      description: "Select the size of image. Must be one of '256x256', '512x512', or '1024x1024'."
+author: Hojjat-1
+icon: https://seeklogo.com/images/O/open-ai-logo-8B9BFEDC26-seeklogo.com.png
+node_color: A3A3A3
+description: "Generate image in Open AI (using your api key)"
