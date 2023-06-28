@@ -1,0 +1,41 @@
+service: openai
+type: Send prompt
+image: dotenx/task-and-trigger:open-ai-send-prompt-lambda
+integrations: [openai]
+fields:
+    - key: model
+      type: text
+      display_name: "* Model"
+      description: "We recommend 'text-davinci-003' for most tasks. If you looking for 'gpt-4' or 'gpt-3.5-turbo' models please use the ChatGPT app instead."
+    - key: prompt
+      type: text
+      display_name: "* Prompt"
+      description: "Writing a good prompt is important. Start by creating a clear goal & ask a specific question. Make sure the prompt is well structured & provides enough context for the OpenAI to generate a useful response."
+    - key: temperature
+      type: text
+      display_name: "* Temperature"
+      description: "Default value is 1. Higher values mean the model will take more risks. Try 0.9 for more creative applications, and 0 for ones with a well-defined answer. We generally recommend altering this or Top P but not both."
+    - key: max_length
+      type: text
+      display_name: "Maximum Length"
+      description: "The maximum number of tokens for the completion. If you leave this field empty, we will attempt to auto-calculate this so you avoid going over your model's context length limit. If we can't auto-calculate for your particular model, we will default to 256 tokens."
+    - key: stop_sequences
+      type: text
+      display_name: "Stop Sequences"
+      description: "Up to 4 sequences where the API will stop generating further tokens. The returned text will not contain the stop sequence."
+    - key: top_p
+      type: text
+      display_name: "* Top P"
+      description: "Default value is 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered."
+    - key: frequency_penalty
+      type: text
+      display_name: "* Frequency Penalty"
+      description: "Default value is 0. Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim."
+    - key: presence_penalty
+      type: text
+      display_name: "* Presence Penalty"
+      description: "Default value is 0. Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics."
+author: Hojjat-1
+icon: https://seeklogo.com/images/O/open-ai-logo-8B9BFEDC26-seeklogo.com.png
+node_color: A3A3A3
+description: "Send a prompt to Open AI (using your api key) and retrieve response"

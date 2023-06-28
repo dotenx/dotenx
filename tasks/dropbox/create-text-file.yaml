@@ -1,0 +1,34 @@
+service: dropbox
+type: Create Text File
+image: dotenx/task-and-trigger:dropbox-create-text-file-lambda
+integrations: [dropbox]
+fields:
+    - key: path
+      type: text
+      display_name: "* Path"
+      description: "Where to save the new file. e.g: '/example/dotenx'"
+
+    - key: file_name
+      type: text
+      display_name: "* File Name"
+      description: "Specify the name of the file. '.{File_Extension}' will always be appended as the file extension."
+
+    - key: file_extension
+      type: text
+      display_name: "File Extension (Format)"
+      description: "The extension (format) of your file. By default this parameter is 'txt'"
+
+    - key: content
+      type: text
+      display_name: "* File Content"
+      description: "Plain text content to put inside the new file."
+      
+    - key: overwrite
+      type: text
+      display_name: "Overwrite"
+      description: "Whether we can overwrite this file (if one of the same name exists) or not. Valid values: 'yes', 'no', By default this parameter is 'no'"
+
+author: Hojjat-1
+icon: https://cdn-icons-png.flaticon.com/512/174/174845.png
+node_color: 4caaff
+description: "Creates a file (with plain text content inside) in your dropbox account and put it on desired folder"
