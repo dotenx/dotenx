@@ -1,0 +1,17 @@
+service: openai
+type: Create Instagram Post
+image: dotenx/task-and-trigger:open-ai-create-instagram-post-lambda
+integrations: [openai]
+fields:
+    - key: explanation
+      type: text
+      display_name: "Explanation"
+      description: "Explanations about subject of post or a summary of contents that should be written."
+    - key: keywords
+      type: text
+      display_name: "* Keywords"
+      description: "Some keywords that post is about them. Keywords can be separated by ',', '-' or something else."
+author: Hojjat-1
+icon: https://seeklogo.com/images/O/open-ai-logo-8B9BFEDC26-seeklogo.com.png
+node_color: A3A3A3
+description: "Creates a post for sharing on Instagram with Open AI (using your api key)"
