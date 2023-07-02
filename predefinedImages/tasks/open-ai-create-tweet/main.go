@@ -1,4 +1,4 @@
-// image: dotenx/task-and-trigger:open-ai-create-tweet-lambda
+// image: dotenx/task-and-trigger:open-ai-create-tweet-lambda2
 package main
 
 import (
@@ -48,7 +48,7 @@ func HandleLambdaEvent(event Event) (Response, error) {
 			Value: "application/json",
 		},
 	}
-	prompt := fmt.Sprintf("Write a tweet about the following content:\n%s\nThis tweet should be written based on SEO techniques and should be about these keywords: %s", explanation, keywords)
+	prompt := fmt.Sprintf("Write a tweet about the following content:\n%s\nThis tweet should be written based on SEO techniques and should be about these keywords: %s\nAnd also based on Twitter limitations the output should has at most 280 characters.", explanation, keywords)
 	fmt.Println("Prompt:", prompt)
 	chatCompletionBody := map[string]interface{}{
 		"model": "gpt-3.5-turbo",
