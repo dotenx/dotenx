@@ -243,7 +243,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 		r.Use(middlewares.LocalTokenTypeMiddleware())
 	}
 
-	// TODO : add sessions middleware to needed endpoints
+	// TODO: add sessions middleware to needed endpoints
 	tasks := r.Group("/task")
 	miniTasks := r.Group("/mini/task")
 	pipeline := r.Group("/pipeline")
