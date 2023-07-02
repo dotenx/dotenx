@@ -1,6 +1,6 @@
 service: openai
 type: Create Instagram Post
-image: dotenx/task-and-trigger:open-ai-create-instagram-post-lambda
+image: dotenx/task-and-trigger:open-ai-create-instagram-post-lambda2
 integrations: [openai]
 fields:
     - key: explanation
