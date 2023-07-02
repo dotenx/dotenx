@@ -53,4 +53,6 @@ open-ai-send-prompt,dotenx/task-and-trigger,open-ai-send-prompt-lambda,task
 dropbox-create-text-file,dotenx/task-and-trigger,dropbox-create-text-file-lambda,task
 open-ai-create-blog-post,dotenx/task-and-trigger,open-ai-create-blog-post-lambda2,task
 medium-create-story,dotenx/task-and-trigger,medium-create-story-lambda2,task
-open-ai-create-tweet,dotenx/task-and-trigger,open-ai-create-tweet-lambda,task
+open-ai-create-tweet,dotenx/task-and-trigger,open-ai-create-tweet-lambda2,task
+open-ai-create-instagram-post,dotenx/task-and-trigger,open-ai-create-instagram-post-lambda2,task
+open-ai-create-facebook-blog-post,dotenx/task-and-trigger,open-ai-create-facebook-blog-post-lambda,task
