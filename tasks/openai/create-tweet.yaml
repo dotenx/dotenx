@@ -1,6 +1,6 @@
 service: openai
 type: Create Tweet
-image: dotenx/task-and-trigger:open-ai-create-tweet-lambda
+image: dotenx/task-and-trigger:open-ai-create-tweet-lambda2
 integrations: [openai]
 fields:
     - key: explanation
