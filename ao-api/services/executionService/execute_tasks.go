@@ -56,7 +56,9 @@ func (manager *executionManager) ExecuteAllTasksAndReturnResults(pipeline models
 			}
 			if cnt == 0 && len(taskIds) == 0 {
 				if !pipeline.IsInteraction {
-					logrus.Error(err.Error())
+					if err != nil {
+						logrus.Error(err.Error())
+					}
 					return gin.H{"id": executionId}, err
 				}
 				var taskRes = struct {
