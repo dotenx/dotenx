@@ -1,5 +1,7 @@
 FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS go-build
 
+ARG TARGETOS TARGETARCH
+
 RUN apk add build-base
 
 ENV GO111MODULE=on
@@ -19,8 +21,6 @@ COPY ./tasks ./tasks
 COPY ./integrations ./integrations
 
 COPY ./ao-api .
-
-ARG TARGETOS TARGETARCH
 
 RUN rm -r vendor
 RUN CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build
