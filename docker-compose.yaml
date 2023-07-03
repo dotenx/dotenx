@@ -35,6 +35,8 @@ services:
         build: 
             context: ./ui-builder
             dockerfile: Dockerfile
+        environment:
+            NODE_OPTIONS=--max_old_space_size=4096
         ports:
             - '8080:80'
         networks:
@@ -101,6 +103,9 @@ services:
             - ./ao-api/.env
         environment:
             - RUNNING_IN_DOCKER=true
+            - BUILDPLATFORM=${BUILDPLATFORM}
+            - TARGETOS=${TARGETOS}
+            - TARGETARCH=${TARGETARCH}
         depends_on:
             - psql
             - scheduler_server
