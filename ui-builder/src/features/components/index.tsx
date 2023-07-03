@@ -25,6 +25,7 @@ import { AboutLeft2 } from './about-left-2'
 import { AboutLeft3 } from './about-left-3'
 import { AboutLeft4 } from './about-left-4'
 import { AboutLeft5 } from './about-left-5'
+import { AboutLeftWithLink } from './about-left-with-link'
 import { AboutLongDetailsLeft } from './about-long-details-left'
 import { AboutLongDetailsRight } from './about-long-details-right'
 import { AboutRight } from './about-right'
@@ -32,6 +33,7 @@ import { AboutRight2 } from './about-right-2'
 import { AboutRight3 } from './about-right-3'
 import { AboutRight4 } from './about-right-4'
 import { AboutRight5 } from './about-right-5'
+import { AboutRightWithLink } from './about-right-with-link'
 import { AboutVideo1 } from './about-video-1'
 import { AboutVideoStatsLeft } from './about-video-stats-left'
 import { AboutVideoStatsRight } from './about-video-stats-right'
@@ -292,6 +294,8 @@ export const COMPONENTS: Components = [
 		title: 'About us',
 		icon: <TbArticle />,
 		items: [
+			AboutLeftWithLink,
+			AboutRightWithLink,
 			AboutLeft,
 			AboutRight,
 			AboutLeft2,
