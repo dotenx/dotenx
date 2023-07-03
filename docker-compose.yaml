@@ -103,6 +103,9 @@ services:
             - ./ao-api/.env
         environment:
             - RUNNING_IN_DOCKER=true
+            - BUILDPLATFORM=${BUILDPLATFORM}
+            - TARGETOS=${TARGETOS}
+            - TARGETARCH=${TARGETARCH}
         depends_on:
             - psql
             - scheduler_server
