@@ -37,20 +37,28 @@ func (manager *executionManager) ExecuteAllTasksAndReturnResults(pipeline models
 	for {
 		select {
 		case <-time.After(time.Duration(config.Configs.App.ExecutionTaskTimeLimit) * time.Second):
-			return nil, errors.New("pipeline timeout")
+			err = errors.New("pipeline timeout")
+			logrus.Error(err.Error())
+			return nil, err
 		case err = <-errChan:
+			logrus.Error(err.Error())
 			return nil, err
 		case res := <-resultsChan:
 			cnt, err := manager.Store.GetNumberOfRunningTasks(noContext, executionId)
 			if err != nil {
+				logrus.Error(err.Error())
 				return nil, err
 			}
 			taskIds, err := manager.Store.GetNextTasks(noContext, executionId, res.TaskId, res.Status)
 			if err != nil {
+				logrus.Error(err.Error())
 				return nil, err
 			}
 			if cnt == 0 && len(taskIds) == 0 {
 				if !pipeline.IsInteraction {
+					if err != nil {
+						logrus.Error(err.Error())
+					}
 					return gin.H{"id": executionId}, err
 				}
 				var taskRes = struct {
