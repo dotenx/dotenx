@@ -1,0 +1,34 @@
+version: "3"
+services:
+
+    redis:
+        image: redis
+        hostname: redis
+        ports:
+            - "6380:6379"
+        volumes:
+            - "redis_data:/data"
+        networks:
+            - default
+            
+    psql:
+        image: postgres:12
+        hostname: postgres
+        env_file:
+            - postgres.env
+        volumes:
+            - "postgres_data:/var/lib/postgresql/data/"
+        ports:
+            - "5434:5432"
+        restart: unless-stopped
+        networks:
+            - default
+
+networks:
+  default:
+    driver: bridge
+    name: redis_network
+
+volumes:
+    redis_data:
+    postgres_data:
