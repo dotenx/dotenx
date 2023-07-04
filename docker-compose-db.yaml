@@ -25,9 +25,8 @@ services:
             - default
 
 networks:
-  default:
-    driver: bridge
-    name: databases
+  databases:
+    driver: overlay
 
 volumes:
     redis_data:
