@@ -51,6 +51,7 @@ import { CustomersGrid } from './customers-grid'
 import { CustomersLogoGrid } from './customers-logo-grid'
 import { CustomersStatLogo } from './customers-stat-logo'
 import { CustomersUserProfiles } from './customers-users'
+import { DividerInfo } from './divider-information'
 import { DividerSimpleLine } from './divider-simple-line'
 import { DividerSimpleTitle } from './divider-simple-title'
 import { DividerStats } from './divider-stats'
@@ -77,6 +78,7 @@ import { FeatureDetailsGridImageTagRight } from './feature-details-grid-image-ta
 import { FeatureDetailsGridImageTagRight2 } from './feature-details-grid-image-tag-right-2'
 import { FeatureDetailsLeft } from './feature-details-left'
 import { FeatureDetailsRight } from './feature-details-right'
+import { FeatureGridDetails } from './feature-grid-details'
 import { FeatureGridImageTag } from './feature-grid-image-tag'
 import { FeatureGridImages } from './feature-grid-images'
 import { Feature1 } from './features/feature-1'
@@ -343,6 +345,7 @@ export const COMPONENTS: Components = [
 			DividerSimpleLine,
 			DividerTextSections,
 			DividerStats,
+			DividerInfo,
 			DividerStatsWithLogos,
 		],
 	},
@@ -350,6 +353,7 @@ export const COMPONENTS: Components = [
 		title: 'Features',
 		icon: <TbList />,
 		items: [
+			FeatureGridDetails,
 			Feature1,
 			Feature2,
 			Feature3,
