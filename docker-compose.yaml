@@ -110,7 +110,6 @@ services:
 
 networks:
   databases:
-    name: databases
     external: true
 
 volumes:
