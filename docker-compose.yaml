@@ -40,7 +40,7 @@ services:
         ports:
             - '8080:80'
         networks:
-            - default
+            - databases
         volumes:
             - ./ui-builder:/usr/src/app
             - ./ui-builder/nginx.conf:/etc/nginx/nginx.conf
