@@ -9,7 +9,7 @@ services:
         volumes:
             - "redis_data:/data"
         networks:
-            - default
+            - databases
 
     psql:
         image: postgres:12
@@ -22,7 +22,7 @@ services:
             - "5434:5432"
         restart: unless-stopped
         networks:
-            - default
+            - databases
 
 networks:
   databases:
