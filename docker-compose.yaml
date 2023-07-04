@@ -95,6 +95,8 @@ services:
             - databases
         ports:
             - "3005:3004"
+        expose:
+            - 3005
 
     runner:
         build:
