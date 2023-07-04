@@ -38,7 +38,7 @@ services:
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
         ports:
-            - '8080:80'
+            - '8090:80'
         networks:
             - databases
         volumes:
