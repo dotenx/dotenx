@@ -110,7 +110,8 @@ services:
 
 networks:
   databases:
-    external: true
+    external:
+      name: databases
 
 volumes:
     ao_api_data:

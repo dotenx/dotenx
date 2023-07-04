@@ -14,8 +14,10 @@ services:
     psql:
         image: postgres:12
         hostname: postgres
-        env_file:
-            - postgres.env
+        env:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
         volumes:
             - "postgres_data:/var/lib/postgresql/data/"
         ports:
@@ -26,6 +28,7 @@ services:
 
 networks:
   databases:
+    name: databases
     driver: overlay
     attachable: true
 
