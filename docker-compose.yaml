@@ -94,6 +94,8 @@ services:
         ports:
             - "5434:5432"
         restart: unless-stopped
+        networks:
+            - default
 
     ao-api:
         build:
