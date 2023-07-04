@@ -10,7 +10,7 @@ services:
             - "redis_data:/data"
         networks:
             - default
-            
+
     psql:
         image: postgres:12
         hostname: postgres
@@ -27,7 +27,7 @@ services:
 networks:
   default:
     driver: bridge
-    name: redis_network
+    name: databases
 
 volumes:
     redis_data:
