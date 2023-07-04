@@ -20,8 +20,9 @@ services:
             POSTGRES_DB: postgres
         volumes:
             - "postgres_data:/var/lib/postgresql/data/"
-            - "./postgresql.conf:/var/lib/postgresql/data//postgresql.conf"
-            - "./pg_hba.conf:/var/lib/postgresql/data//pg_hba.conf"
+            - "./postgresql.conf:/var/lib/postgresql/data/postgresql.conf"
+            - "./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf"
+        command: postgres -c config_file=/var/lib/postgresql/data/postgresql.conf -c config_file=/var/lib/postgresql/data/pg_hba.conf
         ports:
             - "5434:5432"
         expose:
