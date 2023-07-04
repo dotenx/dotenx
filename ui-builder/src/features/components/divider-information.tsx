@@ -1,36 +1,37 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/divider-stats.png'
+import imageUrl from '../../assets/components/information-section.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { box, txt } from '../elements/constructor'
 import { BoxElement } from '../elements/extensions/box'
 import { ColumnsElement } from '../elements/extensions/columns'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { ColumnsStyler } from '../simple/stylers/columns-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
 import { Component, ElementOptions } from './component'
 import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 
-export class DividerStats extends Component {
-	name = 'Stats divider'
+export class DividerInfo extends Component {
+	name = 'Information section'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <DividerStatsOptions />
+		return <DividerInfoOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function DividerStatsOptions() {
+function DividerInfoOptions() {
 	const component = useSelectedElement<BoxElement>()!
 	const sectionsDiv = component.find(tagIds.sectionsDiv) as ColumnsElement
 
 	return (
-		<ComponentWrapper name="Simple stats divider">
+		<ComponentWrapper name="Information section">
 			<ColumnsStyler element={sectionsDiv} maxColumns={8} />
 			<DndTabs
 				containerElement={sectionsDiv}
@@ -40,7 +41,7 @@ function DividerStatsOptions() {
 						<TextStyler label="Stat" element={element.children![1] as TextElement} />
 					</div>
 				)}
-				insertElement={() => createSection()}
+				insertElement={() => createSection('Title', 'Value')}
 			/>
 		</ComponentWrapper>
 	)
@@ -60,8 +61,8 @@ const wrapperDiv = box()
 		fontSize: '24px',
 		paddingTop: '5%',
 		paddingBottom: '5%',
-		paddingLeft: '0%',
-		paddingRight: '0%',
+		paddingLeft: '15%',
+		paddingRight: '15%',
 		width: '100%',
 	})
 	.cssTablet({
@@ -80,6 +81,7 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 			justifyContent: 'space-between',
 			alignItems: 'start',
 			width: '100%',
+			gap: '10px',
 			rowGap: '25px',
 		},
 	}
@@ -100,52 +102,37 @@ const sectionsDiv = produce(new ColumnsElement(), (draft) => {
 		},
 	}
 
-	draft.customStyle.desktop = {
-		'div.section:not(:last-child)': {
-			borderRightWidth: '1px',
-			borderRightStyle: 'solid',
-			borderRightColor: '#303030',
-		},
-	}
-	draft.customStyle.tablet = {
-		'div.section:not(:last-child)': {
-			border: 'none',
-		},
-		'div.section:nth-child(odd)': {
-			border: 'none',
-		},
-		'div.section:last-child': {
-			border: 'none',
-		},
-	}
 	draft.tagId = tagIds.sectionsDiv
 }).serialize()
 
-const createSection = () =>
+const createSection = (label: string, value: string) =>
 	box([
-		txt('Stat')
+		txt(label)
 			.css({
-				textAlign: 'center',
-				fontSize: '24px',
+				textAlign: 'left',
+				fontSize: fontSizes.normal.desktop,
+				textDecoration: 'underline',
 				fontWeight: 'bold',
 			})
 			.cssTablet({
-				fontSize: '20px',
+				fontSize: fontSizes.normal.tablet,
 			})
 			.cssMobile({
-				fontSize: '16px',
+				fontSize: fontSizes.normal.mobile,
 			}),
-		txt('100k')
+		txt(value)
 			.css({
-				textAlign: 'center',
-				fontSize: '20px',
-				color: '#cacaca',
+				marginTop: '10px',
+				textAlign: 'left',
+				fontSize: '0.875rem',
+				fontWeight: 'lighter',
 			})
 			.cssTablet({
-				fontSize: '16px',
+				marginTop: '0px',
+				fontSize: '0.875rem',
 			})
 			.cssMobile({
-				fontSize: '12px',
+				fontSize: '0.75rem',
 			}),
 	])
 		.css({
@@ -156,7 +143,11 @@ const createSection = () =>
 		})
 		.class(['section']) // This is not necessary in the rendered code but I've added it as we add extra divs in the ui-builder
 
-const sections = [createSection(), createSection(), createSection()]
+const sections = [
+	createSection('Address', 'This is a placeholder for address'),
+	createSection('Email', 'example@email.com'),
+	createSection('Phone', '0123456789'),
+]
 
 const defaultData = {
 	...wrapperDiv,
