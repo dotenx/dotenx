@@ -7,7 +7,7 @@ services:
         ports:
             - "9090:9090"
         networks:
-            - default
+            - databases
         volumes:
             - ./job_scheduler/server:/usr/src/app
             - /usr/src/app/node_modules
@@ -23,7 +23,7 @@ services:
         ports:
             - "3010:80"
         networks:
-            - default
+            - databases
         volumes:
             - ./ui:/usr/src/app
             - ./ui/nginx.conf:/etc/nginx/nginx.conf
@@ -53,7 +53,7 @@ services:
         ports:
             - "3011:80"
         networks:
-            - default
+            - databases
         volumes:
             - ./ui-ecommerce:/usr/src/app
             - ./ui-ecommerce/nginx.conf:/etc/nginx/nginx.conf
@@ -68,7 +68,7 @@ services:
         ports:
             - "3012:80"
         networks:
-            - default
+            - databases
         volumes:
             - ./ui-form:/usr/src/app
             - ./ui-form/nginx.conf:/etc/nginx/nginx.conf
@@ -94,7 +94,7 @@ services:
             - ao_api_data:/go/src/github.com/dotenx/dotenx/ao-api
             - /var/run/docker.sock:/var/run/docker.sock
         networks:
-            - default
+            - databases
         ports:
             - "3005:3004"
 
@@ -108,12 +108,12 @@ services:
             - runner_data:/go/src/github.com/dotenx/dotenx/runner
             - /var/run/docker.sock:/var/run/docker.sock
         networks:
-            - default
+            - databases
 
 networks:
-  default:
-    external:
-      name: dev
+  databases:
+    name: databases
+    external: true
 
 volumes:
     ao_api_data:
