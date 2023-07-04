@@ -15,9 +15,9 @@ services:
         image: postgres:12
         hostname: postgres
         environment:
-            POSTGRES_USER:postgres
-            POSTGRES_PASSWORD:postgres
-            POSTGRES_DB:postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
         volumes:
             - "postgres_data:/var/lib/postgresql/data/"
         ports:
