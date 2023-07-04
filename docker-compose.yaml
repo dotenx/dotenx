@@ -85,9 +85,7 @@ services:
         environment:
             - RUNNING_IN_DOCKER=true
         depends_on:
-            - psql
             - scheduler_server
-            - redis
         hostname: ao-api
         working_dir: /root/
         volumes:
