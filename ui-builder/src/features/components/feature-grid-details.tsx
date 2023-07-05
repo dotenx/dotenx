@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { ReactNode } from 'react'
-import imageUrl from '../../assets/components/feature-grid-images.png'
+import imageUrl from '../../assets/components/feature-grid-long-description.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { regenElement } from '../clipboard/copy-paste'
 import { Element } from '../elements/element'
@@ -9,6 +9,7 @@ import { ColumnsElement } from '../elements/extensions/columns'
 import { ImageElement } from '../elements/extensions/image'
 import { TextElement } from '../elements/extensions/text'
 import { useSelectedElement } from '../selection/use-selected-component'
+import { fontSizes } from '../simple/font-sizes'
 import { BoxStyler } from '../simple/stylers/box-styler'
 import { ImageStyler } from '../simple/stylers/image-styler'
 import { TextStyler } from '../simple/stylers/text-styler'
@@ -18,28 +19,24 @@ import { ComponentWrapper } from './helpers/component-wrapper'
 import { DndTabs } from './helpers/dnd-tabs'
 import { OptionsWrapper } from './helpers/options-wrapper'
 
-export class FeatureGridImages extends Component {
-	name = 'Feature grid with images'
+export class FeatureGridDetails extends Component {
+	name = 'Feature grid with long description'
 	image = imageUrl
 	defaultData = deserializeElement(defaultData)
 
 	renderOptions(options: ElementOptions): ReactNode {
-		return <FeatureGridImagesOptions />
+		return <FeatureGridDetailsOptions />
 	}
 }
 
 // =============  renderOptions =============
 
-function FeatureGridImagesOptions() {
+function FeatureGridDetailsOptions() {
 	const component = useSelectedElement<BoxElement>()!
-	const title = component.find<TextElement>(tagIds.title)!
-	const subtitle = component.find<TextElement>(tagIds.subtitle)!
 	const grid = component.find<ColumnsElement>(tagIds.grid)!
 
 	return (
-		<ComponentWrapper name="Feature grid with images">
-			<TextStyler label="Title" element={title} />
-			<TextStyler label="Subtitle" element={subtitle} />
+		<ComponentWrapper name="Feature grid with long description">
 			<DndTabs
 				containerElement={grid}
 				renderItemOptions={(item) => <TileOptions item={item} />}
@@ -68,8 +65,6 @@ function TileOptions({ item }: { item: Element }) {
 // =============  defaultData =============
 
 const tagIds = {
-	title: 'title',
-	subtitle: 'subtitle',
 	grid: 'grid',
 }
 
@@ -106,99 +101,77 @@ const divFlex = produce(new BoxElement(), (draft) => {
 	}
 }).serialize()
 
-const title = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: '32px',
-			marginBottom: '8px',
-		},
-	}
-	draft.style.tablet = {
-		default: {
-			fontSize: '28px',
-		},
-	}
-
-	draft.style.mobile = {
-		default: {
-			fontSize: '24px',
-		},
-	}
-
-	draft.data.text = Expression.fromString('Features')
-	draft.tagId = tagIds.title
-}).serialize()
-
-const subtitle = produce(new TextElement(), (draft) => {
-	draft.style.desktop = {
-		default: {
-			fontSize: '24px',
-			marginBottom: '12px',
-		},
-	}
-
-	draft.style.tablet = {
-		default: {
-			fontSize: '20px',
-		},
-	}
-
-	draft.style.mobile = {
-		default: {
-			fontSize: '16px',
-		},
-	}
-
-	draft.data.text = Expression.fromString('With our platform you can do this and that')
-	draft.tagId = tagIds.subtitle
-}).serialize()
-
 const tileTitle = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '16px',
-			marginBottom: '18px',
+			fontWeight: 500,
+			fontSize: fontSizes.h4.desktop,
+			marginBottom: '10px',
+			marginTop: '20px',
 		},
 	}
-	draft.data.text = Expression.fromString('Feature')
+	draft.style.tablet = {
+		default: {
+			fontWeight: 500,
+			fontSize: fontSizes.h4.tablet,
+		},
+	}
+	draft.style.mobile = {
+		default: {
+			fontWeight: 500,
+			fontSize: fontSizes.h4.mobile,
+		},
+	}
+	draft.data.text = Expression.fromString('Feature Title')
 })
 
 const tileDetails = produce(new TextElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			fontSize: '14px',
+			fontSize: fontSizes.normal.desktop,
 		},
 	}
-	draft.data.text = Expression.fromString('Feature description goes here')
+	draft.style.tablet = {
+		default: {
+			fontSize: fontSizes.normal.tablet,
+		},
+	}
+	draft.style.mobile = {
+		default: {
+			fontSize: fontSizes.normal.mobile,
+		},
+	}
+	draft.data.text = Expression.fromString(
+		'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!'
+	)
 })
 
 const tileImage = produce(new ImageElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
-			width: '100%',
-			maxHeight: '400px',
-			height: 'auto',
+			width: 'auto',
+			height: '400px',
 			objectFit: 'cover',
 			objectPosition: 'center center',
 		},
 	}
 
-	draft.data.src = Expression.fromString('https://i.ibb.co/GHCF717/Marketing-bro.png')
+	draft.data.src = Expression.fromString(
+		'https://files.dotenx.com/a01a080236c5078c428bebba93a9ca96_69b5d85d-2883-4a49-b5ea-291dc5239df9.jpg'
+	)
 })
 
 const tile = produce(new BoxElement(), (draft) => {
 	draft.style.desktop = {
 		default: {
+			justifyContent: 'start',
 			paddingLeft: '10px',
 			paddingRight: '10px',
 			paddingTop: '10px',
 			paddingBottom: '10px',
-			textAlign: 'center',
 			borderRadius: '8px',
 			display: 'flex',
 			flexDirection: 'column',
-			justifyContent: 'start',
-			alignItems: 'center',
 		},
 	}
 	draft.children = [tileImage, tileTitle, tileDetails]
@@ -224,34 +197,40 @@ function createTile({
 }
 const tiles = [
 	createTile({
-		src: 'https://i.ibb.co/GHCF717/Marketing-bro.png',
-		title: 'Customizable',
-		description: 'Change the content and style and make it your own.',
+		src: 'https://files.dotenx.com/41371a6ff203059e890765e540d64781_835864c7-c570-4cc4-ab46-c13acd33477d.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 	createTile({
-		src: 'https://i.ibb.co/Jmrc06m/Construction-costs-amico.png',
-		title: 'Fast',
-		description: 'Fast load times and lag free interaction, my highest priority.',
+		src: 'https://files.dotenx.com/0b4f9437a01bcd9c2b89c7dceadc1f3b_900b9a20-d798-41fe-a5be-11c8fa166190.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 	createTile({
-		src: 'https://i.ibb.co/CWRLMwY/Marketing-cuate.png',
-		title: 'Made with Love',
-		description: 'Increase sales by showing true dedication to your customers.',
+		src: 'https://files.dotenx.com/96900879596db5e3c0eb41f8429113b2_7ab4cdd2-6e5b-4252-9f69-cf6c58071fa2.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 	createTile({
-		src: 'https://i.ibb.co/Jmrc06m/Construction-costs-amico.png',
-		title: 'Easy to Use',
-		description: 'Ready to use with your own content, or customize the source files!',
+		src: 'https://files.dotenx.com/a01a080236c5078c428bebba93a9ca96_69b5d85d-2883-4a49-b5ea-291dc5239df9.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 	createTile({
-		src: 'https://i.ibb.co/CWRLMwY/Marketing-cuate.png',
-		title: 'Cloud Storage',
-		description: 'Access your documents anywhere and share them with others.',
+		src: 'https://files.dotenx.com/1debef53e1caf17a1f6d98c46761e7a7_63361063-0b60-4574-a101-662484ece172.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 	createTile({
-		src: 'https://i.ibb.co/GHCF717/Marketing-bro.png',
-		title: 'Instant Setup',
-		description: 'Get your projects up and running in no time using the theme documentation.',
+		src: 'https://files.dotenx.com/3b66d6e743f3a41eb0cb2456f433b2a8_fe8cc17a-96a4-480b-8494-eaf804762614.jpg',
+		title: 'Feature Title',
+		description:
+			'Lorem ipsum dolor sit amet elit adipisicing . Quod eaque, delectus officiis iusto numquam sunt nemo ullam quia beatae illum iste omnis quis, repudiandae reprehenderit corrupti! Ut reprehenderit earum quasi!',
 	}),
 ]
 
@@ -261,6 +240,7 @@ const grid = produce(new ColumnsElement(), (draft) => {
 			display: 'grid',
 			gridTemplateColumns: '1fr 1fr 1fr',
 			gridGap: '20px',
+			rowGap: '40px',
 			width: '70%',
 		},
 	}
@@ -280,10 +260,6 @@ const grid = produce(new ColumnsElement(), (draft) => {
 const defaultData = {
 	...wrapperDiv,
 	components: [
-		{
-			...topDiv,
-			components: [title, subtitle],
-		},
 		{
 			...divFlex,
 			components: [
