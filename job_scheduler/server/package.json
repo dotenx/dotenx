@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/mkamrani/example-node-bull#readme",
   "dependencies": {
-    "@bull-board/express": "^3.8.1",
+    "@bull-board/express": "^3.11.1",
     "axios": "^0.25.0",
     "body-parser": "^1.19.1",
     "bull": "^4.2.0",
