@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@babel/core':
     specifier: ^7.21.4
@@ -155,8 +159,8 @@ dependencies:
     specifier: ^4.6.0
     version: 4.6.0(eslint@8.39.0)
   immer:
-    specifier: ^9.0.21
-    version: 9.0.21
+    specifier: ^10.0.0
+    version: 10.0.0
   jotai:
     specifier: ^2.0.3
     version: 2.0.3(react@18.2.0)
@@ -231,7 +235,7 @@ dependencies:
     version: 3.21.4
   zustand:
     specifier: ^4.3.7
-    version: 4.3.7(immer@9.0.21)(react@18.2.0)
+    version: 4.3.7(immer@10.0.0)(react@18.2.0)
 
 devDependencies:
   '@types/animejs':
@@ -2991,8 +2995,8 @@ packages:
     engines: {node: '>= 4'}
     dev: false
 
-  /immer@9.0.21:
-    resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
+  /immer@10.0.0:
+    resolution: {integrity: sha512-U5wLsGKDt7+XnufwMYH7+RWcy4JTITNkWsV/H4sNhfIxcXvypDTzn9Cj0Y9Fjj0h1a/Gaba9oZYK0a+kO13uJQ==}
     dev: false
 
   /import-fresh@3.3.0:
@@ -4665,7 +4669,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  /zustand@4.3.7(immer@9.0.21)(react@18.2.0):
+  /zustand@4.3.7(immer@10.0.0)(react@18.2.0):
     resolution: {integrity: sha512-dY8ERwB9Nd21ellgkBZFhudER8KVlelZm8388B5nDAXhO/+FZDhYMuRnqDgu5SYyRgz/iaf8RKnbUs/cHfOGlQ==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -4677,7 +4681,7 @@ packages:
       react:
         optional: true
     dependencies:
-      immer: 9.0.21
+      immer: 10.0.0
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false

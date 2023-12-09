@@ -17,7 +17,7 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 import { Switch, TextInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { Bar } from 'react-chartjs-2'
 import { JsonArray } from '../../../utils'

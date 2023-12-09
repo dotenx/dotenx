@@ -1,5 +1,5 @@
 import { ActionIcon, Menu, Select, TextInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { ReactNode } from 'react'

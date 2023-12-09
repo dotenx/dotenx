@@ -1,7 +1,7 @@
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ActionIcon, Collapse } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useState } from 'react'
 import { TbPlus } from 'react-icons/tb'
 import { Element } from '../../elements/element'

@@ -1,7 +1,7 @@
 import { IconName } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Tabs, TextInput, Tooltip } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { memo, ReactNode, useState } from 'react'
 import { TbTarget } from 'react-icons/tb'
 import { areEqual, FixedSizeGrid as Grid } from 'react-window'

@@ -14,7 +14,7 @@ import { OptionsWrapper } from './helpers/options-wrapper'
 import { Element } from '../elements/element'
 import { useSetElement } from '../elements/elements-store'
 import { Select } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 
 export class GalleryMasonryCustomLayout extends Component {
 	name = 'Masonry gallery with custom layout'

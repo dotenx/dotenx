@@ -1,5 +1,5 @@
 import { Button, CloseButton, NumberInput, SegmentedControl, TextInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbLayoutColumns, TbPlus } from 'react-icons/tb'

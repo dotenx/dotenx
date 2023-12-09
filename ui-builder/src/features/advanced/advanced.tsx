@@ -24,7 +24,7 @@ export function Advanced() {
 
 function AppHeader() {
 	return (
-		<Header height={60} sx={{ zIndex: 110 }}>
+		<Header height={60} style={{ zIndex: 110 }}>
 			<TopBar />
 		</Header>
 	)

@@ -33,7 +33,7 @@ export function PageSelection() {
 				<Button
 					variant="light"
 					size="xs"
-					sx={{ minWidth: 200 }}
+					style={{ minWidth: 200 }}
 					loading={pagesQuery.isLoading}
 				>
 					{pageName}
