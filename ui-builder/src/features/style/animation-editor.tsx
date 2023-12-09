@@ -1,5 +1,5 @@
 import { Button, CloseButton, MultiSelect, Select, Text } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useAtomValue } from 'jotai'
 import _ from 'lodash'
 import { TbPlus } from 'react-icons/tb'

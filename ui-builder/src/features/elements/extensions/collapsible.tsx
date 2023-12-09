@@ -2,7 +2,7 @@ import { ActionIcon, Select, SelectItem, Switch } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import '@splidejs/react-splide/css'
 import '@splidejs/react-splide/css/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { FC, ReactNode } from 'react'
 import {
 	TbArrowNarrowDown,

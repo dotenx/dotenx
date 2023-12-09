@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import React, { ReactNode } from 'react'
 import { TbPlus } from 'react-icons/tb'
 import imageUrl from '../../assets/components/pricing-simple.png'

@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { CSSProperties } from 'react'
 import { Element } from '../features/elements/element'

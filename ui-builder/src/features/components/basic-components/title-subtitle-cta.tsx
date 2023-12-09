@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import { BoxElement } from '../../elements/extensions/box'
 import { LinkElement } from '../../elements/extensions/link'
 import { TextElement } from '../../elements/extensions/text'

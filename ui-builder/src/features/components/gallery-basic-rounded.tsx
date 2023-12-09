@@ -1,5 +1,5 @@
 import { Button, Select } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { ReactNode, useState } from 'react'
 import { TbMinus, TbPlus } from 'react-icons/tb'

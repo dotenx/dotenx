@@ -1,4 +1,8 @@
-FROM golang:1.18-alpine AS go-build
+ARG BUILDPLATFORM
+FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS go-build
+
+ARG TARGETOS 
+ARG TARGETARCH
 
 RUN apk add build-base
 
@@ -21,8 +25,8 @@ COPY ./integrations ./integrations
 COPY ./ao-api .
 
 RUN rm -r vendor
-RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o ao-api .
+RUN CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH go build
+RUN CGO_ENABLED=1 GOOS=$TARGETOS go build -a -installsuffix cgo -o ao-api .
 
 FROM alpine:3.9.5 as dns
 

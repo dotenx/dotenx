@@ -8,7 +8,7 @@ import {
 	TextInput,
 } from '@mantine/core'
 import { openModal } from '@mantine/modals'
-import produce from 'immer'
+import { produce } from 'immer'
 import { atom, useAtom, useSetAtom } from 'jotai'
 import _ from 'lodash'
 import { useEffect } from 'react'

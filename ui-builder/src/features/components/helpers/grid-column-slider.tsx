@@ -1,5 +1,5 @@
 import { Slider } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useAtomValue } from 'jotai'
 import { memo, useCallback } from 'react'
 import { BoxElement } from '../../elements/extensions/box'

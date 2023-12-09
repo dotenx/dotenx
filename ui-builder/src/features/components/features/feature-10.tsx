@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import componentImage from '../../../assets/components/features/feature-10.png'
 import { gridCols } from '../../../utils/style-utils'

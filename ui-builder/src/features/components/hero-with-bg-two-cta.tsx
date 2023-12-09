@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import imageUrl from '../../assets/components/hero-with-bg-two-cta.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { BoxElement } from '../elements/extensions/box'
