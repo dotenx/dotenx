@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/footer-simple-with-input-3.png'
 import { deserializeElement } from '../../utils/deserialize'

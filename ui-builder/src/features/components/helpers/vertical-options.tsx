@@ -1,7 +1,7 @@
 import { DragEndEvent, UniqueIdentifier } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { ActionIcon } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useCallback, useMemo } from 'react'
 import { TbX } from 'react-icons/tb'
 import { BoxElement } from '../../elements/extensions/box'

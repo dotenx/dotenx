@@ -1,5 +1,5 @@
 import { TextInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { ReactNode } from 'react'
 import { API_URL } from '../../api'
 import imageUrl from '../../assets/components/sc-sign-in-basic.png'

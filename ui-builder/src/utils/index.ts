@@ -1,5 +1,5 @@
 import { AxiosRequestHeaders } from 'axios'
-import produce from 'immer'
+import {produce} from 'immer'
 import { customAlphabet } from 'nanoid'
 
 /**

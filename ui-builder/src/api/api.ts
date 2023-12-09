@@ -1,5 +1,5 @@
 import axios from 'axios'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { addComponents } from '../utils/components-utils'
 import {

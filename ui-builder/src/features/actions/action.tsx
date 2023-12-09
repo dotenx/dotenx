@@ -1,5 +1,5 @@
 import { closeAllModals } from '@mantine/modals'
-import produce, { immerable } from 'immer'
+import {produce, immerable } from 'immer'
 import _ from 'lodash'
 import { uuid } from '../../utils'
 import { useDataSourceStore } from '../data-source/data-source-store'

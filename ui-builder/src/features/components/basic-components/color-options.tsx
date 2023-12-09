@@ -1,6 +1,6 @@
 import { BoxElement } from '../../elements/extensions/box'
 import { ColorInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { TextElement } from '../../elements/extensions/text'
 
 function BackgroundColorOption({

@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import imageUrl from '../../assets/components/comparison-table-1.png'

@@ -1,6 +1,6 @@
 import { ActionIcon, Button, CloseButton, Code, Divider, Menu, Select, Text } from '@mantine/core'
 import { openModal } from '@mantine/modals'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { TbEdit, TbPlus } from 'react-icons/tb'
 import { uuid } from '../../utils'
