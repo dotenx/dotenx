@@ -65,7 +65,7 @@
 		"eslint-plugin-react": "^7.32.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"immer": "^10.0.0",
-		"jotai": "^2.0.3",
+		"jotai": "^2.6.0",
 		"js-cookie": "^3.0.1",
 		"known-css-properties": "^0.27.0",
 		"lodash": "^4.17.21",
