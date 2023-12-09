@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import React, { ReactNode } from 'react'
 import imageUrl from '../../assets/components/pricing-simple-2.jpg'
 import { deserializeElement } from '../../utils/deserialize'

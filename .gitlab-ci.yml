@@ -86,7 +86,7 @@ build api: &build
     - docker version
     - cp .env.${environment} .env
     - cd -
-    - docker build -f $DOCKER_FILE_PATH -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_commit_sha} -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id} .
+    - docker build --build-arg BUILDPLATFORM=linux/amd64 --build-arg TARGETOS=linux --build-arg TARGETARCH=amd64 -f $DOCKER_FILE_PATH -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_commit_sha} -t ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id} .
     - docker push ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_commit_sha}
     - docker push ${ECR_REGISTRY_URL}/${repo_name}:${image_tag_pipeline_id}
     - docker images

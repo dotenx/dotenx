@@ -45,7 +45,7 @@ export function ImageDrop({
 			accept={IMAGE_MIME_TYPE}
 			loading={uploadImageMutation.isLoading}
 			h={200}
-			sx={{ display: 'flex', alignItems: 'center' }}
+			style={{ display: 'flex', alignItems: 'center' }}
 		>
 			<Group position="center" spacing="xl" py="xl" style={{ pointerEvents: 'none' }}>
 				<Dropzone.Accept>

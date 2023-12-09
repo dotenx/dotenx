@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { ReactNode } from 'react'
 import { TbLayoutNavbar } from 'react-icons/tb'

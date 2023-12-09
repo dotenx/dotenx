@@ -1,7 +1,7 @@
 import { ActionIcon, Button, CloseButton, Code, Divider, Text } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import axios from 'axios'
-import produce from 'immer'
+import { produce } from 'immer'
 import { ReactNode, useContext } from 'react'
 import { FrameContext } from 'react-frame-component'
 import { TbEdit, TbForms, TbPlus } from 'react-icons/tb'

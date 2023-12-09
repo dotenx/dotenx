@@ -1,5 +1,5 @@
 import { ColorInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { CollapseLine } from '../ui/collapse-line'
 import { InputWithUnit } from '../ui/style-input'
 import { useEditStyle } from './use-edit-style'

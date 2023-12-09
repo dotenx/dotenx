@@ -1,5 +1,5 @@
 import { TextInput } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { ReactNode } from 'react'
 import { TbClick } from 'react-icons/tb'
 import { BackgroundsEditor } from '../../style/background-editor'

@@ -1,6 +1,6 @@
 import { ColorInput, Select } from '@mantine/core'
 import { useInputState } from '@mantine/hooks'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useAtomValue } from 'jotai'
 import { ReactNode } from 'react'
 import { API_URL } from '../../api'

@@ -1,4 +1,4 @@
-import produce from 'immer'
+import { produce } from 'immer'
 import { COMPONENTS } from '../features/components'
 import { Element } from '../features/elements/element'
 

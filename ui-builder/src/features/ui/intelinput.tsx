@@ -1,6 +1,6 @@
 import { CloseButton } from '@mantine/core'
 import { useInputState } from '@mantine/hooks'
-import produce from 'immer'
+import { produce } from 'immer'
 import _ from 'lodash'
 import { useRef } from 'react'
 import { Expression, ExpressionKind, Value } from '../states/expression'

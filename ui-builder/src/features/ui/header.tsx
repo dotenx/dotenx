@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 
 export function AppHeader({ children }: { children: ReactNode }) {
 	return (
-		<Header height={60} sx={{ zIndex: 110 }}>
+		<Header height={60} style={{ zIndex: 110 }}>
 			{children}
 		</Header>
 	)

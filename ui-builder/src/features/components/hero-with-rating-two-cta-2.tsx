@@ -1,5 +1,5 @@
 import { Slider } from '@mantine/core'
-import produce from 'immer'
+import { produce } from 'immer'
 import imageUrl from '../../assets/components/hero-with-rating-two-cta-2.png'
 import { deserializeElement } from '../../utils/deserialize'
 import { useSetElement } from '../elements/elements-store'

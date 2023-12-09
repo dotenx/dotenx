@@ -34,17 +34,63 @@ https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
 
 ---
 
-Run locally
 
+## Run locally
+
+Step 1: Clone project -> ```git clone https://github.com/dotenx/dotenx```
+
+Step 2: Go to dotenx root directory -> ```cd dotenx```
+
+Step 3: Create docker network -> ```docker network create -d bridge --attachable dev```
+
+Step 4: Run all services -> ```docker-compose up```
+
+Step 5: Install postgresql on your device (linux-windows-macOS)
+
+linux: https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql-linux
+
+windows: https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql
+
+macOS: https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql-macos
+
+Step 6: Run this command -> ```psql -h localhost -d postgres -U psql_user -p 5434```
+
+Note: password is "psql_password"
+
+Step 7: Run this query ->
 ```
-git clone https://github.com/dotenx/dotenx
-
-cd dotenx
-
-docker network create -d bridge --attachable dev
-
-docker-compose up
+SELECT 'CREATE DATABASE ao'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ao')\gexec
 ```
+
+Step 8: Run this query -> ```CREATE DATABASE template_base WITH IS_TEMPLATE TRUE;```
+
+Step 9: Run this command -> ```\c template_base```
+
+Step 10: Run these queries (just copy and paste and then press enter) ->
+```
+CREATE DOMAIN yes_no          AS BOOLEAN;
+CREATE DOMAIN image_address   AS VARCHAR;
+CREATE DOMAIN file_address    AS VARCHAR;
+CREATE DOMAIN rating          AS int;
+CREATE DOMAIN url             AS VARCHAR;
+CREATE DOMAIN email           AS VARCHAR;
+CREATE DOMAIN just_time       AS TIME;
+CREATE DOMAIN just_date       AS DATE;
+CREATE DOMAIN date_time       AS TIMESTAMP;
+CREATE DOMAIN num             AS int;
+CREATE DOMAIN short_text      AS VARCHAR;
+CREATE DOMAIN long_text       AS TEXT;
+CREATE DOMAIN link_field      AS int;
+CREATE DOMAIN text_array      AS TEXT[];
+CREATE DOMAIN yes_no_array    AS BOOLEAN[];
+CREATE DOMAIN num_array       AS int[];
+CREATE DOMAIN dtx_json        AS JSONB;
+CREATE DOMAIN float_num       AS DOUBLE PRECISION;
+CREATE DOMAIN float_num_array AS DOUBLE PRECISION[];
+```
+
+Step 11: Finally quit from psql with this command -> ```\q```
 
 Developer guides:
 
