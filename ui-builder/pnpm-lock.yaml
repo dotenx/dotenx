@@ -162,8 +162,8 @@ dependencies:
     specifier: ^10.0.0
     version: 10.0.0
   jotai:
-    specifier: ^2.0.3
-    version: 2.0.3(react@18.2.0)
+    specifier: ^2.6.0
+    version: 2.6.0(@types/react@18.2.0)(react@18.2.0)
   js-cookie:
     specifier: ^3.0.1
     version: 3.0.1
@@ -3177,15 +3177,19 @@ packages:
     hasBin: true
     dev: true
 
-  /jotai@2.0.3(react@18.2.0):
-    resolution: {integrity: sha512-MMjhSPAL3RoeZD9WbObufRT2quThEAEknHHridf2ma8Ml7ZVQmUiHk0ssdbR3F0h3kcwhYqSGJ59OjhPge7RRg==}
+  /jotai@2.6.0(@types/react@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Vt6hsc04Km4j03l+Ax+Sc+FVft5cRJhqgxt6GTz6GM2eM3DyX3CdBdzcG0z2FrlZToL1/0OAkqDghIyARWnSuQ==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
+      '@types/react': '>=17.0.0'
       react: '>=17.0.0'
     peerDependenciesMeta:
+      '@types/react':
+        optional: true
       react:
         optional: true
     dependencies:
+      '@types/react': 18.2.0
       react: 18.2.0
     dev: false
 
