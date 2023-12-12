@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create price
-image: hojjat12/stripe-create-price:lambda
+image: dotenx/task-and-trigger:stripe-create-price-lambda
 integrations: [stripe]
 fields:
     - key: product_id

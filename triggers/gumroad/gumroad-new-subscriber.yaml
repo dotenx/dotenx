@@ -1,7 +1,7 @@
 service: gumroad
 type: Gumroad new subscriber (for membership products)
 integrations: [gumroad]
-image: hojjat12/gumroad-new-subscriber:lambda
+image: dotenx/task-and-trigger:gumroad-new-subscriber-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: product_id

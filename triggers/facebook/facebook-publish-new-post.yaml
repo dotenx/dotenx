@@ -1,7 +1,7 @@
 service: facebook
 type: Facebook new post
 integrations: [facebook]
-image: hojjat12/facebook-publish-new-post:lambda5
+image: dotenx/task-and-trigger:facebook-publish-new-post-lambda5
 credentials:
     - key: page_id
       type: text

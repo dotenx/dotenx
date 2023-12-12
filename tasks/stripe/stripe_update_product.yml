@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe update product
-image: hojjat12/stripe-update-product:lambda
+image: dotenx/task-and-trigger:stripe-update-product-lambda
 integrations: [stripe]
 fields:
     - key: product_id

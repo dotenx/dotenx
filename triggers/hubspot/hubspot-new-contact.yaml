@@ -1,7 +1,7 @@
 service: hubspot
 type: HubSpot new contact
 integrations: [hubspot]
-image: hojjat12/hubspot-new-contact:lambda
+image: dotenx/task-and-trigger:hubspot-new-contact-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: passed_seconds

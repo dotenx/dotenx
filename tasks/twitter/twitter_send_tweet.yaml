@@ -1,6 +1,6 @@
 service: twitter
 type: Send tweet
-image: hojjat12/twitter-send-tweet:lambda5
+image: dotenx/task-and-trigger:twitter-send-tweet-lambda5
 integrations: [twitter]
 fields:
     - key: text

@@ -1,7 +1,7 @@
 service: ebay
 type: Ebay new order
 integrations: [ebay]
-image: hojjat12/ebay-new-order:lambda4
+image: dotenx/task-and-trigger:ebay-new-order-lambda4
 deduplication_method: compare_with_list
 credentials:
     - key: passed_seconds

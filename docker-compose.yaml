@@ -1,21 +1,5 @@
 version: "3"
 services:
-    scheduler_server:
-        build:
-            context: ./job_scheduler/server
-            dockerfile: Dockerfile.dev
-        ports:
-            - "9090:9090"
-        networks:
-            - default
-        volumes:
-            - ./job_scheduler/server:/usr/src/app
-            - /usr/src/app/node_modules
-        environment:
-            - REDIS_HOST=redis
-            - AO_API_URL=http://ao-api:3004
-        command: npm run dev
-
     ui:
         build:
             context: ./ui
@@ -103,7 +87,6 @@ services:
             - RUNNING_IN_DOCKER=true
         depends_on:
             - psql
-            - scheduler_server
             - redis
         hostname: ao-api
         working_dir: /root/
@@ -115,18 +98,6 @@ services:
         ports:
             - "3005:3004"
 
-    runner:
-        build:
-            context: runner
-            dockerfile: Dockerfile.dev
-        working_dir: /root/
-        volumes:
-            - /tmp/cache:/tmp/cache
-            - runner_data:/go/src/github.com/dotenx/dotenx/runner
-            - /var/run/docker.sock:/var/run/docker.sock
-        networks:
-            - default
-
 networks:
   default:
     external:
@@ -136,4 +107,3 @@ volumes:
     redis_data:
     postgres_data:
     ao_api_data:
-    runner_data:

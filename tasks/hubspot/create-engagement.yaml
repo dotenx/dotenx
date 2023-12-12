@@ -1,6 +1,6 @@
 service: hubspot
 type: Create new engagement
-image: hojjat12/hubspot-create-engagement:lambda
+image: dotenx/task-and-trigger:hubspot-create-engagement-lambda
 integrations: [hubspot]
 fields:
     - key: engagement_type

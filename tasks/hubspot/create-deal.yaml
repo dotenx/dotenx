@@ -1,6 +1,6 @@
 service: hubspot
 type: Create new deal
-image: hojjat12/hubspot-create-deal:lambda
+image: dotenx/task-and-trigger:hubspot-create-deal-lambda
 integrations: [hubspot]
 fields:
     - key: deal_name

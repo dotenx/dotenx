@@ -1,7 +1,7 @@
 service: hubspot
 type: HubSpot new ticket
 integrations: [hubspot]
-image: hojjat12/hubspot-new-ticket:lambda
+image: dotenx/task-and-trigger:hubspot-new-ticket-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: passed_seconds
