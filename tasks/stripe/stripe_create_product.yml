@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe create product
-image: hojjat12/stripe-create-product:lambda
+image: dotenx/task-and-trigger:stripe-create-product-lambda
 integrations: [stripe]
 fields:
     - key: name

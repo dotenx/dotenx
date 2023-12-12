@@ -1,6 +1,6 @@
 service: jira
 type: Create jira ticket
-image: awrmin/create-jira-ticket:lambda5
+image: dotenx/task-and-trigger:create-jira-ticket-lambda5
 integrations: [jira]
 has_dynamic_variables: false
 fields:

@@ -1,6 +1,6 @@
 service: hubspot
 type: Create new company
-image: hojjat12/hubspot-create-company:lambda
+image: dotenx/task-and-trigger:hubspot-create-company-lambda
 integrations: [hubspot]
 fields:
     - key: company_name

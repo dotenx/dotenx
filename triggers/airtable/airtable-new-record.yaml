@@ -1,7 +1,7 @@
 service: airtable
 type: Airtable new record
 integrations: [airtable]
-image: hojjat12/airtable-new-record:lambda
+image: dotenx/task-and-trigger:airtable-new-record-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: base_id

@@ -1,7 +1,7 @@
 service: slack
 type: Slack new message
 integrations: [slack-bot]
-image: awrmin/slack-new-message:lambda5
+image: dotenx/task-and-trigger:slack-new-message-lambda5
 deduplication_method: compare_with_last
 credentials:
     - key: channel_id

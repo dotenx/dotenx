@@ -53,6 +53,7 @@ type (
 		Admin        string `envconfig:"AOA_ADMIN_URL"`
 		SendGrid     string `envconfig:"AOA_SENDGRID_URL"`
 		SystemSender string `envconfig:"AOA_SYSTEM_SENDER"`
+		GoNginx      string `envconfig:"AOA_GO_NGINX_SERVICE_IP"`
 	}
 
 	Database struct {

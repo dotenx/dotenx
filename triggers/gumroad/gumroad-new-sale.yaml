@@ -1,7 +1,7 @@
 service: gumroad
 type: Gumroad new sale
 integrations: [gumroad]
-image: hojjat12/gumroad-new-sale:lambda
+image: dotenx/task-and-trigger:gumroad-new-sale-lambda
 deduplication_method: compare_with_list
 credentials:
     - key: passed_seconds

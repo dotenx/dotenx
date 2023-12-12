@@ -1,6 +1,6 @@
 service: hubspot
 type: Create new ticket
-image: hojjat12/hubspot-create-ticket:lambda
+image: dotenx/task-and-trigger:hubspot-create-ticket-lambda
 integrations: [hubspot]
 fields:
     - key: ticket_name

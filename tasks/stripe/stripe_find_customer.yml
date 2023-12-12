@@ -1,6 +1,6 @@
 service: stripe
 type: Stripe find customer
-image: stripe/stripe-find-customer:lambda5
+image: dotenx/task-and-trigger:stripe-find-customer-lambda5
 integrations: [stripe]
 fields:
     - key: CUS_EMAIL

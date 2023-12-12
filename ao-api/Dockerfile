@@ -1,6 +1,8 @@
+ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS go-build
 
-ARG TARGETOS TARGETARCH
+ARG TARGETOS 
+ARG TARGETARCH
 
 RUN apk add build-base
 

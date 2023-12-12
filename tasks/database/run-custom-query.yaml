@@ -1,6 +1,6 @@
 service: database
 type: Run custom query
-image: hojjat12/database-run-custom-query:lambda
+image: dotenx/task-and-trigger:database-run-custom-query-lambda
 fields:
     - key: dtx_access_token
       type: text

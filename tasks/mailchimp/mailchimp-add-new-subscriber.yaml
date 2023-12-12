@@ -1,6 +1,6 @@
 service: mailchimp
 type: Add new subscriber to the list
-image: hojjat12/mailchimp-add-new-subscriber:lambda
+image: dotenx/task-and-trigger:mailchimp-add-new-subscriber-lambda
 integrations: [mailchimp]
 fields:
     - key: list_id

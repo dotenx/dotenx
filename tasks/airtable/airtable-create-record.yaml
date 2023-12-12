@@ -1,6 +1,6 @@
 service: airtable
 type: Create record in Airtable
-image: hojjat12/airtable-create-record:lambda
+image: dotenx/task-and-trigger:airtable-create-record-lambda
 integrations: [airtable]
 fields:
     - key: base_id

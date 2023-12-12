@@ -1,7 +1,7 @@
 service: stripe
 type: Stripe new invoice
 integrations: [stripe]
-image: awrmin/stripe-new-invoice:lambda4
+image: dotenx/task-and-trigger:stripe-new-invoice-lambda4
 credentials:
     - key: passed_seconds
       type: text

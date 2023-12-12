@@ -1,6 +1,6 @@
 service: database
 type: Add a table record
-image: hojjat12/database-add-record:lambda6
+image: dotenx/task-and-trigger:database-add-record-lambda6
 fields:
     - key: dtx_access_token
       type: text
