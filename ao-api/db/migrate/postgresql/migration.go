@@ -363,6 +363,10 @@ var migrations = []struct {
 		name: "create-ui-pages-history-table",
 		stmt: createUIPagesHistoryTable,
 	},
+	{
+		name: "add-ai-website-configuration-field-to-projects-table",
+		stmt: addAIWebsiteConfigurationFieldToProjectsTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -1011,4 +1015,9 @@ project_tag                   VARCHAR(32) NOT NULL,
 content                       JSONB NOT NULL,
 saved_at                      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
+`
+
+var addAIWebsiteConfigurationFieldToProjectsTable = `
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS ai_website_configuration JSONB NOT NULL DEFAULT '{}'::jsonb;
 `
