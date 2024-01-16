@@ -1,8 +1,11 @@
 package project
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -11,6 +14,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,7 +24,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'web_application', 'landing_page', 'ecommerce', 'website'",
+				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'web_application', 'landing_page', 'ecommerce', 'website', 'ai_website'",
 			})
 			return
 		}
@@ -36,21 +40,34 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 			dto.HasDatabase = true
 		case "website":
 			dto.HasDatabase = false
+		case "ai_website":
+			dto.HasDatabase = false
+			// Instantiate the custom validator
+			v := validator.New()
+			validatorInstance := &AIWebsiteConfigurationValidator{validator: v}
+			// Use the custom validator for this API call
+			if err := validatorInstance.Validate(&dto); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 		}
 
 		var err error
 		if dto.ItemId != 0 {
 			err = pc.Service.ImportProject(accountId, dto.Name, dto.Description, dto.ItemId, mService, dbService, cService, uiBuilderService)
 		} else {
+			aiWebsiteConfiguration, _ := json.Marshal(dto.AIWebsiteConfiguration)
 			err = pc.Service.AddProject(accountId, models.Project{
-				Id:               dto.Id,
-				Name:             dto.Name,
-				Description:      dto.Description,
-				AccountId:        accountId,
-				DefaultUserGroup: dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
-				Type:             dto.Type,
-				Theme:            dto.Theme,
-				HasDatabase:      dto.HasDatabase,
+				Name:                   dto.Name,
+				Description:            dto.Description,
+				AccountId:              accountId,
+				DefaultUserGroup:       dto.DefaultUserGroup, // todo: do we need to keep this? seems too early in the user flow.
+				Type:                   dto.Type,
+				AIWebsiteConfiguration: aiWebsiteConfiguration,
+				Theme:                  dto.Theme,
+				HasDatabase:            dto.HasDatabase,
 			}, uiBuilderService)
 		}
 		if err != nil {
@@ -91,14 +108,70 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 }
 
 type ProjectRequest struct {
-	ItemId           int    `json:"itemId"`
-	Id               int    `db:"id" json:"-"`
-	Name             string `db:"name" json:"name" binding:"regexp=^[a-z][a-z0-9_]*$,min=2,max=20"`
-	Description      string `db:"description" json:"description"`
-	AccountId        string `db:"account_id" json:"-"`
-	Tag              string `db:"tag" json:"tag"`
-	DefaultUserGroup string `json:"default_user_group"`
-	Type             string `db:"type" json:"type" binding:"oneof='' 'web_application' 'landing_page' 'ecommerce' 'website'"`
-	Theme            string `db:"theme" json:"theme"`
-	HasDatabase      bool   `json:"hasDatabase"`
+	ItemId                 int                        `json:"itemId"`
+	Name                   string                     `db:"name" json:"name" binding:"regexp=^[a-z][a-z0-9_]*$,min=2,max=20"`
+	Description            string                     `db:"description" json:"description"`
+	Tag                    string                     `db:"tag" json:"tag"`
+	DefaultUserGroup       string                     `json:"default_user_group"`
+	Type                   string                     `db:"type" json:"type" binding:"oneof='' 'web_application' 'landing_page' 'ecommerce' 'website' 'ai_website'"`
+	AIWebsiteConfiguration AIWebsiteConfigurationType `db:"ai_website_configuration" json:"ai_website_configuration" binding:"dive"`
+	Theme                  string                     `db:"theme" json:"theme"`
+	HasDatabase            bool                       `json:"hasDatabase"`
+}
+
+type AIWebsiteConfigurationType struct {
+	BusinessName    string          `json:"business_name"`
+	BusinessType    string          `json:"business_type"`
+	BusinessSubType string          `json:"business_sub_type"`
+	ContactInfo     ContactInfoType `json:"contact_info" binding:"dive"`
+	LogoUrl         string          `json:"logo_url"`
+	Description     string          `json:"description"`
+}
+
+type ContactInfoType struct {
+	Email         string `json:"email"`
+	PhoneNumber   string `json:"phone_number"`
+	Country       string `json:"country"`
+	State         string `json:"state"`
+	City          string `json:"city"`
+	Address       string `json:"address"`
+	FacebookLink  string `json:"facebook_link"`
+	InstagramLink string `json:"instagram_link"`
+	LinkedInLink  string `json:"linkedin_link"`
+	XLink         string `json:"x_link"`
+}
+
+// AIWebsiteConfigurationValidator defines a custom validator
+type AIWebsiteConfigurationValidator struct {
+	validator *validator.Validate
+}
+
+// Validate validates the content field to ensure it contains a string and a number
+func (cv *AIWebsiteConfigurationValidator) Validate(obj interface{}) error {
+	if err := cv.validator.Struct(obj); err != nil {
+		return err
+	}
+
+	// Custom validation for the "content" field
+	configuration := reflect.ValueOf(obj).Elem().FieldByName("AIWebsiteConfiguration")
+	logrus.Info(configuration)
+	if configuration.IsValid() && configuration.Kind() == reflect.Struct {
+		BusinessName := configuration.FieldByName("BusinessName").Interface()
+		BusinessType := configuration.FieldByName("BusinessType").Interface()
+		BusinessSubType := configuration.FieldByName("BusinessSubType").Interface()
+
+		if _, ok := BusinessName.(string); !ok || BusinessName == "" {
+			return fmt.Errorf("ai_website_configuration.business_name must be a non-empty string")
+		}
+
+		if _, ok := BusinessType.(string); !ok || BusinessType == "" {
+			return fmt.Errorf("ai_website_configuration.business_type must be a non-empty string")
+		}
+
+		if _, ok := BusinessSubType.(string); !ok {
+			return fmt.Errorf("ai_website_configuration.business_sub_type must be a string")
+		}
+	}
+
+	return nil
 }
