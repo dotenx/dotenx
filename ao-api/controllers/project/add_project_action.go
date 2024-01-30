@@ -134,7 +134,9 @@ type ContactInfoType struct {
 	Country       string `json:"country"`
 	State         string `json:"state"`
 	City          string `json:"city"`
-	Address       string `json:"address"`
+	Address1      string `json:"address1"`
+	Address2      string `json:"address2"`
+	Postcode      string `json:"postcode"`
 	FacebookLink  string `json:"facebook_link"`
 	InstagramLink string `json:"instagram_link"`
 	LinkedInLink  string `json:"linkedin_link"`
