@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import { ReactNode, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BuilderPage } from './pages/builder'
+import CreateAIWebsitePage from './pages/create-ai-website-page'
 import { EcommerceBuilder } from './pages/ecommerce-builder'
 import { ExtensionDetailsPage } from './pages/extension'
 import { ExtensionCreatePage } from './pages/extension-create'
@@ -70,6 +71,7 @@ function Router() {
 				<Route path="/extensions/:projectName" element={<ExtensionsPage />} />
 				<Route path="/projects/:projectName/:pageName" element={<BuilderPage />} />
 				<Route path="/projects/:projectName" element={<Navigate to="index" replace />} />
+				<Route path="/ai/create" element={<CreateAIWebsitePage />} />
 				<Route path="/*" element={<NotFoundPage />} />
 			</Routes>
 		</Layout>
