@@ -32,7 +32,7 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 		"source": ["aws.acm"],
 		"detail-type": ["ACM Certificate Available"],
 		"resources": [
-            "%s",
+            "%s"
         ],
 		"detail": {
 			"Action": "ISSUANCE"
