@@ -44,6 +44,9 @@ func (pc *ProjectController) HandleCertificateIssuance() gin.HandlerFunc {
 			return
 		}
 
+		// just for debugging
+		logrus.Info(dto)
+
 		if dto.Detail.Action == "ISSUANCE" {
 			err := pc.Service.HandleCertificateIssuance(dto.Resources)
 			if err != nil {

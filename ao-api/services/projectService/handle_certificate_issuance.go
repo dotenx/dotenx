@@ -56,8 +56,12 @@ func (ps *projectService) HandleCertificateIssuance(certificateArnList []string)
 			continue
 		}
 
-		// Update the CNAME record to now point to the CloudFront distribution we just created
-		err = utils.UpsertRoute53Record(projectDomain.ExternalDomain, distributionDomainName, projectDomain.HostedZoneId, "CNAME")
+		if projectDomain.PurchasedFromUs {
+			// Update the CNAME record to now point to the CloudFront distribution we just created
+			err = utils.UpsertRoute53Record(projectDomain.ExternalDomain, distributionDomainName, projectDomain.HostedZoneId, "CNAME")
+		} else {
+			err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, distributionDomainName, config.Configs.UiBuilder.HostedZoneId, "CNAME")
+		}
 		if err != nil {
 			logrus.Error(err.Error())
 			// we move forward for the next certificates because we don't want to lose the
