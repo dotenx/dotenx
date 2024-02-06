@@ -64,7 +64,6 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 		Name:         aws.String(ruleName),
 		EventPattern: aws.String(eventPattern),
 		State:        aws.String(cloudwatchevents.RuleStateEnabled),
-		RoleArn:      aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
 	}
 	_, err = eventBridgeClient.PutRule(createRuleInput)
 	if err != nil {
@@ -77,8 +76,9 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 		Rule: aws.String(ruleName),
 		Targets: []*cloudwatchevents.Target{
 			{
-				Id:  aws.String(utils.GetNewUuid()),
-				Arn: aws.String(targetArn),
+				Id:      aws.String(utils.GetNewUuid()),
+				Arn:     aws.String(targetArn),
+				RoleArn: aws.String(config.Configs.Secrets.EventRuleRoleArn),
 			},
 		},
 	}

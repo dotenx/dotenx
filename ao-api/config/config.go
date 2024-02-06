@@ -96,6 +96,7 @@ type (
 		ScheduledTriggersTargetArn   string `envconfig:"AOA_SCHEDULED_TRIGGERS_TARGET_ARN"`
 		DomainRegistrationTargetArn  string `envconfig:"AOA_EVENT_BRIDGE_DOMAIN_REGISTRATION_TARGET_ARN"`
 		CertificateIssuanceTargetArn string `envconfig:"AOA_EVENT_BRIDGE_CERTIFICATE_ISSUANCE_TARGET_ARN"`
+		EventRuleRoleArn             string `envconfig:"AOA_EVENT_BRIDGE_RULE_ROLE_ARN"`
 		OpenAiApiKey                 string `envconfig:"AOA_OPEN_AI_API_KEY"`
 	}
 
