@@ -14,18 +14,25 @@ import (
 
 func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId, projectTag, certificateArn string) (err error) {
 	// Create a new AWS session
-	awsRegion := config.Configs.Secrets.AwsRegion
-	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
-	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			Region:      &awsRegion,
-			Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
-		},
-	}))
+	// awsRegion := config.Configs.Secrets.AwsRegion
+	// accessKeyId := config.Configs.Secrets.AwsAccessKeyId
+	// secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
+	// sess := session.Must(session.NewSessionWithOptions(session.Options{
+	// 	Config: aws.Config{
+	// 		Region:      &awsRegion,
+	// 		Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
+	// 	},
+	// }))
 
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
 	// Create an EventBridge client
-	eventBridgeClient := cloudwatchevents.New(sess)
+	eventBridgeClient := cloudwatchevents.New(session.New(), cfg)
 
 	// Define the event pattern for certificate creation
 	eventPattern := fmt.Sprintf(`{
