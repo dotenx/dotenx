@@ -35,7 +35,7 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
             "%s"
         ],
 		"detail": {
-			"Action": "ISSUANCE"
+			"Action": ["ISSUANCE"]
 		}
 	}`, certificateArn)
 
