@@ -40,7 +40,7 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 	}`, certificateArn)
 
 	// Define the rule details
-	ruleName := fmt.Sprintf("dtx_certificate_issuance_%s_%s", accountId, projectTag)
+	ruleName := fmt.Sprintf("dtx_certificate_issuance_%s", projectTag)
 	targetArn := config.Configs.Secrets.CertificateIssuanceTargetArn
 
 	// Define the input transformer
