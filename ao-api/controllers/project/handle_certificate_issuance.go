@@ -37,32 +37,40 @@ type acmEventDetail struct {
 func (pc *ProjectController) HandleCertificateIssuance() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		var dto awsEventDto
-		if err := c.ShouldBindJSON(&dto); err != nil {
-			logrus.Error(err.Error())
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+		// var dto awsEventDto
+		// if err := c.ShouldBindJSON(&dto); err != nil {
+		// 	logrus.Error(err.Error())
+		// 	c.JSON(http.StatusBadRequest, gin.H{
+		// 		"error": err.Error(),
+		// 	})
+		// 	return
+		// }
+
+		/////////////////////// just for debugging ///////////////////////
+		var body map[string]interface{}
+		// Bind the JSON body to a map[string]interface{}
+		if err := c.ShouldBindJSON(&body); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
 			return
 		}
-
-		// just for debugging
+		fmt.Println(body)
 		var dtoMap map[string]interface{}
-		dtoBytes, _ := json.Marshal(dto)
+		dtoBytes, _ := json.Marshal(body)
 		json.Unmarshal(dtoBytes, &dtoMap)
 		logrus.Info(dtoMap)
 		fmt.Println(dtoMap)
+		/////////////////////// just for debugging ///////////////////////
 
-		if dto.Detail.Action == "ISSUANCE" {
-			err := pc.Service.HandleCertificateIssuance(dto.Resources)
-			if err != nil {
-				logrus.Error(err.Error())
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
-		}
+		// if dto.Detail.Action == "ISSUANCE" {
+		// 	err := pc.Service.HandleCertificateIssuance(dto.Resources)
+		// 	if err != nil {
+		// 		logrus.Error(err.Error())
+		// 		c.JSON(http.StatusInternalServerError, gin.H{
+		// 			"error": err.Error(),
+		// 		})
+		// 		return
+		// 	}
+		// }
 
 		c.Status(http.StatusOK)
 	}
