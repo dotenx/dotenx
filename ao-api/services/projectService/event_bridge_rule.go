@@ -69,9 +69,8 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 		Rule: aws.String(ruleName),
 		Targets: []*cloudwatchevents.Target{
 			{
-				Id:      aws.String(utils.GetNewUuid()),
-				Arn:     aws.String(targetArn),
-				RoleArn: aws.String(config.Configs.Secrets.EventSchedulerRoleArn),
+				Id:  aws.String(utils.GetNewUuid()),
+				Arn: aws.String(targetArn),
 			},
 		},
 	}
