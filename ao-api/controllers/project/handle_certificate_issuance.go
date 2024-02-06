@@ -1,6 +1,8 @@
 package project
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -45,7 +47,11 @@ func (pc *ProjectController) HandleCertificateIssuance() gin.HandlerFunc {
 		}
 
 		// just for debugging
-		logrus.Info(dto)
+		var dtoMap map[string]interface{}
+		dtoBytes, _ := json.Marshal(dto)
+		json.Unmarshal(dtoBytes, &dtoMap)
+		logrus.Info(dtoMap)
+		fmt.Println(dtoMap)
 
 		if dto.Detail.Action == "ISSUANCE" {
 			err := pc.Service.HandleCertificateIssuance(dto.Resources)

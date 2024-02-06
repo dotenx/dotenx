@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchevents"
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -77,7 +76,7 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 		Rule: aws.String(ruleName),
 		Targets: []*cloudwatchevents.Target{
 			{
-				Id:  aws.String(utils.GetNewUuid()),
+				Id:  aws.String("sns_topic"),
 				Arn: aws.String(targetArn),
 			},
 		},
