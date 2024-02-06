@@ -21,6 +21,7 @@ type ProjectStore interface {
 	GetProject(ctx context.Context, accountId string, projectName string) (models.Project, error)
 	GetProjectByTag(ctx context.Context, tag string) (models.Project, error)
 	GetProjectDomain(ctx context.Context, accountId, projectTag string) (models.ProjectDomain, error)
+	GetProjectDomainByCertificateArn(ctx context.Context, certificateArn string) (models.ProjectDomain, error)
 	UpsertProjectDomain(ctx context.Context, projectDomain models.ProjectDomain) error
 
 	// This function deletes the domain associated with the project

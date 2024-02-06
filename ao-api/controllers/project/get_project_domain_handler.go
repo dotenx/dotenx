@@ -14,6 +14,11 @@ func (pc *ProjectController) GetProjectDomain() gin.HandlerFunc {
 		projectTag := c.Param("project_tag")
 
 		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
+		// for some security reasons we can't give some sensitive data to users so
+		// we should make some fields empty
+		projectDomain.CdnArn = ""
+		projectDomain.CdnDomain = ""
+		projectDomain.TlsArn = ""
 		if err != nil {
 			if err.Error() == "project_domain not found" {
 				c.JSON(http.StatusNotFound, gin.H{"message": "entity not found"})

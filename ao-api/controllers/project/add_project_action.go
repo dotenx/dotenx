@@ -108,39 +108,15 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 }
 
 type ProjectRequest struct {
-	ItemId                 int                        `json:"itemId"`
-	Name                   string                     `db:"name" json:"name" binding:"regexp=^[a-z][a-z0-9_]*$,min=2,max=20"`
-	Description            string                     `db:"description" json:"description"`
-	Tag                    string                     `db:"tag" json:"tag"`
-	DefaultUserGroup       string                     `json:"default_user_group"`
-	Type                   string                     `db:"type" json:"type" binding:"oneof='' 'web_application' 'landing_page' 'ecommerce' 'website' 'ai_website'"`
-	AIWebsiteConfiguration AIWebsiteConfigurationType `db:"ai_website_configuration" json:"ai_website_configuration" binding:"dive"`
-	Theme                  string                     `db:"theme" json:"theme"`
-	HasDatabase            bool                       `json:"hasDatabase"`
-}
-
-type AIWebsiteConfigurationType struct {
-	BusinessName    string          `json:"business_name"`
-	BusinessType    string          `json:"business_type"`
-	BusinessSubType string          `json:"business_sub_type"`
-	ContactInfo     ContactInfoType `json:"contact_info" binding:"dive"`
-	LogoUrl         string          `json:"logo_url"`
-	Description     string          `json:"description"`
-}
-
-type ContactInfoType struct {
-	Email         string `json:"email"`
-	PhoneNumber   string `json:"phone_number"`
-	Country       string `json:"country"`
-	State         string `json:"state"`
-	City          string `json:"city"`
-	Address1      string `json:"address1"`
-	Address2      string `json:"address2"`
-	Postcode      string `json:"postcode"`
-	FacebookLink  string `json:"facebook_link"`
-	InstagramLink string `json:"instagram_link"`
-	LinkedInLink  string `json:"linkedin_link"`
-	XLink         string `json:"x_link"`
+	ItemId                 int                               `json:"itemId"`
+	Name                   string                            `db:"name" json:"name" binding:"regexp=^[a-z][a-z0-9_]*$,min=2,max=20"`
+	Description            string                            `db:"description" json:"description"`
+	Tag                    string                            `db:"tag" json:"tag"`
+	DefaultUserGroup       string                            `json:"default_user_group"`
+	Type                   string                            `db:"type" json:"type" binding:"oneof='' 'web_application' 'landing_page' 'ecommerce' 'website' 'ai_website'"`
+	AIWebsiteConfiguration models.AIWebsiteConfigurationType `db:"ai_website_configuration" json:"ai_website_configuration" binding:"dive"`
+	Theme                  string                            `db:"theme" json:"theme"`
+	HasDatabase            bool                              `json:"hasDatabase"`
 }
 
 // AIWebsiteConfigurationValidator defines a custom validator

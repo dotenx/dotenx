@@ -176,7 +176,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	uiComponentServi := uiComponentService.NewUIbuilderService(componentStort)
 	uiExtensionService := uiExtensionService.NewUIExtensionService(extensionStore)
 	uiFormService := uiFormService.NewUIFormService(formStore)
-	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, crudServices, uibuilderService, uiFormService, objectstoreService)
+	InternalService := internalService.NewInternalService(ProjectStore, DatabaseStore, RedisStore, ProjectService, crudServices, uibuilderService, uiFormService, objectstoreService)
 	predefinedService := predfinedTaskService.NewPredefinedTaskService(marketplaceService)
 	gitIntegrationService := gitIntegrationService.NewGitIntegrationService(gitIntegrationStore)
 
@@ -210,6 +210,10 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	r.POST("/pipeline/check/trigger", TriggerController.HandleEventBridgeScheduler())
 	// this route used by event bridge scheduler for triggering pipelines that have one or more trigger with 'Schedule' type
 	r.POST("/pipeline/check/trigger/scheduled", TriggerController.HandleScheduledTriggers())
+	// this route used by event bridge scheduler for checking domain registration status
+	r.POST("/project/event/bridge/scheduler/domain", projectController.HandleDomainRegistration())
+	// this route used by event bridge when certificate of one or more domain have been issued
+	r.POST("/project/event/bridge/events/certificate", projectController.HandleCertificateIssuance())
 
 	// user management router (without any authentication)
 	r.POST("/user/management/project/:tag/register", userManagementController.Register())
@@ -277,6 +281,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	internal.POST("/domain/list", middlewares.InternalMiddleware(), InternalController.ListDomains)
 	internal.POST("/file_storage/usage", middlewares.InternalMiddleware(), InternalController.GetFileStorageUsage)
 	internal.POST("/user/plan/change", middlewares.InternalMiddleware(), InternalController.ProcessUpdatingPlan())
+	internal.POST("/user/domain/purchase", middlewares.InternalMiddleware(), InternalController.HandleDomainPurchase())
 
 	// tasks router
 	tasks.GET("", predefinedController.GetTasks)

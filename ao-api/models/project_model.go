@@ -15,6 +15,34 @@ type Project struct {
 	HasDatabase            bool            `db:"has_database" json:"hasDatabase"`
 }
 
+type AIWebsiteConfigurationType struct {
+	BusinessName    string          `json:"business_name"`
+	BusinessType    string          `json:"business_type"`
+	BusinessSubType string          `json:"business_sub_type"`
+	ContactInfo     ContactInfoType `json:"contact_info" binding:"dive"`
+	LogoUrl         string          `json:"logo_url"`
+	Description     string          `json:"description"`
+}
+
+type ContactInfoType struct {
+	FirstName     string `json:"first_name"`
+	LastName      string `json:"last_name"`
+	AuIdNumber    string `json:"au_id_number"`
+	AuIdType      string `json:"au_id_type" binding:"oneof='' 'ABN' 'ACN' 'TM'"`
+	Email         string `json:"email"`
+	PhoneNumber   string `json:"phone_number"`
+	Country       string `json:"country" binding:"oneof='AU'"`
+	State         string `json:"state" binding:"oneof='ACT' 'NSW' 'NT' 'QLD' 'SA' 'TAS' 'VIC' 'WA'"`
+	City          string `json:"city"`
+	Address1      string `json:"address1"`
+	Address2      string `json:"address2"`
+	Postcode      string `json:"postcode"`
+	FacebookLink  string `json:"facebook_link"`
+	InstagramLink string `json:"instagram_link"`
+	LinkedInLink  string `json:"linkedin_link"`
+	XLink         string `json:"x_link"`
+}
+
 // TODO: Add UI Pages
 type ProjectDto struct {
 	Name           string               `json:"name"`

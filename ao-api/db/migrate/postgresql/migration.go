@@ -367,6 +367,14 @@ var migrations = []struct {
 		name: "add-ai-website-configuration-field-to-projects-table",
 		stmt: addAIWebsiteConfigurationFieldToProjectsTable,
 	},
+	{
+		name: "add-purchased-from-us-field-to-project-domain-table",
+		stmt: addPurchasedFromUsFieldToProjectDomainTable,
+	},
+	{
+		name: "add-hosted-zone-id-field-to-project-domain-table",
+		stmt: addHostedZoneIdFieldToProjectDomainTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -1020,4 +1028,14 @@ saved_at                      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 var addAIWebsiteConfigurationFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS ai_website_configuration JSONB NOT NULL DEFAULT '{}'::jsonb;
+`
+
+var addPurchasedFromUsFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS purchased_from_us BOOLEAN DEFAULT FALSE;
+`
+
+var addHostedZoneIdFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS hosted_zone_id VARCHAR(64) DEFAULT '';
 `

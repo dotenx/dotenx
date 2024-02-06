@@ -1,6 +1,7 @@
 package project
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dotenx/dotenx/ao-api/models"
@@ -14,7 +15,8 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		projectTag := c.Param("project_tag")
 		dto := struct {
-			ExternalDomain string `json:"externalDomain"`
+			ExternalDomain  string `json:"externalDomain"`
+			PurchasedFromUs bool   `json:"purchased_from_us"`
 		}{}
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			logrus.Error(err.Error())
@@ -68,30 +70,78 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 		}
 
 		projectDomain = models.ProjectDomain{
-			AccountId:      accountId,
-			ProjectTag:     projectTag,
-			TlsArn:         "",
-			ExternalDomain: dto.ExternalDomain,
-			InternalDomain: internalDomain,
+			AccountId:       accountId,
+			ProjectTag:      projectTag,
+			TlsArn:          "",
+			ExternalDomain:  dto.ExternalDomain,
+			InternalDomain:  internalDomain,
+			PurchasedFromUs: dto.PurchasedFromUs,
 		}
-		certificateArn, validationRecordName, validationRecordValue, err := utils.RequestSubdomainCertificate(projectDomain.ExternalDomain)
 
-		if err != nil {
-			logrus.Error(err.Error())
-			c.AbortWithStatus(http.StatusInternalServerError)
+		if !dto.PurchasedFromUs {
+			certificateArn, validationRecordName, validationRecordValue, err := utils.RequestSubdomainCertificate(projectDomain.ExternalDomain)
+
+			if err != nil {
+				logrus.Error(err.Error())
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			projectDomain.TlsArn = certificateArn
+			projectDomain.TlsValidationRecordName = validationRecordName
+			projectDomain.TlsValidationRecordValue = validationRecordValue
+
+			err = pc.Service.UpsertProjectDomain(projectDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			err = pc.Service.CreateEventBridgeRuleForCertificateIssuance(accountId, projectTag, certificateArn)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			c.Status(http.StatusOK)
+			return
+		} else {
+			availability, err := pc.Service.CheckDomainAvailability(dto.ExternalDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			if availability != "AVAILABLE" {
+				err = utils.ErrDomainNotAvailable
+				if availability == "PENDING" {
+					err = errors.New("domain availability check is pending, please try again later")
+				}
+				logrus.Error(err.Error())
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
+			url, err := pc.Service.GetDomainPaymentLink(accountId, projectTag, dto.ExternalDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			err = pc.Service.UpsertProjectDomain(projectDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"payment_link": url,
+			})
 			return
 		}
-		projectDomain.TlsArn = certificateArn
-		projectDomain.TlsValidationRecordName = validationRecordName
-		projectDomain.TlsValidationRecordValue = validationRecordValue
 
-		err = pc.Service.UpsertProjectDomain(projectDomain)
-		if err != nil {
-			logrus.Error(err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.Status(http.StatusOK)
 	}
 }
