@@ -1,6 +1,7 @@
 package project
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -9,15 +10,15 @@ import (
 )
 
 type awsEventDto struct {
-	Message          awsEventMessage `json:"Message"`
-	MessageID        string          `json:"MessageId"`
-	Signature        string          `json:"Signature"`
-	SignatureVersion string          `json:"SignatureVersion"`
-	SigningCertURL   string          `json:"SigningCertURL"`
-	Timestamp        string          `json:"Timestamp"`
-	TopicArn         string          `json:"TopicArn"`
-	Type             string          `json:"Type"`
-	UnsubscribeURL   string          `json:"UnsubscribeURL"`
+	Message          string `json:"Message"`
+	MessageID        string `json:"MessageId"`
+	Signature        string `json:"Signature"`
+	SignatureVersion string `json:"SignatureVersion"`
+	SigningCertURL   string `json:"SigningCertURL"`
+	Timestamp        string `json:"Timestamp"`
+	TopicArn         string `json:"TopicArn"`
+	Type             string `json:"Type"`
+	UnsubscribeURL   string `json:"UnsubscribeURL"`
 }
 
 type awsEventMessage struct {
@@ -55,9 +56,18 @@ func (pc *ProjectController) HandleCertificateIssuance() gin.HandlerFunc {
 			})
 			return
 		}
+		var eventMessage awsEventMessage
+		err := json.Unmarshal([]byte(dto.Message), &eventMessage)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 
-		if dto.Message.Detail.Action == "ISSUANCE" {
-			err := pc.Service.HandleCertificateIssuance(dto.Message.Resources)
+		if eventMessage.Detail.Action == "ISSUANCE" {
+			err := pc.Service.HandleCertificateIssuance(eventMessage.Resources)
 			if err != nil {
 				logrus.Error(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{
