@@ -1,8 +1,6 @@
 package project
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -11,6 +9,18 @@ import (
 )
 
 type awsEventDto struct {
+	Message          awsEventMessage `json:"Message"`
+	MessageID        string          `json:"MessageId"`
+	Signature        string          `json:"Signature"`
+	SignatureVersion string          `json:"SignatureVersion"`
+	SigningCertURL   string          `json:"SigningCertURL"`
+	Timestamp        string          `json:"Timestamp"`
+	TopicArn         string          `json:"TopicArn"`
+	Type             string          `json:"Type"`
+	UnsubscribeURL   string          `json:"UnsubscribeURL"`
+}
+
+type awsEventMessage struct {
 	Version    string         `json:"version"`
 	Id         string         `json:"id"`
 	DetailType string         `json:"detail-type"`
@@ -37,40 +47,25 @@ type acmEventDetail struct {
 func (pc *ProjectController) HandleCertificateIssuance() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		// var dto awsEventDto
-		// if err := c.ShouldBindJSON(&dto); err != nil {
-		// 	logrus.Error(err.Error())
-		// 	c.JSON(http.StatusBadRequest, gin.H{
-		// 		"error": err.Error(),
-		// 	})
-		// 	return
-		// }
-
-		/////////////////////// just for debugging ///////////////////////
-		var body map[string]interface{}
-		// Bind the JSON body to a map[string]interface{}
-		if err := c.ShouldBindJSON(&body); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
+		var dto awsEventDto
+		if err := c.ShouldBindJSON(&dto); err != nil {
+			logrus.Error(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
-		fmt.Println(body)
-		var dtoMap map[string]interface{}
-		dtoBytes, _ := json.Marshal(body)
-		json.Unmarshal(dtoBytes, &dtoMap)
-		logrus.Info(dtoMap)
-		fmt.Println(dtoMap)
-		/////////////////////// just for debugging ///////////////////////
 
-		// if dto.Detail.Action == "ISSUANCE" {
-		// 	err := pc.Service.HandleCertificateIssuance(dto.Resources)
-		// 	if err != nil {
-		// 		logrus.Error(err.Error())
-		// 		c.JSON(http.StatusInternalServerError, gin.H{
-		// 			"error": err.Error(),
-		// 		})
-		// 		return
-		// 	}
-		// }
+		if dto.Message.Detail.Action == "ISSUANCE" {
+			err := pc.Service.HandleCertificateIssuance(dto.Message.Resources)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+		}
 
 		c.Status(http.StatusOK)
 	}
