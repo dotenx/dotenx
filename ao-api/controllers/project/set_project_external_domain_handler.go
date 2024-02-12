@@ -1,6 +1,7 @@
 package project
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -15,8 +16,9 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 		accountId, _ := utils.GetAccountId(c)
 		projectTag := c.Param("project_tag")
 		dto := struct {
-			ExternalDomain  string `json:"externalDomain"`
-			PurchasedFromUs bool   `json:"purchased_from_us"`
+			ExternalDomain  string                   `json:"external_domain"`
+			PurchasedFromUs bool                     `json:"purchased_from_us"`
+			ContactInfo     models.DomainContactInfo `json:"contact_info" binding:"dive"`
 		}{}
 		if err := c.ShouldBindJSON(&dto); err != nil {
 			logrus.Error(err.Error())
@@ -69,6 +71,7 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			internalDomain = GetRandomName(10)
 		}
 
+		contactInfo, _ := json.Marshal(dto.ContactInfo)
 		projectDomain = models.ProjectDomain{
 			AccountId:       accountId,
 			ProjectTag:      projectTag,
@@ -76,11 +79,20 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			ExternalDomain:  dto.ExternalDomain,
 			InternalDomain:  internalDomain,
 			PurchasedFromUs: dto.PurchasedFromUs,
+			ContactInfo:     contactInfo,
 		}
 
 		if !dto.PurchasedFromUs {
-			certificateArn, validationRecordName, validationRecordValue, err := utils.RequestSubdomainCertificate(projectDomain.ExternalDomain)
+			hostedZoneId, nsRecords, err := utils.CreateHostedZone(dto.ExternalDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			projectDomain.HostedZoneId = hostedZoneId
+			projectDomain.Nameservers = nsRecords
 
+			certificateArn, validationRecordName, validationRecordValue, err := utils.RequestSubdomainCertificate(projectDomain.ExternalDomain)
 			if err != nil {
 				logrus.Error(err.Error())
 				c.AbortWithStatus(http.StatusInternalServerError)
@@ -91,6 +103,14 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			projectDomain.TlsValidationRecordValue = validationRecordValue
 
 			err = pc.Service.UpsertProjectDomain(projectDomain)
+			if err != nil {
+				logrus.Error(err.Error())
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			// add tls validation records to related hosted zone
+			err = utils.UpsertRoute53Record(validationRecordName, validationRecordValue, projectDomain.HostedZoneId, "CNAME")
 			if err != nil {
 				logrus.Error(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

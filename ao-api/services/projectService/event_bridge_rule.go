@@ -12,17 +12,6 @@ import (
 )
 
 func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId, projectTag, certificateArn string) (err error) {
-	// Create a new AWS session
-	// awsRegion := config.Configs.Secrets.AwsRegion
-	// accessKeyId := config.Configs.Secrets.AwsAccessKeyId
-	// secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
-	// sess := session.Must(session.NewSessionWithOptions(session.Options{
-	// 	Config: aws.Config{
-	// 		Region:      &awsRegion,
-	// 		Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
-	// 	},
-	// }))
-
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
 	}

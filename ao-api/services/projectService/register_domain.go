@@ -32,6 +32,12 @@ func (ps *projectService) RegisterDomain(accountId, projectTag string) (awsOpera
 		logrus.Error(err.Error())
 		return
 	}
+	var domainContactInfo models.DomainContactInfo
+	err = json.Unmarshal(domainDetails.ContactInfo, &domainContactInfo)
+	if err != nil {
+		logrus.Error(err.Error())
+		return
+	}
 
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
@@ -56,12 +62,12 @@ func (ps *projectService) RegisterDomain(accountId, projectTag string) (awsOpera
 	contactParam := route53domains.ContactDetail{
 		AddressLine1: aws.String(aiWebsiteConfiguration.ContactInfo.Address1),
 		AddressLine2: aws.String(aiWebsiteConfiguration.ContactInfo.Address2),
-		City:         aws.String(aiWebsiteConfiguration.ContactInfo.City),
+		City:         aws.String(domainContactInfo.City),
 		ContactType:  aws.String("PERSON"),
 		CountryCode:  aws.String(aiWebsiteConfiguration.ContactInfo.Country),
 		Email:        aws.String(aiWebsiteConfiguration.ContactInfo.Email),
-		FirstName:    aws.String(aiWebsiteConfiguration.ContactInfo.FirstName),
-		LastName:     aws.String(aiWebsiteConfiguration.ContactInfo.LastName),
+		FirstName:    aws.String(domainContactInfo.FirstName),
+		LastName:     aws.String(domainContactInfo.LastName),
 		PhoneNumber:  aws.String(strings.Replace(aiWebsiteConfiguration.ContactInfo.PhoneNumber, " ", ".", 1)),
 		State:        aws.String(aiWebsiteConfiguration.ContactInfo.State),
 	}
@@ -71,11 +77,11 @@ func (ps *projectService) RegisterDomain(accountId, projectTag string) (awsOpera
 		contactParam.ExtraParams = []*route53domains.ExtraParam{
 			{
 				Name:  aws.String("AU_ID_NUMBER"),
-				Value: aws.String(aiWebsiteConfiguration.ContactInfo.AuIdNumber),
+				Value: aws.String(domainContactInfo.AuIdNumber),
 			},
 			{
 				Name:  aws.String("AU_ID_TYPE"),
-				Value: aws.String(aiWebsiteConfiguration.ContactInfo.AuIdType),
+				Value: aws.String(domainContactInfo.AuIdType),
 			},
 		}
 	}

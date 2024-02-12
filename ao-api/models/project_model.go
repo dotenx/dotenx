@@ -25,10 +25,6 @@ type AIWebsiteConfigurationType struct {
 }
 
 type ContactInfoType struct {
-	FirstName     string `json:"first_name"`
-	LastName      string `json:"last_name"`
-	AuIdNumber    string `json:"au_id_number"`
-	AuIdType      string `json:"au_id_type" binding:"oneof='' 'ABN' 'ACN' 'TM'"`
 	Email         string `json:"email"`
 	PhoneNumber   string `json:"phone_number"`
 	Country       string `json:"country" binding:"oneof='AU'"`

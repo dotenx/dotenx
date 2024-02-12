@@ -1,13 +1,8 @@
 package projectService
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -47,6 +42,7 @@ func (ps *projectService) HandleCertificateIssuance(certificateArnList []string)
 		projectDomain.CdnArn = distributionArn
 		projectDomain.CdnDomain = distributionDomainName
 		projectDomain.S3Bucket = bucketName
+		projectDomain.CertificateIssued = true
 
 		err = ps.UpsertProjectDomain(projectDomain)
 		if err != nil {
@@ -56,12 +52,8 @@ func (ps *projectService) HandleCertificateIssuance(certificateArnList []string)
 			continue
 		}
 
-		if projectDomain.PurchasedFromUs {
-			// Update the CNAME record to now point to the CloudFront distribution we just created
-			err = utils.UpsertRoute53Record(projectDomain.ExternalDomain, distributionDomainName, projectDomain.HostedZoneId, "CNAME")
-		} else {
-			err = utils.UpsertRoute53Record(projectDomain.InternalDomain+"."+config.Configs.UiBuilder.ParentAddress, distributionDomainName, config.Configs.UiBuilder.HostedZoneId, "CNAME")
-		}
+		// add the A (Alias) record to point to the CloudFront distribution we just created
+		err = utils.UpsertRoute53Record(projectDomain.ExternalDomain, distributionDomainName, projectDomain.HostedZoneId, "Alias")
 		if err != nil {
 			logrus.Error(err.Error())
 			// we move forward for the next certificates because we don't want to lose the
@@ -83,39 +75,39 @@ func (ps *projectService) HandleCertificateIssuance(certificateArnList []string)
 		}
 
 		// If external domain starts with 'www' we should add nginx config to redirect from root to www.{root} address
-		if strings.HasPrefix(projectDomain.ExternalDomain, "www") {
-			nginxDto := struct {
-				Domain string `json:"domain"`
-			}{
-				Domain: projectDomain.ExternalDomain,
-			}
-			jsonData, marshalingErr := json.Marshal(nginxDto)
-			if marshalingErr != nil {
-				logrus.Error(marshalingErr.Error())
-				// we move forward for the next certificates because we don't want to lose them
-				errOccurred = true
-				continue
-			}
-			requestBody := bytes.NewBuffer(jsonData)
-			httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
-			url := config.Configs.Endpoints.GoNginx + "/domain"
-			out, httpReqErr, statusCode, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, nil, time.Minute, true)
-			if httpReqErr != nil {
-				logrus.Error(httpReqErr.Error())
-				// we move forward for the next certificates because we don't want to lose them
-				errOccurred = true
-				continue
-			}
-			if statusCode != http.StatusOK && statusCode != http.StatusAccepted {
-				logrus.Println(string(out))
-				err = errors.New("not ok with status: " + strconv.Itoa(statusCode))
-				logrus.Error(err.Error())
-				// "error": "Please first add given A record to your DNS's records",
-				// we move forward for the next certificates because we don't want to lose them
-				errOccurred = true
-				continue
-			}
-		}
+		// if strings.HasPrefix(projectDomain.ExternalDomain, "www") {
+		// 	nginxDto := struct {
+		// 		Domain string `json:"domain"`
+		// 	}{
+		// 		Domain: projectDomain.ExternalDomain,
+		// 	}
+		// 	jsonData, marshalingErr := json.Marshal(nginxDto)
+		// 	if marshalingErr != nil {
+		// 		logrus.Error(marshalingErr.Error())
+		// 		// we move forward for the next certificates because we don't want to lose them
+		// 		errOccurred = true
+		// 		continue
+		// 	}
+		// 	requestBody := bytes.NewBuffer(jsonData)
+		// 	httpHelper := utils.NewHttpHelper(utils.NewHttpClient())
+		// 	url := config.Configs.Endpoints.GoNginx + "/domain"
+		// 	out, httpReqErr, statusCode, _ := httpHelper.HttpRequest(http.MethodPost, url, requestBody, nil, time.Minute, true)
+		// 	if httpReqErr != nil {
+		// 		logrus.Error(httpReqErr.Error())
+		// 		// we move forward for the next certificates because we don't want to lose them
+		// 		errOccurred = true
+		// 		continue
+		// 	}
+		// 	if statusCode != http.StatusOK && statusCode != http.StatusAccepted {
+		// 		logrus.Println(string(out))
+		// 		err = errors.New("not ok with status: " + strconv.Itoa(statusCode))
+		// 		logrus.Error(err.Error())
+		// 		// "error": "Please first add given A record to your DNS's records",
+		// 		// we move forward for the next certificates because we don't want to lose them
+		// 		errOccurred = true
+		// 		continue
+		// 	}
+		// }
 		if errOccurred {
 			errCerts = append(errCerts, certArn)
 		}
