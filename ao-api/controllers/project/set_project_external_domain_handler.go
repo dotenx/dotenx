@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -110,7 +111,7 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			}
 
 			// add tls validation records to related hosted zone
-			err = utils.UpsertRoute53Record(validationRecordName, validationRecordValue, projectDomain.HostedZoneId, "CNAME")
+			err = utils.UpsertRoute53Record(strings.TrimSuffix(validationRecordName, "."), validationRecordValue, projectDomain.HostedZoneId, "CNAME")
 			if err != nil {
 				logrus.Error(err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
