@@ -3,6 +3,7 @@ package projectService
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -84,6 +85,13 @@ func (ps *projectService) HandleDomainRegistration(accountId, projectTag, operat
 		newDomainDetails.TlsValidationRecordValue = validationRecordValue
 		newDomainDetails.HostedZoneId = hostedZoneId
 		err = ps.UpsertProjectDomain(newDomainDetails)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
+		// add tls validation records to related hosted zone
+		err = utils.UpsertRoute53Record(strings.TrimSuffix(validationRecordName, "."), validationRecordValue, hostedZoneId, "CNAME")
 		if err != nil {
 			logrus.Error(err.Error())
 			return err
