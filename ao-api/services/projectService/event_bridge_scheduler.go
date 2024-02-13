@@ -23,7 +23,7 @@ func (ps *projectService) CreateEventBridgeScheduleForDomainRegistration(account
 		},
 	}))
 
-	scheduleName := fmt.Sprintf("dtx_domain_registration_%s_%s", accountId, projectTag)
+	scheduleName := fmt.Sprintf("dtx_domain_registration_%s", projectTag)
 	payloadMap := map[string]interface{}{
 		"account_id":    accountId,
 		"project_tag":   projectTag,

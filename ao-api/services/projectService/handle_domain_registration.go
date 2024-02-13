@@ -77,6 +77,7 @@ func (ps *projectService) HandleDomainRegistration(accountId, projectTag, operat
 		for _, hz := range hostedZoneIds.HostedZones {
 			if *hz.Name == domainDetails.ExternalDomain+"." {
 				hostedZoneId = *hz.Id
+				hostedZoneId = strings.TrimPrefix(hostedZoneId, "/hostedzone/")
 				found = true
 			}
 		}
