@@ -9,19 +9,17 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	awsScheduler "github.com/aws/aws-sdk-go/service/scheduler"
 	"github.com/dotenx/dotenx/ao-api/config"
+	"github.com/sirupsen/logrus"
 )
 
 func (ps *projectService) CreateEventBridgeScheduleForDomainRegistration(accountId, projectTag, domainName, operationId string) (err error) {
-	// Create a new AWS session
-	awsRegion := config.Configs.Secrets.AwsRegion
-	accessKeyId := config.Configs.Secrets.AwsAccessKeyId
-	secretAccessKey := config.Configs.Secrets.AwsSecretAccessKey
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			Region:      &awsRegion,
-			Credentials: credentials.NewStaticCredentials(accessKeyId, secretAccessKey, string("")),
-		},
-	}))
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
 
 	scheduleName := fmt.Sprintf("dtx_domain_registration_%s", projectTag)
 	payloadMap := map[string]interface{}{
@@ -35,7 +33,7 @@ func (ps *projectService) CreateEventBridgeScheduleForDomainRegistration(account
 	payloadBytes, _ := json.Marshal(payloadMap)
 	payloadStr := string(payloadBytes)
 	// Create a new EventBridge client
-	client := awsScheduler.New(sess)
+	client := awsScheduler.New(session.New(), cfg)
 
 	_, err = client.CreateSchedule(&awsScheduler.CreateScheduleInput{
 		Name:               aws.String(scheduleName),
@@ -50,5 +48,9 @@ func (ps *projectService) CreateEventBridgeScheduleForDomainRegistration(account
 			Input:   aws.String(payloadStr),
 		},
 	})
+	if err != nil {
+		logrus.Error("Error creating EventBridge schedule:", err.Error())
+		return
+	}
 	return
 }
