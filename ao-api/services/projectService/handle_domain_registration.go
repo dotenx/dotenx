@@ -46,6 +46,13 @@ func (ps *projectService) HandleDomainRegistration(accountId, projectTag, operat
 		OperationId: aws.String(operationId),
 	})
 
+	domainDetails.RegistrationStatus = *operationDetail.Status
+	err = ps.UpsertProjectDomain(domainDetails)
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
+
 	// If the status is one of the following, it means the process is still waiting so
 	// we need to check it in subsequent calls to the HandleDomainRegistration function.
 	if *operationDetail.Status == "SUBMITTED" || *operationDetail.Status == "IN_PROGRESS" {
