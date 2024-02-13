@@ -50,8 +50,8 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 				})
 				return
 			}
-			if aiWebsiteConfiguration.ContactInfo.Address1 == "" || aiWebsiteConfiguration.ContactInfo.Country == "" || aiWebsiteConfiguration.ContactInfo.Email == "" || aiWebsiteConfiguration.ContactInfo.PhoneNumber == "" || aiWebsiteConfiguration.ContactInfo.State == "" {
-				err = errors.New("these fields are required: address1, country, email, phone_number, state")
+			if aiWebsiteConfiguration.ContactInfo.Address1 == "" || aiWebsiteConfiguration.ContactInfo.Country == "" || aiWebsiteConfiguration.ContactInfo.Email == "" || aiWebsiteConfiguration.ContactInfo.PhoneNumber == "" || aiWebsiteConfiguration.ContactInfo.State == "" || aiWebsiteConfiguration.ContactInfo.Postcode == "" {
+				err = errors.New("these fields are required: address1, country, email, phone_number, state, postcode")
 				c.JSON(http.StatusBadRequest, gin.H{
 					"error": err.Error(),
 				})

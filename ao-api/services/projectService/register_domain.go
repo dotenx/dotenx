@@ -70,6 +70,7 @@ func (ps *projectService) RegisterDomain(accountId, projectTag string) (awsOpera
 		LastName:     aws.String(domainContactInfo.LastName),
 		PhoneNumber:  aws.String(strings.Replace(aiWebsiteConfiguration.ContactInfo.PhoneNumber, " ", ".", 1)),
 		State:        aws.String(aiWebsiteConfiguration.ContactInfo.State),
+		ZipCode:      aws.String(aiWebsiteConfiguration.ContactInfo.Postcode),
 	}
 	if strings.HasSuffix(domainDetails.ExternalDomain, ".com.au") {
 		contactParam.ContactType = aws.String("COMPANY")
@@ -99,6 +100,7 @@ func (ps *projectService) RegisterDomain(accountId, projectTag string) (awsOpera
 
 	output, err := svc.RegisterDomain(&registerDomainParam)
 	if err != nil {
+		logrus.Error(err.Error())
 		return
 	}
 
