@@ -36,8 +36,38 @@ func (pc *ProjectController) SetProjectExternalDomain() gin.HandlerFunc {
 			return
 		}
 
-		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
+		var aiWebsiteConfiguration models.AIWebsiteConfigurationType
+		err = json.Unmarshal(project.AIWebsiteConfiguration, &aiWebsiteConfiguration)
+		if err != nil {
+			logrus.Error(err.Error())
+			return
+		}
+		if dto.PurchasedFromUs {
+			if dto.ContactInfo.FirstName == "" || dto.ContactInfo.LastName == "" || dto.ContactInfo.City == "" {
+				err = errors.New("these fields are required: first_name, last_name, city")
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			if aiWebsiteConfiguration.ContactInfo.Address1 == "" || aiWebsiteConfiguration.ContactInfo.Country == "" || aiWebsiteConfiguration.ContactInfo.Email == "" || aiWebsiteConfiguration.ContactInfo.PhoneNumber == "" || aiWebsiteConfiguration.ContactInfo.State == "" {
+				err = errors.New("these fields are required: address1, country, email, phone_number, state")
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			// just for .com.au domains
+			if strings.HasSuffix(dto.ExternalDomain, ".com.au") && (dto.ContactInfo.AuIdType == "" || dto.ContactInfo.AuIdNumber == "") {
+				err = errors.New("these fields are required for .com.au domains: au_id_type, au_id_number")
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+		}
 
+		projectDomain, err := pc.Service.GetProjectDomain(accountId, projectTag)
 		if err != nil && err.Error() != "project_domain not found" {
 			logrus.Error(err.Error())
 			c.Status(http.StatusInternalServerError)
