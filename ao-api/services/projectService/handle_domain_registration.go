@@ -45,7 +45,12 @@ func (ps *projectService) HandleDomainRegistration(accountId, projectTag, operat
 	operationDetail, err := domainSvc.GetOperationDetail(&route53domains.GetOperationDetailInput{
 		OperationId: aws.String(operationId),
 	})
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
 
+	logrus.Info("aws operation status: ", *operationDetail.Status)
 	domainDetails.RegistrationStatus = *operationDetail.Status
 	err = ps.UpsertProjectDomain(domainDetails)
 	if err != nil {

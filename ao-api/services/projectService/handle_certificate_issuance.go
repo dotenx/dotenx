@@ -151,6 +151,10 @@ func createCloudFrontDistribution(domain, certificateArn, projectTag string) (di
 			Comment:         aws.String("Origin Access Identity for " + domain),
 		},
 	})
+	if err != nil {
+		logrus.Error(err.Error())
+		return
+	}
 
 	fmt.Println("origin access identity: ", *originAccessIdentity.CloudFrontOriginAccessIdentity.Id)
 
