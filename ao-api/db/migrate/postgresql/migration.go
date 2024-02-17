@@ -367,6 +367,30 @@ var migrations = []struct {
 		name: "add-ai-website-configuration-field-to-projects-table",
 		stmt: addAIWebsiteConfigurationFieldToProjectsTable,
 	},
+	{
+		name: "add-purchased-from-us-field-to-project-domain-table",
+		stmt: addPurchasedFromUsFieldToProjectDomainTable,
+	},
+	{
+		name: "add-hosted-zone-id-field-to-project-domain-table",
+		stmt: addHostedZoneIdFieldToProjectDomainTable,
+	},
+	{
+		name: "add-registration-status-field-to-project-domain-table",
+		stmt: addRegistrationStatusFieldToProjectDomainTable,
+	},
+	{
+		name: "add-certificate-issued-field-to-project-domain-table",
+		stmt: addCertificateIssuedFieldToProjectDomainTable,
+	},
+	{
+		name: "add-nameservers-field-to-project-domain-table",
+		stmt: addNameserversFieldToProjectDomainTable,
+	},
+	{
+		name: "add-contact-info-field-to-project-domain-table",
+		stmt: addContactInfoFieldToProjectDomainTable,
+	},
 }
 
 // Migrate performs the database migration. If the migration fails
@@ -1020,4 +1044,34 @@ saved_at                      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 var addAIWebsiteConfigurationFieldToProjectsTable = `
 ALTER TABLE projects
 ADD COLUMN IF NOT EXISTS ai_website_configuration JSONB NOT NULL DEFAULT '{}'::jsonb;
+`
+
+var addPurchasedFromUsFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS purchased_from_us BOOLEAN DEFAULT FALSE;
+`
+
+var addHostedZoneIdFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS hosted_zone_id VARCHAR(64) DEFAULT '';
+`
+
+var addRegistrationStatusFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS registration_status VARCHAR(64) DEFAULT '';
+`
+
+var addCertificateIssuedFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS certificate_issued BOOLEAN DEFAULT FALSE;
+`
+
+var addNameserversFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS nameservers VARCHAR[] DEFAULT array[]::VARCHAR[];
+`
+
+var addContactInfoFieldToProjectDomainTable = `
+ALTER TABLE project_domain
+ADD COLUMN IF NOT EXISTS contact_info JSONB NOT NULL DEFAULT '{}'::jsonb;
 `

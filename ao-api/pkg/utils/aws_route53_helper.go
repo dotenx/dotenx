@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -64,4 +66,36 @@ func UpsertRoute53Record(domain, value, hostedZoneId, recordType string) error {
 		logrus.Error(err.Error())
 	}
 	return err
+}
+
+func CreateHostedZone(externalDomain string) (hostedZoneId string, nsRecords []string, err error) {
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
+	svc := route53.New(session.New(), cfg)
+
+	input := &route53.CreateHostedZoneInput{
+		Name:            aws.String(externalDomain),
+		CallerReference: aws.String(externalDomain),
+		HostedZoneConfig: &route53.HostedZoneConfig{
+			Comment: aws.String("Created by dotenx"),
+		},
+	}
+	result, err := svc.CreateHostedZone(input)
+	if err != nil {
+		return "", nil, err
+	}
+	nsRecords = make([]string, 0)
+	for _, record := range result.DelegationSet.NameServers {
+		nsRecords = append(nsRecords, *record)
+	}
+
+	hostedZoneId = strings.TrimLeft(*result.HostedZone.Id, "/hostedzone/")
+
+	return hostedZoneId, nsRecords, nil
 }

@@ -35,6 +35,7 @@ var ErrDatabaseJobIsPending = errors.New("datbase job status is pending")
 var ErrIntegrationNotFound = errors.New("integration not found")
 var ErrPageNotFound = errors.New("page not found")
 var ErrUserNotFound = errors.New("user not found")
+var ErrDomainNotAvailable = errors.New("domain isn't available")
 
 // constants
 const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)

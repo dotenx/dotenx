@@ -6,6 +6,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
+	"github.com/dotenx/dotenx/ao-api/services/projectService"
 	"github.com/dotenx/dotenx/ao-api/services/uiFormService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
@@ -13,11 +14,12 @@ import (
 	"github.com/dotenx/dotenx/ao-api/stores/redisStore"
 )
 
-func NewInternalService(projStore projectStore.ProjectStore, databaseStore databaseStore.DatabaseStore, redisStore redisStore.RedisStore, pipelineService crudService.CrudService, ubService uibuilderService.UIbuilderService, ufService uiFormService.UIFormService, objService objectstoreService.ObjectstoreService) InternalService {
+func NewInternalService(projStore projectStore.ProjectStore, databaseStore databaseStore.DatabaseStore, redisStore redisStore.RedisStore, projectService projectService.ProjectService, pipelineService crudService.CrudService, ubService uibuilderService.UIbuilderService, ufService uiFormService.UIFormService, objService objectstoreService.ObjectstoreService) InternalService {
 	return &internalService{
 		ProjectStore:       projStore,
 		DatabaseStore:      databaseStore,
 		RedisStore:         redisStore,
+		ProjectService:     projectService,
 		PipelineService:    pipelineService,
 		UIbuilderService:   ubService,
 		UIFormService:      ufService,
@@ -34,12 +36,14 @@ type InternalService interface {
 	ProcessUpdatingPlan(accountId string) (err error)
 	GetNumberOfUiFormResponse(accountId, projectType, from, to string) (int64, error)
 	GetFileStorageUsage(accountId, projectType string) (int64, error)
+	HandleDomainPurchase(accountId, projectTag, domainName string) (err error)
 }
 
 type internalService struct {
 	ProjectStore       projectStore.ProjectStore
 	DatabaseStore      databaseStore.DatabaseStore
 	RedisStore         redisStore.RedisStore
+	ProjectService     projectService.ProjectService
 	PipelineService    crudService.CrudService
 	UIbuilderService   uibuilderService.UIbuilderService
 	UIFormService      uiFormService.UIFormService

@@ -36,6 +36,13 @@ type ProjectService interface {
 	DeleteProject(accountId, projectTag string, ubService uibuilderService.UIbuilderService, dbService databaseService.DatabaseService, cService crudService.CrudService) error
 
 	CheckCreateDomainAccess(accountId, projectType string) (bool, error)
+	CheckDomainAvailability(domain string) (string, error)
+	GetDomainPaymentLink(accountId, projectTag, domain string) (paymentLink string, err error)
+	RegisterDomain(accountId, projectTag string) (awsOperationId string, err error)
+	CreateEventBridgeScheduleForDomainRegistration(accountId, projectTag, domainName, operationId string) (err error)
+	CreateEventBridgeRuleForCertificateIssuance(accountId, projectTag, certificateArn string) (err error)
+	HandleDomainRegistration(accountId, projectTag, operationId, scheduleName string) (err error)
+	HandleCertificateIssuance(certificateArnList []string) (err error)
 }
 
 type projectService struct {
