@@ -380,7 +380,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
 	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyCertificate())
 	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices, IntegrationService))
-	public.POST("/project/upload/logo", projectController.UploadLogo())
+	project.POST("/upload/logo", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.UploadLogo())
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
