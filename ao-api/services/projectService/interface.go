@@ -7,6 +7,7 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
+	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
 	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
@@ -23,7 +24,7 @@ func NewProjectService(store projectStore.ProjectStore, tpUserStore userManageme
 
 type ProjectService interface {
 	AddProject(accountId string, project models.Project, uiBuilderService uibuilderService.UIbuilderService) error
-	InitialSetup(project models.Project) error
+	InitialSetup(project models.Project, objService objectstoreService.ObjectstoreService) error
 	ListProjects(accountId string) ([]models.Project, error)
 	GetProject(accountId string, projectName string) (models.Project, error)
 	GetProjectByTag(tag string) (models.Project, error)

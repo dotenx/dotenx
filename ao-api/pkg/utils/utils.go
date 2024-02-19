@@ -37,6 +37,8 @@ var ErrPageNotFound = errors.New("page not found")
 var ErrUserNotFound = errors.New("user not found")
 var ErrDomainNotAvailable = errors.New("domain isn't available")
 
+var ErrProjectNotFound = errors.New("project not found")
+
 // constants
 const ForgetPasswordUseCase = "forget_password" // for security_code table (user management)
 var GitIntegrationProviders = []string{"github", "gitlab", "bitbucket"}

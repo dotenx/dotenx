@@ -1,21 +1,116 @@
 package projectService
 
 import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/db/dbutil"
 	"github.com/dotenx/dotenx/ao-api/models"
+	"github.com/dotenx/dotenx/ao-api/pkg/utils"
+	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	"github.com/dotenx/dotenx/ao-api/stores/databaseStore"
+	"github.com/dotenx/dotenx/ao-api/stores/projectStore"
 	"github.com/sirupsen/logrus"
 )
 
-func (ps *projectService) InitialSetup(project models.Project) (err error) {
+func (ps *projectService) InitialSetup(project models.Project, objService objectstoreService.ObjectstoreService) (err error) {
 	switch project.Type {
 	case "ecommerce":
 		err = EcommerceInitialSetup(project, ps.DbStore)
+	case "ai_website":
+		err = AiWebsiteInitialSetup(project, objService, ps.Store)
 	}
 	if err != nil {
 		logrus.Error(err)
 		return err
 	}
+	return
+}
+
+func AiWebsiteInitialSetup(project models.Project, objService objectstoreService.ObjectstoreService, projectStore projectStore.ProjectStore) (err error) {
+	var aiWebsiteConfiguration models.AIWebsiteConfigurationType
+	err = json.Unmarshal(project.AIWebsiteConfiguration, &aiWebsiteConfiguration)
+	if err != nil {
+		logrus.Error(err.Error())
+		return
+	}
+
+	if aiWebsiteConfiguration.LogoKey != "" {
+
+		// Check if the user has enough space
+		hasAccess, err := objService.CheckUploadFileAccess(project.AccountId, project.Type)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		if !hasAccess {
+			err = utils.ErrReachLimitationOfPlan
+			logrus.Error(err.Error())
+			return err
+		}
+
+		logoSize, err := utils.GetObjectSize(config.Configs.Upload.S3LogoBucket, aiWebsiteConfiguration.LogoKey)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
+		url := fmt.Sprintf("%s/%s", config.Configs.Upload.PublicUrl, aiWebsiteConfiguration.LogoKey)
+		// Prepare the url of the file based on its access
+		toAdd := models.Objectstore{
+			Key:         aiWebsiteConfiguration.LogoKey,
+			AccountId:   project.AccountId,
+			TpAccountId: "",
+			ProjectTag:  project.Tag,
+			Size:        int(logoSize),
+			// Access:      access,
+			Url:         url,
+			IsPublic:    true,
+			UserGroups:  []string{},
+			DisplayName: aiWebsiteConfiguration.LogoKey,
+		}
+
+		err = objService.AddObject(toAdd)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
+		// Move logo file from temporary bucket to main upload bucket
+		err = utils.CopyFile(config.Configs.Upload.S3LogoBucket, config.Configs.Upload.S3Bucket, aiWebsiteConfiguration.LogoKey, aiWebsiteConfiguration.LogoKey)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		err = utils.DeleteObject(config.Configs.Upload.S3LogoBucket, aiWebsiteConfiguration.LogoKey)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
+		// Make logo file public on the main upload bucket
+		err = utils.MakeObjectPublic(config.Configs.Upload.S3Bucket, aiWebsiteConfiguration.LogoKey)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+
+		// Update AI website configuration
+		aiWebsiteConfiguration.LogoUrl = url
+		aiWebsiteConfigurationBytes, err := json.Marshal(aiWebsiteConfiguration)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+		project.AIWebsiteConfiguration = aiWebsiteConfigurationBytes
+		err = projectStore.UpdateProjectByTag(noContext, project.Tag, project)
+		if err != nil {
+			logrus.Error(err.Error())
+			return err
+		}
+	}
+
 	return
 }
 

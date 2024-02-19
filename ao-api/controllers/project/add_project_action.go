@@ -12,13 +12,14 @@ import (
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/marketplaceService"
+	"github.com/dotenx/dotenx/ao-api/services/objectstoreService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 )
 
-func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceService, dbService databaseService.DatabaseService, cService crudService.CrudService, uiBuilderService uibuilderService.UIbuilderService) gin.HandlerFunc {
+func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceService, dbService databaseService.DatabaseService, cService crudService.CrudService, uiBuilderService uibuilderService.UIbuilderService, objService objectstoreService.ObjectstoreService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var dto ProjectRequest
 		accountId, _ := utils.GetAccountId(c)
@@ -94,7 +95,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		}
 		project.AccountId = accountId
 
-		err = pc.Service.InitialSetup(project)
+		err = pc.Service.InitialSetup(project, objService)
 		if err != nil {
 			logrus.Error(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
