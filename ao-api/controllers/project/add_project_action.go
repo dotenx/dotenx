@@ -115,7 +115,7 @@ type ProjectRequest struct {
 	Tag                    string                            `db:"tag" json:"tag"`
 	DefaultUserGroup       string                            `json:"default_user_group"`
 	Type                   string                            `db:"type" json:"type" binding:"oneof='' 'web_application' 'landing_page' 'ecommerce' 'website' 'ai_website'"`
-	AIWebsiteConfiguration models.AIWebsiteConfigurationType `db:"ai_website_configuration" json:"ai_website_configuration" binding:"dive"`
+	AIWebsiteConfiguration models.AIWebsiteConfigurationType `db:"ai_website_configuration" json:"ai_website_configuration,omitempty" binding:"dive"`
 	Theme                  string                            `db:"theme" json:"theme"`
 	HasDatabase            bool                              `json:"hasDatabase"`
 }
