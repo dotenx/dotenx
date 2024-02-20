@@ -103,6 +103,7 @@ type (
 	Upload struct {
 		S3Bucket         string `envconfig:"AOA_UPLOAD_S3_BUCKET"`
 		S3ProjectsBucket string `envconfig:"AOA_UPLOAD_S3_PROJECTS_BUCKET"`
+		S3LogoBucket     string `envconfig:"AOA_UPLOAD_S3_LOGO_BUCKET"`
 		S3Region         string `envconfig:"AOA_UPLOAD_S3_REGION"`
 		QuotaKB          string `envconfig:"AOA_UPLOAD_QUOTA_KB"`
 		PublicUrl        string `envconfig:"AOA_UPLOAD_PUBLIC_URL"`

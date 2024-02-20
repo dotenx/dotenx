@@ -21,6 +21,7 @@ type AIWebsiteConfigurationType struct {
 	BusinessSubType string          `json:"business_sub_type"`
 	ContactInfo     ContactInfoType `json:"contact_info" binding:"dive"`
 	LogoUrl         string          `json:"logo_url"`
+	LogoKey         string          `json:"logo_key"`
 	Description     string          `json:"description"`
 }
 

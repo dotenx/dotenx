@@ -372,7 +372,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	// TokenTypeMiddleware limits access to endpoints and can get a slice of string as parameter and this strings should be 'user' or 'tp' or both of them
 	// 'user' used for DoTenX users and 'tp' used for third-party users
 	// project router
-	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
+	project.POST("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.AddProject(marketplaceService, DatabaseService, crudServices, uibuilderService, objectstoreService))
 	project.DELETE("/tag/:project_tag", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.DeleteProject(marketplaceService, DatabaseService, crudServices, uibuilderService))
 	project.GET("", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ListProjects())
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
@@ -380,6 +380,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
 	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyCertificate())
 	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices, IntegrationService))
+	project.POST("/upload/logo", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.UploadLogo())
 
 	// database router
 	database.POST("/table", middlewares.TokenTypeMiddleware([]string{"user"}), databaseController.AddTable())
