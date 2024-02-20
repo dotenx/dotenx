@@ -3,6 +3,7 @@ package project
 import (
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/dotenx/dotenx/ao-api/config"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
@@ -52,8 +53,16 @@ func (pc *ProjectController) UploadLogo() gin.HandlerFunc {
 			return
 		}
 
+		presignUrl, err := utils.GetObjectURL(config.Configs.Upload.S3LogoBucket, fileName, 24*time.Hour)
+		if err != nil {
+			logrus.Error(err.Error())
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"key": fileName,
+			"url": presignUrl,
 		})
 	}
 }
