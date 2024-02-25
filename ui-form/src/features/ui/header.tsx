@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import useScreenSize from "../hooks/use-screen-size"
 
 export function Header({
 	title,
@@ -19,7 +20,6 @@ export function Header({
 	headerLink?: string
 }) {
 	const navigate = useNavigate()
-	const smallScreen = window.innerHeight < 750
 	const [searchParams] = useSearchParams()
 	searchParams.get("tab")
 	const urlActiveTab = tabs?.includes(searchParams.get("tab") ?? "")
@@ -29,6 +29,8 @@ export function Header({
 		if (urlActiveTab) onTabChange?.(urlActiveTab)
 	}, [onTabChange, urlActiveTab])
 
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 	return (
 		<div className={` w-full bg-white shadow-sm`}>
 			<div className="flex items-center justify-between pl-10 p-6">
@@ -38,7 +40,7 @@ export function Header({
 							if (headerLink) navigate(headerLink)
 						}}
 						className={`${headerLink && "cursor-pointer"} ${
-							smallScreen ? "text-3xl" : "text-4xl"
+							smallScreen ? "text-2xl" : "text-4xl"
 						} `}
 					>
 						{title}
@@ -69,9 +71,11 @@ export function Header({
 	)
 }
 export function ContentWrapper({ children }: { children: ReactNode }) {
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 	return (
 		<div className={` w-full pb-10`}>
-			<div className="px-10 pt-5">{children}</div>
+			<div className={`${smallScreen ? "px-5" : "px-10"} pt-5`}>{children}</div>
 		</div>
 	)
 }

@@ -6,6 +6,7 @@ import { DomainsPage } from "../../pages/domains"
 import { HomePage } from "../../pages/home"
 import { NotFoundPage } from "../../pages/not-found"
 import { Layout } from "../ui/layout"
+import useScreenSize from "../hooks/use-screen-size"
 
 type Routes = {
 	path: string
@@ -37,16 +38,10 @@ const routes: Routes = [
 
 export function Routes() {
 	const { width } = useViewportSize()
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 
 	if (width === 0) return null
-
-	if (width < 600)
-		return (
-			<div className="w-full px-20 pt-10 text-center ">
-				Dotenx is not designed for mobile use, please come back with a bigger screen.
-			</div>
-		)
-
 	return (
 		<ReactRoutes>
 			{routes.map((route) => (
@@ -56,7 +51,7 @@ export function Routes() {
 					element={
 						<Layout
 							withoutSidebar={route.withoutSidebar}
-							compactSidebar={route.compactSidebar}
+							compactSidebar={smallScreen || route.compactSidebar}
 						>
 							{route.element}
 						</Layout>

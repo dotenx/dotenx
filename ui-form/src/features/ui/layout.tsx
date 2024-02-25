@@ -1,6 +1,7 @@
 import { AppShell, Navbar } from "@mantine/core"
 import { ReactNode } from "react"
 import { Sidebar } from "../app/sidebar"
+import useScreenSize from "../hooks/use-screen-size"
 
 interface LayoutProps {
 	children: ReactNode
@@ -9,7 +10,8 @@ interface LayoutProps {
 }
 
 export function Layout({ children, compactSidebar = false, withoutSidebar }: LayoutProps) {
-	const smallScreen = window.innerHeight < 750
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 
 	return (
 		<div className="text-slate-900 font-body selection:bg-rose-400 selection:text-slate-900">
@@ -24,7 +26,7 @@ export function Layout({ children, compactSidebar = false, withoutSidebar }: Lay
 										? 250
 										: 300
 									: smallScreen
-									? 70
+									? 50
 									: 80,
 							}}
 						>

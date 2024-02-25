@@ -12,6 +12,7 @@ import { IoCheckmark, IoCopy } from "react-icons/io5"
 import { z } from "zod"
 import { Loader } from "../features/ui/loader"
 import { useClipboard } from "@mantine/hooks"
+import useScreenSize from "../features/hooks/use-screen-size"
 
 export function DomainsPage() {
 	const { projectTag, projectName, isLoading: projectTagisLoading } = useGetProjectTag()
@@ -40,7 +41,8 @@ export function DomainsPage() {
 		videoUrl: "https://www.youtube.com/embed/_5GRK17KUrg",
 		tutorialUrl: "https://docs.dotenx.com/docs/builder_studio/domains",
 	}
-
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 	return (
 		<div>
 			<Header title={"Domains"} />
@@ -50,7 +52,7 @@ export function DomainsPage() {
 				getDomainsQuery.isRefetching ? (
 					<Loader className="mx-auto mt-16" />
 				) : (
-					<div className="mx-auto py-10  px-20 max-w-4xl ">
+					<div className={`${smallScreen ? " " : "px-20 max-w-4xl"} mx-auto py-10    `}>
 						{isDomainAdded ? (
 							<Domain
 								projectTag={projectTag}

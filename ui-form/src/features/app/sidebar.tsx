@@ -7,6 +7,7 @@ import { TbChevronLeft, TbExternalLink, TbFiles } from "react-icons/tb"
 import { NavLink as RouterNavLink, useParams } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 import { useGetProjectTag } from "../hooks/use-project-query"
+import useScreenSize from "../hooks/use-screen-size"
 
 const ANIMATION_DURATION = 0.15
 
@@ -31,7 +32,9 @@ export function Sidebar({ closable }: { closable: boolean }) {
 	const { ref, hovered } = useHover()
 	const closed = closable && !hovered
 	const opened = !closable || (closable && hovered)
-	const smallScreen = window.innerHeight < 750
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
+	console.log(closed, "closedclosedclosed")
 	return (
 		<motion.aside
 			ref={ref}
@@ -39,10 +42,14 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				"flex flex-col h-screen bg-rose-600 overflow-hidden",
 				closable && "fixed z-50"
 			)}
-			animate={{ width: opened ? (smallScreen ? 250 : 300) : smallScreen ? 70 : 80 }}
+			animate={{ width: opened ? (smallScreen ? 250 : 300) : smallScreen ? 50 : 80 }}
 			transition={{ type: "tween", duration: ANIMATION_DURATION }}
 		>
-			<div className="px-4 pt-16 grow">
+			<div
+				className={`${
+					smallScreen && !opened ? "px-2 flex flex-col items-center " : "px-4 "
+				} pt-16 grow`}
+			>
 				<img
 					src={logo}
 					className={`${smallScreen ? "w-10	 h-10	" : "w-12 h-12"} rounded-md`}
@@ -53,16 +60,16 @@ export function Sidebar({ closable }: { closable: boolean }) {
 				<div className="mt-10">
 					<NavLinks closed={closed} links={sidebar.navLinks} />
 				</div>
-				<UiBuilderLink />
+				<UiBuilderLink closed={closed} />
 			</div>
 		</motion.aside>
 	)
 }
 
-function UiBuilderLink() {
+function UiBuilderLink({ closed }: { closed: boolean }) {
 	const { projectName } = useParams()
-	const smallScreen = window.innerHeight < 750
-
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 	return (
 		<div className="px-5 pt-5 mt-10 -mx-5 border-t">
 			<a
@@ -74,17 +81,13 @@ function UiBuilderLink() {
 					smallScreen ? "text-sm h-9" : "text-xl h-14 "
 				)}
 			>
-				<div
-					className={`shrink-0 transition-all ${smallScreen ? "text-sm " : "text-lg "} ${
-						!closed && "hidden"
-					} mt-1 `}
-				>
+				<div className={`shrink-0 transition-all text-lg  ${!closed && "hidden"} mt-1 `}>
 					UI
 				</div>
 				<FadeIn visible={!closed}>
 					<div className="flex items-center p-1">
 						<TbExternalLink className="w-4 h-4 mr-4" />
-						<span className={` shrink-0 ${smallScreen ? "text-sm " : "text-lg "}`}>
+						<span className={` shrink-0 ${smallScreen ? "text-sm " : "text-xl "}`}>
 							UI builder
 						</span>
 					</div>
@@ -118,7 +121,8 @@ const useSidebar = () => {
 
 function BackToProjects({ closed }: { closed: boolean }) {
 	const { projectName = "" } = useParams()
-	const smallScreen = window.innerHeight < 750
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 
 	return (
 		<a
@@ -138,7 +142,8 @@ function BackToProjects({ closed }: { closed: boolean }) {
 }
 
 function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) {
-	const smallScreen = window.innerHeight < 750
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 
 	return (
 		<nav className={`${smallScreen ? "space-y-4" : "space-y-5"}`}>
@@ -150,7 +155,8 @@ function NavLinks({ links, closed }: { links: NavLinkData[]; closed: boolean }) 
 }
 
 function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
-	const smallScreen = window.innerHeight < 750
+	const screenSize = useScreenSize()
+	const smallScreen = screenSize !== "desktop"
 
 	return (
 		<RouterNavLink
@@ -159,11 +165,11 @@ function NavLink({ link, closed }: { link: NavLinkData; closed: boolean }) {
 				clsx(
 					"flex items-center gap-4 px-2 w-full  transition text-white rounded-md whitespace-nowrap ",
 					isActive ? "bg-rose-700" : "hover:bg-rose-500 ",
-					smallScreen ? "text-sm h-9  " : "text-xl h-14 "
+					smallScreen ? "text-xl h-9  " : "text-xl h-14 "
 				)
 			}
 		>
-			<span className={`${closed ? "w-full pl-1" : "pl-2 "} transition-all duration-300  `}>
+			<span className={`${closed ? " " : "pl-2 "} transition-all duration-300  `}>
 				{link.icon}
 			</span>
 			<FadeIn visible={!closed}>
