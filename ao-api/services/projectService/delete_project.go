@@ -105,7 +105,7 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 		// Delete the project domain record
 		err = ps.DeleteProjectDomain(models.ProjectDomain{
 			ProjectTag: projectTag,
-		})
+		}, ubService)
 
 		if err != nil && err.Error() != "entity not found" {
 			logrus.Error(err.Error())

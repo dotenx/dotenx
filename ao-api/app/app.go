@@ -378,6 +378,7 @@ func routing(db *db.DB, queue queueService.QueueService, redisClient *redis.Clie
 	project.GET("/:name", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProject())
 	project.GET("/tag/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.GetProjectDomain()) // had to use tag in the path to avoid conflict with :name
 	project.POST("/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.SetProjectExternalDomain())
+	project.DELETE("/tag/:project_tag/domain", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.DeleteProjectDomain(uibuilderService))
 	project.POST("/:project_tag/domain/verify", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.VerifyCertificate())
 	project.POST("/setup/dependent", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.ProjectDependentSetup(DatabaseService, crudServices, IntegrationService))
 	project.POST("/upload/logo", middlewares.TokenTypeMiddleware([]string{"user"}), projectController.UploadLogo())

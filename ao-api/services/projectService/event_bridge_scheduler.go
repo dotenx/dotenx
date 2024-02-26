@@ -54,3 +54,35 @@ func (ps *projectService) CreateEventBridgeScheduleForDomainRegistration(account
 	}
 	return
 }
+
+func EventBridgeScheduleExists(scheduleName string) (bool, error) {
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
+	// Create a new EventBridge client
+	client := awsScheduler.New(session.New(), cfg)
+
+	// Prepare input parameters for GetSchedule.
+	params := &awsScheduler.GetScheduleInput{
+		Name: &scheduleName,
+	}
+
+	// Check if the schedule exists.
+	_, err := client.GetSchedule(params)
+	if err != nil {
+		// If the schedule does not exist, check if the error is due to "ResourceNotFoundException".
+		// If it is, it means the schedule does not exist.
+		if _, ok := err.(*awsScheduler.ResourceNotFoundException); ok {
+			return false, nil
+		}
+		// If it's another error, return it.
+		return false, err
+	}
+
+	// If the schedule exists, return true.
+	return true, nil
+}
