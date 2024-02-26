@@ -194,7 +194,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			}
 			newDistConfig := dist.Distribution.DistributionConfig
 			newDistConfig.Enabled = aws.Bool(false)
-			_, err = cfSvc.UpdateDistribution(&cloudfront.UpdateDistributionInput{
+			newDist, err := cfSvc.UpdateDistribution(&cloudfront.UpdateDistributionInput{
 				DistributionConfig: newDistConfig,
 				Id:                 aws.String(distributionId),
 				IfMatch:            dist.ETag,
@@ -205,15 +205,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			}
 
 			done := make(chan bool)
-			go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *dist.ETag, done)
-			// _, err = cfSvc.DeleteDistribution(&cloudfront.DeleteDistributionInput{
-			// 	Id:      aws.String(distributionId),
-			// 	IfMatch: dist.ETag,
-			// })
-			// if err != nil {
-			// 	logrus.Error("Error occurred while deleting cloud front distribution:", err.Error())
-			// 	return err
-			// }
+			go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *newDist.ETag, done)
 
 			// just for debugging
 			logrus.Info("line 194")
@@ -241,13 +233,6 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			acmSvc := acm.New(session.New(), cfg)
 			done := make(chan bool)
 			go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
-			// _, err = acmSvc.DeleteCertificate(&acm.DeleteCertificateInput{
-			// 	CertificateArn: aws.String(projectDomain.TlsArn),
-			// })
-			// if err != nil {
-			// 	logrus.Error("Error occurred while deleting certificate:", err.Error())
-			// 	return err
-			// }
 
 			// just for debugging
 			logrus.Info("line 226")
@@ -294,7 +279,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 
 func tryToDeleteCertificate(acmService *acm.ACM, certificateArn string, done chan bool) {
 
-	ticker := time.NewTicker(5 * time.Minute)
+	ticker := time.NewTicker(3 * time.Minute)
 	defer ticker.Stop()
 	endTime := time.Now().Add(30 * time.Minute)
 
@@ -323,7 +308,7 @@ func tryToDeleteCertificate(acmService *acm.ACM, certificateArn string, done cha
 
 func tryToDeleteCloudFrontDistribution(cfService *cloudfront.CloudFront, distributionId, ETag string, done chan bool) {
 
-	ticker := time.NewTicker(5 * time.Minute)
+	ticker := time.NewTicker(3 * time.Minute)
 	defer ticker.Stop()
 	endTime := time.Now().Add(30 * time.Minute)
 
