@@ -192,14 +192,28 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 				logrus.Error("Error occurred while getting cloud front distribution:", err.Error())
 				return err
 			}
-			_, err = cfSvc.DeleteDistribution(&cloudfront.DeleteDistributionInput{
-				Id:      aws.String(distributionId),
-				IfMatch: dist.ETag,
+			newDistConfig := dist.Distribution.DistributionConfig
+			newDistConfig.Enabled = aws.Bool(false)
+			_, err = cfSvc.UpdateDistribution(&cloudfront.UpdateDistributionInput{
+				DistributionConfig: newDistConfig,
+				Id:                 aws.String(distributionId),
+				IfMatch:            dist.ETag,
 			})
 			if err != nil {
-				logrus.Error("Error occurred while deleting cloud front distribution:", err.Error())
+				logrus.Error("Error occurred while disabling cloud front distribution:", err.Error())
 				return err
 			}
+
+			done := make(chan bool)
+			go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *dist.ETag, done)
+			// _, err = cfSvc.DeleteDistribution(&cloudfront.DeleteDistributionInput{
+			// 	Id:      aws.String(distributionId),
+			// 	IfMatch: dist.ETag,
+			// })
+			// if err != nil {
+			// 	logrus.Error("Error occurred while deleting cloud front distribution:", err.Error())
+			// 	return err
+			// }
 
 			// just for debugging
 			logrus.Info("line 194")
@@ -274,4 +288,34 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 	}
 
 	return ps.Store.DeleteProjectDomain(context.Background(), projectDomain)
+}
+
+func tryToDeleteCloudFrontDistribution(cfService *cloudfront.CloudFront, distributionId, ETag string, done chan bool) {
+
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+	endTime := time.Now().Add(30 * time.Minute)
+
+	for {
+		select {
+		case <-ticker.C:
+			_, err := cfService.DeleteDistribution(&cloudfront.DeleteDistributionInput{
+				Id:      aws.String(distributionId),
+				IfMatch: aws.String(ETag),
+			})
+			if err != nil {
+				logrus.Error("Error occurred while deleting cloud front distribution:", err.Error())
+			} else {
+				logrus.Printf("Cloud Front Distribution with this id was deleted: %s", distributionId)
+				done <- true
+				return
+			}
+
+			if time.Now().After(endTime) {
+				done <- true
+				return
+			}
+		}
+	}
+
 }
