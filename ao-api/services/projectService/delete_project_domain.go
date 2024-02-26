@@ -239,13 +239,15 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 
 			// Delete certificate
 			acmSvc := acm.New(session.New(), cfg)
-			_, err = acmSvc.DeleteCertificate(&acm.DeleteCertificateInput{
-				CertificateArn: aws.String(projectDomain.TlsArn),
-			})
-			if err != nil {
-				logrus.Error("Error occurred while deleting certificate:", err.Error())
-				return err
-			}
+			done := make(chan bool)
+			go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
+			// _, err = acmSvc.DeleteCertificate(&acm.DeleteCertificateInput{
+			// 	CertificateArn: aws.String(projectDomain.TlsArn),
+			// })
+			// if err != nil {
+			// 	logrus.Error("Error occurred while deleting certificate:", err.Error())
+			// 	return err
+			// }
 
 			// just for debugging
 			logrus.Info("line 226")
@@ -288,6 +290,35 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 	}
 
 	return ps.Store.DeleteProjectDomain(context.Background(), projectDomain)
+}
+
+func tryToDeleteCertificate(acmService *acm.ACM, certificateArn string, done chan bool) {
+
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+	endTime := time.Now().Add(30 * time.Minute)
+
+	for {
+		select {
+		case <-ticker.C:
+			_, err := acmService.DeleteCertificate(&acm.DeleteCertificateInput{
+				CertificateArn: aws.String(certificateArn),
+			})
+			if err != nil {
+				logrus.Error("Error occurred while deleting certificate:", err.Error())
+			} else {
+				logrus.Printf("certificate with this arn was deleted: %s", certificateArn)
+				done <- true
+				return
+			}
+
+			if time.Now().After(endTime) {
+				done <- true
+				return
+			}
+		}
+	}
+
 }
 
 func tryToDeleteCloudFrontDistribution(cfService *cloudfront.CloudFront, distributionId, ETag string, done chan bool) {
