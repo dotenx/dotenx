@@ -155,6 +155,14 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 
 			// Delete event bridge rule
 			eventBridgeSvc := cloudwatchevents.New(session.New(), cfg)
+			_, err = eventBridgeSvc.RemoveTargets(&cloudwatchevents.RemoveTargetsInput{
+				Ids:  []*string{aws.String("sns_topic")},
+				Rule: aws.String(ruleName),
+			})
+			if err != nil {
+				logrus.Error("Error occurred while removing event bridge rule target(s):", err.Error())
+				return err
+			}
 			_, err = eventBridgeSvc.DeleteRule(&cloudwatchevents.DeleteRuleInput{
 				Name: aws.String(ruleName),
 			})
