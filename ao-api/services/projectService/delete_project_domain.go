@@ -194,7 +194,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			}
 			newDistConfig := dist.Distribution.DistributionConfig
 			newDistConfig.Enabled = aws.Bool(false)
-			newDist, err := cfSvc.UpdateDistribution(&cloudfront.UpdateDistributionInput{
+			_, err = cfSvc.UpdateDistribution(&cloudfront.UpdateDistributionInput{
 				DistributionConfig: newDistConfig,
 				Id:                 aws.String(distributionId),
 				IfMatch:            dist.ETag,
@@ -204,8 +204,9 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 				return err
 			}
 
-			done := make(chan bool)
-			go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *newDist.ETag, done)
+			// At this time, we cannot be sure whether the CloudFront distribution can be successfully removed, so we must remove it manually
+			// done := make(chan bool)
+			// go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *newDist.ETag, done)
 
 			// just for debugging
 			logrus.Info("line 194")
@@ -230,9 +231,10 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			logrus.Info("line 213")
 
 			// Delete certificate
-			acmSvc := acm.New(session.New(), cfg)
-			done := make(chan bool)
-			go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
+			// At this time, we cannot be sure whether the certificate can be successfully removed, so we must remove it manually
+			// acmSvc := acm.New(session.New(), cfg)
+			// done := make(chan bool)
+			// go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
 
 			// just for debugging
 			logrus.Info("line 226")
