@@ -83,7 +83,7 @@ func CreateHostedZone(externalDomain string) (hostedZoneId string, nsRecords []s
 
 	input := &route53.CreateHostedZoneInput{
 		Name:            aws.String(externalDomain),
-		CallerReference: aws.String(externalDomain),
+		CallerReference: aws.String(externalDomain + "_" + GetNewUuid()[:16]),
 		HostedZoneConfig: &route53.HostedZoneConfig{
 			Comment: aws.String("Created by dotenx"),
 		},
