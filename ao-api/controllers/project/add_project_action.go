@@ -24,6 +24,7 @@ func (pc *ProjectController) AddProject(mService marketplaceService.MarketplaceS
 		var dto ProjectRequest
 		accountId, _ := utils.GetAccountId(c)
 		if err := c.ShouldBindJSON(&dto); err != nil {
+			logrus.Error(err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "name of project should contain just small letters, numbers and underscores also project type should be one of 'web_application', 'landing_page', 'ecommerce', 'website', 'ai_website'",
 			})
