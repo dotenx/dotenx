@@ -111,7 +111,8 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 				// Delete event bridge schedule
 				schedulerSvc := awsScheduler.New(session.New(), cfg)
 				_, err = schedulerSvc.DeleteSchedule(&awsScheduler.DeleteScheduleInput{
-					Name: aws.String(scheduleName),
+					ClientToken: aws.String(utils.GetNewUuid()),
+					Name:        aws.String(scheduleName),
 				})
 				if err != nil {
 					logrus.Error("Error occurred while deleting EventBridge schedule:", err.Error())
