@@ -49,14 +49,8 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 		return err
 	}
 
-	// just for debugging
-	logrus.Info("line 48")
-
 	if projectDomain.ExternalDomain != "" {
 		if projectDomain.PurchasedFromUs {
-
-			// just for debugging
-			logrus.Info("line 51")
 
 			scheduleName := fmt.Sprintf("dtx_domain_registration_%s", projectDomain.ProjectTag)
 			scheduleExist, err := EventBridgeScheduleExists(scheduleName)
@@ -65,9 +59,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 				return err
 			}
 			if scheduleExist {
-
-				// just for debugging
-				logrus.Info("line 62")
 
 				// send a request to dotenx-admin for canceling subscription
 				dto := BuyDomainDto{
@@ -110,9 +101,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 					return err
 				}
 
-				// just for debugging
-				logrus.Info("line 106")
-
 				// Delete event bridge schedule
 				schedulerSvc := awsScheduler.New(session.New(), cfg)
 				_, err = schedulerSvc.DeleteSchedule(&awsScheduler.DeleteScheduleInput{
@@ -124,14 +112,9 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 					return err
 				}
 
-				// just for debugging
-				logrus.Info("line 119")
 			}
 
 			if projectDomain.RegistrationStatus == "SUCCESSFUL" {
-
-				// just for debugging
-				logrus.Info("line 125")
 
 				// Disable domain auto-renew in aws route53domains
 				route53domainsSvc := route53domains.New(session.New(), cfg)
@@ -143,8 +126,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 					return err
 				}
 
-				// just for debugging
-				logrus.Info("line 138")
 			}
 		}
 
@@ -155,9 +136,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 			return err
 		}
 		if ruleExist {
-
-			// just for debugging
-			logrus.Info("line 151")
 
 			// Delete event bridge rule
 			eventBridgeSvc := cloudwatchevents.New(session.New(), cfg)
@@ -177,14 +155,9 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 				return err
 			}
 
-			// just for debugging
-			logrus.Info("line 164")
 		}
 
 		if projectDomain.CertificateIssued {
-
-			// just for debugging
-			logrus.Info("line 170")
 
 			// Disable cloud front distribution
 			cfSvc := cloudfront.New(session.New(), cfg)
@@ -214,9 +187,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 			// done := make(chan bool)
 			// go tryToDeleteCloudFrontDistribution(cfSvc, distributionId, *newDist.ETag, done)
 
-			// just for debugging
-			logrus.Info("line 194")
-
 			// Delete S3 Bucket
 			s3Svc := s3.New(session.New(), cfg)
 			_, err = s3Svc.DeleteBucket(&s3.DeleteBucketInput{
@@ -227,14 +197,9 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 				return err
 			}
 
-			// just for debugging
-			logrus.Info("line 207")
 		}
 
 		if projectDomain.TlsArn != "" {
-
-			// just for debugging
-			logrus.Info("line 213")
 
 			// Delete certificate
 			// At this time, we cannot be sure whether the certificate can be successfully removed (cloud front distribution uses it), so we must remove it manually
@@ -242,15 +207,10 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 			// done := make(chan bool)
 			// go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
 
-			// just for debugging
-			logrus.Info("line 226")
 		}
 
 		// if !projectDomain.PurchasedFromUs && projectDomain.HostedZoneId != "" {
 		if projectDomain.HostedZoneId != "" {
-
-			// just for debugging
-			logrus.Info("line 233")
 
 			// Delete all records from hosted zone to prepare itslef for deletion
 			err = utils.DeleteAllResourceRecordSets(projectDomain.HostedZoneId)
@@ -258,9 +218,6 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 				logrus.Error("Error occurred while deleting all route53 records:", err.Error())
 				return err
 			}
-
-			// just for debugging
-			logrus.Info("line 245")
 
 			// Delete hosted zone
 			route53Svc := route53.New(session.New(), cfg)
@@ -272,12 +229,7 @@ func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubSe
 				return err
 			}
 
-			// just for debugging
-			logrus.Info("line 258")
 		}
-
-		// just for debugging
-		logrus.Info("line 262")
 	}
 
 	return ps.Store.DeleteProjectDomain(context.Background(), projectDomain)
