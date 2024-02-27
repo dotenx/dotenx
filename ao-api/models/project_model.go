@@ -28,8 +28,8 @@ type AIWebsiteConfigurationType struct {
 type ContactInfoType struct {
 	Email         string `json:"email"`
 	PhoneNumber   string `json:"phone_number"`
-	Country       string `json:"country" binding:"oneof='AU'"`
-	State         string `json:"state" binding:"oneof='ACT' 'NSW' 'NT' 'QLD' 'SA' 'TAS' 'VIC' 'WA'"`
+	Country       string `json:"country" binding:"oneof='' 'AU'"`
+	State         string `json:"state" binding:"oneof='' 'ACT' 'NSW' 'NT' 'QLD' 'SA' 'TAS' 'VIC' 'WA'"`
 	City          string `json:"city"`
 	Address1      string `json:"address1"`
 	Address2      string `json:"address2"`
