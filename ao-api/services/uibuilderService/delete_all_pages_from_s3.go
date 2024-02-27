@@ -26,7 +26,15 @@ func (ps *uibuilderService) DeleteAllPagesFromS3(projectDomain models.ProjectDom
 		}
 		fileExtensions := []string{".html", ".css", ".js"}
 		for _, ext := range fileExtensions {
+			// delete published pages
 			fileName := prefix + pageName + ext
+			err = utils.DeleteObject(bucket, fileName)
+			if err != nil {
+				logrus.Error(err.Error())
+				return
+			}
+			// delete previewed pages
+			fileName = prefix + pageName + "-" + utils.GetMD5Hash(projectDomain.AccountId)[:6] + ext
 			err = utils.DeleteObject(bucket, fileName)
 			if err != nil {
 				logrus.Error(err.Error())
