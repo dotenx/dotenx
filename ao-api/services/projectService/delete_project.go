@@ -11,8 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/models"
-	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/crudService"
 	"github.com/dotenx/dotenx/ao-api/services/databaseService"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
@@ -49,8 +47,7 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 
 	// Get the project domain to understand if the UI pages are published and if yes, where
 
-	projectDomain, err := ps.GetProjectDomain(accountId, projectTag)
-
+	_, err := ps.GetProjectDomain(accountId, projectTag)
 	hasDomain := true
 	if err != nil {
 		if err.Error() == "project_domain not found" {
@@ -61,52 +58,8 @@ func (ps *projectService) DeleteProject(accountId, projectTag string, ubService 
 	}
 
 	if !config.Configs.App.RunLocally && hasDomain {
-		// If the project is published with custom domain, delete CloudFront, Route53 Hosted Zone, S3 bucket and ACM certificate
-		if projectDomain.ExternalDomain != "" {
-			/*
-				1. Delete the CloudFront distribution if it exists
-				2. Delete the S3 bucket if it exists
-				3. Delete the certificate if it exists
-				4. Delete the hosted zone if it exists
-			*/
-			infra, err := ubService.GetUiInfrastructure(accountId, projectTag)
-			if err != nil && err.Error() != "not found" {
-				logrus.Error(err.Error())
-				return err
-			} else {
-				err := deleteCloudFrontDistribution(infra.CdnArn) // todo: use the distribution id
-				if err != nil {
-					logrus.Error(err.Error())
-					return err
-				}
-				err = deleteS3Bucket(infra.S3Bucket)
-				if err != nil {
-					logrus.Error(err.Error())
-					return err
-				}
-				err = deleteCertificate(projectDomain.TlsArn)
-				if err != nil {
-					logrus.Error(err.Error())
-					return err
-				}
-			}
-
-		} else if projectDomain.InternalDomain != "" {
-			// If the project is published with dotenx domain, delete the S3 folder
-			bucket := config.Configs.UiBuilder.S3Bucket
-			prefix := projectDomain.InternalDomain + ".web" + "/"
-			err := utils.DeleteS3Folder(bucket, prefix)
-			if err != nil {
-				logrus.Error(err.Error())
-				return err
-			}
-		}
-
-		// Delete the project domain record
-		err = ps.DeleteProjectDomain(models.ProjectDomain{
-			ProjectTag: projectTag,
-		}, ubService)
-
+		// Delete the project domain and its dependencies
+		err = ps.DeleteProjectDomain(accountId, projectTag, ubService)
 		if err != nil && err.Error() != "entity not found" {
 			logrus.Error(err.Error())
 			return err

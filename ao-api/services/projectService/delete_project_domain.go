@@ -22,13 +22,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	awsScheduler "github.com/aws/aws-sdk-go/service/scheduler"
 	"github.com/dotenx/dotenx/ao-api/config"
-	"github.com/dotenx/dotenx/ao-api/models"
 	"github.com/dotenx/dotenx/ao-api/pkg/utils"
 	"github.com/dotenx/dotenx/ao-api/services/uibuilderService"
 	"github.com/sirupsen/logrus"
 )
 
-func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain, ubService uibuilderService.UIbuilderService) error {
+func (ps *projectService) DeleteProjectDomain(accountId, projectTag string, ubService uibuilderService.UIbuilderService) error {
+	projectDomain, err := ps.GetProjectDomain(accountId, projectTag)
+	if err != nil {
+		logrus.Error(err.Error())
+		return err
+	}
+
 	// setup aws sdk config
 	cfg := &aws.Config{
 		Region: aws.String(config.Configs.Upload.S3Region),
@@ -38,7 +43,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
 	}
 
-	err := ubService.DeleteAllPagesFromS3(projectDomain)
+	err = ubService.DeleteAllPagesFromS3(projectDomain)
 	if err != nil {
 		logrus.Error(err.Error())
 		return err
@@ -181,7 +186,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			// just for debugging
 			logrus.Info("line 170")
 
-			// Delete cloud front distribution
+			// Disable cloud front distribution
 			cfSvc := cloudfront.New(session.New(), cfg)
 			distributionArn := projectDomain.CdnArn
 			parts := strings.Split(distributionArn, "/")
@@ -232,7 +237,7 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			logrus.Info("line 213")
 
 			// Delete certificate
-			// At this time, we cannot be sure whether the certificate can be successfully removed, so we must remove it manually
+			// At this time, we cannot be sure whether the certificate can be successfully removed (cloud front distribution uses it), so we must remove it manually
 			// acmSvc := acm.New(session.New(), cfg)
 			// done := make(chan bool)
 			// go tryToDeleteCertificate(acmSvc, projectDomain.TlsArn, done)
@@ -248,12 +253,10 @@ func (ps *projectService) DeleteProjectDomain(projectDomain models.ProjectDomain
 			logrus.Info("line 233")
 
 			// Delete all records from hosted zone to prepare itslef for deletion
-			if projectDomain.HostedZoneId != "" {
-				err = utils.DeleteAllResourceRecordSets(projectDomain.HostedZoneId)
-				if err != nil {
-					logrus.Error("Error occurred while deleting all route53 records:", err.Error())
-					return err
-				}
+			err = utils.DeleteAllResourceRecordSets(projectDomain.HostedZoneId)
+			if err != nil {
+				logrus.Error("Error occurred while deleting all route53 records:", err.Error())
+				return err
 			}
 
 			// just for debugging
