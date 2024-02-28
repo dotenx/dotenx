@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -81,7 +83,7 @@ func CreateHostedZone(externalDomain string) (hostedZoneId string, nsRecords []s
 
 	input := &route53.CreateHostedZoneInput{
 		Name:            aws.String(externalDomain),
-		CallerReference: aws.String(externalDomain),
+		CallerReference: aws.String(externalDomain + "_" + GetNewUuid()[:16]),
 		HostedZoneConfig: &route53.HostedZoneConfig{
 			Comment: aws.String("Created by dotenx"),
 		},
@@ -98,4 +100,58 @@ func CreateHostedZone(externalDomain string) (hostedZoneId string, nsRecords []s
 	hostedZoneId = strings.TrimLeft(*result.HostedZone.Id, "/hostedzone/")
 
 	return hostedZoneId, nsRecords, nil
+}
+
+func DeleteAllResourceRecordSets(hostedZoneID string) error {
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
+
+	// Create a Route 53 service client
+	svc := route53.New(session.New(), cfg)
+
+	// List all resource record sets in the specified hosted zone
+	resp, err := svc.ListResourceRecordSets(&route53.ListResourceRecordSetsInput{
+		HostedZoneId: aws.String(hostedZoneID),
+	})
+	if err != nil {
+		return err
+	}
+
+	numberOfNonDeletableRecords := 0
+	// Delete each resource record set
+	for _, rrSet := range resp.ResourceRecordSets {
+		_, err := svc.ChangeResourceRecordSets(&route53.ChangeResourceRecordSetsInput{
+			HostedZoneId: aws.String(hostedZoneID),
+			ChangeBatch: &route53.ChangeBatch{
+				Changes: []*route53.Change{
+					{
+						Action:            aws.String("DELETE"),
+						ResourceRecordSet: rrSet,
+					},
+				},
+			},
+		})
+		if err != nil {
+			// we should just continue because we can't delete deafult records
+			logrus.Error(err.Error())
+			numberOfNonDeletableRecords++
+			continue
+			// return err
+		}
+		fmt.Printf("Deleted resource record set: %s\n", *rrSet.Name)
+	}
+
+	if numberOfNonDeletableRecords > 2 {
+		err := errors.New("there are more than two non-deletable records in the hosted zone")
+		logrus.Error(err.Error())
+		return err
+	}
+
+	return nil
 }

@@ -115,6 +115,7 @@ func (ps *projectService) HandleCertificateIssuance(certificateArnList []string)
 	}
 	if len(errCerts) != 0 {
 		err = fmt.Errorf("error occurred on these certificates: %s", strings.Join(errCerts, ","))
+		return err
 	}
 	return
 }
@@ -160,7 +161,7 @@ func createCloudFrontDistribution(domain, certificateArn, projectTag string) (di
 
 	// Create a distribution with s3 origin and the origin access identity
 	distributionConfig := &cloudfront.DistributionConfig{
-		CallerReference: aws.String(projectTag),
+		CallerReference: aws.String(projectTag + "_" + utils.GetNewUuid()[:16]),
 		Comment:         aws.String(projectTag),
 		Enabled:         aws.Bool(true),
 		Origins: &cloudfront.Origins{

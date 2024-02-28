@@ -44,6 +44,7 @@ type ProjectService interface {
 	CreateEventBridgeRuleForCertificateIssuance(accountId, projectTag, certificateArn string) (err error)
 	HandleDomainRegistration(accountId, projectTag, operationId, scheduleName string) (err error)
 	HandleCertificateIssuance(certificateArnList []string) (err error)
+	DeleteProjectDomain(accountId, projectTag string, ubService uibuilderService.UIbuilderService) error
 }
 
 type projectService struct {

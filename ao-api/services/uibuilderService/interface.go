@@ -22,6 +22,7 @@ type UIbuilderService interface {
 	UpsertUiInfrastructure(uiInfra models.UiInfrastructure) error
 	// This function deletes all the pages of a project
 	DeleteAllPages(accountId, projectTag string) error
+	DeleteAllPagesFromS3(projectDomain models.ProjectDomain) (err error)
 
 	UpsertGlobalStates(globalState models.GlobalState) error
 	GetGlobalStates(accountId, projectName string) (models.GlobalState, error)

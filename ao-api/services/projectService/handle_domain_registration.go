@@ -60,6 +60,7 @@ func (ps *projectService) HandleDomainRegistration(accountId, projectTag, operat
 
 	// If the status is one of the following, it means the process is still waiting so
 	// we need to check it in subsequent calls to the HandleDomainRegistration function.
+	// possible values: SUBMITTED | IN_PROGRESS | ERROR | SUCCESSFUL | FAILED
 	if *operationDetail.Status == "SUBMITTED" || *operationDetail.Status == "IN_PROGRESS" {
 		return
 	}

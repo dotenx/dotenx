@@ -78,3 +78,35 @@ func (ps *projectService) CreateEventBridgeRuleForCertificateIssuance(accountId,
 
 	return
 }
+
+func EventBridgeRuleExists(ruleName string) (bool, error) {
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
+	// Create an EventBridge client
+	eventBridgeClient := cloudwatchevents.New(session.New(), cfg)
+
+	// Prepare input parameters for DescribeRule.
+	params := &cloudwatchevents.DescribeRuleInput{
+		Name: aws.String(ruleName),
+	}
+
+	// Check if the rule exists.
+	_, err := eventBridgeClient.DescribeRule(params)
+	if err != nil {
+		// If the rule does not exist, check if the error is due to "ResourceNotFoundException".
+		// If it is, it means the schedule does not exist.
+		if _, ok := err.(*cloudwatchevents.ResourceNotFoundException); ok {
+			return false, nil
+		}
+		// If it's another error, return it.
+		return false, err
+	}
+
+	// If the rule exists, return true.
+	return true, nil
+}

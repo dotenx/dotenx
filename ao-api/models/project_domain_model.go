@@ -13,7 +13,7 @@ type ProjectDomain struct {
 	S3Bucket                 string          `db:"s3_bucket" json:"s3_bucket"`
 	PurchasedFromUs          bool            `db:"purchased_from_us" json:"purchased_from_us"`
 	HostedZoneId             string          `db:"hosted_zone_id" json:"hosted_zone_id"`
-	RegistrationStatus       string          `db:"registration_status" json:"registration_status"`
+	RegistrationStatus       string          `db:"registration_status" json:"registration_status"` // possible values: SUBMITTED | IN_PROGRESS | ERROR | SUCCESSFUL | FAILED
 	CertificateIssued        bool            `db:"certificate_issued" json:"certificate_issued"`
 	Nameservers              []string        `db:"nameservers" json:"nameservers"`
 	ContactInfo              json.RawMessage `db:"contact_info" json:"contact_info"`

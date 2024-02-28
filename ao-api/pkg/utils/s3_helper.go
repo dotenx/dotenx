@@ -4,6 +4,7 @@ import (
 	bytespkg "bytes"
 	"fmt"
 	"mime/multipart"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -230,4 +231,32 @@ func MakeObjectPublic(bucketName, objectKey string) error {
 
 	logrus.Printf("Object '%s' in bucket '%s' is now public.\n", objectKey, bucketName)
 	return nil
+}
+
+func GetObjectURL(bucketName, objectKey string, duration time.Duration) (string, error) {
+	cfg := &aws.Config{
+		Region: aws.String(config.Configs.Upload.S3Region),
+	}
+	if config.Configs.App.RunLocally {
+		creds := credentials.NewStaticCredentials(config.Configs.Secrets.AwsAccessKeyId, config.Configs.Secrets.AwsSecretAccessKey, "")
+
+		cfg = aws.NewConfig().WithRegion(config.Configs.Upload.S3Region).WithCredentials(creds)
+	}
+
+	// Create S3 service client.
+	svc := s3.New(session.New(), cfg)
+
+	// Prepare input parameters for GetObjectRequest.
+	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(objectKey),
+	})
+
+	// Generate a pre-signed URL for the object with the specified expiration time.
+	url, err := req.Presign(duration)
+	if err != nil {
+		return "", err
+	}
+
+	return url, nil
 }
