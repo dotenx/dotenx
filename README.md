@@ -37,6 +37,9 @@ https://www.youtube.com/channel/UC4S1w3Go3IdQpEma1i4fw4g
 
 ## Run locally
 
+**Note:**
+We are presently working on enabling you to run the project locally, but it is not yet complete. As a result, you will be unable to utilize all the features of the platform that are currently running in the cloud.
+
 Step 1: Clone project -> ```git clone https://github.com/dotenx/dotenx```
 
 Step 2: Go to dotenx root directory -> ```cd dotenx```
