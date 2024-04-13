@@ -15,6 +15,7 @@ export const formAtom = atom<{
 	business_type: string
 	business_sub_type: string
 	logo_url: string
+	logo_key: string
 	description: string
 	contact_info: {
 		country: string
@@ -33,6 +34,7 @@ export const formAtom = atom<{
 	business_type: '',
 	business_sub_type: '',
 	logo_url: '',
+	logo_key: '',
 	description: '',
 	contact_info: {
 		country: 'Australia',

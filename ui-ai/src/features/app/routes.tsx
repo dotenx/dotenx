@@ -7,6 +7,8 @@ import { HomePage } from "../../pages/home"
 import { NotFoundPage } from "../../pages/not-found"
 import { Layout } from "../ui/layout"
 import useScreenSize from "../hooks/use-screen-size"
+import { RegisterDomain } from "../../pages/register-domain"
+import { PurchaseDomain } from "../../pages/purchase-domain"
 
 type Routes = {
 	path: string
@@ -20,14 +22,21 @@ const routes: Routes = [
 		path: "/:projectName/forms/:page",
 		element: <FormsPage />,
 	},
-
-	{
-		path: "/:projectName/domains",
-		element: <DomainsPage />,
-	},
 	{
 		path: "/:projectName/forms",
 		element: <HomePage />,
+	},
+	{
+		path: "/:projectName/domains/register",
+		element: <RegisterDomain />,
+	},
+	{
+		path: "/:projectName/domains/purchase",
+		element: <PurchaseDomain />,
+	},
+	{
+		path: "/:projectName/domains",
+		element: <DomainsPage />,
 	},
 	{
 		path: "/*",

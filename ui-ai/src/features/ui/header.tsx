@@ -49,7 +49,7 @@ export function Header({
 				</div>
 				<div className="flex gap-x-5">{children}</div>
 			</div>
-			<div className="flex pl-10 gap-x-10 ">
+			<div className={`${smallScreen ? "gap-x-4" : "gap-x-10"} flex pl-10  `}>
 				{tabs?.map((tab) => {
 					const active = tab === activeTab
 					return (
@@ -60,7 +60,7 @@ export function Header({
 								active
 									? "text-black border-b-4 border-b-rose-600 "
 									: "text-gray-400 border-b-4 border-transparent hover:border-gray-400"
-							} ${smallScreen ? "text-sm" : "text-lg"}`}
+							} ${smallScreen ? "text-xs" : "text-base"}`}
 						>
 							{tab}
 						</span>

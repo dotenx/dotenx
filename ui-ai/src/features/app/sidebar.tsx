@@ -9,7 +9,7 @@ import logo from "../../assets/images/logo.png"
 import { useGetProjectTag } from "../hooks/use-project-query"
 import useScreenSize from "../hooks/use-screen-size"
 
-const ANIMATION_DURATION = 0.15
+export const ANIMATION_DURATION = 0.15
 
 type SidebarData = {
 	navLinks: NavLinkData[]

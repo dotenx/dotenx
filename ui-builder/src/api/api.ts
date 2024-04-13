@@ -37,6 +37,8 @@ import {
 	SetGlobalStatesRequest,
 	UploadImageRequest,
 	UploadImageResponse,
+	UploadLogoRequest,
+	UploadLogoResponse,
 } from './types'
 
 export const API_URL = import.meta.env.VITE_API_URL
@@ -187,6 +189,13 @@ export const uploadImage = ({ projectTag, image }: UploadImageRequest) => {
 	formData.append('file', image)
 	formData.append('is_public', 'true')
 	return api.post<UploadImageResponse>(`/objectstore/project/${projectTag}/upload`, formData, {
+		headers: { 'Content-Type': 'multipart/form-data' },
+	})
+}
+export const uploadLogo = ({ image }: UploadLogoRequest) => {
+	const formData = new FormData()
+	formData.append('file', image)
+	return api.post<UploadLogoResponse>(`/project/upload/logo`, formData, {
 		headers: { 'Content-Type': 'multipart/form-data' },
 	})
 }
